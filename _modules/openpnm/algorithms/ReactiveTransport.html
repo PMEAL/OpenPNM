@@ -219,7 +219,7 @@
         <span class="k">if</span> <span class="n">variable_props</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;variable_props&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span></div>
 
-<div class="viewcode-block" id="ReactiveTransport.set_source"><a class="viewcode-back" href="../../../modules/algorithms/reactive_transport.html#openpnm.algorithms.ReactiveTransport.set_source">[docs]</a>    <span class="k">def</span> <span class="nf">set_source</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">propname</span><span class="p">,</span> <span class="n">pores</span><span class="p">):</span>
+<div class="viewcode-block" id="ReactiveTransport.set_source"><a class="viewcode-back" href="../../../modules/algorithms/reactive_transport.html#openpnm.algorithms.ReactiveTransport.set_source">[docs]</a>    <span class="k">def</span> <span class="nf">set_source</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">propname</span><span class="p">,</span> <span class="n">pores</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;overwrite&#39;</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Applies a given source term to the specified pores</span>
 
@@ -227,9 +227,14 @@
 <span class="sd">        ----------</span>
 <span class="sd">        propname : string</span>
 <span class="sd">            The property name of the source term model to be applied</span>
-
 <span class="sd">        pores : array_like</span>
 <span class="sd">            The pore indices where the source term should be applied</span>
+<span class="sd">        mode : str</span>
+<span class="sd">            Controls how the sources are applied. Options are:</span>
+<span class="sd">                </span>
+<span class="sd">            &#39;merge&#39; - Adds supplied source term to already existing ones.</span>
+<span class="sd">            &#39;overwrite&#39; - (default) Deletes all existing source terms of the </span>
+<span class="sd">            given ``propname`` then adds the specified new ones</span>
 
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
@@ -243,11 +248,33 @@
         <span class="k">if</span> <span class="p">(</span><span class="n">locs</span> <span class="o">&amp;</span> <span class="n">locs_BC</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Boundary conditions already present in given &#39;</span>
                             <span class="o">+</span> <span class="s1">&#39;pores, cannot also assign source terms&#39;</span><span class="p">)</span>
-        <span class="c1"># Set source term</span>
-        <span class="bp">self</span><span class="p">[</span><span class="n">propname</span><span class="p">]</span> <span class="o">=</span> <span class="n">locs</span>
+        <span class="k">if</span> <span class="n">propname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="bp">self</span><span class="p">[</span><span class="n">propname</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;merge&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="p">[</span><span class="n">propname</span><span class="p">][</span><span class="n">locs</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;overwrite&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="p">[</span><span class="n">propname</span><span class="p">]</span> <span class="o">=</span> <span class="n">locs</span>
         <span class="c1"># Check if propname already in source term list</span>
         <span class="k">if</span> <span class="n">propname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;sources&#39;</span><span class="p">]:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;sources&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">propname</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ReactiveTransport.remove_source"><a class="viewcode-back" href="../../../modules/algorithms/reactive_transport.html#openpnm.algorithms.ReactiveTransport.remove_source">[docs]</a>    <span class="k">def</span> <span class="nf">remove_source</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">propname</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Removes source terms from specified pores</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        propname : str</span>
+<span class="sd">            The property name of the source term model to be removed</span>
+<span class="sd">        pores : array_like</span>
+<span class="sd">            The pore indices where the source term should be applied</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">pores</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">pores</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Ps</span>
+        <span class="n">locs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tomask</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pores</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">propname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="bp">self</span><span class="p">[</span><span class="n">propname</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="p">[</span><span class="n">propname</span><span class="p">][</span><span class="n">locs</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span></div>
 
     <span class="k">def</span> <span class="nf">_set_variable_props</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">propnames</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>

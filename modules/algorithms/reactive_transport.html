@@ -53,6 +53,20 @@
 <p>This subclass performs steady simulations of transport phenomena with
 reactions when source terms are added.</p>
 <dl class="py method">
+<dt id="openpnm.algorithms.ReactiveTransport.remove_source">
+<code class="sig-name descname">remove_source</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">propname</span></em>, <em class="sig-param"><span class="n">pores</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/ReactiveTransport.html#ReactiveTransport.remove_source"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.algorithms.ReactiveTransport.remove_source" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes source terms from specified pores</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>propname</strong> (<em>str</em>) – The property name of the source term model to be removed</p></li>
+<li><p><strong>pores</strong> (<em>array_like</em>) – The pore indices where the source term should be applied</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt id="openpnm.algorithms.ReactiveTransport.reset">
 <code class="sig-name descname">reset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">source_terms</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">variable_props</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/ReactiveTransport.html#ReactiveTransport.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.algorithms.ReactiveTransport.reset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Resets the algorithm to enable re-use.</p>
@@ -87,13 +101,18 @@ to results of the algorithm are removed.</p></li>
 
 <dl class="py method">
 <dt id="openpnm.algorithms.ReactiveTransport.set_source">
-<code class="sig-name descname">set_source</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">propname</span></em>, <em class="sig-param"><span class="n">pores</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/ReactiveTransport.html#ReactiveTransport.set_source"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.algorithms.ReactiveTransport.set_source" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">set_source</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">propname</span></em>, <em class="sig-param"><span class="n">pores</span></em>, <em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">'overwrite'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/ReactiveTransport.html#ReactiveTransport.set_source"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.algorithms.ReactiveTransport.set_source" title="Permalink to this definition">¶</a></dt>
 <dd><p>Applies a given source term to the specified pores</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>propname</strong> (<em>string</em>) – The property name of the source term model to be applied</p></li>
 <li><p><strong>pores</strong> (<em>array_like</em>) – The pore indices where the source term should be applied</p></li>
+<li><p><strong>mode</strong> (<em>str</em>) – <p>Controls how the sources are applied. Options are:</p>
+<p>’merge’ - Adds supplied source term to already existing ones.
+‘overwrite’ - (default) Deletes all existing source terms of the
+given <code class="docutils literal notranslate"><span class="pre">propname</span></code> then adds the specified new ones</p>
+</p></li>
 </ul>
 </dd>
 </dl>
