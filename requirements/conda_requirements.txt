@@ -16,3 +16,4 @@ sympy
 docrep==0.2.7
 pardiso4py
 zarr
+paraview
