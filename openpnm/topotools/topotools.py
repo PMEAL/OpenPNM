@@ -1776,14 +1776,17 @@ def is_fully_connected(network, pores=None):
         only if the entire network is connected to the same cluster.  If
         ``pores`` are given the returns ``True`` if ???
     """
-    am = network.get_adjacency_matrix(fmt='coo')
+    am = network.get_adjacency_matrix(fmt='lil').copy()
     temp = csgraph.connected_components(am, directed=False)[1]
-    # If network is fully connected, just exit regardless of other args
     result = np.unique(temp).size == 1
     if result:
-        return True
-    elif (pores is not None):
-        # Ensure all cluters are part of pores
-        pores = network.tomask(pores=pores)
-        result = np.all(np.unique(temp[pores]) == np.unique(~temp))
+        # I want to return from here, but code-factor will complain :-(
+        pass
+    elif (pores is not None):  # Ensure all clusters are part of pores
+        am.resize(network.Np+1, network.Np+1)
+        pores = network._parse_indices(pores)
+        am.rows[-1] = pores.tolist()
+        am.data[-1] = np.arange(network.Nt, network.Nt + len(pores)).tolist()
+        temp = csgraph.connected_components(am, directed=False)[1]
+        result = np.unique(temp).size == 1
     return result
