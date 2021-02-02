@@ -1756,3 +1756,34 @@ def iscoplanar(coords):
     n_dot = np.dot(n, r)
 
     return bool(np.sum(np.absolute(n_dot)) == 0)
+
+
+def is_fully_connected(network, pores=None):
+    r"""
+    Checks whether network is fully connected, i.e. not clustered.
+
+    Parameters
+    ----------
+    network : OpenPNM network object
+        The network whose connectivity to check
+    pores : array_like (optional)
+        The pore indices of boundaries
+
+    Returns
+    -------
+    connected : bool
+        If ``inlets`` and ``outlets`` were note specified, then returns ``True``
+        only if the entire network is connected to the same cluster.  If
+        ``pores`` are given the returns ``True`` if ???
+    """
+    am = network.get_adjacency_matrix(fmt='coo')
+    temp = csgraph.connected_components(am, directed=False)[1]
+    # If network is fully connected, just exit regardless of other args
+    result = np.unique(temp).size == 1
+    if result:
+        return True
+    elif (pores is not None):
+        # Ensure all cluters are part of pores
+        pores = network.tomask(pores=pores)
+        result = np.all(np.unique(temp[pores]) == np.unique(~temp))
+    return result
