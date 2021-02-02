@@ -3,7 +3,6 @@ import numpy as np
 import openpnm as op
 from numpy.testing import assert_allclose
 from openpnm import topotools
-import pytest
 
 
 class TopotoolsTest:
