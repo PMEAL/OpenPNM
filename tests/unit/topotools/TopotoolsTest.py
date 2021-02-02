@@ -3,6 +3,7 @@ import numpy as np
 import openpnm as op
 from numpy.testing import assert_allclose
 from openpnm import topotools
+import pytest
 
 
 class TopotoolsTest:
@@ -449,7 +450,7 @@ class TopotoolsTest:
         Ps = op.topotools.filter_pores_by_z(network=pn, pores=pn.Ps, z=4)
         assert_allclose(Ps, [5, 6, 9, 10])
 
-    def test_isconnected(self):
+    def test_is_fully_connected(self):
         pn = op.network.Cubic(shape=[4, 4, 1])
         op.topotools.trim(network=pn, pores=[1, 5, 9, 13])
         assert op.topotools.is_fully_connected(pn) is False
@@ -459,6 +460,22 @@ class TopotoolsTest:
         assert op.topotools.is_fully_connected(pn, pores=[0, 9]) is False
         assert op.topotools.is_fully_connected(pn, pores=[0]) is False
         assert op.topotools.is_fully_connected(pn, pores=[]) is False
+
+    def test_is_fully_connected_with_alg(self):
+        pn = op.network.Cubic(shape=[4, 4, 1])
+        Ts = pn.find_neighbor_throats(5)
+        op.topotools.trim(network=pn, throats=Ts)
+        assert op.topotools.is_fully_connected(pn) is False
+        phase = op.phases.GenericPhase(network=pn)
+        phase['throat.diffusive_conductance'] = 1.0
+        alg = op.algorithms.FickianDiffusion(network=pn, phase=phase)
+        alg.set_value_BC(pores=[0, 1, 2, 3], values=1.0)
+        alg.set_value_BC(pores=[12, 13, 14, 15], values=0.5)
+        with pytest.raises(Exception):
+            alg.run()
+        alg.set_value_BC(pores=5, values=1.0)
+        alg.run()
+        assert np.ptp(alg['pore.concentration']) == 0.5
 
 
 if __name__ == '__main__':
