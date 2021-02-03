@@ -149,6 +149,34 @@ class ReactiveTransportTest:
         c_mean_relaxed = self.alg['pore.concentration'].mean()
         assert_allclose(c_mean_base, c_mean_relaxed, rtol=1e-6)
 
+    def test_set_source_with_modes(self):
+        self.alg.reset(bcs=True, source_terms=True)
+        self.alg.set_source(pores=self.net.pores('left'),
+                            propname='pore.reaction',
+                            mode='overwrite')
+        assert self.alg['pore.reaction'].sum() == self.net.num_pores('left')
+        self.alg.set_source(pores=[0, 1, 2],
+                            propname='pore.reaction',
+                            mode='overwrite')
+        assert self.alg['pore.reaction'].sum() == 3
+        self.alg.set_source(pores=[2, 3, 4],
+                            propname='pore.reaction',
+                            mode='merge')
+        assert self.alg['pore.reaction'].sum() == 5
+
+    def test_remove_source(self):
+        self.alg.reset(bcs=True, source_terms=True)
+        self.alg.set_source(pores=[2, 3, 4],
+                            propname='pore.reaction',
+                            mode='overwrite')
+        assert self.alg['pore.reaction'].sum() == 3
+        self.alg.remove_source(propname='pore.reaction', pores=[0, 1])
+        assert self.alg['pore.reaction'].sum() == 3
+        self.alg.remove_source(propname='pore.reaction', pores=[0, 2])
+        assert self.alg['pore.reaction'].sum() == 2
+        self.alg.remove_source(propname='pore.reaction')
+        assert self.alg['pore.reaction'].sum() == 0
+
     def test_source_relaxation_consistency_w_base_solution(self):
         self.alg.reset(bcs=True, source_terms=True)
         self.alg.set_source(pores=self.net.pores('bottom'), propname='pore.reaction')

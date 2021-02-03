@@ -185,7 +185,7 @@ class ReactiveTransport(GenericTransport):
         if variable_props:
             self.settings['variable_props'] = []
 
-    def set_source(self, propname, pores):
+    def set_source(self, propname, pores, mode='overwrite'):
         r"""
         Applies a given source term to the specified pores
 
@@ -193,9 +193,14 @@ class ReactiveTransport(GenericTransport):
         ----------
         propname : string
             The property name of the source term model to be applied
-
         pores : array_like
             The pore indices where the source term should be applied
+        mode : str
+            Controls how the sources are applied. Options are:
+                
+            'merge' - Adds supplied source term to already existing ones.
+            'overwrite' - (default) Deletes all existing source terms of the 
+            given ``propname`` then adds the specified new ones
 
         Notes
         -----
@@ -209,11 +214,33 @@ class ReactiveTransport(GenericTransport):
         if (locs & locs_BC).any():
             raise Exception('Boundary conditions already present in given '
                             + 'pores, cannot also assign source terms')
-        # Set source term
-        self[propname] = locs
+        if propname not in self.keys():
+            self[propname] = False
+        if mode == 'merge':
+            self[propname][locs] = True
+        elif mode == 'overwrite':
+            self[propname] = locs
         # Check if propname already in source term list
         if propname not in self.settings['sources']:
             self.settings['sources'].append(propname)
+
+    def remove_source(self, propname, pores=None):
+        r"""
+        Removes source terms from specified pores
+
+        Parameters
+        ----------
+        propname : str
+            The property name of the source term model to be removed
+        pores : array_like
+            The pore indices where the source term should be applied
+        """
+        if pores is None:
+            pores = self.Ps
+        locs = self.tomask(pores=pores)
+        if propname not in self.keys():
+            self[propname] = False
+        self[propname][locs] = False
 
     def _set_variable_props(self, propnames):
         r"""
