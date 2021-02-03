@@ -40,7 +40,7 @@
 <span class="kn">import</span> <span class="nn">scipy.sparse.csgraph</span> <span class="k">as</span> <span class="nn">spgr</span>
 <span class="kn">from</span> <span class="nn">scipy.spatial</span> <span class="kn">import</span> <span class="n">ConvexHull</span>
 <span class="kn">from</span> <span class="nn">scipy.spatial</span> <span class="kn">import</span> <span class="n">cKDTree</span>
-<span class="kn">from</span> <span class="nn">openpnm.topotools</span> <span class="kn">import</span> <span class="n">iscoplanar</span>
+<span class="kn">from</span> <span class="nn">openpnm.topotools</span> <span class="kn">import</span> <span class="n">iscoplanar</span><span class="p">,</span> <span class="n">is_fully_connected</span>
 <span class="kn">from</span> <span class="nn">openpnm.algorithms</span> <span class="kn">import</span> <span class="n">GenericAlgorithm</span>
 <span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">logging</span><span class="p">,</span> <span class="n">Docorator</span><span class="p">,</span> <span class="n">GenericSettings</span>
 <span class="c1"># Uncomment this line when we stop supporting Python 3.6</span>
@@ -810,7 +810,8 @@
         <span class="n">physics</span> <span class="o">=</span> <span class="n">prj</span><span class="o">.</span><span class="n">physics</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
 
         <span class="c1"># Validate network topology health</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">prj</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">_is_fully_connected</span><span class="p">():</span>
+        <span class="n">Ps</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.bc_rate&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.bc_value&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_fully_connected</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="p">,</span> <span class="n">pores_BC</span><span class="o">=</span><span class="n">Ps</span><span class="p">):</span>
             <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="s2">&quot;Your network is clustered. Run h = net.check_network_health()&quot;</span>
                 <span class="s2">&quot; followed by op.topotools.trim(net, pores=h[&#39;trim_pores&#39;])&quot;</span>
