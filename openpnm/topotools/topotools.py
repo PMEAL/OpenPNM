@@ -1758,35 +1758,34 @@ def iscoplanar(coords):
     return bool(np.sum(np.absolute(n_dot)) == 0)
 
 
-def is_fully_connected(network, pores=None):
+def is_fully_connected(network, pores_BC=None):
     r"""
     Checks whether network is fully connected, i.e. not clustered.
 
     Parameters
     ----------
-    network : OpenPNM network object
-        The network whose connectivity to check
-    pores : array_like (optional)
-        The pore indices of boundaries
+    network : GenericNetwork
+        The network whose connectivity to check.
+    pores_BC : array_like (optional)
+        The pore indices of boundary conditions (inlets/outlets).
 
     Returns
     -------
-    connected : bool
-        If ``inlets`` and ``outlets`` were note specified, then returns ``True``
-        only if the entire network is connected to the same cluster.  If
-        ``pores`` are given the returns ``True`` if ???
+    bool
+        If ``pores_BC`` is not specified, then returns ``True`` only if
+        the entire network is connected to the same cluster. If
+        ``pores_BC`` is given, then returns ``True`` only if all clusters
+        are connected to the given boundary condition pores.
     """
     am = network.get_adjacency_matrix(fmt='lil').copy()
     temp = csgraph.connected_components(am, directed=False)[1]
-    result = np.unique(temp).size == 1
-    if result:
-        # I want to return from here, but code-factor will complain :-(
-        pass
-    elif (pores is not None):  # Ensure all clusters are part of pores
-        am.resize(network.Np+1, network.Np+1)
-        pores = network._parse_indices(pores)
-        am.rows[-1] = pores.tolist()
-        am.data[-1] = np.arange(network.Nt, network.Nt + len(pores)).tolist()
+    is_connected = np.unique(temp).size == 1
+    # Ensure all clusters are part of pores, if given
+    if not is_connected and pores_BC is not None:
+        am.resize(network.Np + 1, network.Np + 1)
+        pores_BC = network._parse_indices(pores_BC)
+        am.rows[-1] = pores_BC.tolist()
+        am.data[-1] = np.arange(network.Nt, network.Nt + len(pores_BC)).tolist()
         temp = csgraph.connected_components(am, directed=False)[1]
-        result = np.unique(temp).size == 1
-    return result
+        is_connected = np.unique(temp).size == 1
+    return is_connected

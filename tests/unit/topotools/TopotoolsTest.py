@@ -453,12 +453,12 @@ class TopotoolsTest:
         pn = op.network.Cubic(shape=[4, 4, 1])
         op.topotools.trim(network=pn, pores=[1, 5, 9, 13])
         assert op.topotools.is_fully_connected(pn) is False
-        assert op.topotools.is_fully_connected(pn, pores=[0, 1, 9, 10]) is True
-        assert op.topotools.is_fully_connected(pn, pores=[0, 10]) is True
-        assert op.topotools.is_fully_connected(pn, pores=[1, 10]) is False
-        assert op.topotools.is_fully_connected(pn, pores=[0, 9]) is False
-        assert op.topotools.is_fully_connected(pn, pores=[0]) is False
-        assert op.topotools.is_fully_connected(pn, pores=[]) is False
+        assert op.topotools.is_fully_connected(pn, pores_BC=[0, 1, 9, 10]) is True
+        assert op.topotools.is_fully_connected(pn, pores_BC=[0, 10]) is True
+        assert op.topotools.is_fully_connected(pn, pores_BC=[1, 10]) is False
+        assert op.topotools.is_fully_connected(pn, pores_BC=[0, 9]) is False
+        assert op.topotools.is_fully_connected(pn, pores_BC=[0]) is False
+        assert op.topotools.is_fully_connected(pn, pores_BC=[]) is False
 
     def test_is_fully_connected_with_alg(self):
         pn = op.network.Cubic(shape=[4, 4, 1])

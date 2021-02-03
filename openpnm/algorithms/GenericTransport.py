@@ -777,7 +777,7 @@ class GenericTransport(GenericAlgorithm):
 
         # Validate network topology health
         Ps = (self['pore.bc_rate'] > 0) + (self['pore.bc_value'] > 0)
-        if not is_fully_connected(network=self.network, pores=Ps):
+        if not is_fully_connected(network=self.network, pores_BC=Ps):
             msg = (
                 "Your network is clustered. Run h = net.check_network_health()"
                 " followed by op.topotools.trim(net, pores=h['trim_pores'])"
