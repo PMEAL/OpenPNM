@@ -21,6 +21,7 @@ from .topotools import find_pore_to_pore_distance
 from .topotools import generate_base_points
 from .topotools import iscoplanar
 from .topotools import isoutside
+from .topotools import is_fully_connected
 from .topotools import label_faces
 from .topotools import merge_networks
 from .topotools import merge_pores

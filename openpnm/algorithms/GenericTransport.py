@@ -6,7 +6,7 @@ from numpy.linalg import norm
 import scipy.sparse.csgraph as spgr
 from scipy.spatial import ConvexHull
 from scipy.spatial import cKDTree
-from openpnm.topotools import iscoplanar
+from openpnm.topotools import iscoplanar, is_fully_connected
 from openpnm.algorithms import GenericAlgorithm
 from openpnm.utils import logging, Docorator, GenericSettings
 # Uncomment this line when we stop supporting Python 3.6
@@ -776,7 +776,8 @@ class GenericTransport(GenericAlgorithm):
         physics = prj.physics().values()
 
         # Validate network topology health
-        if not prj.network._is_fully_connected():
+        Ps = (self['pore.bc_rate'] > 0) + (self['pore.bc_value'] > 0)
+        if not is_fully_connected(network=self.network, pores_BC=Ps):
             msg = (
                 "Your network is clustered. Run h = net.check_network_health()"
                 " followed by op.topotools.trim(net, pores=h['trim_pores'])"
