@@ -227,7 +227,7 @@ def trim(network, pores=[], throats=[]):
         # It removes all throat props, adds 'all', and skips rest of function
         if not np.any(Tkeep):
             logger.info('Removing ALL throats from network')
-            for item in network.keys():
+            for item in list(network.keys()):
                 if item.split('.')[0] == 'throat':
                     del network[item]
             network['throat.all'] = np.array([], ndmin=1)
