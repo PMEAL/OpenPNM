@@ -51,13 +51,13 @@ class Statoil(GenericIO):
         p = Path(path)
         # Deal with reservoir pores
         if Pinlet is None:
-            inlet = network.Np - 2
+            Pinlet = network.Np - 2
         if Poutlet is None:
-            outlet = network.Np - 1
-        Pin = network.find_neighbor_pores(pores=inlet)
+            Poutlet = network.Np - 1
+        Pin = network.find_neighbor_pores(pores=Pinlet)
         inlets = np.zeros_like(network.Ps, dtype=bool)
         inlets[Pin] = True
-        Pout = network.find_neighbor_pores(pores=outlet)
+        Pout = network.find_neighbor_pores(pores=Poutlet)
         outlets = np.zeros_like(network.Ps, dtype=bool)
         outlets[Pout] = True
 
