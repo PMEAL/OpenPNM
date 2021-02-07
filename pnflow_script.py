@@ -11,4 +11,7 @@ pn.add_model(propname='throat.total_length',
              model=op.models.geometry.throat_length.ctc)
 pn['throat.shape_factor'] = 1.0
 pn['pore.shape_factor'] = 1.0
-op.io.Statoil.export_data(filename=r"C:\Users\jeff\Dropbox\Flash Sync\Code\Git\pnflow_projects\cubic\tester", network=pn, shape=[1e-3, 1e-3, 1e-3])
+path = r"C:\Users\jeff\Dropbox\Flash Sync\Code\Git\pnflow_projects\cubic"
+prefix = "tester"
+op.io.Statoil.export_data(network=pn, path=path, prefix=prefix,
+                          shape=[1e-3, 1e-3, 1e-3])
