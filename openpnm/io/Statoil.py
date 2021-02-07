@@ -3,6 +3,8 @@ from openpnm.topotools import trim, extend
 from openpnm.utils import logging
 from openpnm.io import GenericIO, Pandas
 from openpnm.network import GenericNetwork
+from openpnm.geometry import GenericGeometry
+import openpnm.models as mods
 from pathlib import Path
 from pandas import DataFrame
 logger = logging.getLogger(__name__)
@@ -38,10 +40,10 @@ class Statoil(GenericIO):
             in physical units (i.e. um)
         inlet and outlet : scalar, int (optional)
             The pore index of the inlet and outlet reservoir pores. If not
-            provided that it is assumed they are the second last and last
+            provided then it is assumed they are the second last and last
             pores in the network, respectively.  This would be the case if
-            the ``add_reservoir_pore`` function had been called just prior
-            to exporting.
+            the ``add_reservoir_pore`` function had been called prior to
+            exporting.
         """
 
         # Deal with reservoir pores
@@ -60,10 +62,10 @@ class Statoil(GenericIO):
         props = ['throat.conns',
                  'throat.diameter',
                  'throat.shape_factor',
-                 'throat.length']
+                 'throat.total_length']
         with open(filename + '_link1.dat', 'wt') as f:
             f.write(str(network.Nt) + '\n')
-            for row in network.throats('reservoir', mode='not'):
+            for row in network.throats():
                 s = ''
                 # Original file has 6 spaces for index, but this is
                 # not enough for networks with > 1 million pores so
@@ -76,9 +78,12 @@ class Statoil(GenericIO):
                     except KeyError:
                         val = 0.0
                     if col == 'throat.conns':
+                        val = np.copy(val)
+                        val[val == network.Np - 1] = -1
+                        val[val == (network.Np - 2)] = -2
                         # Original file has 7 spaces for pore indices, but
                         # this is not enough for networks with > 10 million
-                        # pores so  I have bumped it to 9.  I'm not sure if
+                        # pores so  I have bumped it to 9. I'm not sure if
                         # this will still work with the ICL binaries.
                         s = s + '{:>9}'.format(str(val[0] + 1))
                         s = s + '{:>9}'.format(str(val[1] + 1))
@@ -86,12 +91,14 @@ class Statoil(GenericIO):
                     if isinstance(val, float):
                         if 'diameter' in col:  # Convert to radius
                             val = val/2
+                        if np.isnan(val):
+                            val = 0.0
                         val = np.format_float_scientific(val, precision=6,
                                                          exp_digits=3,
                                                          trim='k',
                                                          unique=False)
                     s = s + '{:>15}'.format(str(val))
-                s = s + '\n'  # Remove trailing tab and a new line
+                s = s + '\n'  # Remove trailing tab and add a new line
                 f.write(s)
 
         # Write Link 2 file
@@ -102,7 +109,7 @@ class Statoil(GenericIO):
                  'throat.volume',
                  'throat.clay_volume']
         with open(filename + '_link2.dat', 'wt') as f:
-            for row in network.throats('reservoir', mode='not'):
+            for row in network.throats():
                 s = ''
                 # Original file has 6 spaces for index, but this is
                 # not enough for networks with > 1 million pores so
@@ -115,6 +122,9 @@ class Statoil(GenericIO):
                     except KeyError:
                         val = 0.0
                     if col == 'throat.conns':
+                        val = np.copy(val)
+                        val[val == network.Np - 1] = -1
+                        val[val == (network.Np - 2)] = -2
                         # Original file has 7 spaces for pore indices, but
                         # this is not enough for networks with > 10 million
                         # pores so I have bumped it to 9. I'm not sure if
@@ -123,6 +133,8 @@ class Statoil(GenericIO):
                         s = s + '{:>9}'.format(str(val[1] + 1))
                         continue
                     if isinstance(val, float):
+                        if np.isnan(val):
+                            val = 0.0
                         val = np.format_float_scientific(val, precision=6,
                                                          exp_digits=3,
                                                          trim='k',
@@ -134,7 +146,7 @@ class Statoil(GenericIO):
         # Write Node 1 file
         with open(filename + '_node1.dat', 'wt') as f:
             s = ''
-            s = s + str(network.Np)
+            s = s + str(network.num_pores('reservoir', 'not'))
             for d in shape:
                 val = np.format_float_scientific(d, precision=6, exp_digits=3,
                                                  trim='k', unique=False)
@@ -302,7 +314,7 @@ class Statoil(GenericIO):
                                         node1['pore.y_coord'],
                                         node1['pore.z_coord'])).T
         # ---------------------------------------------------------------------
-        # Parse the node1 file
+        # Parse the node2 file
         filename = Path(path.resolve(), prefix+'_node2.dat')
         with open(filename, mode='r') as f:
             node2 = read_table(filepath_or_buffer=f,
@@ -356,9 +368,10 @@ class Statoil(GenericIO):
             The pores to which the reservoir pore should be connected to
         offset : scalar
             Controls the distance which the reservoir is offset from the given
-            ``pores``.  The total displacement is found from the network dimension
-            normal to given ``pores``, multiplied by ``offset``.
+            ``pores``.  The total displacement is found from the network
+            dimension normal to given ``pores``, multiplied by ``offset``.
         """
+
         # Check if a label was given and fetch actual indices
         if isinstance(pores, str):
             # Convert 'face' into 'pore.face' if necessary
@@ -379,9 +392,35 @@ class Statoil(GenericIO):
             new_coord[ax] = new_coord[ax] - domain_half_length*(1 + offset)
         if coords[:, ax].mean() > network['pore.coords'][:, ax].mean():
             new_coord[ax] = new_coord[ax] + domain_half_length*(1 + offset)
+        Ps = np.arange(network.Np, network.Np + 1)
         extend(network=network, coords=[new_coord], labels=['reservoir'])
         conns = [[P, network.Np-1] for P in pores]
+        Ts = np.arange(network.Nt, network.Nt + len(conns))
         extend(network=network, conns=conns, labels=['reservoir'])
+        # Compute the geometrical properties of the reservoir pore and throats
+        # Confirm if network has any geometry props on it
+        props = {'throat.length', 'pore.diameter', 'throat.volume'}
+        if len(set(network.keys()).intersection(props)) > 0:
+            raise Exception('Geometrical properties should be moved to a ' +
+                            'geometry object first')
+            # or just do this?:  geo = Imported(network=network)
+        geo = GenericGeometry(network=network, pores=Ps, throats=Ts)
+        geo.add_model(propname='pore.diameter',
+                      model=mods.geometry.pore_size.largest_sphere)
+        geo.add_model(propname='throat.diameter_temp',
+                      model=mods.geometry.throat_size.from_neighbor_pores,
+                      mode='min')
+        geo.add_model(propname='throat.diameter',
+                      model=mods.misc.scaled,
+                      prop='throat.diameter_temp', factor=0.5)
+        geo.add_model(propname='throat.length',
+                      model=mods.geometry.throat_length.classic)
+        geo.add_model(propname='throat.endpoints',
+                      model=mods.geometry.throat_endpoints.spherical_pores)
+        geo.add_model(propname='throat.conduit_lengths',
+                      model=mods.geometry.throat_length.conduit_lengths)
+        geo.add_model(propname='throat.volume',
+                      model=mods.geometry.throat_volume.cylinder)
 
 
 def get_domain_shape(network, pore_diameter='pore.diameter'):
