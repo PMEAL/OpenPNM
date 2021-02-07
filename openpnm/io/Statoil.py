@@ -1,12 +1,12 @@
 import numpy as np
 from openpnm.topotools import trim, extend
 from openpnm.utils import logging
-from openpnm.io import GenericIO, Pandas
+from openpnm.io import GenericIO
 from openpnm.network import GenericNetwork
 from openpnm.geometry import GenericGeometry
 import openpnm.models as mods
 from pathlib import Path
-from pandas import DataFrame
+from pandas import read_table, DataFrame
 logger = logging.getLogger(__name__)
 
 
@@ -26,30 +26,33 @@ class Statoil(GenericIO):
     """
 
     @classmethod
-    def export_data(cls, filename, network, shape, inlet=None, outlet=None):
+    def export_data(cls, network, path, prefix, shape, Pinlet=None, Poutlet=None):
         r"""
 
         Parameters
         ----------
-        filename : str or path object
-            The filename to use
         network : OpenPNM Network object
             The network
+        path : str or path object
+            The location where the exported files should be stored
+        prefix : str
+            The prefix to append to each file name, such as
+            ``<prefix>_node1.dat``
         shape : array_like
             An ndim-by-1 array or list containing the network dimensions
             in physical units (i.e. um)
-        inlet and outlet : scalar, int (optional)
+        Pinlet and Poutlet : scalar, int (optional)
             The pore index of the inlet and outlet reservoir pores. If not
             provided then it is assumed they are the second last and last
             pores in the network, respectively.  This would be the case if
             the ``add_reservoir_pore`` function had been called prior to
             exporting.
         """
-
+        p = Path(path)
         # Deal with reservoir pores
-        if inlet is None:
+        if Pinlet is None:
             inlet = network.Np - 2
-        if outlet is None:
+        if Poutlet is None:
             outlet = network.Np - 1
         Pin = network.find_neighbor_pores(pores=inlet)
         inlets = np.zeros_like(network.Ps, dtype=bool)
@@ -63,14 +66,10 @@ class Statoil(GenericIO):
                  'throat.diameter',
                  'throat.shape_factor',
                  'throat.total_length']
-        with open(filename + '_link1.dat', 'wt') as f:
+        with open(p.joinpath(prefix + '_link1.dat'), 'wt') as f:
             f.write(str(network.Nt) + '\n')
             for row in network.throats():
                 s = ''
-                # Original file has 6 spaces for index, but this is
-                # not enough for networks with > 1 million pores so
-                # I have bumped it to 9.  I'm not sure if this will
-                # still work with the ICL binaries.
                 s = s + '{:>9}'.format(str(row+1))
                 for col in props:
                     try:
@@ -81,10 +80,6 @@ class Statoil(GenericIO):
                         val = np.copy(val)
                         val[val == network.Np - 1] = -1
                         val[val == (network.Np - 2)] = -2
-                        # Original file has 7 spaces for pore indices, but
-                        # this is not enough for networks with > 10 million
-                        # pores so  I have bumped it to 9. I'm not sure if
-                        # this will still work with the ICL binaries.
                         s = s + '{:>9}'.format(str(val[0] + 1))
                         s = s + '{:>9}'.format(str(val[1] + 1))
                         continue
@@ -108,13 +103,9 @@ class Statoil(GenericIO):
                  'throat.conduit_lengths.throat',
                  'throat.volume',
                  'throat.clay_volume']
-        with open(filename + '_link2.dat', 'wt') as f:
+        with open(p.joinpath(prefix + '_link2.dat'), 'wt') as f:
             for row in network.throats():
                 s = ''
-                # Original file has 6 spaces for index, but this is
-                # not enough for networks with > 1 million pores so
-                # I have bumped it to 9. I'm not sure if this will
-                # still work with the ICL binaries.
                 s = s + '{:>9}'.format(str(row+1))
                 for col in props:
                     try:
@@ -144,7 +135,7 @@ class Statoil(GenericIO):
                 f.write(s)
 
         # Write Node 1 file
-        with open(filename + '_node1.dat', 'wt') as f:
+        with open(p.joinpath(prefix + '_node1.dat'), 'wt') as f:
             s = ''
             s = s + str(network.num_pores('reservoir', 'not'))
             for d in shape:
@@ -157,10 +148,6 @@ class Statoil(GenericIO):
                 if row in [inlet, outlet]:
                     continue
                 s = ''
-                # Original file has 6 spaces for index, but this is
-                # not enough for networks with > 1 million pores so
-                # I have bumped it to 9.  I'm not sure if this will
-                # still work with the ICL binaries.
                 s = s + '{:>9}'.format(str(row+1))
                 for c in network['pore.coords'][row]:
                     if isinstance(c, float):
@@ -169,8 +156,6 @@ class Statoil(GenericIO):
                                                        trim='k',
                                                        unique=False)
                     s = s + '{:>15}'.format(str(c))
-                # The following lines use 9 spacing, but should be 7 to match
-                # the file format exactly
                 s = s + '{:>9}'.format(str(network.num_neighbors(row)[0]))
                 for n in network.find_neighbor_pores(row):
                     if n == inlet:
@@ -192,13 +177,9 @@ class Statoil(GenericIO):
                  'pore.diameter',
                  'pore.shape_factor',
                  'pore.clay_volume']
-        with open(filename + '_node2.dat', 'wt') as f:
+        with open(p.joinpath(prefix + '_node2.dat'), 'wt') as f:
             for row in network.pores('reservoir', mode='not'):
                 s = ''
-                # Original file has 6 spaces for index, but this is
-                # not enough for networks with > 1 million pores so
-                # I have bumped it to 9. I'm not sure if this will
-                # still work with the ICL binaries.
                 s = s + '{:>9}'.format(str(row+1))
                 for col in props:
                     try:
@@ -212,10 +193,6 @@ class Statoil(GenericIO):
                                                          exp_digits=3,
                                                          trim='k',
                                                          unique=False)
-                        # The original file has a spacing of 14, but this
-                        # does not leave room for negative numbers, so I
-                        # have bumped it by 1.  I'm not sure if this will
-                        # still work with the ICL binaries.
                         s = s + '{:>15}'.format(str(val))
                 s = s + '\n'  # Remove trailing tab and a new line
                 f.write(s)
@@ -250,8 +227,6 @@ class Statoil(GenericIO):
         An OpenPNM Project containing a GenericNetwork holding all the data
 
         """
-        from pandas import read_table, DataFrame
-
         net = {}
 
         # Parse the link1 file
