@@ -15,8 +15,12 @@ class ExportTest():
         self.path = os.path.dirname(os.path.abspath(sys.argv[0]))
         
     def test_export_data(self):
-        im = ps.generators.blobs(shape=[50, 50, 50], spacing=0.1)
-        export_data(im=im, filename='test_to_paraview.pvsm')
+        pn = op.network.Cubic(shape=[30, 40])
+        geo = op.geometry.StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts)
+        water = op.phases.Water(network=pn)
+        phys = op.physics.Standard(network=pn, phase=water, geometry=geo)
+        op.io.VTK.save(pn, water, 'net.vtp')
+        export_data(pn, filename='test_to_paraview.pvsm')
         os.remove('test_to_paraview.pvsm')
 
     def test_open_paraview(self):
