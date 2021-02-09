@@ -20,8 +20,8 @@ class ExportTest():
         water = op.phases.Water(network=pn)
         phys = op.physics.Standard(network=pn, phase=water, geometry=geo)
         op.io.VTK.save(pn, water, 'net.vtp')
-        export_data(pn, filename='test_to_paraview.pvsm')
-        os.remove('test_to_paraview.pvsm')
+        export_data(pn, filename='net.vtp')
+        os.remove('net.pvsm')
 
     def test_open_paraview(self):
         open_paraview(filename='../fixtures/image.pvsm')
