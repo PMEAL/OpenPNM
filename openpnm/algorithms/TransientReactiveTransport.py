@@ -344,6 +344,9 @@ class TransientReactiveTransport(ReactiveTransport):
             quant_init = self["pore.ic"]
             self[quantity + '@' + t_str] = quant_init
             self[quantity] = quant_init
+           
+            # intialize time (for case t_initial == t_final)
+            time = t
 
             for time in np.arange(t+dt, tf+dt, dt):
                 if res_t >= tol:  # Check if the steady state is reached
