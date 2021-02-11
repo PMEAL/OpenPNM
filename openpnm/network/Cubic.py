@@ -254,10 +254,14 @@ class Cubic(GenericNetwork):
         for ax in [0, 1, 2]:
             if dims[ax]:
                 inds = np.where(unit_vec[:, ax] == unit_vec[:, ax].max())[0]
-                temp = np.unique(mag[inds])
-                if not np.allclose(temp, temp[0]):
-                    raise Exception("A unique value of spacing could not be found")
-                spacing[ax] = temp[0]
+                if np.ndim(mag) != 0:
+                    temp = np.unique(mag[inds])
+                    if not np.allclose(temp, temp[0]):
+                        raise Exception("A unique value of spacing could not be found")
+                    spacing[ax] = temp[0]
+                else:
+                    temp = mag
+                    spacing[ax] = temp
         self.settings['spacing'] = spacing
         return np.array(spacing)
 
