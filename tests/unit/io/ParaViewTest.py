@@ -1,5 +1,7 @@
-import os
 import sys
+import os
+from os.path import realpath
+from pathlib import Path
 import openpnm as op
 from openpnm.io.Paraview import export_data, open_paraview
 
@@ -20,7 +22,8 @@ class ParaViewTest():
         os.remove('test.vtp')
 
     def test_open_paraview(self):
-        open_paraview(filename='../../fixtures/VTK-VTP/test.pvsm')
+        path = Path(realpath(__file__), '../../../fixtures/VTK-VTP/test.pvsm')
+        open_paraview(filename=path)
 
 
 if __name__ == "__main__":

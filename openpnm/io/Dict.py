@@ -83,7 +83,7 @@ class Dict(GenericIO):
                     # Item is categorized by type, so note it
                     objs[path[-3]][path[-2]][path[-1]] = d[item]
                 else:
-                    # item is nested, not categorized; make it a base
+                    # Item is nested, not categorized; make it a base
                     objs['base'][path[-2]][path[-1]] = d[item]
             else:
                 # If not categorized by type, make it a base
