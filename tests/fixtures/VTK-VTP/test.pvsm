@@ -1,5 +1,5 @@
 <GenericParaViewApplication>
-  <ServerManagerState version="5.8.1">
+  <ServerManagerState version="5.8.0">
     <Proxy group="animation" type="AnimationScene" id="303" servers="16">
       <Property name="AnimationTime" id="303.AnimationTime" number_of_elements="1">
         <Element index="0" value="0"/>
@@ -7554,7 +7554,7 @@
         <Domain name="bool" id="542.FlipTextures.bool"/>
       </Property>
       <Property name="GaussianRadius" id="542.GaussianRadius" number_of_elements="1">
-        <Element index="0" value="0.24"/>
+        <Element index="0" value="0.19"/>
         <Domain name="range" id="542.GaussianRadius.range"/>
       </Property>
       <Property name="GlyphTableIndexArray" id="542.GlyphTableIndexArray" number_of_elements="1">
@@ -7759,7 +7759,7 @@
         <Domain name="bool" id="542.ScaleByArray.bool"/>
       </Property>
       <Property name="ScaleFactor" id="542.ScaleFactor" number_of_elements="1">
-        <Element index="0" value="4.8"/>
+        <Element index="0" value="3.8"/>
         <Domain name="bounds" id="542.ScaleFactor.bounds"/>
         <Domain name="scalar_range" id="542.ScaleFactor.scalar_range"/>
         <Domain name="vector_range" id="542.ScaleFactor.vector_range"/>
@@ -8210,7 +8210,7 @@
         <Domain name="bool" id="845.FlipTextures.bool"/>
       </Property>
       <Property name="GaussianRadius" id="845.GaussianRadius" number_of_elements="1">
-        <Element index="0" value="0.24"/>
+        <Element index="0" value="0.19"/>
         <Domain name="range" id="845.GaussianRadius.range"/>
       </Property>
       <Property name="GlyphTableIndexArray" id="845.GlyphTableIndexArray" number_of_elements="1">
@@ -8430,7 +8430,7 @@
         <Domain name="bool" id="845.ScaleByArray.bool"/>
       </Property>
       <Property name="ScaleFactor" id="845.ScaleFactor" number_of_elements="1">
-        <Element index="0" value="4.8"/>
+        <Element index="0" value="3.8"/>
         <Domain name="bounds" id="845.ScaleFactor.bounds"/>
         <Domain name="scalar_range" id="845.ScaleFactor.scalar_range"/>
         <Domain name="vector_range" id="845.ScaleFactor.vector_range"/>
@@ -8881,7 +8881,7 @@
         <Domain name="bool" id="1552.FlipTextures.bool"/>
       </Property>
       <Property name="GaussianRadius" id="1552.GaussianRadius" number_of_elements="1">
-        <Element index="0" value="0.24"/>
+        <Element index="0" value="0.19"/>
         <Domain name="range" id="1552.GaussianRadius.range"/>
       </Property>
       <Property name="GlyphTableIndexArray" id="1552.GlyphTableIndexArray" number_of_elements="1">
@@ -9086,7 +9086,7 @@
         <Domain name="bool" id="1552.ScaleByArray.bool"/>
       </Property>
       <Property name="ScaleFactor" id="1552.ScaleFactor" number_of_elements="1">
-        <Element index="0" value="4.8"/>
+        <Element index="0" value="3.8"/>
         <Domain name="bounds" id="1552.ScaleFactor.bounds"/>
         <Domain name="scalar_range" id="1552.ScaleFactor.scalar_range"/>
         <Domain name="vector_range" id="1552.ScaleFactor.vector_range"/>
@@ -9537,7 +9537,7 @@
         <Domain name="bool" id="1789.FlipTextures.bool"/>
       </Property>
       <Property name="GaussianRadius" id="1789.GaussianRadius" number_of_elements="1">
-        <Element index="0" value="0.245"/>
+        <Element index="0" value="0.195"/>
         <Domain name="range" id="1789.GaussianRadius.range"/>
       </Property>
       <Property name="GlyphTableIndexArray" id="1789.GlyphTableIndexArray" number_of_elements="1">
@@ -9757,7 +9757,7 @@
         <Domain name="bool" id="1789.ScaleByArray.bool"/>
       </Property>
       <Property name="ScaleFactor" id="1789.ScaleFactor" number_of_elements="1">
-        <Element index="0" value="4.9"/>
+        <Element index="0" value="3.9"/>
         <Domain name="bounds" id="1789.ScaleFactor.bounds"/>
         <Domain name="scalar_range" id="1789.ScaleFactor.scalar_range"/>
         <Domain name="vector_range" id="1789.ScaleFactor.vector_range"/>
@@ -10214,7 +10214,7 @@
         <Domain name="bool" id="1086.FlipTextures.bool"/>
       </Property>
       <Property name="GaussianRadius" id="1086.GaussianRadius" number_of_elements="1">
-        <Element index="0" value="0.24"/>
+        <Element index="0" value="0.19"/>
         <Domain name="range" id="1086.GaussianRadius.range"/>
       </Property>
       <Property name="GlyphTableIndexArray" id="1086.GlyphTableIndexArray" number_of_elements="1">
@@ -10432,7 +10432,7 @@
         <Domain name="bool" id="1086.ScaleByArray.bool"/>
       </Property>
       <Property name="ScaleFactor" id="1086.ScaleFactor" number_of_elements="1">
-        <Element index="0" value="4.8"/>
+        <Element index="0" value="3.8"/>
         <Domain name="bounds" id="1086.ScaleFactor.bounds"/>
         <Domain name="scalar_range" id="1086.ScaleFactor.scalar_range"/>
         <Domain name="vector_range" id="1086.ScaleFactor.vector_range"/>
@@ -10898,7 +10898,7 @@
         <Domain name="bool" id="1327.FlipTextures.bool"/>
       </Property>
       <Property name="GaussianRadius" id="1327.GaussianRadius" number_of_elements="1">
-        <Element index="0" value="0.24"/>
+        <Element index="0" value="0.19"/>
         <Domain name="range" id="1327.GaussianRadius.range"/>
       </Property>
       <Property name="GlyphTableIndexArray" id="1327.GlyphTableIndexArray" number_of_elements="1">
@@ -11116,7 +11116,7 @@
         <Domain name="bool" id="1327.ScaleByArray.bool"/>
       </Property>
       <Property name="ScaleFactor" id="1327.ScaleFactor" number_of_elements="1">
-        <Element index="0" value="4.8"/>
+        <Element index="0" value="3.8"/>
         <Domain name="bounds" id="1327.ScaleFactor.bounds"/>
         <Domain name="scalar_range" id="1327.ScaleFactor.scalar_range"/>
         <Domain name="vector_range" id="1327.ScaleFactor.vector_range"/>
@@ -11418,67 +11418,6 @@
         <Element index="15" value="1"/>
       </Property>
     </Proxy>
-    <Proxy group="settings" type="ColorPalette" id="306" servers="16">
-      <Property name="BackgroundColor" id="306.BackgroundColor" number_of_elements="3">
-        <Element index="0" value="0.32"/>
-        <Element index="1" value="0.34"/>
-        <Element index="2" value="0.43"/>
-        <Domain name="range" id="306.BackgroundColor.range"/>
-      </Property>
-      <Property name="BackgroundColor2" id="306.BackgroundColor2" number_of_elements="3">
-        <Element index="0" value="0.32"/>
-        <Element index="1" value="0.34"/>
-        <Element index="2" value="0.43"/>
-        <Domain name="range" id="306.BackgroundColor2.range"/>
-      </Property>
-      <Property name="EdgeColor" id="306.EdgeColor" number_of_elements="3">
-        <Element index="0" value="0"/>
-        <Element index="1" value="0"/>
-        <Element index="2" value="0.5"/>
-        <Domain name="range" id="306.EdgeColor.range"/>
-      </Property>
-      <Property name="ForegroundColor" id="306.ForegroundColor" number_of_elements="3">
-        <Element index="0" value="1"/>
-        <Element index="1" value="1"/>
-        <Element index="2" value="1"/>
-        <Domain name="range" id="306.ForegroundColor.range"/>
-      </Property>
-      <Property name="InteractiveSelectionColor" id="306.InteractiveSelectionColor" number_of_elements="3">
-        <Element index="0" value="0.5"/>
-        <Element index="1" value="0"/>
-        <Element index="2" value="1"/>
-        <Domain name="range" id="306.InteractiveSelectionColor.range"/>
-      </Property>
-      <Property name="InteractiveWidgetColor" id="306.InteractiveWidgetColor" number_of_elements="3">
-        <Element index="0" value="0"/>
-        <Element index="1" value="1"/>
-        <Element index="2" value="0"/>
-        <Domain name="range" id="306.InteractiveWidgetColor.range"/>
-      </Property>
-      <Property name="LoadPalette" id="306.LoadPalette"/>
-      <Property name="SelectionColor" id="306.SelectionColor" number_of_elements="3">
-        <Element index="0" value="1"/>
-        <Element index="1" value="0"/>
-        <Element index="2" value="1"/>
-        <Domain name="range" id="306.SelectionColor.range"/>
-      </Property>
-      <Property name="SurfaceColor" id="306.SurfaceColor" number_of_elements="3">
-        <Element index="0" value="1"/>
-        <Element index="1" value="1"/>
-        <Element index="2" value="1"/>
-        <Domain name="range" id="306.SurfaceColor.range"/>
-      </Property>
-      <Property name="TextAnnotationColor" id="306.TextAnnotationColor" number_of_elements="3">
-        <Element index="0" value="1"/>
-        <Element index="1" value="1"/>
-        <Element index="2" value="1"/>
-        <Domain name="range" id="306.TextAnnotationColor.range"/>
-      </Property>
-      <Property name="UseGradientBackground" id="306.UseGradientBackground" number_of_elements="1">
-        <Element index="0" value="0"/>
-        <Domain name="bool" id="306.UseGradientBackground.bool"/>
-      </Property>
-    </Proxy>
     <Proxy group="filters" type="CellDataToPointData" id="1097" servers="1">
       <Property name="CellDataArrays" id="1097.CellDataArrays" number_of_elements="18">
         <Element index="0" value="net_01 | throat.conns"/>
@@ -11695,11 +11634,11 @@
     </Proxy>
     <Proxy group="sources" type="XMLPolyDataReader" id="316" servers="1">
       <Property name="FileName" id="316.FileName" number_of_elements="1">
-        <Element index="0" value="C:\Users\Hamed\OpenPNM\openpnm\io\Paraview\net.vtp"/>
+        <Element index="0" value="C:\Users\Amin\Code\OpenPNM\tests\fixtures\VTK-VTP\test.vtp"/>
         <Domain name="files" id="316.FileName.files"/>
       </Property>
       <Property name="FileNameInfo" id="316.FileNameInfo" number_of_elements="1">
-        <Element index="0" value="C:\Users\Hamed\OpenPNM\openpnm\io\Paraview\net.vtp"/>
+        <Element index="0" value="C:\Users\Amin\Code\OpenPNM\tests\fixtures\VTK-VTP\test.vtp"/>
       </Property>
       <Property name="TimestepValues" id="316.TimestepValues"/>
       <Property name="CellArrayInfo" id="316.CellArrayInfo" number_of_elements="62">
@@ -11899,218 +11838,204 @@
           <String text="phase | phase_01 | properties | throat.viscosity"/>
         </Domain>
       </Property>
-      <Property name="PointArrayInfo" id="316.PointArrayInfo" number_of_elements="66">
+      <Property name="PointArrayInfo" id="316.PointArrayInfo" number_of_elements="62">
         <Element index="0" value="network | net_01 | labels | pore.all"/>
         <Element index="1" value="1"/>
         <Element index="2" value="network | net_01 | labels | pore.back"/>
         <Element index="3" value="1"/>
-        <Element index="4" value="network | net_01 | labels | pore.bottom"/>
+        <Element index="4" value="network | net_01 | labels | pore.front"/>
         <Element index="5" value="1"/>
-        <Element index="6" value="network | net_01 | labels | pore.front"/>
+        <Element index="6" value="network | net_01 | labels | pore.geo_01"/>
         <Element index="7" value="1"/>
-        <Element index="8" value="network | net_01 | labels | pore.geo_01"/>
+        <Element index="8" value="network | net_01 | labels | pore.internal"/>
         <Element index="9" value="1"/>
-        <Element index="10" value="network | net_01 | labels | pore.internal"/>
+        <Element index="10" value="network | net_01 | labels | pore.left"/>
         <Element index="11" value="1"/>
-        <Element index="12" value="network | net_01 | labels | pore.left"/>
+        <Element index="12" value="network | net_01 | labels | pore.right"/>
         <Element index="13" value="1"/>
-        <Element index="14" value="network | net_01 | labels | pore.right"/>
+        <Element index="14" value="network | net_01 | labels | pore.surface"/>
         <Element index="15" value="1"/>
-        <Element index="16" value="network | net_01 | labels | pore.surface"/>
+        <Element index="16" value="network | net_01 | properties | pore._id"/>
         <Element index="17" value="1"/>
-        <Element index="18" value="network | net_01 | labels | pore.top"/>
+        <Element index="18" value="network | net_01 | properties | pore.area"/>
         <Element index="19" value="1"/>
-        <Element index="20" value="network | net_01 | properties | pore._id"/>
+        <Element index="20" value="network | net_01 | properties | pore.diameter"/>
         <Element index="21" value="1"/>
-        <Element index="22" value="network | net_01 | properties | pore.area"/>
+        <Element index="22" value="network | net_01 | properties | pore.max_size"/>
         <Element index="23" value="1"/>
-        <Element index="24" value="network | net_01 | properties | pore.diameter"/>
+        <Element index="24" value="network | net_01 | properties | pore.seed"/>
         <Element index="25" value="1"/>
-        <Element index="26" value="network | net_01 | properties | pore.max_size"/>
+        <Element index="26" value="network | net_01 | properties | pore.volume"/>
         <Element index="27" value="1"/>
-        <Element index="28" value="network | net_01 | properties | pore.seed"/>
+        <Element index="28" value="phase | phase_01 | labels | pore.all"/>
         <Element index="29" value="1"/>
-        <Element index="30" value="network | net_01 | properties | pore.volume"/>
+        <Element index="30" value="phase | phase_01 | labels | pore.phys_01"/>
         <Element index="31" value="1"/>
-        <Element index="32" value="phase | phase_01 | labels | pore.all"/>
+        <Element index="32" value="phase | phase_01 | properties | pore.contact_angle"/>
         <Element index="33" value="1"/>
-        <Element index="34" value="phase | phase_01 | labels | pore.phys_01"/>
+        <Element index="34" value="phase | phase_01 | properties | pore.critical_pressure"/>
         <Element index="35" value="1"/>
-        <Element index="36" value="phase | phase_01 | properties | pore.contact_angle"/>
+        <Element index="36" value="phase | phase_01 | properties | pore.critical_temperature"/>
         <Element index="37" value="1"/>
-        <Element index="38" value="phase | phase_01 | properties | pore.critical_pressure"/>
+        <Element index="38" value="phase | phase_01 | properties | pore.critical_volume"/>
         <Element index="39" value="1"/>
-        <Element index="40" value="phase | phase_01 | properties | pore.critical_temperature"/>
+        <Element index="40" value="phase | phase_01 | properties | pore.density"/>
         <Element index="41" value="1"/>
-        <Element index="42" value="phase | phase_01 | properties | pore.critical_volume"/>
+        <Element index="42" value="phase | phase_01 | properties | pore.diffusivity"/>
         <Element index="43" value="1"/>
-        <Element index="44" value="phase | phase_01 | properties | pore.density"/>
+        <Element index="44" value="phase | phase_01 | properties | pore.electrical_conductivity"/>
         <Element index="45" value="1"/>
-        <Element index="46" value="phase | phase_01 | properties | pore.diffusivity"/>
+        <Element index="46" value="phase | phase_01 | properties | pore.molar_density"/>
         <Element index="47" value="1"/>
-        <Element index="48" value="phase | phase_01 | properties | pore.electrical_conductivity"/>
+        <Element index="48" value="phase | phase_01 | properties | pore.molecular_weight"/>
         <Element index="49" value="1"/>
-        <Element index="50" value="phase | phase_01 | properties | pore.molar_density"/>
+        <Element index="50" value="phase | phase_01 | properties | pore.pressure"/>
         <Element index="51" value="1"/>
-        <Element index="52" value="phase | phase_01 | properties | pore.molecular_weight"/>
+        <Element index="52" value="phase | phase_01 | properties | pore.surface_tension"/>
         <Element index="53" value="1"/>
-        <Element index="54" value="phase | phase_01 | properties | pore.pressure"/>
+        <Element index="54" value="phase | phase_01 | properties | pore.temperature"/>
         <Element index="55" value="1"/>
-        <Element index="56" value="phase | phase_01 | properties | pore.surface_tension"/>
+        <Element index="56" value="phase | phase_01 | properties | pore.thermal_conductivity"/>
         <Element index="57" value="1"/>
-        <Element index="58" value="phase | phase_01 | properties | pore.temperature"/>
+        <Element index="58" value="phase | phase_01 | properties | pore.vapor_pressure"/>
         <Element index="59" value="1"/>
-        <Element index="60" value="phase | phase_01 | properties | pore.thermal_conductivity"/>
+        <Element index="60" value="phase | phase_01 | properties | pore.viscosity"/>
         <Element index="61" value="1"/>
-        <Element index="62" value="phase | phase_01 | properties | pore.vapor_pressure"/>
-        <Element index="63" value="1"/>
-        <Element index="64" value="phase | phase_01 | properties | pore.viscosity"/>
-        <Element index="65" value="1"/>
       </Property>
-      <Property name="PointArrayStatus" id="316.PointArrayStatus" number_of_elements="132">
+      <Property name="PointArrayStatus" id="316.PointArrayStatus" number_of_elements="124">
         <Element index="0" value="network | net_01 | labels | pore.all"/>
         <Element index="1" value="0"/>
         <Element index="2" value="network | net_01 | labels | pore.back"/>
         <Element index="3" value="0"/>
-        <Element index="4" value="network | net_01 | labels | pore.bottom"/>
+        <Element index="4" value="network | net_01 | labels | pore.front"/>
         <Element index="5" value="0"/>
-        <Element index="6" value="network | net_01 | labels | pore.front"/>
+        <Element index="6" value="network | net_01 | labels | pore.geo_01"/>
         <Element index="7" value="0"/>
-        <Element index="8" value="network | net_01 | labels | pore.geo_01"/>
+        <Element index="8" value="network | net_01 | labels | pore.internal"/>
         <Element index="9" value="0"/>
-        <Element index="10" value="network | net_01 | labels | pore.internal"/>
+        <Element index="10" value="network | net_01 | labels | pore.left"/>
         <Element index="11" value="0"/>
-        <Element index="12" value="network | net_01 | labels | pore.left"/>
+        <Element index="12" value="network | net_01 | labels | pore.right"/>
         <Element index="13" value="0"/>
-        <Element index="14" value="network | net_01 | labels | pore.right"/>
+        <Element index="14" value="network | net_01 | labels | pore.surface"/>
         <Element index="15" value="0"/>
-        <Element index="16" value="network | net_01 | labels | pore.surface"/>
+        <Element index="16" value="network | net_01 | properties | pore._id"/>
         <Element index="17" value="0"/>
-        <Element index="18" value="network | net_01 | labels | pore.top"/>
+        <Element index="18" value="network | net_01 | properties | pore.area"/>
         <Element index="19" value="0"/>
-        <Element index="20" value="network | net_01 | properties | pore._id"/>
+        <Element index="20" value="network | net_01 | properties | pore.diameter"/>
         <Element index="21" value="0"/>
-        <Element index="22" value="network | net_01 | properties | pore.area"/>
+        <Element index="22" value="network | net_01 | properties | pore.max_size"/>
         <Element index="23" value="0"/>
-        <Element index="24" value="network | net_01 | properties | pore.diameter"/>
+        <Element index="24" value="network | net_01 | properties | pore.seed"/>
         <Element index="25" value="0"/>
-        <Element index="26" value="network | net_01 | properties | pore.max_size"/>
+        <Element index="26" value="network | net_01 | properties | pore.volume"/>
         <Element index="27" value="0"/>
-        <Element index="28" value="network | net_01 | properties | pore.seed"/>
+        <Element index="28" value="phase | phase_01 | labels | pore.all"/>
         <Element index="29" value="0"/>
-        <Element index="30" value="network | net_01 | properties | pore.volume"/>
+        <Element index="30" value="phase | phase_01 | labels | pore.phys_01"/>
         <Element index="31" value="0"/>
-        <Element index="32" value="phase | phase_01 | labels | pore.all"/>
+        <Element index="32" value="phase | phase_01 | properties | pore.contact_angle"/>
         <Element index="33" value="0"/>
-        <Element index="34" value="phase | phase_01 | labels | pore.phys_01"/>
+        <Element index="34" value="phase | phase_01 | properties | pore.critical_pressure"/>
         <Element index="35" value="0"/>
-        <Element index="36" value="phase | phase_01 | properties | pore.contact_angle"/>
+        <Element index="36" value="phase | phase_01 | properties | pore.critical_temperature"/>
         <Element index="37" value="0"/>
-        <Element index="38" value="phase | phase_01 | properties | pore.critical_pressure"/>
+        <Element index="38" value="phase | phase_01 | properties | pore.critical_volume"/>
         <Element index="39" value="0"/>
-        <Element index="40" value="phase | phase_01 | properties | pore.critical_temperature"/>
+        <Element index="40" value="phase | phase_01 | properties | pore.density"/>
         <Element index="41" value="0"/>
-        <Element index="42" value="phase | phase_01 | properties | pore.critical_volume"/>
+        <Element index="42" value="phase | phase_01 | properties | pore.diffusivity"/>
         <Element index="43" value="0"/>
-        <Element index="44" value="phase | phase_01 | properties | pore.density"/>
+        <Element index="44" value="phase | phase_01 | properties | pore.electrical_conductivity"/>
         <Element index="45" value="0"/>
-        <Element index="46" value="phase | phase_01 | properties | pore.diffusivity"/>
+        <Element index="46" value="phase | phase_01 | properties | pore.molar_density"/>
         <Element index="47" value="0"/>
-        <Element index="48" value="phase | phase_01 | properties | pore.electrical_conductivity"/>
+        <Element index="48" value="phase | phase_01 | properties | pore.molecular_weight"/>
         <Element index="49" value="0"/>
-        <Element index="50" value="phase | phase_01 | properties | pore.molar_density"/>
+        <Element index="50" value="phase | phase_01 | properties | pore.pressure"/>
         <Element index="51" value="0"/>
-        <Element index="52" value="phase | phase_01 | properties | pore.molecular_weight"/>
+        <Element index="52" value="phase | phase_01 | properties | pore.surface_tension"/>
         <Element index="53" value="0"/>
-        <Element index="54" value="phase | phase_01 | properties | pore.pressure"/>
+        <Element index="54" value="phase | phase_01 | properties | pore.temperature"/>
         <Element index="55" value="0"/>
-        <Element index="56" value="phase | phase_01 | properties | pore.surface_tension"/>
+        <Element index="56" value="phase | phase_01 | properties | pore.thermal_conductivity"/>
         <Element index="57" value="0"/>
-        <Element index="58" value="phase | phase_01 | properties | pore.temperature"/>
+        <Element index="58" value="phase | phase_01 | properties | pore.vapor_pressure"/>
         <Element index="59" value="0"/>
-        <Element index="60" value="phase | phase_01 | properties | pore.thermal_conductivity"/>
+        <Element index="60" value="phase | phase_01 | properties | pore.viscosity"/>
         <Element index="61" value="0"/>
-        <Element index="62" value="phase | phase_01 | properties | pore.vapor_pressure"/>
-        <Element index="63" value="0"/>
-        <Element index="64" value="phase | phase_01 | properties | pore.viscosity"/>
-        <Element index="65" value="0"/>
-        <Element index="66" value="net_01 | pore.coords"/>
+        <Element index="62" value="net_01 | pore.coords"/>
+        <Element index="63" value="1"/>
+        <Element index="64" value="net_01 | pore._id"/>
+        <Element index="65" value="1"/>
+        <Element index="66" value="net_01 | pore.all"/>
         <Element index="67" value="1"/>
-        <Element index="68" value="net_01 | pore._id"/>
+        <Element index="68" value="net_01 | pore.internal"/>
         <Element index="69" value="1"/>
-        <Element index="70" value="net_01 | pore.all"/>
+        <Element index="70" value="net_01 | pore.surface"/>
         <Element index="71" value="1"/>
-        <Element index="72" value="net_01 | pore.internal"/>
+        <Element index="72" value="net_01 | pore.left"/>
         <Element index="73" value="1"/>
-        <Element index="74" value="net_01 | pore.surface"/>
+        <Element index="74" value="net_01 | pore.right"/>
         <Element index="75" value="1"/>
-        <Element index="76" value="net_01 | pore.left"/>
+        <Element index="76" value="net_01 | pore.back"/>
         <Element index="77" value="1"/>
-        <Element index="78" value="net_01 | pore.right"/>
+        <Element index="78" value="net_01 | pore.front"/>
         <Element index="79" value="1"/>
-        <Element index="80" value="net_01 | pore.back"/>
+        <Element index="80" value="net_01 | pore.geo_01"/>
         <Element index="81" value="1"/>
-        <Element index="82" value="net_01 | pore.front"/>
+        <Element index="82" value="net_01 | pore.seed"/>
         <Element index="83" value="1"/>
-        <Element index="84" value="net_01 | pore.top"/>
+        <Element index="84" value="net_01 | pore.max_size"/>
         <Element index="85" value="1"/>
-        <Element index="86" value="net_01 | pore.bottom"/>
+        <Element index="86" value="net_01 | pore.diameter"/>
         <Element index="87" value="1"/>
-        <Element index="88" value="net_01 | pore.geo_01"/>
+        <Element index="88" value="net_01 | pore.area"/>
         <Element index="89" value="1"/>
-        <Element index="90" value="net_01 | pore.seed"/>
+        <Element index="90" value="net_01 | pore.volume"/>
         <Element index="91" value="1"/>
-        <Element index="92" value="net_01 | pore.max_size"/>
+        <Element index="92" value="phase_02 | pore.temperature"/>
         <Element index="93" value="1"/>
-        <Element index="94" value="net_01 | pore.diameter"/>
+        <Element index="94" value="phase_02 | pore.pressure"/>
         <Element index="95" value="1"/>
-        <Element index="96" value="net_01 | pore.area"/>
+        <Element index="96" value="phase_02 | pore.molecular_weight"/>
         <Element index="97" value="1"/>
-        <Element index="98" value="net_01 | pore.volume"/>
+        <Element index="98" value="phase_02 | pore.critical_pressure"/>
         <Element index="99" value="1"/>
-        <Element index="100" value="phase_02 | pore.temperature"/>
+        <Element index="100" value="phase_02 | pore.critical_temperature"/>
         <Element index="101" value="1"/>
-        <Element index="102" value="phase_02 | pore.pressure"/>
+        <Element index="102" value="phase_02 | pore.critical_volume"/>
         <Element index="103" value="1"/>
-        <Element index="104" value="phase_02 | pore.molecular_weight"/>
+        <Element index="104" value="phase_02 | pore.contact_angle"/>
         <Element index="105" value="1"/>
-        <Element index="106" value="phase_02 | pore.critical_pressure"/>
+        <Element index="106" value="phase_02 | pore.electrical_conductivity"/>
         <Element index="107" value="1"/>
-        <Element index="108" value="phase_02 | pore.critical_temperature"/>
+        <Element index="108" value="phase_02 | pore.diffusivity"/>
         <Element index="109" value="1"/>
-        <Element index="110" value="phase_02 | pore.critical_volume"/>
+        <Element index="110" value="phase_02 | pore.density"/>
         <Element index="111" value="1"/>
-        <Element index="112" value="phase_02 | pore.contact_angle"/>
+        <Element index="112" value="phase_02 | pore.molar_density"/>
         <Element index="113" value="1"/>
-        <Element index="114" value="phase_02 | pore.electrical_conductivity"/>
+        <Element index="114" value="phase_02 | pore.surface_tension"/>
         <Element index="115" value="1"/>
-        <Element index="116" value="phase_02 | pore.diffusivity"/>
+        <Element index="116" value="phase_02 | pore.thermal_conductivity"/>
         <Element index="117" value="1"/>
-        <Element index="118" value="phase_02 | pore.density"/>
+        <Element index="118" value="phase_02 | pore.vapor_pressure"/>
         <Element index="119" value="1"/>
-        <Element index="120" value="phase_02 | pore.molar_density"/>
+        <Element index="120" value="phase_02 | pore.viscosity"/>
         <Element index="121" value="1"/>
-        <Element index="122" value="phase_02 | pore.surface_tension"/>
+        <Element index="122" value="phase_02 | pore.all"/>
         <Element index="123" value="1"/>
-        <Element index="124" value="phase_02 | pore.thermal_conductivity"/>
-        <Element index="125" value="1"/>
-        <Element index="126" value="phase_02 | pore.vapor_pressure"/>
-        <Element index="127" value="1"/>
-        <Element index="128" value="phase_02 | pore.viscosity"/>
-        <Element index="129" value="1"/>
-        <Element index="130" value="phase_02 | pore.all"/>
-        <Element index="131" value="1"/>
         <Domain name="array_list" id="316.PointArrayStatus.array_list">
           <String text="network | net_01 | labels | pore.all"/>
           <String text="network | net_01 | labels | pore.back"/>
-          <String text="network | net_01 | labels | pore.bottom"/>
           <String text="network | net_01 | labels | pore.front"/>
           <String text="network | net_01 | labels | pore.geo_01"/>
           <String text="network | net_01 | labels | pore.internal"/>
           <String text="network | net_01 | labels | pore.left"/>
           <String text="network | net_01 | labels | pore.right"/>
           <String text="network | net_01 | labels | pore.surface"/>
-          <String text="network | net_01 | labels | pore.top"/>
           <String text="network | net_01 | properties | pore._id"/>
           <String text="network | net_01 | properties | pore.area"/>
           <String text="network | net_01 | properties | pore.diameter"/>
@@ -12628,9 +12553,9 @@
         <Element index="0" value="0"/>
       </Property>
       <Property name="CameraFocalPoint" id="330.CameraFocalPoint" number_of_elements="3">
-        <Element index="0" value="25"/>
-        <Element index="1" value="20"/>
-        <Element index="2" value="15"/>
+        <Element index="0" value="20"/>
+        <Element index="1" value="15"/>
+        <Element index="2" value="0.5"/>
       </Property>
       <Property name="CameraFocalPointInfo" id="330.CameraFocalPointInfo" number_of_elements="3">
         <Element index="0" value="0"/>
@@ -12638,15 +12563,15 @@
         <Element index="2" value="0"/>
       </Property>
       <Property name="CameraParallelScale" id="330.CameraParallelScale" number_of_elements="1">
-        <Element index="0" value="58.5"/>
+        <Element index="0" value="34"/>
       </Property>
       <Property name="CameraParallelScaleInfo" id="330.CameraParallelScaleInfo" number_of_elements="1">
         <Element index="0" value="1.73"/>
       </Property>
       <Property name="CameraPosition" id="330.CameraPosition" number_of_elements="3">
-        <Element index="0" value="25"/>
-        <Element index="1" value="20"/>
-        <Element index="2" value="251.54999999999998"/>
+        <Element index="0" value="20"/>
+        <Element index="1" value="15"/>
+        <Element index="2" value="146.2"/>
       </Property>
       <Property name="CameraPositionInfo" id="330.CameraPositionInfo" number_of_elements="3">
         <Element index="0" value="0"/>
@@ -12804,9 +12729,6 @@
       <Item id="1789" name="GeometryRepresentation4" logname="Tube1(GeometryRepresentation)"/>
       <Item id="1086" name="UnstructuredGridRepresentation1" logname="Shrink1(UnstructuredGridRepresentation)"/>
       <Item id="1327" name="UnstructuredGridRepresentation2" logname="CellDatatoPointData1(UnstructuredGridRepresentation)"/>
-    </ProxyCollection>
-    <ProxyCollection name="settings">
-      <Item id="306" name="ColorPalette"/>
     </ProxyCollection>
     <ProxyCollection name="sources">
       <Item id="1097" name="CellDatatoPointData1" logname="CellDatatoPointData1"/>

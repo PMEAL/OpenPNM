@@ -1,5 +1,5 @@
-import numpy as np
 import os
+import numpy as np
 import openpnm as op
 import subprocess
 from flatdict import FlatDict
@@ -8,16 +8,19 @@ from flatdict import FlatDict
 def export_data(network, filename):
     r"""
     Converts an array to a paraview state file.
+
     Parameters
     ----------
-    network : OpenPNM Network Object
-        The network containing the desired data
+    network : GenericNetwork
+        The network containing the desired data.
     filename : str
         Path to saved .vtp file.
+
     Notes
     -----
-    Outputs a pvsm file that can be opened in Paraview.The pvsm file will be
-    saved with the same name as .vtp file
+    Outputs a pvsm file that can be opened in Paraview. The pvsm file will
+    be saved with the same name as .vtp file
+
     """
     try:
         import paraview.simple
@@ -43,7 +46,7 @@ def export_data(network, filename):
         yshape = y
     maxshape = max(xshape, yshape, zshape)
     shape = np.array([xshape, yshape, zshape])
-    # create a new 'XML PolyData Reader'
+    # Create a new 'XML PolyData Reader'
     Path = os.getcwd() + "\\" + file + '.vtp'
     water = op.phases.Water(network=network)
     net555vtp = paraview.simple.XMLPolyDataReader(FileName=[Path])
@@ -57,20 +60,20 @@ def export_data(network, filename):
     t = FlatDict(t, delimiter=' | ')
     net555vtp.CellArrayStatus = t.keys()
     net555vtp.PointArrayStatus = p.keys()
-    # get active view
+    # Get active view
     renderView1 = paraview.simple.GetActiveViewOrCreate('RenderView')
-    # uncomment following to set a specific view size
+    # Uncomment following to set a specific view size
     # renderView1.ViewSize = [1524, 527]
-    # get layout
+    # Get layout
     layout1 = paraview.simple.GetLayout()
-    # show data in view
-    net555vtpDisplay = paraview.simple.Show(net555vtp, renderView1,
-                                            'GeometryRepresentation')
-    # trace defaults for the display properties.
+    # Show data in view
+    net555vtpDisplay = paraview.simple.Show(
+        net555vtp, renderView1, 'GeometryRepresentation'
+    )
+    # Trace defaults for the display properties.
     net555vtpDisplay.Representation = 'Surface'
     net555vtpDisplay.ColorArrayName = [None, '']
-    net555vtpDisplay.OSPRayScaleArray = [
-        'network | ' + network.name +  ' | labels | pore.all']
+    net555vtpDisplay.OSPRayScaleArray = [f'network | {network.name} | labels | pore.all']
     net555vtpDisplay.OSPRayScaleFunction = 'PiecewiseFunction'
     net555vtpDisplay.SelectOrientationVectors = 'None'
     net555vtpDisplay.ScaleFactor = (maxshape-1)/10
@@ -86,17 +89,17 @@ def export_data(network, filename):
     net555vtpDisplay.OpacityTransferFunction = 'PiecewiseFunction'
     net555vtpDisplay.DataAxesGrid = 'GridAxesRepresentation'
     net555vtpDisplay.PolarAxes = 'PolarAxesRepresentation'
-    # init the 'PiecewiseFunction' selected for 'ScaleTransferFunction'
+    # Init the 'PiecewiseFunction' selected for 'ScaleTransferFunction'
     net555vtpDisplay.ScaleTransferFunction.Points = [1, 0, 0.5, 0, 1, 1, 0.5, 0]
-    # init the 'PiecewiseFunction' selected for 'OpacityTransferFunction'
+    # Init the 'PiecewiseFunction' selected for 'OpacityTransferFunction'
     net555vtpDisplay.OpacityTransferFunction.Points = [1, 0, 0.5, 0, 1, 1, 0.5, 0]
-    # reset view to fit data
+    # Reset view to fit data
     renderView1.ResetCamera()
-    # get the material library
+    # Get the material library
     materialLibrary1 = paraview.simple.GetMaterialLibrary()
-    # update the view to ensure updated data information
+    # Update the view to ensure updated data information
     renderView1.Update()
-    # create a new 'Glyph'
+    # Create a new 'Glyph'
     glyph1 = paraview.simple.Glyph(Input=net555vtp, GlyphType='Arrow')
     glyph1.OrientationArray = ['POINTS', 'No orientation array']
     glyph1.ScaleArray = ['POINTS', 'No scale array']
@@ -106,41 +109,42 @@ def export_data(network, filename):
     glyph1.GlyphType = 'Sphere'
     glyph1.ScaleArray = [
         'POINTS', 'network | ' + network.name +  ' | properties | pore.diameter']
-    # show data in view
+    # Show data in view
     glyph1Display = paraview.simple.Show(glyph1, renderView1, 'GeometryRepresentation')
-    # trace defaults for the display properties.
+    # Trace defaults for the display properties.
     glyph1Display.Representation = 'Surface'
     glyph1Display.ColorArrayName = [None, '']
     glyph1Display.OSPRayScaleArray = 'Normals'
     glyph1Display.OSPRayScaleFunction = 'PiecewiseFunction'
     glyph1Display.SelectOrientationVectors = 'None'
-    glyph1Display.ScaleFactor = (maxshape-1)/10
+    glyph1Display.ScaleFactor = (maxshape - 1) / 10
     glyph1Display.SelectScaleArray = 'None'
     glyph1Display.GlyphType = 'Arrow'
     glyph1Display.GlyphTableIndexArray = 'None'
-    glyph1Display.GaussianRadius = (maxshape-1)/200
+    glyph1Display.GaussianRadius = (maxshape - 1) / 200
     glyph1Display.SetScaleArray = ['POINTS', 'Normals']
     glyph1Display.ScaleTransferFunction = 'PiecewiseFunction'
     glyph1Display.OpacityArray = ['POINTS', 'Normals']
     glyph1Display.OpacityTransferFunction = 'PiecewiseFunction'
     glyph1Display.DataAxesGrid = 'GridAxesRepresentation'
     glyph1Display.PolarAxes = 'PolarAxesRepresentation'
-    # init the 'PiecewiseFunction' selected for 'ScaleTransferFunction'
+    # Init the 'PiecewiseFunction' selected for 'ScaleTransferFunction'
     glyph1Display.ScaleTransferFunction.Points = [-0.97, 0, 0.5, 0, 0.97, 1, 0.5, 0]
-    # init the 'PiecewiseFunction' selected for 'OpacityTransferFunction'
+    # Init the 'PiecewiseFunction' selected for 'OpacityTransferFunction'
     glyph1Display.OpacityTransferFunction.Points = [-0.97, 0, 0.5, 0, 0.97, 1, 0.5, 0]
-    # update the view to ensure updated data information
+    # Update the view to ensure updated data information
     renderView1.Update()
-    # set active source
+    # Set active source
     paraview.simple.SetActiveSource(net555vtp)
-    # create a new 'Shrink'
+    # Create a new 'Shrink'
     shrink1 = paraview.simple.Shrink(Input=net555vtp)
     # Properties modified on shrink1
     shrink1.ShrinkFactor = 1.0
-    # show data in view
-    shrink1Display = paraview.simple.Show(shrink1, renderView1,
-                                          'UnstructuredGridRepresentation')
-    # trace defaults for the display properties.
+    # Show data in view
+    shrink1Display = paraview.simple.Show(
+        shrink1, renderView1, 'UnstructuredGridRepresentation'
+    )
+    # Trace defaults for the display properties.
     shrink1Display.Representation = 'Surface'
     shrink1Display.ColorArrayName = [None, '']
     shrink1Display.OSPRayScaleArray = [
@@ -161,22 +165,22 @@ def export_data(network, filename):
     shrink1Display.DataAxesGrid = 'GridAxesRepresentation'
     shrink1Display.PolarAxes = 'PolarAxesRepresentation'
     shrink1Display.ScalarOpacityUnitDistance = 1.0349360947089783
-    # init the 'PiecewiseFunction' selected for 'ScaleTransferFunction'
+    # Init the 'PiecewiseFunction' selected for 'ScaleTransferFunction'
     shrink1Display.ScaleTransferFunction.Points = [1, 0, 0.5, 0, 1, 1, 0.5, 0]
-    # init the 'PiecewiseFunction' selected for 'OpacityTransferFunction'
+    # Init the 'PiecewiseFunction' selected for 'OpacityTransferFunction'
     shrink1Display.OpacityTransferFunction.Points = [1, 0, 0.5, 0, 1, 1, 0.5, 0]
-    # hide data in view
+    # Hide data in view
     paraview.simple.Hide(net555vtp, renderView1)
-    # update the view to ensure updated data information
+    # Update the view to ensure updated data information
     renderView1.Update()
-    # create a new 'Cell Data to Point Data'
+    # Create a new 'Cell Data to Point Data'
     cellDatatoPointData1 = paraview.simple.CellDatatoPointData(Input=shrink1)
     cellDatatoPointData1.CellDataArraytoprocess = t
-    # show data in view
-    cellDatatoPointData1Display = paraview.simple.Show(cellDatatoPointData1,
-                                                       renderView1,
-                                                       'UnstructuredGridRepresentation')
-    # trace defaults for the display properties.
+    # Show data in view
+    cellDatatoPointData1Display = paraview.simple.Show(
+        cellDatatoPointData1, renderView1, 'UnstructuredGridRepresentation'
+    )
+    # Trace defaults for the display properties.
     cellDatatoPointData1Display.Representation = 'Surface'
     cellDatatoPointData1Display.ColorArrayName = [None, '']
     cellDatatoPointData1Display.OSPRayScaleArray = [
@@ -197,28 +201,28 @@ def export_data(network, filename):
     cellDatatoPointData1Display.DataAxesGrid = 'GridAxesRepresentation'
     cellDatatoPointData1Display.PolarAxes = 'PolarAxesRepresentation'
     cellDatatoPointData1Display.ScalarOpacityUnitDistance = 1.0349360947089783
-    # init the 'PiecewiseFunction' selected for 'ScaleTransferFunction'
+    # Init the 'PiecewiseFunction' selected for 'ScaleTransferFunction'
     cellDatatoPointData1Display.ScaleTransferFunction.Points = [
         1, 0, 0.5, 0, 1, 1, 0.5, 0]
-    # init the 'PiecewiseFunction' selected for 'OpacityTransferFunction'
+    # Init the 'PiecewiseFunction' selected for 'OpacityTransferFunction'
     cellDatatoPointData1Display.OpacityTransferFunction.Points = [
         1, 0, 0.5, 0, 1, 1, 0.5, 0]
-    # hide data in view
+    # Hide data in view
     paraview.simple.Hide(shrink1, renderView1)
-    # update the view to ensure updated data information
+    # Update the view to ensure updated data information
     renderView1.Update()
-    # set active source
+    # Set active source
     paraview.simple.SetActiveSource(shrink1)
-    # set active source
+    # Set active source
     paraview.simple.SetActiveSource(cellDatatoPointData1)
-    # set active source
+    # Set active source
     paraview.simple.SetActiveSource(shrink1)
-    # create a new 'Extract Surface'
+    # Create a new 'Extract Surface'
     extractSurface1 = paraview.simple.ExtractSurface(Input=shrink1)
-    # show data in view
+    # Show data in view
     extractSurface1Display = paraview.simple.Show(extractSurface1, renderView1,
                                                   'GeometryRepresentation')
-    # trace defaults for the display properties.
+    # Trace defaults for the display properties.
     extractSurface1Display.Representation = 'Surface'
     extractSurface1Display.ColorArrayName = [None, '']
     extractSurface1Display.OSPRayScaleArray = [
@@ -238,15 +242,15 @@ def export_data(network, filename):
     extractSurface1Display.OpacityTransferFunction = 'PiecewiseFunction'
     extractSurface1Display.DataAxesGrid = 'GridAxesRepresentation'
     extractSurface1Display.PolarAxes = 'PolarAxesRepresentation'
-    # init the 'PiecewiseFunction' selected for 'ScaleTransferFunction'
+    # Init the 'PiecewiseFunction' selected for 'ScaleTransferFunction'
     extractSurface1Display.ScaleTransferFunction.Points = [
         1, 0, 0.5, 0, 1, 1, 0.5, 0]
-    # init the 'PiecewiseFunction' selected for 'OpacityTransferFunction'
+    # Init the 'PiecewiseFunction' selected for 'OpacityTransferFunction'
     extractSurface1Display.OpacityTransferFunction.Points = [
         1, 0, 0.5, 0, 1, 1, 0.5, 0]
-    # hide data in view
+    # Hide data in view
     paraview.simple.Hide(shrink1, renderView1)
-    # update the view to ensure updated data information
+    # Update the view to ensure updated data information
     renderView1.Update()
     # create a new 'Tube'
     tube1 = paraview.simple.Tube(Input=extractSurface1)
@@ -254,18 +258,18 @@ def export_data(network, filename):
         'POINTS', 'network |' + network.name +  '| labels | pore.all']
     tube1.Vectors = [None, '1']
     tube1.Radius = 0.04
-    # set active source
+    # Set active source
     paraview.simple.SetActiveSource(extractSurface1)
-    # destroy tube1
+    # Destroy tube1
     paraview.simple.Delete(tube1)
     del tube1
-    # set active source
+    # Set active source
     paraview.simple.SetActiveSource(shrink1)
-    # set active source
+    # Set active source
     paraview.simple.SetActiveSource(cellDatatoPointData1)
-    # set active source
+    # Set active source
     paraview.simple.SetActiveSource(extractSurface1)
-    # create a new 'Tube'
+    # Create a new 'Tube'
     tube1 =paraview.simple.Tube(Input=extractSurface1)
     tube1.Scalars = [
         'POINTS', 'network |' + network.name + ' | labels | pore.all']
@@ -273,10 +277,10 @@ def export_data(network, filename):
     tube1.Radius = 0.04
     # Properties modified on tube1
     tube1.Vectors = ['POINTS', '1']
-    # show data in view
+    # Show data in view
     tube1Display = paraview.simple.Show(tube1, renderView1,
                                         'GeometryRepresentation')
-    # trace defaults for the display properties.
+    # Trace defaults for the display properties.
     tube1Display.Representation = 'Surface'
     tube1Display.ColorArrayName = [None, '']
     tube1Display.OSPRayScaleArray = 'TubeNormals'
@@ -293,45 +297,35 @@ def export_data(network, filename):
     tube1Display.OpacityTransferFunction = 'PiecewiseFunction'
     tube1Display.DataAxesGrid = 'GridAxesRepresentation'
     tube1Display.PolarAxes = 'PolarAxesRepresentation'
-    # init the 'PiecewiseFunction' selected for 'ScaleTransferFunction'
+    # Init the 'PiecewiseFunction' selected for 'ScaleTransferFunction'
     tube1Display.ScaleTransferFunction.Points = [-1, 0, 0.5, 0, 1, 1, 0.5, 0]
-    # init the 'PiecewiseFunction' selected for 'OpacityTransferFunction'
+    # Init the 'PiecewiseFunction' selected for 'OpacityTransferFunction'
     tube1Display.OpacityTransferFunction.Points = [-1, 0, 0.5, 0, 1, 1, 0.5, 0]
-    # hide data in view
+    # Hide data in view
     paraview.simple.Hide(extractSurface1, renderView1)
-    # update the view to ensure updated data information
+    # Update the view to ensure updated data information
     renderView1.Update()
-    # saving camera placements for all active views
-    # current camera placement for renderView1
+    # Saving camera placements for all active views
+    # Current camera placement for renderView1
     renderView1.CameraPosition = [
-    (xshape+1)/2,
-    (yshape+1)/2,
-    4.3 * np.sqrt(np.sum(shape / 2)**2)
+        (xshape + 1) / 2, (yshape + 1) / 2, 4.3 * np.sqrt(np.sum(shape / 2)**2)
     ]
     renderView1.CameraFocalPoint = [(xi+1) / 2 for xi in shape]
     renderView1.CameraParallelScale = np.sqrt(np.sum(shape / 2)**2)
-    paraview.simple.SaveState(file+'.pvsm')
+    paraview.simple.SaveState(f"{file}.pvsm")
 
 
 def open_paraview(filename):
     r"""
-    Open a paraview state file directly in paraview.
+    Opens a paraview state file directly in ParaView.
+
     Parameters
-    --------
+    ----------
     filename : str
         Path to input state file.
+
     """
     file = os.path.splitext(filename)[0]
-    statefile = file + ".pvsm"
-    # paraview_path = "paraview.exe"
+    statefile = f"{file}.pvsm"
     paraview_path = "paraview"
     subprocess.Popen([paraview_path, statefile])
-
-
-pn = op.network.Cubic(shape=[30, 40, 50])
-geo = op.geometry.StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts)
-water = op.phases.Water(network=pn)
-phys = op.physics.Standard(network=pn, phase=water, geometry=geo)
-op.io.VTK.save(pn, water, 'net.vtp')
-export_data(pn, 'net')
-open_paraview('net')
