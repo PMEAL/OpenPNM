@@ -100,6 +100,7 @@
 <span class="sd">    **The following parameters pertain to the ``GenericTransport`` class**</span>
 
 <span class="sd">    %(GenericTransportSettings.other_parameters)s</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">nlin_max_iter</span> <span class="o">=</span> <span class="mi">5000</span>
@@ -118,7 +119,7 @@
 <span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
 <span class="k">class</span> <span class="nc">ReactiveTransport</span><span class="p">(</span><span class="n">GenericTransport</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A subclass for steady-state simulations with (optionally) source terms</span>
+<span class="sd">    A subclass for steady-state simulations with (optional) source terms.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -126,9 +127,9 @@
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-
 <span class="sd">    This subclass performs steady simulations of transport phenomena with</span>
 <span class="sd">    reactions when source terms are added.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="o">=</span><span class="p">{},</span> <span class="n">phase</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -145,8 +146,8 @@
               <span class="n">nlin_max_iter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">relaxation_source</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
               <span class="n">relaxation_quantity</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        This method takes several arguments that are essential to running the</span>
-<span class="sd">        algorithm and adds them to the settings</span>
+<span class="sd">        This method takes several arguments that are essential to running</span>
+<span class="sd">        the algorithm and adds them to the settings.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -156,11 +157,12 @@
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
 <span class="sd">        Under-relaxation is a technique used for improving stability of a</span>
-<span class="sd">        computation, particularly in the presence of highly non-linear terms.</span>
-<span class="sd">        Under-relaxation used here limits the change in a variable from one</span>
-<span class="sd">        iteration to the next. An optimum choice of the relaxation factor is</span>
-<span class="sd">        one that is small enough to ensure stable simulation and large enough</span>
-<span class="sd">        to speed up the computation.</span>
+<span class="sd">        computation, particularly in the presence of highly non-linear</span>
+<span class="sd">        terms. Under-relaxation used here limits the change in a variable</span>
+<span class="sd">        from one iteration to the next. An optimum choice of the</span>
+<span class="sd">        relaxation factor is one that is small enough to ensure stable</span>
+<span class="sd">        simulation and large enough to speed up the computation.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">phase</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;phase&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">phase</span><span class="o">.</span><span class="n">name</span>
@@ -208,6 +210,7 @@
 <span class="sd">            If ``True`` removes source terms. The default is ``False``.</span>
 <span class="sd">        variable_props : boolean</span>
 <span class="sd">            If ``True`` removes variable properties. The default is ``False``.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">reset</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">source_terms</span><span class="p">:</span>
@@ -221,26 +224,26 @@
 
 <div class="viewcode-block" id="ReactiveTransport.set_source"><a class="viewcode-back" href="../../../modules/algorithms/reactive_transport.html#openpnm.algorithms.ReactiveTransport.set_source">[docs]</a>    <span class="k">def</span> <span class="nf">set_source</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">propname</span><span class="p">,</span> <span class="n">pores</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;overwrite&#39;</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Applies a given source term to the specified pores</span>
+<span class="sd">        Applies a given source term to the specified pores.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        propname : string</span>
-<span class="sd">            The property name of the source term model to be applied</span>
+<span class="sd">            The property name of the source term model to be applied.</span>
 <span class="sd">        pores : array_like</span>
-<span class="sd">            The pore indices where the source term should be applied</span>
+<span class="sd">            The pore indices where the source term should be applied.</span>
 <span class="sd">        mode : str</span>
 <span class="sd">            Controls how the sources are applied. Options are:</span>
-<span class="sd">                </span>
-<span class="sd">            &#39;merge&#39; - Adds supplied source term to already existing ones.</span>
-<span class="sd">            &#39;overwrite&#39; - (default) Deletes all existing source terms of the </span>
-<span class="sd">            given ``propname`` then adds the specified new ones</span>
+<span class="sd">                - &#39;merge&#39;: Adds supplied source term to existing ones.</span>
+<span class="sd">                - &#39;overwrite&#39;: (default) Deletes all existing source terms</span>
+<span class="sd">                  of the given ``propname`` then adds the specified new ones.</span>
 
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
 <span class="sd">        Source terms cannot be applied in pores where boundary conditions have</span>
 <span class="sd">        already been set. Attempting to do so will result in an error being</span>
 <span class="sd">        raised.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">locs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tomask</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pores</span><span class="p">)</span>
         <span class="c1"># Check if any BC is already set in the same locations</span>
@@ -260,14 +263,15 @@
 
 <div class="viewcode-block" id="ReactiveTransport.remove_source"><a class="viewcode-back" href="../../../modules/algorithms/reactive_transport.html#openpnm.algorithms.ReactiveTransport.remove_source">[docs]</a>    <span class="k">def</span> <span class="nf">remove_source</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">propname</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Removes source terms from specified pores</span>
+<span class="sd">        Removes source terms from specified pores.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        propname : str</span>
-<span class="sd">            The property name of the source term model to be removed</span>
+<span class="sd">            The property name of the source term model to be removed.</span>
 <span class="sd">        pores : array_like</span>
-<span class="sd">            The pore indices where the source term should be applied</span>
+<span class="sd">            The pore indices where the source term should be applied.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">pores</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">pores</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Ps</span>
@@ -278,12 +282,12 @@
 
     <span class="k">def</span> <span class="nf">_set_variable_props</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">propnames</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Inform the algorithm which properties are variable, so those on which</span>
-<span class="sd">        they depend will be updated on each solver iteration.</span>
+<span class="sd">        Inform the algorithm which properties are variable, so those on</span>
+<span class="sd">        which they depend will be updated on each solver iteration.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        propnames : string or list of strings</span>
+<span class="sd">        propnames : str or List[str]</span>
 <span class="sd">            The propnames of the properties that are variable throughout</span>
 <span class="sd">            the algorithm.</span>
 
@@ -295,13 +299,14 @@
 
     <span class="k">def</span> <span class="nf">_update_iterative_props</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;r</span>
-<span class="sd">        Update physics using the current value of ``quantity``</span>
+<span class="sd">        Update physics using the current value of ``quantity``.</span>
 
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
-<span class="sd">        The algorithm directly writes the value of &#39;quantity&#39; into the phase.</span>
-<span class="sd">        This method was implemented relaxing one of the OpenPNM rules of</span>
-<span class="sd">        algorithms not being able to write into phases.</span>
+<span class="sd">        The algorithm directly writes the value of &#39;quantity&#39; into the</span>
+<span class="sd">        phase. This method was implemented relaxing one of the OpenPNM</span>
+<span class="sd">        rules of algorithms not being able to write into phases.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">phase</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">phases</span><span class="p">()[</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;phase&#39;</span><span class="p">]]</span>
         <span class="n">physics</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">find_physics</span><span class="p">(</span><span class="n">phase</span><span class="o">=</span><span class="n">phase</span><span class="p">)</span>
@@ -320,21 +325,23 @@
 
     <span class="k">def</span> <span class="nf">_apply_sources</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;r</span>
-<span class="sd">        Update ``A`` and ``b`` applying source terms to specified pores</span>
+<span class="sd">        Update ``A`` and ``b`` applying source terms to specified pores.</span>
 
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
-<span class="sd">        - Applying source terms to ``A`` and ``b`` is performed after (optionally)</span>
-<span class="sd">        under-relaxing the source term to improve numerical stability. Physics</span>
-<span class="sd">        are also updated before applying source terms to ensure that source</span>
-<span class="sd">        terms values are associated with the current value of &#39;quantity&#39;.</span>
+<span class="sd">        Applying source terms to ``A`` and ``b`` is performed after</span>
+<span class="sd">        (optionally) under-relaxing the source term to improve numerical</span>
+<span class="sd">        stability. Physics are also updated before applying source terms</span>
+<span class="sd">        to ensure that source terms values are associated with the current</span>
+<span class="sd">        value of &#39;quantity&#39;.</span>
 
-<span class="sd">        - For source term under-relaxation, old values of S1 and S2 need to be</span>
-<span class="sd">        stored somewhere, we chose to store them on the algorithm object. This is</span>
-<span class="sd">        because storing them on phase/physics creates unintended problems, ex.</span>
-<span class="sd">        storing them on physics -&gt; IO complains added depth to the NestedDict, and</span>
-<span class="sd">        storing them on the phase object results in NaNs in case source term is</span>
-<span class="sd">        only added to a subset of nodes, which breaks our _check_for_nans algorithm.</span>
+<span class="sd">        For source term under-relaxation, old values of S1 and S2 need</span>
+<span class="sd">        to be stored somewhere, we chose to store them on the algorithm</span>
+<span class="sd">        object. This is because storing them on phase/physics creates</span>
+<span class="sd">        unintended problems, ex. storing them on physics -&gt; IO complains</span>
+<span class="sd">        added depth to the NestedDict, and storing them on the phase</span>
+<span class="sd">        object results in NaNs in case source term is only added to a</span>
+<span class="sd">        subset of nodes, which breaks our _check_for_nans algorithm.</span>
 
 <span class="sd">        Warnings</span>
 <span class="sd">        --------</span>
@@ -370,29 +377,30 @@
 
     <span class="k">def</span> <span class="nf">_run_reactive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x0</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Repeatedly updates ``A``, ``b``, and the solution guess within according</span>
-<span class="sd">        to the applied source term then calls ``_solve`` to solve the resulting</span>
-<span class="sd">        system of linear equations.</span>
+<span class="sd">        Repeatedly updates ``A``, ``b``, and the solution guess within</span>
+<span class="sd">        according to the applied source term then calls ``_solve`` to</span>
+<span class="sd">        solve the resulting system of linear equations.</span>
 
-<span class="sd">        Stops when the residual falls below ``solver_tol * norm(b)`` or when</span>
-<span class="sd">        the maximum number of iterations is reached.</span>
+<span class="sd">        Stops when the residual falls below ``solver_tol * norm(b)`` or</span>
+<span class="sd">        when the maximum number of iterations is reached.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        x0 : ND-array</span>
+<span class="sd">        x0 : ndarray</span>
 <span class="sd">            Initial guess of unknown variable</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        x : ND-array</span>
+<span class="sd">        x : ndarray</span>
 <span class="sd">            Solution array.</span>
 
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
-<span class="sd">        The algorithm must at least complete one iteration, and hence the check for</span>
-<span class="sd">        itr &gt;= 1, because otherwise, _check_for_nans() never get&#39;s called in case</span>
-<span class="sd">        there&#39;s something wrong with the data, and therefore, the user won&#39;t get</span>
-<span class="sd">        notified about the root cause of the algorithm divergence.</span>
+<span class="sd">        The algorithm must at least complete one iteration, and hence the</span>
+<span class="sd">        check for itr &gt;= 1, because otherwise, _check_for_nans() never</span>
+<span class="sd">        gets called in case there&#39;s something wrong with the data, and</span>
+<span class="sd">        therefore, the user won&#39;t get notified about the root cause of the</span>
+<span class="sd">        algorithm divergence.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">w</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;relaxation_quantity&#39;</span><span class="p">]</span>
@@ -422,7 +430,8 @@
 
     <span class="k">def</span> <span class="nf">_update_A_and_b</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Updates A and b based on the most recent solution stored on algorithm object.</span>
+<span class="sd">        Updates A and b based on the most recent solution stored on</span>
+<span class="sd">        algorithm object.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Update iterative properties on phase, geometries, and physics</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_update_iterative_props</span><span class="p">()</span>
@@ -473,8 +482,8 @@
     <span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
     <span class="k">def</span> <span class="nf">_set_BC</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="p">,</span> <span class="n">bctype</span><span class="p">,</span> <span class="n">bcvalues</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;merge&#39;</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Apply boundary conditions to specified pores if no source terms are</span>
-<span class="sd">        already assigned to these pores. Otherwise, raise an error.</span>
+<span class="sd">        Apply boundary conditions to specified pores if no source terms</span>
+<span class="sd">        are already assigned to these pores. Otherwise, raise an error.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -483,13 +492,15 @@
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
 <span class="sd">        %(GenericTransport._set_BC.notes)s</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># First check that given pores do not have source terms already set</span>
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;sources&#39;</span><span class="p">]:</span>
             <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">item</span><span class="p">][</span><span class="n">pores</span><span class="p">]):</span>
-                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Source term already present in given &#39;</span>
-                                <span class="o">+</span> <span class="s1">&#39;pores, cannot also assign boundary &#39;</span>
-                                <span class="o">+</span> <span class="s1">&#39;conditions&#39;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+                    <span class="s1">&#39;Source term already present in given pores, cannot also&#39;</span>
+                    <span class="s1">&#39; assign boundary conditions&#39;</span>
+                <span class="p">)</span>
         <span class="c1"># Then call parent class function if above check passes</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_set_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pores</span><span class="p">,</span> <span class="n">bctype</span><span class="o">=</span><span class="n">bctype</span><span class="p">,</span> <span class="n">bcvalues</span><span class="o">=</span><span class="n">bcvalues</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span></div>
 </pre></div>

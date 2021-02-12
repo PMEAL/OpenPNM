@@ -39,7 +39,7 @@
 <dt id="openpnm.algorithms.ReactiveTransport">
 <em class="property">class </em><code class="sig-prename descclassname">openpnm.algorithms.</code><code class="sig-name descname">ReactiveTransport</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/ReactiveTransport.html#ReactiveTransport"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.algorithms.ReactiveTransport" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.algorithms.GenericTransport.GenericTransport</span></code></p>
-<p>A subclass for steady-state simulations with (optionally) source terms</p>
+<p>A subclass for steady-state simulations with (optional) source terms.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -55,12 +55,12 @@ reactions when source terms are added.</p>
 <dl class="py method">
 <dt id="openpnm.algorithms.ReactiveTransport.remove_source">
 <code class="sig-name descname">remove_source</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">propname</span></em>, <em class="sig-param"><span class="n">pores</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/ReactiveTransport.html#ReactiveTransport.remove_source"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.algorithms.ReactiveTransport.remove_source" title="Permalink to this definition">¶</a></dt>
-<dd><p>Removes source terms from specified pores</p>
+<dd><p>Removes source terms from specified pores.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>propname</strong> (<em>str</em>) – The property name of the source term model to be removed</p></li>
-<li><p><strong>pores</strong> (<em>array_like</em>) – The pore indices where the source term should be applied</p></li>
+<li><p><strong>propname</strong> (<em>str</em>) – The property name of the source term model to be removed.</p></li>
+<li><p><strong>pores</strong> (<em>array_like</em>) – The pore indices where the source term should be applied.</p></li>
 </ul>
 </dd>
 </dl>
@@ -102,16 +102,20 @@ to results of the algorithm are removed.</p></li>
 <dl class="py method">
 <dt id="openpnm.algorithms.ReactiveTransport.set_source">
 <code class="sig-name descname">set_source</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">propname</span></em>, <em class="sig-param"><span class="n">pores</span></em>, <em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">'overwrite'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/ReactiveTransport.html#ReactiveTransport.set_source"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.algorithms.ReactiveTransport.set_source" title="Permalink to this definition">¶</a></dt>
-<dd><p>Applies a given source term to the specified pores</p>
+<dd><p>Applies a given source term to the specified pores.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>propname</strong> (<em>string</em>) – The property name of the source term model to be applied</p></li>
-<li><p><strong>pores</strong> (<em>array_like</em>) – The pore indices where the source term should be applied</p></li>
-<li><p><strong>mode</strong> (<em>str</em>) – <p>Controls how the sources are applied. Options are:</p>
-<p>’merge’ - Adds supplied source term to already existing ones.
-‘overwrite’ - (default) Deletes all existing source terms of the
-given <code class="docutils literal notranslate"><span class="pre">propname</span></code> then adds the specified new ones</p>
+<li><p><strong>propname</strong> (<em>string</em>) – The property name of the source term model to be applied.</p></li>
+<li><p><strong>pores</strong> (<em>array_like</em>) – The pore indices where the source term should be applied.</p></li>
+<li><p><strong>mode</strong> (<em>str</em>) – <dl class="simple">
+<dt>Controls how the sources are applied. Options are:</dt><dd><ul>
+<li><p>’merge’: Adds supplied source term to existing ones.</p></li>
+<li><p>’overwrite’: (default) Deletes all existing source terms
+of the given <code class="docutils literal notranslate"><span class="pre">propname</span></code> then adds the specified new ones.</p></li>
+</ul>
+</dd>
+</dl>
 </p></li>
 </ul>
 </dd>
@@ -125,8 +129,8 @@ raised.</p>
 <dl class="py method">
 <dt id="openpnm.algorithms.ReactiveTransport.setup">
 <code class="sig-name descname">setup</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">phase</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">quantity</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">conductance</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">nlin_max_iter</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">relaxation_source</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">relaxation_quantity</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/ReactiveTransport.html#ReactiveTransport.setup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.algorithms.ReactiveTransport.setup" title="Permalink to this definition">¶</a></dt>
-<dd><p>This method takes several arguments that are essential to running the
-algorithm and adds them to the settings</p>
+<dd><p>This method takes several arguments that are essential to running
+the algorithm and adds them to the settings.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -145,11 +149,11 @@ associated with the given <em>Phase</em>.</p></li>
 </dl>
 <p class="rubric">Notes</p>
 <p>Under-relaxation is a technique used for improving stability of a
-computation, particularly in the presence of highly non-linear terms.
-Under-relaxation used here limits the change in a variable from one
-iteration to the next. An optimum choice of the relaxation factor is
-one that is small enough to ensure stable simulation and large enough
-to speed up the computation.</p>
+computation, particularly in the presence of highly non-linear
+terms. Under-relaxation used here limits the change in a variable
+from one iteration to the next. An optimum choice of the
+relaxation factor is one that is small enough to ensure stable
+simulation and large enough to speed up the computation.</p>
 </dd></dl>
 
 </dd></dl>
