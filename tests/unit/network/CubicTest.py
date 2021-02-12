@@ -10,6 +10,11 @@ class CubicTest:
     def teardown_class(self):
         pass
 
+    def test_spacing_1D(self):
+        # in _get_spacing it will be np.ndim(mag) == 0 (scalar value)
+        net = op.network.Cubic(shape=[2, 1, 1], spacing=1)
+        assert np.all(net.spacing == [1.0, 0.0, 0.0])
+
     def test_spacing_2D(self):
         net = op.network.Cubic(shape=[5, 5, 1], spacing=[1, 1])
         assert np.all(net.spacing == [1.0, 1.0, 0.0])
