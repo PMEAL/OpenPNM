@@ -139,9 +139,7 @@ class Cubic(GenericNetwork):
         elif connectivity == 6 + 8 + 12:
             joints = face_joints + corner_joints + edge_joints
         else:
-            raise Exception(
-                "Invalid connectivity receieved. Must be 6, 14, 18, 20 or 26"
-            )
+            raise Exception("Invalid connectivity. Must be 6, 14, 18, 20 or 26.")
 
         tails, heads = np.array([], dtype=int), np.array([], dtype=int)
         for T, H in joints:
