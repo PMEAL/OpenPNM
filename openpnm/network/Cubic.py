@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 ===============================================================================
 Cubic: Generate lattice-like networks
@@ -245,23 +244,19 @@ class Cubic(GenericNetwork):
         dims = topotools.dimensionality(self)
         # Ensure vectors point in n-dims unique directions
         c = {tuple(row): 1 for row in unit_vec}
+        mag = np.atleast_1d(mag.squeeze()).astype(float)
         if len(c.keys()) > sum(dims):
             raise Exception(
-                "Spacing is undefined when throats point in "
-                + "more directions than network has dimensions"
+                "Spacing is undefined when throats point in more directions"
+                " than network has dimensions."
             )
-        mag = np.float64(mag.squeeze())
         for ax in [0, 1, 2]:
             if dims[ax]:
                 inds = np.where(unit_vec[:, ax] == unit_vec[:, ax].max())[0]
-                if np.ndim(mag) != 0:
-                    temp = np.unique(mag[inds])
-                    if not np.allclose(temp, temp[0]):
-                        raise Exception("A unique value of spacing could not be found")
-                    spacing[ax] = temp[0]
-                else:
-                    temp = mag
-                    spacing[ax] = temp
+                temp = np.unique(mag[inds])
+                if not np.allclose(temp, temp[0]):
+                    raise Exception("A unique value of spacing could not be found.")
+                spacing[ax] = temp[0]
         self.settings['spacing'] = spacing
         return np.array(spacing)
 

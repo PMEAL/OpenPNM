@@ -11,7 +11,6 @@ class CubicTest:
         pass
 
     def test_spacing_1D(self):
-        # in _get_spacing it will be np.ndim(mag) == 0 (scalar value)
         net = op.network.Cubic(shape=[2, 1, 1], spacing=1)
         assert np.all(net.spacing == [1.0, 0.0, 0.0])
 
@@ -119,13 +118,13 @@ class CubicTest:
         net = op.network.Cubic(shape=[3, 4, 5])
         net['pore.coords'] += np.random.rand(net.Np, 3)
         with pytest.raises(Exception):
-            net.spacing
+            _ = net.spacing
 
     def test_spacing_on_network_with_boundary_pores(self):
         net = op.network.Cubic(shape=[3, 4, 5])
         net.add_boundary_pores()
         with pytest.raises(Exception):
-            net.spacing
+            _ = net.spacing
 
     def test_connectivity(self):
         clist = [6, 14, 18, 20, 26]
