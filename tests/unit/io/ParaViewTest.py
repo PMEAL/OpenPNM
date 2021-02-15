@@ -1,9 +1,8 @@
-import sys
 import os
+import sys
 from os.path import realpath
 from pathlib import Path
 import openpnm as op
-from openpnm.io.ParaView import export_data, open_paraview
 
 
 class ParaViewTest():
@@ -17,13 +16,13 @@ class ParaViewTest():
         water = op.phases.Water(network=pn)
         _ = op.physics.Standard(network=pn, phase=water, geometry=geo)
         op.io.VTK.save(pn, water, 'test.vtp')
-        export_data(pn, filename='test.vtp')
+        op.io.ParaView.export_data(pn, filename='test.vtp')
         os.remove('test.pvsm')
         os.remove('test.vtp')
 
     def test_open_paraview(self):
         path = Path(realpath(__file__), '../../../fixtures/VTK-VTP/test.pvsm')
-        open_paraview(filename=path)
+        op.io.ParaView.open_paraview(filename=path)
 
 
 if __name__ == "__main__":
