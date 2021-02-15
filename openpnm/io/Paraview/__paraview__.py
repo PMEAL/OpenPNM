@@ -7,7 +7,7 @@ from flatdict import FlatDict
 
 def export_data(network, filename):
     r"""
-    Converts an array to a paraview state file.
+    Exports an OpenPNM network to a paraview state file.
 
     Parameters
     ----------
