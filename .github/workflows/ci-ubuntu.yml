@@ -40,6 +40,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           condarc-file: requirements/.condarc
+          channels: conda-forge,defaults
           mamba-version: "*"
           allow-softlinks: true
           use-only-tar-bz2: true
@@ -48,7 +49,6 @@ jobs:
           channel-priority: flexible
 
       - name: Install dependencies (conda)
-        shell: bash -l {0}
         run: |
           cat requirements/conda_requirements.txt >> requirements.txt
           cat requirements/test_requirements.txt >> requirements.txt
