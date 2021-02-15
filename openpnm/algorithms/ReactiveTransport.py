@@ -45,8 +45,6 @@ class ReactiveTransportSettings(GenericSettings):
     ----------------
     sources : list
         List of source terms that have been added
-    variable_props : list
-        List of props that are variable throughout the algorithm
     relaxation_source : float (default = 1.0)
         A relaxation factor to control under-relaxation of the source term.
         Factor approaching 0 leads to improved stability but slower simulation.
@@ -76,9 +74,6 @@ class ReactiveTransportSettings(GenericSettings):
     # Swap the following 2 lines when we stop supporting Python 3.6
     # sources: List = field(default_factory=lambda: [])
     sources = []
-    # Swap the following 2 lines when we stop supporting Python 3.6
-    variable_props = []
-    # variable_props: List = field(default_factory=lambda: [])
 
 
 @docstr.get_sectionsf('ReactiveTransport', sections=['Parameters'])
@@ -165,7 +160,7 @@ class ReactiveTransport(GenericTransport):
         self[quantity] = x
 
     @docstr.dedent
-    def reset(self, source_terms=False, variable_props=False, **kwargs):
+    def reset(self, source_terms=False, **kwargs):
         r"""
         %(GenericTransport.reset.full_desc)s
 
@@ -174,8 +169,6 @@ class ReactiveTransport(GenericTransport):
         %(GenericTransport.reset.parameters)s
         source_terms : boolean
             If ``True`` removes source terms. The default is ``False``.
-        variable_props : boolean
-            If ``True`` removes variable properties. The default is ``False``.
 
         """
         super().reset(**kwargs)
@@ -185,8 +178,6 @@ class ReactiveTransport(GenericTransport):
                 self.pop(item)
             # Reset the settings dict
             self.settings['sources'] = []
-        if variable_props:
-            self.settings['variable_props'] = []
 
     def set_source(self, propname, pores, mode='overwrite'):
         r"""
@@ -245,23 +236,6 @@ class ReactiveTransport(GenericTransport):
         if propname not in self.keys():
             self[propname] = False
         self[propname][locs] = False
-
-    def _set_variable_props(self, propnames):
-        r"""
-        Inform the algorithm which properties are variable, so those on
-        which they depend will be updated on each solver iteration.
-
-        Parameters
-        ----------
-        propnames : str or List[str]
-            The propnames of the properties that are variable throughout
-            the algorithm.
-
-        """
-        if isinstance(propnames, str):  # Convert string to list if necessary
-            propnames = [propnames]
-        d = self.settings["variable_props"]
-        self.settings["variable_props"] = list(set(d) | set(propnames))
 
     def _update_iterative_props(self):
         """r
@@ -430,10 +404,10 @@ class ReactiveTransport(GenericTransport):
             dg = nx.compose(dg, g.models.dependency_graph(deep=True))
         for p in physics:
             dg = nx.compose(dg, p.models.dependency_graph(deep=True))
-        base_props = [self.settings["quantity"]] + self.settings["variable_props"]
+        base_props = [self.settings["quantity"]]
         if base_props is None:
             return []
-        # Find all props downstream that rely on "quantity" and variable_props
+        # Find all props downstream that rely on "quantity"
         dg = nx.DiGraph(nx.edge_dfs(dg, source=base_props))
         if len(dg.nodes) == 0:
             return []
