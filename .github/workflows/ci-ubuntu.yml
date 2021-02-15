@@ -40,11 +40,12 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           condarc-file: requirements/.condarc
+          mamba-version: "*"
           allow-softlinks: true
-          channel-priority: flexible
-          show-channel-urls: false
           use-only-tar-bz2: true
+          show-channel-urls: false
           auto-activate-base: true
+          channel-priority: flexible
 
       - name: Install dependencies (conda)
         shell: bash -l {0}
