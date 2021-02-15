@@ -1,2 +1,2 @@
-from .__paraview__ import export_data
-from .__paraview__ import open_paraview
+from .paraview import export_data
+from .paraview import open_paraview
