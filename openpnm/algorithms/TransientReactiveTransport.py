@@ -344,44 +344,29 @@ class TransientReactiveTransport(ReactiveTransport):
             quant_init = self["pore.ic"]
             self[quantity + '@' + t_str] = quant_init
             self[quantity] = quant_init
-           
-            # intialize time (for case t_initial == t_final)
-            time = t
 
             for time in np.arange(t+dt, tf+dt, dt):
-                if res_t >= tol:  # Check if the steady state is reached
-                    logger.info(f'    Current time step: {time} s')
-                    # Update A and b and apply BCs
-                    self._t_update_A()
-                    self._t_update_b()
-                    self._apply_BCs()
-                    # Save copies of A and b to be used in _t_run_reactive()
-                    self._A_t = self._A.copy()
-                    self._b_t = self._b.copy()
-                    x_old = self[quantity]
-                    self._t_run_reactive(x0=x_old)
-                    x_new = self[quantity]
-                    # Compute the residual
-                    res_t = np.sum(np.absolute(x_old**2 - x_new**2))
-                    logger.info(f'        Residual: {res_t}')
-                    # Output transient solutions. Round time to ensure every
-                    # value in outputs is exported.
-                    if round(time, t_pre) in out:
-                        t_str = self._nbr_to_str(time)
-                        self[quantity + '@' + t_str] = x_new
-                        self.settings['t_solns'].append(t_str)
-                        logger.info(f'        Exporting time step: {time} s')
-                else:
-                    # Output steady state solution
+                logger.info(f'    Current time step: {time} s')
+                # Update A and b and apply BCs
+                self._t_update_A()
+                self._t_update_b()
+                self._apply_BCs()
+                # Save copies of A and b to be used in _t_run_reactive()
+                self._A_t = self._A.copy()
+                self._b_t = self._b.copy()
+                x_old = self[quantity]
+                self._t_run_reactive(x0=x_old)
+                x_new = self[quantity]
+                # Output transient solutions. Round time to ensure every
+                # value in outputs is exported.
+                if round(time, t_pre) in out:
                     t_str = self._nbr_to_str(time)
                     self[quantity + '@' + t_str] = x_new
+                    self.settings['t_solns'].append(t_str)
                     logger.info(f'        Exporting time step: {time} s')
-                    break
 
-            if round(time, t_pre) == tf:
-                logger.info(f'    Maximum time step reached: {time} s')
-            else:
-                logger.info(f'    Transient solver converged after: {time} s')
+            logger.info(f'    Maximum time step reached: {time} s')
+
 
     def _t_run_reactive(self, x0=None):
         """r
