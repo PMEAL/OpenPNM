@@ -1,7 +1,5 @@
 import numpy as np
 import openpnm as op
-import networkx as nx
-import matplotlib.pyplot as plt
 
 
 def plot_connections(network, throats=None, fig=None, size_by=None,
@@ -77,11 +75,11 @@ def plot_connections(network, throats=None, fig=None, size_by=None,
 
     """
     import matplotlib.pyplot as plt
+    from matplotlib import cm
+    from matplotlib import colors as mcolors
     from mpl_toolkits.mplot3d import Axes3D
     from matplotlib.collections import LineCollection
     from mpl_toolkits.mplot3d.art3d import Line3DCollection
-    from matplotlib import colors as mcolors
-    from matplotlib import cm
     from openpnm.topotools import dimensionality
 
     Ts = network.Ts if throats is None else network._parse_indices(throats)
@@ -197,8 +195,8 @@ def plot_coordinates(network, pores=None, fig=None, size_by=None,
 
     """
     import matplotlib.pyplot as plt
-    from mpl_toolkits.mplot3d import Axes3D
     from matplotlib import cm
+    from mpl_toolkits.mplot3d import Axes3D
     from openpnm.topotools import dimensionality
 
     Ps = network.Ps if pores is None else network._parse_indices(pores)
@@ -313,9 +311,9 @@ def plot_networkx(network, plot_throats=True, labels=None, colors=None,
         Transparency value, 1 is opaque and 0 is transparent
 
     """
-    from networkx import Graph, draw_networkx_nodes, draw_networkx_edges
-    from matplotlib.collections import PathCollection
     import matplotlib.pyplot as plt
+    from matplotlib.collections import PathCollection
+    from networkx import Graph, draw_networkx_nodes, draw_networkx_edges
     from openpnm.topotools import dimensionality
 
     dims = dimensionality(network)
@@ -524,6 +522,8 @@ def plot_tutorial(network, font_size=12, line_width=2,
     g : NetworkX plot object
 
     """
+    import networkx as nx
+    import matplotlib.pyplot as plt
     from openpnm.io import NetworkX
 
     G = NetworkX.to_networkx(network=network)
