@@ -788,16 +788,13 @@ class GenericTransport(GenericAlgorithm):
         import networkx as nx
         from pandas import unique
 
+        # Short-circuit subsequent checks if data are healthy
+        if np.isfinite(self.A.data).all() and np.isfinite(self.b).all():
+            return True
         # Validate network topology health
         self._validate_topology_health()
         # Validate geometry health
         self._validate_geometry_health()
-
-        # Short-circuit subsequent checks if data are healthy
-        is_A_healthy = np.isfinite(self.A.data).all()
-        is_b_healthy = np.isfinite(self.b).all()
-        if is_A_healthy and is_b_healthy:
-            return True
 
         # Fetch phase/geometries/physics
         prj = self.network.project
