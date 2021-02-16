@@ -12,7 +12,6 @@
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
    
@@ -79,8 +78,6 @@
 <span class="sd">    ----------------</span>
 <span class="sd">    sources : list</span>
 <span class="sd">        List of source terms that have been added</span>
-<span class="sd">    variable_props : list</span>
-<span class="sd">        List of props that are variable throughout the algorithm</span>
 <span class="sd">    relaxation_source : float (default = 1.0)</span>
 <span class="sd">        A relaxation factor to control under-relaxation of the source term.</span>
 <span class="sd">        Factor approaching 0 leads to improved stability but slower simulation.</span>
@@ -110,9 +107,6 @@
     <span class="c1"># Swap the following 2 lines when we stop supporting Python 3.6</span>
     <span class="c1"># sources: List = field(default_factory=lambda: [])</span>
     <span class="n">sources</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="c1"># Swap the following 2 lines when we stop supporting Python 3.6</span>
-    <span class="n">variable_props</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="c1"># variable_props: List = field(default_factory=lambda: [])</span>
 
 
 <div class="viewcode-block" id="ReactiveTransport"><a class="viewcode-back" href="../../../modules/algorithms/reactive_transport.html#openpnm.algorithms.ReactiveTransport">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">get_sectionsf</span><span class="p">(</span><span class="s1">&#39;ReactiveTransport&#39;</span><span class="p">,</span> <span class="n">sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Parameters&#39;</span><span class="p">])</span>
@@ -199,7 +193,7 @@
         <span class="bp">self</span><span class="p">[</span><span class="n">quantity</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span></div>
 
 <div class="viewcode-block" id="ReactiveTransport.reset"><a class="viewcode-back" href="../../../modules/algorithms/reactive_transport.html#openpnm.algorithms.ReactiveTransport.reset">[docs]</a>    <span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
-    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_terms</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">variable_props</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_terms</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        %(GenericTransport.reset.full_desc)s</span>
 
@@ -208,8 +202,6 @@
 <span class="sd">        %(GenericTransport.reset.parameters)s</span>
 <span class="sd">        source_terms : boolean</span>
 <span class="sd">            If ``True`` removes source terms. The default is ``False``.</span>
-<span class="sd">        variable_props : boolean</span>
-<span class="sd">            If ``True`` removes variable properties. The default is ``False``.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">reset</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -218,9 +210,7 @@
             <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;sources&#39;</span><span class="p">]:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
             <span class="c1"># Reset the settings dict</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;sources&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">if</span> <span class="n">variable_props</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;variable_props&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;sources&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span></div>
 
 <div class="viewcode-block" id="ReactiveTransport.set_source"><a class="viewcode-back" href="../../../modules/algorithms/reactive_transport.html#openpnm.algorithms.ReactiveTransport.set_source">[docs]</a>    <span class="k">def</span> <span class="nf">set_source</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">propname</span><span class="p">,</span> <span class="n">pores</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;overwrite&#39;</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -279,23 +269,6 @@
         <span class="k">if</span> <span class="n">propname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="bp">self</span><span class="p">[</span><span class="n">propname</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="p">[</span><span class="n">propname</span><span class="p">][</span><span class="n">locs</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span></div>
-
-    <span class="k">def</span> <span class="nf">_set_variable_props</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">propnames</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Inform the algorithm which properties are variable, so those on</span>
-<span class="sd">        which they depend will be updated on each solver iteration.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        propnames : str or List[str]</span>
-<span class="sd">            The propnames of the properties that are variable throughout</span>
-<span class="sd">            the algorithm.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">propnames</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>  <span class="c1"># Convert string to list if necessary</span>
-            <span class="n">propnames</span> <span class="o">=</span> <span class="p">[</span><span class="n">propnames</span><span class="p">]</span>
-        <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;variable_props&quot;</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;variable_props&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="o">|</span> <span class="nb">set</span><span class="p">(</span><span class="n">propnames</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="nf">_update_iterative_props</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;r</span>
@@ -464,10 +437,10 @@
             <span class="n">dg</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">compose</span><span class="p">(</span><span class="n">dg</span><span class="p">,</span> <span class="n">g</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">dependency_graph</span><span class="p">(</span><span class="n">deep</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
         <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">physics</span><span class="p">:</span>
             <span class="n">dg</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">compose</span><span class="p">(</span><span class="n">dg</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">dependency_graph</span><span class="p">(</span><span class="n">deep</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
-        <span class="n">base_props</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;quantity&quot;</span><span class="p">]]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;variable_props&quot;</span><span class="p">]</span>
+        <span class="n">base_props</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;quantity&quot;</span><span class="p">]]</span>
         <span class="k">if</span> <span class="n">base_props</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[]</span>
-        <span class="c1"># Find all props downstream that rely on &quot;quantity&quot; and variable_props</span>
+        <span class="c1"># Find all props downstream that rely on &quot;quantity&quot;</span>
         <span class="n">dg</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">edge_dfs</span><span class="p">(</span><span class="n">dg</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">base_props</span><span class="p">))</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dg</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[]</span>
@@ -567,7 +540,7 @@
       &copy;2021 OpenPNM Team.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.3</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

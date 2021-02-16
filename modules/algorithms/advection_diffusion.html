@@ -12,7 +12,6 @@
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Metrics" href="metrics/index.html" />
@@ -37,12 +36,12 @@
 <span id="advection-diffusion-api"></span><h1>AdvectionDiffusion<a class="headerlink" href="#advectiondiffusion" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="openpnm.algorithms.AdvectionDiffusion">
-<em class="property">class </em><code class="sig-prename descclassname">openpnm.algorithms.</code><code class="sig-name descname">AdvectionDiffusion</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/AdvectionDiffusion.html#AdvectionDiffusion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.algorithms.AdvectionDiffusion" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">openpnm.algorithms.</span></code><code class="sig-name descname"><span class="pre">AdvectionDiffusion</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/AdvectionDiffusion.html#AdvectionDiffusion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.AdvectionDiffusion" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.algorithms.ReactiveTransport.ReactiveTransport</span></code></p>
 <p>A subclass of ReactiveTransport to simulate advection-diffusion</p>
 <dl class="py method">
 <dt id="openpnm.algorithms.AdvectionDiffusion.remove_BC">
-<code class="sig-name descname">remove_BC</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pores</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">bctype</span><span class="o">=</span><span class="default_value">'all'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/AdvectionDiffusion.html#AdvectionDiffusion.remove_BC"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.algorithms.AdvectionDiffusion.remove_BC" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">remove_BC</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bctype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/AdvectionDiffusion.html#AdvectionDiffusion.remove_BC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.AdvectionDiffusion.remove_BC" title="Permalink to this definition">¶</a></dt>
 <dd><p>Removes boundary conditions from the specified pores</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -62,7 +61,7 @@ is thrown if the provided pores do not have any BCs assigned.</p></li>
 
 <dl class="py method">
 <dt id="openpnm.algorithms.AdvectionDiffusion.set_outflow_BC">
-<code class="sig-name descname">set_outflow_BC</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pores</span></em>, <em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">'merge'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/AdvectionDiffusion.html#AdvectionDiffusion.set_outflow_BC"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.algorithms.AdvectionDiffusion.set_outflow_BC" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">set_outflow_BC</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pores</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'merge'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/AdvectionDiffusion.html#AdvectionDiffusion.set_outflow_BC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.AdvectionDiffusion.set_outflow_BC" title="Permalink to this definition">¶</a></dt>
 <dd><p>Adds outflow boundary condition to the selected pores</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -86,7 +85,7 @@ does not change, i.e. is 0.</p>
 
 <dl class="py method">
 <dt id="openpnm.algorithms.AdvectionDiffusion.setup">
-<code class="sig-name descname">setup</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">phase</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">quantity</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">conductance</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">diffusive_conductance</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">hydraulic_conductance</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">pressure</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/AdvectionDiffusion.html#AdvectionDiffusion.setup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.algorithms.AdvectionDiffusion.setup" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">setup</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quantity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conductance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">diffusive_conductance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hydraulic_conductance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pressure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/AdvectionDiffusion.html#AdvectionDiffusion.setup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.AdvectionDiffusion.setup" title="Permalink to this definition">¶</a></dt>
 <dd><p>Setup method for setting/modifying algorithm settings</p>
 </dd></dl>
 
@@ -161,7 +160,7 @@ does not change, i.e. is 0.</p>
       &copy;2021 OpenPNM Team.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.3</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

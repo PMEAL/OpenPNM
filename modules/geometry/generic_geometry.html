@@ -12,7 +12,6 @@
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="StickAndBall" href="stick_and_ball.html" />
@@ -37,7 +36,7 @@
 <span id="generic-geometry-api"></span><h1>GenericGeometry<a class="headerlink" href="#genericgeometry" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="openpnm.geometry.GenericGeometry">
-<em class="property">class </em><code class="sig-prename descclassname">openpnm.geometry.</code><code class="sig-name descname">GenericGeometry</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/geometry/GenericGeometry.html#GenericGeometry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.geometry.GenericGeometry" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">openpnm.geometry.</span></code><code class="sig-name descname"><span class="pre">GenericGeometry</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/geometry/GenericGeometry.html#GenericGeometry"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.geometry.GenericGeometry" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.core.Subdomain.Subdomain</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.core.ModelsMixin.ModelsMixin</span></code></p>
 <p>This generic class is meant as a starter for custom Geometry objects</p>
 <p>It has no pore-scale models assigned to it, so a a blank slate.  Note that
@@ -92,7 +91,7 @@ label to identify where this Geometry applies.</p></li>
 <img alt="../../_images/generic_geometry_histogram.png" class="align-center" src="../../_images/generic_geometry_histogram.png" style="width: 500px;" />
 <dl class="py method">
 <dt id="openpnm.geometry.GenericGeometry.add_locations">
-<code class="sig-name descname">add_locations</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pores</span><span class="o">=</span><span class="default_value">[]</span></em>, <em class="sig-param"><span class="n">throats</span><span class="o">=</span><span class="default_value">[]</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/geometry/GenericGeometry.html#GenericGeometry.add_locations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.geometry.GenericGeometry.add_locations" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">add_locations</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throats</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/geometry/GenericGeometry.html#GenericGeometry.add_locations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.geometry.GenericGeometry.add_locations" title="Permalink to this definition">¶</a></dt>
 <dd><p>Adds associations between this geometry and the given pore and/or
 throat locations.</p>
 <dl class="field-list simple">
@@ -108,7 +107,7 @@ pore and/or throat associations are also changed.</p>
 
 <dl class="py method">
 <dt id="openpnm.geometry.GenericGeometry.drop_locations">
-<code class="sig-name descname">drop_locations</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pores</span><span class="o">=</span><span class="default_value">[]</span></em>, <em class="sig-param"><span class="n">throats</span><span class="o">=</span><span class="default_value">[]</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/geometry/GenericGeometry.html#GenericGeometry.drop_locations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.geometry.GenericGeometry.drop_locations" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">drop_locations</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throats</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/geometry/GenericGeometry.html#GenericGeometry.drop_locations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.geometry.GenericGeometry.drop_locations" title="Permalink to this definition">¶</a></dt>
 <dd><p>Removes association between this geometry and the given pore and/or
 throat locations.</p>
 <dl class="field-list simple">
@@ -193,7 +192,7 @@ pore and/or throat associations are also changed.</p>
       &copy;2021 OpenPNM Team.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.3</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

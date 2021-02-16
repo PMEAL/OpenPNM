@@ -12,7 +12,6 @@
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
     <link rel="next" title="Topotools" href="../../topotools/index.html" />
@@ -37,7 +36,7 @@
 <span id="relative-permeabilitiy-api"></span><h1>RelativePermeability<a class="headerlink" href="#relativepermeability" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="openpnm.algorithms.metrics.RelativePermeability">
-<em class="property">class </em><code class="sig-prename descclassname">openpnm.algorithms.metrics.</code><code class="sig-name descname">RelativePermeability</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/openpnm/algorithms/metrics/RelativePermeability.html#RelativePermeability"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.algorithms.metrics.RelativePermeability" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">openpnm.algorithms.metrics.</span></code><code class="sig-name descname"><span class="pre">RelativePermeability</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/openpnm/algorithms/metrics/RelativePermeability.html#RelativePermeability"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.metrics.RelativePermeability" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.algorithms.GenericAlgorithm.GenericAlgorithm</span></code></p>
 <p>A subclass of Generic Algorithm to calculate relative permeabilities of
 fluids in a drainage process.</p>
@@ -57,21 +56,21 @@ use the flow rate of the phase of interest in single and multiphase
 permeability calculation.</p>
 <dl class="py method">
 <dt id="openpnm.algorithms.metrics.RelativePermeability.get_Kr_data">
-<code class="sig-name descname">get_Kr_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/openpnm/algorithms/metrics/RelativePermeability.html#RelativePermeability.get_Kr_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.algorithms.metrics.RelativePermeability.get_Kr_data" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get_Kr_data</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/openpnm/algorithms/metrics/RelativePermeability.html#RelativePermeability.get_Kr_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.metrics.RelativePermeability.get_Kr_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns data points of the relative permeability of the phase(s) in
 flow direction(s) and Saturation points.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="openpnm.algorithms.metrics.RelativePermeability.plot_Kr_curves">
-<code class="sig-name descname">plot_Kr_curves</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fig</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/openpnm/algorithms/metrics/RelativePermeability.html#RelativePermeability.plot_Kr_curves"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.algorithms.metrics.RelativePermeability.plot_Kr_curves" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">plot_Kr_curves</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/openpnm/algorithms/metrics/RelativePermeability.html#RelativePermeability.plot_Kr_curves"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.metrics.RelativePermeability.plot_Kr_curves" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plots the relative permeability curve of the phase(s) in flow
 direction(s) as Kr vs Saturation points.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="openpnm.algorithms.metrics.RelativePermeability.run">
-<code class="sig-name descname">run</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">Snwp_num</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/openpnm/algorithms/metrics/RelativePermeability.html#RelativePermeability.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.algorithms.metrics.RelativePermeability.run" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">run</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Snwp_num</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/openpnm/algorithms/metrics/RelativePermeability.html#RelativePermeability.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.metrics.RelativePermeability.run" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the saturation of each phase using the invasion sequence.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -92,7 +91,7 @@ K_abs.</p>
 
 <dl class="py method">
 <dt id="openpnm.algorithms.metrics.RelativePermeability.setup">
-<code class="sig-name descname">setup</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">invading_phase</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">defending_phase</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">invasion_sequence</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">flow_inlets</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">flow_outlets</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">Snwp_num</span><span class="o">=</span><span class="default_value">100</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/openpnm/algorithms/metrics/RelativePermeability.html#RelativePermeability.setup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.algorithms.metrics.RelativePermeability.setup" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">setup</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">invading_phase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">defending_phase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">invasion_sequence</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flow_inlets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flow_outlets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Snwp_num</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/openpnm/algorithms/metrics/RelativePermeability.html#RelativePermeability.setup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.metrics.RelativePermeability.setup" title="Permalink to this definition">¶</a></dt>
 <dd><p>Assigns values to the algorithm <code class="docutils literal notranslate"><span class="pre">settings</span></code>.</p>
 <p>This part is revised so that it can be applied on either 2D or 3D
 networks. The dimension is found by the number of boundary faces
@@ -189,7 +188,7 @@ Kr values will be calculated.</p></li>
       &copy;2021 OpenPNM Team.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.3</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

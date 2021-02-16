@@ -12,7 +12,6 @@
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Project" href="project.html" />
@@ -37,7 +36,7 @@
 <span id="workspace-api"></span><h1>Workspace<a class="headerlink" href="#workspace" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="openpnm.utils.Workspace">
-<em class="property">class </em><code class="sig-prename descclassname">openpnm.utils.</code><code class="sig-name descname">Workspace</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Workspace.html#Workspace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.utils.Workspace" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">openpnm.utils.</span></code><code class="sig-name descname"><span class="pre">Workspace</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Workspace.html#Workspace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.Workspace" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></p>
 <p>The Workspace object provides the highest level of adminstrative
 control over active OpenPNM sessions.</p>
@@ -56,19 +55,19 @@ Projects.</p>
 from the ‘file-menu’ in a typical GUI.</p>
 <dl class="py method">
 <dt id="openpnm.utils.Workspace.close_project">
-<code class="sig-name descname">close_project</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">project</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Workspace.html#Workspace.close_project"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.utils.Workspace.close_project" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">close_project</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Workspace.html#Workspace.close_project"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.Workspace.close_project" title="Permalink to this definition">¶</a></dt>
 <dd><p>Removes the specified Project from the Workspace</p>
 <p>This does not save the project, so any changes will be lost.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="openpnm.utils.Workspace.copy">
-<code class="sig-name descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Workspace.html#Workspace.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.utils.Workspace.copy" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">copy</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Workspace.html#Workspace.copy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.Workspace.copy" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="openpnm.utils.Workspace.copy_project">
-<code class="sig-name descname">copy_project</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">project</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Workspace.html#Workspace.copy_project"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.utils.Workspace.copy_project" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">copy_project</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Workspace.html#Workspace.copy_project"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.Workspace.copy_project" title="Permalink to this definition">¶</a></dt>
 <dd><p>Make a copy of an existing Project</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -89,7 +88,7 @@ one will be generated (e.g. ‘proj_02’)</p></li>
 
 <dl class="py method">
 <dt id="openpnm.utils.Workspace.load_project">
-<code class="sig-name descname">load_project</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename</span></em>, <em class="sig-param"><span class="n">overwrite</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Workspace.html#Workspace.load_project"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.utils.Workspace.load_project" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">load_project</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Workspace.html#Workspace.load_project"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.Workspace.load_project" title="Permalink to this definition">¶</a></dt>
 <dd><p>Loads a Project from the specified ‘pnm’ file</p>
 <p>The loaded project is added to the Workspace . This will <em>not</em> delete
 any existing Projects in the Workspace and will rename any Projects
@@ -114,7 +113,7 @@ path object object such as that produced by <code class="docutils literal notran
 
 <dl class="py method">
 <dt id="openpnm.utils.Workspace.load_workspace">
-<code class="sig-name descname">load_workspace</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Workspace.html#Workspace.load_workspace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.utils.Workspace.load_workspace" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">load_workspace</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Workspace.html#Workspace.load_workspace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.Workspace.load_workspace" title="Permalink to this definition">¶</a></dt>
 <dd><p>Load project(s) from a saved workspace into current workspace</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -127,7 +126,7 @@ path object object such as that produced by <code class="docutils literal notran
 
 <dl class="py method">
 <dt id="openpnm.utils.Workspace.new_project">
-<code class="sig-name descname">new_project</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Workspace.html#Workspace.new_project"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.utils.Workspace.new_project" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">new_project</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Workspace.html#Workspace.new_project"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.Workspace.new_project" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a new empty Project object</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -146,7 +145,7 @@ generator</p>
 
 <dl class="py method">
 <dt id="openpnm.utils.Workspace.save_project">
-<code class="sig-name descname">save_project</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">project</span></em>, <em class="sig-param"><span class="n">filename</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Workspace.html#Workspace.save_project"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.utils.Workspace.save_project" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">save_project</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Workspace.html#Workspace.save_project"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.Workspace.save_project" title="Permalink to this definition">¶</a></dt>
 <dd><p>Saves given Project to a <code class="docutils literal notranslate"><span class="pre">pnm</span></code> file</p>
 <p>This will include all of associated objects, including algorithms.</p>
 <dl class="field-list simple">
@@ -173,7 +172,7 @@ path object object such as that produced by <code class="docutils literal notran
 
 <dl class="py method">
 <dt id="openpnm.utils.Workspace.save_workspace">
-<code class="sig-name descname">save_workspace</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Workspace.html#Workspace.save_workspace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.utils.Workspace.save_workspace" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">save_workspace</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Workspace.html#Workspace.save_workspace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.Workspace.save_workspace" title="Permalink to this definition">¶</a></dt>
 <dd><p>Save all projects in the current workspace as a single file</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -259,7 +258,7 @@ each project in the workspace. This archive can be extracted and each
       &copy;2021 OpenPNM Team.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.3</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

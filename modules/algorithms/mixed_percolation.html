@@ -12,7 +12,6 @@
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="FickianDiffusion" href="fickian_diffusion.html" />
@@ -37,7 +36,7 @@
 <span id="mixed-percolation-api"></span><h1>MixedInvasionPercolation<a class="headerlink" href="#mixedinvasionpercolation" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="openpnm.algorithms.MixedInvasionPercolation">
-<em class="property">class </em><code class="sig-prename descclassname">openpnm.algorithms.</code><code class="sig-name descname">MixedInvasionPercolation</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/MixedInvasionPercolation.html#MixedInvasionPercolation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.algorithms.MixedInvasionPercolation" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">openpnm.algorithms.</span></code><code class="sig-name descname"><span class="pre">MixedInvasionPercolation</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/MixedInvasionPercolation.html#MixedInvasionPercolation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.MixedInvasionPercolation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.algorithms.GenericAlgorithm.GenericAlgorithm</span></code></p>
 <p>An implemetation of invasion percolation which can invade bonds, sites or a
 mixture of both. Inlets can be treated as individual injection points that
@@ -52,7 +51,7 @@ Inlets can also be single pores or clusters.</p>
 <p>n/a</p>
 <dl class="py method">
 <dt id="openpnm.algorithms.MixedInvasionPercolation.apply_flow">
-<code class="sig-name descname">apply_flow</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">flowrate</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/MixedInvasionPercolation.html#MixedInvasionPercolation.apply_flow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.algorithms.MixedInvasionPercolation.apply_flow" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">apply_flow</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flowrate</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/MixedInvasionPercolation.html#MixedInvasionPercolation.apply_flow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.MixedInvasionPercolation.apply_flow" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert the invaded sequence into an invaded time for a given flow rate
 considering the volume of invaded pores and throats.</p>
 <dl class="field-list simple">
@@ -71,7 +70,7 @@ considering the volume of invaded pores and throats.</p>
 
 <dl class="py method">
 <dt id="openpnm.algorithms.MixedInvasionPercolation.apply_trapping">
-<code class="sig-name descname">apply_trapping</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">partial</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/MixedInvasionPercolation.html#MixedInvasionPercolation.apply_trapping"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.algorithms.MixedInvasionPercolation.apply_trapping" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">apply_trapping</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">partial</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/MixedInvasionPercolation.html#MixedInvasionPercolation.apply_trapping"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.MixedInvasionPercolation.apply_trapping" title="Permalink to this definition">¶</a></dt>
 <dd><p>Apply trapping based on algorithm described by Y. Masson [1].</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -125,19 +124,19 @@ percolation with trapping. Computers &amp; Geosciences, 90, pp.41-48</p>
 
 <dl class="py method">
 <dt id="openpnm.algorithms.MixedInvasionPercolation.get_intrusion_data">
-<code class="sig-name descname">get_intrusion_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inv_points</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/MixedInvasionPercolation.html#MixedInvasionPercolation.get_intrusion_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.algorithms.MixedInvasionPercolation.get_intrusion_data" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get_intrusion_data</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inv_points</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/MixedInvasionPercolation.html#MixedInvasionPercolation.get_intrusion_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.MixedInvasionPercolation.get_intrusion_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot a simple drainage curve</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="openpnm.algorithms.MixedInvasionPercolation.plot_intrusion_curve">
-<code class="sig-name descname">plot_intrusion_curve</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fig</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">inv_points</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/MixedInvasionPercolation.html#MixedInvasionPercolation.plot_intrusion_curve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.algorithms.MixedInvasionPercolation.plot_intrusion_curve" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">plot_intrusion_curve</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inv_points</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/MixedInvasionPercolation.html#MixedInvasionPercolation.plot_intrusion_curve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.MixedInvasionPercolation.plot_intrusion_curve" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot a simple drainage curve</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="openpnm.algorithms.MixedInvasionPercolation.reset">
-<code class="sig-name descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/MixedInvasionPercolation.html#MixedInvasionPercolation.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.algorithms.MixedInvasionPercolation.reset" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">reset</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/MixedInvasionPercolation.html#MixedInvasionPercolation.reset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.MixedInvasionPercolation.reset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Resets the various data arrays on the object back to their original
 state. This is useful for repeating a simulation at different inlet
 conditions, or invasion points for instance.</p>
@@ -145,7 +144,7 @@ conditions, or invasion points for instance.</p>
 
 <dl class="py method">
 <dt id="openpnm.algorithms.MixedInvasionPercolation.results">
-<code class="sig-name descname">results</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">Pc</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/MixedInvasionPercolation.html#MixedInvasionPercolation.results"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.algorithms.MixedInvasionPercolation.results" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">results</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Pc</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/MixedInvasionPercolation.html#MixedInvasionPercolation.results"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.MixedInvasionPercolation.results" title="Permalink to this definition">¶</a></dt>
 <dd><p>Places the results of the IP simulation into the Phase object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -156,7 +155,7 @@ conditions, or invasion points for instance.</p>
 
 <dl class="py method">
 <dt id="openpnm.algorithms.MixedInvasionPercolation.run">
-<code class="sig-name descname">run</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">max_pressure</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/MixedInvasionPercolation.html#MixedInvasionPercolation.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.algorithms.MixedInvasionPercolation.run" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">run</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_pressure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/MixedInvasionPercolation.html#MixedInvasionPercolation.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.MixedInvasionPercolation.run" title="Permalink to this definition">¶</a></dt>
 <dd><p>Perform the algorithm</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -168,7 +167,7 @@ throats with entry pressure above this value will not be invaded.</p>
 
 <dl class="py method">
 <dt id="openpnm.algorithms.MixedInvasionPercolation.set_inlets">
-<code class="sig-name descname">set_inlets</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pores</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">clusters</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/MixedInvasionPercolation.html#MixedInvasionPercolation.set_inlets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.algorithms.MixedInvasionPercolation.set_inlets" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">set_inlets</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clusters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/MixedInvasionPercolation.html#MixedInvasionPercolation.set_inlets"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.MixedInvasionPercolation.set_inlets" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -182,7 +181,7 @@ throats with entry pressure above this value will not be invaded.</p>
 
 <dl class="py method">
 <dt id="openpnm.algorithms.MixedInvasionPercolation.set_outlets">
-<code class="sig-name descname">set_outlets</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pores</span><span class="o">=</span><span class="default_value">[]</span></em>, <em class="sig-param"><span class="n">overwrite</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/MixedInvasionPercolation.html#MixedInvasionPercolation.set_outlets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.algorithms.MixedInvasionPercolation.set_outlets" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">set_outlets</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/MixedInvasionPercolation.html#MixedInvasionPercolation.set_outlets"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.MixedInvasionPercolation.set_outlets" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set the locations through which defender exits the network.
 This is only necessary if ‘trapping’ was set to True when <code class="docutils literal notranslate"><span class="pre">setup</span></code>
 was called.</p>
@@ -202,7 +201,7 @@ locations.</p></li>
 
 <dl class="py method">
 <dt id="openpnm.algorithms.MixedInvasionPercolation.set_residual">
-<code class="sig-name descname">set_residual</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pores</span><span class="o">=</span><span class="default_value">[]</span></em>, <em class="sig-param"><span class="n">overwrite</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/MixedInvasionPercolation.html#MixedInvasionPercolation.set_residual"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.algorithms.MixedInvasionPercolation.set_residual" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">set_residual</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/MixedInvasionPercolation.html#MixedInvasionPercolation.set_residual"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.MixedInvasionPercolation.set_residual" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method to start invasion in a network w. residual saturation.
 Called after inlets are set.</p>
 <dl class="field-list simple">
@@ -233,7 +232,7 @@ merges in and starts invading</p>
 
 <dl class="py method">
 <dt id="openpnm.algorithms.MixedInvasionPercolation.setup">
-<code class="sig-name descname">setup</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">phase</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">pore_entry_pressure</span><span class="o">=</span><span class="default_value">'pore.entry_pressure'</span></em>, <em class="sig-param"><span class="n">throat_entry_pressure</span><span class="o">=</span><span class="default_value">'throat.entry_pressure'</span></em>, <em class="sig-param"><span class="n">snap_off</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">invade_isolated_Ts</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">late_pore_filling</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">late_throat_filling</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/MixedInvasionPercolation.html#MixedInvasionPercolation.setup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.algorithms.MixedInvasionPercolation.setup" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">setup</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_entry_pressure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.entry_pressure'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_entry_pressure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.entry_pressure'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snap_off</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">invade_isolated_Ts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">late_pore_filling</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">late_throat_filling</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/MixedInvasionPercolation.html#MixedInvasionPercolation.setup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.MixedInvasionPercolation.setup" title="Permalink to this definition">¶</a></dt>
 <dd><p>Used to specify necessary arguments to the simulation.  This method is
 useful for resetting the algorithm or applying more explicit control.</p>
 <dl class="field-list simple">
@@ -331,7 +330,7 @@ a function of applied pressure.</p></li>
       &copy;2021 OpenPNM Team.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.3</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

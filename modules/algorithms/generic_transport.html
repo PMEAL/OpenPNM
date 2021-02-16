@@ -12,7 +12,6 @@
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="ReactiveTransport" href="reactive_transport.html" />
@@ -37,7 +36,7 @@
 <span id="generic-transport-api"></span><h1>GenericTransport<a class="headerlink" href="#generictransport" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="openpnm.algorithms.GenericTransport">
-<em class="property">class </em><code class="sig-prename descclassname">openpnm.algorithms.</code><code class="sig-name descname">GenericTransport</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/GenericTransport.html#GenericTransport"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.algorithms.GenericTransport" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">openpnm.algorithms.</span></code><code class="sig-name descname"><span class="pre">GenericTransport</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/GenericTransport.html#GenericTransport"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.GenericTransport" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.algorithms.GenericAlgorithm.GenericAlgorithm</span></code></p>
 <p>This class implements steady-state linear transport calculations</p>
 <dl class="field-list simple">
@@ -157,14 +156,14 @@ user</p></td>
 </table>
 <dl class="py method">
 <dt id="openpnm.algorithms.GenericTransport._apply_BCs">
-<code class="sig-name descname">_apply_BCs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/GenericTransport.html#GenericTransport._apply_BCs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.algorithms.GenericTransport._apply_BCs" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">_apply_BCs</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/GenericTransport.html#GenericTransport._apply_BCs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.GenericTransport._apply_BCs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Applies all the boundary conditions that have been specified, by
 adding values to the <em>A</em> and <em>b</em> matrices.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="openpnm.algorithms.GenericTransport._build_A">
-<code class="sig-name descname">_build_A</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/GenericTransport.html#GenericTransport._build_A"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.algorithms.GenericTransport._build_A" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">_build_A</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/GenericTransport.html#GenericTransport._build_A"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.GenericTransport._build_A" title="Permalink to this definition">¶</a></dt>
 <dd><p>Builds the coefficient matrix based on conductances between pores.
 The conductance to use is specified in the algorithm’s <code class="docutils literal notranslate"><span class="pre">settings</span></code>
 under <code class="docutils literal notranslate"><span class="pre">conductance</span></code>.  In subclasses (e.g. <code class="docutils literal notranslate"><span class="pre">FickianDiffusion</span></code>)
@@ -173,7 +172,7 @@ this is set by default, though it can be overwritten.</p>
 
 <dl class="py method">
 <dt id="openpnm.algorithms.GenericTransport._build_b">
-<code class="sig-name descname">_build_b</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/GenericTransport.html#GenericTransport._build_b"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.algorithms.GenericTransport._build_b" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">_build_b</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/GenericTransport.html#GenericTransport._build_b"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.GenericTransport._build_b" title="Permalink to this definition">¶</a></dt>
 <dd><p>Builds the RHS matrix, without applying any boundary conditions or
 source terms. This method is trivial an basically creates a column
 vector of 0’s.</p>
@@ -181,7 +180,7 @@ vector of 0’s.</p>
 
 <dl class="py method">
 <dt id="openpnm.algorithms.GenericTransport._calc_eff_prop">
-<code class="sig-name descname">_calc_eff_prop</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inlets</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">outlets</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">domain_area</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">domain_length</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/GenericTransport.html#GenericTransport._calc_eff_prop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.algorithms.GenericTransport._calc_eff_prop" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">_calc_eff_prop</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inlets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outlets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain_area</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/GenericTransport.html#GenericTransport._calc_eff_prop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.GenericTransport._calc_eff_prop" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the effective transport through the network</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -205,7 +204,7 @@ not given an attempt is made to infer them from the algorithm.</p></li>
 
 <dl class="py method">
 <dt id="openpnm.algorithms.GenericTransport._solve">
-<code class="sig-name descname">_solve</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">A</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">b</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">x0</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/GenericTransport.html#GenericTransport._solve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.algorithms.GenericTransport._solve" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">_solve</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/GenericTransport.html#GenericTransport._solve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.GenericTransport._solve" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sends the A and b matrices to the specified solver, and solves for <em>x</em>
 given the boundary conditions, and source terms based on the present
 value of <em>x</em>.  This method does NOT iterate to solve for non-linear
@@ -228,7 +227,7 @@ algorithm.</p>
 
 <dl class="py method">
 <dt id="openpnm.algorithms.GenericTransport.rate">
-<code class="sig-name descname">rate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pores</span><span class="o">=</span><span class="default_value">[]</span></em>, <em class="sig-param"><span class="n">throats</span><span class="o">=</span><span class="default_value">[]</span></em>, <em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">'group'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/GenericTransport.html#GenericTransport.rate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.algorithms.GenericTransport.rate" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">rate</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throats</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'group'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/GenericTransport.html#GenericTransport.rate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.GenericTransport.rate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the net rate of material moving into a given set of pores or
 throats</p>
 <dl class="field-list simple">
@@ -261,14 +260,14 @@ moving into the given set of pores
 
 <dl class="py method">
 <dt id="openpnm.algorithms.GenericTransport.results">
-<code class="sig-name descname">results</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/GenericTransport.html#GenericTransport.results"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.algorithms.GenericTransport.results" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">results</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/GenericTransport.html#GenericTransport.results"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.GenericTransport.results" title="Permalink to this definition">¶</a></dt>
 <dd><p>Fetches the calculated quantity from the algorithm and returns it as
 an array.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="openpnm.algorithms.GenericTransport.set_rate_BC">
-<code class="sig-name descname">set_rate_BC</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pores</span></em>, <em class="sig-param"><span class="n">rates</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">total_rate</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">'merge'</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/GenericTransport.html#GenericTransport.set_rate_BC"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.algorithms.GenericTransport.set_rate_BC" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">set_rate_BC</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pores</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rates</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'merge'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/GenericTransport.html#GenericTransport.set_rate_BC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.GenericTransport.set_rate_BC" title="Permalink to this definition">¶</a></dt>
 <dd><p>Apply constant rate boundary conditons to the specified locations.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -299,7 +298,7 @@ BCs of the other type).</p>
 
 <dl class="py method">
 <dt id="openpnm.algorithms.GenericTransport.set_value_BC">
-<code class="sig-name descname">set_value_BC</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pores</span></em>, <em class="sig-param"><span class="n">values</span></em>, <em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">'merge'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/GenericTransport.html#GenericTransport.set_value_BC"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.algorithms.GenericTransport.set_value_BC" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">set_value_BC</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pores</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'merge'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/GenericTransport.html#GenericTransport.set_value_BC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.GenericTransport.set_value_BC" title="Permalink to this definition">¶</a></dt>
 <dd><p>Apply constant value boundary conditons to the specified locations.</p>
 <p>These are sometimes referred to as Dirichlet conditions.</p>
 <dl class="field-list simple">
@@ -328,7 +327,7 @@ BCs of the other type).</p>
 
 <dl class="py method">
 <dt id="openpnm.algorithms.GenericTransport.setup">
-<code class="sig-name descname">setup</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">phase</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">quantity</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">conductance</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/GenericTransport.html#GenericTransport.setup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.algorithms.GenericTransport.setup" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">setup</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quantity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conductance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/GenericTransport.html#GenericTransport.setup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.GenericTransport.setup" title="Permalink to this definition">¶</a></dt>
 <dd><p>Customize algorithm settings, e.g. assign phase, set quantity to be
 solved, set conductance dict key, etc.</p>
 <dl class="field-list simple">
@@ -415,7 +414,7 @@ associated with the given <em>Phase</em>.</p></li>
       &copy;2021 OpenPNM Team.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.3</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

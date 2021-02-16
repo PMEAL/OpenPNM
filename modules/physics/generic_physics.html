@@ -12,7 +12,6 @@
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Standard" href="standard.html" />
@@ -37,7 +36,7 @@
 <span id="generic-physics-api"></span><h1>GenericPhysics<a class="headerlink" href="#genericphysics" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="openpnm.physics.GenericPhysics">
-<em class="property">class </em><code class="sig-prename descclassname">openpnm.physics.</code><code class="sig-name descname">GenericPhysics</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/physics/GenericPhysics.html#GenericPhysics"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.physics.GenericPhysics" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">openpnm.physics.</span></code><code class="sig-name descname"><span class="pre">GenericPhysics</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/physics/GenericPhysics.html#GenericPhysics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.physics.GenericPhysics" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.core.Subdomain.Subdomain</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.core.ModelsMixin.ModelsMixin</span></code></p>
 <p>This generic class is meant as a starter for custom Physics objects</p>
 <p>It produces a blank object with no pore-scale models attached.  Users can
@@ -57,7 +56,7 @@ generated that includes the class name and an integer index.</p></li>
 </dl>
 <dl class="py method">
 <dt id="openpnm.physics.GenericPhysics.set_geometry">
-<code class="sig-name descname">set_geometry</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">geometry</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">'add'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/physics/GenericPhysics.html#GenericPhysics.set_geometry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.physics.GenericPhysics.set_geometry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">set_geometry</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">geometry</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'add'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/physics/GenericPhysics.html#GenericPhysics.set_geometry"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.physics.GenericPhysics.set_geometry" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sets the association between this physics and a geometry (i.e. a
 set of pores and throats that define a subdomain)</p>
 <dl class="field-list simple">
@@ -80,7 +79,7 @@ geometry, this will create associations.</p>
 
 <dl class="py method">
 <dt id="openpnm.physics.GenericPhysics.set_phase">
-<code class="sig-name descname">set_phase</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">phase</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">'swap'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/physics/GenericPhysics.html#GenericPhysics.set_phase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.physics.GenericPhysics.set_phase" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">set_phase</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'swap'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/physics/GenericPhysics.html#GenericPhysics.set_phase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.physics.GenericPhysics.set_phase" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sets the association between this physics and a phase.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -179,7 +178,7 @@ must be run.</p>
       &copy;2021 OpenPNM Team.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.3</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

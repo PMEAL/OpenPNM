@@ -12,7 +12,6 @@
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="InvasionPercolation" href="invasion_percolation.html" />
@@ -37,7 +36,7 @@
 <span id="porosimetry-api"></span><h1>Porosimetry<a class="headerlink" href="#porosimetry" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="openpnm.algorithms.Porosimetry">
-<em class="property">class </em><code class="sig-prename descclassname">openpnm.algorithms.</code><code class="sig-name descname">Porosimetry</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/Porosimetry.html#Porosimetry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.algorithms.Porosimetry" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">openpnm.algorithms.</span></code><code class="sig-name descname"><span class="pre">Porosimetry</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/Porosimetry.html#Porosimetry"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.Porosimetry" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.algorithms.OrdinaryPercolation.OrdinaryPercolation</span></code></p>
 <p>Simulates mercury instrustion porosimetry using ordinary percolation</p>
 <dl class="field-list simple">
@@ -61,12 +60,12 @@ with access limitations enabled.</p>
 </div>
 <dl class="py method">
 <dt id="openpnm.algorithms.Porosimetry.results">
-<code class="sig-name descname">results</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">Pc</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/Porosimetry.html#Porosimetry.results"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.algorithms.Porosimetry.results" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">results</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Pc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/Porosimetry.html#Porosimetry.results"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.Porosimetry.results" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="openpnm.algorithms.Porosimetry.run">
-<code class="sig-name descname">run</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">points</span><span class="o">=</span><span class="default_value">25</span></em>, <em class="sig-param"><span class="n">start</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">stop</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/Porosimetry.html#Porosimetry.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.algorithms.Porosimetry.run" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">run</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/Porosimetry.html#Porosimetry.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.Porosimetry.run" title="Permalink to this definition">¶</a></dt>
 <dd><p>Runs the percolation algorithm to determine which pores and throats
 will be invaded at each given pressure point.</p>
 <dl class="field-list simple">
@@ -98,7 +97,7 @@ to the inlet face, and set their volumes to zero.</p>
 
 <dl class="py method">
 <dt id="openpnm.algorithms.Porosimetry.set_partial_filling">
-<code class="sig-name descname">set_partial_filling</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">propname</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/Porosimetry.html#Porosimetry.set_partial_filling"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.algorithms.Porosimetry.set_partial_filling" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">set_partial_filling</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">propname</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/Porosimetry.html#Porosimetry.set_partial_filling"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.Porosimetry.set_partial_filling" title="Permalink to this definition">¶</a></dt>
 <dd><p>Define which pore filling model to apply.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -115,7 +114,7 @@ model(s).</p>
 
 <dl class="py method">
 <dt id="openpnm.algorithms.Porosimetry.setup">
-<code class="sig-name descname">setup</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">phase</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">quantity</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">throat_entry_pressure</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">pore_volume</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">throat_volume</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">late_pore_filling</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">late_throat_filling</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/Porosimetry.html#Porosimetry.setup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.algorithms.Porosimetry.setup" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">setup</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quantity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_entry_pressure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_volume</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_volume</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">late_pore_filling</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">late_throat_filling</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/Porosimetry.html#Porosimetry.setup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.Porosimetry.setup" title="Permalink to this definition">¶</a></dt>
 <dd><p>Used to specify necessary arguments to the simulation.  This method is
 useful for resetting the algorithm or applying more explicit control.</p>
 <dl class="field-list simple">
@@ -216,7 +215,7 @@ a function of applied pressure.</p></li>
       &copy;2021 OpenPNM Team.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.3</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

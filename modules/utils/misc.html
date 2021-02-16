@@ -12,7 +12,6 @@
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Citing" href="../../citation.html" />
@@ -37,7 +36,7 @@
 <span id="misc-api"></span><h1>Miscellaneous Classes, Functions, and Tools<a class="headerlink" href="#miscellaneous-classes-functions-and-tools" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="openpnm.utils.PrintableDict">
-<em class="property">class </em><code class="sig-prename descclassname">openpnm.utils.</code><code class="sig-name descname">PrintableDict</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/misc.html#PrintableDict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.utils.PrintableDict" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">openpnm.utils.</span></code><code class="sig-name descname"><span class="pre">PrintableDict</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/misc.html#PrintableDict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.PrintableDict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Simple subclass of <code class="docutils literal notranslate"><span class="pre">dict</span></code> that has nicer printing.</p>
 <p class="rubric">Example</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">PrintableDict</span>
@@ -60,7 +59,7 @@ shape, otherwise it will contain the result of <code class="docutils literal not
 
 <dl class="py class">
 <dt id="openpnm.utils.PrintableList">
-<em class="property">class </em><code class="sig-prename descclassname">openpnm.utils.</code><code class="sig-name descname">PrintableList</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">iterable</span><span class="o">=</span><span class="default_value">()</span></em>, <em class="sig-param"><span class="o">/</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/misc.html#PrintableList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.utils.PrintableList" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">openpnm.utils.</span></code><code class="sig-name descname"><span class="pre">PrintableList</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iterable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/misc.html#PrintableList"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.PrintableList" title="Permalink to this definition">¶</a></dt>
 <dd><p>Simple subclass of <code class="docutils literal notranslate"><span class="pre">list</span></code> that has nice printing.  Only works flat lists.</p>
 <p class="rubric">Example</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">PrintableList</span>
@@ -78,17 +77,17 @@ shape, otherwise it will contain the result of <code class="docutils literal not
 
 <dl class="py class">
 <dt id="openpnm.utils.NestedDict">
-<em class="property">class </em><code class="sig-prename descclassname">openpnm.utils.</code><code class="sig-name descname">NestedDict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mapping</span><span class="o">=</span><span class="default_value">{}</span></em>, <em class="sig-param"><span class="n">delimiter</span><span class="o">=</span><span class="default_value">'/'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/misc.html#NestedDict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.utils.NestedDict" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">openpnm.utils.</span></code><code class="sig-name descname"><span class="pre">NestedDict</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mapping</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delimiter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'/'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/misc.html#NestedDict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.NestedDict" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py class">
 <dt id="openpnm.utils.SettingsDict">
-<em class="property">class </em><code class="sig-prename descclassname">openpnm.utils.</code><code class="sig-name descname">SettingsDict</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/misc.html#SettingsDict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.utils.SettingsDict" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">openpnm.utils.</span></code><code class="sig-name descname"><span class="pre">SettingsDict</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/misc.html#SettingsDict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.SettingsDict" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py class">
 <dt id="openpnm.utils.HealthDict">
-<em class="property">class </em><code class="sig-prename descclassname">openpnm.utils.</code><code class="sig-name descname">HealthDict</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/misc.html#HealthDict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.utils.HealthDict" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">openpnm.utils.</span></code><code class="sig-name descname"><span class="pre">HealthDict</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/misc.html#HealthDict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.HealthDict" title="Permalink to this definition">¶</a></dt>
 <dd><p>This class adds a ‘health’ check to a standard dictionary.  This check
 looks into the dict values, and considers empty lists as healthy and all
 else as unhealthy.  If one or more entries is ‘unhealthy’ the health method
@@ -97,14 +96,14 @@ returns False.</p>
 
 <dl class="py function">
 <dt id="openpnm.utils.flat_list">
-<code class="sig-prename descclassname">openpnm.utils.</code><code class="sig-name descname">flat_list</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input_list</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/misc.html#flat_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.utils.flat_list" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">openpnm.utils.</span></code><code class="sig-name descname"><span class="pre">flat_list</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/misc.html#flat_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.flat_list" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given a list of nested lists of arbitrary depth, returns a single level or
 ‘flat’ list.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt id="openpnm.utils.sanitize_dict">
-<code class="sig-prename descclassname">openpnm.utils.</code><code class="sig-name descname">sanitize_dict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input_dict</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/misc.html#sanitize_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.utils.sanitize_dict" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">openpnm.utils.</span></code><code class="sig-name descname"><span class="pre">sanitize_dict</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/misc.html#sanitize_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.sanitize_dict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given a nested dictionary, ensures that all nested dicts are normal
 Python dicts.  This is necessary for pickling, or just converting
 an ‘auto-vivifying’ dict to something that acts normal.</p>
@@ -112,13 +111,13 @@ an ‘auto-vivifying’ dict to something that acts normal.</p>
 
 <dl class="py function">
 <dt id="openpnm.utils.unique_list">
-<code class="sig-prename descclassname">openpnm.utils.</code><code class="sig-name descname">unique_list</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input_list</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/misc.html#unique_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.utils.unique_list" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">openpnm.utils.</span></code><code class="sig-name descname"><span class="pre">unique_list</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/misc.html#unique_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.unique_list" title="Permalink to this definition">¶</a></dt>
 <dd><p>For a given list (of points) remove any duplicates</p>
 </dd></dl>
 
 <dl class="py function">
 <dt id="openpnm.utils.tic">
-<code class="sig-prename descclassname">openpnm.utils.</code><code class="sig-name descname">tic</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/misc.html#tic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.utils.tic" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">openpnm.utils.</span></code><code class="sig-name descname"><span class="pre">tic</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/misc.html#tic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.tic" title="Permalink to this definition">¶</a></dt>
 <dd><p>Homemade version of matlab tic and toc function, tic starts or resets
 the clock, toc reports the time since the last call of tic.</p>
 <div class="admonition seealso">
@@ -129,7 +128,7 @@ the clock, toc reports the time since the last call of tic.</p>
 
 <dl class="py function">
 <dt id="openpnm.utils.toc">
-<code class="sig-prename descclassname">openpnm.utils.</code><code class="sig-name descname">toc</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">quiet</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/misc.html#toc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.utils.toc" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">openpnm.utils.</span></code><code class="sig-name descname"><span class="pre">toc</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">quiet</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/misc.html#toc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.toc" title="Permalink to this definition">¶</a></dt>
 <dd><p>Homemade version of matlab tic and toc function, tic starts or resets
 the clock, toc reports the time since the last call of tic.</p>
 <dl class="field-list simple">
@@ -213,7 +212,7 @@ the message is not displayed and the elapsed time is returned.</p>
       &copy;2021 OpenPNM Team.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.3</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

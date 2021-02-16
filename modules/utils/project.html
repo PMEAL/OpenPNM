@@ -12,7 +12,6 @@
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Miscellaneous Classes, Functions, and Tools" href="misc.html" />
@@ -37,7 +36,7 @@
 <span id="project-api"></span><h1>Project<a class="headerlink" href="#project" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="openpnm.utils.Project">
-<em class="property">class </em><code class="sig-prename descclassname">openpnm.utils.</code><code class="sig-name descname">Project</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Project.html#Project"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.utils.Project" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">openpnm.utils.</span></code><code class="sig-name descname"><span class="pre">Project</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Project.html#Project"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.Project" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></p>
 <p>This class provides a container for all OpenPNM objects in a given
 simulation.</p>
@@ -59,7 +58,7 @@ by printing the Workspace.</p>
 </div>
 <dl class="py method">
 <dt id="openpnm.utils.Project.append">
-<code class="sig-name descname">append</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Project.html#Project.append"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.utils.Project.append" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">append</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Project.html#Project.append"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.Project.append" title="Permalink to this definition">¶</a></dt>
 <dd><p>The Project (a list) must be kept as a flat list, so the append
 function, which can normally be used to insert a list into a list, is
 overloaded to basically prevent the normal append operation and simply
@@ -68,7 +67,7 @@ calls <code class="docutils literal notranslate"><span class="pre">extend</span>
 
 <dl class="py method">
 <dt id="openpnm.utils.Project.check_data_health">
-<code class="sig-name descname">check_data_health</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Project.html#Project.check_data_health"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.utils.Project.check_data_health" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">check_data_health</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Project.html#Project.check_data_health"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.Project.check_data_health" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check the health of pore and throat data arrays.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -87,7 +86,7 @@ deemed healthy (empty lists), or False otherwise.</p>
 
 <dl class="py method">
 <dt id="openpnm.utils.Project.check_geometry_health">
-<code class="sig-name descname">check_geometry_health</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Project.html#Project.check_geometry_health"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.utils.Project.check_geometry_health" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">check_geometry_health</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Project.html#Project.check_geometry_health"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.Project.check_geometry_health" title="Permalink to this definition">¶</a></dt>
 <dd><p>Perform a check to find pores with overlapping or undefined Geometries</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -101,7 +100,7 @@ deemed healthy (empty lists), or False otherwise.</p>
 
 <dl class="py method">
 <dt id="openpnm.utils.Project.check_network_health">
-<code class="sig-name descname">check_network_health</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Project.html#Project.check_network_health"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.utils.Project.check_network_health" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">check_network_health</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Project.html#Project.check_network_health"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.Project.check_network_health" title="Permalink to this definition">¶</a></dt>
 <dd><p>This method check the network topological health by checking for:</p>
 <blockquote>
 <div><ol class="arabic simple">
@@ -135,7 +134,7 @@ and is based on keeping the largest cluster and trimming the others.</p>
 
 <dl class="py method">
 <dt id="openpnm.utils.Project.check_physics_health">
-<code class="sig-name descname">check_physics_health</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">phase</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Project.html#Project.check_physics_health"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.utils.Project.check_physics_health" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">check_physics_health</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phase</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Project.html#Project.check_physics_health"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.Project.check_physics_health" title="Permalink to this definition">¶</a></dt>
 <dd><p>Perform a check to find pores which have overlapping or missing Physics</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -152,7 +151,7 @@ and is based on keeping the largest cluster and trimming the others.</p>
 
 <dl class="py method">
 <dt id="openpnm.utils.Project.clear">
-<code class="sig-name descname">clear</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">objtype</span><span class="o">=</span><span class="default_value">[]</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Project.html#Project.clear"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.utils.Project.clear" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">clear</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">objtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Project.html#Project.clear"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.Project.clear" title="Permalink to this definition">¶</a></dt>
 <dd><p>Clears objects from the project entirely or selectively, depdening on
 the received arguments.</p>
 <dl class="field-list simple">
@@ -168,7 +167,7 @@ abbreviations, like <em>‘geom’</em>.</p>
 
 <dl class="py method">
 <dt id="openpnm.utils.Project.copy">
-<code class="sig-name descname">copy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Project.html#Project.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.utils.Project.copy" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">copy</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Project.html#Project.copy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.Project.copy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a deep copy of the current project</p>
 <p>A deep copy means that new, unique versions of all the objects are
 created but with identical data and properties.</p>
@@ -192,7 +191,7 @@ also stored (<code class="docutils literal notranslate"><span class="pre">obj.se
 
 <dl class="py method">
 <dt id="openpnm.utils.Project.export_data">
-<code class="sig-name descname">export_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">phases</span><span class="o">=</span><span class="default_value">[]</span></em>, <em class="sig-param"><span class="n">filename</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">filetype</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Project.html#Project.export_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.utils.Project.export_data" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">export_data</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phases</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filetype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Project.html#Project.export_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.Project.export_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Export the pore and throat data from the given object(s) into the
 specified file and format.</p>
 <dl class="field-list simple">
@@ -232,7 +231,7 @@ information about the format refer to <code class="docutils literal notranslate"
 
 <dl class="py method">
 <dt id="openpnm.utils.Project.extend">
-<code class="sig-name descname">extend</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Project.html#Project.extend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.utils.Project.extend" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">extend</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Project.html#Project.extend"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.Project.extend" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function is used to add objects to the project.  Arguments can
 be single OpenPNM objects, an OpenPNM project list, or a plain list of
 OpenPNM objects.  Note that if an object has the same name as one
@@ -241,7 +240,7 @@ already existing on the project, the it will be renamed automatically.</p>
 
 <dl class="py method">
 <dt id="openpnm.utils.Project.find_full_domain">
-<code class="sig-name descname">find_full_domain</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Project.html#Project.find_full_domain"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.utils.Project.find_full_domain" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">find_full_domain</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Project.html#Project.find_full_domain"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.Project.find_full_domain" title="Permalink to this definition">¶</a></dt>
 <dd><p>Find the full domain object associated with a given object.
 For geometry the network is found, for physics the phase is found and
 for all other objects which are defined for for the full domain,
@@ -261,7 +260,7 @@ themselves are found.</p>
 
 <dl class="py method">
 <dt id="openpnm.utils.Project.find_geometry">
-<code class="sig-name descname">find_geometry</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">physics</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Project.html#Project.find_geometry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.utils.Project.find_geometry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">find_geometry</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">physics</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Project.html#Project.find_geometry"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.Project.find_geometry" title="Permalink to this definition">¶</a></dt>
 <dd><p>Find the Geometry associated with a given Physics</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -281,7 +280,7 @@ themselves are found.</p>
 
 <dl class="py method">
 <dt id="openpnm.utils.Project.find_phase">
-<code class="sig-name descname">find_phase</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Project.html#Project.find_phase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.utils.Project.find_phase" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">find_phase</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Project.html#Project.find_phase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.Project.find_phase" title="Permalink to this definition">¶</a></dt>
 <dd><p>Find the Phase associated with a given object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -301,7 +300,7 @@ themselves are found.</p>
 
 <dl class="py method">
 <dt id="openpnm.utils.Project.find_physics">
-<code class="sig-name descname">find_physics</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">geometry</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">phase</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Project.html#Project.find_physics"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.utils.Project.find_physics" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">find_physics</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">geometry</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Project.html#Project.find_physics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.Project.find_physics" title="Permalink to this definition">¶</a></dt>
 <dd><p>Find the Physics object(s) associated with a given Geometry, Phase,
 or combination.</p>
 <dl class="field-list simple">
@@ -337,7 +336,7 @@ method finds the PHysics’ at each intersection</p>
 
 <dl class="py method">
 <dt id="openpnm.utils.Project.insert">
-<code class="sig-name descname">insert</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">index</span></em>, <em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Project.html#Project.insert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.utils.Project.insert" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">insert</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Project.html#Project.insert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.Project.insert" title="Permalink to this definition">¶</a></dt>
 <dd><p>Inserts the supplied object at the specified index in the Project list</p>
 <p class="rubric">Notes</p>
 <p>The order of the objects in an OpenPNM Project lists do not matter, so
@@ -350,7 +349,7 @@ it is recommended to just use <code class="docutils literal notranslate"><span c
 
 <dl class="py method">
 <dt id="openpnm.utils.Project.inspect_locations">
-<code class="sig-name descname">inspect_locations</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">element</span></em>, <em class="sig-param"><span class="n">indices</span></em>, <em class="sig-param"><span class="n">objs</span><span class="o">=</span><span class="default_value">[]</span></em>, <em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">'all'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Project.html#Project.inspect_locations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.utils.Project.inspect_locations" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">inspect_locations</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">objs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Project.html#Project.inspect_locations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.Project.inspect_locations" title="Permalink to this definition">¶</a></dt>
 <dd><p>Shows the values of all props and/or labels for a given subset of
 pores or throats.</p>
 <dl class="field-list simple">
@@ -376,7 +375,7 @@ as a property and/or label.</p>
 
 <dl class="py method">
 <dt id="openpnm.utils.Project.load_object">
-<code class="sig-name descname">load_object</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Project.html#Project.load_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.utils.Project.load_object" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">load_object</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Project.html#Project.load_object"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.Project.load_object" title="Permalink to this definition">¶</a></dt>
 <dd><p>Loads a single object from a pickle file</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -390,7 +389,7 @@ object type is inferred from</p>
 
 <dl class="py method">
 <dt id="openpnm.utils.Project.pop">
-<code class="sig-name descname">pop</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">index</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Project.html#Project.pop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.utils.Project.pop" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">pop</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Project.html#Project.pop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.Project.pop" title="Permalink to this definition">¶</a></dt>
 <dd><p>The object at the given index is removed from the list and returned.</p>
 <p class="rubric">Notes</p>
 <p>This method uses <code class="docutils literal notranslate"><span class="pre">purge_object</span></code> to perform the actual removal of the
@@ -403,7 +402,7 @@ object. It is reommended to just use that directly instead.</p>
 
 <dl class="py method">
 <dt id="openpnm.utils.Project.purge_object">
-<code class="sig-name descname">purge_object</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">deep</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Project.html#Project.purge_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.utils.Project.purge_object" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">purge_object</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Project.html#Project.purge_object"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.Project.purge_object" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove an object from the Project.  This removes all references to
 the object from all other objects (i.e. removes labels)</p>
 <dl class="field-list simple">
@@ -431,7 +430,7 @@ a Phase is like removing a column.</p>
 
 <dl class="py method">
 <dt id="openpnm.utils.Project.remove">
-<code class="sig-name descname">remove</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Project.html#Project.remove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.utils.Project.remove" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">remove</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Project.html#Project.remove"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.Project.remove" title="Permalink to this definition">¶</a></dt>
 <dd><p>The given object is removed from the project</p>
 <p>This removes the object, along with all it’s labels in associated
 objects, but does NOT remove the associated objects.</p>
@@ -443,7 +442,7 @@ objects, but does NOT remove the associated objects.</p>
 
 <dl class="py method">
 <dt id="openpnm.utils.Project.save_object">
-<code class="sig-name descname">save_object</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Project.html#Project.save_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.utils.Project.save_object" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">save_object</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Project.html#Project.save_object"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.Project.save_object" title="Permalink to this definition">¶</a></dt>
 <dd><p>Saves the given object or list of objects to a pickle file</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -455,7 +454,7 @@ extension will be one of ‘net’, ‘geo’, ‘phase’, ‘phys’ or ‘alg
 
 <dl class="py method">
 <dt id="openpnm.utils.Project.save_project">
-<code class="sig-name descname">save_project</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Project.html#Project.save_project"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.utils.Project.save_project" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">save_project</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Project.html#Project.save_project"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.Project.save_project" title="Permalink to this definition">¶</a></dt>
 <dd><p>Save the current project to a <code class="docutils literal notranslate"><span class="pre">pnm</span></code> file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -468,7 +467,7 @@ current working directory.</p>
 
 <dl class="py method">
 <dt id="openpnm.utils.Project.show_model_dependencies">
-<code class="sig-name descname">show_model_dependencies</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">prop</span></em>, <em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Project.html#Project.show_model_dependencies"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.utils.Project.show_model_dependencies" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">show_model_dependencies</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prop</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Project.html#Project.show_model_dependencies"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.Project.show_model_dependencies" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -542,7 +541,7 @@ current working directory.</p>
       &copy;2021 OpenPNM Team.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.3</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

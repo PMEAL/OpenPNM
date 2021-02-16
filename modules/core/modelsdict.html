@@ -12,7 +12,6 @@
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Network" href="../network/index.html" />
@@ -37,7 +36,7 @@
 <span id="modelsdict-api"></span><h1>ModelsDict<a class="headerlink" href="#modelsdict" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="openpnm.core.ModelsDict">
-<em class="property">class </em><code class="sig-prename descclassname">openpnm.core.</code><code class="sig-name descname">ModelsDict</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/core/ModelsMixin.html#ModelsDict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.core.ModelsDict" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">openpnm.core.</span></code><code class="sig-name descname"><span class="pre">ModelsDict</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/core/ModelsMixin.html#ModelsDict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.core.ModelsDict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.utils.misc.PrintableDict</span></code></p>
 <p>This subclassed dictionary is assigned to the <code class="docutils literal notranslate"><span class="pre">models</span></code> attribute of
 all objects that inherit from the <code class="docutils literal notranslate"><span class="pre">ModelsMixin</span></code> class.  Each dictionary
@@ -48,7 +47,7 @@ order in which models should be called: <code class="docutils literal notranslat
 <code class="docutils literal notranslate"><span class="pre">dependency_graph</span></code>, and <code class="docutils literal notranslate"><span class="pre">dependency_map</span></code>.</p>
 <dl class="py method">
 <dt id="openpnm.core.ModelsDict.dependency_graph">
-<code class="sig-name descname">dependency_graph</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">deep</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/core/ModelsMixin.html#ModelsDict.dependency_graph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.core.ModelsDict.dependency_graph" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">dependency_graph</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">deep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/core/ModelsMixin.html#ModelsDict.dependency_graph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.core.ModelsDict.dependency_graph" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a NetworkX graph object of the dependencies</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -84,7 +83,7 @@ settings is helpful:</p>
 
 <dl class="py method">
 <dt id="openpnm.core.ModelsDict.dependency_list">
-<code class="sig-name descname">dependency_list</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/core/ModelsMixin.html#ModelsDict.dependency_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.core.ModelsDict.dependency_list" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">dependency_list</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/core/ModelsMixin.html#ModelsDict.dependency_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.core.ModelsDict.dependency_list" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a list of dependencies in the order with which they should be
 called to ensure data is calculated by one model before it’s asked for
 by another.</p>
@@ -101,7 +100,7 @@ to visually inspect the graph using <code class="docutils literal notranslate"><
 
 <dl class="py method">
 <dt id="openpnm.core.ModelsDict.dependency_map">
-<code class="sig-name descname">dependency_map</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ax</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">figsize</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">deep</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">style</span><span class="o">=</span><span class="default_value">'shell'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/core/ModelsMixin.html#ModelsDict.dependency_map"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.core.ModelsDict.dependency_map" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">dependency_map</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">style</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'shell'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/core/ModelsMixin.html#ModelsDict.dependency_map"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.core.ModelsDict.dependency_map" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a graph of the dependency graph in a decent format</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -188,7 +187,7 @@ to visually inspect the graph using <code class="docutils literal notranslate"><
       &copy;2021 OpenPNM Team.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.3</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

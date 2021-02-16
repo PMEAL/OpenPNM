@@ -12,7 +12,6 @@
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="ModelsDict" href="modelsdict.html" />
@@ -37,7 +36,7 @@
 <span id="modelsmixin-api"></span><h1>ModelsMixin<a class="headerlink" href="#modelsmixin" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="openpnm.core.ModelsMixin">
-<em class="property">class </em><code class="sig-prename descclassname">openpnm.core.</code><code class="sig-name descname">ModelsMixin</code><a class="reference internal" href="../../_modules/openpnm/core/ModelsMixin.html#ModelsMixin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.core.ModelsMixin" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">openpnm.core.</span></code><code class="sig-name descname"><span class="pre">ModelsMixin</span></code><a class="reference internal" href="../../_modules/openpnm/core/ModelsMixin.html#ModelsMixin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.core.ModelsMixin" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>This class is meant to be combined by the Base class in multiple
 inheritence.  This approach is used since Network and Algorithm do not
@@ -109,7 +108,7 @@ attribute:</p>
 </div>
 <dl class="py method">
 <dt id="openpnm.core.ModelsMixin.add_model">
-<code class="sig-name descname">add_model</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">propname</span></em>, <em class="sig-param"><span class="n">model</span></em>, <em class="sig-param"><span class="n">regen_mode</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/core/ModelsMixin.html#ModelsMixin.add_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.core.ModelsMixin.add_model" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">add_model</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">propname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regen_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/core/ModelsMixin.html#ModelsMixin.add_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.core.ModelsMixin.add_model" title="Permalink to this definition">¶</a></dt>
 <dd><p>Adds a new model to the models dictionary (<code class="docutils literal notranslate"><span class="pre">object.models</span></code>)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -137,7 +136,7 @@ of when the model is run.</p>
 
 <dl class="py method">
 <dt id="openpnm.core.ModelsMixin.regenerate_models">
-<code class="sig-name descname">regenerate_models</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">propnames</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">exclude</span><span class="o">=</span><span class="default_value">[]</span></em>, <em class="sig-param"><span class="n">deep</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/core/ModelsMixin.html#ModelsMixin.regenerate_models"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.core.ModelsMixin.regenerate_models" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">regenerate_models</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">propnames</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/core/ModelsMixin.html#ModelsMixin.regenerate_models"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.core.ModelsMixin.regenerate_models" title="Permalink to this definition">¶</a></dt>
 <dd><p>Re-runs the specified model or models.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -160,7 +159,7 @@ so regenerating models on a Physics will not update a Phase.</p></li>
 
 <dl class="py method">
 <dt id="openpnm.core.ModelsMixin.remove_model">
-<code class="sig-name descname">remove_model</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">propname</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">['model', 'data']</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/core/ModelsMixin.html#ModelsMixin.remove_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openpnm.core.ModelsMixin.remove_model" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">remove_model</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">propname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['model',</span> <span class="pre">'data']</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/core/ModelsMixin.html#ModelsMixin.remove_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.core.ModelsMixin.remove_model" title="Permalink to this definition">¶</a></dt>
 <dd><p>Removes model and data from object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -248,7 +247,7 @@ already exist.</p>
       &copy;2021 OpenPNM Team.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.3</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>
