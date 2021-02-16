@@ -8,7 +8,7 @@ from scipy.spatial import ConvexHull
 from scipy.spatial import cKDTree
 from openpnm.topotools import iscoplanar, is_fully_connected
 from openpnm.algorithms import GenericAlgorithm
-from openpnm.utils import logging, Docorator, GenericSettings
+from openpnm.utils import logging, Docorator, GenericSettings, prettify_logger_message
 # Uncomment this line when we stop supporting Python 3.6
 # from dataclasses import dataclass, field
 # from typing import List
@@ -403,11 +403,10 @@ class GenericTransport(GenericAlgorithm):
             inds = pores[existing_bcs[pores]]
         # Now drop any pore indices which have BCs that should be kept
         if len(inds) > 0:
-            msg = r'Boundary conditions are already specified in ' + \
-                  r'the following given pores, so these will be skipped: '
-            msg = '\n'.join((msg, inds.__repr__()))
-            logger.warning(msg)
-            pores = np.array(list(set(pores).difference(set(inds))), dtype=int)
+            msg = (r'Boundary conditions are already specified in the following given'
+                   f' pores, so these will be skipped: {inds.__repr__()}')
+            logger.warning(prettify_logger_message(msg))
+            pores = np.setdiff1d(pores, inds)
 
         # Store boundary values
         self['pore.bc_' + bctype][pores] = values
@@ -789,15 +788,16 @@ class GenericTransport(GenericAlgorithm):
         import networkx as nx
         from pandas import unique
 
+        # Validate network topology health
+        self._validate_topology_health()
+        # Validate geometry health
+        self._validate_geometry_health()
+
         # Short-circuit subsequent checks if data are healthy
         is_A_healthy = np.isfinite(self.A.data).all()
         is_b_healthy = np.isfinite(self.b).all()
         if is_A_healthy and is_b_healthy:
             return True
-        # Validate network topology health
-        self._validate_topology_health()
-        # Validate geometry health
-        self._validate_geometry_health()
 
         # Fetch phase/geometries/physics
         prj = self.network.project
