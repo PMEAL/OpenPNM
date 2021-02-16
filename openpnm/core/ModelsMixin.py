@@ -128,10 +128,9 @@ class ModelsDict(PrintableDict):
         Parameters
         ----------
         ax : matplotlib.axis, optional
-            Matplotlib axis object on which dependency map is to be drawn
-
+            Matplotlib axis object on which dependency map is to be drawn.
         figsize : tuple, optional
-            Tuple containing frame size
+            Tuple containing frame size.
 
         See Also
         --------
@@ -142,33 +141,45 @@ class ModelsDict(PrintableDict):
         import networkx as nx
         import matplotlib.pyplot as plt
 
-        dtree = self.dependency_graph(deep=deep)
-        labels = {}
-        for node in dtree.nodes:
-            if node.startswith("pore."):
-                value = node.replace("pore.", "[P] ")
-            elif node.startswith("throat."):
-                value = node.replace("throat.", "[T] ")
-            labels[node] = value
-
         if ax is None:
             fig, ax = plt.subplots()
         if figsize is not None:
             fig.set_size_inches(figsize)
 
+        labels = {}
+        dtree = self.dependency_graph(deep=deep)
+        for node in dtree.nodes:
+            labels[node] = node.split(".")[1]
+
+        node_shapes = {}
+        for node in dtree.nodes:
+            if node.startswith("pore"):
+                node_shapes[node] = "o"
+            else:
+                node_shapes[node] = "s"
+        nx.set_node_attributes(dtree, node_shapes, "node_shape")
+
         style = style.replace('draw_', '')
-        method = getattr(nx, 'draw_' + style)
-        method(dtree,
-               labels=labels,
-               with_labels=True,
-               edge_color='lightgrey',
-               font_size=12,
-               width=3.0)
+        draw = getattr(nx, 'draw_' + style)
+
+        pore_props = [prop for prop in dtree.nodes if prop.startswith("pore")]
+        throat_props = [prop for prop in dtree.nodes if prop.startswith("throat")]
+
+        for props, shape in zip([pore_props, throat_props], ["o", "s"]):
+            draw(dtree,
+                 nodelist=props,
+                 node_shape=shape,
+                 labels=labels,
+                 with_labels=True,
+                 edge_color='lightgrey',
+                 font_size=12,
+                 width=2.0,
+                 alpha=0.8)
 
         ax = plt.gca()
         ax.margins(x=0.2, y=0.02)
 
-        # return ax.figure
+        return ax
 
     def __str__(self):
         horizontal_rule = '―' * 85
