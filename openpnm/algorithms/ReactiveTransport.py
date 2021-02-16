@@ -66,6 +66,7 @@ class ReactiveTransportSettings(GenericSettings):
     **The following parameters pertain to the ``GenericTransport`` class**
 
     %(GenericTransportSettings.other_parameters)s
+
     """
 
     nlin_max_iter = 5000
@@ -84,7 +85,7 @@ class ReactiveTransportSettings(GenericSettings):
 @docstr.dedent
 class ReactiveTransport(GenericTransport):
     r"""
-    A subclass for steady-state simulations with (optionally) source terms
+    A subclass for steady-state simulations with (optional) source terms.
 
     Parameters
     ----------
@@ -92,9 +93,9 @@ class ReactiveTransport(GenericTransport):
 
     Notes
     -----
-
     This subclass performs steady simulations of transport phenomena with
     reactions when source terms are added.
+
     """
 
     def __init__(self, settings={}, phase=None, **kwargs):
@@ -111,8 +112,8 @@ class ReactiveTransport(GenericTransport):
               nlin_max_iter=None, relaxation_source=None,
               relaxation_quantity=None, **kwargs):
         r"""
-        This method takes several arguments that are essential to running the
-        algorithm and adds them to the settings
+        This method takes several arguments that are essential to running
+        the algorithm and adds them to the settings.
 
         Parameters
         ----------
@@ -122,11 +123,12 @@ class ReactiveTransport(GenericTransport):
         Notes
         -----
         Under-relaxation is a technique used for improving stability of a
-        computation, particularly in the presence of highly non-linear terms.
-        Under-relaxation used here limits the change in a variable from one
-        iteration to the next. An optimum choice of the relaxation factor is
-        one that is small enough to ensure stable simulation and large enough
-        to speed up the computation.
+        computation, particularly in the presence of highly non-linear
+        terms. Under-relaxation used here limits the change in a variable
+        from one iteration to the next. An optimum choice of the
+        relaxation factor is one that is small enough to ensure stable
+        simulation and large enough to speed up the computation.
+
         """
         if phase:
             self.settings['phase'] = phase.name
@@ -174,6 +176,7 @@ class ReactiveTransport(GenericTransport):
             If ``True`` removes source terms. The default is ``False``.
         variable_props : boolean
             If ``True`` removes variable properties. The default is ``False``.
+
         """
         super().reset(**kwargs)
         if source_terms:
@@ -187,26 +190,26 @@ class ReactiveTransport(GenericTransport):
 
     def set_source(self, propname, pores, mode='overwrite'):
         r"""
-        Applies a given source term to the specified pores
+        Applies a given source term to the specified pores.
 
         Parameters
         ----------
         propname : string
-            The property name of the source term model to be applied
+            The property name of the source term model to be applied.
         pores : array_like
-            The pore indices where the source term should be applied
+            The pore indices where the source term should be applied.
         mode : str
             Controls how the sources are applied. Options are:
-                
-            'merge' - Adds supplied source term to already existing ones.
-            'overwrite' - (default) Deletes all existing source terms of the 
-            given ``propname`` then adds the specified new ones
+                - 'merge': Adds supplied source term to existing ones.
+                - 'overwrite': (default) Deletes all existing source terms
+                  of the given ``propname`` then adds the specified new ones.
 
         Notes
         -----
         Source terms cannot be applied in pores where boundary conditions have
         already been set. Attempting to do so will result in an error being
         raised.
+
         """
         locs = self.tomask(pores=pores)
         # Check if any BC is already set in the same locations
@@ -226,14 +229,15 @@ class ReactiveTransport(GenericTransport):
 
     def remove_source(self, propname, pores=None):
         r"""
-        Removes source terms from specified pores
+        Removes source terms from specified pores.
 
         Parameters
         ----------
         propname : str
-            The property name of the source term model to be removed
+            The property name of the source term model to be removed.
         pores : array_like
-            The pore indices where the source term should be applied
+            The pore indices where the source term should be applied.
+
         """
         if pores is None:
             pores = self.Ps
@@ -244,12 +248,12 @@ class ReactiveTransport(GenericTransport):
 
     def _set_variable_props(self, propnames):
         r"""
-        Inform the algorithm which properties are variable, so those on which
-        they depend will be updated on each solver iteration.
+        Inform the algorithm which properties are variable, so those on
+        which they depend will be updated on each solver iteration.
 
         Parameters
         ----------
-        propnames : string or list of strings
+        propnames : str or List[str]
             The propnames of the properties that are variable throughout
             the algorithm.
 
@@ -261,13 +265,14 @@ class ReactiveTransport(GenericTransport):
 
     def _update_iterative_props(self):
         """r
-        Update physics using the current value of ``quantity``
+        Update physics using the current value of ``quantity``.
 
         Notes
         -----
-        The algorithm directly writes the value of 'quantity' into the phase.
-        This method was implemented relaxing one of the OpenPNM rules of
-        algorithms not being able to write into phases.
+        The algorithm directly writes the value of 'quantity' into the
+        phase. This method was implemented relaxing one of the OpenPNM
+        rules of algorithms not being able to write into phases.
+
         """
         phase = self.project.phases()[self.settings['phase']]
         physics = self.project.find_physics(phase=phase)
@@ -286,21 +291,23 @@ class ReactiveTransport(GenericTransport):
 
     def _apply_sources(self):
         """r
-        Update ``A`` and ``b`` applying source terms to specified pores
+        Update ``A`` and ``b`` applying source terms to specified pores.
 
         Notes
         -----
-        - Applying source terms to ``A`` and ``b`` is performed after (optionally)
-        under-relaxing the source term to improve numerical stability. Physics
-        are also updated before applying source terms to ensure that source
-        terms values are associated with the current value of 'quantity'.
+        Applying source terms to ``A`` and ``b`` is performed after
+        (optionally) under-relaxing the source term to improve numerical
+        stability. Physics are also updated before applying source terms
+        to ensure that source terms values are associated with the current
+        value of 'quantity'.
 
-        - For source term under-relaxation, old values of S1 and S2 need to be
-        stored somewhere, we chose to store them on the algorithm object. This is
-        because storing them on phase/physics creates unintended problems, ex.
-        storing them on physics -> IO complains added depth to the NestedDict, and
-        storing them on the phase object results in NaNs in case source term is
-        only added to a subset of nodes, which breaks our _check_for_nans algorithm.
+        For source term under-relaxation, old values of S1 and S2 need
+        to be stored somewhere, we chose to store them on the algorithm
+        object. This is because storing them on phase/physics creates
+        unintended problems, ex. storing them on physics -> IO complains
+        added depth to the NestedDict, and storing them on the phase
+        object results in NaNs in case source term is only added to a
+        subset of nodes, which breaks our _check_for_nans algorithm.
 
         Warnings
         --------
@@ -336,29 +343,30 @@ class ReactiveTransport(GenericTransport):
 
     def _run_reactive(self, x0):
         r"""
-        Repeatedly updates ``A``, ``b``, and the solution guess within according
-        to the applied source term then calls ``_solve`` to solve the resulting
-        system of linear equations.
+        Repeatedly updates ``A``, ``b``, and the solution guess within
+        according to the applied source term then calls ``_solve`` to
+        solve the resulting system of linear equations.
 
-        Stops when the residual falls below ``solver_tol * norm(b)`` or when
-        the maximum number of iterations is reached.
+        Stops when the residual falls below ``solver_tol * norm(b)`` or
+        when the maximum number of iterations is reached.
 
         Parameters
         ----------
-        x0 : ND-array
+        x0 : ndarray
             Initial guess of unknown variable
 
         Returns
         -------
-        x : ND-array
+        x : ndarray
             Solution array.
 
         Notes
         -----
-        The algorithm must at least complete one iteration, and hence the check for
-        itr >= 1, because otherwise, _check_for_nans() never get's called in case
-        there's something wrong with the data, and therefore, the user won't get
-        notified about the root cause of the algorithm divergence.
+        The algorithm must at least complete one iteration, and hence the
+        check for itr >= 1, because otherwise, _check_for_nans() never
+        gets called in case there's something wrong with the data, and
+        therefore, the user won't get notified about the root cause of the
+        algorithm divergence.
 
         """
         w = self.settings['relaxation_quantity']
@@ -388,7 +396,8 @@ class ReactiveTransport(GenericTransport):
 
     def _update_A_and_b(self):
         r"""
-        Updates A and b based on the most recent solution stored on algorithm object.
+        Updates A and b based on the most recent solution stored on
+        algorithm object.
         """
         # Update iterative properties on phase, geometries, and physics
         self._update_iterative_props()
@@ -439,8 +448,8 @@ class ReactiveTransport(GenericTransport):
     @docstr.dedent
     def _set_BC(self, pores, bctype, bcvalues=None, mode='merge'):
         r"""
-        Apply boundary conditions to specified pores if no source terms are
-        already assigned to these pores. Otherwise, raise an error.
+        Apply boundary conditions to specified pores if no source terms
+        are already assigned to these pores. Otherwise, raise an error.
 
         Parameters
         ----------
@@ -449,12 +458,14 @@ class ReactiveTransport(GenericTransport):
         Notes
         -----
         %(GenericTransport._set_BC.notes)s
+
         """
         # First check that given pores do not have source terms already set
         for item in self.settings['sources']:
             if np.any(self[item][pores]):
-                raise Exception('Source term already present in given '
-                                + 'pores, cannot also assign boundary '
-                                + 'conditions')
+                raise Exception(
+                    'Source term already present in given pores, cannot also'
+                    ' assign boundary conditions'
+                )
         # Then call parent class function if above check passes
         super()._set_BC(pores=pores, bctype=bctype, bcvalues=bcvalues, mode=mode)
