@@ -1,4 +1,5 @@
 import inspect
+import numpy as np
 from openpnm.utils import PrintableDict, logging, Workspace
 from openpnm.utils.misc import is_valid_propname
 from openpnm.utils import prettify_logger_message
@@ -9,21 +10,28 @@ ws = Workspace()
 class ModelsDict(PrintableDict):
     r"""
     This subclassed dictionary is assigned to the ``models`` attribute of
-    all objects that inherit from the ``ModelsMixin`` class.  Each dictionary
-    entry corresponds to an entry in the target object's dictionary, and
-    contains the models and associated parameters for generating the model.
+    all objects that inherit from the ``ModelsMixin`` class.  Each
+    dictionary entry corresponds to an entry in the target object's
+    dictionary, and contains the models and associated parameters for
+    generating the model.
 
-    The main features of this subclass are three methods the help resolve the
-    order in which models should be called: ``dependency_list``,
+    The main features of this subclass are three methods the help resolve
+    the order in which models should be called: ``dependency_list``,
     ``dependency_graph``, and ``dependency_map``.
 
     """
 
+    def _find_parent(self):
+        for proj in ws.values():
+            for obj in proj:
+                if obj.models is self:
+                    return obj
+
     def dependency_list(self):
         r"""
-        Returns a list of dependencies in the order with which they should be
-        called to ensure data is calculated by one model before it's asked for
-        by another.
+        Returns a list of dependencies in the order with which they should
+        be called to ensure data is calculated by one model before it's
+        asked for by another.
 
         Notes
         -----
@@ -55,8 +63,9 @@ class ModelsDict(PrintableDict):
         Parameters
         ----------
         deep : bool, optional
-            Defines whether intra- or inter-object dependency graph is desired.
-            Default is False, i.e. only returns dependencies within the object.
+            Defines whether intra- or inter-object dependency graph is
+            desired. Default is False, i.e. only returns dependencies
+            within the object.
 
         See Also
         --------
@@ -89,6 +98,11 @@ class ModelsDict(PrintableDict):
 
         dtree = nx.DiGraph()
         models = list(self.keys())
+        # Fetch model-less props: those w/o any model, like temperature
+        # otherwise, they won't get picked up in the dependency graph.
+        all_props = list(self._find_parent().keys())
+        exclude_keys = ["pore.all", "throat.all"]
+        pure_props = np.setdiff1d(all_props, models + exclude_keys).tolist()
 
         for model in models:
             dtree.add_node(model)
@@ -100,7 +114,7 @@ class ModelsDict(PrintableDict):
             # Add depenency from model's parameters
             for d in dependencies:
                 if not deep:
-                    if d in models:
+                    if d in models + pure_props:
                         dtree.add_edge(d, model)
                 else:
                     dtree.add_edge(d, model)
@@ -208,17 +222,17 @@ class ModelWrapper(dict):
 class ModelsMixin:
     r"""
     This class is meant to be combined by the Base class in multiple
-    inheritence.  This approach is used since Network and Algorithm do not
-    need to have any ``models`` attribute, while Phase, Geometry, and Physics
-    do.  By using a mixin class, all objects can inherit from Base while
-    the model functionality can be added only where needed.
+    inheritence. This approach is used since Network and Algorithm do not
+    need to have any ``models`` attribute, while Phase, Geometry, and
+    Physics do. By using a mixin class, all objects can inherit from Base
+    while the model functionality can be added only where needed.
 
     Notes
     -----
-    The following table gives a brief overview of the methods that are added
-    to the object by this mixin.  In addition to these methods, a ``models``
-    attribute is also added, which is a dictionary that contains all of the
-    models and their parameters.
+    The following table gives a brief overview of the methods that are
+    added to the object by this mixin.  In addition to these methods, a
+    ``models`` attribute is also added, which is a dictionary that
+    contains all of the models and their parameters.
 
     +----------------------+--------------------------------------------------+
     | Method or Attribute  | Functionality                                    |
@@ -245,8 +259,8 @@ class ModelsMixin:
     >>> print(temp.num_pores())
     3
 
-    But also has those needed for working with models.  For instance, a simple
-    model can be added as follows:
+    But also has those needed for working with models.  For instance, a
+    simple model can be added as follows:
 
     >>> temp.add_model(propname='pore.test',
     ...                model=op.models.misc.constant,
@@ -254,8 +268,8 @@ class ModelsMixin:
     >>> print(temp['pore.test'])
     [2 2 2]
 
-    All the models and their respective parameters are stored in the ``models``
-    attribute:
+    All the models and their respective parameters are stored in the
+    ``models`` attribute:
 
     >>> print(temp.models)
     ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
