@@ -42,18 +42,6 @@ class ReactiveTransportTest:
         assert self.alg.settings["relaxation_quantity"] == 3.21
         self.alg.settings = temp
 
-    def test_set_variable_props(self):
-        assert len(self.alg.settings["variable_props"]) == 0
-        self.alg._set_variable_props(propnames="pore.pressure")
-        assert "pore.pressure" in self.alg.settings["variable_props"]
-        # Ensure each prop is only added once
-        self.alg._set_variable_props(propnames="pore.pressure")
-        assert len(self.alg.settings["variable_props"]) == 1
-        self.alg._set_variable_props(propnames=["pore.temperature", "pore.pressure"])
-        assert len(self.alg.settings["variable_props"]) == 2
-        assert "pore.pressure" in self.alg.settings["variable_props"]
-        assert "pore.temperature" in self.alg.settings["variable_props"]
-
     def test_get_iterative_props(self):
         # When quantity is None
         iterative_props = self.alg._get_iterative_props()
@@ -74,14 +62,6 @@ class ReactiveTransportTest:
         iterative_props = self.alg._get_iterative_props()
         assert len(iterative_props) == 2
         assert "pore.baz_depends_on_bar" in iterative_props
-        # When settings["variable_props"] is not empty
-        self.phys.add_model(propname="pore.lambda_depends_on_blah",
-                            model=lambda target, bar="pore.blah": 0.0)
-        self.alg._set_variable_props("pore.blah")
-        iterative_props = self.alg._get_iterative_props()
-        assert len(iterative_props) == 4
-        assert "pore.lambda_depends_on_blah" in iterative_props
-        assert "pore.blah" in iterative_props
 
     def test_multiple_set_source_with_same_name_should_only_keep_one(self):
         self.alg.settings.update({'conductance': 'throat.diffusive_conductance',
@@ -218,7 +198,7 @@ class ReactiveTransportTest:
         self.alg.setup(nlin_max_iter=5000)
 
     def test_variable_conductance(self):
-        self.alg.reset(bcs=True, source_terms=True, variable_props=True)
+        self.alg.reset(bcs=True, source_terms=True)
 
         # Define concentration-dependent diffusivity
         def variable_diffusivity(target, pore_concentration="pore.concentration"):
@@ -243,16 +223,12 @@ class ReactiveTransportTest:
         assert_allclose(c_avg, desired)
 
     def test_reset(self):
-        self.alg.reset(bcs=True, source_terms=True, variable_props=True)
+        self.alg.reset(bcs=True, source_terms=True)
         self.alg.set_source(pores=self.net.pores('bottom'), propname='pore.reaction')
         self.alg.set_value_BC(pores=self.net.pores('top'), values=1.0)
         assert 'sources' in self.alg.settings.keys()
         self.alg.reset(source_terms=True)
         assert not self.alg.settings['sources']
-        self.alg._set_variable_props(["pore.blah", "pore.foo"])
-        assert len(self.alg.settings["variable_props"]) == 2
-        self.alg.reset(variable_props=True)
-        assert not self.alg.settings["variable_props"]
 
     def test_ensure_settings_are_valid(self):
         alg = op.algorithms.ReactiveTransport(network=self.net,
