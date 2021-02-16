@@ -8,7 +8,7 @@ from scipy.spatial import ConvexHull
 from scipy.spatial import cKDTree
 from openpnm.topotools import iscoplanar, is_fully_connected
 from openpnm.algorithms import GenericAlgorithm
-from openpnm.utils import logging, Docorator, GenericSettings
+from openpnm.utils import logging, Docorator, GenericSettings, prettify_logger_message
 # Uncomment this line when we stop supporting Python 3.6
 # from dataclasses import dataclass, field
 # from typing import List
@@ -403,11 +403,10 @@ class GenericTransport(GenericAlgorithm):
             inds = pores[existing_bcs[pores]]
         # Now drop any pore indices which have BCs that should be kept
         if len(inds) > 0:
-            msg = r'Boundary conditions are already specified in ' + \
-                  r'the following given pores, so these will be skipped: '
-            msg = '\n'.join((msg, inds.__repr__()))
-            logger.warning(msg)
-            pores = np.array(list(set(pores).difference(set(inds))), dtype=int)
+            msg = (r'Boundary conditions are already specified in the following given'
+                   f' pores, so these will be skipped: {inds.__repr__()}')
+            logger.warning(prettify_logger_message(msg))
+            pores = np.setdiff1d(pores, inds)
 
         # Store boundary values
         self['pore.bc_' + bctype][pores] = values
@@ -762,6 +761,26 @@ class GenericTransport(GenericAlgorithm):
         if self.settings['conductance'] is None:
             raise Exception('"conductance" has not been defined on this algorithm')
 
+    def _validate_geometry_health(self):
+        h = self.project.check_geometry_health()
+        issues = []
+        for k, v in h.items():
+            if len(v) > 0:
+                issues.append(k)
+        if len(issues) > 0:
+            raise Exception(
+                r"Found the following critical issues with your geometry(ies):"
+                f" {', '.join(issues)}. Run network.project.check_geometry_health() for"
+                r" more details.")
+
+    def _validate_topology_health(self):
+        Ps = (self['pore.bc_rate'] > 0) + (self['pore.bc_value'] > 0)
+        if not is_fully_connected(network=self.network, pores_BC=Ps):
+            raise Exception(
+                "Your network is clustered. Run h = net.check_network_health() followed"
+                " by op.topotools.trim(net, pores=h['trim_pores']) to make your network"
+                " fully connected.")
+
     def _validate_data_health(self):
         r"""
         Check whether A and b are well-defined, i.e. doesn't contain nans.
@@ -769,25 +788,19 @@ class GenericTransport(GenericAlgorithm):
         import networkx as nx
         from pandas import unique
 
+        # Short-circuit subsequent checks if data are healthy
+        if np.isfinite(self.A.data).all() and np.isfinite(self.b).all():
+            return True
+        # Validate network topology health
+        self._validate_topology_health()
+        # Validate geometry health
+        self._validate_geometry_health()
+
         # Fetch phase/geometries/physics
         prj = self.network.project
         phase = prj.find_phase(self)
         geometries = prj.geometries().values()
         physics = prj.physics().values()
-
-        # Validate network topology health
-        Ps = (self['pore.bc_rate'] > 0) + (self['pore.bc_value'] > 0)
-        if not is_fully_connected(network=self.network, pores_BC=Ps):
-            msg = (
-                "Your network is clustered. Run h = net.check_network_health()"
-                " followed by op.topotools.trim(net, pores=h['trim_pores'])"
-                " to make your network fully connected."
-            )
-            raise Exception(msg)
-
-        # Short-circuit subsequent checks if data are healthy
-        if np.isfinite(self.A.data).all() and np.isfinite(self.b).all():
-            return True
 
         # Locate the root of NaNs
         unaccounted_nans = []
@@ -812,28 +825,24 @@ class GenericTransport(GenericAlgorithm):
             root_objs = unique([d[x] for x in nx.topological_sort(dg_nans)])
             # Throw error with helpful info on how to resolve the issue
             if root_props:
-                msg = (
+                raise Exception(
                     r"Found NaNs in A matrix, possibly caused by NaNs in"
-                    f" {', '.join(root_props)}. The issue might get"
-                    r" resolved if you call regenerate_models on the following"
-                    f" object(s): {', '.join(root_objs)}"
-                )
-                raise Exception(msg)
+                    f" {', '.join(root_props)}. The issue might get resolved if you call"
+                    r" regenerate_models on the following object(s):"
+                    f" {', '.join(root_objs)}")
 
         # Raise Exception for unaccounted properties
         if unaccounted_nans:
             raise Exception(
                 r"Found NaNs in A matrix, possibly caused by NaNs in"
-                f" {', '.join(unaccounted_nans)}."
-            )
+                f" {', '.join(unaccounted_nans)}.")
 
         # Raise Exception otherwise if root cannot be found
         raise Exception(
-            "Found NaNs in A matrix but couldn't locate the root object(s)"
-            " that might have caused it. It's likely that disabling caching"
-            " of A matrix via alg.settings['cache_A'] = False after"
-            " instantiating the algorithm object fixes the problem."
-        )
+            "Found NaNs in A matrix but couldn't locate the root object(s) that might"
+            " have caused it. It's likely that disabling caching of A matrix via"
+            " alg.settings['cache_A'] = False after instantiating the algorithm object"
+            " fixes the problem.")
 
     def results(self):
         r"""
