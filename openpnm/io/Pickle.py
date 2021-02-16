@@ -1,8 +1,8 @@
-import pickle
 import time
-from openpnm.utils import Workspace, Project
-from openpnm.utils import logging
+import pickle
 from openpnm.io import GenericIO
+from openpnm.utils import logging
+from openpnm.utils import Workspace, Project
 logger = logging.getLogger(__name__)
 ws = Workspace()
 

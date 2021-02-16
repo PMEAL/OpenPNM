@@ -1,6 +1,5 @@
 import re
 import numpy as np
-import scipy as sp
 from openpnm.io.Pandas import Pandas
 from openpnm.io import GenericIO, Dict
 from openpnm.utils import logging, Workspace
