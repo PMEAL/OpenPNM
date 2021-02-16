@@ -41,7 +41,7 @@
 <span class="kn">from</span> <span class="nn">scipy.spatial</span> <span class="kn">import</span> <span class="n">cKDTree</span>
 <span class="kn">from</span> <span class="nn">openpnm.topotools</span> <span class="kn">import</span> <span class="n">iscoplanar</span><span class="p">,</span> <span class="n">is_fully_connected</span>
 <span class="kn">from</span> <span class="nn">openpnm.algorithms</span> <span class="kn">import</span> <span class="n">GenericAlgorithm</span>
-<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">logging</span><span class="p">,</span> <span class="n">Docorator</span><span class="p">,</span> <span class="n">GenericSettings</span>
+<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">logging</span><span class="p">,</span> <span class="n">Docorator</span><span class="p">,</span> <span class="n">GenericSettings</span><span class="p">,</span> <span class="n">prettify_logger_message</span>
 <span class="c1"># Uncomment this line when we stop supporting Python 3.6</span>
 <span class="c1"># from dataclasses import dataclass, field</span>
 <span class="c1"># from typing import List</span>
@@ -436,11 +436,10 @@
             <span class="n">inds</span> <span class="o">=</span> <span class="n">pores</span><span class="p">[</span><span class="n">existing_bcs</span><span class="p">[</span><span class="n">pores</span><span class="p">]]</span>
         <span class="c1"># Now drop any pore indices which have BCs that should be kept</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">inds</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;Boundary conditions are already specified in &#39;</span> <span class="o">+</span> \
-                  <span class="sa">r</span><span class="s1">&#39;the following given pores, so these will be skipped: &#39;</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="n">msg</span><span class="p">,</span> <span class="n">inds</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()))</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-            <span class="n">pores</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">pores</span><span class="p">)</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">inds</span><span class="p">))),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Boundary conditions are already specified in the following given&#39;</span>
+                   <span class="sa">f</span><span class="s1">&#39; pores, so these will be skipped: </span><span class="si">{</span><span class="n">inds</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">prettify_logger_message</span><span class="p">(</span><span class="n">msg</span><span class="p">))</span>
+            <span class="n">pores</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">setdiff1d</span><span class="p">(</span><span class="n">pores</span><span class="p">,</span> <span class="n">inds</span><span class="p">)</span>
 
         <span class="c1"># Store boundary values</span>
         <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.bc_&#39;</span> <span class="o">+</span> <span class="n">bctype</span><span class="p">][</span><span class="n">pores</span><span class="p">]</span> <span class="o">=</span> <span class="n">values</span>
@@ -795,6 +794,26 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;conductance&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;&quot;conductance&quot; has not been defined on this algorithm&#39;</span><span class="p">)</span>
 
+    <span class="k">def</span> <span class="nf">_validate_geometry_health</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">check_geometry_health</span><span class="p">()</span>
+        <span class="n">issues</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">h</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">issues</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">issues</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+                <span class="sa">r</span><span class="s2">&quot;Found the following critical issues with your geometry(ies):&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">issues</span><span class="p">)</span><span class="si">}</span><span class="s2">. Run network.project.check_geometry_health() for&quot;</span>
+                <span class="sa">r</span><span class="s2">&quot; more details.&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_validate_topology_health</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">Ps</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.bc_rate&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.bc_value&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_fully_connected</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="p">,</span> <span class="n">pores_BC</span><span class="o">=</span><span class="n">Ps</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+                <span class="s2">&quot;Your network is clustered. Run h = net.check_network_health() followed&quot;</span>
+                <span class="s2">&quot; by op.topotools.trim(net, pores=h[&#39;trim_pores&#39;]) to make your network&quot;</span>
+                <span class="s2">&quot; fully connected.&quot;</span><span class="p">)</span>
+
     <span class="k">def</span> <span class="nf">_validate_data_health</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check whether A and b are well-defined, i.e. doesn&#39;t contain nans.</span>
@@ -802,25 +821,19 @@
         <span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
         <span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">unique</span>
 
+        <span class="c1"># Short-circuit subsequent checks if data are healthy</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="c1"># Validate network topology health</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_topology_health</span><span class="p">()</span>
+        <span class="c1"># Validate geometry health</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_geometry_health</span><span class="p">()</span>
+
         <span class="c1"># Fetch phase/geometries/physics</span>
         <span class="n">prj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">project</span>
         <span class="n">phase</span> <span class="o">=</span> <span class="n">prj</span><span class="o">.</span><span class="n">find_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="n">geometries</span> <span class="o">=</span> <span class="n">prj</span><span class="o">.</span><span class="n">geometries</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
         <span class="n">physics</span> <span class="o">=</span> <span class="n">prj</span><span class="o">.</span><span class="n">physics</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
-
-        <span class="c1"># Validate network topology health</span>
-        <span class="n">Ps</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.bc_rate&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.bc_value&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_fully_connected</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="p">,</span> <span class="n">pores_BC</span><span class="o">=</span><span class="n">Ps</span><span class="p">):</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="s2">&quot;Your network is clustered. Run h = net.check_network_health()&quot;</span>
-                <span class="s2">&quot; followed by op.topotools.trim(net, pores=h[&#39;trim_pores&#39;])&quot;</span>
-                <span class="s2">&quot; to make your network fully connected.&quot;</span>
-            <span class="p">)</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-
-        <span class="c1"># Short-circuit subsequent checks if data are healthy</span>
-        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
-            <span class="k">return</span> <span class="kc">True</span>
 
         <span class="c1"># Locate the root of NaNs</span>
         <span class="n">unaccounted_nans</span> <span class="o">=</span> <span class="p">[]</span>
@@ -845,28 +858,24 @@
             <span class="n">root_objs</span> <span class="o">=</span> <span class="n">unique</span><span class="p">([</span><span class="n">d</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">nx</span><span class="o">.</span><span class="n">topological_sort</span><span class="p">(</span><span class="n">dg_nans</span><span class="p">)])</span>
             <span class="c1"># Throw error with helpful info on how to resolve the issue</span>
             <span class="k">if</span> <span class="n">root_props</span><span class="p">:</span>
-                <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
                     <span class="sa">r</span><span class="s2">&quot;Found NaNs in A matrix, possibly caused by NaNs in&quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root_props</span><span class="p">)</span><span class="si">}</span><span class="s2">. The issue might get&quot;</span>
-                    <span class="sa">r</span><span class="s2">&quot; resolved if you call regenerate_models on the following&quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot; object(s): </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root_objs</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
-                <span class="p">)</span>
-                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+                    <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root_props</span><span class="p">)</span><span class="si">}</span><span class="s2">. The issue might get resolved if you call&quot;</span>
+                    <span class="sa">r</span><span class="s2">&quot; regenerate_models on the following object(s):&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root_objs</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="c1"># Raise Exception for unaccounted properties</span>
         <span class="k">if</span> <span class="n">unaccounted_nans</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
                 <span class="sa">r</span><span class="s2">&quot;Found NaNs in A matrix, possibly caused by NaNs in&quot;</span>
-                <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">unaccounted_nans</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
-            <span class="p">)</span>
+                <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">unaccounted_nans</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
 
         <span class="c1"># Raise Exception otherwise if root cannot be found</span>
         <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
-            <span class="s2">&quot;Found NaNs in A matrix but couldn&#39;t locate the root object(s)&quot;</span>
-            <span class="s2">&quot; that might have caused it. It&#39;s likely that disabling caching&quot;</span>
-            <span class="s2">&quot; of A matrix via alg.settings[&#39;cache_A&#39;] = False after&quot;</span>
-            <span class="s2">&quot; instantiating the algorithm object fixes the problem.&quot;</span>
-        <span class="p">)</span>
+            <span class="s2">&quot;Found NaNs in A matrix but couldn&#39;t locate the root object(s) that might&quot;</span>
+            <span class="s2">&quot; have caused it. It&#39;s likely that disabling caching of A matrix via&quot;</span>
+            <span class="s2">&quot; alg.settings[&#39;cache_A&#39;] = False after instantiating the algorithm object&quot;</span>
+            <span class="s2">&quot; fixes the problem.&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="GenericTransport.results"><a class="viewcode-back" href="../../../modules/algorithms/generic_transport.html#openpnm.algorithms.GenericTransport.results">[docs]</a>    <span class="k">def</span> <span class="nf">results</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
