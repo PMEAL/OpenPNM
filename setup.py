@@ -85,7 +85,6 @@ setup(
         'flatdict',
         'gitpython',
         'jsonschema',
-        'unyt',
         'terminaltables',
         'docrep',
         'json-tricks',
