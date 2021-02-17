@@ -5,7 +5,7 @@ logger = logging.getLogger(__name__)
 docstr = Docorator()
 
 
-@docstr.get_sectionsf('GenericAlgorithm', sections=['Parameters'])
+@docstr.get_sections(base='GenericAlgorithm', sections=['Parameters'])
 @docstr.dedent
 class GenericAlgorithm(Base):
     r"""

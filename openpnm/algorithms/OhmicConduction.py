@@ -4,8 +4,8 @@ docstr = Docorator()
 logger = logging.getLogger(__name__)
 
 
-@docstr.get_sectionsf('OhmicConductionSettings',
-                      sections=['Parameters'])
+@docstr.get_sections(base='OhmicConductionSettings',
+                     sections=['Parameters'])
 @docstr.dedent
 class OhmicConductionSettings(GenericSettings):
     r"""

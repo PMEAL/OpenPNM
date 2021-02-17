@@ -55,9 +55,10 @@ jobs:
           printf "pyamg\n" >> requirements.txt
           mamba install --file requirements.txt
           # Install OpenPNM from the checked-out branch
-          pip install -e .
+          pip install -e . --no-deps
           # Install PoreSpy, required in some notebooks
-          conda install porespy
+          mamba install --file requirements/porespy_requirements.txt
+          mamba install porespy --no-deps
 
       - name: Running tests
         run:

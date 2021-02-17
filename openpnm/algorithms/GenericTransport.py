@@ -17,8 +17,8 @@ docstr = Docorator()
 logger = logging.getLogger(__name__)
 
 
-@docstr.get_sectionsf('GenericTransportSettings',
-                      sections=['Parameters', 'Other Parameters'])
+@docstr.get_sections(base='GenericTransportSettings',
+                     sections=['Parameters', 'Other Parameters'])
 @docstr.dedent
 # Uncomment this line when we stop supporting Python 3.6
 # @dataclass
@@ -93,7 +93,7 @@ class GenericTransportSettings(GenericSettings):
     cache_b = True
 
 
-@docstr.get_sectionsf('GenericTransport', sections=['Parameters'])
+@docstr.get_sections(base='GenericTransport', sections=['Parameters'])
 @docstr.dedent
 class GenericTransport(GenericAlgorithm):
     r"""
@@ -197,7 +197,7 @@ class GenericTransport(GenericAlgorithm):
         self['pore.bc_rate'] = np.nan
         self['pore.bc_value'] = np.nan
 
-    @docstr.get_sectionsf('GenericTransport.setup', sections=['Parameters'])
+    @docstr.get_sections(base='GenericTransport.setup', sections=['Parameters'])
     @docstr.dedent
     def setup(self, phase=None, quantity='', conductance='', **kwargs):
         r"""
@@ -217,8 +217,8 @@ class GenericTransport(GenericAlgorithm):
             self.settings['conductance'] = conductance
         self.settings.update(**kwargs)
 
-    @docstr.get_full_descriptionf(base='GenericTransport.reset')
-    @docstr.get_sectionsf(base='GenericTransport.reset', sections=['Parameters'])
+    @docstr.get_full_description(base='GenericTransport.reset')
+    @docstr.get_sections(base='GenericTransport.reset', sections=['Parameters'])
     @docstr.dedent
     def reset(self, bcs=False, results=True):
         r"""
@@ -332,8 +332,8 @@ class GenericTransport(GenericAlgorithm):
             rates = total_rate/pores.size
         self._set_BC(pores=pores, bctype='rate', bcvalues=rates, mode=mode)
 
-    @docstr.get_sectionsf(base='GenericTransport._set_BC',
-                          sections=['Parameters', 'Notes'])
+    @docstr.get_sections(base='GenericTransport._set_BC',
+                         sections=['Parameters', 'Notes'])
     def _set_BC(self, pores, bctype, bcvalues=None, mode='merge'):
         r"""
         This private method is called by public facing BC methods, to apply

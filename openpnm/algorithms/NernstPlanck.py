@@ -5,7 +5,7 @@ docstr = Docorator()
 logger = logging.getLogger(__name__)
 
 
-@docstr.get_sectionsf('NernstPlanckSettings', sections=['Parameters'])
+@docstr.get_sections(base='NernstPlanckSettings', sections=['Parameters'])
 @docstr.dedent
 class NernstPlanckSettings(GenericSettings):
     r"""

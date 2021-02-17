@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 ws = Workspace()
 
 
-@docstr.get_sectionsf('Base', sections=['Parameters'])
+@docstr.get_sections(base='Base', sections=['Parameters'])
 class Base(dict):
     r"""
     Contains methods for working with the data in the OpenPNM dict objects

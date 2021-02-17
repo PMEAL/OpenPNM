@@ -7,8 +7,8 @@ docstr = Docorator()
 logger = logging.getLogger(__name__)
 
 
-@docstr.get_sectionsf('TransientReactiveTransportSettings',
-                      sections=['Parameters', 'Other Parameters'])
+@docstr.get_sections(base='TransientReactiveTransportSettings',
+                     sections=['Parameters', 'Other Parameters'])
 @docstr.dedent
 class TransientReactiveTransportSettings(GenericSettings):
     r"""
