@@ -106,14 +106,10 @@ to results of the algorithm are removed.</p></li>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>propname</strong> (<em>string</em>) – The property name of the source term model to be applied.</p></li>
 <li><p><strong>pores</strong> (<em>array_like</em>) – The pore indices where the source term should be applied.</p></li>
-<li><p><strong>mode</strong> (<em>str</em>) – <dl class="simple">
-<dt>Controls how the sources are applied. Options are:</dt><dd><ul>
-<li><p>’merge’: Adds supplied source term to existing ones.</p></li>
-<li><p>’overwrite’: (default) Deletes all existing source terms
-of the given <code class="docutils literal notranslate"><span class="pre">propname</span></code> then adds the specified new ones.</p></li>
-</ul>
-</dd>
-</dl>
+<li><p><strong>mode</strong> (<em>str</em>) – <p>Controls how the sources are applied. Options are:</p>
+<p>’merge’ - Adds supplied source term to already existing ones.
+‘overwrite’ - (default) Deletes all existing source terms of the
+given <code class="docutils literal notranslate"><span class="pre">propname</span></code> then adds the specified new ones</p>
 </p></li>
 </ul>
 </dd>

@@ -50,8 +50,8 @@
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
-<span class="nd">@docstr</span><span class="o">.</span><span class="n">get_sectionsf</span><span class="p">(</span><span class="s1">&#39;GenericTransportSettings&#39;</span><span class="p">,</span>
-                      <span class="n">sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Parameters&#39;</span><span class="p">,</span> <span class="s1">&#39;Other Parameters&#39;</span><span class="p">])</span>
+<span class="nd">@docstr</span><span class="o">.</span><span class="n">get_sections</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="s1">&#39;GenericTransportSettings&#39;</span><span class="p">,</span>
+                     <span class="n">sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Parameters&#39;</span><span class="p">,</span> <span class="s1">&#39;Other Parameters&#39;</span><span class="p">])</span>
 <span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
 <span class="c1"># Uncomment this line when we stop supporting Python 3.6</span>
 <span class="c1"># @dataclass</span>
@@ -126,7 +126,7 @@
     <span class="n">cache_b</span> <span class="o">=</span> <span class="kc">True</span>
 
 
-<div class="viewcode-block" id="GenericTransport"><a class="viewcode-back" href="../../../modules/algorithms/generic_transport.html#openpnm.algorithms.GenericTransport">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">get_sectionsf</span><span class="p">(</span><span class="s1">&#39;GenericTransport&#39;</span><span class="p">,</span> <span class="n">sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Parameters&#39;</span><span class="p">])</span>
+<div class="viewcode-block" id="GenericTransport"><a class="viewcode-back" href="../../../modules/algorithms/generic_transport.html#openpnm.algorithms.GenericTransport">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">get_sections</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="s1">&#39;GenericTransport&#39;</span><span class="p">,</span> <span class="n">sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Parameters&#39;</span><span class="p">])</span>
 <span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
 <span class="k">class</span> <span class="nc">GenericTransport</span><span class="p">(</span><span class="n">GenericAlgorithm</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -230,7 +230,7 @@
         <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.bc_rate&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
         <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.bc_value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
 
-<div class="viewcode-block" id="GenericTransport.setup"><a class="viewcode-back" href="../../../modules/algorithms/generic_transport.html#openpnm.algorithms.GenericTransport.setup">[docs]</a>    <span class="nd">@docstr</span><span class="o">.</span><span class="n">get_sectionsf</span><span class="p">(</span><span class="s1">&#39;GenericTransport.setup&#39;</span><span class="p">,</span> <span class="n">sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Parameters&#39;</span><span class="p">])</span>
+<div class="viewcode-block" id="GenericTransport.setup"><a class="viewcode-back" href="../../../modules/algorithms/generic_transport.html#openpnm.algorithms.GenericTransport.setup">[docs]</a>    <span class="nd">@docstr</span><span class="o">.</span><span class="n">get_sections</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="s1">&#39;GenericTransport.setup&#39;</span><span class="p">,</span> <span class="n">sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Parameters&#39;</span><span class="p">])</span>
     <span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
     <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">quantity</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">conductance</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -250,8 +250,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;conductance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">conductance</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
-    <span class="nd">@docstr</span><span class="o">.</span><span class="n">get_full_descriptionf</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="s1">&#39;GenericTransport.reset&#39;</span><span class="p">)</span>
-    <span class="nd">@docstr</span><span class="o">.</span><span class="n">get_sectionsf</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="s1">&#39;GenericTransport.reset&#39;</span><span class="p">,</span> <span class="n">sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Parameters&#39;</span><span class="p">])</span>
+    <span class="nd">@docstr</span><span class="o">.</span><span class="n">get_full_description</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="s1">&#39;GenericTransport.reset&#39;</span><span class="p">)</span>
+    <span class="nd">@docstr</span><span class="o">.</span><span class="n">get_sections</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="s1">&#39;GenericTransport.reset&#39;</span><span class="p">,</span> <span class="n">sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Parameters&#39;</span><span class="p">])</span>
     <span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
     <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bcs</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">results</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -365,8 +365,8 @@
             <span class="n">rates</span> <span class="o">=</span> <span class="n">total_rate</span><span class="o">/</span><span class="n">pores</span><span class="o">.</span><span class="n">size</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pores</span><span class="p">,</span> <span class="n">bctype</span><span class="o">=</span><span class="s1">&#39;rate&#39;</span><span class="p">,</span> <span class="n">bcvalues</span><span class="o">=</span><span class="n">rates</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span></div>
 
-    <span class="nd">@docstr</span><span class="o">.</span><span class="n">get_sectionsf</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="s1">&#39;GenericTransport._set_BC&#39;</span><span class="p">,</span>
-                          <span class="n">sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Parameters&#39;</span><span class="p">,</span> <span class="s1">&#39;Notes&#39;</span><span class="p">])</span>
+    <span class="nd">@docstr</span><span class="o">.</span><span class="n">get_sections</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="s1">&#39;GenericTransport._set_BC&#39;</span><span class="p">,</span>
+                         <span class="n">sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Parameters&#39;</span><span class="p">,</span> <span class="s1">&#39;Notes&#39;</span><span class="p">])</span>
     <span class="k">def</span> <span class="nf">_set_BC</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="p">,</span> <span class="n">bctype</span><span class="p">,</span> <span class="n">bcvalues</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;merge&#39;</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This private method is called by public facing BC methods, to apply</span>
