@@ -126,7 +126,11 @@ class ModelsDict(PrintableDict):
 
         return dtree
 
-    def dependency_map(self, ax=None, figsize=None, deep=False, style='shell'):
+    def dependency_map(self,
+                       ax=None,
+                       figsize=None,
+                       deep=False,
+                       style='shell'):  # pragma: no cover
         r"""
         Create a graph of the dependency graph in a decent format
 
