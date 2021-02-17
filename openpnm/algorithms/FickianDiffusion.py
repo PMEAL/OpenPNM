@@ -4,8 +4,8 @@ docstr = Docorator()
 logger = logging.getLogger(__name__)
 
 
-@docstr.get_sectionsf('FickianDiffusionSettings',
-                      sections=['Parameters'])
+@docstr.get_sections(base='FickianDiffusionSettings',
+                     sections=['Parameters'])
 @docstr.dedent
 class FickianDiffusionSettings(GenericSettings):
     r"""

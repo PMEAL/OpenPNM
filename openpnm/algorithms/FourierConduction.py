@@ -4,8 +4,8 @@ logger = logging.getLogger(__name__)
 docstr = Docorator()
 
 
-@docstr.get_sectionsf('FourierConductionSettings',
-                      sections=['Parameters'])
+@docstr.get_sections(base='FourierConductionSettings',
+                     sections=['Parameters'])
 @docstr.dedent
 class FourierConductionSettings(GenericSettings):
     r"""

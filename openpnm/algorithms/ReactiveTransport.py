@@ -22,8 +22,8 @@ logger = logging.getLogger(__name__)
 #     quantity = 1.0
 
 
-@docstr.get_sectionsf('ReactiveTransportSettings',
-                      sections=['Parameters', 'Other Parameters'])
+@docstr.get_sections(base='ReactiveTransportSettings',
+                     sections=['Parameters', 'Other Parameters'])
 @docstr.dedent
 # Uncomment this line when we stop supporting Python 3.6
 # @dataclass
@@ -76,7 +76,7 @@ class ReactiveTransportSettings(GenericSettings):
     sources = []
 
 
-@docstr.get_sectionsf('ReactiveTransport', sections=['Parameters'])
+@docstr.get_sections(base='ReactiveTransport', sections=['Parameters'])
 @docstr.dedent
 class ReactiveTransport(GenericTransport):
     r"""
@@ -100,8 +100,8 @@ class ReactiveTransport(GenericTransport):
         if phase is not None:
             self.setup(phase=phase)
 
-    @docstr.get_sectionsf('ReactiveTransport.setup',
-                          sections=['Parameters', 'Notes'])
+    @docstr.get_sections(base='ReactiveTransport.setup',
+                         sections=['Parameters', 'Notes'])
     @docstr.dedent
     def setup(self, phase=None, quantity='', conductance='',
               nlin_max_iter=None, relaxation_source=None,
@@ -191,9 +191,10 @@ class ReactiveTransport(GenericTransport):
             The pore indices where the source term should be applied.
         mode : str
             Controls how the sources are applied. Options are:
-                - 'merge': Adds supplied source term to existing ones.
-                - 'overwrite': (default) Deletes all existing source terms
-                  of the given ``propname`` then adds the specified new ones.
+
+            'merge' - Adds supplied source term to already existing ones.
+            'overwrite' - (default) Deletes all existing source terms of the
+            given ``propname`` then adds the specified new ones
 
         Notes
         -----

@@ -87,7 +87,7 @@ setup(
         'jsonschema',
         'unyt',
         'terminaltables',
-        'docrep==0.2.7',
+        'docrep',
         'json-tricks',
     ],
     author='OpenPNM Team',

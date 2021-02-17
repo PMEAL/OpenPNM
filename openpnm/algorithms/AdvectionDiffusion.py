@@ -5,8 +5,8 @@ docstr = Docorator()
 logger = logging.getLogger(__name__)
 
 
-@docstr.get_sectionsf('AdvectionDiffusionSettings',
-                      sections=['Parameters', 'Other Parameters'])
+@docstr.get_sections(base='AdvectionDiffusionSettings',
+                     sections=['Parameters', 'Other Parameters'])
 @docstr.dedent
 class AdvectionDiffusionSettings(GenericSettings):
     r"""

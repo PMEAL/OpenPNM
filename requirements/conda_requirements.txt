@@ -13,6 +13,6 @@ gitpython
 flatdict
 transforms3d
 sympy
-docrep==0.2.7
+docrep
 pardiso4py
 zarr
