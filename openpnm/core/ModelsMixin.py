@@ -170,16 +170,18 @@ class ModelsDict(PrintableDict):
         pore_props = [prop for prop in dtree.nodes if prop.startswith("pore")]
         throat_props = [prop for prop in dtree.nodes if prop.startswith("throat")]
 
-        for props, shape in zip([pore_props, throat_props], ["o", "s"]):
+        for props, color, shape in zip([pore_props, throat_props],
+                                       ["yellowgreen", "coral"],
+                                       ["o", "s"]):
             draw(dtree,
                  nodelist=props,
                  node_shape=shape,
                  labels=labels,
                  with_labels=True,
                  edge_color='lightgrey',
+                 node_color=color,
                  font_size=12,
-                 width=2.0,
-                 alpha=0.8)
+                 width=2.0)
 
         ax = plt.gca()
         ax.margins(x=0.2, y=0.02)
