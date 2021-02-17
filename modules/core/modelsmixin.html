@@ -39,15 +39,15 @@
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">openpnm.core.</span></code><code class="sig-name descname"><span class="pre">ModelsMixin</span></code><a class="reference internal" href="../../_modules/openpnm/core/ModelsMixin.html#ModelsMixin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.core.ModelsMixin" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>This class is meant to be combined by the Base class in multiple
-inheritence.  This approach is used since Network and Algorithm do not
-need to have any <code class="docutils literal notranslate"><span class="pre">models</span></code> attribute, while Phase, Geometry, and Physics
-do.  By using a mixin class, all objects can inherit from Base while
-the model functionality can be added only where needed.</p>
+inheritence. This approach is used since Network and Algorithm do not
+need to have any <code class="docutils literal notranslate"><span class="pre">models</span></code> attribute, while Phase, Geometry, and
+Physics do. By using a mixin class, all objects can inherit from Base
+while the model functionality can be added only where needed.</p>
 <p class="rubric">Notes</p>
-<p>The following table gives a brief overview of the methods that are added
-to the object by this mixin.  In addition to these methods, a <code class="docutils literal notranslate"><span class="pre">models</span></code>
-attribute is also added, which is a dictionary that contains all of the
-models and their parameters.</p>
+<p>The following table gives a brief overview of the methods that are
+added to the object by this mixin.  In addition to these methods, a
+<code class="docutils literal notranslate"><span class="pre">models</span></code> attribute is also added, which is a dictionary that
+contains all of the models and their parameters.</p>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 31%" />
@@ -85,8 +85,8 @@ models and their parameters.</p>
 <span class="go">3</span>
 </pre></div>
 </div>
-<p>But also has those needed for working with models.  For instance, a simple
-model can be added as follows:</p>
+<p>But also has those needed for working with models.  For instance, a
+simple model can be added as follows:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">temp</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.test&#39;</span><span class="p">,</span>
 <span class="gp">... </span>               <span class="n">model</span><span class="o">=</span><span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">misc</span><span class="o">.</span><span class="n">constant</span><span class="p">,</span>
 <span class="gp">... </span>               <span class="n">value</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
@@ -94,8 +94,8 @@ model can be added as follows:</p>
 <span class="go">[2 2 2]</span>
 </pre></div>
 </div>
-<p>All the models and their respective parameters are stored in the <code class="docutils literal notranslate"><span class="pre">models</span></code>
-attribute:</p>
+<p>All the models and their respective parameters are stored in the
+<code class="docutils literal notranslate"><span class="pre">models</span></code> attribute:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">temp</span><span class="o">.</span><span class="n">models</span><span class="p">)</span>
 <span class="go">―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――</span>
 <span class="go">#   Property Name                       Parameter                 Value</span>

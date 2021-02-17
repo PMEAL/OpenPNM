@@ -39,11 +39,12 @@
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">openpnm.core.</span></code><code class="sig-name descname"><span class="pre">ModelsDict</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/core/ModelsMixin.html#ModelsDict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.core.ModelsDict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.utils.misc.PrintableDict</span></code></p>
 <p>This subclassed dictionary is assigned to the <code class="docutils literal notranslate"><span class="pre">models</span></code> attribute of
-all objects that inherit from the <code class="docutils literal notranslate"><span class="pre">ModelsMixin</span></code> class.  Each dictionary
-entry corresponds to an entry in the target object’s dictionary, and
-contains the models and associated parameters for generating the model.</p>
-<p>The main features of this subclass are three methods the help resolve the
-order in which models should be called: <code class="docutils literal notranslate"><span class="pre">dependency_list</span></code>,
+all objects that inherit from the <code class="docutils literal notranslate"><span class="pre">ModelsMixin</span></code> class.  Each
+dictionary entry corresponds to an entry in the target object’s
+dictionary, and contains the models and associated parameters for
+generating the model.</p>
+<p>The main features of this subclass are three methods the help resolve
+the order in which models should be called: <code class="docutils literal notranslate"><span class="pre">dependency_list</span></code>,
 <code class="docutils literal notranslate"><span class="pre">dependency_graph</span></code>, and <code class="docutils literal notranslate"><span class="pre">dependency_map</span></code>.</p>
 <dl class="py method">
 <dt id="openpnm.core.ModelsDict.dependency_graph">
@@ -51,8 +52,9 @@ order in which models should be called: <code class="docutils literal notranslat
 <dd><p>Returns a NetworkX graph object of the dependencies</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>deep</strong> (<em>bool</em><em>, </em><em>optional</em>) – Defines whether intra- or inter-object dependency graph is desired.
-Default is False, i.e. only returns dependencies within the object.</p>
+<dd class="field-odd"><p><strong>deep</strong> (<em>bool</em><em>, </em><em>optional</em>) – Defines whether intra- or inter-object dependency graph is
+desired. Default is False, i.e. only returns dependencies
+within the object.</p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -84,9 +86,9 @@ settings is helpful:</p>
 <dl class="py method">
 <dt id="openpnm.core.ModelsDict.dependency_list">
 <code class="sig-name descname"><span class="pre">dependency_list</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/core/ModelsMixin.html#ModelsDict.dependency_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.core.ModelsDict.dependency_list" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a list of dependencies in the order with which they should be
-called to ensure data is calculated by one model before it’s asked for
-by another.</p>
+<dd><p>Returns a list of dependencies in the order with which they should
+be called to ensure data is calculated by one model before it’s
+asked for by another.</p>
 <p class="rubric">Notes</p>
 <p>This raises an exception if the graph has cycles which means the
 dependencies are unresolvable (i.e. there is no order which the
@@ -105,8 +107,8 @@ to visually inspect the graph using <code class="docutils literal notranslate"><
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>ax</strong> (<em>matplotlib.axis</em><em>, </em><em>optional</em>) – Matplotlib axis object on which dependency map is to be drawn</p></li>
-<li><p><strong>figsize</strong> (<em>tuple</em><em>, </em><em>optional</em>) – Tuple containing frame size</p></li>
+<li><p><strong>ax</strong> (<em>matplotlib.axis</em><em>, </em><em>optional</em>) – Matplotlib axis object on which dependency map is to be drawn.</p></li>
+<li><p><strong>figsize</strong> (<em>tuple</em><em>, </em><em>optional</em>) – Tuple containing frame size.</p></li>
 </ul>
 </dd>
 </dl>

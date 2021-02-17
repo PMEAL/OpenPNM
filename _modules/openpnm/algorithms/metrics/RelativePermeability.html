@@ -36,7 +36,6 @@
 <span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">logging</span>
 <span class="kn">from</span> <span class="nn">openpnm.phases</span> <span class="kn">import</span> <span class="n">GenericPhase</span>
 <span class="kn">from</span> <span class="nn">openpnm.algorithms</span> <span class="kn">import</span> <span class="n">GenericAlgorithm</span><span class="p">,</span> <span class="n">StokesFlow</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
@@ -401,24 +400,28 @@
 <span class="sd">        Plots the relative permeability curve of the phase(s) in flow</span>
 <span class="sd">        direction(s) as Kr vs Saturation points.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
         <span class="k">if</span> <span class="n">fig</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+            <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">inp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;flow_inlets&#39;</span><span class="p">]:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;wp&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Kr_values</span><span class="p">[</span><span class="s1">&#39;sat&#39;</span><span class="p">][</span><span class="n">inp</span><span class="p">],</span>
-                         <span class="bp">self</span><span class="o">.</span><span class="n">Kr_values</span><span class="p">[</span><span class="s1">&#39;relperm_wp&#39;</span><span class="p">][</span><span class="n">inp</span><span class="p">],</span>
-                         <span class="s1">&#39;o-&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Kr_wp&#39;</span><span class="o">+</span><span class="n">inp</span><span class="p">)</span>
-                <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Kr_values</span><span class="p">[</span><span class="s1">&#39;sat&#39;</span><span class="p">][</span><span class="n">inp</span><span class="p">],</span>
-                         <span class="bp">self</span><span class="o">.</span><span class="n">Kr_values</span><span class="p">[</span><span class="s1">&#39;relperm_nwp&#39;</span><span class="p">][</span><span class="n">inp</span><span class="p">],</span>
-                         <span class="s1">&#39;*-&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Kr_nwp&#39;</span><span class="o">+</span><span class="n">inp</span><span class="p">)</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Kr_values</span><span class="p">[</span><span class="s1">&#39;sat&#39;</span><span class="p">][</span><span class="n">inp</span><span class="p">],</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">Kr_values</span><span class="p">[</span><span class="s1">&#39;relperm_wp&#39;</span><span class="p">][</span><span class="n">inp</span><span class="p">],</span>
+                        <span class="s1">&#39;o-&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Kr_wp&#39;</span><span class="o">+</span><span class="n">inp</span><span class="p">)</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Kr_values</span><span class="p">[</span><span class="s1">&#39;sat&#39;</span><span class="p">][</span><span class="n">inp</span><span class="p">],</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">Kr_values</span><span class="p">[</span><span class="s1">&#39;relperm_nwp&#39;</span><span class="p">][</span><span class="n">inp</span><span class="p">],</span>
+                        <span class="s1">&#39;*-&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Kr_nwp&#39;</span><span class="o">+</span><span class="n">inp</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Kr_values</span><span class="p">[</span><span class="s1">&#39;sat&#39;</span><span class="p">][</span><span class="n">inp</span><span class="p">],</span>
-                         <span class="bp">self</span><span class="o">.</span><span class="n">Kr_values</span><span class="p">[</span><span class="s1">&#39;relperm_nwp&#39;</span><span class="p">][</span><span class="n">inp</span><span class="p">],</span>
-                         <span class="s1">&#39;*-&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Kr_nwp&#39;</span><span class="o">+</span><span class="n">inp</span><span class="p">)</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Snw&#39;</span><span class="p">)</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Kr&#39;</span><span class="p">)</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Relative Permability Curves&#39;</span><span class="p">)</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Kr_values</span><span class="p">[</span><span class="s1">&#39;sat&#39;</span><span class="p">][</span><span class="n">inp</span><span class="p">],</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">Kr_values</span><span class="p">[</span><span class="s1">&#39;relperm_nwp&#39;</span><span class="p">][</span><span class="n">inp</span><span class="p">],</span>
+                        <span class="s1">&#39;*-&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Kr_nwp&#39;</span><span class="o">+</span><span class="n">inp</span><span class="p">)</span>
+
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Snw&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Kr&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Relative Permability Curves&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
         <span class="k">return</span> <span class="n">fig</span></div>
 
 <div class="viewcode-block" id="RelativePermeability.get_Kr_data"><a class="viewcode-back" href="../../../../modules/algorithms/metrics/relative_permeability.html#openpnm.algorithms.metrics.RelativePermeability.get_Kr_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_Kr_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
