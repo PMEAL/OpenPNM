@@ -56,7 +56,7 @@ jobs:
           printf "pyamg\nmpi4py\npetsc\npetsc4py\n" >> requirements.txt
           mamba install --file requirements.txt
           # Install OpenPNM from the checked-out branch
-          pip install -e .
+          pip install -e . --no-deps
 
       - name: Running tests
         run: pytest --ignore=scripts/ --ignore="openpnm/utils/petsc.py"
