@@ -22,10 +22,15 @@ class ModelsDict(PrintableDict):
     """
 
     def _find_parent(self):
+        r"""
+        Finds and returns the parent object to self.
+        """
         for proj in ws.values():
             for obj in proj:
-                if obj.models is self:
-                    return obj
+                if hasattr(obj, "models"):
+                    if obj.models is self:
+                        return obj
+        raise Exception("No parent object found!")
 
     def dependency_list(self):
         r"""
