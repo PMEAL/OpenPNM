@@ -1583,6 +1583,7 @@ class Base(dict):
         function.
         """
         import matplotlib.pyplot as plt
+
         temp = plt.rcParams['font.size']
         plt.rcParams['font.size'] = fontsize
         if isinstance(props, str):

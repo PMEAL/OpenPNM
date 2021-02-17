@@ -3,7 +3,6 @@ from openpnm import models
 from openpnm.utils import logging
 from openpnm.phases import GenericPhase
 from openpnm.algorithms import GenericAlgorithm, StokesFlow
-import matplotlib.pyplot as plt
 logger = logging.getLogger(__name__)
 
 
@@ -368,24 +367,28 @@ class RelativePermeability(GenericAlgorithm):
         Plots the relative permeability curve of the phase(s) in flow
         direction(s) as Kr vs Saturation points.
         """
+        import matplotlib.pyplot as plt
+
         if fig is None:
-            fig = plt.figure()
+            fig, ax = plt.subplots()
         for inp in self.settings['flow_inlets']:
             if self.settings['wp'] is not None:
-                plt.plot(self.Kr_values['sat'][inp],
-                         self.Kr_values['relperm_wp'][inp],
-                         'o-', label='Kr_wp'+inp)
-                plt.plot(self.Kr_values['sat'][inp],
-                         self.Kr_values['relperm_nwp'][inp],
-                         '*-', label='Kr_nwp'+inp)
+                ax.plot(self.Kr_values['sat'][inp],
+                        self.Kr_values['relperm_wp'][inp],
+                        'o-', label='Kr_wp'+inp)
+                ax.plot(self.Kr_values['sat'][inp],
+                        self.Kr_values['relperm_nwp'][inp],
+                        '*-', label='Kr_nwp'+inp)
             else:
-                plt.plot(self.Kr_values['sat'][inp],
-                         self.Kr_values['relperm_nwp'][inp],
-                         '*-', label='Kr_nwp'+inp)
-        plt.xlabel('Snw')
-        plt.ylabel('Kr')
-        plt.title('Relative Permability Curves')
-        plt.legend()
+                ax.plot(self.Kr_values['sat'][inp],
+                        self.Kr_values['relperm_nwp'][inp],
+                        '*-', label='Kr_nwp'+inp)
+
+        ax.set_xlabel('Snw')
+        ax.set_ylabel('Kr')
+        ax.set_title('Relative Permability Curves')
+        ax.legend()
+
         return fig
 
     def get_Kr_data(self):
