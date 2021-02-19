@@ -207,7 +207,7 @@ class MixedInvasionPercolation(GenericAlgorithm):
             elif np.size(cluster) == 1:
                 self._add_ts2q(cluster, self.queue[i])
                 if check_coop:
-                    self._check_coop(elem_id, self.queue[i])
+                    self._check_coop(cluster, self.queue[i])
             else:
                 logger.warning("Some inlet clusters have no pores")
         if self.settings["snap_off"]:
