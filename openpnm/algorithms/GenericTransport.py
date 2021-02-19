@@ -6,9 +6,9 @@ from numpy.linalg import norm
 import scipy.sparse.csgraph as spgr
 from scipy.spatial import ConvexHull
 from scipy.spatial import cKDTree
-from openpnm.topotools import iscoplanar
+from openpnm.topotools import iscoplanar, is_fully_connected
 from openpnm.algorithms import GenericAlgorithm
-from openpnm.utils import logging, Docorator, GenericSettings
+from openpnm.utils import logging, Docorator, GenericSettings, prettify_logger_message
 # Uncomment this line when we stop supporting Python 3.6
 # from dataclasses import dataclass, field
 # from typing import List
@@ -17,8 +17,8 @@ docstr = Docorator()
 logger = logging.getLogger(__name__)
 
 
-@docstr.get_sectionsf('GenericTransportSettings',
-                      sections=['Parameters', 'Other Parameters'])
+@docstr.get_sections(base='GenericTransportSettings',
+                     sections=['Parameters', 'Other Parameters'])
 @docstr.dedent
 # Uncomment this line when we stop supporting Python 3.6
 # @dataclass
@@ -93,7 +93,7 @@ class GenericTransportSettings(GenericSettings):
     cache_b = True
 
 
-@docstr.get_sectionsf('GenericTransport', sections=['Parameters'])
+@docstr.get_sections(base='GenericTransport', sections=['Parameters'])
 @docstr.dedent
 class GenericTransport(GenericAlgorithm):
     r"""
@@ -197,7 +197,7 @@ class GenericTransport(GenericAlgorithm):
         self['pore.bc_rate'] = np.nan
         self['pore.bc_value'] = np.nan
 
-    @docstr.get_sectionsf('GenericTransport.setup', sections=['Parameters'])
+    @docstr.get_sections(base='GenericTransport.setup', sections=['Parameters'])
     @docstr.dedent
     def setup(self, phase=None, quantity='', conductance='', **kwargs):
         r"""
@@ -217,8 +217,8 @@ class GenericTransport(GenericAlgorithm):
             self.settings['conductance'] = conductance
         self.settings.update(**kwargs)
 
-    @docstr.get_full_descriptionf(base='GenericTransport.reset')
-    @docstr.get_sectionsf(base='GenericTransport.reset', sections=['Parameters'])
+    @docstr.get_full_description(base='GenericTransport.reset')
+    @docstr.get_sections(base='GenericTransport.reset', sections=['Parameters'])
     @docstr.dedent
     def reset(self, bcs=False, results=True):
         r"""
@@ -332,8 +332,8 @@ class GenericTransport(GenericAlgorithm):
             rates = total_rate/pores.size
         self._set_BC(pores=pores, bctype='rate', bcvalues=rates, mode=mode)
 
-    @docstr.get_sectionsf(base='GenericTransport._set_BC',
-                          sections=['Parameters', 'Notes'])
+    @docstr.get_sections(base='GenericTransport._set_BC',
+                         sections=['Parameters', 'Notes'])
     def _set_BC(self, pores, bctype, bcvalues=None, mode='merge'):
         r"""
         This private method is called by public facing BC methods, to apply
@@ -403,11 +403,10 @@ class GenericTransport(GenericAlgorithm):
             inds = pores[existing_bcs[pores]]
         # Now drop any pore indices which have BCs that should be kept
         if len(inds) > 0:
-            msg = r'Boundary conditions are already specified in ' + \
-                  r'the following given pores, so these will be skipped: '
-            msg = '\n'.join((msg, inds.__repr__()))
-            logger.warning(msg)
-            pores = np.array(list(set(pores).difference(set(inds))), dtype=int)
+            msg = (r'Boundary conditions are already specified in the following given'
+                   f' pores, so these will be skipped: {inds.__repr__()}')
+            logger.warning(prettify_logger_message(msg))
+            pores = np.setdiff1d(pores, inds)
 
         # Store boundary values
         self['pore.bc_' + bctype][pores] = values
@@ -762,6 +761,26 @@ class GenericTransport(GenericAlgorithm):
         if self.settings['conductance'] is None:
             raise Exception('"conductance" has not been defined on this algorithm')
 
+    def _validate_geometry_health(self):
+        h = self.project.check_geometry_health()
+        issues = []
+        for k, v in h.items():
+            if len(v) > 0:
+                issues.append(k)
+        if len(issues) > 0:
+            raise Exception(
+                r"Found the following critical issues with your geometry(ies):"
+                f" {', '.join(issues)}. Run network.project.check_geometry_health() for"
+                r" more details.")
+
+    def _validate_topology_health(self):
+        Ps = (self['pore.bc_rate'] > 0) + (self['pore.bc_value'] > 0)
+        if not is_fully_connected(network=self.network, pores_BC=Ps):
+            raise Exception(
+                "Your network is clustered. Run h = net.check_network_health() followed"
+                " by op.topotools.trim(net, pores=h['trim_pores']) to make your network"
+                " fully connected.")
+
     def _validate_data_health(self):
         r"""
         Check whether A and b are well-defined, i.e. doesn't contain nans.
@@ -769,24 +788,19 @@ class GenericTransport(GenericAlgorithm):
         import networkx as nx
         from pandas import unique
 
+        # Short-circuit subsequent checks if data are healthy
+        if np.isfinite(self.A.data).all() and np.isfinite(self.b).all():
+            return True
+        # Validate network topology health
+        self._validate_topology_health()
+        # Validate geometry health
+        self._validate_geometry_health()
+
         # Fetch phase/geometries/physics
         prj = self.network.project
         phase = prj.find_phase(self)
         geometries = prj.geometries().values()
         physics = prj.physics().values()
-
-        # Validate network topology health
-        if not prj.network._is_fully_connected():
-            msg = (
-                "Your network is clustered. Run h = net.check_network_health()"
-                " followed by op.topotools.trim(net, pores=h['trim_pores'])"
-                " to make your network fully connected."
-            )
-            raise Exception(msg)
-
-        # Short-circuit subsequent checks if data are healthy
-        if np.isfinite(self.A.data).all() and np.isfinite(self.b).all():
-            return True
 
         # Locate the root of NaNs
         unaccounted_nans = []
@@ -811,28 +825,24 @@ class GenericTransport(GenericAlgorithm):
             root_objs = unique([d[x] for x in nx.topological_sort(dg_nans)])
             # Throw error with helpful info on how to resolve the issue
             if root_props:
-                msg = (
+                raise Exception(
                     r"Found NaNs in A matrix, possibly caused by NaNs in"
-                    f" {', '.join(root_props)}. The issue might get"
-                    r" resolved if you call regenerate_models on the following"
-                    f" object(s): {', '.join(root_objs)}"
-                )
-                raise Exception(msg)
+                    f" {', '.join(root_props)}. The issue might get resolved if you call"
+                    r" regenerate_models on the following object(s):"
+                    f" {', '.join(root_objs)}")
 
         # Raise Exception for unaccounted properties
         if unaccounted_nans:
             raise Exception(
                 r"Found NaNs in A matrix, possibly caused by NaNs in"
-                f" {', '.join(unaccounted_nans)}."
-            )
+                f" {', '.join(unaccounted_nans)}.")
 
         # Raise Exception otherwise if root cannot be found
         raise Exception(
-            "Found NaNs in A matrix but couldn't locate the root object(s)"
-            " that might have caused it. It's likely that disabling caching"
-            " of A matrix via alg.settings['cache_A'] = False after"
-            " instantiating the algorithm object fixes the problem."
-        )
+            "Found NaNs in A matrix but couldn't locate the root object(s) that might"
+            " have caused it. It's likely that disabling caching of A matrix via"
+            " alg.settings['cache_A'] = False after instantiating the algorithm object"
+            " fixes the problem.")
 
     def results(self):
         r"""

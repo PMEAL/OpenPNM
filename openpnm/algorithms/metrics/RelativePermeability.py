@@ -3,7 +3,6 @@ from openpnm import models
 from openpnm.utils import logging
 from openpnm.phases import GenericPhase
 from openpnm.algorithms import GenericAlgorithm, StokesFlow
-import matplotlib.pyplot as plt
 logger = logging.getLogger(__name__)
 
 
@@ -22,27 +21,27 @@ default_settings = {
 
 class RelativePermeability(GenericAlgorithm):
     r"""
-    A subclass of Generic Algorithm to calculate relative permeabilities of
-    fluids in a drainage process.
+    A subclass of Generic Algorithm to calculate relative permeabilities
+    of fluids in a drainage process.
 
-    The main roles of this subclass are to get invasion sequence and implement
-    a method for calculating the relative permeabilities of the fluids flowing
-    in three directions.
+    The main roles of this subclass are to get invasion sequence and
+    implement a method for calculating the relative permeabilities of the
+    fluids flowing in three directions.
 
     Notes
     -----
-    1. The results can be plotted using `plot_Kr_curves`, and numerical data
-    can be obtained with `get_Kr_data`.
+    1. The results can be plotted using `plot_Kr_curves`, and numerical
+       data can be obtained with `get_Kr_data`.
 
-    2. Properties related to the invading phase have subscript 'nwp', while those
-    related to the defending phase (if there is any) are named by subscript
-    'wp'.
+    2. Properties related to the invading phase have subscript 'nwp',
+       while those related to the defending phase (if there is any) are
+       named by subscript 'wp'.
 
-    3. As the relative permeability definition is the ratio of effective to
-    absolute permeability, domain length and area calculation will appear
-    in both nominator and denominator. Ignoring those variables, we only
-    use the flow rate of the phase of interest in single and multiphase
-    permeability calculation.
+    3. As the relative permeability definition is the ratio of effective
+       to absolute permeability, domain length and area calculation will
+       appear in both nominator and denominator. Ignoring those variables,
+       we only use the flow rate of the phase of interest in single and
+       multiphase permeability calculation.
 
     """
 
@@ -70,7 +69,7 @@ class RelativePermeability(GenericAlgorithm):
         Parameters
         ----------
         invading_phase: str
-            The invading or non-wetting phase
+            The invading or non-wetting phase.
 
         defending_phase: str, optional
             If defending phase is specified, then it's permeability will
@@ -78,21 +77,22 @@ class RelativePermeability(GenericAlgorithm):
             considered.
 
         invasion_sequence: str (default is 'invasion_sequence')
-            The dictionary key on the invading phase object where the invasion
-            sequence is stored. The default from both the IP and OP algorithms
-            is 'invasion_sequence', so this is the default here.
+            The dictionary key on the invading phase object where the
+            invasion sequence is stored. The default from both the IP and
+            OP algorithms is 'invasion_sequence', so this is the default
+            here.
 
         flow_inlets: dict, optional
-            A dictionary containing the direction of the flow and the label of
-            the pores as the inlet pores of that direction
+            A dictionary containing the direction of the flow and the
+            label of the pores as the inlet pores of that direction.
 
         flow_outlets: dict, optional
-            A dictionary containing the direction of the flow and the label of
-            the pores as the outlet pores of that direction
+            A dictionary containing the direction of the flow and the
+            label of the pores as the outlet pores of that direction.
 
         swnp_num: int
-           The number of saturation points (equidistant points), at which the
-           Kr values will be calculated.
+           The number of saturation points (equidistant points), at which
+           the Kr values will be calculated.
 
         """
         self.settings['Snwp_num'] = Snwp_num
@@ -167,8 +167,8 @@ class RelativePermeability(GenericAlgorithm):
         Calculates absolute permeability of the medium using StokesFlow
         algorithm.
 
-        The direction of flow is defined by flow_pores. This permeability is
-        normalized by variables in darcy's law other than the rate.
+        The direction of flow is defined by flow_pores. This permeability
+        is normalized by variables in darcy's law other than the rate.
 
         Parameters
         ----------
@@ -176,22 +176,22 @@ class RelativePermeability(GenericAlgorithm):
             The phase for which the flow rate is calculated.
 
         flow_pores: np.ndarray
-            Boundary pores that will have constant value boundary condition to
-            in StokesFlow algorithm. First element is the inlet face (pores)
-            for flow of invading phase through porous media. Second element is
-            the outlet face (pores).
+            Boundary pores that will have constant value boundary
+            condition to in StokesFlow algorithm. First element is the
+            inlet face (pores) for flow of invading phase through porous
+            media. Second element is the outlet face (pores).
 
         Returns
         -------
         K_abs: float
-            The value of absolute permeability of the invading phase in the
-            direction that is defined by flow_pores.
+            The value of absolute permeability of the invading phase in
+            the direction that is defined by flow_pores.
 
         Notes
         -----
         Absolute permeability is not dependent to the phase, but here
-        we just need to calculate the rate instead of all variables that are
-        contributing to the darcy's law.
+        we just need to calculate the rate instead of all variables that
+        are contributing to the darcy's law.
 
         """
         network = self.project.network
@@ -207,36 +207,38 @@ class RelativePermeability(GenericAlgorithm):
     def _eff_perm_calc(self, flow_pores):
         r"""
         Calculates effective permeability of each phase using StokesFlow
-        algorithm with updated multiphase physics models to account for the
-        multiphase flow.
+        algorithm with updated multiphase physics models to account for
+        the multiphase flow.
 
         The direction of the flow is defined by flow_pores.
 
         Parameters
         ----------
         flow_pores: np.ndarray
-            Boundary pores that will have constant value boundary condition in
-            StokesFlow algorithm. First element is the inlet face (pores) for
-            flow of invading phase through porous media. Second element is the
-            outlet face (pores).
+            Boundary pores that will have constant value boundary
+            condition in StokesFlow algorithm. First element is the inlet
+            face (pores) for flow of invading phase through porous media.
+            Second element is the outlet face (pores).
 
         Returns
         -------
         output: list
-            The value of effective permeability of defending (if there is any)
-            and invading phase in the direction that is defined by flow_pores.
+            The value of effective permeability of defending (if there is
+            any) and invading phase in the direction that is defined by
+            flow_pores.
 
         Notes
         -----
-        1. To account for multiphase flow, multiphase physics model is added
-        and updated in each saturation (saturation is related to the presence
-        of another phase). Here, the conduit_hydraulic conductance is used as
-        the conductance required by stokes flow algorithm.
+        1. To account for multiphase flow, multiphase physics model is
+           added and updated in each saturation (saturation is related to
+           the presence of another phase). Here, the conduit_hydraulic
+           conductance is used as the conductance required by stokes flow
+           algorithm.
 
-        2. All variables except for the rate in darcy's law will be the same in
-        relative permeability ratio. The effective rate represents the
-        effective permeability in the nominator of relative permeability
-        ratio.
+        2. All variables except for the rate in darcy's law will be the
+           same in relative permeability ratio. The effective rate
+           represents the effective permeability in the nominator of
+           relative permeability ratio.
 
         """
         network = self.project.network
@@ -266,16 +268,16 @@ class RelativePermeability(GenericAlgorithm):
 
     def _sat_occ_update(self, i):
         r"""
-        Calculates the saturation of each phase using the invasion sequence
-        from either invasion percolation or ordinary percolation.
+        Calculates the saturation of each phase using the invasion
+        sequence from either invasion percolation or ordinary percolation.
 
         Parameters
         ----------
         i: int
-            The invasion_sequence limit for masking pores/throats that have
-            already been invaded within this limit range. The saturation is
-            found by adding the volume of pores and thorats that meet this
-            sequence limit divided by the bulk volume.
+            The invasion_sequence limit for masking pores/throats that
+            have already been invaded within this limit range. The
+            saturation is found by adding the volume of pores and thorats
+            that meet this sequence limit divided by the bulk volume.
 
         """
         network = self.project.network
@@ -297,25 +299,27 @@ class RelativePermeability(GenericAlgorithm):
 
     def run(self, Snwp_num=None):
         r"""
-        Calculates the saturation of each phase using the invasion sequence.
+        Calculates the saturation of each phase using the invasion
+        sequence.
 
         Parameters
         ----------
         Snwp_num: int, optional
-            Number of saturation point to calculate the relative permseability
-            values. If not given, default value is 100. Saturation points will
-            be Snwp_num (or 100 by default) equidistant points in range [0,1].
+            Number of saturation point to calculate the relative
+            permseability values. If not given, default value is 100.
+            Saturation points will be Snwp_num (or 100 by default)
+            equidistant points in range [0,1].
 
         Notes
         -----
-        1. For three directions of flow the absolute permeability values will
-        be calculated using _abs_perm_calc.
+        1. For three directions of flow the absolute permeability values
+           will be calculated using _abs_perm_calc.
 
-        2. For each saturation point, the saturation values are calculated by
-        _sat_occ_update. This function also updates occupancies of each phase
-        in pores/throats. Effective permeabilities of each phase is then
-        calculated. Relative permeability is defined by devision of K_eff and
-        K_abs.
+        2. For each saturation point, the saturation values are calculated
+           by _sat_occ_update. This function also updates occupancies of
+           each phase in pores/throats. Effective permeabilities of each
+           phase is then calculated. Relative permeability is defined by
+           devision of K_eff and K_abs.
 
         """
         if Snwp_num is None:
@@ -368,30 +372,37 @@ class RelativePermeability(GenericAlgorithm):
         Plots the relative permeability curve of the phase(s) in flow
         direction(s) as Kr vs Saturation points.
         """
+        import matplotlib.pyplot as plt
+
         if fig is None:
-            fig = plt.figure()
+            fig, ax = plt.subplots()
+        else:
+            ax = fig.get_axes()[0]
+
         for inp in self.settings['flow_inlets']:
             if self.settings['wp'] is not None:
-                plt.plot(self.Kr_values['sat'][inp],
-                         self.Kr_values['relperm_wp'][inp],
-                         'o-', label='Kr_wp'+inp)
-                plt.plot(self.Kr_values['sat'][inp],
-                         self.Kr_values['relperm_nwp'][inp],
-                         '*-', label='Kr_nwp'+inp)
+                ax.plot(self.Kr_values['sat'][inp],
+                        self.Kr_values['relperm_wp'][inp],
+                        'o-', label='Kr_wp'+inp)
+                ax.plot(self.Kr_values['sat'][inp],
+                        self.Kr_values['relperm_nwp'][inp],
+                        '*-', label='Kr_nwp'+inp)
             else:
-                plt.plot(self.Kr_values['sat'][inp],
-                         self.Kr_values['relperm_nwp'][inp],
-                         '*-', label='Kr_nwp'+inp)
-        plt.xlabel('Snw')
-        plt.ylabel('Kr')
-        plt.title('Relative Permability Curves')
-        plt.legend()
+                ax.plot(self.Kr_values['sat'][inp],
+                        self.Kr_values['relperm_nwp'][inp],
+                        '*-', label='Kr_nwp'+inp)
+
+        ax.set_xlabel('Snw')
+        ax.set_ylabel('Kr')
+        ax.set_title('Relative Permability Curves')
+        ax.legend()
+
         return fig
 
     def get_Kr_data(self):
         r"""
-        Returns data points of the relative permeability of the phase(s) in
-        flow direction(s) and Saturation points.
+        Returns data points of the relative permeability of the phase(s)
+        in flow direction(s) and Saturation points.
         """
         self.Kr_values['results']['sat'] = self.Kr_values['sat']
         if self.settings['wp'] is not None:

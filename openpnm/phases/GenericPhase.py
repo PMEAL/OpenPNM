@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 ws = Workspace()
 
 
-@docstr.get_sectionsf('GenericPhase', sections=['Parameters'])
+@docstr.get_sections(base='GenericPhase', sections=['Parameters'])
 @docstr.dedent
 class GenericPhase(Base, ModelsMixin):
     r"""

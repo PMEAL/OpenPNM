@@ -1,6 +1,5 @@
 import os
 import numpy as np
-import scipy as sp
 import openpnm as op
 from pathlib import Path
 

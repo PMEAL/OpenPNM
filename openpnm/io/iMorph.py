@@ -3,12 +3,10 @@ import numpy as np
 import scipy as sp
 import scipy.sparse
 from pathlib import Path
-from openpnm.geometry import Imported
 from openpnm.utils import logging
 from openpnm.io import GenericIO
 from openpnm.network import GenericNetwork
 from openpnm.topotools import extend, trim
-
 logger = logging.getLogger(__name__)
 
 
@@ -60,16 +58,15 @@ class iMorph(GenericIO):
             object.  The geometry-related data are automatically placed on the
             geometry object using the ``Imported`` geometry class.
         """
-        #
         path = Path(path)
         node_file = os.path.join(path.resolve(), node_file)
         graph_file = os.path.join(path.resolve(), graph_file)
-        # parsing the nodes file
+        # Parsing the nodes file
         with open(node_file, "r") as file:
             Np = np.fromstring(file.readline().rsplit("=")[1], sep="\t", dtype=int)[0]
             vox_size = np.fromstring(file.readline().rsplit(")")[1], sep="\t",)[0]
 
-            # network always recreated to prevent errors
+            # Network always recreated to prevent errors
             network = GenericNetwork(Np=Np, Nt=0)
 
             # Define expected properies
@@ -85,13 +82,13 @@ class iMorph(GenericIO):
                 network["pore." + vals[2]][int(vals[0])] = True
 
         if voxel_size is None:
-            voxel_size = vox_size * 1.0e-6  # file stores value in microns
+            voxel_size = vox_size * 1.0e-6  # File stores value in microns
 
         if voxel_size < 0:
             raise Exception("Error - Voxel size must be specfied in "
                             + "the Nodes file or as a keyword argument.")
 
-        # parsing the graph file
+        # Parsing the graph file
         with open(graph_file, "r") as file:
             # Define expected properties
             network["pore.coords"] = np.zeros((Np, 3)) * np.nan
@@ -131,7 +128,7 @@ class iMorph(GenericIO):
                 lil.rows[vals[0]] = vals[2:].tolist()
                 lil.data[vals[0]] = np.ones(vals[1]).tolist()
 
-        # fixing any negative volumes or distances so they are 1 voxel/micron
+        # Fixing any negative volumes or distances so they are 1 voxel/micron
         network["pore.volume"][np.where(network["pore.volume"] < 0)[0]] = 1.0
         network["pore.radius"][np.where(network["pore.radius"] < 0)[0]] = 1.0
         network["pore.dmax"][np.where(network["pore.dmax"] < 0)[0]] = 1.0
@@ -156,7 +153,7 @@ class iMorph(GenericIO):
             ][Ts]
         trim(network=network, pores=Ts)
 
-        # setting up boundary pores
+        # Setting up boundary pores
         x_coord, y_coord, z_coord = np.hsplit(network["pore.coords"], 3)
         network["pore.front_boundary"] = np.ravel(x_coord == 0)
         network["pore.back_boundary"] = np.ravel(x_coord == xmax)
@@ -165,19 +162,19 @@ class iMorph(GenericIO):
         network["pore.bottom_boundary"] = np.ravel(z_coord == 0)
         network["pore.top_boundary"] = np.ravel(z_coord == zmax)
 
-        # removing any pores that got classified as a boundary pore but
-        # weren't labled a border_cell_face
+        # Removing any pores that got classified as a boundary pore but
+        # Weren't labled a border_cell_face
         ps = np.where(
             ~np.in1d(network.pores("*_boundary"), network.pores("border_cell_face"))
         )[0]
         ps = network.pores("*_boundary")[ps]
         for side in ["front", "back", "left", "right", "top", "bottom"]:
             network["pore." + side + "_boundary"][ps] = False
-        # setting internal label
+        # Setting internal label
         network["pore.internal"] = False
         network["pore.internal"][network.pores("*_boundary", mode="not")] = True
 
-        # adding props to border cell face throats and from pores
+        # Adding props to border cell face throats and from pores
         Ts = np.where(
             network["throat.conns"][:, 1] > network.pores("border_cell_face")[0] - 1
         )[0]
@@ -187,7 +184,7 @@ class iMorph(GenericIO):
             network["throat." + item][Ts] = network["pore." + item][faces]
         network["pore.volume"][faces] = 0.0
 
-        # applying unit conversions
+        # Applying unit conversions
         # TODO: Determine if radius and dmax are indeed microns and not voxels
         network["pore.coords"] = network["pore.coords"] * 1e-6
         network["pore.radius"] = network["pore.radius"] * 1e-6

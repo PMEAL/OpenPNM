@@ -23,6 +23,7 @@ class MAT(GenericIO):
     3. Boolean data represented as 1's and 0's will be converted to the
     Python boolean True and False.  These will become \'labels\' in
     OpenPNM.
+
     """
 
     @classmethod

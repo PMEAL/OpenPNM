@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 ws = Workspace()
 
 
-@docstr.get_sectionsf('Base', sections=['Parameters'])
+@docstr.get_sections(base='Base', sections=['Parameters'])
 class Base(dict):
     r"""
     Contains methods for working with the data in the OpenPNM dict objects
@@ -1583,6 +1583,7 @@ class Base(dict):
         function.
         """
         import matplotlib.pyplot as plt
+
         temp = plt.rcParams['font.size']
         plt.rcParams['font.size'] = fontsize
         if isinstance(props, str):

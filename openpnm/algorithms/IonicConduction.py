@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 docstr = Docorator()
 
 
-@docstr.get_sectionsf('IonicConductionSettings', sections=['Parameters'])
+@docstr.get_sections(base='IonicConductionSettings', sections=['Parameters'])
 @docstr.dedent
 class IonicConductionSettings(GenericSettings):
     r"""

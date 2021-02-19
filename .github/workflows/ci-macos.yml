@@ -1,4 +1,4 @@
-name: 👰 macOS
+name: macOS
 
 on: [push]
 
@@ -38,21 +38,25 @@ jobs:
       - name: Set up conda
         uses: conda-incubator/setup-miniconda@v2
         with:
-          python-version: ${{ matrix.python-version }}
-          condarc-file: requirements/.condarc
+          mamba-version: "*"
           allow-softlinks: true
-          channel-priority: flexible
-          show-channel-urls: false
           use-only-tar-bz2: true
+          show-channel-urls: false
           auto-activate-base: true
+          channel-priority: flexible
+          channels: conda-forge,defaults
+          condarc-file: requirements/.condarc
+          python-version: ${{ matrix.python-version }}
 
       - name: Install dependencies (conda)
         run: |
-          conda install --file requirements/conda_requirements.txt
-          conda install --file requirements/test_requirements.txt
-          conda install pyamg
+          cat requirements/conda_requirements.txt >> requirements.txt
+          cat requirements/test_requirements.txt >> requirements.txt
+          cat requirements/optional_requirements.txt >> requirements.txt
+          printf "pyamg\nmpi4py\npetsc\npetsc4py\n" >> requirements.txt
+          mamba install --file requirements.txt
           # Install OpenPNM from the checked-out branch
-          pip install -e .
+          pip install -e . --no-deps
 
       - name: Running tests
         run: pytest --ignore=scripts/ --ignore="openpnm/utils/petsc.py"
