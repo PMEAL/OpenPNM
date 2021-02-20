@@ -90,7 +90,11 @@ def plot_connections(network, throats=None, fig=None, size_by=None,
         dim[np.argwhere(~dim)[0]] = True
 
     fig = plt.figure() if fig is None else fig
-    ax = fig.gca()
+    if hasattr(fig, 'gca'):
+        ax = fig.gca()
+    else:
+        ax = fig
+
     if ThreeD and ax.name != '3d':
         fig.delaxes(ax)
         ax = fig.add_subplot(111, projection='3d')
@@ -211,7 +215,10 @@ def plot_coordinates(network, pores=None, fig=None, size_by=None,
         dim[[0, 1]] = True
 
     fig = plt.figure() if fig is None else fig
-    ax = fig.gca()
+    if hasattr(fig, 'gca'):
+        ax = fig.gca()
+    else:
+        ax = fig
     if ThreeD and ax.name != '3d':
         fig.delaxes(ax)
         ax = fig.add_subplot(111, projection='3d')
