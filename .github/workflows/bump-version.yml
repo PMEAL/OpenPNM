@@ -29,7 +29,7 @@ jobs:
         chmod +x .github/workflows/utils.sh
         echo "VERSION_FILE=openpnm/__version__.py" >> $GITHUB_ENV
         echo "SETUP_CFG_FILE=setup.cfg" >> $GITHUB_ENV
-        echo ${{ github.event.head_commit.message }}
+        echo "${{ github.event.head_commit.message }}"
 
     - name: Install dependencies
       run: |
