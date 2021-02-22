@@ -1,9 +1,10 @@
 function join_by {
     # It was necessary to define this function because
     # Unix's `join` didn't work.
-    local IFS="$1"
+    local d=$1
+    local f=$2
     shift
-    echo "$*"
+    printf %s "$f" "${@/#/$d}"
 }
 
 function is_empty {
@@ -14,20 +15,11 @@ function is_empty {
     fi
 }
 
-function parse_args {
-    local temp=()
-    for arg in "$@"
-    do
-        temp+=("\<${arg}\>")
-    done
-    echo $(join_by "|" "${temp[@]}")
-}
-
 function filter_commits_by_label {
     local temp
-    local commits=$1    # fetch the first argument
-    shift               # removes first arg from list of input args
-    temp=$(echo "${commits}" | grep -E --ignore-case "$@")
+    local commits=$1            # fetch the first argument
+    local exclude_labels=$2     # fetch the second argument
+    temp=$(echo "${commits}" | grep -E --ignore-case "$exclude_labels")
     # Strip empty lines (that might include tabs, spaces, etc.)
     temp=$(echo "${temp}" | sed -r '/^\s*$/d')
     # Make each line a bullet point by appending "- " to lines
@@ -37,10 +29,10 @@ function filter_commits_by_label {
 
 function filter_commits_exclude_label {
     local temp
-    local commits=$1    # fetch the first argument
-    shift               # removes first arg from list of input args
+    local commits=$1            # fetch the first argument
+    local exclude_labels=$2     # fetch the second argument
     # Reverse filter commits by the given labels (i.e. exclude labels)
-    temp=$(echo "$commits" | grep -v -E --ignore-case "$@")
+    temp=$(echo "$commits" | grep -v -E --ignore-case "$exclude_labels")
     # Strip empty lines (that might include tabs, spaces, etc.)
     temp=$(echo "${temp}" | sed -r '/^\s*$/d')
     # Make each line a bullet point by appending "- " to lines
@@ -84,8 +76,7 @@ fixes=$(filter_commits_by_label "$merge_commits" "#bug")
 documentation=$(filter_commits_by_label "$merge_commits" "#doc")
 
 # Fetching uncategorized merge commits (those w/o keywords)
-all_keywords=$(join_by "|" "#new #enh #maint #api #bug #doc")
-echo $all_keywords
+all_keywords=$(join_by "|" \#new \#enh \#maint \#api \#bug \#doc \# patch \#minor \#major)
 uncategorized=$(filter_commits_exclude_label "$merge_commits" "$all_keywords")
 
 # Delete "entry" file if already exists
