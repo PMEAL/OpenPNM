@@ -72,12 +72,12 @@ jobs:
         git commit -m "Bump version number" -a
         git push "${remote_repo}" release
 
-    - name: Create Pull Request to merge back master into dev
+    - name: Create Pull Request to merge back release into dev
       uses: peter-evans/create-pull-request@v3
       with:
         branch: release
         base: dev
-        title: Don't forget to merge master back into dev!
+        title: Don't forget to merge release back into dev!
         body: Changes made to the release branch (e.g. hotfixes), plus the version bump.
         delete-branch: false
 
