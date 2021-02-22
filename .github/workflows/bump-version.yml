@@ -1,4 +1,4 @@
-name: ⏫ Version No.
+name: Bump Version Number
 
 on:
   push:
