@@ -72,16 +72,14 @@ jobs:
         git commit -m "Bump version number" -a
         git push "${remote_repo}" release
 
-        # commit the version bump back to the dev branch as well
-        git checkout dev
-        git checkout release -- $SETUP_CFG_FILE $VERSION_FILE
-        git add $SETUP_CFG_FILE $VERSION_FILE
-        # the first statement in the next line is to catch commit nothing error
-        git diff-index --quiet HEAD || git commit -m "Bump version number"
-        git push "${remote_repo}" dev
-
-        # checkout the Action branch (release)
-        git checkout release
+    - name: Create Pull Request to merge back master into dev
+      uses: peter-evans/create-pull-request@v3
+      with:
+        branch: release
+        base: dev
+        title: Don't forget to merge master back into dev!
+        body: Changes made to the release branch (e.g. hotfixes), plus the version bump.
+        delete-branch: false
 
     - name: Create new tag
       run: |
