@@ -85,16 +85,6 @@ jobs:
         pr_allow_empty: true                              # Creates pull request even if there are no changes
         github_token: ${{ secrets.GITHUB_TOKEN }}
 
-    # - name: Create Pull Request to merge back release into dev
-    #   uses: peter-evans/create-pull-request@v3
-    #   with:
-    #     token: ${{ secrets.PUSH_ACTION_TOKEN }}
-    #     branch: release
-    #     base: dev
-    #     title: Don't forget to merge release back into dev!
-    #     body: Changes made to the release branch (e.g. hotfixes), plus the version bump.
-    #     delete-branch: false
-
     - name: Create new tag
       run: |
         REPOSITORY=${INPUT_REPOSITORY:-$GITHUB_REPOSITORY}
