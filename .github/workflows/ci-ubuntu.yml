@@ -52,7 +52,7 @@ jobs:
           cat requirements/conda_requirements.txt >> requirements.txt
           cat requirements/test_requirements.txt >> requirements.txt
           cat requirements/optional_requirements.txt >> requirements.txt
-          printf "pyamg\nmpi4py\npetsc\npetsc4py\n" >> requirements.txt
+          printf "pyamg\nmpi4py\npetsc\npetsc4py\nmpich\n" >> requirements.txt
           mamba install --file requirements.txt
           # Install OpenPNM from the checked-out branch
           pip install -e . --no-deps
