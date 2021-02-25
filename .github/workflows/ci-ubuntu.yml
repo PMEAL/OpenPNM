@@ -27,7 +27,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Cache conda
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         env:
           CACHE_NUMBER: 0  # increase value -> force reset cache
         with:
