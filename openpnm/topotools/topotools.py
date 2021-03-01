@@ -2,7 +2,7 @@ import numpy as np
 import scipy as sp
 import scipy.ndimage as spim
 from scipy.sparse import csgraph
-from scipy.spatial import ConvexHull, delaunay_plot_2d
+from scipy.spatial import ConvexHull
 from openpnm.utils import logging, Workspace
 logger = logging.getLogger(__name__)
 ws = Workspace()
@@ -227,7 +227,7 @@ def trim(network, pores=[], throats=[]):
         # It removes all throat props, adds 'all', and skips rest of function
         if not np.any(Tkeep):
             logger.info('Removing ALL throats from network')
-            for item in network.keys():
+            for item in list(network.keys()):
                 if item.split('.')[0] == 'throat':
                     del network[item]
             network['throat.all'] = np.array([], ndmin=1)
@@ -371,7 +371,7 @@ def reduce_coordination(network, z):
     Notes
     -----
     This method first finds the minimum spanning tree of the network using
-    random weights on each throat, the assures that these throats are *not*
+    random weights on each throat, then assures that these throats are *not*
     deleted, in order to maintain network connectivity.
 
     """
@@ -991,6 +991,32 @@ def find_pore_to_pore_distance(network, pores1=None, pores2=None):
     p2 = np.array(pores2, ndmin=1)
     coords = network['pore.coords']
     return cdist(coords[p1], coords[p2])
+
+
+def filter_pores_by_z(network, pores, z=1):
+    r"""
+    Find pores with a given number of neighbors
+
+    Parameters
+    ----------
+    network : OpenPNM Network object
+        The network on which the query is to be performed
+    pores : array_like
+        The pores to be filtered
+    z : int
+        The coordination number to filter by
+
+    Returns
+    -------
+    pores : array_like
+        The pores which have the specified coordination number
+
+    """
+    pores = network._parse_indices(pores)
+    Nz = network.num_neighbors(pores=pores)
+    orphans = np.where(Nz == z)[0]
+    hits = pores[orphans]
+    return hits
 
 
 def subdivide(network, pores, shape, labels=[]):
@@ -1730,3 +1756,36 @@ def iscoplanar(coords):
     n_dot = np.dot(n, r)
 
     return bool(np.sum(np.absolute(n_dot)) == 0)
+
+
+def is_fully_connected(network, pores_BC=None):
+    r"""
+    Checks whether network is fully connected, i.e. not clustered.
+
+    Parameters
+    ----------
+    network : GenericNetwork
+        The network whose connectivity to check.
+    pores_BC : array_like (optional)
+        The pore indices of boundary conditions (inlets/outlets).
+
+    Returns
+    -------
+    bool
+        If ``pores_BC`` is not specified, then returns ``True`` only if
+        the entire network is connected to the same cluster. If
+        ``pores_BC`` is given, then returns ``True`` only if all clusters
+        are connected to the given boundary condition pores.
+    """
+    am = network.get_adjacency_matrix(fmt='lil').copy()
+    temp = csgraph.connected_components(am, directed=False)[1]
+    is_connected = np.unique(temp).size == 1
+    # Ensure all clusters are part of pores, if given
+    if not is_connected and pores_BC is not None:
+        am.resize(network.Np + 1, network.Np + 1)
+        pores_BC = network._parse_indices(pores_BC)
+        am.rows[-1] = pores_BC.tolist()
+        am.data[-1] = np.arange(network.Nt, network.Nt + len(pores_BC)).tolist()
+        temp = csgraph.connected_components(am, directed=False)[1]
+        is_connected = np.unique(temp).size == 1
+    return is_connected

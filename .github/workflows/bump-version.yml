@@ -1,4 +1,4 @@
-name: ⏫ Version No.
+name: Bump Version Number
 
 on:
   push:
@@ -29,7 +29,7 @@ jobs:
         chmod +x .github/workflows/utils.sh
         echo "VERSION_FILE=openpnm/__version__.py" >> $GITHUB_ENV
         echo "SETUP_CFG_FILE=setup.cfg" >> $GITHUB_ENV
-        echo ${{ github.event.head_commit.message }}
+        echo "${{ github.event.head_commit.message }}"
 
     - name: Install dependencies
       run: |
@@ -69,19 +69,21 @@ jobs:
         git config --local user.name "GitHub Action"
 
         # commit version bump to release
-        git commit -m "Bump version number [ci skip]" -a
+        git commit -m "Bump version number" -a
         git push "${remote_repo}" release
 
-        # commit the version bump back to the dev branch as well
-        git checkout dev
-        git checkout release -- $SETUP_CFG_FILE $VERSION_FILE
-        git add $SETUP_CFG_FILE $VERSION_FILE
-        # the first statement in the next line is to catch commit nothing error
-        git diff-index --quiet HEAD || git commit -m "Bump version number [ci skip]"
-        git push "${remote_repo}" dev
-
-        # checkout the Action branch (release)
-        git checkout release
+    - name: Create Pull Request to merge back release into dev
+      uses: repo-sync/pull-request@v2
+      with:
+        source_branch: "release"                          # If blank, default: triggered branch
+        destination_branch: "dev"                         # If blank, default: master
+        pr_title: "Don't forget to merge release back into dev!"
+        pr_body: "Changes made to the release branch (e.g. hotfixes), plus the version bump."
+        pr_assignee: "jgostick,ma-sadeghi"                # Comma-separated list (no spaces)
+        pr_label: "high priority"                         # Comma-separated list (no spaces)
+        pr_draft: false                                   # Creates pull request as draft
+        pr_allow_empty: true                              # Creates pull request even if there are no changes
+        github_token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Create new tag
       run: |

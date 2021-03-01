@@ -1,4 +1,4 @@
-name: 📝 Release notes
+name: Release Notes
 
 on:
   push:
@@ -18,7 +18,7 @@ jobs:
 
       - name: Generate release notes
         run: |
-          git fetch --all --tags
+          git fetch --all --tags --force
           chmod +x .github/workflows/logger.sh
           chmod +x .github/workflows/utils.sh
           source .github/workflows/utils.sh

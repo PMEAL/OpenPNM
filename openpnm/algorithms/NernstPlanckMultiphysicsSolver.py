@@ -5,8 +5,8 @@ docstr = Docorator()
 logger = logging.getLogger(__name__)
 
 
-@docstr.get_sectionsf('NernstPlanckMultiphysicsSolverSettings',
-                      sections=['Parameters'])
+@docstr.get_sections(base='NernstPlanckMultiphysicsSolverSettings',
+                     sections=['Parameters'])
 @docstr.dedent
 class NernstPlanckMultiphysicsSolverSettings(GenericSettings):
     r"""

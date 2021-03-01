@@ -25,7 +25,7 @@ To be notified of new releases click the `Watch` button on the Github repo page.
 ## Installation and Requirements
 
 ### Preferred method
-The preferred way of installing OpenPNM is via [Anaconda Cloud](https://anaconda.org/conda-forge/openpnm) using:
+The preferred way of installing OpenPNM is through [Anaconda Cloud](https://anaconda.org/conda-forge/openpnm) using:
 
 ```
 conda install -c conda-forge openpnm
@@ -82,6 +82,10 @@ The drainage curve can be visualized with `mip.plot_intrusion_curve()` giving so
 </p>
 
 A collection of examples is available in the *examples* folder of this repository: [Examples](https://www.github.com/PMEAL/OpenPNM/tree/dev/examples)
+
+## Asking Questions and Getting Help
+
+Github now has a [Discussions](https://github.com/PMEAL/OpenPNM/discussions) function, which works similarly to [stack overflow](https://www.stackoverflow.com).  Please post your question in the [Q&A category](https://github.com/PMEAL/OpenPNM/discussions?discussions_q=category%3AQ%26A) so devs or users can provide answers, vote on accepted answers, improve on each other's answers, and generally discuss things. Most importantly, all answers are searchable so eventually, once enough questions have been posted and answered, you can find what you're looking for with a simple search.
 
 ## Contact
 

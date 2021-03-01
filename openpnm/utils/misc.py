@@ -494,62 +494,6 @@ def ignore_warnings(warning=RuntimeWarning):
     return _ignore_warning
 
 
-def conduit_lengths(network, throats=None, mode="pore"):
-    r"""
-    Return the respective lengths of the conduit components defined by the throat
-    conns P1 - T - P2
-
-    Notes
-    -----
-    mode = 'pore' - uses pore coordinates
-    mode = 'centroid' uses pore and throat centroids
-
-    """
-    if throats is None:
-        throats = network.throats()
-    Ps = network["throat.conns"]
-    pdia = network["pore.diameter"]
-    Lt = network["throat.length"]
-
-    if mode == "centroid":
-        try:
-            pcentroids = network["pore.centroid"]
-            tcentroids = network["throat.centroid"]
-            if _np.sum(_np.isnan(pcentroids)) + _np.sum(_np.isnan(tcentroids)) > 0:
-                mode = "pore"
-            else:
-                plen1 = (
-                    _np.sqrt(_np.sum(_np.square(pcentroids[Ps[:, 0]] - tcentroids), 1))
-                    - Lt / 2
-                )
-                plen2 = (
-                    _np.sqrt(_np.sum(_np.square(pcentroids[Ps[:, 1]] - tcentroids), 1))
-                    - Lt / 2
-                )
-        except KeyError:
-            mode = "pore"
-    if mode == "pore":
-        # Find half-lengths of each pore
-        pcoords = network["pore.coords"]
-        # Find the pore-to-pore distance, minus the throat length
-        lengths = (
-            _np.sqrt(_np.sum(_np.square(pcoords[Ps[:, 0]] - pcoords[Ps[:, 1]]), 1)) - Lt
-        )
-        lengths[lengths < 0.0] = 2e-9
-        # Calculate the fraction of that distance from the first pore
-        try:
-            fractions = pdia[Ps[:, 0]] / (pdia[Ps[:, 0]] + pdia[Ps[:, 1]])
-            # Don't allow zero lengths
-            # fractions[fractions == 0.0] = 0.5
-            # fractions[fractions == 1.0] = 0.5
-        except Exception:
-            fractions = 0.5
-        plen1 = lengths * fractions
-        plen2 = lengths * (1 - fractions)
-
-    return _np.vstack((plen1, Lt, plen2)).T[throats]
-
-
 def is_symmetric(a, rtol=1e-10):
     r"""
     Is ``a`` a symmetric matrix?
@@ -700,3 +644,12 @@ def _validate_conduit_array(arr):
     arr = _np.array(arr)
     if arr.shape[1] != 3:
         raise Exception("Conduit array must be exactly 3 columns wide.")
+
+
+def prettify_logger_message(msg):
+    r"""Prettifies logger messages by breaking them up into multi lines"""
+    from textwrap import wrap
+    linewidth = 75
+    indent = "\n" + " " * 13
+    temp = wrap(msg, width=linewidth)
+    return indent.join(temp)

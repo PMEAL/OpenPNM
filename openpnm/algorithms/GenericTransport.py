@@ -6,9 +6,9 @@ from numpy.linalg import norm
 import scipy.sparse.csgraph as spgr
 from scipy.spatial import ConvexHull
 from scipy.spatial import cKDTree
-from openpnm.topotools import iscoplanar
+from openpnm.topotools import iscoplanar, is_fully_connected
 from openpnm.algorithms import GenericAlgorithm
-from openpnm.utils import logging, Docorator, GenericSettings
+from openpnm.utils import logging, Docorator, GenericSettings, prettify_logger_message
 # Uncomment this line when we stop supporting Python 3.6
 # from dataclasses import dataclass, field
 # from typing import List
@@ -17,8 +17,8 @@ docstr = Docorator()
 logger = logging.getLogger(__name__)
 
 
-@docstr.get_sectionsf('GenericTransportSettings',
-                      sections=['Parameters', 'Other Parameters'])
+@docstr.get_sections(base='GenericTransportSettings',
+                     sections=['Parameters', 'Other Parameters'])
 @docstr.dedent
 # Uncomment this line when we stop supporting Python 3.6
 # @dataclass
@@ -93,7 +93,7 @@ class GenericTransportSettings(GenericSettings):
     cache_b = True
 
 
-@docstr.get_sectionsf('GenericTransport', sections=['Parameters'])
+@docstr.get_sections(base='GenericTransport', sections=['Parameters'])
 @docstr.dedent
 class GenericTransport(GenericAlgorithm):
     r"""
@@ -197,7 +197,7 @@ class GenericTransport(GenericAlgorithm):
         self['pore.bc_rate'] = np.nan
         self['pore.bc_value'] = np.nan
 
-    @docstr.get_sectionsf('GenericTransport.setup', sections=['Parameters'])
+    @docstr.get_sections(base='GenericTransport.setup', sections=['Parameters'])
     @docstr.dedent
     def setup(self, phase=None, quantity='', conductance='', **kwargs):
         r"""
@@ -217,8 +217,8 @@ class GenericTransport(GenericAlgorithm):
             self.settings['conductance'] = conductance
         self.settings.update(**kwargs)
 
-    @docstr.get_full_descriptionf(base='GenericTransport.reset')
-    @docstr.get_sectionsf(base='GenericTransport.reset', sections=['Parameters'])
+    @docstr.get_full_description(base='GenericTransport.reset')
+    @docstr.get_sections(base='GenericTransport.reset', sections=['Parameters'])
     @docstr.dedent
     def reset(self, bcs=False, results=True):
         r"""
@@ -266,13 +266,13 @@ class GenericTransport(GenericAlgorithm):
         mode : string, optional
             Controls how the boundary conditions are applied.  Options are:
 
-            +-------------+--------------------------------------------------+
-            | 'merge'     | (Default) Adds supplied boundary conditions to   |
-            |             | already existing conditions                      |
-            +-------------+--------------------------------------------------+
-            | 'overwrite' | Deletes all boundary condition on object then    |
-            |             | adds the given ones                              |
-            +-------------+--------------------------------------------------+
+            'merge' - (Default) Adds supplied boundary conditions to already
+            existing conditions, and also overwrites any existing values.
+            If BCs of the complementary type already exist in the given
+            locations, those values are kept.
+            'overwrite' - Deletes all boundary conditions of the given type
+            then adds the specified new ones (unless locations already have
+            BCs of the other type).
 
         Notes
         -----
@@ -280,7 +280,6 @@ class GenericTransport(GenericAlgorithm):
         ``settings``, e.g. ``alg.settings['quantity'] = 'pore.pressure'``.
 
         """
-        mode = self._parse_mode(mode, allowed=['merge', 'overwrite'], single=True)
         self._set_BC(pores=pores, bctype='value', bcvalues=values, mode=mode)
 
     def set_rate_BC(self, pores, rates=None, total_rate=None, mode='merge',
@@ -303,13 +302,13 @@ class GenericTransport(GenericAlgorithm):
         mode : str, optional
             Controls how the boundary conditions are applied.  Options are:
 
-            +-------------+--------------------------------------------------+
-            | 'merge'     | (Default) Adds supplied boundary conditions to   |
-            |             | already existing conditions                      |
-            +-------------+--------------------------------------------------+
-            | 'overwrite' | Deletes all boundary condition on object then    |
-            |             | adds the given ones                              |
-            +-------------+--------------------------------------------------+
+            'merge' - (Default) Adds supplied boundary conditions to already
+            existing conditions, and also overwrites any existing values.
+            If BCs of the complementary type already exist in the given
+            locations, these values are kept.
+            'overwrite' - Deletes all boundary conditions of the given type
+            then adds the specified new ones (unless locations already have
+            BCs of the other type).
 
         Notes
         -----
@@ -331,11 +330,10 @@ class GenericTransport(GenericAlgorithm):
                                 + 'total_rate')
             pores = self._parse_indices(pores)
             rates = total_rate/pores.size
-        mode = self._parse_mode(mode, allowed=['merge', 'overwrite'], single=True)
         self._set_BC(pores=pores, bctype='rate', bcvalues=rates, mode=mode)
 
-    @docstr.get_sectionsf(base='GenericTransport._set_BC',
-                          sections=['Parameters', 'Notes'])
+    @docstr.get_sections(base='GenericTransport._set_BC',
+                         sections=['Parameters', 'Notes'])
     def _set_BC(self, pores, bctype, bcvalues=None, mode='merge'):
         r"""
         This private method is called by public facing BC methods, to apply
@@ -349,12 +347,8 @@ class GenericTransport(GenericAlgorithm):
             Specifies the type or the name of boundary condition to apply. The
             types can be one one of the following:
 
-            +-------------+--------------------------------------------------+
-            | 'value'     | Specify the value of the quantity in each        |
-            |             | location                                         |
-            +-------------+--------------------------------------------------+
-            | 'rate'      | Specify the flow rate into each location         |
-            +-------------+--------------------------------------------------+
+            'value' - Specify the value of the quantity in each location
+            'rate' - Specify the flow rate into each location
 
         bcvalues : int or array_like
             The boundary value to apply, such as concentration or rate.  If
@@ -366,13 +360,13 @@ class GenericTransport(GenericAlgorithm):
         mode : string, optional
             Controls how the boundary conditions are applied.  Options are:
 
-            +-------------+--------------------------------------------------+
-            | 'merge'     | (Default) Adds supplied boundary conditions to   |
-            |             | already existing conditions                      |
-            +-------------+--------------------------------------------------+
-            | 'overwrite' | Deletes all boundary condition on object then    |
-            |             | adds the given ones                              |
-            +-------------+--------------------------------------------------+
+            'merge' - (Default) Adds supplied boundary conditions to already
+            existing conditions, and also overwrites any existing values.
+            If BCs of the complementary type already exist in the given
+            locations, these values are kept.
+            'overwrite' - Deletes all boundary conditions of the given type
+            then adds the specified new ones (unless locations already have
+            BCs of the other type).
 
         Notes
         -----
@@ -385,6 +379,7 @@ class GenericTransport(GenericAlgorithm):
         # Hijack the parse_mode function to verify bctype argument
         bctype = self._parse_mode(bctype, allowed=['value', 'rate'],
                                   single=True)
+        othertype = list(set(['value', 'rate']).difference(set([bctype])))[0]
         mode = self._parse_mode(mode, allowed=['merge', 'overwrite'],
                                 single=True)
         pores = self._parse_indices(pores)
@@ -394,16 +389,24 @@ class GenericTransport(GenericAlgorithm):
             raise Exception('The number of boundary values must match the '
                             + 'number of locations')
 
-        # Warn the user that another boundary condition already exists
-        value_BC_mask = np.isfinite(self["pore.bc_value"])
-        rate_BC_mask = np.isfinite(self["pore.bc_rate"])
-        BC_locs = self.Ps[rate_BC_mask + value_BC_mask]
-        if np.intersect1d(pores, BC_locs).size:
-            logger.info('Another boundary condition detected in some locations!')
-
-        # Clear old boundary values if needed
-        if ('pore.bc_' + bctype not in self.keys()) or (mode == 'overwrite'):
+        # Create boundary array if needed (though these are created on init)
+        if 'pore.bc_' + bctype not in self.keys():
             self['pore.bc_' + bctype] = np.nan
+
+        # Catch pores with existing BCs
+        if mode == 'merge':  # remove offenders, and warn user
+            existing_bcs = np.isfinite(self["pore.bc_" + othertype])
+            inds = pores[existing_bcs[pores]]
+        elif mode == 'overwrite':  # Remove existing BCs and write new ones
+            self['pore.bc_' + bctype] = np.nan
+            existing_bcs = np.isfinite(self["pore.bc_" + othertype])
+            inds = pores[existing_bcs[pores]]
+        # Now drop any pore indices which have BCs that should be kept
+        if len(inds) > 0:
+            msg = (r'Boundary conditions are already specified in the following given'
+                   f' pores, so these will be skipped: {inds.__repr__()}')
+            logger.warning(prettify_logger_message(msg))
+            pores = np.setdiff1d(pores, inds)
 
         # Store boundary values
         self['pore.bc_' + bctype][pores] = values
@@ -424,21 +427,18 @@ class GenericTransport(GenericAlgorithm):
             -*'all'*: (default) Removes all boundary conditions
             -*'value'*: Removes only value conditions
             -*'rate'*: Removes only rate conditions
-            -*'outflow'*: Removes only outflow conditions
 
         """
         if isinstance(bctype, str):
             bctype = [bctype]
         if 'all' in bctype:
-            bctype = ['value', 'rate', 'outflow']
+            bctype = ['value', 'rate']
         if pores is None:
             pores = self.Ps
         if ('pore.bc_value' in self.keys()) and ('value' in bctype):
             self['pore.bc_value'][pores] = np.nan
         if ('pore.bc_rate' in self.keys()) and ('rate' in bctype):
             self['pore.bc_rate'][pores] = np.nan
-        if ('pore.bc_outflow' in self.keys()) and ('outflow' in bctype):
-            self['pore.bc_outflow'][pores] = np.nan
 
     def _build_A(self):
         r"""
@@ -461,7 +461,10 @@ class GenericTransport(GenericAlgorithm):
             self._pure_A = None
         if self._pure_A is None:
             network = self.project.network
-            phase = self.project.phases()[self.settings['phase']]
+            try:
+                phase = self.project.phases()[self.settings['phase']]
+            except KeyError:
+                raise Exception('Phase has not been defined for algorithm')
             g = phase[gvals]
             am = network.create_adjacency_matrix(weights=g, fmt='coo')
             self._pure_A = spgr.laplacian(am).astype(float)
@@ -547,6 +550,9 @@ class GenericTransport(GenericAlgorithm):
         """
         logger.info('―' * 80)
         logger.info('Running GenericTransport')
+        self._validate_settings()
+        # Check if A and b are well-defined
+        self._validate_data_health()
         x0 = np.zeros_like(self.b) if x0 is None else x0
         self["pore.initial_guess"] = x0
         self._run_generic(x0)
@@ -596,7 +602,7 @@ class GenericTransport(GenericAlgorithm):
             raise Exception('The A matrix or the b vector not yet built.')
         A = A.tocsr()
 
-        # Check if A and b are well-defined
+        # Check if A and b are STILL well-defined
         self._validate_data_health()
 
         # Check if A is symmetric
@@ -666,11 +672,23 @@ class GenericTransport(GenericAlgorithm):
                 return x
         # PyPardiso
         elif self.settings['solver_family'] == 'pypardiso':
+            try:
+                import pypardiso
+            except ModuleNotFoundError:
+                if self.Np <= 8000:
+                    logger.critical("Pardiso not found, reverting to much "
+                                    + "slower spsolve.  Install pardiso with: "
+                                    + "conda install -c conda-forge pardiso4py")
+                    self.settings['solver_family'] = 'scipy'
+                    return self._get_solver()
+                else:
+                    raise Exception("Pardiso not found. Install it with: "
+                                    + "conda install -c conda-forge pardiso4py")
+
             def solver(A, b, **kwargs):
                 r"""
                 Wrapper method for PyPardiso sparse linear solver.
                 """
-                import pypardiso
                 x = pypardiso.spsolve(A=A, b=b)
                 return x
         else:
@@ -737,6 +755,32 @@ class GenericTransport(GenericAlgorithm):
         flag_converged = True if res <= res_tol else False
         return flag_converged
 
+    def _validate_settings(self):
+        if self.settings['quantity'] is None:
+            raise Exception('"quantity" has not been defined on this algorithm')
+        if self.settings['conductance'] is None:
+            raise Exception('"conductance" has not been defined on this algorithm')
+
+    def _validate_geometry_health(self):
+        h = self.project.check_geometry_health()
+        issues = []
+        for k, v in h.items():
+            if len(v) > 0:
+                issues.append(k)
+        if len(issues) > 0:
+            raise Exception(
+                r"Found the following critical issues with your geometry(ies):"
+                f" {', '.join(issues)}. Run network.project.check_geometry_health() for"
+                r" more details.")
+
+    def _validate_topology_health(self):
+        Ps = (self['pore.bc_rate'] > 0) + (self['pore.bc_value'] > 0)
+        if not is_fully_connected(network=self.network, pores_BC=Ps):
+            raise Exception(
+                "Your network is clustered. Run h = net.check_network_health() followed"
+                " by op.topotools.trim(net, pores=h['trim_pores']) to make your network"
+                " fully connected.")
+
     def _validate_data_health(self):
         r"""
         Check whether A and b are well-defined, i.e. doesn't contain nans.
@@ -744,24 +788,19 @@ class GenericTransport(GenericAlgorithm):
         import networkx as nx
         from pandas import unique
 
+        # Short-circuit subsequent checks if data are healthy
+        if np.isfinite(self.A.data).all() and np.isfinite(self.b).all():
+            return True
+        # Validate network topology health
+        self._validate_topology_health()
+        # Validate geometry health
+        self._validate_geometry_health()
+
         # Fetch phase/geometries/physics
         prj = self.network.project
         phase = prj.find_phase(self)
         geometries = prj.geometries().values()
         physics = prj.physics().values()
-
-        # Validate network topology health
-        if not prj.network._is_fully_connected():
-            msg = (
-                "Your network is clustered. Run h = net.check_network_health()"
-                " followed by op.topotools.trim(net, pores=h['trim_pores'])"
-                " to make your network fully connected."
-            )
-            raise Exception(msg)
-
-        # Short-circuit subsequent checks if data are healthy
-        if np.isfinite(self.A.data).all() and np.isfinite(self.b).all():
-            return True
 
         # Locate the root of NaNs
         unaccounted_nans = []
@@ -786,28 +825,24 @@ class GenericTransport(GenericAlgorithm):
             root_objs = unique([d[x] for x in nx.topological_sort(dg_nans)])
             # Throw error with helpful info on how to resolve the issue
             if root_props:
-                msg = (
+                raise Exception(
                     r"Found NaNs in A matrix, possibly caused by NaNs in"
-                    f" {', '.join(root_props)}. The issue might get"
-                    r" resolved if you call regenerate_models on the following"
-                    f" object(s): {', '.join(root_objs)}"
-                )
-                raise Exception(msg)
+                    f" {', '.join(root_props)}. The issue might get resolved if you call"
+                    r" regenerate_models on the following object(s):"
+                    f" {', '.join(root_objs)}")
 
         # Raise Exception for unaccounted properties
         if unaccounted_nans:
             raise Exception(
                 r"Found NaNs in A matrix, possibly caused by NaNs in"
-                f" {', '.join(unaccounted_nans)}."
-            )
+                f" {', '.join(unaccounted_nans)}.")
 
         # Raise Exception otherwise if root cannot be found
         raise Exception(
-            "Found NaNs in A matrix but couldn't locate the root object(s)"
-            " that might have caused it. It's likely that disabling caching"
-            " of A matrix via alg.settings['cache_A'] = False after"
-            " instantiating the algorithm object fixes the problem."
-        )
+            "Found NaNs in A matrix but couldn't locate the root object(s) that might"
+            " have caused it. It's likely that disabling caching of A matrix via"
+            " alg.settings['cache_A'] = False after instantiating the algorithm object"
+            " fixes the problem.")
 
     def results(self):
         r"""

@@ -2,6 +2,7 @@ import numpy as np
 import openpnm as op
 from numpy.testing import assert_allclose
 from openpnm.algorithms import AdvectionDiffusion, StokesFlow
+import pytest
 
 
 class AdvectionDiffusionTest:
@@ -156,6 +157,30 @@ class AdvectionDiffusionTest:
             y = ad[ad.settings['quantity']].mean()
             assert_allclose(actual=y, desired=2, rtol=1e-5)
 
+    def test_add_outflow_overwrite_rate_and_value_BC(self):
+        ad = AdvectionDiffusion(network=self.net, phase=self.phase)
+        ad.set_rate_BC(pores=[0, 1], total_rate=1)
+        ad.set_value_BC(pores=[2, 3], values=1)
+        assert np.sum(np.isfinite(ad['pore.bc_rate'])) == 2
+        assert np.sum(np.isfinite(ad['pore.bc_value'])) == 2
+        ad.set_outflow_BC(pores=[0, 1, 2, 3])
+        assert np.sum(np.isfinite(ad['pore.bc_rate'])) == 0
+        assert np.sum(np.isfinite(ad['pore.bc_value'])) == 0
+
+    def test_value_BC_does_not_overwrite_outflow(self):
+        ad = AdvectionDiffusion(network=self.net, phase=self.phase)
+        ad.set_outflow_BC(pores=[0, 1])
+        with pytest.raises(Exception):
+            ad.set_value_BC(pores=[0, 1], values=1)
+
+    def test_add_rate_BC_fails_when_outflow_BC_present(self):
+        ad = AdvectionDiffusion(network=self.net, phase=self.phase)
+        ad.set_outflow_BC(pores=[0, 1])
+        with pytest.raises(Exception):
+            ad.set_rate_BC(pores=[0, 1], total_rate=1)
+        ad.set_rate_BC(pores=[2, 3], total_rate=1)
+        assert np.all(ad['pore.bc_rate'][[2, 3]] == 0.5)
+
     def test_outflow_BC_rigorous(self):
         ad = AdvectionDiffusion(network=self.net, phase=self.phase)
         ad.settings["cache_A"] = False
@@ -220,8 +245,8 @@ class AdvectionDiffusionTest:
 if __name__ == '__main__':
     t = AdvectionDiffusionTest()
     t.setup_class()
+    self = t
     for item in t.__dir__():
         if item.startswith('test'):
             print(f'Running test: {item}')
             t.__getattribute__(item)()
-    self = t

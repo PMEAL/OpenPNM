@@ -547,6 +547,7 @@ def multiphase_diffusion(
     throat_diffusivity="throat.diffusivity",
     conduit_lengths="throat.conduit_lengths",
     conduit_shape_factors="throat.poisson_shape_factors",
+    partition_coef_global="throat.partition_coef.all"
 ):
     r"""
     Calculates the diffusive conductance of conduits in network.
@@ -581,18 +582,18 @@ def multiphase_diffusion(
     information.
 
     """
-    network = target.project.network
-    throats = network.map_throats(throats=target.Ts, origin=target)
+    network = target.network
+    throats = target.throats(target=network)
     phase = target.project.find_phase(target)
-    cn = network["throat.conns"][throats]
+    cn = network.conns[throats]
+
     # Getting equivalent areas
-    A1 = network[pore_area][cn[:, 0]]
+    A1, A2 = network[pore_area][cn].T
     At = network[throat_area][throats]
-    A2 = network[pore_area][cn[:, 1]]
     # Getting conduit lengths
-    L1 = network[conduit_lengths + ".pore1"][throats]
-    Lt = network[conduit_lengths + ".throat"][throats]
-    L2 = network[conduit_lengths + ".pore2"][throats]
+    L1 = network[f"{conduit_lengths}.pore1"][throats]
+    Lt = network[f"{conduit_lengths}.throat"][throats]
+    L2 = network[f"{conduit_lengths}.pore2"][throats]
     # Getting shape factors
     try:
         SF1 = phase[conduit_shape_factors + ".pore1"][throats]
@@ -603,18 +604,20 @@ def multiphase_diffusion(
     # Interpolate pore phase property values to throats
     D1, D2 = phase[pore_diffusivity][cn].T
     Dt = phase.interpolate_data(propname=pore_diffusivity)[throats]
+
     # Find g for half of pore 1, throat, and half of pore 2 + apply shape factors
     g1 = (D1 * A1) / L1 * SF1
     g2 = (D2 * A2) / L2 * SF2
     gt = (Dt * At) / Lt * SFt
+
     # Ensure infinite conductance for elements with zero length
-    g1[L1 == 0] = _np.inf
-    g2[L2 == 0] = _np.inf
-    gt[Lt == 0] = _np.inf
-    # Get partition coefficient dictionary key from phase settings
-    partition_coef = phase.settings["partition_coef"]
+    for gi, Li in zip([g1, gt, g2], [L1, Lt, L2]):
+        gi[Li == 0] = _np.inf
+
     # Apply Henry's partitioning coefficient
-    K12 = phase[partition_coef][throats]
-    G12 = K12 * (1.0 / g1 + 0.5 / gt + K12 * (1.0 / g2 + 0.5 / gt)) ** (-1)
-    G21 = 1.0 / K12 * (1.0 / g2 + 0.5 / gt + 1.0 / K12 * (1.0 / g1 + 0.5 / gt)) ** (-1)
+    # Note 1: m12 = G21*c1 - G12*c2
+    K12 = phase[partition_coef_global][throats]
+    G21 = (1/g1 + 0.5/gt + K12 * (1/g2 + 0.5/gt)) ** (-1)
+    G12 = K12 * G21
+
     return _np.vstack((G12, G21)).T

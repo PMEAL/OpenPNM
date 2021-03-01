@@ -10,6 +10,16 @@ class CubicTest:
     def teardown_class(self):
         pass
 
+    def test_spacing_could_not_be_found(self):
+        net = op.network.Cubic(shape=[1, 5, 1], spacing=1)
+        net["pore.coords"][4, 1] += 5
+        with pytest.raises(Exception):
+            _ = net.spacing
+
+    def test_spacing_1D(self):
+        net = op.network.Cubic(shape=[2, 1, 1], spacing=1)
+        assert np.all(net.spacing == [1.0, 0.0, 0.0])
+
     def test_spacing_2D(self):
         net = op.network.Cubic(shape=[5, 5, 1], spacing=[1, 1])
         assert np.all(net.spacing == [1.0, 1.0, 0.0])
@@ -114,13 +124,13 @@ class CubicTest:
         net = op.network.Cubic(shape=[3, 4, 5])
         net['pore.coords'] += np.random.rand(net.Np, 3)
         with pytest.raises(Exception):
-            net.spacing
+            _ = net.spacing
 
     def test_spacing_on_network_with_boundary_pores(self):
         net = op.network.Cubic(shape=[3, 4, 5])
         net.add_boundary_pores()
         with pytest.raises(Exception):
-            net.spacing
+            _ = net.spacing
 
     def test_connectivity(self):
         clist = [6, 14, 18, 20, 26]

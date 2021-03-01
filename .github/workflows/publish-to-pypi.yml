@@ -1,4 +1,4 @@
-name: 🐍 Deploy to PyPI
+name: Deploy to PyPI
 
 on:
   push:
@@ -41,7 +41,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install setuptools wheel twine
-        echo ${{ github.event.ref }}
+        echo "${{ github.event.ref }}"
         echo "Tag/version mismatch: $TAG_MISMATCH"
 
     - name: Build distribution 📦

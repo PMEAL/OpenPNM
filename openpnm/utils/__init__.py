@@ -26,6 +26,7 @@ from .misc import is_symmetric
 from .misc import nbr_to_str
 from .misc import conduit_dict_to_array
 from .misc import conduit_array_to_dict
+from .misc import prettify_logger_message
 from .Workspace import Workspace
 from .Project import Project
 

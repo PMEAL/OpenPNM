@@ -31,6 +31,7 @@ html_title = "OpenPNM"
 html_short_title = "OpenPNM: An open-source pore network modeling package"
 html_logo = 'static/logo.png'
 html_static_path = ['static']
+html_scaled_image_link = False  # This makes images not clickable
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = []

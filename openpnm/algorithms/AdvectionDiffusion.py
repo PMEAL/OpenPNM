@@ -5,8 +5,8 @@ docstr = Docorator()
 logger = logging.getLogger(__name__)
 
 
-@docstr.get_sectionsf('AdvectionDiffusionSettings',
-                      sections=['Parameters', 'Other Parameters'])
+@docstr.get_sections(base='AdvectionDiffusionSettings',
+                     sections=['Parameters', 'Other Parameters'])
 @docstr.dedent
 class AdvectionDiffusionSettings(GenericSettings):
     r"""
@@ -74,7 +74,7 @@ class AdvectionDiffusion(ReactiveTransport):
             **kwargs
     ):
         r"""
-        Setup method for setting/modifying algorithm settings.
+        Setup method for setting/modifying algorithm settings
         """
         if phase:
             self.settings['phase'] = phase.name
@@ -92,17 +92,31 @@ class AdvectionDiffusion(ReactiveTransport):
 
     def set_outflow_BC(self, pores, mode='merge'):
         r"""
-        Adds outflow boundary condition to the selected pores.
+        Adds outflow boundary condition to the selected pores
+
+        Parameters
+        ----------
+        pores : array_like
+            The pore indices where the condition should be applied
+        mode : string, optional
+            Controls how the boundary conditions are applied.  Options are:
+
+            'merge' - (Default) Adds supplied boundary conditions to already
+            existing conditions, and also overwrites any existing values.
+            If at rate or value BC exists at the given locations, these
+            are deleted, and outflow conditions are given priority.
+            'overwrite' - Deletes all boundary conditions of the given type
+            then adds the specified new ones.
 
         Notes
         -----
-        Outflow condition simply means that the gradient of the solved
-        quantity does not change, i.e. is 0.
+        Outflow condition means that the gradient of the solved quantity
+        does not change, i.e. is 0.
 
         """
         # Hijack the parse_mode function to verify mode/pores argument
-        allowed_modes = ['merge', 'overwrite', 'remove']
-        mode = self._parse_mode(mode, allowed=allowed_modes, single=True)
+        mode = self._parse_mode(mode, allowed=['merge', 'overwrite'],
+                                single=True)
         pores = self._parse_indices(pores)
 
         # Calculating A[i,i] values to ensure the outflow condition
@@ -117,10 +131,31 @@ class AdvectionDiffusion(ReactiveTransport):
         np.add.at(Qp, C12[:, 0], -Q12)
         np.add.at(Qp, C12[:, 1], Q12)
 
+        # Ensure other BCs are not already applied at given pores
+        hits = ~np.isnan(self['pore.bc_rate'][pores])
+        if np.any(hits):
+            self['pore.bc_rate'][pores] = np.nan
+            logger.warning('Rate boundary conditions found in some of the '
+                           + 'specified pores will be overwritten')
+        hits = ~np.isnan(self['pore.bc_value'][pores])
+        if np.any(hits):
+            self['pore.bc_value'][pores] = np.nan
+            logger.warning('Value boundary conditions found in some of the '
+                           + 'specified pores will be overwritten')
         # Store boundary values
         if ('pore.bc_outflow' not in self.keys()) or (mode == 'overwrite'):
             self['pore.bc_outflow'] = np.nan
         self['pore.bc_outflow'][pores] = Qp[pores]
+
+    def remove_BC(self, pores=None, bctype='all'):
+        # parse bctype argument
+        if isinstance(bctype, str):
+            bctype = [bctype]
+        if 'all' in bctype:
+            bctype = ['value', 'rate', 'outflow']
+        if ('pore.bc_outflow' in self.keys()) and ('outflow' in bctype):
+            self['pore.bc_outflow'][pores] = np.nan
+        super().remove_BC(pores=pores, bctype=bctype)
 
     def _apply_BCs(self):
         r"""
@@ -135,3 +170,15 @@ class AdvectionDiffusion(ReactiveTransport):
         ind = np.isfinite(self['pore.bc_outflow'])
         diag[ind] += self['pore.bc_outflow'][ind]
         self.A.setdiag(diag)
+
+    def _set_BC(self, pores, bctype, bcvalues=None, mode='merge'):
+        pores = self._parse_indices(pores)
+        # First check that given pores outflow BCs already applied
+        if 'pore.bc_outflow' in self.keys():
+            hits = ~np.isnan(self['pore.bc_outflow'][pores])
+            if np.any(hits):
+                raise Exception('Cannot apply BCs to the following pores '
+                                + 'which already have an outflow BC '
+                                + 'specified', pores[np.where(hits)])
+        # Then call parent class function if above check passes
+        super()._set_BC(pores=pores, bctype=bctype, bcvalues=bcvalues, mode=mode)

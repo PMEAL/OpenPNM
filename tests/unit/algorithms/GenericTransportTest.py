@@ -24,6 +24,18 @@ class GenericTransportTest:
         with pytest.raises(Exception):
             alg.results()
 
+    def test_undefined_elements(self):
+        net = op.network.Cubic(shape=[3, 3, 3])
+        geom = op.geometry.GenericGeometry(network=net, pores=net.Ps)
+        phase = op.phases.GenericPhase(network=net)
+        phys = op.physics.GenericPhysics(network=net, phase=phase, geometry=geom)
+        phys["throat.conductance"] = 1.0
+        alg = op.algorithms.GenericTransport(network=net, phase=phase)
+        alg.settings.update({"quantity": "pore.concentration",
+                             "conductance": "throat.conductance"})
+        with pytest.raises(Exception):
+            alg.run()
+
     def test_set_solver(self):
         alg = op.algorithms.GenericTransport(network=self.net,
                                              phase=self.phase)
@@ -97,6 +109,27 @@ class GenericTransportTest:
         x = [0., 1., 2., 3., 4., 5., 6., 7., 8.]
         y = np.unique(np.around(alg['pore.mole_fraction'], decimals=3))
         assert np.all(x == y)
+
+    def test_set_value_bc_where_rate_is_already_set_mode_merge(self):
+        alg = op.algorithms.GenericTransport(network=self.net,
+                                             phase=self.phase)
+        alg.settings['conductance'] = 'throat.diffusive_conductance'
+        alg.settings['quantity'] = 'pore.mole_fraction'
+        alg.set_rate_BC(pores=[0, 1], values=1, mode='merge')
+        alg.set_value_BC(pores=[1, 2], values=0, mode='merge')
+        assert np.isfinite(alg['pore.bc_rate']).sum() == 2
+        assert np.isfinite(alg['pore.bc_value']).sum() == 1
+
+    def test_set_value_bc_where_rate_is_already_set_mode_overwrite(self):
+        alg = op.algorithms.GenericTransport(network=self.net,
+                                             phase=self.phase)
+        alg.settings['conductance'] = 'throat.diffusive_conductance'
+        alg.settings['quantity'] = 'pore.mole_fraction'
+        alg.set_rate_BC(pores=[0, 1], values=1, mode='merge')
+        alg.set_value_BC(pores=[2, 3, 4], values=0, mode='merge')
+        alg.set_value_BC(pores=[1, 2], values=0, mode='overwrite')
+        assert np.isfinite(alg['pore.bc_rate']).sum() == 2
+        assert np.isfinite(alg['pore.bc_value']).sum() == 1
 
     def test_cache_A(self):
         alg = op.algorithms.GenericTransport(network=self.net,
@@ -176,9 +209,9 @@ class GenericTransportTest:
         m.set_occupancy(phase=water, pores=[3, 4, 5])
         const = op.models.misc.constant
         K_water_air = 0.5
-        m.set_binary_partition_coef(propname="throat.partition_coef",
-                                    phases=[water, air],
-                                    model=const, value=K_water_air)
+        m.set_binary_partition_coef(
+            phases=[water, air], model=const, value=K_water_air
+        )
         m._set_automatic_throat_occupancy()
         _ = op.physics.Standard(network=net, phase=m, geometry=geom)
         alg = op.algorithms.GenericTransport(network=net, phase=m)

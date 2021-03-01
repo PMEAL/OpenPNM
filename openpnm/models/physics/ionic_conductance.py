@@ -565,8 +565,8 @@ def electroneutrality(target,
             c1 = phase[pore_concentration+i][cn[:, 0]]
             c2 = phase[pore_concentration+i][cn[:, 1]]
         except KeyError:
-            c1 = _np.zeros((network.Nt))[cn[:, 0]]
-            c2 = _np.zeros((network.Nt))[cn[:, 1]]
+            c1 = _np.zeros((network.Np))[cn[:, 0]]
+            c2 = _np.zeros((network.Np))[cn[:, 1]]
         ct = (c1*Vol1 + c2*Vol2)/(Vol1 + Vol2)
         # Interpolate pore phase property values to throats
         try:

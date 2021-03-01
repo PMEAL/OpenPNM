@@ -1,5 +1,4 @@
 import numpy as np
-import scipy as sp
 from flatdict import FlatDict
 from collections import namedtuple
 from openpnm.io import Dict, GenericIO
