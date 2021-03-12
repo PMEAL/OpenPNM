@@ -31,7 +31,7 @@ class RelativePermeabilityTest:
                                      model=mod)
         self.wet_phase.add_model(propname='throat.entry_pressure',
                                  model=mod)
-        self.inlet_pores = self.net.pores('front')
+        self.inlet_pores = self.net.pores('back')
         ip = op.algorithms.InvasionPercolation(network=self.net,
                                                phase=self.non_wet_phase)
         ip.set_inlets(pores=self.inlet_pores)
@@ -47,8 +47,8 @@ class RelativePermeabilityTest:
         assert results['kr_wp'] is None
 
     def test_overwriting_boundary_faces(self):
-        inlets = {'x': 'front', 'y': 'front', 'z': 'front'}
-        outlets = {'x': 'back', 'y': 'back', 'z': 'back'}
+        inlets = {'x': 'back', 'y': 'back', 'z': 'back'}
+        outlets = {'x': 'front', 'y': 'front', 'z': 'front'}
         rp = op.algorithms.metrics.RelativePermeability(network=self.net)
         rp.setup(invading_phase=self.non_wet_phase.name,
                  defending_phase=self.wet_phase.name,
@@ -125,7 +125,7 @@ class RelativePermeabilityTest:
         self.wet_phase.add_model(propname='throat.entry_pressure',
                                  model=mod)
         if shape[1] != 1:
-            self.inlet_pores = self.net.pores('front')
+            self.inlet_pores = self.net.pores('back')
         else:
             self.inlet_pores = self.net.pores('left')
         ip = op.algorithms.InvasionPercolation(network=self.net,
