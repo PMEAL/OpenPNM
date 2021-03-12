@@ -432,8 +432,8 @@ def label_faces(network, tol=0.0, label='surface'):
         network['pore.left'] = (crds[:, 0] <= (xmin + tol*xspan)) * Psurf
         network['pore.right'] = (crds[:, 0] >= (xmax - tol*xspan)) * Psurf
     if dims[1]:
-        network['pore.back'] = (crds[:, 1] <= (ymin + tol*yspan)) * Psurf
-        network['pore.front'] = (crds[:, 1] >= (ymax - tol*yspan)) * Psurf
+        network['pore.front'] = (crds[:, 1] <= (ymin + tol*yspan)) * Psurf
+        network['pore.back'] = (crds[:, 1] >= (ymax - tol*yspan)) * Psurf
     if dims[2]:
         network['pore.top'] = (crds[:, 2] >= (zmax - tol*zspan)) * Psurf
         network['pore.bottom'] = (crds[:, 2] <= (zmin + tol*zspan)) * Psurf
