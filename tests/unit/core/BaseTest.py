@@ -714,7 +714,7 @@ class BaseTest:
     def test_getitem_with_no_matches(self):
         self.geo.pop('pore.blah', None)
         with pytest.raises(KeyError):
-            self.geo['pore.blah']
+            _ = self.geo['pore.blah']
 
     def test_interpolate_data(self):
         self.geo['throat.tester'] = np.linspace(0, 1.0, self.geo.network.Nt)
@@ -729,7 +729,7 @@ class BaseTest:
     def test_get_no_matches(self):
         self.geo.pop('pore.blah', None)
         with pytest.raises(KeyError):
-            self.geo['pore.blah']
+            _ = self.geo['pore.blah']
 
     def test_get_string(self):
         a = self.net.get('pore.coords')
@@ -899,9 +899,9 @@ class BaseTest:
         pn['pore.foo.bar'] = 1
         pn['pore.foo.baz'] = 2
         with pytest.raises(KeyError):
-            pn['pore.foo.b']
+            _ = pn['pore.foo.b']
         with pytest.raises(KeyError):
-            pn['pore.fo']
+            _ = pn['pore.fo']
 
     def test_set_label_add_to_pores(self):
         pn = op.network.Cubic(shape=[5, 5, 5])
