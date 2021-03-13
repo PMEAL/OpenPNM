@@ -37,8 +37,8 @@ class NernstPlanckTest:
         self.oc = op.algorithms.OhmicConduction(network=self.net, phase=self.phase)
         self.oc.settings['conductance'] = 'throat.ionic_conductance'
         self.oc.settings['quantity'] = 'pore.potential'
-        self.oc.set_value_BC(pores=self.net.pores('back'), values=0.05)
-        self.oc.set_value_BC(pores=self.net.pores('front'), values=0.)
+        self.oc.set_value_BC(pores=self.net.pores('front'), values=0.05)
+        self.oc.set_value_BC(pores=self.net.pores('back'), values=0.)
         self.oc.run()
 
         self.phase.update(self.oc.results())
