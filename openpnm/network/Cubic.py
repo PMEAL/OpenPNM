@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 ===============================================================================
 Cubic: Generate lattice-like networks
@@ -140,9 +139,7 @@ class Cubic(GenericNetwork):
         elif connectivity == 6 + 8 + 12:
             joints = face_joints + corner_joints + edge_joints
         else:
-            raise Exception(
-                "Invalid connectivity receieved. Must be 6, 14, 18, 20 or 26"
-            )
+            raise Exception("Invalid connectivity. Must be 6, 14, 18, 20 or 26.")
 
         tails, heads = np.array([], dtype=int), np.array([], dtype=int)
         for T, H in joints:
@@ -210,14 +207,14 @@ class Cubic(GenericNetwork):
 
         offset = {}
         shape = self.settings['shape']
-        offset["back"] = offset["left"] = offset["bottom"] = [0, 0, 0]
+        offset["front"] = offset["left"] = offset["bottom"] = [0, 0, 0]
         offset["right"] = [Lcx * shape[0], 0, 0]
-        offset["front"] = [0, Lcy * shape[1], 0]
+        offset["back"] = [0, Lcy * shape[1], 0]
         offset["top"] = [0, 0, Lcz * shape[2]]
 
         scale = {}
         scale["left"] = scale["right"] = [0, 1, 1]
-        scale["back"] = scale["front"] = [1, 0, 1]
+        scale["front"] = scale["back"] = [1, 0, 1]
         scale["bottom"] = scale["top"] = [1, 1, 0]
 
         for label in labels:
@@ -245,18 +242,18 @@ class Cubic(GenericNetwork):
         dims = topotools.dimensionality(self)
         # Ensure vectors point in n-dims unique directions
         c = {tuple(row): 1 for row in unit_vec}
+        mag = np.atleast_1d(mag.squeeze()).astype(float)
         if len(c.keys()) > sum(dims):
             raise Exception(
-                "Spacing is undefined when throats point in "
-                + "more directions than network has dimensions"
+                "Spacing is undefined when throats point in more directions"
+                " than network has dimensions."
             )
-        mag = np.float64(mag.squeeze())
         for ax in [0, 1, 2]:
             if dims[ax]:
                 inds = np.where(unit_vec[:, ax] == unit_vec[:, ax].max())[0]
                 temp = np.unique(mag[inds])
                 if not np.allclose(temp, temp[0]):
-                    raise Exception("A unique value of spacing could not be found")
+                    raise Exception("A unique value of spacing could not be found.")
                 spacing[ax] = temp[0]
         self.settings['spacing'] = spacing
         return np.array(spacing)

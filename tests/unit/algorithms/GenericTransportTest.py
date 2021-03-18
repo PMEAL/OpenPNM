@@ -24,6 +24,18 @@ class GenericTransportTest:
         with pytest.raises(Exception):
             alg.results()
 
+    def test_undefined_elements(self):
+        net = op.network.Cubic(shape=[3, 3, 3])
+        geom = op.geometry.GenericGeometry(network=net, pores=net.Ps)
+        phase = op.phases.GenericPhase(network=net)
+        phys = op.physics.GenericPhysics(network=net, phase=phase, geometry=geom)
+        phys["throat.conductance"] = 1.0
+        alg = op.algorithms.GenericTransport(network=net, phase=phase)
+        alg.settings.update({"quantity": "pore.concentration",
+                             "conductance": "throat.conductance"})
+        with pytest.raises(Exception):
+            alg.run()
+
     def test_set_solver(self):
         alg = op.algorithms.GenericTransport(network=self.net,
                                              phase=self.phase)

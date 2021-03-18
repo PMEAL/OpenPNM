@@ -37,9 +37,9 @@ class PNM(GenericIO):
                 foreign_attrs = found_attrs.difference(known_attrs)
                 if len(foreign_attrs) > 0:
                     line_break = f"\n{'':13}"
-                    logger.warning(f"{obj.name} has the following attributes that will"
-                                   + f" not be saved: {[i for i in foreign_attrs]}"
-                                   + f"{line_break}Consider using Pickle instead")
+                    logger.critical(f"{obj.name} has the following attributes that will"
+                                    + f" not be saved: {[i for i in foreign_attrs]}"
+                                    + f"{line_break}Consider using Pickle instead")
                 item = root.create_group(obj.name)
                 for arr in obj.keys():  # Store data
                     try:

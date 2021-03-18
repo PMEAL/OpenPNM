@@ -150,24 +150,28 @@ class MultiPhase(GenericPhase):
         >>> water = Water(network=net, name='water')
         >>> mphase = MultiPhase(network=net, phases=[air, water], name='multi')
 
-        # Now, assign some pores to air and the rest to water
+        Now, assign some pores to air and the rest to water
+
         >>> Ps = net['pore.coords'][:, 0] < 3  # Pick some pores to be air filled
         >>> Ts = net.find_neighbor_throats(pores=Ps)  # Find neighboring throats
         >>> Ts = net.tomask(throats=Ts)  # Convert throat indices to mask
         >>> mphase.set_occupancy(phase=air, Pvals=Ps, Tvals=Ts)  # Assign occupancies
         >>> mphase.set_occupancy(phase=water, Pvals=~Ps, Tvals=~Ts)
 
-        # Now, add an interface model for binary partition coefficient
+        Now, add an interface model for binary partition coefficient
+
         >>> mphase.set_binary_partition_coef(phases=[air, water],
         ...                                  model=constant,
         ...                                  value=0.5)
 
-        # Now, verify that K12 for interface throats is 0.5
+        Now, verify that K12 for interface throats is 0.5
+
         >>> Ts_interface = net.find_neighbor_throats(Ps, mode="xor")
         >>> K12_interface = mphase["throat.partition_coef.all"][Ts_interface]
         >>> assert K12_interface.mean() == 0.5
 
-        # Finally, verify that K12 for non-interface throats is 1.
+        Finally, verify that K12 for non-interface throats is 1.
+
         >>> Ts_rest = ~ np.isin(net.Ts, Ts_interface)
         >>> K12_rest = mphase["throat.partition_coef.all"][Ts_rest]
         >>> assert K12_rest.mean() == 1.

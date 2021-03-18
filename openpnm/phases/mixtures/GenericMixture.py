@@ -24,7 +24,7 @@ class GenericMixtureSettings(GenericSettings):
     prefix = 'mix'
 
 
-@docstr.get_sectionsf('GenericMixture', sections=['Parameters'])
+@docstr.get_sections(base='GenericMixture', sections=['Parameters'])
 @docstr.dedent
 class GenericMixture(GenericPhase):
     r"""

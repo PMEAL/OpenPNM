@@ -7,12 +7,11 @@ numba
 networkx
 h5py
 jsonschema
+json_tricks
 terminaltables
-unyt
 gitpython
 flatdict
 transforms3d
 sympy
-docrep==0.2.7
+docrep
 pardiso4py
-zarr
