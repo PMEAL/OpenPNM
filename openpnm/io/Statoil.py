@@ -1,3 +1,4 @@
+import os
 import numpy as np
 from openpnm.topotools import trim, extend
 from openpnm.utils import logging
@@ -7,6 +8,7 @@ from openpnm.geometry import GenericGeometry
 import openpnm.models as mods
 from pathlib import Path
 from pandas import read_table, DataFrame
+from tqdm import tqdm
 logger = logging.getLogger(__name__)
 
 
@@ -26,21 +28,22 @@ class Statoil(GenericIO):
     """
 
     @classmethod
-    def export_data(cls, network, path, prefix, shape, Pinlet=None, Poutlet=None):
+    def export_data(cls, network, shape, prefix=None, path=None, Pin=None, Pout=None):
         r"""
 
         Parameters
         ----------
         network : OpenPNM Network object
             The network
-        path : str or path object
-            The location where the exported files should be stored
-        prefix : str
-            The prefix to append to each file name, such as
-            ``<prefix>_node1.dat``
         shape : array_like
             An ndim-by-1 array or list containing the network dimensions
             in physical units (i.e. um)
+        prefix : str
+            The prefix to append to each file name, such as
+            ``<prefix>_node1.dat``. If not provided ``project.name`` is used.
+        path : str or path object
+            The location where the exported files should be stored. If not
+            provided the current working directory is used
         Pinlet and Poutlet : scalar, int (optional)
             The pore index of the inlet and outlet reservoir pores. If not
             provided then it is assumed they are the second last and last
@@ -48,18 +51,22 @@ class Statoil(GenericIO):
             the ``add_reservoir_pore`` function had been called prior to
             exporting.
         """
+        if path is None:
+            path = os.getcwd()
         p = Path(path)
+        if prefix is None:
+            prefix = network.project.name
         # Deal with reservoir pores
-        if Pinlet is None:
-            Pinlet = network.Np - 2
-        if Poutlet is None:
-            Poutlet = network.Np - 1
-        Pin = network.find_neighbor_pores(pores=Pinlet)
+        if Pin is None:
+            Pin = network.Np - 2
+        if Pout is None:
+            Pout = network.Np - 1
+        Ptemp = network.find_neighbor_pores(pores=Pin)
         inlets = np.zeros_like(network.Ps, dtype=bool)
-        inlets[Pin] = True
-        Pout = network.find_neighbor_pores(pores=Poutlet)
+        inlets[Ptemp] = True
+        Ptemp = network.find_neighbor_pores(pores=Pout)
         outlets = np.zeros_like(network.Ps, dtype=bool)
-        outlets[Pout] = True
+        outlets[Ptemp] = True
 
         # Write link 1 file
         props = ['throat.conns',
@@ -68,7 +75,7 @@ class Statoil(GenericIO):
                  'throat.total_length']
         with open(p.joinpath(prefix + '_link1.dat'), 'wt') as f:
             f.write(str(network.Nt) + '\n')
-            for row in network.throats():
+            for row in tqdm(network.throats(), desc='Writing Link1 file'):
                 s = ''
                 s = s + '{:>9}'.format(str(row+1))
                 for col in props:
@@ -104,7 +111,7 @@ class Statoil(GenericIO):
                  'throat.volume',
                  'throat.clay_volume']
         with open(p.joinpath(prefix + '_link2.dat'), 'wt') as f:
-            for row in network.throats():
+            for row in tqdm(network.throats(), desc='Writing Link2 file'):
                 s = ''
                 s = s + '{:>9}'.format(str(row+1))
                 for col in props:
@@ -144,8 +151,9 @@ class Statoil(GenericIO):
                 s = s + '{:>17}'.format(str(val))
             s = s + '\n'
             f.write(s)
-            for row in network.pores('reservoir', mode='not'):
-                if row in [inlet, outlet]:
+            for row in tqdm(network.pores('reservoir', mode='not'),
+                            desc='Writing Node1 file'):
+                if row in [Pin, Pout]:
                     continue
                 s = ''
                 s = s + '{:>9}'.format(str(row+1))
@@ -158,9 +166,9 @@ class Statoil(GenericIO):
                     s = s + '{:>15}'.format(str(c))
                 s = s + '{:>9}'.format(str(network.num_neighbors(row)[0]))
                 for n in network.find_neighbor_pores(row):
-                    if n == inlet:
+                    if n == Pin:
                         n = 0
-                    elif n == outlet:
+                    elif n == Pout:
                         n = -1
                     else:
                         n = n + 1
@@ -178,7 +186,8 @@ class Statoil(GenericIO):
                  'pore.shape_factor',
                  'pore.clay_volume']
         with open(p.joinpath(prefix + '_node2.dat'), 'wt') as f:
-            for row in network.pores('reservoir', mode='not'):
+            for row in tqdm(network.pores('reservoir', mode='not'),
+                            desc='Writing Node2 file'):
                 s = ''
                 s = s + '{:>9}'.format(str(row+1))
                 for col in props:
