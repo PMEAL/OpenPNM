@@ -370,6 +370,9 @@ class LiquidMixture(GenericMixture):
         self.add_model(propname='pore.thermal_conductivity',
                        model=liquid_mixture_thermal_conductivity,
                        regen_mode='deferred')
+        self.add_model(propname='pore.heat_capacity',
+                       model=mixture_heat_capacity,
+                       regen_mode='deferred')
 
 
 class GasMixture(GenericMixture):
@@ -377,6 +380,12 @@ class GasMixture(GenericMixture):
         super().__init__(**kwargs)
         self.add_model(propname='pore.gas_viscosity',
                        model=gas_mixture_viscosity,
+                       regen_mode='deferred')
+        self.add_model(propname='pore.thermal_conductivity',
+                       model=gas_mixture_thermal_conductivity,
+                       regen_mode='deferred')
+        self.add_model(propname='pore.heat_capacity',
+                       model=mixture_heat_capacity,
                        regen_mode='deferred')
 
 
@@ -510,3 +519,10 @@ def gas_mixture_thermal_conductivity(target, temperature='pore.temperature'):
             denom += ys[j]*A
         kmix += num/denom
     return kmix
+
+
+def mixture_heat_capacity(target):
+    zs = [target['pore.mole_fraction.' + c.name] for c in target.components.values()]
+    Cps = [c['pore.heat_capacity'] for c in target.components.values()]
+    Cpmix = np.sum([zs[i]*Cps[i] for i in range(len(zs))], axis=0)
+    return Cpmix
