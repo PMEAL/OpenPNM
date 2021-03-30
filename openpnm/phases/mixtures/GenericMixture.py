@@ -1,6 +1,6 @@
 # from collections import ChainMap  # Might use eventually
 import numpy as np
-from chemicals import Vm_to_rho
+from chemicals import Vm_to_rho, rho_to_Vm
 from chemicals import numba_vectorized
 from openpnm.phases import GenericPhase as GenericPhase
 from openpnm.utils import HealthDict, PrintableList, SubDict
@@ -367,6 +367,9 @@ class LiquidMixture(GenericMixture):
         self.add_model(propname='pore.density',
                        model=liquid_mixture_density,
                        regen_mode='deferred')
+        self.add_model(propname='pore.thermal_conductivity',
+                       model=liquid_mixture_thermal_conductivity,
+                       regen_mode='deferred')
 
 
 class GasMixture(GenericMixture):
@@ -470,3 +473,40 @@ def liquid_mixture_density(target, temperature='pore.temperature'):
     Vm = Vc*V_0*(1.0 - omega*V_delta)
     rhoL = Vm_to_rho(Vm=Vm, MW=MW)
     return rhoL
+
+
+def liquid_mixture_thermal_conductivity(target, density='pore.density'):
+    xs = [target['pore.mole_fraction.' + c.name] for c in target.components.values()]
+    kLs = [c['pore.thermal_conductivity'] for c in target.components.values()]
+    # kL = numba_vectorized.DIPPR9I(xs, kLs)  # Another one that doesn't work
+    Vm = [rho_to_Vm(c[density], c.parameters['molecular_weight'])
+          for c in target.components.values()]
+    denom = np.sum([xs[i]*Vm[i] for i in range(len(xs))], axis=0)
+    phis = np.array([xs[i]*Vm[i] for i in range(len(xs))])/denom
+    kij = 2/np.sum([1/kLs[i] for i in range(len(xs))], axis=0)
+    kmix = np.zeros_like(xs[0])
+    N = len(xs)
+    for i in range(N):
+        for j in range(N):
+            kmix += phis[i]*phis[j]*kij
+    return kmix
+
+
+def gas_mixture_thermal_conductivity(target, temperature='pore.temperature'):
+    T = target[temperature]
+    ys = [target['pore.mole_fraction.' + c.name] for c in target.components.values()]
+    kGs = [c['pore.thermal_conductivity'] for c in target.components.values()]
+    mus = [c['pore.viscosity'] for c in target.components.values()]
+    Tbs = [c.parameters['boiling_temperature'] for c in target.components.values()]
+    MWs = [c.parameters['molecular_weight'] for c in target.components.values()]
+    # numba_vectorized.Lindsay_Bromley(T, ys, kGs, mus, Tbs, MWs)
+    kmix = np.zeros_like(T)
+    for i in range(len(ys)):
+        num = ys[i]*kGs[i]
+        A = 0.0
+        denom = 0.0
+        for j in range(len(ys)):
+            A += np.sqrt(MWs[j]/MWs[i])
+            denom += ys[j]*A
+        kmix += num/denom
+    return kmix
