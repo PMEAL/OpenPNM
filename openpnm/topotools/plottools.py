@@ -1,5 +1,7 @@
 import numpy as np
 import openpnm as op
+from tqdm import tqdm
+from openpnm.topotools import dimensionality
 
 
 def plot_connections(network, throats=None, fig=None, size_by=None,
@@ -556,3 +558,41 @@ def plot_tutorial(network, font_size=12, line_width=2,
     fig.set_size_inches(5, 5 / aspect_ratio)
 
     return gplot
+
+
+def plot_3d(network):
+    r"""
+    Produce a 3D plot of the network topology using Mayavi visualization
+
+    Parameters
+    ----------
+    network : GenericNetwork
+        The network whose topological connections to plot
+    """
+    try:
+        from mayavi import mlab
+    except ModuleNotFoundError:
+        msg = (
+            "The mayavi python bindings must be installed using conda"
+            " install -c conda-forge mayavi, however this may require"
+            " using a virtualenv since conflicts with other packages may"
+            " happen. This is why it is not explicitly included as a"
+            " dependency in porespy."
+        )
+        raise ModuleNotFoundError(msg)
+    dim = dimensionality(network)
+    Ts = network.Ts
+    Ps = np.unique(network['throat.conns'][Ts])
+    X, Y, Z = network['pore.coords'][Ps].T
+    xyz = network["pore.coords"][:, dim]
+    P1, P2 = network["throat.conns"][Ts].T
+    pos = np.column_stack((xyz[P1], xyz[P2])).reshape((Ts.size, 2, dim.sum()))
+    for i in tqdm(range(pos.shape[0])):
+        mlab.plot3d(pos[i, :, 0],
+                    pos[i, :, 1],
+                    pos[i, :, 2],
+                    representation="surface")
+    mlab.points3d(network['pore.coords'][:, 0],
+                  network['pore.coords'][:, 1],
+                  network['pore.coords'][:, 2],
+                  scale_factor=.7)
