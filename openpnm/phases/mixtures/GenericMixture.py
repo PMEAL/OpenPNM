@@ -56,11 +56,6 @@ class GenericMixture(GenericPhase):
             self.set_mole_fraction(comp, np.nan)
         self['pore.mole_fraction.all'] = np.nan
 
-        self.add_model(propname='pore.molar_mass',
-                       model=models.phases.mixtures.mole_weighted_average,
-                       prop='pore.molecular_weight',
-                       regen_mode='deferred')
-
         logger.warning('Mixtures are a beta feature and functionality may '
                        + 'change in future versions')
 
@@ -347,3 +342,122 @@ class GenericMixture(GenericPhase):
         if len(hi) > 0:
             h['mole_fraction_too_high'] = hi
         return h
+
+
+class LiquidMixture(GenericMixture):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.add_model(propname='pore.molecular_weight',
+                       model=liquid_mixture_molecular_weight)
+        self.add_model(propname='pore.liquid_viscosity',
+                       model=liquid_mixture_viscosity,
+                       regen_mode='deferred')
+        self.add_model(propname='pore.critical_volume',
+                       model=liquid_mixture_critical_volume)
+        self.add_model(propname='pore.critical_temperature',
+                       model=liquid_mixture_critical_temperature)
+        self.add_model(propname='pore.acentric_factor',
+                       model=liquid_mixture_acentric_factor)
+        self.add_model(propname='pore.density',
+                       model=liquid_mixture_density)
+
+
+class GasMixture(GenericMixture):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.add_model(propname='pore.gas_viscosity',
+                       model=gas_mixture_viscosity,
+                       regen_mode='deferred')
+
+
+def gas_mixture_viscosity(target):
+    ys = [target['pore.mole_fraction.' + c.name] for c in target.components.values()]
+    MWs = [c.parameters['molecular_weight'] for c in target.components.values()]
+    mus = [c['pore.viscosity'] for c in target.components.values()]
+    num = 0.0
+    denom = 0.0
+    for i in range(len(ys)):
+        num += ys[i]*mus[i]*np.sqrt(MWs[i])
+        denom += ys[i]*np.sqrt(MWs[i])
+    mu = num/denom
+    return mu
+
+
+def liquid_mixture_viscosity(target):
+    xs = [target['pore.mole_fraction.' + c.name] for c in target.components.values()]
+    mus = [c['pore.viscosity'] for c in target.components.values()]
+    mu = 0.0
+    for i in range(len(xs)):
+        mu += xs[i]*np.log(mus[i])
+    return np.exp(mu)
+
+
+def liquid_mixture_critical_volume(target):
+    xs = [target['pore.mole_fraction.' + c.name] for c in target.components.values()]
+    Vcs = [c.parameters['critical_volume'] for c in target.components.values()]
+    N = len(xs)  # Number of components
+
+    Vm1 = np.sum([xs[i]*Vcs[i] for i in range(N)], axis=0)
+    Vm2 = np.sum([xs[i]*(Vcs[i])**(2/3) for i in range(N)], axis=0)
+    Vm3 = np.sum([xs[i]*(Vcs[i])**(1/3) for i in range(N)], axis=0)
+    Vm = 0.25*(Vm1 + 3*(Vm2*Vm3))
+    return Vm
+
+
+def liquid_mixture_critical_temperature(target, Vc='pore.critical_volume'):
+    xs = [target['pore.mole_fraction.' + c.name] for c in target.components.values()]
+    Tcs = [c.parameters['critical_temperature'] for c in target.components.values()]
+    Vcs = [c.parameters['critical_volume'] for c in target.components.values()]
+    Vm = target[Vc]
+    N = len(xs)  # Number of components
+
+    num = np.zeros_like(xs[0])
+    for i in range(N):
+        for j in range(N):
+            VT = (Vcs[i]*Tcs[i]*Vcs[j]*Tcs[j])**0.5
+            num += xs[i]*xs[j]*VT
+    Tcm = num/Vm
+    return Tcm
+
+
+def liquid_mixture_acentric_factor(target):
+    xs = [target['pore.mole_fraction.' + c.name] for c in target.components.values()]
+    omegas = [c.parameters['acentric_factor'] for c in target.components.values()]
+    omega = np.sum([omegas[i]*xs[i] for i in range(len(xs))], axis=0)
+    return omega
+
+
+def liquid_mixture_molecular_weight(target):
+    xs = [target['pore.mole_fraction.' + c.name] for c in target.components.values()]
+    MWs = [c.parameters['molecular_weight'] for c in target.components.values()]
+    MW = np.zeros_like(xs[0])
+    for i in range(len(xs)):
+        MW += xs[i]*MWs[i]
+    return MW
+
+
+def liquid_mixture_density(target, temperature='pore.temperature'):
+    # Actually pure component density using mixture properties
+    from chemicals import Vm_to_rho
+    T = target[temperature]
+    MW = target['pore.molecular_weight']
+    Tc = target['pore.critical_temperature']
+    Vc = target['pore.critical_volume']
+    omega = target['pore.acentric_factor']
+    T = np.clip(T, -np.inf, Tc)
+    Tr = T/Tc
+    tau = 1.0 - Tr
+    tau_cbrt = (tau)**(1.0/3.)
+    a = 0.296123
+    b = 0.0480645
+    c = 0.0427258
+    d = 0.386914
+    e = 0.190454
+    f = 0.81446
+    g = 1.43907
+    h = 1.52816
+    V_delta = (-a + Tr*(Tr*(-b*Tr - c) + d))/(Tr - 1.00001)
+    V_0 = tau_cbrt*(tau_cbrt*(tau_cbrt*(e*tau_cbrt - f) + g) - h) + 1.0
+    Vm = Vc*V_0*(1.0 - omega*V_delta)
+    rhoL = Vm_to_rho(Vm=Vm, MW=MW)
+    return rhoL
