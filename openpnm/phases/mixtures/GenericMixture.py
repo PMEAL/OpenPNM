@@ -1,5 +1,7 @@
 # from collections import ChainMap  # Might use eventually
 import numpy as np
+from chemicals import Vm_to_rho
+from chemicals import numba_vectorized
 from openpnm.phases import GenericPhase as GenericPhase
 from openpnm.utils import HealthDict, PrintableList, SubDict
 from openpnm.utils import Docorator, GenericSettings
@@ -348,18 +350,23 @@ class LiquidMixture(GenericMixture):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.add_model(propname='pore.molecular_weight',
-                       model=liquid_mixture_molecular_weight)
-        self.add_model(propname='pore.liquid_viscosity',
+                       model=mixture_molecular_weight,
+                       regen_mode='deferred')
+        self.add_model(propname='pore.viscosity',
                        model=liquid_mixture_viscosity,
                        regen_mode='deferred')
         self.add_model(propname='pore.critical_volume',
-                       model=liquid_mixture_critical_volume)
+                       model=liquid_mixture_critical_volume,
+                       regen_mode='deferred')
         self.add_model(propname='pore.critical_temperature',
-                       model=liquid_mixture_critical_temperature)
+                       model=liquid_mixture_critical_temperature,
+                       regen_mode='deferred')
         self.add_model(propname='pore.acentric_factor',
-                       model=liquid_mixture_acentric_factor)
+                       model=mixture_acentric_factor,
+                       regen_mode='deferred')
         self.add_model(propname='pore.density',
-                       model=liquid_mixture_density)
+                       model=liquid_mixture_density,
+                       regen_mode='deferred')
 
 
 class GasMixture(GenericMixture):
@@ -374,6 +381,8 @@ def gas_mixture_viscosity(target):
     ys = [target['pore.mole_fraction.' + c.name] for c in target.components.values()]
     MWs = [c.parameters['molecular_weight'] for c in target.components.values()]
     mus = [c['pore.viscosity'] for c in target.components.values()]
+    # Should be a one-liner, but not working
+    # mu = numba_vectorized.Herning_Zipperer(ys, mus, MWs, sqrtMWs)
     num = 0.0
     denom = 0.0
     for i in range(len(ys)):
@@ -420,14 +429,14 @@ def liquid_mixture_critical_temperature(target, Vc='pore.critical_volume'):
     return Tcm
 
 
-def liquid_mixture_acentric_factor(target):
+def mixture_acentric_factor(target):
     xs = [target['pore.mole_fraction.' + c.name] for c in target.components.values()]
     omegas = [c.parameters['acentric_factor'] for c in target.components.values()]
     omega = np.sum([omegas[i]*xs[i] for i in range(len(xs))], axis=0)
     return omega
 
 
-def liquid_mixture_molecular_weight(target):
+def mixture_molecular_weight(target):
     xs = [target['pore.mole_fraction.' + c.name] for c in target.components.values()]
     MWs = [c.parameters['molecular_weight'] for c in target.components.values()]
     MW = np.zeros_like(xs[0])
