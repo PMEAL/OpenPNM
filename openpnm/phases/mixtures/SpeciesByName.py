@@ -1,6 +1,8 @@
 from openpnm.phases.mixtures import GenericSpecies
 from openpnm.utils import PrintableDict
 import chemicals as chem
+from chemicals import numba_vectorized
+from chemicals import Vm_to_rho
 from chemicals.utils import R, k
 from openpnm.utils import logging
 import numpy as np
@@ -90,10 +92,7 @@ def vapor_pressure(target, temperature='pore.temperature'):
     try:
         coeffs = chem.vapor_pressure.Psat_data_AntoineExtended.loc[CAS]
         _, A, B, C, Tc, to, n, E, F, Tmin, Tmax = coeffs
-        x = (T - to - 273.15)/Tc
-        x = np.clip(x, 0, np.inf)
-        x4 = x*x*x*x
-        PV = 10.**(A - B/(T+C) + 0.43429*x**n + x4*x4*(E + F*x4))
+        PV = numba_vectorized.TRC_Antoine_extended(T, A, B, C, n, E, F)
     except KeyError:
         coeffs = chem.vapor_pressure.Psat_data_AntoinePoling.loc[CAS]
         _, A, B, C, Tmin, Tmax = coeffs
@@ -102,28 +101,13 @@ def vapor_pressure(target, temperature='pore.temperature'):
 
 
 def liquid_density(target, temperature='pore.temperature'):
-    from chemicals import Vm_to_rho
     T = target[temperature]
     MW = target.parameters['molecular_weight']
     Tc = target.parameters['critical_temperature']
     Vc = target.parameters['critical_volume']
     omega = target.parameters['acentric_factor']
-    T[T > Tc] = Tc
-    Tr = T/Tc
-    tau = 1.0 - Tr
-    tau_cbrt = (tau)**(1.0/3.)
-    a = 0.296123
-    b = 0.0480645
-    c = 0.0427258
-    d = 0.386914
-    e = 0.190454
-    f = 0.81446
-    g = 1.43907
-    h = 1.52816
-    V_delta = (-a + Tr*(Tr*(-b*Tr - c) + d))/(Tr - 1.00001)
-    V_0 = tau_cbrt*(tau_cbrt*(tau_cbrt*(e*tau_cbrt - f) + g) - h) + 1.0
-    Vm = Vc*V_0*(1.0 - omega*V_delta)
-    rhoL = Vm_to_rho(Vm=Vm, MW=MW)
+    Vm = numba_vectorized.COSTALD(T, Tc, Vc, omega)
+    rhoL = Vm_to_rho(Vm, MW)
     return rhoL
 
 
@@ -133,7 +117,7 @@ def liquid_viscosity(target, temperature='pore.temperature'):
     Tc = target.parameters['critical_temperature']
     Pc = target.parameters['critical_pressure']
     omega = target.parameters['acentric_factor']
-    muL = chem.viscosity.Letsou_Stiel(T=T, MW=MW, Tc=Tc, Pc=Pc, omega=omega)
+    muL = numba_vectorized.Letsou_Stiel(T, MW, Tc, Pc, omega)
     return muL
 
 
@@ -142,13 +126,7 @@ def gas_viscosity(target, temperature='pore.temperature'):
     MW = target.parameters['molecular_weight']
     Tc = target.parameters['critical_temperature']
     Pc = target.parameters['critical_pressure']
-    Tr = T/Tc
-    mask = Tr < 0.2
-    Tr[mask] = 0.2
-    T[mask] = 0.2*Tc
-    muG = 1E-5*Pc*Tr + (0.091 - 0.477/MW)*T + \
-        MW*(1E-5*Pc - 8.0*MW*MW/(T*T))*(10.7639/Tc - 4.1929/T)
-    muG = 1e-7*muG
+    muG = numba_vectorized.viscosity_gas_Gharagheizi(T, Tc, Pc, MW)
     return muG
 
 
@@ -158,8 +136,7 @@ def liquid_thermal_conductivity(target, temperature='pore.temperature'):
     Tb = target.parameters['boiling_temperature']
     Pc = target.parameters['critical_pressure']
     omega = target.parameters['acentric_factor']
-    kL = chem.thermal_conductivity.Gharagheizi_liquid(T=T, MW=MW, Tb=Tb,
-                                                      Pc=Pc, omega=omega)
+    kL = numba_vectorized.Gharagheizi_liquid(T, MW, Tb, Pc, omega)
     return kL
 
 
@@ -169,8 +146,7 @@ def gas_thermal_conductivity(target, temperature='pore.temperature'):
     Tb = target.parameters['boiling_temperature']
     Pc = target.parameters['critical_pressure']
     omega = target.parameters['acentric_factor']
-    kG = chem.thermal_conductivity.Gharagheizi_gas(T=T, MW=MW, Tb=Tb,
-                                                   Pc=Pc, omega=omega)
+    kG = numba_vectorized.Gharagheizi_gas(T, MW, Tb, Pc, omega)
     return kG
 
 
@@ -181,24 +157,13 @@ def liquid_heat_capacity(target,
     Cpgm = target['pore.gas_heat_capacity']
     Tc = target.parameters['critical_temperature']
     omega = target.parameters['acentric_factor']
-    Tr = T/Tc
-    Cplm = Cpgm + R*(1.586 + 0.49/(1.0-Tr) +
-                     omega*(4.2775 + 6.3*(1.0-Tr)**(1/3.)/Tr + 0.4355/(1.0-Tr)))
+    Cplm = numba_vectorized.Rowlinson_Poling(T, Tc, omega, Cpgm)
     return Cplm
 
 
 def gas_heat_capacity(target, temperature='pore.temperature'):
-    from numpy import exp
     T = target[temperature]
     props = chem.heat_capacity.TRC_gas_data.loc[target.settings['CAS']]
     _, Tmin, Tmax, a0, a1, a2, a3, a4, a5, a6, a7, I, J, Hfg = props
-    if np.any(T <= a7):
-        y = 0.
-    else:
-        y = (T - a7)/(T + a6)
-    T_inv = 1.0/T
-    y2 = y*y
-    T_m_a7 = T - a7
-    Cp = R*(a0 + (a1*T_inv*T_inv)*exp(-a2*T_inv) +
-            y2*(a3 + (a4 - a5/(T_m_a7*T_m_a7))*y2*y2*y2))
+    Cp = numba_vectorized.TRCCp(T, a0, a1, a2, a3, a4, a5, a6, a7)
     return Cp
