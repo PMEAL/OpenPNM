@@ -1,2 +1,4 @@
 paraview
+vtk
+pyqt=4
 mayavi
