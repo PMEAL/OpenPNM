@@ -2,6 +2,7 @@
 import numpy as np
 from chemicals import Vm_to_rho, rho_to_Vm
 from chemicals import numba_vectorized
+from chemicals import R, k
 from openpnm.phases import GenericPhase as GenericPhase
 from openpnm.utils import HealthDict, PrintableList, SubDict
 from openpnm.utils import Docorator, GenericSettings
@@ -378,6 +379,9 @@ class LiquidMixture(GenericMixture):
 class GasMixture(GenericMixture):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.add_model(propname='pore.molecular_weight',
+                       model=mixture_molecular_weight,
+                       regen_mode='deferred')
         self.add_model(propname='pore.gas_viscosity',
                        model=gas_mixture_viscosity,
                        regen_mode='deferred')
@@ -386,6 +390,18 @@ class GasMixture(GenericMixture):
                        regen_mode='deferred')
         self.add_model(propname='pore.heat_capacity',
                        model=mixture_heat_capacity,
+                       regen_mode='deferred')
+        self.add_model(propname='pore.LJ_epsilon',
+                       model=gas_mixture_LJ_epsilon,
+                       regen_mode='deferred')
+        self.add_model(propname='pore.LJ_sigma',
+                       model=gas_mixture_LJ_sigma,
+                       regen_mode='deferred')
+        self.add_model(propname='pore.LJ_omega',
+                       model=gas_mixture_LJ_collision_integral,
+                       regen_mode='deferred')
+        self.add_model(propname='pore.diffusion_coefficient',
+                       model=gas_mixture_diffusivity,
                        regen_mode='deferred')
 
 
@@ -459,7 +475,6 @@ def mixture_molecular_weight(target):
 
 def liquid_mixture_density(target, temperature='pore.temperature'):
     # Actually pure component density using mixture properties
-    from chemicals import Vm_to_rho
     T = target[temperature]
     MW = target['pore.molecular_weight']
     Tc = target['pore.critical_temperature']
@@ -505,8 +520,6 @@ def gas_mixture_thermal_conductivity(target, temperature='pore.temperature'):
     T = target[temperature]
     ys = [target['pore.mole_fraction.' + c.name] for c in target.components.values()]
     kGs = [c['pore.thermal_conductivity'] for c in target.components.values()]
-    mus = [c['pore.viscosity'] for c in target.components.values()]
-    Tbs = [c.parameters['boiling_temperature'] for c in target.components.values()]
     MWs = [c.parameters['molecular_weight'] for c in target.components.values()]
     # numba_vectorized.Lindsay_Bromley(T, ys, kGs, mus, Tbs, MWs)
     kmix = np.zeros_like(T)
@@ -526,3 +539,52 @@ def mixture_heat_capacity(target):
     Cps = [c['pore.heat_capacity'] for c in target.components.values()]
     Cpmix = np.sum([zs[i]*Cps[i] for i in range(len(zs))], axis=0)
     return Cpmix
+
+
+def gas_mixture_LJ_collision_integral(
+        target,
+        temperature='pore.temperature',
+        epsilon='pore.LJ_epsilon',
+        ):
+    T = target[temperature]
+    eAB = target[epsilon]
+    A = 1.06036
+    B = 0.15610
+    C = 0.19300
+    D = 0.47635
+    E = 1.03587
+    F = 1.52996
+    G = 1.76474
+    H = 3.89411
+    Ts = k*T/eAB
+    Omega = A/Ts**B + C/np.exp(D*Ts) + E/np.exp(F*Ts) + G/np.exp(H*Ts)
+    return Omega
+
+
+def gas_mixture_LJ_epsilon(target):
+    es = [c.parameters['lennard_jones_epsilon'] for c in target.components.values()]
+    eAB = np.sqrt(np.prod(es))
+    return eAB
+
+
+def gas_mixture_LJ_sigma(target):
+    ss = [c.parameters['lennard_jones_sigma'] for c in target.components.values()]
+    sAB = np.mean(ss)
+    return sAB
+
+
+def gas_mixture_diffusivity(
+        target,
+        temperature='pore.temperature',
+        pressure='pore.pressure',
+        sigma='pore.LJ_sigma',
+        omega='pore.LJ_omega',
+        ):
+    MW = [c.parameters['molecular_weight'] for c in target.components.values()]
+    MWAB = 2/np.sum(1/np.array(MW))
+    T = target[temperature]
+    P = target[pressure]
+    sAB = target[sigma]
+    Omega = target[omega]
+    DAB = 0.00266*T*1.5/(P*MWAB**0.5*sAB**2*Omega)*101.325  # Convert to m2/s
+    return DAB

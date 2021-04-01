@@ -47,10 +47,13 @@ class SpeciesByName(GenericSpecies):
         self.parameters['melting_temperature'] = chem.Tm(CAS)
         self.parameters['acentric_factor'] = chem.acentric.omega(CAS)
         self.parameters['dipole_moment'] = chem.dipole.dipole_moment(CAS)
-        e_k = chem.lennard_jones.Stockmayer(CAS)
+        if CAS in extra_LJ.keys():
+            s, e_k = extra_LJ[CAS]
+        else:
+            e_k = chem.lennard_jones.Stockmayer(CAS)
+            s = chem.lennard_jones.molecular_diameter(CAS)
         if e_k is not None:
             self.parameters['lennard_jones_epsilon'] = e_k*k
-        s = chem.lennard_jones.molecular_diameter(CAS)
         if s is not None:
             self.parameters['lennard_jones_sigma'] = s
 
@@ -83,6 +86,10 @@ class LiquidByName(SpeciesByName):
                        model=liquid_density)
         self.add_model(propname='pore.vapor_pressure',
                        model=vapor_pressure)
+
+
+extra_LJ = {}
+extra_LJ['7727-37-9'] = (3.788, 71.4)
 
 
 def vapor_pressure(target, temperature='pore.temperature'):
