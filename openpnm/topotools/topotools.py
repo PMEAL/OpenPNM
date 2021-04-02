@@ -1616,7 +1616,7 @@ def reflect_base_points(base_pts, domain_size):
         if domain_size[1] != 0:  # If not a disk
             r = np.hstack([r, r, r])
             theta = np.hstack([theta, theta, theta])
-            z = np.hstack([z, -z, 2-z])
+            z = np.hstack([z, -z, 2*domain_size[1]-z])
         base_pts = np.vstack((r, theta, z))
     elif len(domain_size) == 3:
         Nx, Ny, Nz = domain_size
