@@ -5,156 +5,303 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>iMorph &#8212; OpenPNM</title>
+    <title>iMorph &#8212; OpenPNM  documentation</title>
+    
+  <link href="../../_static/css/theme.css" rel="stylesheet" />
+  <link href="../../_static/css/index.f6b7ca918bee2f46fd9abac01cfb07d5.css" rel="stylesheet" />
+
+    
+  <link rel="stylesheet"
+    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
+    <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    
+  <link rel="preload" as="script" href="../../_static/js/index.1e043a052b0af929e4d8.js">
+
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/custom.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Utilities" href="../utils/index.html" />
     <link rel="prev" title="MARock" href="marock.html" />
-   
-  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
 
-  </head><body>
-  
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
+    
+      
+      <a class="navbar-brand" href="https://www.openpnm.org">
+        <img src="../../_static/openpnm_logo.png" class="logo" alt="logo">
+      </a>
+      
+    
+
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    
+    <div id="navbar-menu" class=" collapse navbar-collapse">
+      <ul id="navbar-main-elements" class="navbar-nav mr-auto">
+        <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../userguide/index.html">
+  <strong>
+   User Guide
+  </strong>
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="../index.html">
+  <strong>
+   Module Reference
+  </strong>
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../examples/examples.html">
+  Examples
+ </a>
+</li>
+
+        
+        <li class="nav-item">
+            <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
+        </li>
+        
+        <li class="nav-item">
+            <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
+        </li>
+        
+      </ul>
+
+      <form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form>
+      <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/PMEAL/OpenPNM" rel="noopener" target="_blank" title="GitHub">
+            <span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://openpnm.substack.com/" rel="noopener" target="_blank" title="Substack">
+            <span><i class="fas fa-envelope-square"></i></span>
+            <label class="sr-only">Substack</label>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://twitter.com/OpenPnm" rel="noopener" target="_blank" title="Twitter">
+            <span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label>
+          </a>
+        </li>
+      </ul>
+    </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar"><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l2">
+  <a class="reference internal" href="../core/index.html">
+   Core
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../network/index.html">
+   Network
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../geometry/index.html">
+   Geometry
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../phases/index.html">
+   Phases
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../physics/index.html">
+   Physics
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../materials/index.html">
+   Materials
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../algorithms/index.html">
+   Algorithms
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../algorithms/metrics/index.html">
+   Metrics
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../topotools/index.html">
+   Topotools
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../models/index.html">
+   Models
+  </a>
+ </li>
+ <li class="toctree-l2 current active">
+  <a class="reference internal" href="index.html">
+   IO
+  </a>
+  <ul class="current">
+   <li class="toctree-l3">
+    <a class="reference internal" href="dict.html">
+     Dict
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="CSV.html">
+     CSV
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="VTK.html">
+     VTK
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="HDF5.html">
+     HDF5
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="XDMF.html">
+     XDMF
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="mat.html">
+     VTK
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="networkx.html">
+     NetworkX
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="pandas.html">
+     Pandas
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="statoil.html">
+     Statoil
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="marock.html">
+     MARock
+    </a>
+   </li>
+   <li class="toctree-l3 current active">
+    <a class="current reference internal" href="#">
+     iMorph
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../utils/index.html">
+   Utilities
+  </a>
+ </li>
+</ul>
+  </div>
+</nav>
+            </div>
+            
           
 
-          <div class="body" role="main">
-            
-  <div class="section" id="imorph">
-<span id="imorph-api"></span><h1>iMorph<a class="headerlink" href="#imorph" title="Permalink to this headline">¶</a></h1>
-<dl class="py class">
-<dt id="openpnm.io.iMorph">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">openpnm.io.</span></code><code class="sig-name descname"><span class="pre">iMorph</span></code><a class="reference internal" href="../../_modules/openpnm/io/iMorph.html#iMorph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.io.iMorph" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.io.GenericIO.GenericIO</span></code></p>
-<p>iMorph is a graphical interface program that provides some image analysis
-tools for porous media</p>
-<p>Combines two output files from the iMorph program to build a pore network.
-throats_cellsThroatsGraph_Nodes.txt - stores node shape and type
-information throats_cellsThroatsGraph.txt - stores node connectivity</p>
-<dl class="py method">
-<dt id="openpnm.io.iMorph.import_data">
-<em class="property"><span class="pre">classmethod</span> </em><code class="sig-name descname"><span class="pre">import_data</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throats_cellsThroatsGraph_Nodes.txt'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graph_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throats_cellsThroatsGraph.txt'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">voxel_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/io/iMorph.html#iMorph.import_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.io.iMorph.import_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Loads network data from an iMorph processed image stack</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>path</strong> (<em>string</em>) – The path of the folder where the subfiles are held</p></li>
-<li><p><strong>node_file</strong> (<em>string</em>) – The file that describes the pores and throats, the
-default iMorph name is: throats_cellsThroatsGraph_Nodes.txt</p></li>
-<li><p><strong>graph_file</strong> (<em>string</em>) – The file that describes the connectivity of the network, the
-default iMorph name is: throats_cellsThroatsGraph.txt</p></li>
-<li><p><strong>voxel_size</strong> (<em>float</em>) – Allows the user to define a voxel size different than what is
-contained in the node_file. The value must be in meters.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>project</strong> – An OpenPNM project object containing a network and a geometry
-object.  The geometry-related data are automatically placed on the
-geometry object using the <code class="docutils literal notranslate"><span class="pre">Imported</span></code> geometry class.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>list</p>
-</dd>
-</dl>
-</dd></dl>
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+              
 
-<dl class="py method">
-<dt id="openpnm.io.iMorph.load">
-<em class="property"><span class="pre">classmethod</span> </em><code class="sig-name descname"><span class="pre">load</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/io/iMorph.html#iMorph.load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.io.iMorph.load" title="Permalink to this definition">¶</a></dt>
-<dd><p>This method is being deprecated.  Use <code class="docutils literal notranslate"><span class="pre">import_data</span></code> instead.</p>
-</dd></dl>
-
-</dd></dl>
-
-</div>
+<nav id="bd-toc-nav">
+    
+</nav>
 
 
+              
           </div>
           
-        </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-            <p class="logo"><a href="../../index.html">
-              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
-            </a></p>
-<h1 class="logo"><a href="../../index.html">OpenPNM</a></h1>
 
-
-
-
-
-
-
-
-<h3>Navigation</h3>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../quick_start.html">Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../userguide.html">Examples’ Library</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../index.html"><strong>Module Reference</strong></a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../citation.html">Citing</a></li>
-</ul>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="../../index.html">Documentation overview</a><ul>
-  <li><a href="../index.html"><strong>Module Reference</strong></a><ul>
-  <li><a href="index.html">IO</a><ul>
-      <li>Previous: <a href="marock.html" title="previous chapter">MARock</a></li>
-      <li>Next: <a href="../utils/index.html" title="next chapter">Utilities</a></li>
-  </ul></li>
-  </ul></li>
-  </ul></li>
-</ul>
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <div class="section" id="imorph">
+<span id="imorph-api"></span><h1>iMorph<a class="headerlink" href="#imorph" title="Permalink to this headline">¶</a></h1>
 </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script>$('#searchbox').show(0);</script>
 
 
+              </div>
+              
+              
+          </main>
+          
 
-
-
-
-
-
-        </div>
       </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="footer">
-      &copy;2021 OpenPNM Team.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.3</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
-      
     </div>
 
     
+  <script src="../../_static/js/index.1e043a052b0af929e4d8.js"></script>
 
-    
+
+    <footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    <p>
+          &copy; Copyright 2021 OpenPNM Team.<br/>
+    </p>
+  </div>
+</footer>
   </body>
 </html>

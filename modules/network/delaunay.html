@@ -5,188 +5,293 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Delaunay &#8212; OpenPNM</title>
+    <title>Delaunay &#8212; OpenPNM  documentation</title>
+    
+  <link href="../../_static/css/theme.css" rel="stylesheet" />
+  <link href="../../_static/css/index.f6b7ca918bee2f46fd9abac01cfb07d5.css" rel="stylesheet" />
+
+    
+  <link rel="stylesheet"
+    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
+    <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    
+  <link rel="preload" as="script" href="../../_static/js/index.1e043a052b0af929e4d8.js">
+
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/custom.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Gabriel" href="gabriel.html" />
     <link rel="prev" title="Voronoi" href="voronoi.html" />
-   
-  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
 
-  </head><body>
-  
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
+    
+      
+      <a class="navbar-brand" href="https://www.openpnm.org">
+        <img src="../../_static/openpnm_logo.png" class="logo" alt="logo">
+      </a>
+      
+    
+
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    
+    <div id="navbar-menu" class=" collapse navbar-collapse">
+      <ul id="navbar-main-elements" class="navbar-nav mr-auto">
+        <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../userguide/index.html">
+  <strong>
+   User Guide
+  </strong>
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="../index.html">
+  <strong>
+   Module Reference
+  </strong>
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../examples/examples.html">
+  Examples
+ </a>
+</li>
+
+        
+        <li class="nav-item">
+            <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
+        </li>
+        
+        <li class="nav-item">
+            <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
+        </li>
+        
+      </ul>
+
+      <form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form>
+      <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/PMEAL/OpenPNM" rel="noopener" target="_blank" title="GitHub">
+            <span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://openpnm.substack.com/" rel="noopener" target="_blank" title="Substack">
+            <span><i class="fas fa-envelope-square"></i></span>
+            <label class="sr-only">Substack</label>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://twitter.com/OpenPnm" rel="noopener" target="_blank" title="Twitter">
+            <span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label>
+          </a>
+        </li>
+      </ul>
+    </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar"><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l2">
+  <a class="reference internal" href="../core/index.html">
+   Core
+  </a>
+ </li>
+ <li class="toctree-l2 current active">
+  <a class="reference internal" href="index.html">
+   Network
+  </a>
+  <ul class="current">
+   <li class="toctree-l3">
+    <a class="reference internal" href="generic.html">
+     GenericNetwork
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="cubic.html">
+     Cubic
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="cubic_dual.html">
+     CubicDual
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="cubic_template.html">
+     CubicTemplate
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="bravais.html">
+     Bravais
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="voronoi.html">
+     Voronoi
+    </a>
+   </li>
+   <li class="toctree-l3 current active">
+    <a class="current reference internal" href="#">
+     Delaunay
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="gabriel.html">
+     Gabriel
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="delaunay_voronoi_dual.html">
+     DelaunayVoronoiDual
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../geometry/index.html">
+   Geometry
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../phases/index.html">
+   Phases
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../physics/index.html">
+   Physics
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../materials/index.html">
+   Materials
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../algorithms/index.html">
+   Algorithms
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../algorithms/metrics/index.html">
+   Metrics
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../topotools/index.html">
+   Topotools
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../models/index.html">
+   Models
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../io/index.html">
+   IO
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../utils/index.html">
+   Utilities
+  </a>
+ </li>
+</ul>
+  </div>
+</nav>
+            </div>
+            
           
 
-          <div class="body" role="main">
-            
-  <div class="section" id="delaunay">
-<span id="delaunay-api"></span><h1>Delaunay<a class="headerlink" href="#delaunay" title="Permalink to this headline">¶</a></h1>
-<dl class="py class">
-<dt id="openpnm.network.Delaunay">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">openpnm.network.</span></code><code class="sig-name descname"><span class="pre">Delaunay</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/network/Delaunay.html#Delaunay"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.network.Delaunay" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.network.DelaunayVoronoiDual.DelaunayVoronoiDual</span></code></p>
-<p>Random network formed by Delaunay tessellation of arbitrary base points</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>num_points</strong> (<em>scalar</em>) – The number of points to place in the domain, which will become the
-pore centers after the tessellation is performed.  This value is
-ignored if <code class="docutils literal notranslate"><span class="pre">points</span></code> are given.</p></li>
-<li><p><strong>points</strong> (<em>array_like</em>) – An array of coordinates indicating the [x, y, z] locations of each
-point to use in the tessellation.  Note that the points must be given
-in rectilinear coordinates regardless of which domain <code class="docutils literal notranslate"><span class="pre">shape</span></code> was
-specified.  To convert between coordinate systems see the
-<code class="docutils literal notranslate"><span class="pre">convert_coords</span></code> function in the <code class="docutils literal notranslate"><span class="pre">openpnm.topotools</span></code> module.</p></li>
-<li><p><strong>shape</strong> (<em>array_like</em>) – <p>The size of the domain.  It’s possible to create cubic as well as 2D
-square domains by changing the <code class="docutils literal notranslate"><span class="pre">shape</span></code> as follows:</p>
-<p>[x, y, z] - will produce a normal cubic domain of dimension x, and
-and z</p>
-<p>[x, y, 0] - will produce a 2D square domain of size x by y</p>
-</p></li>
-<li><p><strong>name</strong> (<em>string</em>) – An optional name for the object to help identify it.  If not given,
-one will be generated.</p></li>
-<li><p><strong>project</strong> (<em>OpenPNM Project object</em><em>, </em><em>optional</em>) – Each OpenPNM object must be part of a <em>Project</em>.  If none is supplied
-then one will be created and this Network will be automatically
-assigned to it.  To create a <em>Project</em> use <code class="docutils literal notranslate"><span class="pre">openpnm.Project()</span></code>.</p></li>
-</ul>
-</dd>
-</dl>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><a class="reference internal" href="gabriel.html#openpnm.network.Gabriel" title="openpnm.network.Gabriel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Gabriel</span></code></a>, <a class="reference internal" href="voronoi.html#openpnm.network.Voronoi" title="openpnm.network.Voronoi"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Voronoi</span></code></a>, <a class="reference internal" href="delaunay_voronoi_dual.html#openpnm.network.DelaunayVoronoiDual" title="openpnm.network.DelaunayVoronoiDual"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DelaunayVoronoiDual</span></code></a></p>
-</div>
-<p class="rubric">Notes</p>
-<p>This class always performs the tessellation on the full set of points, then
-trims any points that lie outside the given domain <code class="docutils literal notranslate"><span class="pre">shape</span></code>.</p>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">scipy</span> <span class="k">as</span> <span class="nn">sp</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">matplotlib</span> <span class="k">as</span> <span class="nn">mpl</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">mpl</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s1">&#39;Agg&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Supplying custom specified points:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">gn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Delaunay</span><span class="p">(</span><span class="n">points</span><span class="o">=</span><span class="n">pts</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">gn</span><span class="o">.</span><span class="n">Np</span>
-<span class="go">200</span>
-</pre></div>
-</div>
-<p>Which can be quickly visualized using:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">fig</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">topotools</span><span class="o">.</span><span class="n">plot_connections</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">gn</span><span class="p">)</span>
-</pre></div>
-</div>
-<img alt="../../_images/delaunay_network_given_points.png" class="align-center" src="../../_images/delaunay_network_given_points.png" />
-<p>Upon visualization it can be seen that this network is not very cubic.
-There are a few ways to combat this, but none will make a truly square
-domain.  Points can be generated that lie outside the domain <code class="docutils literal notranslate"><span class="pre">shape</span></code>
-and they will be automatically trimmed.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">300</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span><span class="o">*</span><span class="mf">1.2</span> <span class="o">-</span> <span class="mf">0.1</span>  <span class="c1"># Must have more points for same density</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">gn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Delaunay</span><span class="p">(</span><span class="n">points</span><span class="o">=</span><span class="n">pts</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">gn</span><span class="o">.</span><span class="n">Np</span> <span class="o">&lt;</span> <span class="mi">300</span>  <span class="c1"># Confirm base points have been trimmed</span>
-<span class="go">True</span>
-</pre></div>
-</div>
-<p>And visualizing:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">fig</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">topotools</span><span class="o">.</span><span class="n">plot_connections</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">gn</span><span class="p">)</span>
-</pre></div>
-</div>
-<img alt="../../_images/delaunay_network_w_trimmed_points.png" class="align-center" src="../../_images/delaunay_network_w_trimmed_points.png" />
-<p>If a domain with random base points but flat faces is needed use
-<code class="docutils literal notranslate"><span class="pre">Voronoi</span></code>.</p>
-</dd></dl>
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+              
 
-</div>
+<nav id="bd-toc-nav">
+    
+</nav>
 
 
+              
           </div>
           
-        </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-            <p class="logo"><a href="../../index.html">
-              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
-            </a></p>
-<h1 class="logo"><a href="../../index.html">OpenPNM</a></h1>
 
-
-
-
-
-
-
-
-<h3>Navigation</h3>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../quick_start.html">Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../userguide.html">Examples’ Library</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../index.html"><strong>Module Reference</strong></a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../citation.html">Citing</a></li>
-</ul>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="../../index.html">Documentation overview</a><ul>
-  <li><a href="../index.html"><strong>Module Reference</strong></a><ul>
-  <li><a href="index.html">Network</a><ul>
-      <li>Previous: <a href="voronoi.html" title="previous chapter">Voronoi</a></li>
-      <li>Next: <a href="gabriel.html" title="next chapter">Gabriel</a></li>
-  </ul></li>
-  </ul></li>
-  </ul></li>
-</ul>
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <div class="section" id="delaunay">
+<span id="delaunay-api"></span><h1>Delaunay<a class="headerlink" href="#delaunay" title="Permalink to this headline">¶</a></h1>
 </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script>$('#searchbox').show(0);</script>
 
 
+              </div>
+              
+              
+          </main>
+          
 
-
-
-
-
-
-        </div>
       </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="footer">
-      &copy;2021 OpenPNM Team.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.3</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
-      
     </div>
 
     
+  <script src="../../_static/js/index.1e043a052b0af929e4d8.js"></script>
 
-    
+
+    <footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    <p>
+          &copy; Copyright 2021 OpenPNM Team.<br/>
+    </p>
+  </div>
+</footer>
   </body>
 </html>

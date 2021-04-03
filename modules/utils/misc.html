@@ -5,221 +5,263 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Miscellaneous Classes, Functions, and Tools &#8212; OpenPNM</title>
+    <title>Miscellaneous Classes, Functions, and Tools &#8212; OpenPNM  documentation</title>
+    
+  <link href="../../_static/css/theme.css" rel="stylesheet" />
+  <link href="../../_static/css/index.f6b7ca918bee2f46fd9abac01cfb07d5.css" rel="stylesheet" />
+
+    
+  <link rel="stylesheet"
+    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
+    <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    
+  <link rel="preload" as="script" href="../../_static/js/index.1e043a052b0af929e4d8.js">
+
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/custom.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Citing" href="../../citation.html" />
+    <link rel="next" title="Examples" href="../../examples/examples.html" />
     <link rel="prev" title="Project" href="project.html" />
-   
-  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
 
-  </head><body>
-  
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
+    
+      
+      <a class="navbar-brand" href="https://www.openpnm.org">
+        <img src="../../_static/openpnm_logo.png" class="logo" alt="logo">
+      </a>
+      
+    
+
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    
+    <div id="navbar-menu" class=" collapse navbar-collapse">
+      <ul id="navbar-main-elements" class="navbar-nav mr-auto">
+        <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../userguide/index.html">
+  <strong>
+   User Guide
+  </strong>
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="../index.html">
+  <strong>
+   Module Reference
+  </strong>
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../examples/examples.html">
+  Examples
+ </a>
+</li>
+
+        
+        <li class="nav-item">
+            <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
+        </li>
+        
+        <li class="nav-item">
+            <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
+        </li>
+        
+      </ul>
+
+      <form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form>
+      <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/PMEAL/OpenPNM" rel="noopener" target="_blank" title="GitHub">
+            <span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://openpnm.substack.com/" rel="noopener" target="_blank" title="Substack">
+            <span><i class="fas fa-envelope-square"></i></span>
+            <label class="sr-only">Substack</label>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://twitter.com/OpenPnm" rel="noopener" target="_blank" title="Twitter">
+            <span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label>
+          </a>
+        </li>
+      </ul>
+    </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar"><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l2">
+  <a class="reference internal" href="../core/index.html">
+   Core
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../network/index.html">
+   Network
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../geometry/index.html">
+   Geometry
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../phases/index.html">
+   Phases
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../physics/index.html">
+   Physics
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../materials/index.html">
+   Materials
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../algorithms/index.html">
+   Algorithms
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../algorithms/metrics/index.html">
+   Metrics
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../topotools/index.html">
+   Topotools
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../models/index.html">
+   Models
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../io/index.html">
+   IO
+  </a>
+ </li>
+ <li class="toctree-l2 current active">
+  <a class="reference internal" href="index.html">
+   Utilities
+  </a>
+  <ul class="current">
+   <li class="toctree-l3">
+    <a class="reference internal" href="workspace.html">
+     Workspace
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="project.html">
+     Project
+    </a>
+   </li>
+   <li class="toctree-l3 current active">
+    <a class="current reference internal" href="#">
+     Miscellaneous Classes, Functions, and Tools
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+  </div>
+</nav>
+            </div>
+            
           
 
-          <div class="body" role="main">
-            
-  <div class="section" id="miscellaneous-classes-functions-and-tools">
-<span id="misc-api"></span><h1>Miscellaneous Classes, Functions, and Tools<a class="headerlink" href="#miscellaneous-classes-functions-and-tools" title="Permalink to this headline">¶</a></h1>
-<dl class="py class">
-<dt id="openpnm.utils.PrintableDict">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">openpnm.utils.</span></code><code class="sig-name descname"><span class="pre">PrintableDict</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/misc.html#PrintableDict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.PrintableDict" title="Permalink to this definition">¶</a></dt>
-<dd><p>Simple subclass of <code class="docutils literal notranslate"><span class="pre">dict</span></code> that has nicer printing.</p>
-<p class="rubric">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">PrintableDict</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">array</span> <span class="k">as</span> <span class="n">arr</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;item1&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;item2&#39;</span><span class="p">:</span> <span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;item3&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;item4&#39;</span><span class="p">:</span> <span class="n">arr</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])}</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">PrintableDict</span><span class="p">(</span><span class="n">d</span><span class="p">))</span>
-<span class="go">――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――</span>
-<span class="go">key                                 value</span>
-<span class="go">――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――</span>
-<span class="go">item1                               1</span>
-<span class="go">item2                               1</span>
-<span class="go">item3                               [1, 1]</span>
-<span class="go">item4                               (2,)</span>
-<span class="go">――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――</span>
-</pre></div>
-</div>
-<p>If the item is a Numpy array the value column will contain the items’
-shape, otherwise it will contain the result of <code class="docutils literal notranslate"><span class="pre">print(item)</span></code></p>
-</dd></dl>
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+              
 
-<dl class="py class">
-<dt id="openpnm.utils.PrintableList">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">openpnm.utils.</span></code><code class="sig-name descname"><span class="pre">PrintableList</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iterable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/misc.html#PrintableList"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.PrintableList" title="Permalink to this definition">¶</a></dt>
-<dd><p>Simple subclass of <code class="docutils literal notranslate"><span class="pre">list</span></code> that has nice printing.  Only works flat lists.</p>
-<p class="rubric">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">PrintableList</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">temp</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;item1&#39;</span><span class="p">,</span> <span class="s1">&#39;item2&#39;</span><span class="p">,</span> <span class="s1">&#39;item3&#39;</span><span class="p">]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">PrintableList</span><span class="p">(</span><span class="n">temp</span><span class="p">))</span>
-<span class="go">――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――</span>
-<span class="go">1     : item1</span>
-<span class="go">2     : item2</span>
-<span class="go">3     : item3</span>
-<span class="go">――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――</span>
-</pre></div>
-</div>
-<p>Each line contains the result of <code class="docutils literal notranslate"><span class="pre">print(item)</span></code> on each item in the list</p>
-</dd></dl>
-
-<dl class="py class">
-<dt id="openpnm.utils.NestedDict">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">openpnm.utils.</span></code><code class="sig-name descname"><span class="pre">NestedDict</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mapping</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delimiter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'/'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/misc.html#NestedDict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.NestedDict" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py class">
-<dt id="openpnm.utils.SettingsDict">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">openpnm.utils.</span></code><code class="sig-name descname"><span class="pre">SettingsDict</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/misc.html#SettingsDict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.SettingsDict" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py class">
-<dt id="openpnm.utils.HealthDict">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">openpnm.utils.</span></code><code class="sig-name descname"><span class="pre">HealthDict</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/misc.html#HealthDict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.HealthDict" title="Permalink to this definition">¶</a></dt>
-<dd><p>This class adds a ‘health’ check to a standard dictionary.  This check
-looks into the dict values, and considers empty lists as healthy and all
-else as unhealthy.  If one or more entries is ‘unhealthy’ the health method
-returns False.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt id="openpnm.utils.flat_list">
-<code class="sig-prename descclassname"><span class="pre">openpnm.utils.</span></code><code class="sig-name descname"><span class="pre">flat_list</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/misc.html#flat_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.flat_list" title="Permalink to this definition">¶</a></dt>
-<dd><p>Given a list of nested lists of arbitrary depth, returns a single level or
-‘flat’ list.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt id="openpnm.utils.sanitize_dict">
-<code class="sig-prename descclassname"><span class="pre">openpnm.utils.</span></code><code class="sig-name descname"><span class="pre">sanitize_dict</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/misc.html#sanitize_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.sanitize_dict" title="Permalink to this definition">¶</a></dt>
-<dd><p>Given a nested dictionary, ensures that all nested dicts are normal
-Python dicts.  This is necessary for pickling, or just converting
-an ‘auto-vivifying’ dict to something that acts normal.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt id="openpnm.utils.unique_list">
-<code class="sig-prename descclassname"><span class="pre">openpnm.utils.</span></code><code class="sig-name descname"><span class="pre">unique_list</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/misc.html#unique_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.unique_list" title="Permalink to this definition">¶</a></dt>
-<dd><p>For a given list (of points) remove any duplicates</p>
-</dd></dl>
-
-<dl class="py function">
-<dt id="openpnm.utils.tic">
-<code class="sig-prename descclassname"><span class="pre">openpnm.utils.</span></code><code class="sig-name descname"><span class="pre">tic</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/misc.html#tic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.tic" title="Permalink to this definition">¶</a></dt>
-<dd><p>Homemade version of matlab tic and toc function, tic starts or resets
-the clock, toc reports the time since the last call of tic.</p>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#openpnm.utils.toc" title="openpnm.utils.toc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">toc</span></code></a></p>
-</div>
-</dd></dl>
-
-<dl class="py function">
-<dt id="openpnm.utils.toc">
-<code class="sig-prename descclassname"><span class="pre">openpnm.utils.</span></code><code class="sig-name descname"><span class="pre">toc</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">quiet</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/misc.html#toc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.toc" title="Permalink to this definition">¶</a></dt>
-<dd><p>Homemade version of matlab tic and toc function, tic starts or resets
-the clock, toc reports the time since the last call of tic.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>quiet</strong> (<em>Boolean</em>) – If False (default) then a message is output to the console.  If True
-the message is not displayed and the elapsed time is returned.</p>
-</dd>
-</dl>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#openpnm.utils.tic" title="openpnm.utils.tic"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tic</span></code></a></p>
-</div>
-</dd></dl>
-
-</div>
+<nav id="bd-toc-nav">
+    
+</nav>
 
 
+              
           </div>
           
-        </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-            <p class="logo"><a href="../../index.html">
-              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
-            </a></p>
-<h1 class="logo"><a href="../../index.html">OpenPNM</a></h1>
 
-
-
-
-
-
-
-
-<h3>Navigation</h3>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../quick_start.html">Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../userguide.html">Examples’ Library</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../index.html"><strong>Module Reference</strong></a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../citation.html">Citing</a></li>
-</ul>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="../../index.html">Documentation overview</a><ul>
-  <li><a href="../index.html"><strong>Module Reference</strong></a><ul>
-  <li><a href="index.html">Utilities</a><ul>
-      <li>Previous: <a href="project.html" title="previous chapter">Project</a></li>
-      <li>Next: <a href="../../citation.html" title="next chapter">Citing</a></li>
-  </ul></li>
-  </ul></li>
-  </ul></li>
-</ul>
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <div class="section" id="miscellaneous-classes-functions-and-tools">
+<span id="misc-api"></span><h1>Miscellaneous Classes, Functions, and Tools<a class="headerlink" href="#miscellaneous-classes-functions-and-tools" title="Permalink to this headline">¶</a></h1>
 </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script>$('#searchbox').show(0);</script>
 
 
+              </div>
+              
+              
+          </main>
+          
 
-
-
-
-
-
-        </div>
       </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="footer">
-      &copy;2021 OpenPNM Team.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.3</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
-      
     </div>
 
     
+  <script src="../../_static/js/index.1e043a052b0af929e4d8.js"></script>
 
-    
+
+    <footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    <p>
+          &copy; Copyright 2021 OpenPNM Team.<br/>
+    </p>
+  </div>
+</footer>
   </body>
 </html>

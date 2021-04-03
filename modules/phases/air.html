@@ -5,274 +5,268 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Air &#8212; OpenPNM</title>
+    <title>Air &#8212; OpenPNM  documentation</title>
+    
+  <link href="../../_static/css/theme.css" rel="stylesheet" />
+  <link href="../../_static/css/index.f6b7ca918bee2f46fd9abac01cfb07d5.css" rel="stylesheet" />
+
+    
+  <link rel="stylesheet"
+    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
+    <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    
+  <link rel="preload" as="script" href="../../_static/js/index.1e043a052b0af929e4d8.js">
+
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/custom.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Water" href="water.html" />
     <link rel="prev" title="GenericPhase" href="generic_phase.html" />
-   
-  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
 
-  </head><body>
-  
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
+    
+      
+      <a class="navbar-brand" href="https://www.openpnm.org">
+        <img src="../../_static/openpnm_logo.png" class="logo" alt="logo">
+      </a>
+      
+    
+
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    
+    <div id="navbar-menu" class=" collapse navbar-collapse">
+      <ul id="navbar-main-elements" class="navbar-nav mr-auto">
+        <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../userguide/index.html">
+  <strong>
+   User Guide
+  </strong>
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="../index.html">
+  <strong>
+   Module Reference
+  </strong>
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../examples/examples.html">
+  Examples
+ </a>
+</li>
+
+        
+        <li class="nav-item">
+            <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
+        </li>
+        
+        <li class="nav-item">
+            <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
+        </li>
+        
+      </ul>
+
+      <form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form>
+      <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/PMEAL/OpenPNM" rel="noopener" target="_blank" title="GitHub">
+            <span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://openpnm.substack.com/" rel="noopener" target="_blank" title="Substack">
+            <span><i class="fas fa-envelope-square"></i></span>
+            <label class="sr-only">Substack</label>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://twitter.com/OpenPnm" rel="noopener" target="_blank" title="Twitter">
+            <span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label>
+          </a>
+        </li>
+      </ul>
+    </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar"><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l2">
+  <a class="reference internal" href="../core/index.html">
+   Core
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../network/index.html">
+   Network
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../geometry/index.html">
+   Geometry
+  </a>
+ </li>
+ <li class="toctree-l2 current active">
+  <a class="reference internal" href="index.html">
+   Phases
+  </a>
+  <ul class="current">
+   <li class="toctree-l3">
+    <a class="reference internal" href="generic_phase.html">
+     GenericPhase
+    </a>
+   </li>
+   <li class="toctree-l3 current active">
+    <a class="current reference internal" href="#">
+     Air
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="water.html">
+     Water
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="mercury.html">
+     Mercury
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../physics/index.html">
+   Physics
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../materials/index.html">
+   Materials
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../algorithms/index.html">
+   Algorithms
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../algorithms/metrics/index.html">
+   Metrics
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../topotools/index.html">
+   Topotools
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../models/index.html">
+   Models
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../io/index.html">
+   IO
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../utils/index.html">
+   Utilities
+  </a>
+ </li>
+</ul>
+  </div>
+</nav>
+            </div>
+            
           
 
-          <div class="body" role="main">
-            
-  <div class="section" id="air">
-<span id="air-api"></span><h1>Air<a class="headerlink" href="#air" title="Permalink to this headline">¶</a></h1>
-<dl class="py class">
-<dt id="openpnm.phases.Air">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">openpnm.phases.</span></code><code class="sig-name descname"><span class="pre">Air</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/phases/Air.html#Air"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.phases.Air" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.phases.GenericPhase.GenericPhase</span></code></p>
-<p>Creates Phase object with preset models and values for air.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>network</strong> (<em>OpenPNM Network object</em>) – The network to which this phase object will be attached.</p></li>
-<li><p><strong>project</strong> (<em>OpenPNM Project object</em><em>, </em><em>optional</em>) – The Project with which this phase should be associted.  If a
-<code class="docutils literal notranslate"><span class="pre">network</span></code> is given then this is ignored and the Network’s project is
-used.  If a <code class="docutils literal notranslate"><span class="pre">network</span></code> is not given then this is mandatory.</p></li>
-<li><p><strong>name</strong> (<em>string</em><em>, </em><em>optional</em>) – The name of the phase.  This is useful to keep track of the objects
-throughout the simulation.  The name must be unique to the project.  If
-no name is given, one is generated.</p></li>
-</ul>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">air</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">phases</span><span class="o">.</span><span class="n">Air</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">)</span>
-</pre></div>
-</div>
-<p class="rubric">Notes</p>
-<p>The table below shows all of the pore-scale models that are included with
-this class to calculate the physical properties of this fluid as functions
-of the relevant state variables.</p>
-<p>This object is initialized at standard conditions of 298 K and 101325 Pa.
-If these conditions are changed, the dependent properties can be
-recalculated by calling <code class="docutils literal notranslate"><span class="pre">regenerate_models</span></code>.</p>
-<p>All of these parameters can be adjusted manually by editing the entries in
-the <strong>ModelsDict</strong> stored in the <code class="docutils literal notranslate"><span class="pre">models</span></code> attribute of the object.</p>
-<p>For a full listing of models and their parameters use <code class="docutils literal notranslate"><span class="pre">print(obj.models)</span></code>
-where <code class="docutils literal notranslate"><span class="pre">obj</span></code> is the handle to the object.</p>
-<p>In addition to these models, this class also has a number of constant
-values assigned to it which can be found by running
-<code class="docutils literal notranslate"><span class="pre">props(mode='constants')</span></code>.</p>
-<table class="docutils align-default">
-<colgroup>
-<col style="width: 4%" />
-<col style="width: 32%" />
-<col style="width: 26%" />
-<col style="width: 38%" />
-</colgroup>
-<thead>
-<tr class="row-odd"><th class="head"><p>#</p></th>
-<th class="head"><p>Property Name</p></th>
-<th class="head"><p>Parameter</p></th>
-<th class="head"><p>Value</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>1</p></td>
-<td><p>pore.molar_density</p></td>
-<td><p>model:</p></td>
-<td><p>ideal_gas</p></td>
-</tr>
-<tr class="row-odd"><td></td>
-<td></td>
-<td><p>regen_mode</p></td>
-<td><p>normal</p></td>
-</tr>
-<tr class="row-even"><td></td>
-<td></td>
-<td><p>pressure</p></td>
-<td><p>pore.pressure</p></td>
-</tr>
-<tr class="row-odd"><td></td>
-<td></td>
-<td><p>temperature</p></td>
-<td><p>pore.temperature</p></td>
-</tr>
-<tr class="row-even"><td><p>2</p></td>
-<td><p>pore.diffusivity</p></td>
-<td><p>model:</p></td>
-<td><p>fuller</p></td>
-</tr>
-<tr class="row-odd"><td></td>
-<td></td>
-<td><p>MA</p></td>
-<td><p>0.032</p></td>
-</tr>
-<tr class="row-even"><td></td>
-<td></td>
-<td><p>MB</p></td>
-<td><p>0.028</p></td>
-</tr>
-<tr class="row-odd"><td></td>
-<td></td>
-<td><p>vA</p></td>
-<td><p>16.6</p></td>
-</tr>
-<tr class="row-even"><td></td>
-<td></td>
-<td><p>vB</p></td>
-<td><p>17.9</p></td>
-</tr>
-<tr class="row-odd"><td></td>
-<td></td>
-<td><p>regen_mode</p></td>
-<td><p>normal</p></td>
-</tr>
-<tr class="row-even"><td></td>
-<td></td>
-<td><p>temperature</p></td>
-<td><p>pore.temperature</p></td>
-</tr>
-<tr class="row-odd"><td></td>
-<td></td>
-<td><p>pressure</p></td>
-<td><p>pore.pressure</p></td>
-</tr>
-<tr class="row-even"><td><p>3</p></td>
-<td><p>pore.thermal_cond…</p></td>
-<td><p>model:</p></td>
-<td><p>polynomial</p></td>
-</tr>
-<tr class="row-odd"><td></td>
-<td></td>
-<td><p>prop</p></td>
-<td><p>pore.temperature</p></td>
-</tr>
-<tr class="row-even"><td></td>
-<td></td>
-<td><p>a</p></td>
-<td><p>[0.00422791, 7.89606e…</p></td>
-</tr>
-<tr class="row-odd"><td></td>
-<td></td>
-<td><p>regen_mode</p></td>
-<td><p>normal</p></td>
-</tr>
-<tr class="row-even"><td><p>4</p></td>
-<td><p>pore.viscosity</p></td>
-<td><p>model:</p></td>
-<td><p>polynomial</p></td>
-</tr>
-<tr class="row-odd"><td></td>
-<td></td>
-<td><p>prop</p></td>
-<td><p>pore.temperature</p></td>
-</tr>
-<tr class="row-even"><td></td>
-<td></td>
-<td><p>a</p></td>
-<td><p>[1.82082e-06, 6.51815…</p></td>
-</tr>
-<tr class="row-odd"><td></td>
-<td></td>
-<td><p>regen_mode</p></td>
-<td><p>normal</p></td>
-</tr>
-</tbody>
-</table>
-<p class="rubric">References</p>
-<p>The pore scale models for this class are taken from:</p>
-<p>[1] E.W. Lemmon and R.T. Jacobsen, “Viscosity and Thermal Conductivity
-Equations for Nitrogen, Oxygen, Argon, and Air”, Int. J. of Thermophysics,
-Vol. 25, No. 1, January 2004, pp. 21-69</p>
-</dd></dl>
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+              
 
-</div>
+<nav id="bd-toc-nav">
+    
+</nav>
 
 
+              
           </div>
           
-        </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-            <p class="logo"><a href="../../index.html">
-              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
-            </a></p>
-<h1 class="logo"><a href="../../index.html">OpenPNM</a></h1>
 
-
-
-
-
-
-
-
-<h3>Navigation</h3>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../quick_start.html">Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../userguide.html">Examples’ Library</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../index.html"><strong>Module Reference</strong></a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../citation.html">Citing</a></li>
-</ul>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="../../index.html">Documentation overview</a><ul>
-  <li><a href="../index.html"><strong>Module Reference</strong></a><ul>
-  <li><a href="index.html">Phases</a><ul>
-      <li>Previous: <a href="generic_phase.html" title="previous chapter">GenericPhase</a></li>
-      <li>Next: <a href="water.html" title="next chapter">Water</a></li>
-  </ul></li>
-  </ul></li>
-  </ul></li>
-</ul>
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <div class="section" id="air">
+<span id="air-api"></span><h1>Air<a class="headerlink" href="#air" title="Permalink to this headline">¶</a></h1>
 </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script>$('#searchbox').show(0);</script>
 
 
+              </div>
+              
+              
+          </main>
+          
 
-
-
-
-
-
-        </div>
       </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="footer">
-      &copy;2021 OpenPNM Team.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.3</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
-      
     </div>
 
     
+  <script src="../../_static/js/index.1e043a052b0af929e4d8.js"></script>
 
-    
+
+    <footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    <p>
+          &copy; Copyright 2021 OpenPNM Team.<br/>
+    </p>
+  </div>
+</footer>
   </body>
 </html>
