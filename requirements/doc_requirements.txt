@@ -1,0 +1,6 @@
+pydata-sphinx-theme
+jupyterlab_widgets
+sphinx-copybutton
+nbsphinx
+nbsphinx-link
+pandoc
