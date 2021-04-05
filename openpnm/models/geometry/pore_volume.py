@@ -114,6 +114,76 @@ def cylinder(target, pore_diameter='pore.diameter'):
     return value
 
 
+def pyramid(target, pore_diameter='pore.diameter'):
+    r"""
+    Calculates pore volume from diameter assuming a truncated pyramid pore
+    body.
+
+    Parameters
+    ----------
+    target : OpenPNM Object
+        The object which this model is associated with. This controls
+        the length of the calculated array, and also provides access to other
+        necessary geometric properties.
+
+    pore_diameter : string
+        The dictionary key of the pore diameter values
+
+    Returns
+    -------
+    value : NumPy ndarray
+        Array containing pore volume values.
+
+    """
+    raise NotImplementedError
+
+
+def cone(target, pore_diameter='pore.diameter'):
+    r"""
+    Calculates pore volume from diameter assuming a conical pore body.
+
+    Parameters
+    ----------
+    target : OpenPNM Object
+        The object which this model is associated with. This controls
+        the length of the calculated array, and also provides access to other
+        necessary geometric properties.
+
+    pore_diameter : string
+        The dictionary key of the pore diameter values
+
+    Returns
+    -------
+    value : NumPy ndarray
+        Array containing pore volume values.
+
+    """
+    raise NotImplementedError
+
+
+def trapezoid(target, pore_diameter='pore.diameter'):
+    r"""
+    Calculates pore volume from diameter assuming a trapezoidal pore body.
+
+    Parameters
+    ----------
+    target : OpenPNM Object
+        The object which this model is associated with. This controls
+        the length of the calculated array, and also provides access to other
+        necessary geometric properties.
+
+    pore_diameter : string
+        The dictionary key of the pore diameter values
+
+    Returns
+    -------
+    value : NumPy ndarray
+        Array containing pore volume values.
+
+    """
+    raise NotImplementedError
+
+
 def effective(target, pore_volume='pore.volume',
               throat_volume='throat.volume'):
     r"""

@@ -426,9 +426,8 @@ class MultiPhase(GenericPhase):
         if phase not in self.project:
             raise Exception(f"{phase.name} doesn't belong to this project")
         # Add the passed phase to MultiPhase object if not found
-        else:
-            if phase.name not in self.settings['phases']:
-                self.add_phases(phase)
+        if phase.name not in self.settings['phases']:
+            self.add_phases(phase)
 
         # Check for value consistency of the arguments
         if np.any(Pvals > 1.0) or np.any(Pvals < 0.0):

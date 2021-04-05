@@ -74,11 +74,10 @@ class GenericMixture(GenericPhase):
                     comp = self.project[key.split('.')[-1]]
                     vals = comp[key.rsplit('.', maxsplit=1)[0]]
                     return vals
-                else:
-                    # If does not end in component name, see if components have it
-                    vals = SubDict()
-                    for comp in self.components.keys():
-                        vals[key + '.' + comp] = self.components[comp][key]
+                # If does not end in component name, see if components have it
+                vals = SubDict()
+                for comp in self.components.keys():
+                    vals[key + '.' + comp] = self.components[comp][key]
             except KeyError:
                 vals = self.interleave_data(key)
         return vals

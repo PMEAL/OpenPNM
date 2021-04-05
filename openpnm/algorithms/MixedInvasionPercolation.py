@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 ===============================================================================
 MixedInvasionPercolation: IP allowing pores and throats to invade separately
@@ -18,18 +17,18 @@ logger = logging.getLogger(__name__)
 
 class MixedInvasionPercolation(GenericAlgorithm):
     r"""
-    An implemetation of invasion percolation which can invade bonds, sites or a
-    mixture of both. Inlets can be treated as individual injection points that
-    share a common pressure or have their own and progess independently.
-    Inlets can also be single pores or clusters.
+    An implemetation of invasion percolation which can invade bonds,
+    sites or a mixture of both. Inlets can be treated as individual
+    injection points that share a common pressure or have their own and
+    progess independently. Inlets can also be single pores or clusters.
 
     Parameters
     ----------
-    network : OpenPNM Network object
-        The Network upon which the invasion should occur.
+    network : GenericNetwork
+        The network upon which the invasion should occur.
 
     Notes
-    ----
+    -----
     n/a
 
     """
@@ -185,14 +184,9 @@ class MixedInvasionPercolation(GenericAlgorithm):
         elif clusters is not None:
             logger.info("Setting inlet clusters at individual pressures")
         else:
-            logger.error(
-                "Either 'inlets' or 'clusters' must be passed to" + " setup method"
-            )
+            logger.error("Either 'inlets' or 'clusters' must be passed to" + " setup method")
         self.queue = []
-        if self.settings["cooperative_pore_filling"] and hasattr(self, "tt_Pc"):
-            check_coop = True
-        else:
-            check_coop = False
+        check_coop = self.settings["cooperative_pore_filling"] and hasattr(self, "tt_Pc")
         for i, cluster in enumerate(clusters):
             self.queue.append([])
             # Perform initial analysis on input pores
