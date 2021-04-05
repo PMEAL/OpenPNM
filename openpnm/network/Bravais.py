@@ -94,7 +94,7 @@ class Bravais(GenericNetwork):
     >>> op.topotools.merge_networks(sc, [bcc, fcc])
     >>> fig = op.topotools.plot_connections(sc)
 
-    .. image:: /../docs/static/images/bravais_networks.png
+    .. image:: /../docs/_static/images/bravais_networks.png
         :align: center
 
     For larger networks and more control over presentation use `Paraview

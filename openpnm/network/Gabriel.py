@@ -65,7 +65,7 @@ class Gabriel(Delaunay):
     >>> fig = op.topotools.plot_connections(dn)
     >>> fig = op.topotools.plot_coordinates(dn, c='r', s=100, fig=fig)
 
-    .. image:: /../docs/static/images/gabriel_network.png
+    .. image:: /../docs/_static/images/gabriel_network.png
         :align: center
 
     """
