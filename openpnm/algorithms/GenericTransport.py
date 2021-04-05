@@ -681,9 +681,8 @@ class GenericTransport(GenericAlgorithm):
                                     + "conda install -c conda-forge pardiso4py")
                     self.settings['solver_family'] = 'scipy'
                     return self._get_solver()
-                else:
-                    raise Exception("Pardiso not found. Install it with: "
-                                    + "conda install -c conda-forge pardiso4py")
+                raise Exception("Pardiso not found. Install it with: "
+                                + "conda install -c conda-forge pardiso4py")
 
             def solver(A, b, **kwargs):
                 r"""

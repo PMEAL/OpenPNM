@@ -32,6 +32,24 @@ class HydraulicConductanceTest:
         actual = self.phys['throat.hydraulic_conductance'].mean()
         assert_allclose(actual, desired=1421.0262776)
 
+    def test_generic_hydraulic(self):
+        # Pass size factors as dict
+        self.geo['throat.hydraulic_size_factors'] = {
+            "pore1": 0.123, "throat": 0.981, "pore2": 0.551
+        }
+        mod = op.models.physics.hydraulic_conductance.generic_hydraulic
+        self.phys.add_model(propname='throat.g_hydraulic_conductance', model=mod)
+        self.phys.regenerate_models()
+        actual = self.phys['throat.g_hydraulic_conductance'].mean()
+        assert_allclose(actual, desired=9120.483231751232)
+        # Pass size factors as an array
+        for elem in ["pore1", "throat", "pore2"]:
+            del self.geo[f"throat.hydraulic_size_factors.{elem}"]
+        self.geo['throat.hydraulic_size_factors'] = 0.896
+        self.phys.regenerate_models("throat.g_hydraulic_conductance")
+        actual = self.phys['throat.g_hydraulic_conductance'].mean()
+        assert_allclose(actual, desired=89600.0)
+
     def test_hagen_poiseuille_2d(self):
         self.geo['throat.conduit_lengths.pore1'] = 0.25
         self.geo['throat.conduit_lengths.throat'] = 0.6
