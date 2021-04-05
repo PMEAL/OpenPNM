@@ -60,7 +60,7 @@ class GenericGeometry(Subdomain, ModelsMixin):
     >>> mpl.use('Agg')
     >>> geom.show_hist('pore.size')
 
-    .. image:: /../docs/static/images/generic_geometry_histogram.png
+    .. image:: /../docs/_static/images/generic_geometry_histogram.png
         :width: 500px
         :align: center
 
