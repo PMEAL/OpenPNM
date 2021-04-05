@@ -342,8 +342,7 @@ def flat_list(input_list):
     x = input_list
     if isinstance(x, list):
         return [a for i in x for a in flat_list(i)]
-    else:
-        return [x]
+    return [x]
 
 
 def sanitize_dict(input_dict):

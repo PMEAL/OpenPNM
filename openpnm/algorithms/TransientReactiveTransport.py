@@ -343,6 +343,7 @@ class TransientReactiveTransport(ReactiveTransport):
             self[quantity + '@' + t_str] = quant_init
             self[quantity] = quant_init
 
+            time = None
             for time in np.arange(t+dt, tf+dt, dt):
                 logger.info(f'    Current time step: {time} s')
                 # Update A and b and apply BCs

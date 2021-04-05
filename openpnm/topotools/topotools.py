@@ -1068,9 +1068,8 @@ def subdivide(network, pores, shape, labels=[]):
                          does not support another subdivision')
     # Assigning right shape and division
     if np.size(shape) != 2 and np.size(shape) != 3:
-        raise Exception('Subdivide not implemented for Networks other than 2D \
-                         and 3D')
-    elif np.size(shape) == 3 and 1 not in shape:
+        raise Exception('Subdivide not implemented for Networks other than 2D and 3D')
+    if np.size(shape) == 3 and 1 not in shape:
         div = np.array(shape, ndmin=1)
         single_dim = None
     else:

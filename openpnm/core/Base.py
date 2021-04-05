@@ -1604,6 +1604,7 @@ class Base(dict):
             r, c = N // 3 + 1, 3
         fig, ax = plt.subplots(r, c, figsize=(3*c, 3*r))
         axs = np.array(ax).flatten()
+        i = None
         for i, _ in enumerate(props):
             try:
                 # Update kwargs with some default values
@@ -1616,7 +1617,7 @@ class Base(dict):
             except KeyError:
                 pass
         # Hide unpopulated subplots from the grid
-        for j in range(i+1, len(axs)):
+        for j in range(i + 1, len(axs)):
             axs[j].set_axis_off()
         plt.rcParams['font.size'] = temp
         plt.tight_layout(h_pad=0.9, w_pad=0.9)
