@@ -215,8 +215,8 @@ class ReactiveTransportTest:
                              model=variable_diffusivity)
         self.phys.add_model(propname="throat.diffusive_conductance",
                             model=variable_conductance)
-        self.alg.set_value_BC(pores=self.net.pores("back"), values=10.0)
-        self.alg.set_value_BC(pores=self.net.pores("front"), values=0.0)
+        self.alg.set_value_BC(pores=self.net.pores("front"), values=10.0)
+        self.alg.set_value_BC(pores=self.net.pores("back"), values=0.0)
         self.alg.run()
         c_avg = self.alg["pore.concentration"].reshape(self.net.shape).mean(axis=(0, 2))
         desired = [10.0, 8.18175755, 5.42194391, 0.0]

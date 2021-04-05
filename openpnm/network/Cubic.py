@@ -207,14 +207,14 @@ class Cubic(GenericNetwork):
 
         offset = {}
         shape = self.settings['shape']
-        offset["back"] = offset["left"] = offset["bottom"] = [0, 0, 0]
+        offset["front"] = offset["left"] = offset["bottom"] = [0, 0, 0]
         offset["right"] = [Lcx * shape[0], 0, 0]
-        offset["front"] = [0, Lcy * shape[1], 0]
+        offset["back"] = [0, Lcy * shape[1], 0]
         offset["top"] = [0, 0, Lcz * shape[2]]
 
         scale = {}
         scale["left"] = scale["right"] = [0, 1, 1]
-        scale["back"] = scale["front"] = [1, 0, 1]
+        scale["front"] = scale["back"] = [1, 0, 1]
         scale["bottom"] = scale["top"] = [1, 1, 0]
 
         for label in labels:
