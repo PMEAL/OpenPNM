@@ -1,0 +1,221 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>openpnm.algorithms.OhmicConduction &#8212; OpenPNM</title>
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/plot_directive.css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for openpnm.algorithms.OhmicConduction</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">openpnm.algorithms</span> <span class="kn">import</span> <span class="n">ReactiveTransport</span>
+<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">logging</span><span class="p">,</span> <span class="n">Docorator</span><span class="p">,</span> <span class="n">GenericSettings</span>
+<span class="n">docstr</span> <span class="o">=</span> <span class="n">Docorator</span><span class="p">()</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<span class="nd">@docstr</span><span class="o">.</span><span class="n">get_sections</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="s1">&#39;OhmicConductionSettings&#39;</span><span class="p">,</span>
+                     <span class="n">sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Parameters&#39;</span><span class="p">])</span>
+<span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+<span class="k">class</span> <span class="nc">OhmicConductionSettings</span><span class="p">(</span><span class="n">GenericSettings</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    %(GenericTransportSettings.parameters)s</span>
+<span class="sd">    quantity : str (default = ``&#39;pore.voltage&#39;``)</span>
+<span class="sd">        The name of the physical quantity to be calculated</span>
+<span class="sd">    conductance : str (default = ``&#39;throat.electrical_conductance&#39;``)</span>
+<span class="sd">        The name of the pore-scale transport conductance values. These are</span>
+<span class="sd">        typically calculated by a model attached to a *Physics* object</span>
+<span class="sd">        associated with the given *Phase*.</span>
+
+<span class="sd">    Other Parameters</span>
+<span class="sd">    ----------------</span>
+
+<span class="sd">    **The following parameters pertain to the ReactiveTransport class**</span>
+
+<span class="sd">    %(ReactiveTransportSettings.other_parameters)s</span>
+
+<span class="sd">    ----</span>
+
+<span class="sd">    **The following parameters pertain to the GenericTransport class**</span>
+
+<span class="sd">    %(GenericTransportSettings.other_parameters)s</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">quantity</span> <span class="o">=</span> <span class="s1">&#39;pore.voltage&#39;</span>
+    <span class="n">conductance</span> <span class="o">=</span> <span class="s1">&#39;throat.electrical_conductance&#39;</span>
+
+
+<div class="viewcode-block" id="OhmicConduction"><a class="viewcode-back" href="../../../modules/algorithms/ohmic_conduction.html#openpnm.algorithms.OhmicConduction">[docs]</a><span class="k">class</span> <span class="nc">OhmicConduction</span><span class="p">(</span><span class="n">ReactiveTransport</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A subclass of GenericLinearTransport to simulate electron and ionic</span>
+<span class="sd">    conduction.  The 2 main roles of this subclass are to set the default</span>
+<span class="sd">    property names and to implement a method for calculating the effective</span>
+<span class="sd">    conductivity of the network.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="o">=</span><span class="p">{},</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">_update_settings_and_docs</span><span class="p">(</span><span class="n">OhmicConductionSettings</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span>
+
+<div class="viewcode-block" id="OhmicConduction.setup"><a class="viewcode-back" href="../../../modules/algorithms/ohmic_conduction.html#openpnm.algorithms.OhmicConduction.setup">[docs]</a>    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">quantity</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">conductance</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method takes several arguments that are essential to running the</span>
+<span class="sd">        algorithm and adds them to the settings.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        %(OhmicConductionSettings.parameters)s</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Any additional arguments are added to the ``settings`` dictionary of</span>
+<span class="sd">        the object.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">phase</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;phase&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">phase</span><span class="o">.</span><span class="n">name</span>
+        <span class="k">if</span> <span class="n">quantity</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;quantity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">quantity</span>
+        <span class="k">if</span> <span class="n">conductance</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;conductance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">conductance</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="OhmicConduction.calc_effective_conductivity"><a class="viewcode-back" href="../../../modules/algorithms/ohmic_conduction.html#openpnm.algorithms.OhmicConduction.calc_effective_conductivity">[docs]</a>    <span class="k">def</span> <span class="nf">calc_effective_conductivity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inlets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">outlets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                                    <span class="n">domain_area</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">domain_length</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This calculates the effective electrical conductivity.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        inlets : array_like</span>
+<span class="sd">            The pores where the inlet voltage boundary conditions were</span>
+<span class="sd">            applied.  If not given an attempt is made to infer them from the</span>
+<span class="sd">            algorithm.</span>
+
+<span class="sd">        outlets : array_like</span>
+<span class="sd">            The pores where the outlet voltage boundary conditions were</span>
+<span class="sd">            applied.  If not given an attempt is made to infer them from the</span>
+<span class="sd">            algorithm.</span>
+
+<span class="sd">        domain_area : scalar, optional</span>
+<span class="sd">            The area of the inlet (and outlet) boundary faces.  If not given</span>
+<span class="sd">            then an attempt is made to estimate it, but it is usually</span>
+<span class="sd">            underestimated.</span>
+
+<span class="sd">        domain_length : scalar, optional</span>
+<span class="sd">            The length of the domain between the inlet and outlet boundary</span>
+<span class="sd">            faces.  If not given then an attempt is made to estimate it, but it</span>
+<span class="sd">            is usually underestimated.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        The area and length of the domain are found using the bounding box</span>
+<span class="sd">        around the inlet and outlet pores which do not necessarily lie on the</span>
+<span class="sd">        edge of the domain, resulting in underestimation of sizes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calc_eff_prop</span><span class="p">(</span><span class="n">inlets</span><span class="o">=</span><span class="n">inlets</span><span class="p">,</span> <span class="n">outlets</span><span class="o">=</span><span class="n">outlets</span><span class="p">,</span>
+                                   <span class="n">domain_area</span><span class="o">=</span><span class="n">domain_area</span><span class="p">,</span>
+                                   <span class="n">domain_length</span><span class="o">=</span><span class="n">domain_length</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h1 class="logo"><a href="../../../index.html">OpenPNM</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quick_start.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../userguide.html">Examples’ Library</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/index.html"><strong>Module Reference</strong></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../citation.html">Citing</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021 OpenPNM Team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

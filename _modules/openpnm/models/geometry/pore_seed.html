@@ -1,0 +1,212 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>openpnm.models.geometry.pore_seed &#8212; OpenPNM</title>
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/plot_directive.css" />
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for openpnm.models.geometry.pore_seed</h1><div class="highlight"><pre>
+<span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Pore seed models are use to calculate random numbers for each pore, which can</span>
+<span class="sd">subsequently be used in statistical distributions to calculate actual pore</span>
+<span class="sd">sizes.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">_np</span>
+<span class="kn">import</span> <span class="nn">scipy</span> <span class="k">as</span> <span class="nn">_sp</span>
+<span class="kn">from</span> <span class="nn">openpnm.models</span> <span class="kn">import</span> <span class="n">misc</span> <span class="k">as</span> <span class="n">_misc</span>
+<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">logging</span> <span class="k">as</span> <span class="n">_logging</span>
+<span class="n">_logger</span> <span class="o">=</span> <span class="n">_logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="random"><a class="viewcode-back" href="../../../../modules/models/geometry.html#openpnm.models.geometry.pore_seed.random">[docs]</a><span class="k">def</span> <span class="nf">random</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">num_range</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]):</span>
+    <span class="k">return</span> <span class="n">_misc</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">element</span><span class="o">=</span><span class="s1">&#39;pore&#39;</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">,</span> <span class="n">num_range</span><span class="o">=</span><span class="n">num_range</span><span class="p">)</span></div>
+
+
+<span class="n">random</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="n">_misc</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="vm">__doc__</span>
+
+
+<div class="viewcode-block" id="spatially_correlated"><a class="viewcode-back" href="../../../../modules/models/geometry.html#openpnm.models.geometry.pore_seed.spatially_correlated">[docs]</a><span class="k">def</span> <span class="nf">spatially_correlated</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">strel</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generates pore seeds that are spatailly correlated with their neighbors.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    target : OpenPNM Object</span>
+<span class="sd">        The object which this model is associated with. This controls the</span>
+<span class="sd">        length of the calculated array, and also provides access to other</span>
+<span class="sd">        necessary properties.</span>
+
+<span class="sd">    weights : list of ints, optional</span>
+<span class="sd">        The [Nx,Ny,Nz] distances (in number of pores) in each direction that</span>
+<span class="sd">        should be correlated.</span>
+
+<span class="sd">    strel : array_like, optional (in place of weights)</span>
+<span class="sd">        The option allows full control over the spatial correlation pattern by</span>
+<span class="sd">        specifying the structuring element to be used in the convolution.</span>
+
+<span class="sd">        The array should be a 3D array containing the strength of correlations</span>
+<span class="sd">        in each direction.  Nonzero values indicate the strength, direction</span>
+<span class="sd">        and extent of correlations.  The following would achieve a basic</span>
+<span class="sd">        correlation in the z-direction:</span>
+
+<span class="sd">    ::</span>
+
+<span class="sd">        strel = np.array([[[0, 0, 0], [0, 0, 0], [0, 0, 0]],</span>
+<span class="sd">                          [[0, 0, 0], [1, 1, 1], [0, 0, 0]],</span>
+<span class="sd">                          [[0, 0, 0], [0, 0, 0], [0, 0, 0]]])</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    values : NumPy ndarray</span>
+<span class="sd">        Array containing pore seed values.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This approach uses image convolution to replace each pore seed in the</span>
+<span class="sd">    geoemtry with a weighted average of those around it.  It then converts the</span>
+<span class="sd">    new seeds back to a random distribution by assuming they new seeds are</span>
+<span class="sd">    normally distributed.</span>
+
+<span class="sd">    Because is uses image analysis tools, it only works on Cubic networks.</span>
+
+<span class="sd">    This is the appproached used by Gostick et al [2]_ to create an anistropic</span>
+<span class="sd">    gas diffusion layer for fuel cell electrodes.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [2] J. Gostick et al, Pore network modeling of fibrous gas diffusion</span>
+<span class="sd">           layers for polymer electrolyte membrane fuel cells. J Power Sources</span>
+<span class="sd">           v173, pp277–290 (2007)</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import openpnm as op</span>
+<span class="sd">    &gt;&gt;&gt; pn = op.network.Cubic(shape=[10, 10, 10])</span>
+<span class="sd">    &gt;&gt;&gt; Ps, Ts = pn.Ps, pn.Ts</span>
+<span class="sd">    &gt;&gt;&gt; geom = op.geometry.GenericGeometry(network=pn, pores=Ps, throats=Ts)</span>
+<span class="sd">    &gt;&gt;&gt; mod = op.models.geometry.pore_seed.spatially_correlated</span>
+<span class="sd">    &gt;&gt;&gt; geom.add_model(propname=&#39;pore.seed&#39;, model=mod, weights=[2, 2, 2])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">scipy.ndimage</span> <span class="k">as</span> <span class="nn">spim</span>
+    <span class="n">network</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">network</span>
+    <span class="c1"># The following will only work on Cubic networks</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;shape&#39;</span><span class="p">]</span>
+    <span class="n">im</span> <span class="o">=</span> <span class="n">_np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">strel</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># Then generate a strel</span>
+        <span class="k">if</span> <span class="nb">sum</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># If weights of 0 are sent, then skip everything and return rands.</span>
+            <span class="k">return</span> <span class="n">im</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="n">_np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
+        <span class="n">strel</span> <span class="o">=</span> <span class="n">_np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">w</span><span class="o">*</span><span class="mi">2</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">strel</span><span class="p">[:,</span> <span class="n">w</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">w</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">strel</span><span class="p">[</span><span class="n">w</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">:,</span> <span class="n">w</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">strel</span><span class="p">[</span><span class="n">w</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">w</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="p">:]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">im</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">convolve</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">strel</span><span class="p">)</span>
+    <span class="c1"># Convolution is no longer randomly distributed, so fit a gaussian</span>
+    <span class="c1"># and find it&#39;s seeds</span>
+    <span class="n">im</span> <span class="o">=</span> <span class="p">(</span><span class="n">im</span> <span class="o">-</span> <span class="n">_np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">im</span><span class="p">))</span><span class="o">/</span><span class="n">_np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+    <span class="n">im</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">_sp</span><span class="o">.</span><span class="n">special</span><span class="o">.</span><span class="n">erfc</span><span class="p">(</span><span class="o">-</span><span class="n">im</span><span class="o">/</span><span class="n">_np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+    <span class="n">values</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+    <span class="n">values</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="n">network</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="n">target</span><span class="o">.</span><span class="n">name</span><span class="p">)]</span>
+    <span class="k">return</span> <span class="n">values</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../index.html">
+              <img class="logo" src="../../../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h1 class="logo"><a href="../../../../index.html">OpenPNM</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../quick_start.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../userguide.html">Examples’ Library</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules/index.html"><strong>Module Reference</strong></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../citation.html">Citing</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021 OpenPNM Team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

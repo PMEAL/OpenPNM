@@ -1,0 +1,330 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>openpnm.models.geometry.throat_volume &#8212; OpenPNM</title>
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/plot_directive.css" />
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for openpnm.models.geometry.throat_volume</h1><div class="highlight"><pre>
+<span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">_np</span>
+
+
+<div class="viewcode-block" id="cylinder"><a class="viewcode-back" href="../../../../modules/models/geometry.html#openpnm.models.geometry.throat_volume.cylinder">[docs]</a><span class="k">def</span> <span class="nf">cylinder</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">throat_length</span><span class="o">=</span><span class="s1">&#39;throat.length&#39;</span><span class="p">,</span>
+             <span class="n">throat_diameter</span><span class="o">=</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate throat volume assuing a cylindrical shape</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    target : OpenPNM Object</span>
+<span class="sd">        The object which this model is associated with. This controls the</span>
+<span class="sd">        length of the calculated array, and also provides access to other</span>
+<span class="sd">        necessary properties.</span>
+
+<span class="sd">    throat_length and throat_diameter : strings</span>
+<span class="sd">        The dictionary keys containing the arrays with the throat diameter and</span>
+<span class="sd">        length values.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    value : NumPy ndarray</span>
+<span class="sd">        Array containing throat volume values.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    At present this models does NOT account for the volume reprsented by the</span>
+<span class="sd">    intersection of the throat with a spherical pore body.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">leng</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">throat_length</span><span class="p">]</span>
+    <span class="n">diam</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">throat_diameter</span><span class="p">]</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="n">_np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">4</span><span class="o">*</span><span class="n">leng</span><span class="o">*</span><span class="n">diam</span><span class="o">**</span><span class="mi">2</span>
+    <span class="k">return</span> <span class="n">value</span></div>
+
+
+<div class="viewcode-block" id="cuboid"><a class="viewcode-back" href="../../../../modules/models/geometry.html#openpnm.models.geometry.throat_volume.cuboid">[docs]</a><span class="k">def</span> <span class="nf">cuboid</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">throat_length</span><span class="o">=</span><span class="s1">&#39;throat.length&#39;</span><span class="p">,</span>
+           <span class="n">throat_diameter</span><span class="o">=</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate throat volume assuing a square cross-section</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    target : OpenPNM Object</span>
+<span class="sd">        The object which this model is associated with. This controls the</span>
+<span class="sd">        length of the calculated array, and also provides access to other</span>
+<span class="sd">        necessary properties.</span>
+
+<span class="sd">    throat_length and throat_diameter : strings</span>
+<span class="sd">        The dictionary keys containing the arrays with the throat diameter and</span>
+<span class="sd">        length values.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    value : NumPy ndarray</span>
+<span class="sd">        Array containing throat volume values.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    At present this models does NOT account for the volume reprsented by the</span>
+<span class="sd">    intersection of the throat with a spherical pore body.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">leng</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">throat_length</span><span class="p">]</span>
+    <span class="n">diam</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">throat_diameter</span><span class="p">]</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="n">leng</span><span class="o">*</span><span class="n">diam</span><span class="o">**</span><span class="mi">2</span>
+    <span class="k">return</span> <span class="n">value</span></div>
+
+
+<div class="viewcode-block" id="extrusion"><a class="viewcode-back" href="../../../../modules/models/geometry.html#openpnm.models.geometry.throat_volume.extrusion">[docs]</a><span class="k">def</span> <span class="nf">extrusion</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">throat_length</span><span class="o">=</span><span class="s1">&#39;throat.length&#39;</span><span class="p">,</span>
+              <span class="n">throat_area</span><span class="o">=</span><span class="s1">&#39;throat.area&#39;</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate throat volume from the throat area and the throat length. This</span>
+<span class="sd">    method is useful for abnormal shaped throats.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    target : OpenPNM Object</span>
+<span class="sd">        The object which this model is associated with. This controls the</span>
+<span class="sd">        length of the calculated array, and also provides access to other</span>
+<span class="sd">        necessary properties.</span>
+
+<span class="sd">    throat_length and throat_area : strings</span>
+<span class="sd">        The dictionary keys containing the arrays with the throat area and</span>
+<span class="sd">        length values.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    value : NumPy ndarray</span>
+<span class="sd">        Array containing throat volume values.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    At present this models does NOT account for the volume reprsented by the</span>
+<span class="sd">    intersection of the throat with a spherical pore body.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">leng</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">throat_length</span><span class="p">]</span>
+    <span class="n">area</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">throat_area</span><span class="p">]</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="n">leng</span><span class="o">*</span><span class="n">area</span>
+    <span class="k">return</span> <span class="n">value</span></div>
+
+
+<div class="viewcode-block" id="rectangle"><a class="viewcode-back" href="../../../../modules/models/geometry.html#openpnm.models.geometry.throat_volume.rectangle">[docs]</a><span class="k">def</span> <span class="nf">rectangle</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">throat_length</span><span class="o">=</span><span class="s1">&#39;throat.length&#39;</span><span class="p">,</span>
+              <span class="n">throat_diameter</span><span class="o">=</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate throat volume assuing a rectangular shape</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    target : OpenPNM Object</span>
+<span class="sd">        The object which this model is associated with. This controls the</span>
+<span class="sd">        length of the calculated array, and also provides access to other</span>
+<span class="sd">        necessary properties.</span>
+
+<span class="sd">    throat_length and throat_diameter : strings</span>
+<span class="sd">        The dictionary keys containing the arrays with the throat diameter and</span>
+<span class="sd">        length values.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    At present this models does NOT account for the volume reprsented by the</span>
+<span class="sd">    intersection of the throat with a spherical pore body.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">target</span><span class="p">[</span><span class="n">throat_length</span><span class="p">]</span> <span class="o">*</span> <span class="n">target</span><span class="p">[</span><span class="n">throat_diameter</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="lens"><a class="viewcode-back" href="../../../../modules/models/geometry.html#openpnm.models.geometry.throat_volume.lens">[docs]</a><span class="k">def</span> <span class="nf">lens</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">throat_diameter</span><span class="o">=</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">,</span>
+         <span class="n">pore_diameter</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the volume residing the hemispherical caps formed by the</span>
+<span class="sd">    intersection between cylindrical throats and spherical pores.</span>
+
+<span class="sd">    This volume should be subtracted from throat volumes if the throat lengths</span>
+<span class="sd">    were found using throat end points.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    throat_diameter : string</span>
+<span class="sd">        The dictionary keys containing the array with the throat diameter</span>
+<span class="sd">        values.</span>
+<span class="sd">    pore_diameter : string</span>
+<span class="sd">        The dictionary keys containing the array with the pore diameter</span>
+<span class="sd">        values.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    volume : ND-array</span>
+<span class="sd">        The volume that should be subtracted from each throat volume to prevent</span>
+<span class="sd">        double counting the volume of overlapping area.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This model does NOT consider the possibility that multiple throats might</span>
+<span class="sd">    overlap in the same location which could happen if throats are large and</span>
+<span class="sd">    connectivity is random.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    pendular_ring</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">network</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">network</span>
+    <span class="n">conns</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">]</span>
+    <span class="n">Rp</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">pore_diameter</span><span class="p">]</span>
+    <span class="n">Rt</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">throat_diameter</span><span class="p">]</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">_np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">Rt</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">q</span> <span class="o">=</span> <span class="n">_np</span><span class="o">.</span><span class="n">arcsin</span><span class="p">(</span><span class="n">a</span><span class="o">/</span><span class="n">Rp</span><span class="p">[</span><span class="n">conns</span><span class="p">])</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">Rp</span><span class="p">[</span><span class="n">conns</span><span class="p">]</span><span class="o">*</span><span class="n">_np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">q</span><span class="p">)</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="n">Rp</span><span class="p">[</span><span class="n">conns</span><span class="p">]</span> <span class="o">-</span> <span class="n">b</span>
+    <span class="n">V</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="mi">6</span><span class="o">*</span><span class="n">_np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">h</span><span class="o">*</span><span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="n">a</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">h</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="pendular_ring"><a class="viewcode-back" href="../../../../modules/models/geometry.html#openpnm.models.geometry.throat_volume.pendular_ring">[docs]</a><span class="k">def</span> <span class="nf">pendular_ring</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">throat_diameter</span><span class="o">=</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">,</span>
+                  <span class="n">pore_diameter</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the volume of the pendular rings residing between the end of</span>
+<span class="sd">    a cylindrical throat and spherical pores that are in contact but not</span>
+<span class="sd">    overlapping.</span>
+
+<span class="sd">    This volume should be added to the throat volume if the throat length was</span>
+<span class="sd">    found as the center-to-center distance less the pore radii.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    throat_diameter : string</span>
+<span class="sd">        The dictionary keys containing the array with the throat diameter</span>
+<span class="sd">        values.</span>
+<span class="sd">    pore_diameter : string</span>
+<span class="sd">        The dictionary keys containing the array with the pore diameter</span>
+<span class="sd">        values.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    volume : ND-array</span>
+<span class="sd">        The volume that should be added to each throat volume to account for</span>
+<span class="sd">        under-represented void volume at the pore-throat junctions.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This model does NOT consider the possibility that multiple throats might</span>
+<span class="sd">    overlap in the same location which could happen if throats are large and</span>
+<span class="sd">    connectivity is random.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    lens</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">network</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">network</span>
+    <span class="n">conns</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">]</span>
+    <span class="n">Rp</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">pore_diameter</span><span class="p">]</span>
+    <span class="n">Rt</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">throat_diameter</span><span class="p">]</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">_np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">Rt</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">q</span> <span class="o">=</span> <span class="n">_np</span><span class="o">.</span><span class="n">arcsin</span><span class="p">(</span><span class="n">a</span><span class="o">/</span><span class="n">Rp</span><span class="p">[</span><span class="n">conns</span><span class="p">])</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">Rp</span><span class="p">[</span><span class="n">conns</span><span class="p">]</span><span class="o">*</span><span class="n">_np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">q</span><span class="p">)</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="n">Rp</span><span class="p">[</span><span class="n">conns</span><span class="p">]</span> <span class="o">-</span> <span class="n">b</span>
+    <span class="n">Vlens</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="mi">6</span><span class="o">*</span><span class="n">_np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">h</span><span class="o">*</span><span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="n">a</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">h</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">Vcyl</span> <span class="o">=</span> <span class="n">_np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">h</span>
+    <span class="n">V</span> <span class="o">=</span> <span class="n">Vcyl</span> <span class="o">-</span> <span class="n">Vlens</span>
+    <span class="k">return</span> <span class="n">_np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../index.html">
+              <img class="logo" src="../../../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h1 class="logo"><a href="../../../../index.html">OpenPNM</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../quick_start.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../userguide.html">Examples’ Library</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules/index.html"><strong>Module Reference</strong></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../citation.html">Citing</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021 OpenPNM Team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

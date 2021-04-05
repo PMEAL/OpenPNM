@@ -4,259 +4,189 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>GenericPhysics &#8212; OpenPNM  documentation</title>
-    
-  <link href="../../_static/css/theme.css" rel="stylesheet" />
-  <link href="../../_static/css/index.f6b7ca918bee2f46fd9abac01cfb07d5.css" rel="stylesheet" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
 
-    
-  <link rel="stylesheet"
-    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
-
-    
-      
-
-    
+    <title>GenericPhysics &#8212; OpenPNM</title>
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
-    
-  <link rel="preload" as="script" href="../../_static/js/index.1e043a052b0af929e4d8.js">
-
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/clipboard.min.js"></script>
-    <script src="../../_static/copybutton.js"></script>
-    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script src="../../_static/js/custom.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Standard" href="standard.html" />
     <link rel="prev" title="Physics" href="index.html" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="en" />
-  </head>
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
-    
-    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
+  </head><body>
+  
 
-    
-      
-      <a class="navbar-brand" href="https://www.openpnm.org">
-        <img src="../../_static/openpnm_logo.png" class="logo" alt="logo">
-      </a>
-      
-    
-
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-
-    
-    <div id="navbar-menu" class=" collapse navbar-collapse">
-      <ul id="navbar-main-elements" class="navbar-nav mr-auto">
-        <li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="../../userguide/index.html">
-  <strong>
-   User Guide
-  </strong>
- </a>
-</li>
-
-<li class="toctree-l1 current active nav-item">
- <a class="reference internal nav-link" href="../index.html">
-  <strong>
-   Module Reference
-  </strong>
- </a>
-</li>
-
-<li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="../../examples/examples.html">
-  Examples
- </a>
-</li>
-
-        
-        <li class="nav-item">
-            <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
-        </li>
-        
-        <li class="nav-item">
-            <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
-        </li>
-        
-      </ul>
-
-      <form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
-  <i class="icon fas fa-search"></i>
-  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
-</form>
-      <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
-        <li class="nav-item">
-          <a class="nav-link" href="https://github.com/PMEAL/OpenPNM" rel="noopener" target="_blank" title="GitHub">
-            <span><i class="fab fa-github-square"></i></span>
-            <label class="sr-only">GitHub</label>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="https://openpnm.substack.com/" rel="noopener" target="_blank" title="Substack">
-            <span><i class="fas fa-envelope-square"></i></span>
-            <label class="sr-only">Substack</label>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="https://twitter.com/OpenPnm" rel="noopener" target="_blank" title="Twitter">
-            <span><i class="fab fa-twitter-square"></i></span>
-            <label class="sr-only">Twitter</label>
-          </a>
-        </li>
-      </ul>
-    </div>
-</div>
-    </nav>
-    
-
-    <div class="container-xl">
-      <div class="row">
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
           
+
+          <div class="body" role="main">
             
-            <!-- Only show if we have sidebars configured, else just a small margin  -->
-            <div class="col-12 col-md-3 bd-sidebar"><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
-  <div class="bd-toc-item active">
-    <ul class="current nav bd-sidenav">
- <li class="toctree-l2">
-  <a class="reference internal" href="../core/index.html">
-   Core
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../network/index.html">
-   Network
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../geometry/index.html">
-   Geometry
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../phases/index.html">
-   Phases
-  </a>
- </li>
- <li class="toctree-l2 current active">
-  <a class="reference internal" href="index.html">
-   Physics
-  </a>
-  <ul class="current">
-   <li class="toctree-l3 current active">
-    <a class="current reference internal" href="#">
-     GenericPhysics
-    </a>
-   </li>
-   <li class="toctree-l3">
-    <a class="reference internal" href="standard.html">
-     Standard
-    </a>
-   </li>
-  </ul>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../materials/index.html">
-   Materials
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../algorithms/index.html">
-   Algorithms
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../algorithms/metrics/index.html">
-   Metrics
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../topotools/index.html">
-   Topotools
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../models/index.html">
-   Models
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../io/index.html">
-   IO
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../utils/index.html">
-   Utilities
-  </a>
- </li>
+  <section id="genericphysics">
+<span id="generic-physics-api"></span><h1>GenericPhysics<a class="headerlink" href="#genericphysics" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="openpnm.physics.GenericPhysics">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">openpnm.physics.</span></code><code class="sig-name descname"><span class="pre">GenericPhysics</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/physics/GenericPhysics.html#GenericPhysics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.physics.GenericPhysics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.core.Subdomain.Subdomain</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.core.ModelsMixin.ModelsMixin</span></code></p>
+<p>This generic class is meant as a starter for custom Physics objects</p>
+<p>It produces a blank object with no pore-scale models attached.  Users can
+add models from the <code class="docutils literal notranslate"><span class="pre">models</span></code> module (or create their own).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>network</strong> (<em>OpenPNM Network object</em>) – The network to which this Physics should be attached</p></li>
+<li><p><strong>phase</strong> (<em>OpenPNM Phase object</em>) – The Phase object to which this Physics applies</p></li>
+<li><p><strong>geometry</strong> (<em>OpenPNM Geometry object</em>) – The Geometry object that defines the pores/throats where this Physics
+should be applied.</p></li>
+<li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – A unique string name to identify the Physics object, typically same as
+instance name but can be anything.  If left blank, and name will be
+generated that includes the class name and an integer index.</p></li>
 </ul>
-  </div>
-</nav>
-            </div>
-            
-          
+</dd>
+</dl>
+<dl class="py method">
+<dt id="openpnm.physics.GenericPhysics.set_geometry">
+<code class="sig-name descname"><span class="pre">set_geometry</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">geometry</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'add'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/physics/GenericPhysics.html#GenericPhysics.set_geometry"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.physics.GenericPhysics.set_geometry" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the association between this physics and a geometry (i.e. a
+set of pores and throats that define a subdomain)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>geometry</strong> (<em>OpenPNM Geometry object</em>) – The geometry defining the pores and throats to which this physics
+should be attached</p></li>
+<li><p><strong>mode</strong> (<em>str</em>) – <p>Options are:</p>
+<p>’swap’ - Associations will be made with the new geometry, and
+the pore and throat locations from the current geometry will be
+transferred to the new one.</p>
+<p>’drop’ - Associations with the current geometry will be removed.</p>
+<p>’add’ - If the physics does not presently have an associated
+geometry, this will create associations.</p>
+</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
-          
-          <div class="d-none d-xl-block col-xl-2 bd-toc">
-              
+<dl class="py method">
+<dt id="openpnm.physics.GenericPhysics.set_phase">
+<code class="sig-name descname"><span class="pre">set_phase</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'swap'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/physics/GenericPhysics.html#GenericPhysics.set_phase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.physics.GenericPhysics.set_phase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the association between this physics and a phase.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>phase</strong> (<em>OpenPNM Phase object</em>) – If mode is ‘add’ or ‘swap’, this must be specified so that
+associations can be recorded in the phase dictionary.  If the
+mode is ‘drop’, this is not needed since the existing association
+can be used to find it.</p></li>
+<li><p><strong>mode</strong> (<em>str</em>) – <p>Options are:</p>
+<p>’swap’ - Associations will be made with the new phase, and
+the pore and throat locations from the current phase will be
+transferred to the new one.</p>
+<p>’drop’ - Associations with the existing phase will be removed.</p>
+<p>’add’ - If the physics does not presently have an associated
+phase, this will create associations, but no pore or throat
+locations will assigned.  This must be done using the
+<code class="docutils literal notranslate"><span class="pre">set_geometry</span></code> method.</p>
+</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>In all cases the property data will be deleted since it will not
+be relevant to the new phase, so the <code class="docutils literal notranslate"><span class="pre">regenerate_models</span></code> method
+must be run.</p>
+</dd></dl>
 
-<nav id="bd-toc-nav">
-    
-</nav>
+</dd></dl>
+
+</section>
 
 
-              
           </div>
           
-
-          
-          
-            
-          
-          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
-              
-              <div>
-                
-  <div class="section" id="genericphysics">
-<span id="generic-physics-api"></span><h1>GenericPhysics<a class="headerlink" href="#genericphysics" title="Permalink to this headline">¶</a></h1>
-</div>
-
-
-              </div>
-              
-              
-          </main>
-          
-
+        </div>
       </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h1 class="logo"><a href="../../index.html">OpenPNM</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quick_start.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../userguide.html">Examples’ Library</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html"><strong>Module Reference</strong></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../citation.html">Citing</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html"><strong>Module Reference</strong></a><ul>
+  <li><a href="index.html">Physics</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Physics</a></li>
+      <li>Next: <a href="standard.html" title="next chapter">Standard</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021 OpenPNM Team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
     </div>
 
     
-  <script src="../../_static/js/index.1e043a052b0af929e4d8.js"></script>
 
-
-    <footer class="footer mt-5 mt-md-0">
-  <div class="container">
-    <p>
-          &copy; Copyright 2021 OpenPNM Team.<br/>
-    </p>
-  </div>
-</footer>
+    
   </body>
 </html>

@@ -1,0 +1,214 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>openpnm.io.Pandas &#8212; OpenPNM</title>
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/plot_directive.css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for openpnm.io.Pandas</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">flatdict</span> <span class="kn">import</span> <span class="n">FlatDict</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
+<span class="kn">from</span> <span class="nn">openpnm.io</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">GenericIO</span>
+<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">sanitize_dict</span><span class="p">,</span> <span class="n">logging</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Pandas"><a class="viewcode-back" href="../../../modules/io/pandas.html#openpnm.io.Pandas">[docs]</a><span class="k">class</span> <span class="nc">Pandas</span><span class="p">(</span><span class="n">GenericIO</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Combines all data arrays into a Pandas DataFrame object</span>
+
+<span class="sd">    The structure of a DataFrame is a very close match to OpenPNMs data</span>
+<span class="sd">    storage.  Each key becomes a column header in the Dataframe, and each</span>
+<span class="sd">    pore or throat entry becomes a row.</span>
+
+<span class="sd">    Limitations of the DataFrame are the inability to have multidimensional</span>
+<span class="sd">    data in a single column.  The methods on a DataFrame are also oriented</span>
+<span class="sd">    towards time-series data.</span>
+
+<span class="sd">    Nonetheless, Pandas offers many useful features such as performing</span>
+<span class="sd">    statistical analysis on property.  DataFrames also offer *many* options for</span>
+<span class="sd">    exporting to other file formats, so if a format is not yet supported</span>
+<span class="sd">    by OpenPNM, this could be an solution.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Pandas.to_dataframe"><a class="viewcode-back" href="../../../modules/io/pandas.html#openpnm.io.Pandas.to_dataframe">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">to_dataframe</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method is being deprecated.  Use ``export_data`` instead.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">export_data</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">data</span></div>
+
+<div class="viewcode-block" id="Pandas.export_data"><a class="viewcode-back" href="../../../modules/io/pandas.html#openpnm.io.Pandas.export_data">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">export_data</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">phases</span><span class="o">=</span><span class="p">[],</span> <span class="n">join</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">delim</span><span class="o">=</span><span class="s1">&#39; | &#39;</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert the Network (and optionally Phase) data to Pandas DataFrames.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        network: OpenPNM Network Object</span>
+<span class="sd">            The network containing the data to be stored</span>
+
+<span class="sd">        phases : list of OpenPNM Phase Objects</span>
+<span class="sd">            The data on each supplied phase will be added to DataFrame</span>
+
+<span class="sd">        join : boolean</span>
+<span class="sd">            If ``False`` (default), two DataFrames are returned with *pore*</span>
+<span class="sd">            data in one, and *throat* data in the other.  If ``True`` the pore</span>
+<span class="sd">            and throat data are combined into a single DataFrame.  This can be</span>
+<span class="sd">            problematic as it will put NaNs into all the *pore* columns which</span>
+<span class="sd">            are shorter than the *throat* columns.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Pandas ``DataFrame`` object containing property and label data in each</span>
+<span class="sd">        column.  If ``join`` was False (default) the two DataFrames are</span>
+<span class="sd">        returned i a named tuple, or else a single DataFrame with pore and</span>
+<span class="sd">        throat data in the same file, despite the column length being</span>
+<span class="sd">        different.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">DataFrame</span>
+
+        <span class="n">project</span><span class="p">,</span> <span class="n">network</span><span class="p">,</span> <span class="n">phases</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_parse_args</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">network</span><span class="p">,</span>
+                                                   <span class="n">phases</span><span class="o">=</span><span class="n">phases</span><span class="p">)</span>
+
+        <span class="c1"># Initialize pore and throat data dictionary using Dict class</span>
+        <span class="n">pdata</span> <span class="o">=</span> <span class="n">Dict</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">network</span><span class="p">,</span> <span class="n">phases</span><span class="o">=</span><span class="n">phases</span><span class="p">,</span> <span class="n">element</span><span class="o">=</span><span class="s1">&#39;pore&#39;</span><span class="p">,</span>
+                             <span class="n">interleave</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">flatten</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                             <span class="n">categorize_by</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;object&#39;</span><span class="p">])</span>
+        <span class="n">tdata</span> <span class="o">=</span> <span class="n">Dict</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">network</span><span class="p">,</span> <span class="n">phases</span><span class="o">=</span><span class="n">phases</span><span class="p">,</span> <span class="n">element</span><span class="o">=</span><span class="s1">&#39;throat&#39;</span><span class="p">,</span>
+                             <span class="n">interleave</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">flatten</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                             <span class="n">categorize_by</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;object&#39;</span><span class="p">])</span>
+        <span class="n">pdata</span> <span class="o">=</span> <span class="n">FlatDict</span><span class="p">(</span><span class="n">pdata</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="n">delim</span><span class="p">)</span>
+        <span class="n">tdata</span> <span class="o">=</span> <span class="n">FlatDict</span><span class="p">(</span><span class="n">tdata</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="n">delim</span><span class="p">)</span>
+
+        <span class="c1"># Scan data and convert non-1d arrays to multiple columns</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">pdata</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">pdata</span><span class="p">[</span><span class="n">key</span><span class="p">])</span> <span class="o">!=</span> <span class="p">(</span><span class="n">network</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">Np</span><span class="p">,):</span>
+                <span class="n">arr</span> <span class="o">=</span> <span class="n">pdata</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+                <span class="n">tmp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">cols</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tmp</span><span class="p">))</span>
+                <span class="n">pdata</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">key</span><span class="o">+</span><span class="s1">&#39;[&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;]&#39;</span><span class="p">:</span> <span class="n">tmp</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
+                              <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">cols</span><span class="p">})</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">tdata</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">tdata</span><span class="p">[</span><span class="n">key</span><span class="p">])</span> <span class="o">!=</span> <span class="p">(</span><span class="n">network</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">Nt</span><span class="p">,):</span>
+                <span class="n">arr</span> <span class="o">=</span> <span class="n">tdata</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+                <span class="n">tmp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">cols</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tmp</span><span class="p">))</span>
+                <span class="n">tdata</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">key</span><span class="o">+</span><span class="s1">&#39;[&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;]&#39;</span><span class="p">:</span> <span class="n">tmp</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
+                              <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">cols</span><span class="p">})</span>
+
+        <span class="c1"># Convert sanitized dictionaries to DataFrames</span>
+        <span class="n">pdata</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="p">(</span><span class="n">sanitize_dict</span><span class="p">(</span><span class="n">pdata</span><span class="p">))</span>
+        <span class="n">tdata</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="p">(</span><span class="n">sanitize_dict</span><span class="p">(</span><span class="n">tdata</span><span class="p">))</span>
+
+        <span class="c1"># Prepare DataFrames to be returned</span>
+        <span class="k">if</span> <span class="n">join</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">tdata</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">other</span><span class="o">=</span><span class="n">pdata</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">nt</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;dataframes&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;pore&#39;</span><span class="p">,</span> <span class="s1">&#39;throat&#39;</span><span class="p">))</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">nt</span><span class="p">(</span><span class="n">pore</span><span class="o">=</span><span class="n">pdata</span><span class="p">,</span> <span class="n">throat</span><span class="o">=</span><span class="n">tdata</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">data</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h1 class="logo"><a href="../../../index.html">OpenPNM</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quick_start.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../userguide.html">Examples’ Library</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/index.html"><strong>Module Reference</strong></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../citation.html">Citing</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021 OpenPNM Team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -4,314 +4,190 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>FickianDiffusion &#8212; OpenPNM  documentation</title>
-    
-  <link href="../../_static/css/theme.css" rel="stylesheet" />
-  <link href="../../_static/css/index.f6b7ca918bee2f46fd9abac01cfb07d5.css" rel="stylesheet" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
 
-    
-  <link rel="stylesheet"
-    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
-
-    
-      
-
-    
+    <title>FickianDiffusion &#8212; OpenPNM</title>
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
-    
-  <link rel="preload" as="script" href="../../_static/js/index.1e043a052b0af929e4d8.js">
-
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/clipboard.min.js"></script>
-    <script src="../../_static/copybutton.js"></script>
-    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script src="../../_static/js/custom.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="FourierConduction" href="fourier_conduction.html" />
     <link rel="prev" title="MixedInvasionPercolation" href="mixed_percolation.html" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="en" />
-  </head>
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
-    
-    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
+  </head><body>
+  
 
-    
-      
-      <a class="navbar-brand" href="https://www.openpnm.org">
-        <img src="../../_static/openpnm_logo.png" class="logo" alt="logo">
-      </a>
-      
-    
-
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-
-    
-    <div id="navbar-menu" class=" collapse navbar-collapse">
-      <ul id="navbar-main-elements" class="navbar-nav mr-auto">
-        <li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="../../userguide/index.html">
-  <strong>
-   User Guide
-  </strong>
- </a>
-</li>
-
-<li class="toctree-l1 current active nav-item">
- <a class="reference internal nav-link" href="../index.html">
-  <strong>
-   Module Reference
-  </strong>
- </a>
-</li>
-
-<li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="../../examples/examples.html">
-  Examples
- </a>
-</li>
-
-        
-        <li class="nav-item">
-            <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
-        </li>
-        
-        <li class="nav-item">
-            <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
-        </li>
-        
-      </ul>
-
-      <form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
-  <i class="icon fas fa-search"></i>
-  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
-</form>
-      <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
-        <li class="nav-item">
-          <a class="nav-link" href="https://github.com/PMEAL/OpenPNM" rel="noopener" target="_blank" title="GitHub">
-            <span><i class="fab fa-github-square"></i></span>
-            <label class="sr-only">GitHub</label>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="https://openpnm.substack.com/" rel="noopener" target="_blank" title="Substack">
-            <span><i class="fas fa-envelope-square"></i></span>
-            <label class="sr-only">Substack</label>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="https://twitter.com/OpenPnm" rel="noopener" target="_blank" title="Twitter">
-            <span><i class="fab fa-twitter-square"></i></span>
-            <label class="sr-only">Twitter</label>
-          </a>
-        </li>
-      </ul>
-    </div>
-</div>
-    </nav>
-    
-
-    <div class="container-xl">
-      <div class="row">
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
           
+
+          <div class="body" role="main">
             
-            <!-- Only show if we have sidebars configured, else just a small margin  -->
-            <div class="col-12 col-md-3 bd-sidebar"><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
-  <div class="bd-toc-item active">
-    <ul class="current nav bd-sidenav">
- <li class="toctree-l2">
-  <a class="reference internal" href="../core/index.html">
-   Core
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../network/index.html">
-   Network
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../geometry/index.html">
-   Geometry
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../phases/index.html">
-   Phases
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../physics/index.html">
-   Physics
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../materials/index.html">
-   Materials
-  </a>
- </li>
- <li class="toctree-l2 current active">
-  <a class="reference internal" href="index.html">
-   Algorithms
-  </a>
-  <ul class="current">
-   <li class="toctree-l3">
-    <a class="reference internal" href="generic_algorithm.html">
-     GenericAlgorithm
-    </a>
-   </li>
-   <li class="toctree-l3">
-    <a class="reference internal" href="generic_transport.html">
-     GenericTransport
-    </a>
-   </li>
-   <li class="toctree-l3">
-    <a class="reference internal" href="reactive_transport.html">
-     ReactiveTransport
-    </a>
-   </li>
-   <li class="toctree-l3">
-    <a class="reference internal" href="transient_reactive_transport.html">
-     TransientReactiveTransport
-    </a>
-   </li>
-   <li class="toctree-l3">
-    <a class="reference internal" href="ordinary_percolation.html">
-     OrdinaryPercolation
-    </a>
-   </li>
-   <li class="toctree-l3">
-    <a class="reference internal" href="porosimetry.html">
-     Porosimetry
-    </a>
-   </li>
-   <li class="toctree-l3">
-    <a class="reference internal" href="invasion_percolation.html">
-     InvasionPercolation
-    </a>
-   </li>
-   <li class="toctree-l3">
-    <a class="reference internal" href="mixed_percolation.html">
-     MixedInvasionPercolation
-    </a>
-   </li>
-   <li class="toctree-l3 current active">
-    <a class="current reference internal" href="#">
-     FickianDiffusion
-    </a>
-   </li>
-   <li class="toctree-l3">
-    <a class="reference internal" href="fourier_conduction.html">
-     FourierConduction
-    </a>
-   </li>
-   <li class="toctree-l3">
-    <a class="reference internal" href="ohmic_conduction.html">
-     OhmicConduction
-    </a>
-   </li>
-   <li class="toctree-l3">
-    <a class="reference internal" href="stokes_flow.html">
-     StokesFlow
-    </a>
-   </li>
-   <li class="toctree-l3">
-    <a class="reference internal" href="advection_diffusion.html">
-     AdvectionDiffusion
-    </a>
-   </li>
-  </ul>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="metrics/index.html">
-   Metrics
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../topotools/index.html">
-   Topotools
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../models/index.html">
-   Models
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../io/index.html">
-   IO
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../utils/index.html">
-   Utilities
-  </a>
- </li>
+  <section id="fickiandiffusion">
+<span id="fickian-diffusion-api"></span><h1>FickianDiffusion<a class="headerlink" href="#fickiandiffusion" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="openpnm.algorithms.FickianDiffusion">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">openpnm.algorithms.</span></code><code class="sig-name descname"><span class="pre">FickianDiffusion</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/FickianDiffusion.html#FickianDiffusion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.FickianDiffusion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.algorithms.ReactiveTransport.ReactiveTransport</span></code></p>
+<p>A class to simulate binary diffusion with reactions</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>network</strong> (<em>(</em><em>OpenPNM Network object</em><em>)</em>) – The network object to which this algorithm will apply.</p></li>
+<li><p><strong>name</strong> (<em>(</em><em>string</em><em>, </em><em>optional</em><em>)</em>) – Name of the algorithm</p></li>
+<li><p><strong>project</strong> (<em>(</em><em>OpenPNM Project object</em><em>, </em><em>optional</em><em>)</em>) – Either a Network or a Project must be supplied</p></li>
 </ul>
-  </div>
-</nav>
-            </div>
-            
-          
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Fickian diffusion in porous materials occurs in the void space, but
+becuase the diffusion is defined to pores it is impacted by the porosity
+and tortuosity of the network.  Thus the total diffusive flux through the
+network is reduced.  This class can be used to simualte diffusion-reaction
+in domains with arbitrarily complex boundary conditions, or it can be used
+to calculate the effective diffusivity of the network by applying
+controlled boundary conditions on opposing faces, calculate the diffusion
+rate, and inverting Fick’s first law:</p>
+<div class="math notranslate nohighlight">
+\[D_{eff} = N_{A}*L/(A*\Delta C_{A})\]</div>
+<p>This class includes a method for calculating Deff automatically assuming
+appropriate boundary conditions were applied (<code class="docutils literal notranslate"><span class="pre">calc_eff_diffusivity</span></code>).
+The length and area of the domain should be supplied, but if they are
+not an attempt is made to calculate them.</p>
+<dl class="py method">
+<dt id="openpnm.algorithms.FickianDiffusion.calc_effective_diffusivity">
+<code class="sig-name descname"><span class="pre">calc_effective_diffusivity</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inlets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outlets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain_area</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/FickianDiffusion.html#FickianDiffusion.calc_effective_diffusivity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.FickianDiffusion.calc_effective_diffusivity" title="Permalink to this definition">¶</a></dt>
+<dd><p>This calculates the effective diffusivity in this linear transport
+algorithm.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>inlets</strong> (<em>array_like</em>) – The pores where the inlet composition boundary conditions were
+applied.  If not given an attempt is made to infer them from the
+algorithm.</p></li>
+<li><p><strong>outlets</strong> (<em>array_like</em>) – The pores where the outlet composition boundary conditions were
+applied.  If not given an attempt is made to infer them from the
+algorithm.</p></li>
+<li><p><strong>domain_area</strong> (<em>scalar</em><em>, </em><em>optional</em>) – The area of the inlet (and outlet) boundary faces.  If not given
+then an attempt is made to estimate it, but it is usually
+underestimated.</p></li>
+<li><p><strong>domain_length</strong> (<em>scalar</em><em>, </em><em>optional</em>) – The length of the domain between the inlet and outlet boundary
+faces.  If not given then an attempt is made to estimate it, but it
+is usually underestimated.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The area and length of the domain are found using the bounding box
+around the inlet and outlet pores which do not necessarily lie on the
+edge of the domain, resulting in underestimation of sizes.</p>
+</dd></dl>
 
-          
-          <div class="d-none d-xl-block col-xl-2 bd-toc">
-              
+<dl class="py method">
+<dt id="openpnm.algorithms.FickianDiffusion.setup">
+<code class="sig-name descname"><span class="pre">setup</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quantity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conductance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/FickianDiffusion.html#FickianDiffusion.setup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.FickianDiffusion.setup" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method takes several arguments that are essential to running the
+algorithm and adds them to the settings.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>%</strong><strong>(</strong><strong>FickianDiffusionSettings.parameters</strong><strong>)</strong><strong>s</strong> – </p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Any additional arguments are added to the <code class="docutils literal notranslate"><span class="pre">settings</span></code> dictionary of
+the object.</p>
+</dd></dl>
 
-<nav id="bd-toc-nav">
-    
-</nav>
+</dd></dl>
+
+</section>
 
 
-              
           </div>
           
-
-          
-          
-            
-          
-          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
-              
-              <div>
-                
-  <div class="section" id="fickiandiffusion">
-<span id="fickian-diffusion-api"></span><h1>FickianDiffusion<a class="headerlink" href="#fickiandiffusion" title="Permalink to this headline">¶</a></h1>
-</div>
-
-
-              </div>
-              
-              
-          </main>
-          
-
+        </div>
       </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h1 class="logo"><a href="../../index.html">OpenPNM</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quick_start.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../userguide.html">Examples’ Library</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html"><strong>Module Reference</strong></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../citation.html">Citing</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html"><strong>Module Reference</strong></a><ul>
+  <li><a href="index.html">Algorithms</a><ul>
+      <li>Previous: <a href="mixed_percolation.html" title="previous chapter">MixedInvasionPercolation</a></li>
+      <li>Next: <a href="fourier_conduction.html" title="next chapter">FourierConduction</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021 OpenPNM Team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
     </div>
 
     
-  <script src="../../_static/js/index.1e043a052b0af929e4d8.js"></script>
 
-
-    <footer class="footer mt-5 mt-md-0">
-  <div class="container">
-    <p>
-          &copy; Copyright 2021 OpenPNM Team.<br/>
-    </p>
-  </div>
-</footer>
+    
   </body>
 </html>

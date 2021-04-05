@@ -4,294 +4,215 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Bravais &#8212; OpenPNM  documentation</title>
-    
-  <link href="../../_static/css/theme.css" rel="stylesheet" />
-  <link href="../../_static/css/index.f6b7ca918bee2f46fd9abac01cfb07d5.css" rel="stylesheet" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
 
-    
-  <link rel="stylesheet"
-    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
-
-    
-      
-
-    
+    <title>Bravais &#8212; OpenPNM</title>
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
-    
-  <link rel="preload" as="script" href="../../_static/js/index.1e043a052b0af929e4d8.js">
-
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/clipboard.min.js"></script>
-    <script src="../../_static/copybutton.js"></script>
-    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script src="../../_static/js/custom.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Voronoi" href="voronoi.html" />
     <link rel="prev" title="CubicTemplate" href="cubic_template.html" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="en" />
-  </head>
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
-    
-    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
+  </head><body>
+  
 
-    
-      
-      <a class="navbar-brand" href="https://www.openpnm.org">
-        <img src="../../_static/openpnm_logo.png" class="logo" alt="logo">
-      </a>
-      
-    
-
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-
-    
-    <div id="navbar-menu" class=" collapse navbar-collapse">
-      <ul id="navbar-main-elements" class="navbar-nav mr-auto">
-        <li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="../../userguide/index.html">
-  <strong>
-   User Guide
-  </strong>
- </a>
-</li>
-
-<li class="toctree-l1 current active nav-item">
- <a class="reference internal nav-link" href="../index.html">
-  <strong>
-   Module Reference
-  </strong>
- </a>
-</li>
-
-<li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="../../examples/examples.html">
-  Examples
- </a>
-</li>
-
-        
-        <li class="nav-item">
-            <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
-        </li>
-        
-        <li class="nav-item">
-            <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
-        </li>
-        
-      </ul>
-
-      <form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
-  <i class="icon fas fa-search"></i>
-  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
-</form>
-      <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
-        <li class="nav-item">
-          <a class="nav-link" href="https://github.com/PMEAL/OpenPNM" rel="noopener" target="_blank" title="GitHub">
-            <span><i class="fab fa-github-square"></i></span>
-            <label class="sr-only">GitHub</label>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="https://openpnm.substack.com/" rel="noopener" target="_blank" title="Substack">
-            <span><i class="fas fa-envelope-square"></i></span>
-            <label class="sr-only">Substack</label>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="https://twitter.com/OpenPnm" rel="noopener" target="_blank" title="Twitter">
-            <span><i class="fab fa-twitter-square"></i></span>
-            <label class="sr-only">Twitter</label>
-          </a>
-        </li>
-      </ul>
-    </div>
-</div>
-    </nav>
-    
-
-    <div class="container-xl">
-      <div class="row">
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
           
+
+          <div class="body" role="main">
             
-            <!-- Only show if we have sidebars configured, else just a small margin  -->
-            <div class="col-12 col-md-3 bd-sidebar"><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
-  <div class="bd-toc-item active">
-    <ul class="current nav bd-sidenav">
- <li class="toctree-l2">
-  <a class="reference internal" href="../core/index.html">
-   Core
-  </a>
- </li>
- <li class="toctree-l2 current active">
-  <a class="reference internal" href="index.html">
-   Network
-  </a>
-  <ul class="current">
-   <li class="toctree-l3">
-    <a class="reference internal" href="generic.html">
-     GenericNetwork
-    </a>
-   </li>
-   <li class="toctree-l3">
-    <a class="reference internal" href="cubic.html">
-     Cubic
-    </a>
-   </li>
-   <li class="toctree-l3">
-    <a class="reference internal" href="cubic_dual.html">
-     CubicDual
-    </a>
-   </li>
-   <li class="toctree-l3">
-    <a class="reference internal" href="cubic_template.html">
-     CubicTemplate
-    </a>
-   </li>
-   <li class="toctree-l3 current active">
-    <a class="current reference internal" href="#">
-     Bravais
-    </a>
-   </li>
-   <li class="toctree-l3">
-    <a class="reference internal" href="voronoi.html">
-     Voronoi
-    </a>
-   </li>
-   <li class="toctree-l3">
-    <a class="reference internal" href="delaunay.html">
-     Delaunay
-    </a>
-   </li>
-   <li class="toctree-l3">
-    <a class="reference internal" href="gabriel.html">
-     Gabriel
-    </a>
-   </li>
-   <li class="toctree-l3">
-    <a class="reference internal" href="delaunay_voronoi_dual.html">
-     DelaunayVoronoiDual
-    </a>
-   </li>
-  </ul>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../geometry/index.html">
-   Geometry
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../phases/index.html">
-   Phases
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../physics/index.html">
-   Physics
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../materials/index.html">
-   Materials
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../algorithms/index.html">
-   Algorithms
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../algorithms/metrics/index.html">
-   Metrics
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../topotools/index.html">
-   Topotools
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../models/index.html">
-   Models
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../io/index.html">
-   IO
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../utils/index.html">
-   Utilities
-  </a>
- </li>
+  <section id="bravais">
+<span id="bravais-api"></span><h1>Bravais<a class="headerlink" href="#bravais" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="openpnm.network.Bravais">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">openpnm.network.</span></code><code class="sig-name descname"><span class="pre">Bravais</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/network/Bravais.html#Bravais"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.network.Bravais" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.network.GenericNetwork.GenericNetwork</span></code></p>
+<p>Crystal lattice types including fcc, bcc, sc, and hcp</p>
+<p>These arrangements not only allow more dense packing than the standard
+Cubic for higher porosity materials, but also have more interesting
+non-straight connections between the various pore sites.</p>
+<p>More information on Bravais lattice notation can be <a class="reference external" href="https://en.wikipedia.org/wiki/Bravais_lattice">found on wikipedia</a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>shape</strong> (<em>array_like</em>) – The number of pores in each direction.  This value is a bit ambiguous
+for the more complex unit cells used here, but generally refers to the
+the number for ‘corner’ sites</p></li>
+<li><p><strong>spacing</strong> (<em>array_like</em><em> (</em><em>optional</em><em>)</em>) – The spacing between pores in all three directions.  Like the <code class="docutils literal notranslate"><span class="pre">shape</span></code>
+this is a bit ambiguous but refers to the spacing between corner sites.
+Essentially it controls the dimensions of the unit cell.  It a scalar
+is given it is applied to all directions.  The default is 1.</p></li>
+<li><p><strong>mode</strong> (<em>string</em>) – <p>The type of lattice to create.  Options are:</p>
+<ul>
+<li><p>’sc’ : Simple cubic (Same as <code class="docutils literal notranslate"><span class="pre">Cubic</span></code>)</p></li>
+<li><p>’bcc’ : Body-centered cubic lattice</p></li>
+<li><p>’fcc’ : Face-centered cubic lattice</p></li>
+<li><p>’hcp’ : Hexagonal close packed (Note Implemented Yet)</p></li>
 </ul>
-  </div>
-</nav>
-            </div>
-            
-          
+</p></li>
+<li><p><strong>name</strong> (<em>string</em>) – An optional name for the object to help identify it.  If not given,
+one will be generated.</p></li>
+<li><p><strong>project</strong> (<em>OpenPNM Project object</em><em>, </em><em>optional</em>) – Each OpenPNM object must be part of a Project.  If none is supplied
+then one will be created and this Network will be automatically
+assigned to it.  To create a Project use <code class="docutils literal notranslate"><span class="pre">openpnm.Project()</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="cubic.html#openpnm.network.Cubic" title="openpnm.network.Cubic"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Cubic</span></code></a>, <a class="reference internal" href="cubic_dual.html#openpnm.network.CubicDual" title="openpnm.network.CubicDual"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CubicDual</span></code></a></p>
+</div>
+<p class="rubric">Notes</p>
+<p>The pores are labelled as beloning to ‘corner_sites’ and ‘body_sites’ in
+bcc or ‘face_sites’ in fcc.  Throats are labelled by the which type of
+pores they connect, e.g. ‘throat.corner_to_body’.</p>
+<p>Limitations:</p>
+<ul class="simple">
+<li><p>Bravais lattice can also have a skew to them, but this is not
+implemented yet.</p></li>
+<li><p>Support for 2D networks has not been added yet.</p></li>
+<li><p>Hexagonal Close Packed (hcp) has not been implemented yet, but is on
+the todo list.</p></li>
+</ul>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sc</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Bravais</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;sc&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bcc</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Bravais</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;bcc&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fcc</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Bravais</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;fcc&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sc</span><span class="o">.</span><span class="n">Np</span><span class="p">,</span> <span class="n">bcc</span><span class="o">.</span><span class="n">Np</span><span class="p">,</span> <span class="n">fcc</span><span class="o">.</span><span class="n">Np</span>
+<span class="go">(27, 35, 63)</span>
+</pre></div>
+</div>
+<p>Since these three networks all have the same domain size, it is clear that
+both ‘bcc’ and ‘fcc’ have more pores per unit volume.  This is particularly
+helpful for modeling higher porosity materials.</p>
+<p>They all have the same number corner sites, which corresponds to the
+[3, 3, 3] shape that was specified:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sc</span><span class="o">.</span><span class="n">num_pores</span><span class="p">(</span><span class="s1">&#39;corner*&#39;</span><span class="p">),</span> <span class="n">bcc</span><span class="o">.</span><span class="n">num_pores</span><span class="p">(</span><span class="s1">&#39;cor*&#39;</span><span class="p">),</span> <span class="n">fcc</span><span class="o">.</span><span class="n">num_pores</span><span class="p">(</span><span class="s1">&#39;cor*&#39;</span><span class="p">)</span>
+<span class="go">(27, 27, 27)</span>
+</pre></div>
+</div>
+<p>Visualization of these three networks can be done quickly using the
+functions in topotools.  Firstly, merge them all into a single network
+for convenience:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">bcc</span><span class="p">[</span><span class="s1">&#39;pore.coords&#39;</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fcc</span><span class="p">[</span><span class="s1">&#39;pore.coords&#39;</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">6</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">op</span><span class="o">.</span><span class="n">topotools</span><span class="o">.</span><span class="n">merge_networks</span><span class="p">(</span><span class="n">sc</span><span class="p">,</span> <span class="p">[</span><span class="n">bcc</span><span class="p">,</span> <span class="n">fcc</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fig</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">topotools</span><span class="o">.</span><span class="n">plot_connections</span><span class="p">(</span><span class="n">sc</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="../../_images/bravais_networks.png" class="align-center" src="../../_images/bravais_networks.png" />
+<p>For larger networks and more control over presentation use <a class="reference external" href="http://www.paraview.org">Paraview</a>.</p>
+<dl class="py method">
+<dt id="openpnm.network.Bravais.add_boundary_pores">
+<code class="sig-name descname"><span class="pre">add_boundary_pores</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">labels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spacing</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/network/Bravais.html#Bravais.add_boundary_pores"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.network.Bravais.add_boundary_pores" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add boundary pores to the specified faces of the network</p>
+<p>Pores are offset from the faces by 1/2 of the given <code class="docutils literal notranslate"><span class="pre">spacing</span></code>, such
+that they lie directly on the boundaries.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>labels</strong> (<em>string</em><em> or </em><em>list of strings</em>) – The labels indicating the pores defining each face where boundary
+pores are to be added (e.g. ‘left’ or [‘left’, ‘right’])</p></li>
+<li><p><strong>spacing</strong> (<em>scalar</em><em> or </em><em>array_like</em>) – The spacing of the network (e.g. [1, 1, 1]).  This must be given
+since it can be quite difficult to infer from the network,
+for instance if boundary pores have already added to other faces.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
-          
-          <div class="d-none d-xl-block col-xl-2 bd-toc">
-              
+</dd></dl>
 
-<nav id="bd-toc-nav">
-    
-</nav>
+</section>
 
 
-              
           </div>
           
-
-          
-          
-            
-          
-          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
-              
-              <div>
-                
-  <div class="section" id="bravais">
-<span id="bravais-api"></span><h1>Bravais<a class="headerlink" href="#bravais" title="Permalink to this headline">¶</a></h1>
-</div>
-
-
-              </div>
-              
-              
-          </main>
-          
-
+        </div>
       </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h1 class="logo"><a href="../../index.html">OpenPNM</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quick_start.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../userguide.html">Examples’ Library</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html"><strong>Module Reference</strong></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../citation.html">Citing</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html"><strong>Module Reference</strong></a><ul>
+  <li><a href="index.html">Network</a><ul>
+      <li>Previous: <a href="cubic_template.html" title="previous chapter">CubicTemplate</a></li>
+      <li>Next: <a href="voronoi.html" title="next chapter">Voronoi</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021 OpenPNM Team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
     </div>
 
     
-  <script src="../../_static/js/index.1e043a052b0af929e4d8.js"></script>
 
-
-    <footer class="footer mt-5 mt-md-0">
-  <div class="container">
-    <p>
-          &copy; Copyright 2021 OpenPNM Team.<br/>
-    </p>
-  </div>
-</footer>
+    
   </body>
 </html>
