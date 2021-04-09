@@ -2,9 +2,17 @@ import numpy as np
 import openpnm as op
 
 
-def plot_connections(network, throats=None, fig=None, size_by=None,
-                     color_by=None, cmap='jet', color='b', alpha=1.0,
-                     linestyle='solid', linewidth=1, **kwargs):
+def plot_connections(network,
+                     throats=None,
+                     fig=None,
+                     size_by=None,
+                     color_by=None,
+                     cmap='jet',
+                     color='b',
+                     alpha=1.0,
+                     linestyle='solid',
+                     linewidth=1,
+                     **kwargs):  # pragma: no cover
     r"""
     Produce a 3D plot of the network topology.
 
@@ -90,7 +98,11 @@ def plot_connections(network, throats=None, fig=None, size_by=None,
         dim[np.argwhere(~dim)[0]] = True
 
     fig = plt.figure() if fig is None else fig
-    ax = fig.gca()
+    if hasattr(fig, 'gca'):
+        ax = fig.gca()
+    else:
+        ax = fig
+
     if ThreeD and ax.name != '3d':
         fig.delaxes(ax)
         ax = fig.add_subplot(111, projection='3d')
@@ -128,9 +140,17 @@ def plot_connections(network, throats=None, fig=None, size_by=None,
     return fig
 
 
-def plot_coordinates(network, pores=None, fig=None, size_by=None,
-                     color_by=None, cmap='jet', color='r', alpha=1.0,
-                     marker='o', markersize=10, **kwargs):
+def plot_coordinates(network,
+                     pores=None,
+                     fig=None,
+                     size_by=None,
+                     color_by=None,
+                     cmap='jet',
+                     color='r',
+                     alpha=1.0,
+                     marker='o',
+                     markersize=10,
+                     **kwargs):  # pragma: no cover
     r"""
     Produce a 3D plot showing specified pore coordinates as markers.
 
@@ -211,7 +231,10 @@ def plot_coordinates(network, pores=None, fig=None, size_by=None,
         dim[[0, 1]] = True
 
     fig = plt.figure() if fig is None else fig
-    ax = fig.gca()
+    if hasattr(fig, 'gca'):
+        ax = fig.gca()
+    else:
+        ax = fig
     if ThreeD and ax.name != '3d':
         fig.delaxes(ax)
         ax = fig.add_subplot(111, projection='3d')
@@ -289,8 +312,13 @@ def _scale_3d_axes(ax, X, Y, Z, dimen):
             ax.autoscale()
 
 
-def plot_networkx(network, plot_throats=True, labels=None, colors=None,
-                  scale=1, ax=None, alpha=1.0):
+def plot_networkx(network,
+                  plot_throats=True,
+                  labels=None,
+                  colors=None,
+                  scale=1,
+                  ax=None,
+                  alpha=1.0):  # pragma: no cover
     r"""
     Creates a pretty 2d plot for 2d OpenPNM networks.
 
@@ -384,7 +412,8 @@ def plot_vpython(network,
                  Tsize='throat.diameter',
                  Pcolor=None,
                  Tcolor=None,
-                 cmap='jet', **kwargs):
+                 cmap='jet',
+                 **kwargs):  # pragma: no cover
     r"""
     Quickly visualize a network in 3D using VPython.
 
@@ -496,8 +525,12 @@ def plot_vpython(network,
     return scene
 
 
-def plot_tutorial(network, font_size=12, line_width=2,
-                  node_color='b', edge_color='r', node_size=500):
+def plot_tutorial(network,
+                  font_size=12,
+                  line_width=2,
+                  node_color='b',
+                  edge_color='r',
+                  node_size=500):  # pragma: no cover
     r"""
     Generate a network plot suitable for tutorials and explanations.
 
