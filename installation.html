@@ -4,8 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Installation &#8212; OpenPNM</title>
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
@@ -34,33 +33,33 @@
 
           <div class="body" role="main">
             
-  <section id="installation">
+  <div class="section" id="installation">
 <span id="id1"></span><h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
 <p>OpenPNM requires the <em>Scipy Stack</em> (Numpy, Scipy, Matplotlib, etc), which is most conveniently obtained by installing the <a class="reference external" href="https://conda.io/docs/user-guide/install/download.html">Anaconda Distribution</a>, so first download and install this if you don’t have it already.</p>
-<section id="preferred-method">
+<div class="section" id="preferred-method">
 <h2>Preferred method<a class="headerlink" href="#preferred-method" title="Permalink to this headline">¶</a></h2>
 <p>The preferred way of installing OpenPNM is via Anaconda Cloud using:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">install</span> <span class="o">-</span><span class="n">c</span> <span class="n">conda</span><span class="o">-</span><span class="n">forge</span> <span class="n">openpnm</span>
 </pre></div>
 </div>
-</section>
-<section id="alternative-method">
+</div>
+<div class="section" id="alternative-method">
 <h2>Alternative method<a class="headerlink" href="#alternative-method" title="Permalink to this headline">¶</a></h2>
 <p>OpenPNM can also be installed from the <a class="reference external" href="https://pypi.org/project/openpnm/">Python Package Index</a> using:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">openpnm</span>
 </pre></div>
 </div>
 <p>However, we don’t recommend installing using pip since <code class="docutils literal notranslate"><span class="pre">pypardiso</span></code>, which is a blazing fast direct solver, is not available for Windows users who use Python 3.7+.</p>
-</section>
-<section id="for-developers">
+</div>
+<div class="section" id="for-developers">
 <h2>For developers<a class="headerlink" href="#for-developers" title="Permalink to this headline">¶</a></h2>
 <p>For developers who intend to change the source code or contribute to OpenPNM, the source code can be downloaded from Github and installed by running:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">e</span> <span class="s1">&#39;path/to/downloaded/files&#39;</span>
 </pre></div>
 </div>
 <p>The advantage to installing from the source code is that you can edit the files and have access to your changes each time you import OpenPNM.</p>
-</section>
-</section>
+</div>
+</div>
 
 
           </div>
