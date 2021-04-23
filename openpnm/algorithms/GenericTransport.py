@@ -671,7 +671,7 @@ class GenericTransport(GenericAlgorithm):
                 x = ml.solve(b=b, x0=x0, tol=rtol, maxiter=max_it, accel="bicgstab")
                 return x
         # PyPardiso
-        elif self.settings['solver_family'] == 'pypardiso':
+        elif self.settings['solver_family'] in ['pypardiso', 'pardiso']:
             try:
                 import pypardiso
             except ModuleNotFoundError:
