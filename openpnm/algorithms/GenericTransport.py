@@ -690,6 +690,16 @@ class GenericTransport(GenericAlgorithm):
                 """
                 x = pypardiso.spsolve(A=A, b=b)
                 return x
+        # CuPy
+        elif self.settings['solver_family'] == 'cupy':
+            def solver(A, b, rtol=None, max_it=None, x0=None, **kwargs):
+                r"""
+                Wrapper method for CuPy sparse linear solvers.
+                """
+                import cupy
+                import cupyx.linalg.sparse
+                x = cupyx.linalg.sparse.lschol(A, cupy.array(b))
+                return cupy.asnumpy(x)
         else:
             raise Exception(f"{self.settings['solver_family']} not available.")
 
