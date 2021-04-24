@@ -619,7 +619,7 @@ class GenericTransport(GenericAlgorithm):
         # Fetch solver object based on settings dict.
         solver = self._get_solver()
         x = solver(A, b, atol=atol, rtol=rtol, max_it=max_it, x0=x0)
-        
+
         # Check solution convergence
         if not self._is_converged(x=x):
             raise Exception("Solver did not converge.")
@@ -696,9 +696,13 @@ class GenericTransport(GenericAlgorithm):
                 r"""
                 Wrapper method for CuPy sparse linear solvers.
                 """
-                import cupy
-                import cupyx.scipy.sparse.linalg
-                cupyx.scipy.sparse.linalg.lschol = cupyx.linalg.sparse.lschol
+                try:
+                    import cupy
+                    import cupyx.scipy.sparse.linalg
+                    cupyx.scipy.sparse.linalg.lschol = cupyx.linalg.sparse.lschol
+                except ModuleNotFoundError:
+                    msg = "CuPy not found. Install via: conda install -c conda-forge cupy"
+                    raise Exception(msg)
                 b = cupy.array(b)
                 A = cupy.sparse.csr_matrix(A)
                 direct = ["spsolve", "lsqr", "lschol"]
