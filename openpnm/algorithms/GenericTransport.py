@@ -705,7 +705,7 @@ class GenericTransport(GenericAlgorithm):
                 r"""
                 Wrapper method for CuPy sparse linear solvers.
                 """
-                x0 = cupy.array(x0) if x0 is not None else x0
+                x0 = x0 if x0 is None else cupy.array(x0)
                 b = cupy.array(b)
                 A = cupy.sparse.csr_matrix(A)
                 direct = ["spsolve", "lsqr", "lschol"]
