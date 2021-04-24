@@ -619,7 +619,7 @@ class GenericTransport(GenericAlgorithm):
         # Fetch solver object based on settings dict.
         solver = self._get_solver()
         x = solver(A, b, atol=atol, rtol=rtol, max_it=max_it, x0=x0)
-
+        
         # Check solution convergence
         if not self._is_converged(x=x):
             raise Exception("Solver did not converge.")
@@ -691,14 +691,28 @@ class GenericTransport(GenericAlgorithm):
                 x = pypardiso.spsolve(A=A, b=b)
                 return x
         # CuPy
-        elif self.settings['solver_family'] == 'cupy':
-            def solver(A, b, rtol=None, max_it=None, x0=None, **kwargs):
+        elif self.settings['solver_family'] == 'cupy':  # pragma: no cover
+            def solver(A, b, atol=None, rtol=None, max_it=None, x0=None, **kwargs):
                 r"""
                 Wrapper method for CuPy sparse linear solvers.
                 """
                 import cupy
-                import cupyx.linalg.sparse
-                x = cupyx.linalg.sparse.lschol(A, cupy.array(b))
+                import cupyx.scipy.sparse.linalg
+                cupyx.scipy.sparse.linalg.lschol = cupyx.linalg.sparse.lschol
+                b = cupy.array(b)
+                A = cupy.sparse.csr_matrix(A)
+                direct = ["spsolve", "lsqr", "lschol"]
+                iterative = ["cg", "gmres"]
+                solver_type = self.settings["solver_type"]
+                args = {"A": A, "b": b}
+                if solver_type in direct + iterative:
+                    ls = getattr(cupyx.scipy.sparse.linalg, solver_type)
+                    if solver_type in iterative:
+                        args.update({"tol": rtol, "maxiter": max_it})
+                else:
+                    raise Exception(f"Unsupported solver type: {solver_type}")
+                out = ls(**args)
+                x = out[0] if isinstance(out, tuple) else out
                 return cupy.asnumpy(x)
         else:
             raise Exception(f"{self.settings['solver_family']} not available.")
