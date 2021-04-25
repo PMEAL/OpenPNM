@@ -2,7 +2,6 @@ import openpnm as op
 import numpy as np
 import openpnm.models as mods
 import pytest
-from testfixtures import LogCapture
 
 
 class ModelsTest:
@@ -152,13 +151,13 @@ class ModelsTest:
         loglevel = ws.settings["loglevel"]
         ws.settings["loglevel"] = 50
         assert len(phys) == 2
-        assert len(phase) == 14
+        assert len(phase) == 13
         phys.regenerate_models(propnames=None, deep=False)
         assert len(phys) == 14
         # Note that 2 new models were added to the phase during interpolation
         assert len(phase) < len_phase
         phase.clear(mode='model_data')
-        assert len(phase) == 14
+        assert len(phase) == 13
         phys.regenerate_models(propnames=None, deep=True)
         assert len(phase) < len_phase
         ws.settings["loglevel"] = loglevel
