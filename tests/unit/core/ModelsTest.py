@@ -2,7 +2,6 @@ import openpnm as op
 import numpy as np
 import openpnm.models as mods
 import pytest
-from testfixtures import LogCapture
 
 
 class ModelsTest:
