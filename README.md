@@ -95,7 +95,7 @@ The lead developer for this project is Prof. Jeff Gostick (jgostick@gmail.com).
 
 ## Acknowledgements
 
-OpenPNM is greatful to [CANARIE](https://canarie.ca) for their generous funding over the past few years.  We would also like to acknowledge the support of [NSERC of Canada](https://www.nserc-crsng.gc.ca/) for funding many of the student that have contributed to OpenPNM since it's inception in 2011.
+OpenPNM is grateful to [CANARIE](https://canarie.ca) for their generous funding over the past few years.  We would also like to acknowledge the support of [NSERC of Canada](https://www.nserc-crsng.gc.ca/) for funding many of the student that have contributed to OpenPNM since it's inception in 2011.
 
 ## Citation
 
