@@ -67,8 +67,6 @@ class GasByName(SpeciesByName):
                        model=gas_thermal_conductivity)
         self.add_model(propname='pore.viscosity',
                        model=gas_viscosity)
-        self.add_model(propname='pore.vapor_pressure',
-                       model=vapor_pressure)
 
 
 class LiquidByName(SpeciesByName):
@@ -103,7 +101,8 @@ def vapor_pressure(target, temperature='pore.temperature'):
     except KeyError:
         coeffs = chem.vapor_pressure.Psat_data_AntoinePoling.loc[CAS]
         _, A, B, C, Tmin, Tmax = coeffs
-        PV = chem.vapor_pressure.Antoine(T=T, A=A, B=B, C=C)
+        PV = 10**(A - B/(T + C))
+        # PV = numba_vectorized.vapor_pressure.Antoine(T=T, A=A, B=B, C=C)
     return PV
 
 
