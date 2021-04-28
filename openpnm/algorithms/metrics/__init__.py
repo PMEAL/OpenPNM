@@ -19,6 +19,9 @@ The table below gives a list of available Metrics:
 +---------------------+-------------------------------------------------------+
 | MercuryIntrusion    | Invades mercury into a network from all sides         |
 +---------------------+-------------------------------------------------------+
+| PNFlow              | classical network flow simulation using PNFlow        |
++---------------------+-------------------------------------------------------+
+
 
 """
 
@@ -26,3 +29,4 @@ from .GenericMetric import GenericMetric
 from .MercuryIntrusion import MercuryIntrusion
 from .FormationFactor import FormationFactor
 from .RelativePermeability import RelativePermeability
+from .PNFlow import PNFlow
