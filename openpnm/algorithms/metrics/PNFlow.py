@@ -38,7 +38,7 @@ class PNFlow:
             f"cycle1_BC:   T     F       T       T      DP    1.00  2.00; \n" \
             f"cycle2_BC:   T     F       T       T      DP    2.00  1.00; \n" \
             f"cycle3_BC:   T     F       T       T      DP    1.00  2.00; \n" \
-            f"CALC_BOX:  0.2 0.9; \n" \
+            f"CALC_BOX:  0.1 0.9; \n" \
             f"INIT_CONT_ANG:   1   0   10  -0.2    -3.0   rand   0.0; \n" \
             f"EQUIL_CON_ANG:   4   30   50   -0.2   -3.0   rand   0.0; \n" \
             f"Water  0.001               1.2                1000.0; \n" \
