@@ -313,11 +313,9 @@ class TransientReactiveTransport(ReactiveTransport):
         tf = self.settings['t_final']
         dt = self.settings['t_step']
         to = self.settings['t_output']
-        tol = self.settings['t_tolerance']
         t_pre = self.settings['t_precision']
         quantity = self.settings['quantity']
         s = self.settings['t_scheme']
-        res_t = 1e+06  # Initialize the residual
 
         if isinstance(to, (float, int)):
             # Make sure 'tf' and 'to' are multiples of 'dt'
@@ -345,6 +343,7 @@ class TransientReactiveTransport(ReactiveTransport):
             self[quantity + '@' + t_str] = quant_init
             self[quantity] = quant_init
 
+            time = None
             for time in np.arange(t+dt, tf+dt, dt):
                 logger.info(f'    Current time step: {time} s')
                 # Update A and b and apply BCs
@@ -366,7 +365,6 @@ class TransientReactiveTransport(ReactiveTransport):
                     logger.info(f'        Exporting time step: {time} s')
 
             logger.info(f'    Maximum time step reached: {time} s')
-
 
     def _t_run_reactive(self, x0=None):
         """r

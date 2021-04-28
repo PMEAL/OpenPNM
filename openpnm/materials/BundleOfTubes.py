@@ -72,7 +72,7 @@ class BundleOfTubes(Project):
             raise Exception('shape not understood, must be int '
                             + ' or list of 2 ints')
 
-        if isinstance(spacing, float) or isinstance(spacing, int):
+        if isinstance(spacing, (float, int)):
             spacing = float(spacing)
             self.settings['spacing'] = spacing
             spacing = np.array([spacing, spacing, length])

@@ -4,16 +4,6 @@
 Pore-network modeling made easy
 ###############################
 
-.. sidebar:: Highlight
-
-    The image below was extracted using the SNOW algorithm from PoreSpy,
-    then imported into OpenPNM for use, then exported to Paraview for
-    visualization.
-
-    .. image:: /../docs/static/images/extracted_berea.png
-        :width: 600px
-        :align: center
-
 *OpenPNM* is an open source project to provide porous media researchers
 with a ready-made framework for performing a wide range of pore network
 simulations.

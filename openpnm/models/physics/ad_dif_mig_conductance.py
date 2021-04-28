@@ -172,11 +172,6 @@ def ad_dif_mig(
     Peij_mig[(Peij_mig < 1e-10) & (Peij_mig >= 0)] = 1e-10
     Peij_mig[(Peij_mig > -1e-10) & (Peij_mig <= 0)] = -1e-10
 
-    # Export Peclet values (half only since Peij_adv_mig = -Peji_adv_mig)
-    phase["throat.peclet." + "ad_mig." + ion] = _np.absolute(Peij_adv_mig[0 : len(Lt)])
-    phase["throat.peclet." + "ad." + ion] = _np.absolute(Peij_adv[0 : len(Lt)])
-    phase["throat.peclet." + "mig." + ion] = _np.absolute(Peij_mig[0 : len(Lt)])
-
     # Corrected advection-migration
     adv_mig = Peij_adv_mig * gd
 
