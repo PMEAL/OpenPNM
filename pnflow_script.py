@@ -20,5 +20,4 @@ path = "./"
 prefix = pn.project.name
 op.io.Statoil.export_data(network=pn, path=path, prefix=prefix,
                           shape=[1e-3, 1e-3, 1e-3])
-
-op.algorithms.metrics.PNFlow.run(pn.project.name, path=path)
+# op.algorithms.metrics.PNFlow.run(pn.project.name, path=path)
