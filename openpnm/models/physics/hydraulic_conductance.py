@@ -4,12 +4,61 @@ Pore-scale models for calculating hydraulic conductance of conduits.
 import numpy as _np
 
 __all__ = [
+    "generic_hydraulic",
     "hagen_poiseuille",
     "hagen_poiseuille_2d",
     "hagen_poiseuille_power_law",
     "valvatne_blunt",
     "classic_hagen_poiseuille"
 ]
+
+
+def generic_hydraulic(
+        target,
+        pore_viscosity='pore.viscosity',
+        throat_viscosity='throat.viscosity',
+        size_factors='throat.hydraulic_size_factors'
+):
+    r"""
+    Calculates the hydraulic conductance of conduits in network.
+
+    A conduit is defined as ( 1/2 pore - full throat - 1/2 pore ).
+
+    Parameters
+    ----------
+    target : _GenericPhysics
+        Physics object with which this model is associated.
+    pore_viscosity : str
+        Dictionary key of the pore viscosity values.
+    throat_viscosity : str
+        Dictionary key of the throat viscosity values.
+    size_factors: str
+        Dictionary key of the conduit hydraulic size factors' values.
+
+    Returns
+    -------
+    ndarray
+        Array containing hydraulic conductance values for conduits in the
+        geometry attached to the given physics object.
+
+    """
+    network = target.project.network
+    throats = target.throats(target=network)
+    conns = network.conns[throats]
+    phase = target.project.find_phase(target)
+    F = network[size_factors]
+    mu1, mu2 = phase[pore_viscosity][conns].T
+    mut = phase[throat_viscosity]
+
+    if isinstance(F, dict):
+        g1 = F[f"{size_factors}.pore1"][throats] / mu1
+        gt = F[f"{size_factors}.throat"][throats] / mut
+        g2 = F[f"{size_factors}.pore2"][throats] / mu2
+        gh = 1 / (1 / g1 + 1 / gt + 1 / g2)
+    else:
+        gh = F / mut
+
+    return gh
 
 
 def hagen_poiseuille(

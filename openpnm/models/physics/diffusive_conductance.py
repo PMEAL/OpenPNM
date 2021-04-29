@@ -5,6 +5,7 @@ import numpy as _np
 import scipy.constants as _const
 
 __all__ = [
+    "generic_diffusive",
     "ordinary_diffusion",
     "ordinary_diffusion_2d",
     "mixed_diffusion",
@@ -12,6 +13,54 @@ __all__ = [
     "classic_ordinary_diffusion",
     "multiphase_diffusion"
 ]
+
+
+def generic_diffusive(
+    target,
+    pore_diffusivity="pore.diffusivity",
+    throat_diffusivity="throat.diffusivity",
+    size_factors="throat.diffusive_size_factors",
+):
+    r"""
+    Calculates the diffusive conductance of conduits in network.
+
+    A conduit is defined as ( 1/2 pore - full throat - 1/2 pore ).
+
+    Parameters
+    ----------
+    target : GenericPhysics
+        Physics object with which this model is associated.
+    pore_diffusivity : str
+        Dictionary key of the pore diffusivity values.
+    throat_diffusivity : str
+        Dictionary key of the throat diffusivity values.
+    size_factors: str
+        Dictionary key of the conduit diffusive shape factors' values.
+
+    Returns
+    -------
+    ndarray
+        Array containing diffusive conductance values for conduits in the
+        geometry attached to the given physics object.
+
+    """
+    network = target.project.network
+    throats = target.throats(target=network)
+    conns = network.conns[throats]
+    phase = target.project.find_phase(target)
+    F = network[size_factors]
+    DAB1, DAB2 = phase[pore_diffusivity][conns].T
+    DABt = phase[throat_diffusivity]
+
+    if isinstance(F, dict):
+        g1 = DAB1 * F[f"{size_factors}.pore1"][throats]
+        gt = DABt * F[f"{size_factors}.throat"][throats]
+        g2 = DAB2 * F[f"{size_factors}.pore2"][throats]
+        gd = 1 / (1 / g1 + 1 / gt + 1 / g2)
+    else:
+        gd = DABt * F
+
+    return gd
 
 
 def ordinary_diffusion(

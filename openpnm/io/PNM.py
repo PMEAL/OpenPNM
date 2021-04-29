@@ -57,6 +57,7 @@ class PNM(GenericIO):
                 # Store models dict as metadata
                 if hasattr(obj, 'models'):
                     obj_models = {}
+                    model = None
                     for model in obj.models.keys():
                         temp = {k: v for k, v in obj.models[model].items()
                                 if k != 'model'}
@@ -68,9 +69,8 @@ class PNM(GenericIO):
                     try:
                         item.attrs['models'] = json.dumps(obj_models)
                     except TypeError:
-                        logger.critical('The model ' + model + ' and it\'s '
-                                        + 'parameters could not be written '
-                                        + 'to file')
+                        logger.critical(f'The model {model} and its parameters'
+                                        + ' could not be written to file.')
                 item.attrs['class'] = str(obj.__class__)
 
     @classmethod

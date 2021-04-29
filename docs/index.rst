@@ -17,6 +17,10 @@
      <img src=".\_static\images\openpnm_logo.png" width="80%"></img>
    </p>
 
+*OpenPNM* is an open source project to provide porous media researchers
+with a ready-made framework for performing a wide range of pore network
+simulations.
+
 #########################################
 Pore-network Modeling Framework in Python
 #########################################

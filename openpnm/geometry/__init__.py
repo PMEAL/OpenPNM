@@ -94,3 +94,10 @@ from .StickAndBall2D import StickAndBall2D
 from .Boundary import Boundary
 from .Boundary2D import Boundary2D
 from .Imported import Imported
+from .SpheresAndCylinders import SpheresAndCylinders
+from .CirclesAndRectangles import CirclesAndRectangles
+from .ConesAndCylinders import ConesAndCylinders
+from .PyramidsAndCuboids import PyramidsAndCuboids
+from .TrapezoidsAndRectangles import TrapezoidsAndRectangles
+from .CubesAndCuboids import CubesAndCuboids
+from .SquaresAndRectangles import SquaresAndRectangles

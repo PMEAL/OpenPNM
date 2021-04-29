@@ -175,7 +175,7 @@ class StickAndBall2D(GenericGeometry):
         self.add_model(propname='pore.seed',
                        model=mods.misc.random,
                        element='pore',
-                       num_range=[0.5, 0.5],
+                       num_range=[0.2, 0.7],
                        seed=None)
 
         self.add_model(propname='pore.max_size',
