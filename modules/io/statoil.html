@@ -41,13 +41,52 @@
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.io.GenericIO.GenericIO</span></code></p>
 <p>The StatOil format is used by the Maximal Ball network extraction code of
 the Imperial College London group</p>
-<p>This class can be used to load and work with those networks.  Numerous
+<p>This class can be used to load and work with those networks. Numerous
 datasets are available for download from the group’s
 <a class="reference external" href="http://tinyurl.com/zurko4q">website</a>.</p>
-<p>The so-called ‘Statoil’ format consists of 4 different files in a single
-folder.  The data is stored in columns with each corresponding to a
-specific property.  Headers are not provided in the files, so one must
+<p>The ‘Statoil’ format consists of 4 different files in a single
+folder. The data is stored in columns with each corresponding to a
+specific property. Headers are not provided in the files, so one must
 refer to various theses and documents to interpret their meaning.</p>
+<dl class="py method">
+<dt id="openpnm.io.Statoil.add_reservoir_pore">
+<em class="property"><span class="pre">classmethod</span> </em><code class="sig-name descname"><span class="pre">add_reservoir_pore</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">network</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pores</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/io/Statoil.html#Statoil.add_reservoir_pore"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.io.Statoil.add_reservoir_pore" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>network</strong> (<em>OpenPNM Network object</em>) – The network to which the reservoir pore should be added</p></li>
+<li><p><strong>pores</strong> (<em>array_like</em>) – The pores to which the reservoir pore should be connected to</p></li>
+<li><p><strong>offset</strong> (<em>scalar</em>) – Controls the distance which the reservoir is offset from the given
+<code class="docutils literal notranslate"><span class="pre">pores</span></code>.  The total displacement is found from the network
+dimension normal to given <code class="docutils literal notranslate"><span class="pre">pores</span></code>, multiplied by <code class="docutils literal notranslate"><span class="pre">offset</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="openpnm.io.Statoil.export_data">
+<em class="property"><span class="pre">classmethod</span> </em><code class="sig-name descname"><span class="pre">export_data</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">network</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Pin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Pout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/io/Statoil.html#Statoil.export_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.io.Statoil.export_data" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>network</strong> (<em>OpenPNM Network object</em>) – The network</p></li>
+<li><p><strong>shape</strong> (<em>array_like</em>) – An ndim-by-1 array or list containing the network dimensions
+in physical units (i.e. um)</p></li>
+<li><p><strong>prefix</strong> (<em>str</em>) – The prefix to append to each file name, such as
+<code class="docutils literal notranslate"><span class="pre">&lt;prefix&gt;_node1.dat</span></code>. If not provided <code class="docutils literal notranslate"><span class="pre">project.name</span></code> is used.</p></li>
+<li><p><strong>path</strong> (<em>str</em><em> or </em><em>path object</em>) – The location where the exported files should be stored. If not
+provided the current working directory is used</p></li>
+<li><p><strong>and Poutlet</strong> (<em>Pinlet</em>) – The pore index of the inlet and outlet reservoir pores. If not
+provided then it is assumed they are the second last and last
+pores in the network, respectively.  This would be the case if
+the <code class="docutils literal notranslate"><span class="pre">add_reservoir_pore</span></code> function had been called prior to
+exporting.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt id="openpnm.io.Statoil.import_data">
 <em class="property"><span class="pre">classmethod</span> </em><code class="sig-name descname"><span class="pre">import_data</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/io/Statoil.html#Statoil.import_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.io.Statoil.import_data" title="Permalink to this definition">¶</a></dt>
