@@ -16,3 +16,4 @@ tqdm
 sympy
 docrep
 pardiso4py
+chemicals
