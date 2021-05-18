@@ -212,7 +212,7 @@ def find_neighbor_bonds(sites, im=None, am=None, flatten=True, logic='or'):
         if am.format != 'coo':
             am = am.tocoo(copy=False)
         if not istriu(am):
-            am = sp.sparse.triu(am, k=1)
+            am = sprs.triu(am, k=1)
         if flatten is False:
             raise Exception('flatten cannot be used with an adjacency matrix')
         Ps = np.zeros(am.shape[0], dtype=bool)
@@ -526,7 +526,7 @@ def tri_to_am(tri):
     # Set weights to 1's
     coo.data = np.ones_like(coo.data)
     # Remove diagonal, and convert to csr remove duplicates
-    am = sp.sparse.triu(A=coo, k=1, format='csr')
+    am = sprs.triu(A=coo, k=1, format='csr')
     # The convert back to COO and return
     am = am.tocoo()
     return am
@@ -570,7 +570,7 @@ def vor_to_am(vor):
     M = N = np.amax(rc) + 1
     am = sprs.coo_matrix((data, (rc[:, 0], rc[:, 1])), shape=(M, N))
     # Remove diagonal, and convert to csr remove duplicates
-    am = sp.sparse.triu(A=am, k=1, format='csr')
+    am = sprs.triu(A=am, k=1, format='csr')
     # The convert back to COO and return
     am = am.tocoo()
     return am
