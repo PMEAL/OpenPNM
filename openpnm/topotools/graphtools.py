@@ -1,6 +1,5 @@
 import warnings
 import numpy as np
-import scipy as sp
 import scipy.sparse as sprs
 from openpnm.utils import logging, Workspace
 logger = logging.getLogger(__name__)
