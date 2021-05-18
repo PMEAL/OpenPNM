@@ -294,7 +294,7 @@ def find_connected_sites(bonds, am, flatten=True, logic='or'):
     # This function only uses the upper triangular portion, so make sure it
     # is sorted properly first
     if not istriu(am):
-        am = sp.sparse.triu(am, k=1)
+        am = sprs.triu(am, k=1)
     neighbors = np.hstack((am.row[bonds], am.col[bonds])).astype(np.int64)
     if neighbors.size:
         n_sites = np.amax(neighbors)
