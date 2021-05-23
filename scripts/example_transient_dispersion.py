@@ -56,6 +56,7 @@ phys.add_model(propname='throat.ad_dif_conductance',
 linear = op.models.physics.generic_source_term.linear
 phys['pore.A1'] = -1e-15
 phys['pore.A2'] = 0.0
+water['pore.concentration'] = 0.0
 phys.add_model(propname='pore.rxn', model=linear, X='pore.concentration',
                A1='pore.A1', A2='pore.A2')
 rxn_pores = np.array([200])
@@ -75,8 +76,8 @@ ad.set_source(propname='pore.rxn', pores=rxn_pores)
 ad.set_value_BC(pores=net.pores('back'), values=100)
 ad.set_value_BC(pores=net.pores('front'), values=90)
 # Change 'steady' to 'implicit' or 'cranknicolson' for transient simulations
-settings = {'t_scheme': 'steady', 'solver_tol': 1e-12, 't_output': 1000,
-            't_step': 500, 't_final': 100000}
+settings = {'t_scheme': 'implicit', 'solver_tol': 1e-12, 't_output': 1000,
+            't_step': 500, 't_final': 100000, 'store_rate': True}
 ad.settings.update(settings)
 ad.set_IC(90)
 ad.run()

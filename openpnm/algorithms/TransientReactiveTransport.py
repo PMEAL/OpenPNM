@@ -81,12 +81,13 @@ class TransientReactiveTransportSettings(GenericSettings):
     t_initial = 0
     t_final = 10
     t_step = 0.1
-    t_output = 1e+08
     t_tolerance = 1e-06
     t_precision = 12
     t_scheme = 'implicit'
     pore_volume = 'pore.volume'
     t_solns = []
+    store_rate = False
+    t_output = 1000
 
 
 class TransientReactiveTransport(ReactiveTransport):
@@ -337,14 +338,17 @@ class TransientReactiveTransport(ReactiveTransport):
 
         # Time marching step
         else:
-            # Export the initial field (t=t_initial)
+            # Export the initial conditions and other quantities (t=t_initial)
             t_str = self._nbr_to_str(t)
             quant_init = self["pore.ic"]
             self[quantity + '@' + t_str] = quant_init
             self[quantity] = quant_init
+            self.settings['t_solns'].append(t_str)
+            if self.settings['store_rate']:
+                self['pore.net_rate' + '@' + t_str] = 0.0
 
             time = None
-            for time in np.arange(t+dt, tf+dt, dt):
+            for time in np.arange(t, tf+dt, dt):
                 logger.info(f'    Current time step: {time} s')
                 # Update A and b and apply BCs
                 self._t_update_A()
@@ -362,6 +366,14 @@ class TransientReactiveTransport(ReactiveTransport):
                     t_str = self._nbr_to_str(time)
                     self[quantity + '@' + t_str] = x_new
                     self.settings['t_solns'].append(t_str)
+                    if self.settings['store_rate']:
+                        rate = self.rate(pores=self.Ps, mode='single')
+                        self['pore.rate' + '@' + t_str] = rate
+                        t1 = self.settings['t_solns'][-1]
+                        t0 = self.settings['t_solns'][-2]
+                        net_accum = self['pore.net_rate' + '@' + t0]
+                        accum = rate * (float(t1) - float(t0))
+                        self['pore.net_rate' + '@' + t_str] = net_accum + accum
                     logger.info(f'        Exporting time step: {time} s')
 
             logger.info(f'    Maximum time step reached: {time} s')
