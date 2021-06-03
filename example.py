@@ -1,55 +1,68 @@
 import openpnm as op
-ws = op.Workspace()
-proj = ws.new_project()
-export = False
+import numpy as np
 
-pn = op.network.Cubic(shape=[10, 10, 10], spacing=1e-4, project=proj)
+
+def theta(target,
+          alg_name,
+          theta_max,
+          m=3,
+          diameter='pore.diameter',
+          volume='pore.volume',
+          area='pore.area'):
+    r"""
+    """
+    from scipy.constants import Avogadro as N_A
+    from scipy.constants import pi
+    alg = target.project[alg_name]
+    net = target.network
+    try:
+        t = alg.settings['t_solns'][-1]
+        Cads = alg[f'pore.net_rate@{t}']
+        r = net[diameter]
+        Vp = net[volume]
+        A = net[area]
+        B = (1-pi*r**2*Vp/(A*theta_max) * Cads)**m
+    except:
+        B = np.zeros(alg.Np)
+    return B
+
+
+pn = op.network.Cubic(shape=[10, 10, 10], spacing=1e-4)
 geo = op.geometry.StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts)
 air = op.phases.Air(network=pn, name='air')
-water = op.phases.Water(network=pn, name='h2o')
-hg = op.phases.Mercury(network=pn, name='hg')
 phys_air = op.physics.Standard(network=pn, phase=air, geometry=geo)
-phys_water = op.physics.Standard(network=pn, phase=water, geometry=geo)
-phys_hg = op.physics.Standard(network=pn, phase=hg, geometry=geo)
-
-mip = op.algorithms.Porosimetry(network=pn)
-mip.setup(phase=hg)
-mip.set_inlets(pores=pn.pores(['top', 'bottom']))
-mip.run()
-hg.update(mip.results(Pc=70000))
-# mip.plot_intrusion_curve()
-
-perm = op.algorithms.StokesFlow(network=pn)
-perm.setup(phase=water)
-perm.set_value_BC(pores=pn.pores('right'), values=0)
-perm.set_value_BC(pores=pn.pores('left'), values=101325)
-perm.run()
-water.update(perm.results())
-# print(perm.calc_effective_permeability())
 
 # Add reaction to phys_air
+phys_air['pore.n'] = 1
+phys_air['pore.k'] = -1e-5
+phys_air.add_model(propname='pore.B',
+                   model=theta,
+                   alg_name=None,  # Will update later
+                   theta_max=0.91,
+                   m=3, regen_mode='deferred')
+phys_air.add_model(propname='pore.A',
+                   model=op.models.misc.product,
+                   prop1='pore.k', prop2='pore.B',
+                   regen_mode='deferred')
 mod = op.models.physics.source_terms.standard_kinetics
-phys_air['pore.n'] = 2
-phys_air['pore.A'] = -1e-5
-phys_air.add_model(propname='pore.2nd_order_rxn', model=mod,
+phys_air.add_model(propname='pore.rxn', model=mod,
                    X='pore.concentration',
                    prefactor='pore.A', exponent='pore.n',
                    regen_mode='deferred')
-rxn = op.algorithms.FickianDiffusion(network=pn)
-rxn.setup(phase=air, solver='spsolve')
+
+rxn = op.algorithms.TransientFickianDiffusion(network=pn)
+phys_air.models['pore.B']['alg_name'] = rxn.name  # This is kludgy for now
+rxn.setup(phase=air)
 Ps = pn.find_nearby_pores(pores=50, r=5e-4, flatten=True)
-rxn.set_source(propname='pore.2nd_order_rxn', pores=Ps)
+rxn.set_source(propname='pore.rxn', pores=Ps)
 rxn.set_value_BC(pores=pn.pores('top'), values=1)
+settings = {'store_rate': True,
+            't_final': 100.0,
+            't_initial': 0,
+            't_output':10.0}
+rxn.settings.update(settings)
 rxn.run()
 air.update(rxn.results())
 
-fd = op.algorithms.FickianDiffusion(network=pn)
-fd.setup(phase=air)
-fd.set_value_BC(pores=pn.pores('left'), values=1)
-fd.set_value_BC(pores=pn.pores('right'), values=0)
-fd.run()
-fd.calc_effective_diffusivity()
 
-# Output network and the phases to a VTP file for visualization in Paraview
-if export:
-    proj.export_data(network=pn, phases=[hg, air, water], filename='output.vtp')
+
