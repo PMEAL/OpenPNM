@@ -247,7 +247,7 @@ class Base(dict):
             if self._count(element) == 0:
                 self.update({key: value})
             else:
-                raise Exception('Provided array is wrong legth for ' + key)
+                raise Exception('Provided array is wrong length for ' + key)
 
     def __getitem__(self, key):
         element, prop = key.split('.', 1)
