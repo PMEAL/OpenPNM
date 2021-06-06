@@ -12,6 +12,8 @@ terminaltables
 gitpython
 flatdict
 transforms3d
+tqdm
 sympy
 docrep
 pardiso4py
+chemicals

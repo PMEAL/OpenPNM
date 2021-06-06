@@ -13,5 +13,6 @@ gitpython
 flatdict
 transforms3d
 sympy
+tqdm
 docrep
 json-tricks
