@@ -3,12 +3,16 @@ name: Deploy Documentation
 on:
   push:
     branches:
-    - dev
+    - "*"
 
 jobs:
   deploy-docs:
 
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -l {0}
+
     steps:
       - uses: actions/checkout@v2
 
@@ -21,7 +25,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -r requirements/pip_requirements.txt
-          pip install sphinx sphinx_rtd_theme
+          pip install -r requirements/doc_requirements.txt
       # Build the documentation
       - name: Build the documentation
         run: |
