@@ -5,34 +5,682 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Geometry Models &#8212; OpenPNM</title>
-    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
-    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <title>Geometry Models &#8212; OpenPNM  documentation</title>
+    
+  <link href="../../_static/css/theme.css" rel="stylesheet" />
+  <link href="../../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
+
+    
+  <link rel="stylesheet"
+    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    
+  <link rel="preload" as="script" href="../../_static/js/index.1c5a1a01449ed65a7b51.js">
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/custom.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Phase Models" href="phase.html" />
     <link rel="prev" title="Miscellaneous Models" href="misc.html" />
-   
-  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
 
-  </head><body>
-  
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
+  <div id="navbar-start">
+    
+    
+
+<a class="navbar-brand" href="https://www.openpnm.org">
+  <img src="../../_static/openpnm_logo.png" class="logo" alt="logo">
+</a>
+
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class=" collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../userguide/index.html">
+  <strong>
+   User Guide
+  </strong>
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="../index.html">
+  <strong>
+   Module Reference
+  </strong>
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../examples/examples.html">
+  Examples
+ </a>
+</li>
+
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/PMEAL/OpenPNM" rel="noopener" target="_blank" title="GitHub">
+            <span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://openpnm.substack.com/" rel="noopener" target="_blank" title="Substack">
+            <span><i class="fas fa-envelope-square"></i></span>
+            <label class="sr-only">Substack</label>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://twitter.com/OpenPnm" rel="noopener" target="_blank" title="Twitter">
+            <span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label>
+          </a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../core/index.html">
+   Core
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../core/base.html">
+     Base
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../core/subdomain.html">
+     Subdomain
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../core/modelsmixin.html">
+     ModelsMixin
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../core/modelsdict.html">
+     ModelsDict
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../network/index.html">
+   Network
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+  <label for="toctree-checkbox-2">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../network/generic.html">
+     GenericNetwork
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../network/cubic.html">
+     Cubic
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../network/cubic_dual.html">
+     CubicDual
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../network/cubic_template.html">
+     CubicTemplate
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../network/bravais.html">
+     Bravais
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../network/voronoi.html">
+     Voronoi
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../network/delaunay.html">
+     Delaunay
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../network/gabriel.html">
+     Gabriel
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../network/delaunay_voronoi_dual.html">
+     DelaunayVoronoiDual
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../geometry/index.html">
+   Geometry
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
+  <label for="toctree-checkbox-3">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../geometry/generic_geometry.html">
+     GenericGeometry
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../geometry/stick_and_ball.html">
+     StickAndBall
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../phases/index.html">
+   Phases
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
+  <label for="toctree-checkbox-4">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../phases/generic_phase.html">
+     GenericPhase
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../phases/air.html">
+     Air
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../phases/water.html">
+     Water
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../phases/mercury.html">
+     Mercury
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../physics/index.html">
+   Physics
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/>
+  <label for="toctree-checkbox-5">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../physics/generic_physics.html">
+     GenericPhysics
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../physics/standard.html">
+     Standard
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../materials/index.html">
+   Materials
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/>
+  <label for="toctree-checkbox-6">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../materials/voronoi_fibers.html">
+     VoronoiFibers
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../algorithms/index.html">
+   Algorithms
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
+  <label for="toctree-checkbox-7">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../algorithms/generic_algorithm.html">
+     GenericAlgorithm
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../algorithms/generic_transport.html">
+     GenericTransport
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../algorithms/reactive_transport.html">
+     ReactiveTransport
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../algorithms/transient_reactive_transport.html">
+     TransientReactiveTransport
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../algorithms/ordinary_percolation.html">
+     OrdinaryPercolation
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../algorithms/porosimetry.html">
+     Porosimetry
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../algorithms/invasion_percolation.html">
+     InvasionPercolation
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../algorithms/mixed_percolation.html">
+     MixedInvasionPercolation
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../algorithms/fickian_diffusion.html">
+     FickianDiffusion
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../algorithms/fourier_conduction.html">
+     FourierConduction
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../algorithms/ohmic_conduction.html">
+     OhmicConduction
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../algorithms/stokes_flow.html">
+     StokesFlow
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../algorithms/advection_diffusion.html">
+     AdvectionDiffusion
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../algorithms/metrics/index.html">
+   Metrics
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/>
+  <label for="toctree-checkbox-8">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../algorithms/metrics/mercury_intrusion.html">
+     MercuryIntrusion
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../algorithms/metrics/formation_factor.html">
+     FormationFactor
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../algorithms/metrics/relative_permeability.html">
+     RelativePermeability
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../topotools/index.html">
+   Topotools
+  </a>
+ </li>
+ <li class="toctree-l1 current active has-children">
+  <a class="reference internal" href="index.html">
+   Models
+  </a>
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/>
+  <label for="toctree-checkbox-9">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul class="current">
+   <li class="toctree-l2">
+    <a class="reference internal" href="misc.html">
+     Miscellaneous Models
+    </a>
+   </li>
+   <li class="toctree-l2 current active">
+    <a class="current reference internal" href="#">
+     Geometry Models
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="phase.html">
+     Phase Models
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="physics.html">
+     Physics Models
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../io/index.html">
+   IO
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/>
+  <label for="toctree-checkbox-10">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../io/dict.html">
+     Dict
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../io/CSV.html">
+     CSV
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../io/VTK.html">
+     VTK
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../io/HDF5.html">
+     HDF5
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../io/XDMF.html">
+     XDMF
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../io/mat.html">
+     VTK
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../io/networkx.html">
+     NetworkX
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../io/pandas.html">
+     Pandas
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../io/statoil.html">
+     Statoil
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../io/marock.html">
+     MARock
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../io/imorph.html">
+     iMorph
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../utils/index.html">
+   Utilities
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/>
+  <label for="toctree-checkbox-11">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../utils/workspace.html">
+     Workspace
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../utils/project.html">
+     Project
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../utils/misc.html">
+     Miscellaneous Classes, Functions, and Tools
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+  </div>
+</nav>
+            </div>
+            
           
 
-          <div class="body" role="main">
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
             
+              
+              <div class="toc-item">
+                
+<div class="tocsection onthispage pt-5 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
+
+<nav id="bd-toc-nav">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-openpnm.models.geometry">
+   Overview of Submodule
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#detailed-model-documentation">
+   Detailed Model Documentation
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#module-openpnm.models.geometry.pore_size">
+     Pore size
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#module-openpnm.models.geometry.pore_volume">
+     Pore volume
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#module-openpnm.models.geometry.pore_seed">
+     Pore seed
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#module-openpnm.models.geometry.pore_surface_area">
+     Pore surface area
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#module-openpnm.models.geometry.throat_cross_sectional_area">
+     Throat cross sectional area
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#module-openpnm.models.geometry.throat_size">
+     Throat size
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#module-openpnm.models.geometry.throat_length">
+     Throat length
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#module-openpnm.models.geometry.throat_perimeter">
+     Throat perimeter
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#module-openpnm.models.geometry.throat_surface_area">
+     Throat surface area
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#module-openpnm.models.geometry.throat_vector">
+     Throat vector
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#module-openpnm.models.geometry.throat_volume">
+     Throat volume
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#module-openpnm.models.geometry.throat_capillary_shape_factor">
+     Throat capillary shape factor
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+</nav>
+              </div>
+              
+              <div class="toc-item">
+                
+              </div>
+              
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
   <div class="section" id="geometry-models">
 <span id="geom-models-api"></span><h1><a class="toc-backref" href="#id3">Geometry Models</a><a class="headerlink" href="#geometry-models" title="Permalink to this headline">¶</a></h1>
 <div class="contents topic" id="contents-of-this-page">
@@ -76,8 +724,8 @@ then look-up pore-sizes from cumuative distribtions functions.  There is also
 a model for finding the largest possible sphere that can be placed on each
 site.</p>
 <dl class="py function">
-<dt id="openpnm.models.geometry.pore_size.equivalent_diameter">
-<code class="sig-prename descclassname"><span class="pre">openpnm.models.geometry.pore_size.</span></code><code class="sig-name descname"><span class="pre">equivalent_diameter</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_volume</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.volume'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'sphere'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/pore_size.html#equivalent_diameter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.pore_size.equivalent_diameter" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="openpnm.models.geometry.pore_size.equivalent_diameter">
+<span class="sig-name descname"><span class="pre">equivalent_diameter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_volume</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.volume'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'sphere'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/pore_size.html#equivalent_diameter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.pore_size.equivalent_diameter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the diameter of a sphere or edge-length of a cube with same
 volume as the pore.</p>
 <dl class="field-list simple">
@@ -101,8 +749,8 @@ volume.  Options are ‘sphere’ (default) or ‘cube’.</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt id="openpnm.models.geometry.pore_size.from_neighbor_throats">
-<code class="sig-prename descclassname"><span class="pre">openpnm.models.geometry.pore_size.</span></code><code class="sig-name descname"><span class="pre">from_neighbor_throats</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prop</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'max'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/pore_size.html#from_neighbor_throats"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.pore_size.from_neighbor_throats" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="openpnm.models.geometry.pore_size.from_neighbor_throats">
+<span class="sig-name descname"><span class="pre">from_neighbor_throats</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prop</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'max'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/pore_size.html#from_neighbor_throats"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.pore_size.from_neighbor_throats" title="Permalink to this definition">¶</a></dt>
 <dd><p>Adopt a value from the values found in neighboring throats</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -126,8 +774,8 @@ used in the calculation.</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt id="openpnm.models.geometry.pore_size.generic_distribution">
-<code class="sig-prename descclassname"><span class="pre">openpnm.models.geometry.pore_size.</span></code><code class="sig-name descname"><span class="pre">generic_distribution</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seeds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.seed'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/pore_size.html#generic_distribution"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.pore_size.generic_distribution" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="openpnm.models.geometry.pore_size.generic_distribution">
+<span class="sig-name descname"><span class="pre">generic_distribution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seeds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.seed'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/pore_size.html#generic_distribution"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.pore_size.generic_distribution" title="Permalink to this definition">¶</a></dt>
 <dd><p>Accepts an ‘rv_frozen’ object from the Scipy.stats submodule and returns
 values from the distribution for the given seeds</p>
 <p>This uses the <code class="docutils literal notranslate"><span class="pre">ppf</span></code> method of the stats object</p>
@@ -163,7 +811,7 @@ stats object and adding it as a model:</p>
 </pre></div>
 </div>
 <p>Now retrieve the stats distribution and add to <code class="docutils literal notranslate"><span class="pre">geo</span></code> as a model:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">stats_obj</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">weibull_min</span><span class="p">(</span><span class="n">c</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">scale</span><span class="o">=.</span><span class="mi">0001</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">stats_obj</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">weibull_min</span><span class="p">(</span><span class="n">c</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">.0001</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">geo</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.size&#39;</span><span class="p">,</span>
 <span class="gp">... </span>              <span class="n">model</span><span class="o">=</span><span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">pore_size</span><span class="o">.</span><span class="n">generic_distribution</span><span class="p">,</span>
 <span class="gp">... </span>              <span class="n">seeds</span><span class="o">=</span><span class="s1">&#39;pore.seed&#39;</span><span class="p">,</span>
@@ -177,8 +825,8 @@ stats object and adding it as a model:</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="openpnm.models.geometry.pore_size.largest_sphere">
-<code class="sig-prename descclassname"><span class="pre">openpnm.models.geometry.pore_size.</span></code><code class="sig-name descname"><span class="pre">largest_sphere</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fixed_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.fixed_diameter'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/pore_size.html#largest_sphere"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.pore_size.largest_sphere" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="openpnm.models.geometry.pore_size.largest_sphere">
+<span class="sig-name descname"><span class="pre">largest_sphere</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fixed_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.fixed_diameter'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/pore_size.html#largest_sphere"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.pore_size.largest_sphere" title="Permalink to this definition">¶</a></dt>
 <dd><p>Finds the maximum diameter pore that can be placed in each location without
 overlapping any neighbors.</p>
 <p>This method iteratively expands pores by increasing their diameter to
@@ -222,8 +870,8 @@ again.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="openpnm.models.geometry.pore_size.normal">
-<code class="sig-prename descclassname"><span class="pre">openpnm.models.geometry.pore_size.</span></code><code class="sig-name descname"><span class="pre">normal</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seeds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.seed'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/pore_size.html#normal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.pore_size.normal" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="openpnm.models.geometry.pore_size.normal">
+<span class="sig-name descname"><span class="pre">normal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seeds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.seed'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/pore_size.html#normal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.pore_size.normal" title="Permalink to this definition">¶</a></dt>
 <dd><p>Produces values from a Weibull distribution given a set of random numbers.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -251,7 +899,7 @@ which uses the ‘norm’ method of the scipy.stats module.  This can
 be used to find suitable values of ‘scale’ and ‘loc’.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">scipy</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">func</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">scale</span><span class="o">=.</span><span class="mi">0001</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="mf">0.001</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">func</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="mf">.0001</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="mf">0.001</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">ppf</span><span class="p">(</span><span class="n">q</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">10000</span><span class="p">)),</span> <span class="n">bins</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
 </pre></div>
@@ -259,8 +907,8 @@ be used to find suitable values of ‘scale’ and ‘loc’.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="openpnm.models.geometry.pore_size.random">
-<code class="sig-prename descclassname"><span class="pre">openpnm.models.geometry.pore_size.</span></code><code class="sig-name descname"><span class="pre">random</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0,</span> <span class="pre">1]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/pore_size.html#random"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.pore_size.random" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="openpnm.models.geometry.pore_size.random">
+<span class="sig-name descname"><span class="pre">random</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0,</span> <span class="pre">1]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/pore_size.html#random"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.pore_size.random" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create an array of random numbers of a specified size.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -285,8 +933,8 @@ numbers.</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt id="openpnm.models.geometry.pore_size.weibull">
-<code class="sig-prename descclassname"><span class="pre">openpnm.models.geometry.pore_size.</span></code><code class="sig-name descname"><span class="pre">weibull</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seeds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.seed'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/pore_size.html#weibull"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.pore_size.weibull" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="openpnm.models.geometry.pore_size.weibull">
+<span class="sig-name descname"><span class="pre">weibull</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seeds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.seed'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/pore_size.html#weibull"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.pore_size.weibull" title="Permalink to this definition">¶</a></dt>
 <dd><p>Produces values from a Weibull distribution given a set of random numbers.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -332,8 +980,8 @@ be used to find suitable values of ‘shape’, ‘scale’` and ‘loc’.  Not
 <span id="pore-volume"></span><h3><a class="toc-backref" href="#id7">Pore volume</a><a class="headerlink" href="#module-openpnm.models.geometry.pore_volume" title="Permalink to this headline">¶</a></h3>
 <p>These models calculate pore volumes depending on the specified shape</p>
 <dl class="py function">
-<dt id="openpnm.models.geometry.pore_volume.circle">
-<code class="sig-prename descclassname"><span class="pre">openpnm.models.geometry.pore_volume.</span></code><code class="sig-name descname"><span class="pre">circle</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.diameter'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/pore_volume.html#circle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.pore_volume.circle" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="openpnm.models.geometry.pore_volume.circle">
+<span class="sig-name descname"><span class="pre">circle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.diameter'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/pore_volume.html#circle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.pore_volume.circle" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate pore volume from diameter assuming a spherical pore body</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -348,8 +996,8 @@ necessary geometric properties.</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt id="openpnm.models.geometry.pore_volume.cone">
-<code class="sig-prename descclassname"><span class="pre">openpnm.models.geometry.pore_volume.</span></code><code class="sig-name descname"><span class="pre">cone</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.diameter'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/pore_volume.html#cone"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.pore_volume.cone" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="openpnm.models.geometry.pore_volume.cone">
+<span class="sig-name descname"><span class="pre">cone</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.diameter'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/pore_volume.html#cone"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.pore_volume.cone" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates pore volume from diameter assuming a conical pore body.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -370,8 +1018,8 @@ necessary geometric properties.</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt id="openpnm.models.geometry.pore_volume.cube">
-<code class="sig-prename descclassname"><span class="pre">openpnm.models.geometry.pore_volume.</span></code><code class="sig-name descname"><span class="pre">cube</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.diameter'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/pore_volume.html#cube"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.pore_volume.cube" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="openpnm.models.geometry.pore_volume.cube">
+<span class="sig-name descname"><span class="pre">cube</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.diameter'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/pore_volume.html#cube"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.pore_volume.cube" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate pore volume from diameter assuming a cubic pore body</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -392,8 +1040,8 @@ necessary geometric properties.</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt id="openpnm.models.geometry.pore_volume.cylinder">
-<code class="sig-prename descclassname"><span class="pre">openpnm.models.geometry.pore_volume.</span></code><code class="sig-name descname"><span class="pre">cylinder</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.diameter'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/pore_volume.html#cylinder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.pore_volume.cylinder" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="openpnm.models.geometry.pore_volume.cylinder">
+<span class="sig-name descname"><span class="pre">cylinder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.diameter'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/pore_volume.html#cylinder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.pore_volume.cylinder" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate pore volume from diameter assuming a cylindrical pore body
 with a height equal to its diameter.</p>
 <dl class="field-list simple">
@@ -415,8 +1063,8 @@ necessary geometric properties.</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt id="openpnm.models.geometry.pore_volume.effective">
-<code class="sig-prename descclassname"><span class="pre">openpnm.models.geometry.pore_volume.</span></code><code class="sig-name descname"><span class="pre">effective</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_volume</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.volume'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_volume</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.volume'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/pore_volume.html#effective"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.pore_volume.effective" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="openpnm.models.geometry.pore_volume.effective">
+<span class="sig-name descname"><span class="pre">effective</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_volume</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.volume'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_volume</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.volume'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/pore_volume.html#effective"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.pore_volume.effective" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the effective pore volume for optional use in transient
 simulations. The effective pore volume is calculated by adding half the
 volume of all neighbouring throats to the pore volume.</p>
@@ -440,8 +1088,8 @@ necessary geometric properties.</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt id="openpnm.models.geometry.pore_volume.pyramid">
-<code class="sig-prename descclassname"><span class="pre">openpnm.models.geometry.pore_volume.</span></code><code class="sig-name descname"><span class="pre">pyramid</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.diameter'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/pore_volume.html#pyramid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.pore_volume.pyramid" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="openpnm.models.geometry.pore_volume.pyramid">
+<span class="sig-name descname"><span class="pre">pyramid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.diameter'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/pore_volume.html#pyramid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.pore_volume.pyramid" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates pore volume from diameter assuming a truncated pyramid pore
 body.</p>
 <dl class="field-list simple">
@@ -463,8 +1111,8 @@ necessary geometric properties.</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt id="openpnm.models.geometry.pore_volume.sphere">
-<code class="sig-prename descclassname"><span class="pre">openpnm.models.geometry.pore_volume.</span></code><code class="sig-name descname"><span class="pre">sphere</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.diameter'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/pore_volume.html#sphere"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.pore_volume.sphere" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="openpnm.models.geometry.pore_volume.sphere">
+<span class="sig-name descname"><span class="pre">sphere</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.diameter'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/pore_volume.html#sphere"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.pore_volume.sphere" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate pore volume from diameter assuming a spherical pore body</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -485,8 +1133,8 @@ necessary geometric properties.</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt id="openpnm.models.geometry.pore_volume.square">
-<code class="sig-prename descclassname"><span class="pre">openpnm.models.geometry.pore_volume.</span></code><code class="sig-name descname"><span class="pre">square</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.diameter'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/pore_volume.html#square"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.pore_volume.square" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="openpnm.models.geometry.pore_volume.square">
+<span class="sig-name descname"><span class="pre">square</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.diameter'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/pore_volume.html#square"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.pore_volume.square" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate pore volume from diameter assuming a cubic pore body</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -501,8 +1149,8 @@ necessary geometric properties.</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt id="openpnm.models.geometry.pore_volume.trapezoid">
-<code class="sig-prename descclassname"><span class="pre">openpnm.models.geometry.pore_volume.</span></code><code class="sig-name descname"><span class="pre">trapezoid</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.diameter'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/pore_volume.html#trapezoid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.pore_volume.trapezoid" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="openpnm.models.geometry.pore_volume.trapezoid">
+<span class="sig-name descname"><span class="pre">trapezoid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.diameter'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/pore_volume.html#trapezoid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.pore_volume.trapezoid" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates pore volume from diameter assuming a trapezoidal pore body.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -530,8 +1178,8 @@ necessary geometric properties.</p></li>
 subsequently be used in statistical distributions to calculate actual pore
 sizes.</p>
 <dl class="py function">
-<dt id="openpnm.models.geometry.pore_seed.random">
-<code class="sig-prename descclassname"><span class="pre">openpnm.models.geometry.pore_seed.</span></code><code class="sig-name descname"><span class="pre">random</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0,</span> <span class="pre">1]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/pore_seed.html#random"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.pore_seed.random" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="openpnm.models.geometry.pore_seed.random">
+<span class="sig-name descname"><span class="pre">random</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0,</span> <span class="pre">1]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/pore_seed.html#random"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.pore_seed.random" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create an array of random numbers of a specified size.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -556,8 +1204,8 @@ numbers.</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt id="openpnm.models.geometry.pore_seed.spatially_correlated">
-<code class="sig-prename descclassname"><span class="pre">openpnm.models.geometry.pore_seed.</span></code><code class="sig-name descname"><span class="pre">spatially_correlated</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/pore_seed.html#spatially_correlated"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.pore_seed.spatially_correlated" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="openpnm.models.geometry.pore_seed.spatially_correlated">
+<span class="sig-name descname"><span class="pre">spatially_correlated</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/pore_seed.html#spatially_correlated"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.pore_seed.spatially_correlated" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generates pore seeds that are spatailly correlated with their neighbors.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -621,8 +1269,8 @@ v173, pp277–290 (2007)</p>
 <div class="section" id="module-openpnm.models.geometry.pore_surface_area">
 <span id="pore-surface-area"></span><h3><a class="toc-backref" href="#id9">Pore surface area</a><a class="headerlink" href="#module-openpnm.models.geometry.pore_surface_area" title="Permalink to this headline">¶</a></h3>
 <dl class="py function">
-<dt id="openpnm.models.geometry.pore_surface_area.circle">
-<code class="sig-prename descclassname"><span class="pre">openpnm.models.geometry.pore_surface_area.</span></code><code class="sig-name descname"><span class="pre">circle</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.diameter'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_cross_sectional_area</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.cross_sectional_area'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/pore_surface_area.html#circle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.pore_surface_area.circle" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="openpnm.models.geometry.pore_surface_area.circle">
+<span class="sig-name descname"><span class="pre">circle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.diameter'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_cross_sectional_area</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.cross_sectional_area'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/pore_surface_area.html#circle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.pore_surface_area.circle" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates internal surface area of pore bodies assuming they are
 circular then subtracts the area of the neighboring throats in a
 crude way, by simply considering the throat cross-sectional area, thus
@@ -649,8 +1297,8 @@ removed from the computation.</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt id="openpnm.models.geometry.pore_surface_area.cube">
-<code class="sig-prename descclassname"><span class="pre">openpnm.models.geometry.pore_surface_area.</span></code><code class="sig-name descname"><span class="pre">cube</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.diameter'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_cross_sectional_area</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.cross_sectional_area'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/pore_surface_area.html#cube"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.pore_surface_area.cube" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="openpnm.models.geometry.pore_surface_area.cube">
+<span class="sig-name descname"><span class="pre">cube</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.diameter'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_cross_sectional_area</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.cross_sectional_area'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/pore_surface_area.html#cube"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.pore_surface_area.cube" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates internal surface area of pore bodies assuming they are cubes
 then subtracts the area of the neighboring throats.</p>
 <dl class="field-list simple">
@@ -675,8 +1323,8 @@ removed from the computation.</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt id="openpnm.models.geometry.pore_surface_area.sphere">
-<code class="sig-prename descclassname"><span class="pre">openpnm.models.geometry.pore_surface_area.</span></code><code class="sig-name descname"><span class="pre">sphere</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.diameter'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_cross_sectional_area</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.cross_sectional_area'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/pore_surface_area.html#sphere"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.pore_surface_area.sphere" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="openpnm.models.geometry.pore_surface_area.sphere">
+<span class="sig-name descname"><span class="pre">sphere</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.diameter'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_cross_sectional_area</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.cross_sectional_area'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/pore_surface_area.html#sphere"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.pore_surface_area.sphere" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates internal surface area of pore bodies assuming they are
 spherical then subtracts the area of the neighboring throats in a
 crude way, by simply considering the throat cross-sectional area, thus
@@ -703,8 +1351,8 @@ removed from the computation.</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt id="openpnm.models.geometry.pore_surface_area.square">
-<code class="sig-prename descclassname"><span class="pre">openpnm.models.geometry.pore_surface_area.</span></code><code class="sig-name descname"><span class="pre">square</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.diameter'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_cross_sectional_area</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.cross_sectional_area'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/pore_surface_area.html#square"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.pore_surface_area.square" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="openpnm.models.geometry.pore_surface_area.square">
+<span class="sig-name descname"><span class="pre">square</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.diameter'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_cross_sectional_area</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.cross_sectional_area'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/pore_surface_area.html#square"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.pore_surface_area.square" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates internal surface area of pore bodies assuming they are
 squares then subtracts the area of the neighboring throats.</p>
 <dl class="field-list simple">
@@ -733,8 +1381,8 @@ removed from the computation.</p></li>
 <div class="section" id="module-openpnm.models.geometry.throat_cross_sectional_area">
 <span id="throat-cross-sectional-area"></span><h3><a class="toc-backref" href="#id10">Throat cross sectional area</a><a class="headerlink" href="#module-openpnm.models.geometry.throat_cross_sectional_area" title="Permalink to this headline">¶</a></h3>
 <dl class="py function">
-<dt id="openpnm.models.geometry.throat_cross_sectional_area.cuboid">
-<code class="sig-prename descclassname"><span class="pre">openpnm.models.geometry.throat_cross_sectional_area.</span></code><code class="sig-name descname"><span class="pre">cuboid</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.diameter'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_cross_sectional_area.html#cuboid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_cross_sectional_area.cuboid" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="openpnm.models.geometry.throat_cross_sectional_area.cuboid">
+<span class="sig-name descname"><span class="pre">cuboid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.diameter'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_cross_sectional_area.html#cuboid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_cross_sectional_area.cuboid" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate throat cross-sectional area for a cuboid throat</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -755,8 +1403,8 @@ necessary properties.</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt id="openpnm.models.geometry.throat_cross_sectional_area.cylinder">
-<code class="sig-prename descclassname"><span class="pre">openpnm.models.geometry.throat_cross_sectional_area.</span></code><code class="sig-name descname"><span class="pre">cylinder</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.diameter'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_cross_sectional_area.html#cylinder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_cross_sectional_area.cylinder" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="openpnm.models.geometry.throat_cross_sectional_area.cylinder">
+<span class="sig-name descname"><span class="pre">cylinder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.diameter'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_cross_sectional_area.html#cylinder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_cross_sectional_area.cylinder" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate throat cross-sectional area for a cylindrical throat</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -777,8 +1425,8 @@ necessary properties.</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt id="openpnm.models.geometry.throat_cross_sectional_area.rectangle">
-<code class="sig-prename descclassname"><span class="pre">openpnm.models.geometry.throat_cross_sectional_area.</span></code><code class="sig-name descname"><span class="pre">rectangle</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.diameter'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_cross_sectional_area.html#rectangle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_cross_sectional_area.rectangle" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="openpnm.models.geometry.throat_cross_sectional_area.rectangle">
+<span class="sig-name descname"><span class="pre">rectangle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.diameter'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_cross_sectional_area.html#rectangle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_cross_sectional_area.rectangle" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate throat cross-sectional area for a rectangular throat</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -797,8 +1445,8 @@ necessary properties.</p></li>
 <div class="section" id="module-openpnm.models.geometry.throat_size">
 <span id="throat-size"></span><h3><a class="toc-backref" href="#id11">Throat size</a><a class="headerlink" href="#module-openpnm.models.geometry.throat_size" title="Permalink to this headline">¶</a></h3>
 <dl class="py function">
-<dt id="openpnm.models.geometry.throat_size.equivalent_diameter">
-<code class="sig-prename descclassname"><span class="pre">openpnm.models.geometry.throat_size.</span></code><code class="sig-name descname"><span class="pre">equivalent_diameter</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_area</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.area'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'circle'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_size.html#equivalent_diameter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_size.equivalent_diameter" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="openpnm.models.geometry.throat_size.equivalent_diameter">
+<span class="sig-name descname"><span class="pre">equivalent_diameter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_area</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.area'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'circle'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_size.html#equivalent_diameter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_size.equivalent_diameter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the diameter of a cirlce or edge-length of a sqaure with same
 area as the throat.</p>
 <dl class="field-list simple">
@@ -823,8 +1471,8 @@ back-calculating from the area.  Options are ‘circle’ (default) or
 </dd></dl>
 
 <dl class="py function">
-<dt id="openpnm.models.geometry.throat_size.from_neighbor_pores">
-<code class="sig-prename descclassname"><span class="pre">openpnm.models.geometry.throat_size.</span></code><code class="sig-name descname"><span class="pre">from_neighbor_pores</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.diameter'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'min'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_size.html#from_neighbor_pores"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_size.from_neighbor_pores" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="openpnm.models.geometry.throat_size.from_neighbor_pores">
+<span class="sig-name descname"><span class="pre">from_neighbor_pores</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.diameter'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'min'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_size.html#from_neighbor_pores"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_size.from_neighbor_pores" title="Permalink to this definition">¶</a></dt>
 <dd><p>Adopt a value based on the values in neighboring pores</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -849,8 +1497,8 @@ used in the calculation.</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt id="openpnm.models.geometry.throat_size.generic_distribution">
-<code class="sig-prename descclassname"><span class="pre">openpnm.models.geometry.throat_size.</span></code><code class="sig-name descname"><span class="pre">generic_distribution</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seeds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.seed'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_size.html#generic_distribution"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_size.generic_distribution" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="openpnm.models.geometry.throat_size.generic_distribution">
+<span class="sig-name descname"><span class="pre">generic_distribution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seeds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.seed'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_size.html#generic_distribution"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_size.generic_distribution" title="Permalink to this definition">¶</a></dt>
 <dd><p>Accepts an ‘rv_frozen’ object from the Scipy.stats submodule and returns
 values from the distribution for the given seeds</p>
 <p>This uses the <code class="docutils literal notranslate"><span class="pre">ppf</span></code> method of the stats object</p>
@@ -886,7 +1534,7 @@ stats object and adding it as a model:</p>
 </pre></div>
 </div>
 <p>Now retrieve the stats distribution and add to <code class="docutils literal notranslate"><span class="pre">geo</span></code> as a model:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">stats_obj</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">weibull_min</span><span class="p">(</span><span class="n">c</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">scale</span><span class="o">=.</span><span class="mi">0001</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">stats_obj</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">weibull_min</span><span class="p">(</span><span class="n">c</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">.0001</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">geo</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.size&#39;</span><span class="p">,</span>
 <span class="gp">... </span>              <span class="n">model</span><span class="o">=</span><span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">pore_size</span><span class="o">.</span><span class="n">generic_distribution</span><span class="p">,</span>
 <span class="gp">... </span>              <span class="n">seeds</span><span class="o">=</span><span class="s1">&#39;pore.seed&#39;</span><span class="p">,</span>
@@ -900,8 +1548,8 @@ stats object and adding it as a model:</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="openpnm.models.geometry.throat_size.normal">
-<code class="sig-prename descclassname"><span class="pre">openpnm.models.geometry.throat_size.</span></code><code class="sig-name descname"><span class="pre">normal</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seeds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.seed'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_size.html#normal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_size.normal" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="openpnm.models.geometry.throat_size.normal">
+<span class="sig-name descname"><span class="pre">normal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seeds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.seed'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_size.html#normal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_size.normal" title="Permalink to this definition">¶</a></dt>
 <dd><p>Produces values from a Weibull distribution given a set of random numbers.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -929,7 +1577,7 @@ which uses the ‘norm’ method of the scipy.stats module.  This can
 be used to find suitable values of ‘scale’ and ‘loc’.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">scipy</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">func</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">scale</span><span class="o">=.</span><span class="mi">0001</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="mf">0.001</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">func</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="mf">.0001</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="mf">0.001</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">ppf</span><span class="p">(</span><span class="n">q</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">10000</span><span class="p">)),</span> <span class="n">bins</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
 </pre></div>
@@ -937,8 +1585,8 @@ be used to find suitable values of ‘scale’ and ‘loc’.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="openpnm.models.geometry.throat_size.random">
-<code class="sig-prename descclassname"><span class="pre">openpnm.models.geometry.throat_size.</span></code><code class="sig-name descname"><span class="pre">random</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0,</span> <span class="pre">1]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_size.html#random"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_size.random" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="openpnm.models.geometry.throat_size.random">
+<span class="sig-name descname"><span class="pre">random</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0,</span> <span class="pre">1]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_size.html#random"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_size.random" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create an array of random numbers of a specified size.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -963,8 +1611,8 @@ numbers.</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt id="openpnm.models.geometry.throat_size.weibull">
-<code class="sig-prename descclassname"><span class="pre">openpnm.models.geometry.throat_size.</span></code><code class="sig-name descname"><span class="pre">weibull</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seeds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.seed'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_size.html#weibull"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_size.weibull" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="openpnm.models.geometry.throat_size.weibull">
+<span class="sig-name descname"><span class="pre">weibull</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seeds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.seed'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_size.html#weibull"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_size.weibull" title="Permalink to this definition">¶</a></dt>
 <dd><p>Produces values from a Weibull distribution given a set of random numbers.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1009,8 +1657,8 @@ be used to find suitable values of ‘shape’, ‘scale’` and ‘loc’.  Not
 <div class="section" id="module-openpnm.models.geometry.throat_length">
 <span id="throat-length"></span><h3><a class="toc-backref" href="#id12">Throat length</a><a class="headerlink" href="#module-openpnm.models.geometry.throat_length" title="Permalink to this headline">¶</a></h3>
 <dl class="py function">
-<dt id="openpnm.models.geometry.throat_length.circles_and_rectangles">
-<code class="sig-prename descclassname"><span class="pre">openpnm.models.geometry.throat_length.</span></code><code class="sig-name descname"><span class="pre">circles_and_rectangles</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.diameter'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.diameter'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_length.html#circles_and_rectangles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_length.circles_and_rectangles" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="openpnm.models.geometry.throat_length.circles_and_rectangles">
+<span class="sig-name descname"><span class="pre">circles_and_rectangles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.diameter'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.diameter'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_length.html#circles_and_rectangles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_length.circles_and_rectangles" title="Permalink to this definition">¶</a></dt>
 <dd><p>Finds throat length assuming pores are circles and throats are
 rectangles.</p>
 <dl class="field-list simple">
@@ -1033,8 +1681,8 @@ necessary properties.</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt id="openpnm.models.geometry.throat_length.classic">
-<code class="sig-prename descclassname"><span class="pre">openpnm.models.geometry.throat_length.</span></code><code class="sig-name descname"><span class="pre">classic</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.diameter'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_length.html#classic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_length.classic" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="openpnm.models.geometry.throat_length.classic">
+<span class="sig-name descname"><span class="pre">classic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.diameter'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_length.html#classic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_length.classic" title="Permalink to this definition">¶</a></dt>
 <dd><p>Finds throat length as the pore-to-pore center distance, less the radii of
 each pore.</p>
 <dl class="field-list simple">
@@ -1050,8 +1698,8 @@ necessary properties.</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt id="openpnm.models.geometry.throat_length.conduit_lengths">
-<code class="sig-prename descclassname"><span class="pre">openpnm.models.geometry.throat_length.</span></code><code class="sig-name descname"><span class="pre">conduit_lengths</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_endpoints</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.endpoints'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.length'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_centroid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.centroid'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_length.html#conduit_lengths"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_length.conduit_lengths" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="openpnm.models.geometry.throat_length.conduit_lengths">
+<span class="sig-name descname"><span class="pre">conduit_lengths</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_endpoints</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.endpoints'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.length'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_centroid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.centroid'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_length.html#conduit_lengths"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_length.conduit_lengths" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates conduit lengths. A conduit is defined as half pore + throat
 + half pore.</p>
 <dl class="field-list simple">
@@ -1077,8 +1725,8 @@ direct distance bewteen the two throat end points is used.</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt id="openpnm.models.geometry.throat_length.cones_and_cylinders">
-<code class="sig-prename descclassname"><span class="pre">openpnm.models.geometry.throat_length.</span></code><code class="sig-name descname"><span class="pre">cones_and_cylinders</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.diameter'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.diameter'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_length.html#cones_and_cylinders"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_length.cones_and_cylinders" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="openpnm.models.geometry.throat_length.cones_and_cylinders">
+<span class="sig-name descname"><span class="pre">cones_and_cylinders</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.diameter'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.diameter'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_length.html#cones_and_cylinders"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_length.cones_and_cylinders" title="Permalink to this definition">¶</a></dt>
 <dd><p>Finds throat length assuming pores are cones and throats are
 cylinders.</p>
 <dl class="field-list simple">
@@ -1101,8 +1749,8 @@ necessary properties.</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt id="openpnm.models.geometry.throat_length.ctc">
-<code class="sig-prename descclassname"><span class="pre">openpnm.models.geometry.throat_length.</span></code><code class="sig-name descname"><span class="pre">ctc</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_length.html#ctc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_length.ctc" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="openpnm.models.geometry.throat_length.ctc">
+<span class="sig-name descname"><span class="pre">ctc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_length.html#ctc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_length.ctc" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates throat length assuming point-like pores, i.e. center-to-center
 distance between pores. Also, this model assumes that pores and throat
 centroids are colinear.</p>
@@ -1122,8 +1770,8 @@ necessary properties.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="openpnm.models.geometry.throat_length.cubes_and_cuboids">
-<code class="sig-prename descclassname"><span class="pre">openpnm.models.geometry.throat_length.</span></code><code class="sig-name descname"><span class="pre">cubes_and_cuboids</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.diameter'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.diameter'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_length.html#cubes_and_cuboids"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_length.cubes_and_cuboids" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="openpnm.models.geometry.throat_length.cubes_and_cuboids">
+<span class="sig-name descname"><span class="pre">cubes_and_cuboids</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.diameter'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.diameter'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_length.html#cubes_and_cuboids"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_length.cubes_and_cuboids" title="Permalink to this definition">¶</a></dt>
 <dd><p>Finds throat length assuming pores are cubes and throats are
 cuboids.</p>
 <dl class="field-list simple">
@@ -1146,8 +1794,8 @@ necessary properties.</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt id="openpnm.models.geometry.throat_length.piecewise">
-<code class="sig-prename descclassname"><span class="pre">openpnm.models.geometry.throat_length.</span></code><code class="sig-name descname"><span class="pre">piecewise</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_endpoints</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.endpoints'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_centroid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.centroid'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_length.html#piecewise"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_length.piecewise" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="openpnm.models.geometry.throat_length.piecewise">
+<span class="sig-name descname"><span class="pre">piecewise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_endpoints</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.endpoints'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_centroid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.centroid'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_length.html#piecewise"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_length.piecewise" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates throat length from end points and optionally a centroid</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1174,8 +1822,8 @@ length. This could be useful for Voronoi or extracted networks.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="openpnm.models.geometry.throat_length.pyramids_and_cuboids">
-<code class="sig-prename descclassname"><span class="pre">openpnm.models.geometry.throat_length.</span></code><code class="sig-name descname"><span class="pre">pyramids_and_cuboids</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.diameter'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.diameter'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_length.html#pyramids_and_cuboids"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_length.pyramids_and_cuboids" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="openpnm.models.geometry.throat_length.pyramids_and_cuboids">
+<span class="sig-name descname"><span class="pre">pyramids_and_cuboids</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.diameter'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.diameter'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_length.html#pyramids_and_cuboids"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_length.pyramids_and_cuboids" title="Permalink to this definition">¶</a></dt>
 <dd><p>Finds throat length assuming pores are pyramids and throats are
 cuboids.</p>
 <dl class="field-list simple">
@@ -1198,8 +1846,8 @@ necessary properties.</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt id="openpnm.models.geometry.throat_length.spheres_and_cylinders">
-<code class="sig-prename descclassname"><span class="pre">openpnm.models.geometry.throat_length.</span></code><code class="sig-name descname"><span class="pre">spheres_and_cylinders</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.diameter'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.diameter'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_length.html#spheres_and_cylinders"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_length.spheres_and_cylinders" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="openpnm.models.geometry.throat_length.spheres_and_cylinders">
+<span class="sig-name descname"><span class="pre">spheres_and_cylinders</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.diameter'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.diameter'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_length.html#spheres_and_cylinders"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_length.spheres_and_cylinders" title="Permalink to this definition">¶</a></dt>
 <dd><p>Finds throat length assuming pores are spheres and throats are
 cylinders.</p>
 <dl class="field-list simple">
@@ -1222,8 +1870,8 @@ necessary properties.</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt id="openpnm.models.geometry.throat_length.squares_and_rectangles">
-<code class="sig-prename descclassname"><span class="pre">openpnm.models.geometry.throat_length.</span></code><code class="sig-name descname"><span class="pre">squares_and_rectangles</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.diameter'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.diameter'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_length.html#squares_and_rectangles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_length.squares_and_rectangles" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="openpnm.models.geometry.throat_length.squares_and_rectangles">
+<span class="sig-name descname"><span class="pre">squares_and_rectangles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.diameter'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.diameter'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_length.html#squares_and_rectangles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_length.squares_and_rectangles" title="Permalink to this definition">¶</a></dt>
 <dd><p>Finds throat length assuming pores are squares and throats are
 rectangles.</p>
 <dl class="field-list simple">
@@ -1246,8 +1894,8 @@ necessary properties.</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt id="openpnm.models.geometry.throat_length.trapezoids_and_rectangles">
-<code class="sig-prename descclassname"><span class="pre">openpnm.models.geometry.throat_length.</span></code><code class="sig-name descname"><span class="pre">trapezoids_and_rectangles</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.diameter'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.diameter'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_length.html#trapezoids_and_rectangles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_length.trapezoids_and_rectangles" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="openpnm.models.geometry.throat_length.trapezoids_and_rectangles">
+<span class="sig-name descname"><span class="pre">trapezoids_and_rectangles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.diameter'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.diameter'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_length.html#trapezoids_and_rectangles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_length.trapezoids_and_rectangles" title="Permalink to this definition">¶</a></dt>
 <dd><p>Finds throat length assuming pores are trapezoids and throats are
 rectangles.</p>
 <dl class="field-list simple">
@@ -1274,8 +1922,8 @@ necessary properties.</p></li>
 <div class="section" id="module-openpnm.models.geometry.throat_perimeter">
 <span id="throat-perimeter"></span><h3><a class="toc-backref" href="#id13">Throat perimeter</a><a class="headerlink" href="#module-openpnm.models.geometry.throat_perimeter" title="Permalink to this headline">¶</a></h3>
 <dl class="py function">
-<dt id="openpnm.models.geometry.throat_perimeter.cuboid">
-<code class="sig-prename descclassname"><span class="pre">openpnm.models.geometry.throat_perimeter.</span></code><code class="sig-name descname"><span class="pre">cuboid</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.diameter'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_perimeter.html#cuboid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_perimeter.cuboid" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="openpnm.models.geometry.throat_perimeter.cuboid">
+<span class="sig-name descname"><span class="pre">cuboid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.diameter'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_perimeter.html#cuboid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_perimeter.cuboid" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calcuate the throat perimeter assuming a square cross-section</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1296,8 +1944,8 @@ necessary properties.</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt id="openpnm.models.geometry.throat_perimeter.cylinder">
-<code class="sig-prename descclassname"><span class="pre">openpnm.models.geometry.throat_perimeter.</span></code><code class="sig-name descname"><span class="pre">cylinder</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.diameter'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_perimeter.html#cylinder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_perimeter.cylinder" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="openpnm.models.geometry.throat_perimeter.cylinder">
+<span class="sig-name descname"><span class="pre">cylinder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.diameter'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_perimeter.html#cylinder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_perimeter.cylinder" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calcuate the throat perimeter assuming a circular cross-section</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1318,8 +1966,8 @@ necessary properties.</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt id="openpnm.models.geometry.throat_perimeter.rectangle">
-<code class="sig-prename descclassname"><span class="pre">openpnm.models.geometry.throat_perimeter.</span></code><code class="sig-name descname"><span class="pre">rectangle</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.diameter'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_perimeter.html#rectangle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_perimeter.rectangle" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="openpnm.models.geometry.throat_perimeter.rectangle">
+<span class="sig-name descname"><span class="pre">rectangle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.diameter'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_perimeter.html#rectangle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_perimeter.rectangle" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calcuate the throat perimeter assuming a rectangular cross-section (2D)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1344,8 +1992,8 @@ necessary properties.</p></li>
 <div class="section" id="module-openpnm.models.geometry.throat_surface_area">
 <span id="throat-surface-area"></span><h3><a class="toc-backref" href="#id14">Throat surface area</a><a class="headerlink" href="#module-openpnm.models.geometry.throat_surface_area" title="Permalink to this headline">¶</a></h3>
 <dl class="py function">
-<dt id="openpnm.models.geometry.throat_surface_area.cuboid">
-<code class="sig-prename descclassname"><span class="pre">openpnm.models.geometry.throat_surface_area.</span></code><code class="sig-name descname"><span class="pre">cuboid</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.diameter'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.length'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_surface_area.html#cuboid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_surface_area.cuboid" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="openpnm.models.geometry.throat_surface_area.cuboid">
+<span class="sig-name descname"><span class="pre">cuboid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.diameter'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.length'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_surface_area.html#cuboid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_surface_area.cuboid" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate surface area for a cuboid throat</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1368,8 +2016,8 @@ necessary properties.</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt id="openpnm.models.geometry.throat_surface_area.cylinder">
-<code class="sig-prename descclassname"><span class="pre">openpnm.models.geometry.throat_surface_area.</span></code><code class="sig-name descname"><span class="pre">cylinder</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.diameter'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.length'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_surface_area.html#cylinder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_surface_area.cylinder" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="openpnm.models.geometry.throat_surface_area.cylinder">
+<span class="sig-name descname"><span class="pre">cylinder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.diameter'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.length'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_surface_area.html#cylinder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_surface_area.cylinder" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate surface area for a cylindrical throat</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1392,8 +2040,8 @@ necessary properties.</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt id="openpnm.models.geometry.throat_surface_area.extrusion">
-<code class="sig-prename descclassname"><span class="pre">openpnm.models.geometry.throat_surface_area.</span></code><code class="sig-name descname"><span class="pre">extrusion</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_perimeter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.perimeter'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.length'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_surface_area.html#extrusion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_surface_area.extrusion" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="openpnm.models.geometry.throat_surface_area.extrusion">
+<span class="sig-name descname"><span class="pre">extrusion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_perimeter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.perimeter'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.length'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_surface_area.html#extrusion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_surface_area.extrusion" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate surface area for an arbitrary shaped throat give the perimeter
 and length.</p>
 <dl class="field-list simple">
@@ -1417,8 +2065,8 @@ necessary properties.</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt id="openpnm.models.geometry.throat_surface_area.rectangle">
-<code class="sig-prename descclassname"><span class="pre">openpnm.models.geometry.throat_surface_area.</span></code><code class="sig-name descname"><span class="pre">rectangle</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.length'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_surface_area.html#rectangle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_surface_area.rectangle" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="openpnm.models.geometry.throat_surface_area.rectangle">
+<span class="sig-name descname"><span class="pre">rectangle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.length'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_surface_area.html#rectangle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_surface_area.rectangle" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate surface area for a rectangular throat</p>
 <p>Only suitable for true 2D simulations</p>
 <dl class="field-list simple">
@@ -1438,8 +2086,8 @@ necessary properties.</p></li>
 <div class="section" id="module-openpnm.models.geometry.throat_vector">
 <span id="throat-vector"></span><h3><a class="toc-backref" href="#id15">Throat vector</a><a class="headerlink" href="#module-openpnm.models.geometry.throat_vector" title="Permalink to this headline">¶</a></h3>
 <dl class="py function">
-<dt id="openpnm.models.geometry.throat_vector.pore_to_pore">
-<code class="sig-prename descclassname"><span class="pre">openpnm.models.geometry.throat_vector.</span></code><code class="sig-name descname"><span class="pre">pore_to_pore</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_vector.html#pore_to_pore"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_vector.pore_to_pore" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="openpnm.models.geometry.throat_vector.pore_to_pore">
+<span class="sig-name descname"><span class="pre">pore_to_pore</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_vector.html#pore_to_pore"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_vector.pore_to_pore" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates throat vector as straight path between connected pores.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1464,8 +2112,8 @@ This corresponds to the pores in the 1st and 2nd columns of the
 <div class="section" id="module-openpnm.models.geometry.throat_volume">
 <span id="throat-volume"></span><h3><a class="toc-backref" href="#id16">Throat volume</a><a class="headerlink" href="#module-openpnm.models.geometry.throat_volume" title="Permalink to this headline">¶</a></h3>
 <dl class="py function">
-<dt id="openpnm.models.geometry.throat_volume.cuboid">
-<code class="sig-prename descclassname"><span class="pre">openpnm.models.geometry.throat_volume.</span></code><code class="sig-name descname"><span class="pre">cuboid</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.length'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.diameter'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_volume.html#cuboid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_volume.cuboid" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="openpnm.models.geometry.throat_volume.cuboid">
+<span class="sig-name descname"><span class="pre">cuboid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.length'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.diameter'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_volume.html#cuboid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_volume.cuboid" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate throat volume assuing a square cross-section</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1490,8 +2138,8 @@ intersection of the throat with a spherical pore body.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="openpnm.models.geometry.throat_volume.cylinder">
-<code class="sig-prename descclassname"><span class="pre">openpnm.models.geometry.throat_volume.</span></code><code class="sig-name descname"><span class="pre">cylinder</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.length'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.diameter'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_volume.html#cylinder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_volume.cylinder" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="openpnm.models.geometry.throat_volume.cylinder">
+<span class="sig-name descname"><span class="pre">cylinder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.length'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.diameter'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_volume.html#cylinder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_volume.cylinder" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate throat volume assuing a cylindrical shape</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1516,8 +2164,8 @@ intersection of the throat with a spherical pore body.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="openpnm.models.geometry.throat_volume.extrusion">
-<code class="sig-prename descclassname"><span class="pre">openpnm.models.geometry.throat_volume.</span></code><code class="sig-name descname"><span class="pre">extrusion</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.length'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_area</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.area'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_volume.html#extrusion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_volume.extrusion" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="openpnm.models.geometry.throat_volume.extrusion">
+<span class="sig-name descname"><span class="pre">extrusion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.length'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_area</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.area'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_volume.html#extrusion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_volume.extrusion" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate throat volume from the throat area and the throat length. This
 method is useful for abnormal shaped throats.</p>
 <dl class="field-list simple">
@@ -1543,8 +2191,8 @@ intersection of the throat with a spherical pore body.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="openpnm.models.geometry.throat_volume.lens">
-<code class="sig-prename descclassname"><span class="pre">openpnm.models.geometry.throat_volume.</span></code><code class="sig-name descname"><span class="pre">lens</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.diameter'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.diameter'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_volume.html#lens"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_volume.lens" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="openpnm.models.geometry.throat_volume.lens">
+<span class="sig-name descname"><span class="pre">lens</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.diameter'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.diameter'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_volume.html#lens"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_volume.lens" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the volume residing the hemispherical caps formed by the
 intersection between cylindrical throats and spherical pores.</p>
 <p>This volume should be subtracted from throat volumes if the throat lengths
@@ -1577,8 +2225,8 @@ connectivity is random.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="openpnm.models.geometry.throat_volume.pendular_ring">
-<code class="sig-prename descclassname"><span class="pre">openpnm.models.geometry.throat_volume.</span></code><code class="sig-name descname"><span class="pre">pendular_ring</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.diameter'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.diameter'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_volume.html#pendular_ring"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_volume.pendular_ring" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="openpnm.models.geometry.throat_volume.pendular_ring">
+<span class="sig-name descname"><span class="pre">pendular_ring</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.diameter'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.diameter'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_volume.html#pendular_ring"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_volume.pendular_ring" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the volume of the pendular rings residing between the end of
 a cylindrical throat and spherical pores that are in contact but not
 overlapping.</p>
@@ -1612,8 +2260,8 @@ connectivity is random.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="openpnm.models.geometry.throat_volume.rectangle">
-<code class="sig-prename descclassname"><span class="pre">openpnm.models.geometry.throat_volume.</span></code><code class="sig-name descname"><span class="pre">rectangle</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.length'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.diameter'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_volume.html#rectangle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_volume.rectangle" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="openpnm.models.geometry.throat_volume.rectangle">
+<span class="sig-name descname"><span class="pre">rectangle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.length'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.diameter'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_volume.html#rectangle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_volume.rectangle" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate throat volume assuing a rectangular shape</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1636,8 +2284,8 @@ intersection of the throat with a spherical pore body.</p>
 <div class="section" id="module-openpnm.models.geometry.throat_capillary_shape_factor">
 <span id="throat-capillary-shape-factor"></span><h3><a class="toc-backref" href="#id17">Throat capillary shape factor</a><a class="headerlink" href="#module-openpnm.models.geometry.throat_capillary_shape_factor" title="Permalink to this headline">¶</a></h3>
 <dl class="py function">
-<dt id="openpnm.models.geometry.throat_capillary_shape_factor.compactness">
-<code class="sig-prename descclassname"><span class="pre">openpnm.models.geometry.throat_capillary_shape_factor.</span></code><code class="sig-name descname"><span class="pre">compactness</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_perimeter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.perimeter'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_area</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.area'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_capillary_shape_factor.html#compactness"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_capillary_shape_factor.compactness" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="openpnm.models.geometry.throat_capillary_shape_factor.compactness">
+<span class="sig-name descname"><span class="pre">compactness</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_perimeter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.perimeter'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_area</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.area'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_capillary_shape_factor.html#compactness"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_capillary_shape_factor.compactness" title="Permalink to this definition">¶</a></dt>
 <dd><p>Mortensen et al. have shown that the Hagen-Poiseuille hydraluic resistance
 is linearly dependent on the compactness. Defined as perimeter^2/area.
 The dependence is not universal as shapes with sharp corners provide more
@@ -1667,8 +2315,8 @@ Physical Review E, v.71, pp.057301 (2005).</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="openpnm.models.geometry.throat_capillary_shape_factor.jenkins_rao">
-<code class="sig-prename descclassname"><span class="pre">openpnm.models.geometry.throat_capillary_shape_factor.</span></code><code class="sig-name descname"><span class="pre">jenkins_rao</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_perimeter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.perimeter'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_area</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.area'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.indiameter'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_capillary_shape_factor.html#jenkins_rao"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_capillary_shape_factor.jenkins_rao" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="openpnm.models.geometry.throat_capillary_shape_factor.jenkins_rao">
+<span class="sig-name descname"><span class="pre">jenkins_rao</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_perimeter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.perimeter'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_area</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.area'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.indiameter'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_capillary_shape_factor.html#jenkins_rao"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_capillary_shape_factor.jenkins_rao" title="Permalink to this definition">¶</a></dt>
 <dd><p>Jenkins and Rao relate the capillary pressure in an eliptical throat to
 the aspect ratio</p>
 <dl class="field-list simple">
@@ -1695,8 +2343,8 @@ mercury porosimetry results. Powder technology, 38(2), pp.177-180. (1984)</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="openpnm.models.geometry.throat_capillary_shape_factor.mason_morrow">
-<code class="sig-prename descclassname"><span class="pre">openpnm.models.geometry.throat_capillary_shape_factor.</span></code><code class="sig-name descname"><span class="pre">mason_morrow</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_perimeter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.perimeter'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_area</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.area'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_capillary_shape_factor.html#mason_morrow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_capillary_shape_factor.mason_morrow" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="openpnm.models.geometry.throat_capillary_shape_factor.mason_morrow">
+<span class="sig-name descname"><span class="pre">mason_morrow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_perimeter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.perimeter'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_area</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.area'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_capillary_shape_factor.html#mason_morrow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_capillary_shape_factor.mason_morrow" title="Permalink to this definition">¶</a></dt>
 <dd><p>Mason and Morrow relate the capillary pressure to the shaped factor in a
 similar way to Mortensen but for triangles.</p>
 <dl class="field-list simple">
@@ -1727,79 +2375,33 @@ Science, 141(1), pp.262-274 (1991).</p>
 </div>
 
 
-          </div>
+              </div>
+              
+              
+          </main>
           
-        </div>
+
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-            <p class="logo"><a href="../../index.html">
-              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
-            </a></p>
-<h1 class="logo"><a href="../../index.html">OpenPNM</a></h1>
-
-
-
-
-
-
-
-
-<h3>Navigation</h3>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../quick_start.html">Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../userguide.html">Examples’ Library</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../index.html"><strong>Module Reference</strong></a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../citation.html">Citing</a></li>
-</ul>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="../../index.html">Documentation overview</a><ul>
-  <li><a href="../index.html"><strong>Module Reference</strong></a><ul>
-  <li><a href="index.html">Models</a><ul>
-      <li>Previous: <a href="misc.html" title="previous chapter">Miscellaneous Models</a></li>
-      <li>Next: <a href="phase.html" title="next chapter">Phase Models</a></li>
-  </ul></li>
-  </ul></li>
-  </ul></li>
-</ul>
-</div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
-      <input type="submit" value="Go" />
-    </form>
     </div>
-</div>
-<script>$('#searchbox').show(0);</script>
+  
+  <script src="../../_static/js/index.1c5a1a01449ed65a7b51.js"></script>
 
-
-
-
-
-
-
-
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="footer">
-      &copy;2021 OpenPNM Team.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.4</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
-      
-    </div>
-
+  <footer class="footer mt-5 mt-md-0">
+  <div class="container">
     
-
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2021 OpenPNM Team.<br/>
+</p>
+    </div>
     
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.0.2.<br/>
+</p>
+    </div>
+    
+  </div>
+</footer>
   </body>
 </html>

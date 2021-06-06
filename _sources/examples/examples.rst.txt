@@ -1,7 +1,7 @@
 .. _user_guide:
 
-Examples' Library
-#################
+Examples
+########
 
 The best way to learn how to use OpenPNM, like anything, is by example.
 
@@ -18,7 +18,7 @@ How OpenPNM Works
 
    <a href="https://github.com/PMEAL/OpenPNM/tree/dev/examples/tutorials" target="_blank">A Series of Tutorials</a>
 
-.. |chalkboard| image:: /static/images/chalkboard.png
+.. |chalkboard| image:: /_static/images/chalkboard.png
    :width: 300px
 
 Working with Networks
@@ -47,7 +47,7 @@ Working with Networks
 .. |netgen| image:: https://user-images.githubusercontent.com/14086031/99129769-7f144600-25dc-11eb-95bb-b7176d82b0a0.png
    :width: 300px
 
-.. |netimp| image:: /static/images/extracted_berea.png
+.. |netimp| image:: /_static/images/extracted_berea.png
    :width: 300px
 
 .. |netman| image:: https://user-images.githubusercontent.com/14086031/99127916-779e6e00-25d7-11eb-954e-d7aa8531e2f1.png
