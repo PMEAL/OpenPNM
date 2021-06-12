@@ -116,16 +116,14 @@ class Imported(GenericGeometry):
             except KeyError:
                 logger.error(tdia + " not found, can't assign 'throat.diameter'")
 
-        if 'throat.endpoints' not in self.keys():
-            self.add_model(propname='throat.endpoints',
-                           model=mods.geometry.throat_endpoints.spherical_pores,
-                           pore_diameter='pore.diameter',
-                           throat_diameter='throat.diameter')
-
         if 'throat.length' not in self.keys():
+            t_shape = self.settings['throat_shape'] + 's'
+            p_shape = self.settings['pore_shape'] + 's'
+            m = getattr(mods.geometry.throat_length, p_shape + '_and_' + t_shape)
             self.add_model(propname='throat.length',
-                           model=mods.geometry.throat_length.piecewise,
-                           throat_endpoints='throat.endpoints')
+                           model=m,
+                           throat_diameter='throat.diameter',
+                           pore_diameter='pore.diameter')
 
         if 'throat.volume' not in self.keys():
             shape = self.settings['throat_shape']
@@ -134,9 +132,3 @@ class Imported(GenericGeometry):
                            model=m,
                            throat_length='throat.length',
                            throat_diameter='throat.diameter')
-
-        if 'throat.conduit_lengths' not in self.keys():
-            self.add_model(propname='throat.conduit_lengths',
-                           model=mods.geometry.throat_length.conduit_lengths,
-                           throat_endpoints='throat.endpoints',
-                           throat_length='throat.length')
