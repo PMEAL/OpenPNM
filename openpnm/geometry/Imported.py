@@ -29,6 +29,7 @@ class ImportedSettings(GenericSettings):
     throat_diameter = 'throat.equivalent_diameter'
     pore_shape = 'sphere'
     throat_shape = 'cylinder'
+    exclude_props = []
 
 
 class Imported(GenericGeometry):
@@ -71,7 +72,7 @@ class Imported(GenericGeometry):
 
     """
 
-    def __init__(self, exclude=[], settings={}, **kwargs):
+    def __init__(self, settings={}, **kwargs):
         self.settings._update_settings_and_docs(ImportedSettings())
         self.settings.update(settings)
         if 'network' in kwargs.keys():
@@ -82,14 +83,14 @@ class Imported(GenericGeometry):
         super().__init__(network=network, pores=network.Ps, throats=network.Ts,
                          **kwargs)
         # Transfer all geometrical properties off of network
-        exclude.extend(['pore.coords', 'throat.conns'])
+        exclude = self.settings['exclude_props']
+        exclude.extend(['pore.coords', 'throat.conns', 'pore.region_label'])
         for item in network.props():
             if item not in exclude:
                 self[item] = network.pop(item)
 
         # If the following 'essential' props are not already defined, then
         # they should be added using the specified values or models
-
         if 'pore.diameter' not in self.keys():
             pdia = 'pore.'+self.settings['pore_diameter'].split('pore.')[-1]
             try:
@@ -116,9 +117,9 @@ class Imported(GenericGeometry):
             except KeyError:
                 logger.error(tdia + " not found, can't assign 'throat.diameter'")
 
+        t_shape = self.settings['throat_shape'] + 's'
+        p_shape = self.settings['pore_shape'] + 's'
         if 'throat.length' not in self.keys():
-            t_shape = self.settings['throat_shape'] + 's'
-            p_shape = self.settings['pore_shape'] + 's'
             m = getattr(mods.geometry.throat_length, p_shape + '_and_' + t_shape)
             self.add_model(propname='throat.length',
                            model=m,
@@ -132,3 +133,7 @@ class Imported(GenericGeometry):
                            model=m,
                            throat_length='throat.length',
                            throat_diameter='throat.diameter')
+        m = getattr(mods.geometry.diffusive_size_factors, p_shape + '_and_' + t_shape)
+        self.add_model(propname='throat.diffusive_size_factors', model=m)
+        m = getattr(mods.geometry.hydraulic_size_factors, p_shape + '_and_' + t_shape)
+        self.add_model(propname='throat.hydraulic_size_factors', model=m)
