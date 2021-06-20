@@ -25,9 +25,9 @@ class ImportedSettings(GenericSettings):
         such as volume and surface area.
 
     """
-    pore_diameter = 'pore.extended_diameter'
-    throat_diameter = 'throat.equivalent_diameter'
-    pore_shape = 'sphere'
+    pore_diameter = 'extended_diameter'
+    throat_diameter = 'inscribed_diameter'
+    pore_shape = 'cone'
     throat_shape = 'cylinder'
     exclude_props = []
 
