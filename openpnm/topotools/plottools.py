@@ -289,27 +289,17 @@ def _label_axes(ax, X, Y, Z):
         ax.set_zlabel("Z")
 
 
-def _scale_3d_axes(ax, X, Y, Z, dimen):
-    if not hasattr(ax, '_scaled'):
-        ax._scaled = True
-        if not hasattr(ax, "set_zlim"):
-            ax.axis("equal")
-        max_range = np.ptp([X, Y, Z]).max() / 2
-        mid_x = (X.max() + X.min()) * 0.5
-        mid_y = (Y.max() + Y.min()) * 0.5
-        mid_z = (Z.max() + Z.min()) * 0.5
-        ax.set_xlim(mid_x - max_range, mid_x + max_range)
-        ax.set_ylim(mid_y - max_range, mid_y + max_range)
-        if hasattr(ax, "set_zlim"):
-            ax.set_zlim(mid_z - max_range, mid_z + max_range)
-        # Changes for the cases where a previous fig is already existed
-        # recompute the ax.dataLim
-        if (dimen is True):
-            ax.relim()
-            # update ax.viewLim using the new dataLim
-            ax.autoscale_view()
-        else:
-            ax.autoscale()
+def _scale_axes(ax, X, Y, Z):
+    max_range = np.ptp([X, Y, Z]).max() / 2
+    mid_x = (X.max() + X.min()) * 0.5
+    mid_y = (Y.max() + Y.min()) * 0.5
+    mid_z = (Z.max() + Z.min()) * 0.5
+    ax.set_xlim(mid_x - max_range, mid_x + max_range)
+    ax.set_ylim(mid_y - max_range, mid_y + max_range)
+    if hasattr(ax, "set_zlim"):
+        ax.set_zlim(mid_z - max_range, mid_z + max_range)
+    else:
+        ax.axis("equal")
 
 
 def plot_networkx(network,
