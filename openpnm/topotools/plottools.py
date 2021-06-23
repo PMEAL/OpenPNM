@@ -144,18 +144,15 @@ def plot_connections(network,
                             antialiaseds=np.ones_like(network.Ts), **kwargs)
     ax.add_collection(lc)
 
-    _scale_3d_axes(ax=ax, X=X, Y=Y, Z=Z, dimen=ThreeD)
     _scale_axes(ax=ax, X=X, Y=Y, Z=Z)
     _label_axes(ax=ax, X=X, Y=Y, Z=Z)
     fig.tight_layout()
 
-    return fig
     return lc
 
 
 def plot_coordinates(network,
                      pores=None,
-                     fig=None,
                      ax=None,
                      size_by=None,
                      color_by=None,
