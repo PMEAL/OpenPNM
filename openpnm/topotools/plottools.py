@@ -77,7 +77,6 @@ def plot_connections(network,
     --------
     >>> import openpnm as op
     >>> import matplotlib as mpl
-    >>> import matplotlib.pyplot as plt
     >>> mpl.use('Agg')
     >>> pn = op.network.Cubic(shape=[10, 10, 3])
     >>> pn.add_boundary_pores()
@@ -230,7 +229,6 @@ def plot_coordinates(network,
     --------
     >>> import openpnm as op
     >>> import matplotlib as mpl
-    >>> import matplotlib.pyplot as plt
     >>> mpl.use('Agg')
     >>> pn = op.network.Cubic(shape=[10, 10, 3])
     >>> pn.add_boundary_pores()
