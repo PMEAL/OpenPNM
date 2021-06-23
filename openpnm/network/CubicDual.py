@@ -59,13 +59,13 @@ class CubicDual(GenericNetwork):
     And it can be plotted for quick visualization using:
 
     >>> fig, ax = plt.subplots()
-    >>> op.topotools.plot_connections(network=pn,
-    ...                               throats=pn.throats('primary'),
-    ...                               color='b', ax=ax)
-    >>> op.topotools.plot_connections(network=pn,
-    ...                               throats=pn.throats('secondary'),
-    ...                               color='r', ax=ax)
-    >>> op.topotools.plot_coordinates(network=pn, c='r', s=75, ax=ax)
+    >>> _ = op.topotools.plot_connections(network=pn,
+    ...                                   throats=pn.throats('primary'),
+    ...                                   color='b', ax=ax)
+    >>> _ = op.topotools.plot_connections(network=pn,
+    ...                                   throats=pn.throats('secondary'),
+    ...                                   color='r', ax=ax)
+    >>> _ = op.topotools.plot_coordinates(network=pn, c='r', s=75, ax=ax)
 
     .. image:: /../docs/static/images/cubic_dual_network.png
         :align: center

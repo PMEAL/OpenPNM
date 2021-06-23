@@ -77,8 +77,8 @@ class Cubic(GenericNetwork):
     And it can be plotted for quick visualization using:
 
     >>> fig, ax = plt.subplots()
-    >>> op.topotools.plot_connections(network=pn, ax=ax)
-    >>> op.topotools.plot_coordinates(network=pn, c='r', s=75, ax=ax)
+    >>> _ = op.topotools.plot_connections(network=pn, ax=ax)
+    >>> _ = op.topotools.plot_coordinates(network=pn, c='r', s=75, ax=ax)
 
     .. image:: /../docs/static/images/cubic_network.png
         :align: center

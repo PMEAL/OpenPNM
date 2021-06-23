@@ -64,8 +64,8 @@ class Gabriel(Delaunay):
     >>> gn['pore.coords'] += [1, 0, 0]
     >>> op.topotools.merge_networks(dn, gn)
     >>> fig, ax = plt.subplots()
-    >>> op.topotools.plot_connections(dn, ax=ax)
-    >>> op.topotools.plot_coordinates(dn, c='r', s=100, ax=ax)
+    >>> _ = op.topotools.plot_connections(dn, ax=ax)
+    >>> _ = op.topotools.plot_coordinates(dn, c='r', s=100, ax=ax)
 
     .. image:: /../docs/static/images/gabriel_network.png
         :align: center
