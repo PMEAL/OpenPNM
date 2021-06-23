@@ -12,6 +12,7 @@ def plot_connections(network,
                      alpha=1.0,
                      linestyle='solid',
                      linewidth=1,
+                     show_colorbar=False,
                      **kwargs):  # pragma: no cover
     r"""
     Produce a 3D plot of the network topology.
@@ -76,6 +77,7 @@ def plot_connections(network,
     --------
     >>> import openpnm as op
     >>> import matplotlib as mpl
+    >>> import matplotlib.pyplot as plt
     >>> mpl.use('Agg')
     >>> pn = op.network.Cubic(shape=[10, 10, 3])
     >>> pn.add_boundary_pores()
@@ -96,6 +98,7 @@ def plot_connections(network,
     from mpl_toolkits.mplot3d import Axes3D
     from matplotlib.collections import LineCollection
     from mpl_toolkits.mplot3d.art3d import Line3DCollection
+    from mpl_toolkits.axes_grid1 import make_axes_locatable
     from openpnm.topotools import dimensionality
 
     Ts = network.Ts if throats is None else network._parse_indices(throats)
@@ -143,6 +146,13 @@ def plot_connections(network,
                             linestyles=linestyle, linewidths=linewidth,
                             antialiaseds=np.ones_like(network.Ts), **kwargs)
     ax.add_collection(lc)
+
+    if show_colorbar and color_by is not None:
+        divider = make_axes_locatable(ax)
+        cax = divider.append_axes("right", size="5%", pad=0.1)
+        sm = plt.cm.ScalarMappable(
+            cmap=cmap, norm=plt.Normalize(vmin=color_by.min(), vmax=color_by.max()))
+        plt.colorbar(sm, cax=cax)
 
     _scale_axes(ax=ax, X=X, Y=Y, Z=Z)
     _label_axes(ax=ax, X=X, Y=Y, Z=Z)
@@ -220,6 +230,7 @@ def plot_coordinates(network,
     --------
     >>> import openpnm as op
     >>> import matplotlib as mpl
+    >>> import matplotlib.pyplot as plt
     >>> mpl.use('Agg')
     >>> pn = op.network.Cubic(shape=[10, 10, 3])
     >>> pn.add_boundary_pores()
