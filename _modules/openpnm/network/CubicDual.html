@@ -231,13 +231,13 @@
 <span class="sd">    And it can be plotted for quick visualization using:</span>
 
 <span class="sd">    &gt;&gt;&gt; fig, ax = plt.subplots()</span>
-<span class="sd">    &gt;&gt;&gt; op.topotools.plot_connections(network=pn,</span>
-<span class="sd">    ...                               throats=pn.throats(&#39;primary&#39;),</span>
-<span class="sd">    ...                               color=&#39;b&#39;, ax=ax)</span>
-<span class="sd">    &gt;&gt;&gt; op.topotools.plot_connections(network=pn,</span>
-<span class="sd">    ...                               throats=pn.throats(&#39;secondary&#39;),</span>
-<span class="sd">    ...                               color=&#39;r&#39;, ax=ax)</span>
-<span class="sd">    &gt;&gt;&gt; op.topotools.plot_coordinates(network=pn, c=&#39;r&#39;, s=75, ax=ax)</span>
+<span class="sd">    &gt;&gt;&gt; _ = op.topotools.plot_connections(network=pn,</span>
+<span class="sd">    ...                                   throats=pn.throats(&#39;primary&#39;),</span>
+<span class="sd">    ...                                   color=&#39;b&#39;, ax=ax)</span>
+<span class="sd">    &gt;&gt;&gt; _ = op.topotools.plot_connections(network=pn,</span>
+<span class="sd">    ...                                   throats=pn.throats(&#39;secondary&#39;),</span>
+<span class="sd">    ...                                   color=&#39;r&#39;, ax=ax)</span>
+<span class="sd">    &gt;&gt;&gt; _ = op.topotools.plot_coordinates(network=pn, c=&#39;r&#39;, s=75, ax=ax)</span>
 
 <span class="sd">    .. image:: /../docs/static/images/cubic_dual_network.png</span>
 <span class="sd">        :align: center</span>
