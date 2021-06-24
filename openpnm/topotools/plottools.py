@@ -233,9 +233,9 @@ def plot_coordinates(network,
     ...                                   ax=ax)        # plot internal pores
     >>> Ps = pn.pores('*boundary')                      # find boundary pores
     >>> _ = op.topotools.plot_coordinates(network=pn,
-                                          pores=Ps,
-                                          color='r',
-                                          ax=ax)        # plot boundary pores in red
+    ...                                   pores=Ps,
+    ...                                   color='r',
+    ...                                   ax=ax)        # plot boundary pores in red
 
     """
     import matplotlib.pyplot as plt
