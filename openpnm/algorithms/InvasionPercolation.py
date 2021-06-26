@@ -430,27 +430,22 @@ class InvasionPercolation(GenericAlgorithm):
         data = pc_curve(data.Pc, sat)
         return data
 
-    def plot_intrusion_curve(self, fig=None):
+    def plot_intrusion_curve(self, ax=None, num_markers=25):
         r"""
         Plot the percolation curve as the invader volume or number fraction vs
         the capillary capillary pressure.
-
         """
         import matplotlib.pyplot as plt
 
         data = self.get_intrusion_data()
-        if data is not None:
-            if fig is None:
-                fig, ax = plt.subplots()
-            else:
-                ax = fig.gca()
-            ax.semilogx(data.Pcap, data.S_tot,)
-            plt.ylabel('Invading Phase Saturation')
-            plt.xlabel('Capillary Pressure')
-            plt.grid(True)
-            return fig
-        else:
-            return None
+        if ax is None:
+            fig, ax = plt.subplots()
+        markevery = int(data.Pcap.size // num_markers)            
+        ax.semilogx(data.Pcap, data.S_tot)
+        plt.ylabel('invading phase saturation')
+        plt.xlabel('capillary pressure')
+        plt.grid(True)
+        return fig
 
     def _run_accelerated(queue, t_sorted, t_order, t_inv, p_inv, p_inv_t,
                          conns, idx, indptr, n_steps):

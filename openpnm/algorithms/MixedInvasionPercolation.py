@@ -550,24 +550,23 @@ class MixedInvasionPercolation(GenericAlgorithm):
         data = pc_curve(inv_points, sat_p, sat_t, tot_sat)
         return data
 
-    def plot_intrusion_curve(self, fig=None, inv_points=None):
+    def plot_intrusion_curve(self, ax=None, inv_points=None, num_markers=25):
         r"""
-        Plot a simple drainage curve
+        Plot a simple drainage curve.
         """
         import matplotlib.pyplot as plt
 
         data = self.get_intrusion_data(inv_points)
-        if fig is None:
-            fig = plt.figure()
-        a = fig.add_subplot(111)
-        a.plot(data.Pcap, data.S_pore, "r*-", label="pore")
-        a.plot(data.Pcap, data.S_throat, "b*-", label="throat")
-        a.plot(data.Pcap, data.S_tot, "g*-", label="total")
-        a.legend(bbox_to_anchor=(0, 1.02, 1, 0.102), loc=3, ncol=3, borderaxespad=0)
-        a.set_xlabel("Capillary Pressure [Pa]")
-        a.set_ylabel("Saturation")
-        a.set_ybound(lower=0.0, upper=1.0)
-        return fig
+        if ax is None:
+            fig, ax = plt.subplots()
+        markevery = int(data.Pcap.size // num_markers)
+        ax.plot(data.Pcap, data.S_pore, "r*-", label="pore", markevery=markevery)
+        ax.plot(data.Pcap, data.S_throat, "b*-", label="throat", markevery=markevery)
+        ax.plot(data.Pcap, data.S_tot, "g*-", label="total", markevery=markevery)
+        ax.legend(bbox_to_anchor=(0, 1.02, 1, 0.102), loc=3, ncol=3, borderaxespad=0)
+        ax.set_xlabel("Capillary pressure [Pa]")
+        ax.set_ylabel("Saturation")
+        ax.set_ybound(lower=0.0, upper=1.0)
 
     def apply_trapping(self, partial=False):
         """

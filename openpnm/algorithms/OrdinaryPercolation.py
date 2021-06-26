@@ -466,22 +466,23 @@ class OrdinaryPercolation(GenericAlgorithm):
         data = pc_curve(points, Snwp_all)
         return data
 
-    def plot_intrusion_curve(self, fig=None):
+    def plot_intrusion_curve(self, ax=None, num_markers=25):
         r"""
         Plot the percolation curve as the invader volume or number fraction vs
         the applied capillary pressure.
 
         """
         import matplotlib.pyplot as plt
+        
         # Begin creating nicely formatted plot
         x, y = self.get_intrusion_data()
-        if fig is None:
-            fig = plt.figure()
-        plt.semilogx(x, y, 'ko-')
-        plt.ylabel('Invading Phase Saturation')
-        plt.xlabel('Capillary Pressure')
-        plt.grid(True)
-        return fig
+        if ax is None:
+            fig, ax = plt.subplots()
+        markevery = int(x.size // num_markers)
+        ax.semilogx(x, y, 'ko-', markevery=markevery)
+        ax.ylabel('Invading phase saturation')
+        ax.xlabel('Capillary pressure')
+        ax.grid(True)
 
     def results(self, Pc=None):
         r"""

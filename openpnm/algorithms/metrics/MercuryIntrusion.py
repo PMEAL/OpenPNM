@@ -75,11 +75,14 @@ class MercuryIntrusion(Porosimetry):
 
     pc_data = property(fget=_get_pc_data, fset=_set_pc_data)
 
-    def plot_intrusion_curve(self, fig=None):
-        fig = super().plot_intrusion_curve(fig=fig)
-        ax = fig.gca()
+    def plot_intrusion_curve(self, ax=None, num_markers=25):
+        r""""""
+        import matplotlib.pyplto as plt
+        
+        super().plot_intrusion_curve(ax=ax)
+        ax = plt.gca()
         x = self.pc_data
         y = self.snwp_data
+        markevery = int(self.pc_data.size // num_markers)
         if (x is not None) and (y is not None):
-            ax.plot(x, y, 'r*-')
-        return fig
+            ax.plot(x, y, 'r*-', markevery=markevery)
