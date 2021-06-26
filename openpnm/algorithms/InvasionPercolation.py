@@ -159,7 +159,8 @@ class InvasionPercolation(GenericAlgorithm):
         # Perform initial analysis on input pores
         Ts = self.project.network.find_neighbor_throats(pores=pores)
         self.queue = []
-        [hq.heappush(self.queue, T) for T in self['throat.order'][Ts]]
+        for T in self['throat.order'][Ts]:
+            hq.heappush(self.queue, T)
 
     def run(self, n_steps=None):
         r"""
