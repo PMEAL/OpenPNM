@@ -400,7 +400,7 @@ class InvasionPercolation(GenericAlgorithm):
 
         """
         if 'pore.invasion_pressure' not in self.props():
-            logger.error('Algorithm must be run first')
+            logger.error('Algorithm must be run first.')
             return None
         net = self.project.network
         pvols = net[self.settings['pore_volume']]
@@ -438,6 +438,8 @@ class InvasionPercolation(GenericAlgorithm):
         import matplotlib.pyplot as plt
 
         data = self.get_intrusion_data()
+        if data is None:
+            raise Exception("You must run the algorithm first.")
         if ax is None:
             fig, ax = plt.subplots()
         markevery = max(data.Pcap.size // num_markers, 1)
@@ -445,7 +447,6 @@ class InvasionPercolation(GenericAlgorithm):
         plt.ylabel('invading phase saturation')
         plt.xlabel('capillary pressure')
         plt.grid(True)
-        return fig
 
     def _run_accelerated(queue, t_sorted, t_order, t_inv, p_inv, p_inv_t,
                          conns, idx, indptr, n_steps):

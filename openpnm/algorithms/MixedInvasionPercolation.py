@@ -520,11 +520,14 @@ class MixedInvasionPercolation(GenericAlgorithm):
 
     def get_intrusion_data(self, inv_points=None):
         r"""
-        Plot a simple drainage curve
+        Returns the intrusion data.
         """
         net = self.project.network
+
         if "pore.invasion_pressure" not in self.props():
-            logger.error("Cannot plot drainage curve. Please run " + " algorithm first")
+            logger.error("You must run the algorithm first.")
+            return None
+
         if inv_points is None:
             mask = ~np.isnan(self["throat.invasion_pressure"])
             ok_Pc = self["throat.invasion_pressure"][mask]
@@ -541,12 +544,14 @@ class MixedInvasionPercolation(GenericAlgorithm):
         tvol = np.sum(net["throat.volume"])
         tot_vol = pvol + tvol
         tot_sat = sat_p + sat_t
+
         # Normalize
         sat_p /= tot_vol
         sat_t /= tot_vol
         tot_sat /= tot_vol
         pc_curve = namedtuple("pc_curve", ("Pcap", "S_pore", "S_throat", "S_tot"))
         data = pc_curve(inv_points, sat_p, sat_t, tot_sat)
+
         return data
 
     def plot_intrusion_curve(self, ax=None, inv_points=None, num_markers=25):
@@ -556,6 +561,8 @@ class MixedInvasionPercolation(GenericAlgorithm):
         import matplotlib.pyplot as plt
 
         data = self.get_intrusion_data(inv_points)
+        if data is None:
+            raise Exception("You must run the algorithm first.")
         if ax is None:
             fig, ax = plt.subplots()
         markevery = max(data.Pcap.size // num_markers, 1)
