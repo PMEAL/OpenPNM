@@ -4,7 +4,7 @@ import openpnm as op
 
 def plot_connections(network,
                      throats=None,
-                     fig=None,
+                     ax=None,
                      size_by=None,
                      color_by=None,
                      cmap='jet',
@@ -56,11 +56,17 @@ def plot_connections(network,
         class of matplotlib, so check their documentation for additional
         formatting options.
 
+    Returns
+    -------
+    lc : LineCollection or Line3DCollection
+        Matplotlib object containing the lines representing the throats.
+
     Notes
     -----
-    The figure handle returned by this method can be passed into
-    ``plot_coordinates`` to create a plot that combines pore coordinates and
-    throat connections, and vice versa.
+    To create a single plot containing both pore coordinates and throats,
+    consider creating an empty figure and then pass the ``ax`` object as
+    an argument to ``plot_connections`` and ``plot_coordinates``.
+    Otherwise, each call to either of these methods creates a new figure.
 
     See Also
     --------
@@ -70,16 +76,19 @@ def plot_connections(network,
     --------
     >>> import openpnm as op
     >>> import matplotlib as mpl
+    >>> import matplotlib.pyplot as plt
     >>> mpl.use('Agg')
     >>> pn = op.network.Cubic(shape=[10, 10, 3])
     >>> pn.add_boundary_pores()
-    >>> Ts = pn.throats('*boundary', mode='nor')
-    >>> # Create figure showing boundary throats
-    >>> fig = op.topotools.plot_connections(network=pn, throats=Ts)
-    >>> Ts = pn.throats('*boundary')
-    >>> # Pass existing fig back into function to plot additional throats
-    >>> fig = op.topotools.plot_connections(network=pn, throats=Ts,
-    ...                                     fig=fig, color='r')
+    >>> Ts = pn.throats('*boundary', mode='not')        # find internal throats
+    >>> fig, ax = plt.subplots()                        # create empty figure
+    >>> _ = op.topotools.plot_connections(network=pn,
+    ...                                   throats=Ts)   # plot internal throats
+    >>> Ts = pn.throats('*boundary')                    # find boundary throats
+    >>> _ = op.topotools.plot_connections(network=pn,
+    ...                                   throats=Ts,
+    ...                                   ax=ax,
+    ...                                   color='r')    # plot boundary throats in red
 
     """
     import matplotlib.pyplot as plt
@@ -97,15 +106,17 @@ def plot_connections(network,
     if dim.sum() == 1:
         dim[np.argwhere(~dim)[0]] = True
 
-    fig = plt.figure() if fig is None else fig
-    if hasattr(fig, 'gca'):
-        ax = fig.gca()
+    if "fig" in kwargs.keys():
+        raise Exception("'fig' argument is deprecated, use 'ax' instead.")
+    if ax is None:
+        fig, ax = plt.subplots()
     else:
-        ax = fig
-
+        # The next line is necessary if ax was created using plt.subplots()
+        fig, ax = ax.get_figure(), ax.get_figure().gca()
     if ThreeD and ax.name != '3d':
         fig.delaxes(ax)
         ax = fig.add_subplot(111, projection='3d')
+
     # Collect coordinates
     Ps = np.unique(network['throat.conns'][Ts])
     X, Y, Z = network['pore.coords'][Ps].T
@@ -134,15 +145,16 @@ def plot_connections(network,
                             antialiaseds=np.ones_like(network.Ts), **kwargs)
     ax.add_collection(lc)
 
-    _scale_3d_axes(ax=ax, X=X, Y=Y, Z=Z, dimen=ThreeD)
+    _scale_axes(ax=ax, X=X, Y=Y, Z=Z)
     _label_axes(ax=ax, X=X, Y=Y, Z=Z)
+    fig.tight_layout()
 
-    return fig
+    return lc
 
 
 def plot_coordinates(network,
                      pores=None,
-                     fig=None,
+                     ax=None,
                      size_by=None,
                      color_by=None,
                      cmap='jet',
@@ -162,8 +174,8 @@ def plot_coordinates(network,
         The list of pores to plot if only a sub-sample is desired. This is
         useful for inspecting a small region of the network. If no pores
         are specified then all are shown.
-    fig : Matplotlib figure handle
-        If a ``fig`` is supplied, then the coordinates will be overlaid.
+    ax : Matplotlib axis handle
+        If ``ax`` is supplied, then the coordinates will be overlaid.
         This enables the plotting of multiple different sets of pores as
         well as throat connections from ``plot_connections``.
     size_by : str or array_like
@@ -189,11 +201,17 @@ def plot_coordinates(network,
         function of matplotlib, so check their documentation for additional
         formatting options.
 
+    Returns
+    -------
+    pc : PathCollection
+        Matplotlib object containing the markers representing the pores.
+
     Notes
     -----
-    The figure handle returned by this method can be passed into
-    ``plot_connections`` to create a plot that combines pore coordinates
-    and throat connections, and vice versa.
+    To create a single plot containing both pore coordinates and throats,
+    consider creating an empty figure and then pass the ``ax`` object as
+    an argument to ``plot_connections`` and ``plot_coordinates``.
+    Otherwise, each call to either of these methods creates a new figure.
 
     See Also
     --------
@@ -203,15 +221,21 @@ def plot_coordinates(network,
     --------
     >>> import openpnm as op
     >>> import matplotlib as mpl
+    >>> import matplotlib.pyplot as plt
     >>> mpl.use('Agg')
     >>> pn = op.network.Cubic(shape=[10, 10, 3])
     >>> pn.add_boundary_pores()
-    >>> Ps = pn.pores('internal')
-    >>> # Create figure showing internal pores
-    >>> fig = op.topotools.plot_coordinates(pn, pores=Ps, c='b')
-    >>> Ps = pn.pores('*boundary')
-    >>> # Pass existing fig back into function to plot boundary pores
-    >>> fig = op.topotools.plot_coordinates(pn, pores=Ps, fig=fig, color='r')
+    >>> Ps = pn.pores('internal')                       # find internal pores
+    >>> fig, ax = plt.subplots()                        # create empty figure
+    >>> _ = op.topotools.plot_coordinates(network=pn,
+    ...                                   pores=Ps,
+    ...                                   color='b',
+    ...                                   ax=ax)        # plot internal pores
+    >>> Ps = pn.pores('*boundary')                      # find boundary pores
+    >>> _ = op.topotools.plot_coordinates(network=pn,
+    ...                                   pores=Ps,
+    ...                                   color='r',
+    ...                                   ax=ax)        # plot boundary pores in red
 
     """
     import matplotlib.pyplot as plt
@@ -230,11 +254,13 @@ def plot_coordinates(network,
     if dim.sum() == 0:
         dim[[0, 1]] = True
 
-    fig = plt.figure() if fig is None else fig
-    if hasattr(fig, 'gca'):
-        ax = fig.gca()
+    if "fig" in kwargs.keys():
+        raise Exception("'fig' argument is deprecated, use 'ax' instead.")
+    if ax is None:
+        fig, ax = plt.subplots()
     else:
-        ax = fig
+        # The next line is necessary if ax was created using plt.subplots()
+        fig, ax = ax.get_figure(), ax.get_figure().gca()
     if ThreeD and ax.name != '3d':
         fig.delaxes(ax)
         ax = fig.add_subplot(111, projection='3d')
@@ -256,18 +282,17 @@ def plot_coordinates(network,
         markersize = size_by / size_by.max() * markersize
 
     if ThreeD:
-        ax.scatter(X, Y, Z, c=color, s=markersize,
-                   marker=marker, alpha=alpha, **kwargs)
-        _scale_3d_axes(ax=ax, X=Xl, Y=Yl, Z=Zl, dimen=ThreeD)
+        sc = ax.scatter(X, Y, Z, c=color, s=markersize, marker=marker, alpha=alpha, **kwargs)
+        _scale_axes(ax=ax, X=Xl, Y=Yl, Z=Zl)
     else:
-        X_temp, Y_temp = np.column_stack((X, Y, Z))[:, dim].T
-        ax.scatter(X_temp, Y_temp, c=color, s=markersize,
-                   marker=marker, alpha=alpha, **kwargs)
-        _scale_3d_axes(ax=ax, X=Xl, Y=Yl, Z=np.zeros_like(Yl), dimen=ThreeD)
+        _X, _Y = np.column_stack((X, Y, Z))[:, dim].T
+        sc = ax.scatter(_X, _Y, c=color, s=markersize, marker=marker, alpha=alpha, **kwargs)
+        _scale_axes(ax=ax, X=Xl, Y=Yl, Z=np.zeros_like(Yl))
 
     _label_axes(ax=ax, X=Xl, Y=Yl, Z=Zl)
+    fig.tight_layout()
 
-    return fig
+    return sc
 
 
 def _label_axes(ax, X, Y, Z):
@@ -289,27 +314,17 @@ def _label_axes(ax, X, Y, Z):
         ax.set_zlabel("Z")
 
 
-def _scale_3d_axes(ax, X, Y, Z, dimen):
-    if not hasattr(ax, '_scaled'):
-        ax._scaled = True
-        if not hasattr(ax, "set_zlim"):
-            ax.axis("equal")
-        max_range = np.ptp([X, Y, Z]).max() / 2
-        mid_x = (X.max() + X.min()) * 0.5
-        mid_y = (Y.max() + Y.min()) * 0.5
-        mid_z = (Z.max() + Z.min()) * 0.5
-        ax.set_xlim(mid_x - max_range, mid_x + max_range)
-        ax.set_ylim(mid_y - max_range, mid_y + max_range)
-        if hasattr(ax, "set_zlim"):
-            ax.set_zlim(mid_z - max_range, mid_z + max_range)
-        # Changes for the cases where a previous fig is already existed
-        # recompute the ax.dataLim
-        if (dimen is True):
-            ax.relim()
-            # update ax.viewLim using the new dataLim
-            ax.autoscale_view()
-        else:
-            ax.autoscale()
+def _scale_axes(ax, X, Y, Z):
+    max_range = np.ptp([X, Y, Z]).max() / 2
+    mid_x = (X.max() + X.min()) * 0.5
+    mid_y = (Y.max() + Y.min()) * 0.5
+    mid_z = (Z.max() + Z.min()) * 0.5
+    ax.set_xlim(mid_x - max_range, mid_x + max_range)
+    ax.set_ylim(mid_y - max_range, mid_y + max_range)
+    if hasattr(ax, "set_zlim"):
+        ax.set_zlim(mid_z - max_range, mid_z + max_range)
+    else:
+        ax.axis("equal")
 
 
 def plot_networkx(network,
