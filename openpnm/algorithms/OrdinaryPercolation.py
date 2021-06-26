@@ -473,15 +473,15 @@ class OrdinaryPercolation(GenericAlgorithm):
 
         """
         import matplotlib.pyplot as plt
-        
+
         # Begin creating nicely formatted plot
         x, y = self.get_intrusion_data()
         if ax is None:
             fig, ax = plt.subplots()
-        markevery = int(x.size // num_markers)
+        markevery = max(x.size // num_markers, 1)
         ax.semilogx(x, y, 'ko-', markevery=markevery)
-        ax.ylabel('Invading phase saturation')
-        ax.xlabel('Capillary pressure')
+        ax.set_ylabel('Invading phase saturation')
+        ax.set_xlabel('Capillary pressure')
         ax.grid(True)
 
     def results(self, Pc=None):

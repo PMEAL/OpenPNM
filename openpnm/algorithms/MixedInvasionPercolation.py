@@ -6,7 +6,6 @@ MixedInvasionPercolation: IP allowing pores and throats to invade separately
 """
 import logging
 import heapq as hq
-import scipy as sp
 import numpy as np
 from collections import namedtuple
 from openpnm.algorithms import GenericAlgorithm
@@ -559,7 +558,7 @@ class MixedInvasionPercolation(GenericAlgorithm):
         data = self.get_intrusion_data(inv_points)
         if ax is None:
             fig, ax = plt.subplots()
-        markevery = int(data.Pcap.size // num_markers)
+        markevery = max(data.Pcap.size // num_markers, 1)
         ax.plot(data.Pcap, data.S_pore, "r*-", label="pore", markevery=markevery)
         ax.plot(data.Pcap, data.S_throat, "b*-", label="throat", markevery=markevery)
         ax.plot(data.Pcap, data.S_tot, "g*-", label="total", markevery=markevery)

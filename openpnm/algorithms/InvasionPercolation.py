@@ -440,8 +440,8 @@ class InvasionPercolation(GenericAlgorithm):
         data = self.get_intrusion_data()
         if ax is None:
             fig, ax = plt.subplots()
-        markevery = int(data.Pcap.size // num_markers)            
-        ax.semilogx(data.Pcap, data.S_tot)
+        markevery = max(data.Pcap.size // num_markers, 1)
+        ax.semilogx(data.Pcap, data.S_tot, markevery=markevery)
         plt.ylabel('invading phase saturation')
         plt.xlabel('capillary pressure')
         plt.grid(True)

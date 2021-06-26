@@ -1,5 +1,4 @@
 import numpy as np
-import scipy as sp
 import openpnm as op
 mgr = op.Workspace()
 
@@ -31,7 +30,7 @@ class MercuryIntrusionTest:
         mip.run()
         mip.pc_data = [1e1, 1e3, 1e5, 1e6]
         mip.snwp_data = [0.0, 0.1, 0.5, 0.9]
-        _ = mip.plot_intrusion_curve()
+        mip.plot_intrusion_curve()
 
 
 if __name__ == '__main__':
