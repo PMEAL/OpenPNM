@@ -1,22 +1,18 @@
-import scipy as sp
+import pytest
 import numpy as np
 import openpnm as op
 import matplotlib.pyplot as plt
-
-mgr = op.Workspace()
 
 
 class IPTest:
     def setup_class(self):
         self.net = op.network.Cubic(shape=[10, 10, 10], spacing=0.0005)
         self.geo = op.geometry.StickAndBall(
-            network=self.net, pores=self.net.Ps, throats=self.net.Ts
-        )
+            network=self.net, pores=self.net.Ps, throats=self.net.Ts)
         self.water = op.phases.Water(network=self.net)
         self.air = op.phases.Air(network=self.net)
         self.phys = op.physics.GenericPhysics(
-            network=self.net, phase=self.water, geometry=self.geo
-        )
+            network=self.net, phase=self.water, geometry=self.geo)
         mod = op.models.physics.capillary_pressure.washburn
         self.phys.add_model(propname="throat.entry_pressure", model=mod)
 
@@ -71,19 +67,17 @@ class IPTest:
         alg = op.algorithms.InvasionPercolation(network=self.net)
         alg.setup(phase=self.water)
         alg.set_inlets(pores=self.net.pores("top"))
-        fig1 = alg.plot_intrusion_curve()
-        assert fig1 is None
+        with pytest.raises(Exception):
+            alg.plot_intrusion_curve()
         alg.run()
-        fig2 = alg.plot_intrusion_curve()
-        ax2 = plt.gca()
-        assert fig2 is not None
+        fig1, ax1 = plt.subplots()
+        alg.plot_intrusion_curve(ax=ax1)
         alg.apply_trapping(outlets=self.net.pores("bottom"))
-        fig3 = alg.plot_intrusion_curve()
-        assert fig3 is not None
-        ax3 = plt.gca()
-        ydata2 = ax2.lines[0].get_ydata()
-        ydata3 = ax3.lines[0].get_ydata()
-        assert np.any(ydata2 - ydata3 != 0.0)
+        fig2, ax2 = plt.subplots()
+        alg.plot_intrusion_curve(ax=ax2)
+        y1 = ax1.lines[0].get_ydata()
+        y2 = ax2.lines[0].get_ydata()
+        assert not np.allclose(y1, y2)
         plt.close("all")
 
 
