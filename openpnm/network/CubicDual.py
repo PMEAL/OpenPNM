@@ -67,7 +67,7 @@ class CubicDual(GenericNetwork):
     ...                                   color='r', ax=ax)
     >>> _ = op.topotools.plot_coordinates(network=pn, c='r', s=75, ax=ax)
 
-    .. image:: /../docs/static/images/cubic_dual_network.png
+    .. image:: /../docs/_static/images/cubic_dual_network.png
         :align: center
 
     For larger networks and more control over presentation use `Paraview
