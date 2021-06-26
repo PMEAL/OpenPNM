@@ -638,22 +638,23 @@
         <span class="n">data</span> <span class="o">=</span> <span class="n">pc_curve</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">Snwp_all</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">data</span></div>
 
-<div class="viewcode-block" id="OrdinaryPercolation.plot_intrusion_curve"><a class="viewcode-back" href="../../../modules/algorithms/ordinary_percolation.html#openpnm.algorithms.OrdinaryPercolation.plot_intrusion_curve">[docs]</a>    <span class="k">def</span> <span class="nf">plot_intrusion_curve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fig</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="OrdinaryPercolation.plot_intrusion_curve"><a class="viewcode-back" href="../../../modules/algorithms/ordinary_percolation.html#openpnm.algorithms.OrdinaryPercolation.plot_intrusion_curve">[docs]</a>    <span class="k">def</span> <span class="nf">plot_intrusion_curve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">num_markers</span><span class="o">=</span><span class="mi">25</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Plot the percolation curve as the invader volume or number fraction vs</span>
 <span class="sd">        the applied capillary pressure.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+        
         <span class="c1"># Begin creating nicely formatted plot</span>
         <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_intrusion_data</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">fig</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">semilogx</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="s1">&#39;ko-&#39;</span><span class="p">)</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Invading Phase Saturation&#39;</span><span class="p">)</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Capillary Pressure&#39;</span><span class="p">)</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">fig</span></div>
+        <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+        <span class="n">markevery</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">size</span> <span class="o">//</span> <span class="n">num_markers</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">semilogx</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="s1">&#39;ko-&#39;</span><span class="p">,</span> <span class="n">markevery</span><span class="o">=</span><span class="n">markevery</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Invading phase saturation&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Capillary pressure&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="OrdinaryPercolation.results"><a class="viewcode-back" href="../../../modules/algorithms/ordinary_percolation.html#openpnm.algorithms.OrdinaryPercolation.results">[docs]</a>    <span class="k">def</span> <span class="nf">results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Pc</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
