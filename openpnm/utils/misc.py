@@ -299,13 +299,12 @@ def toc(quiet=False):
     tic
 
     """
-    if "_startTime_for_tictoc" in globals():
-        t = _time.time() - _startTime_for_tictoc
-        if quiet is False:
-            print(f"Elapsed time: {_format_time(t)}")
-        return t
-    else:
+    if "_startTime_for_tictoc" not in globals():
         raise Exception("Start time not set, call tic first")
+    t = _time.time() - _startTime_for_tictoc
+    if quiet is False:
+        print(f"Elapsed time: {_format_time(t)}")
+    return t
 
 
 def unique_list(input_list):
