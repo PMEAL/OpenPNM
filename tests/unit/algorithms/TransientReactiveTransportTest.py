@@ -9,14 +9,12 @@ class TransientImplicitReactiveTransportTest:
     def setup_class(self):
         np.random.seed(0)
         self.net = op.network.Cubic(shape=[3, 3, 1], spacing=1e-6)
-        self.geo = op.geometry.GenericGeometry(network=self.net,
-                                               pores=self.net.Ps,
-                                               throats=self.net.Ts)
+        self.geo = op.geometry.GenericGeometry(
+            network=self.net, pores=self.net.Ps, throats=self.net.Ts)
         self.geo['pore.volume'] = 1e-12
         self.phase = op.phases.GenericPhase(network=self.net)
-        self.phys = op.physics.GenericPhysics(network=self.net,
-                                              phase=self.phase,
-                                              geometry=self.geo)
+        self.phys = op.physics.GenericPhysics(
+            network=self.net, phase=self.phase, geometry=self.geo)
         self.phys['pore.A'] = -1e-13
         self.phys['pore.k'] = 2
         self.phys['throat.diffusive_conductance'] = 1e-12
@@ -29,9 +27,8 @@ class TransientImplicitReactiveTransportTest:
                             regen_mode='deferred')
         self.settings = {'conductance': 'throat.diffusive_conductance',
                          'quantity': 'pore.concentration'}
-        self.alg = op.algorithms.TransientReactiveTransport(network=self.net,
-                                                            phase=self.phase,
-                                                            settings=self.settings)
+        self.alg = op.algorithms.TransientReactiveTransport(
+            network=self.net, phase=self.phase, settings=self.settings)
         self.alg.setup(quantity='pore.concentration',
                        conductance='throat.diffusive_conductance',
                        t_initial=0, t_final=1, t_step=0.1, t_tolerance=1e-7,
@@ -114,8 +111,7 @@ class TransientImplicitReactiveTransportTest:
                                 pores=self.net.pores('left'))
 
     def test_ensure_settings_are_valid(self):
-        alg = op.algorithms.TransientReactiveTransport(network=self.net,
-                                                       phase=self.phase)
+        alg = op.algorithms.TransientReactiveTransport(network=self.net, phase=self.phase)
         with pytest.raises(Exception, match=r".*quantity.*"):
             alg.run()
         alg.settings['quantity'] = 'pore.concentration'
@@ -137,5 +133,5 @@ if __name__ == '__main__':
     self = t
     for item in t.__dir__():
         if item.startswith('test'):
-            print('running test: '+item)
+            print(f'Running test: {item}')
             t.__getattribute__(item)()

@@ -119,8 +119,6 @@ class TransientReactiveTransport(ReactiveTransport):
             self.setup(phase=phase)
         # Initialize the initial condition
         self["pore.ic"] = np.nan
-        # Initial f-values needed for time stepping schemes
-        self._set_f_values()
 
     def setup(self, phase=None, quantity='', conductance='',
               t_initial=None, t_final=None, t_step=None, t_output=None,
@@ -160,7 +158,6 @@ class TransientReactiveTransport(ReactiveTransport):
         if t_scheme:
             self.settings['t_scheme'] = t_scheme
         self.settings.update(kwargs)
-        self._set_f_values()
 
     def set_IC(self, values):
         r"""
@@ -192,9 +189,9 @@ class TransientReactiveTransport(ReactiveTransport):
         quantity = self.settings['quantity']
         self[quantity] = ic_vals
 
-    def _set_f_values(self):
+    def _get_f_values(self):
         r"""
-        Sets f1, f2, and f3 values based on the time stepping scheme.
+        Returns f1, f2, and f3 values based on the time stepping scheme.
         """
         scheme = self.settings['t_scheme']
         fdict = {
@@ -202,10 +199,24 @@ class TransientReactiveTransport(ReactiveTransport):
             'cranknicolson':    [0.5, 1.0, 0.0],
             'steady':           [1.0, 0.0, 1.0]
         }
-        try:
-            self._f1, self._f2, self._f3 = fdict[scheme]
-        except KeyError:
+        if scheme is None:
+            raise Exception("settings['t_scheme'] hasn't been set.")
+        if scheme not in fdict.keys():
             raise Exception(f"Unsupported settings['t_scheme']: {scheme}")
+        return fdict[scheme]
+
+    def _get_f1(self):
+        return self._get_f_values()[0]
+
+    def _get_f2(self):
+        return self._get_f_values()[1]
+
+    def _get_f3(self):
+        return self._get_f_values()[2]
+
+    _f1 = property(fget=_get_f1)
+    _f2 = property(fget=_get_f2)
+    _f3 = property(fget=_get_f3)
 
     def _t_update_A(self):
         r"""
@@ -376,7 +387,6 @@ class TransientReactiveTransport(ReactiveTransport):
         found in the parent class 'ReactiveTransport' documentation.
 
         """
-        from openpnm.utils import tic, toc
         quantity = self.settings['quantity']
         w = self.settings['relaxation_quantity']
         max_it = int(self.settings['nlin_max_iter'])
@@ -399,9 +409,7 @@ class TransientReactiveTransport(ReactiveTransport):
                 return x
             logger.info(f'Tolerance not met: {res:.4e}')
             # Solve, use relaxation, and update solution on algorithm obj
-            tic()
             self[quantity] = x = self._solve(x0=x) * w + x * (1 - w)
-            toc()
         # Check solution convergence after max_it iterations
         if not self._is_converged():
             raise Exception(f"Not converged after {max_it} iterations.")
