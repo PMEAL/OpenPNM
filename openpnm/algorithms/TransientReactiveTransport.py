@@ -1,5 +1,4 @@
 import numpy as np
-import scipy.sparse as sprs
 from decimal import Decimal as dc
 from openpnm.algorithms import ReactiveTransport
 from openpnm.utils import logging, GenericSettings, Docorator
@@ -190,38 +189,45 @@ class TransientReactiveTransport(ReactiveTransport):
         quantity = self.settings['quantity']
         self[quantity] = ic_vals
 
-    def _get_f1_f2_f3(self):
+    def _get_f_values(self):
         r"""
-        Helper method: returns f1, f2, and f3 for _t_update_A and _t_update_b methods.
+        Returns f1, f2, and f3 values based on the time stepping scheme.
         """
-        s = self.settings['t_scheme']
-        if s == 'implicit':
-            f1, f2, f3 = 1, 1, 0
-        elif s == 'cranknicolson':
-            f1, f2, f3 = 0.5, 1, 0
-        elif s == 'steady':
-            f1, f2, f3 = 1, 0, 1
-        else:
-            raise Exception(f'Unsupported t_scheme: "{s}"')
-        return f1, f2, f3
+        scheme = self.settings['t_scheme']
+        fdict = {
+            'implicit':         [1.0, 1.0, 0.0],
+            'cranknicolson':    [0.5, 1.0, 0.0],
+            'steady':           [1.0, 0.0, 1.0]
+        }
+        if scheme is None:
+            raise Exception("settings['t_scheme'] hasn't been set.")
+        if scheme not in fdict.keys():
+            raise Exception(f"Unsupported settings['t_scheme']: {scheme}")
+        return fdict[scheme]
+
+    def _get_f1(self):
+        return self._get_f_values()[0]
+
+    def _get_f2(self):
+        return self._get_f_values()[1]
+
+    def _get_f3(self):
+        return self._get_f_values()[2]
+
+    _f1 = property(fget=_get_f1)
+    _f2 = property(fget=_get_f2)
+    _f3 = property(fget=_get_f3)
 
     def _t_update_A(self):
         r"""
         A method to update 'A' matrix at each time step according to 't_scheme'
         """
         network = self.project.network
-        pore_volume = self.settings['pore_volume']
-        Vi = network[pore_volume]
+        Vi = network[self.settings['pore_volume']]
         dt = self.settings['t_step']
-        f1, f2, _ = self._get_f1_f2_f3()
-        # Compute A (operations involve conversion to 'csr')
-        A = ((f2/dt) * sprs.coo_matrix.multiply(
-            sprs.coo_matrix(np.reshape(Vi, (self.Np, 1)), shape=(self.Np, 1)),
-            sprs.identity(self.Np, format='coo')) + f1 * self._A_steady)
-        # Convert A to 'coo' format to apply BCs
-        A = sprs.coo_matrix(A)
+        A = self._f1 * self._A_steady
+        A.setdiag(A.diagonal() + self._f2/dt * Vi)
         self._A = A
-        return A
 
     def _t_update_b(self):
         r"""
@@ -231,21 +237,15 @@ class TransientReactiveTransport(ReactiveTransport):
         quantity = self.settings['quantity']
         network = self.project.network
         phase = self.project.phases()[self.settings['phase']]
-        pore_volume = self.settings['pore_volume']
-        Vi = network[pore_volume]
+        Vi = network[self.settings['pore_volume']]
         dt = self.settings['t_step']
-        f1, f2, f3 = self._get_f1_f2_f3()
-        x_old = self[quantity]
-        b = (f2 * (1-f1) * (-self._A_steady) * x_old
-             + f2 * (Vi/dt) * x_old
-             + f3 * np.zeros(shape=(self.Np,), dtype=float))
+        X = self[quantity]
+        b = self._f2 * (1-self._f1) * -self._A_steady * X + self._f2 * Vi/dt * X
         self._update_iterative_props()
         for item in self.settings['sources']:
             Ps = self.pores(item)
-            # Update b
-            b[Ps] = b[Ps] - f2 * (1-f1) * (phase[item + '.' + 'rate'][Ps])
+            b[Ps] -= self._f2 * (1-self._f1) * phase[f"{item}.rate"][Ps]
         self._b = b
-        return b
 
     def run(self, t=None):
         r"""
@@ -281,8 +281,7 @@ class TransientReactiveTransport(ReactiveTransport):
         # Save copies of A and b to be used in _t_run_reactive()
         self._A_t = self._A.copy()
         self._b_t = self._b.copy()
-        if t is None:
-            t = self.settings['t_initial']
+        t = self.settings['t_initial'] if t is None else t
         self._update_iterative_props()
         self._run_transient(t=t)
 
@@ -334,7 +333,6 @@ class TransientReactiveTransport(ReactiveTransport):
         if s == 'steady':
             logger.info('    Running in steady mode')
             self._t_run_reactive()
-
         # Time marching step
         else:
             # Export the initial field (t=t_initial)
@@ -396,7 +394,6 @@ class TransientReactiveTransport(ReactiveTransport):
 
         # Write initial guess to algorithm for _update_iterative_props to work
         self[quantity] = x
-
         for itr in range(max_it):
             # Update iterative properties on phase and physics
             self._update_iterative_props()
@@ -413,7 +410,6 @@ class TransientReactiveTransport(ReactiveTransport):
             logger.info(f'Tolerance not met: {res:.4e}')
             # Solve, use relaxation, and update solution on algorithm obj
             self[quantity] = x = self._solve(x0=x) * w + x * (1 - w)
-
         # Check solution convergence after max_it iterations
         if not self._is_converged():
             raise Exception(f"Not converged after {max_it} iterations.")
@@ -479,15 +475,14 @@ class TransientReactiveTransport(ReactiveTransport):
         ----------
         nbr : scalar
             The number to be converted into a scalar.
-        t_precision : integer
+        t_precision : int
             The time precision (number of decimal places). Default value is 12.
 
         """
-        if t_pre is None:
-            t_pre = self.settings['t_precision']
+        t_pre = self.settings['t_precision'] if t_pre is None else t_pre
         n = int(-dc(str(round(nbr, t_pre))).as_tuple().exponent
                 * (round(nbr, t_pre) != int(nbr)))
-        nbr_str = (str(int(round(nbr, t_pre)*10**n)) + ('e-'+str(n))*(n != 0))
+        nbr_str = str(int(round(nbr, t_pre)*10**n)) + ('e-'+str(n))*(n != 0)
         return nbr_str
 
     def _correct_apply_sources(self):
@@ -500,14 +495,13 @@ class TransientReactiveTransport(ReactiveTransport):
         Correction (built for transient simulations) depends on the time scheme
 
         """
-        f1, f2, f3 = self._get_f1_f2_f3()
         phase = self.project.phases()[self.settings['phase']]
         for item in self.settings['sources']:
             Ps = self.pores(item)
-            # get already added relaxed source term
+            # Fetch already added relaxed source term
             S1, S2 = [phase[item + '.' + x][Ps] for x in ['S1', 'S2']]
-            # correct S1 and S2 in A and b as a function of t_scheme
+            # Correct S1 and S2 in A and b as a function of t_scheme
             datadiag = self._A.diagonal().copy()
-            datadiag[Ps] = datadiag[Ps] - S1 + f1*S1
+            datadiag[Ps] = datadiag[Ps] - S1 + self._f1*S1
             self._A.setdiag(datadiag)
-            self._b[Ps] = self._b[Ps] + S2 - f1*S2
+            self._b[Ps] = self._b[Ps] + S2 - self._f1*S2
