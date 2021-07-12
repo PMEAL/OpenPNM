@@ -606,59 +606,6 @@
                 
   <div class="section" id="ohmicconduction">
 <span id="ohmic-conduction-api"></span><h1>OhmicConduction<a class="headerlink" href="#ohmicconduction" title="Permalink to this headline">¶</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="openpnm.algorithms.OhmicConduction">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">OhmicConduction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/OhmicConduction.html#OhmicConduction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.OhmicConduction" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="reactive_transport.html#openpnm.algorithms.ReactiveTransport" title="openpnm.algorithms.ReactiveTransport.ReactiveTransport"><code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.algorithms.ReactiveTransport.ReactiveTransport</span></code></a></p>
-<p>A subclass of GenericLinearTransport to simulate electron and ionic
-conduction.  The 2 main roles of this subclass are to set the default
-property names and to implement a method for calculating the effective
-conductivity of the network.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="openpnm.algorithms.OhmicConduction.calc_effective_conductivity">
-<span class="sig-name descname"><span class="pre">calc_effective_conductivity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inlets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outlets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain_area</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/OhmicConduction.html#OhmicConduction.calc_effective_conductivity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.OhmicConduction.calc_effective_conductivity" title="Permalink to this definition">¶</a></dt>
-<dd><p>This calculates the effective electrical conductivity.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>inlets</strong> (<em>array_like</em>) – The pores where the inlet voltage boundary conditions were
-applied.  If not given an attempt is made to infer them from the
-algorithm.</p></li>
-<li><p><strong>outlets</strong> (<em>array_like</em>) – The pores where the outlet voltage boundary conditions were
-applied.  If not given an attempt is made to infer them from the
-algorithm.</p></li>
-<li><p><strong>domain_area</strong> (<em>scalar</em><em>, </em><em>optional</em>) – The area of the inlet (and outlet) boundary faces.  If not given
-then an attempt is made to estimate it, but it is usually
-underestimated.</p></li>
-<li><p><strong>domain_length</strong> (<em>scalar</em><em>, </em><em>optional</em>) – The length of the domain between the inlet and outlet boundary
-faces.  If not given then an attempt is made to estimate it, but it
-is usually underestimated.</p></li>
-</ul>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<p>The area and length of the domain are found using the bounding box
-around the inlet and outlet pores which do not necessarily lie on the
-edge of the domain, resulting in underestimation of sizes.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="openpnm.algorithms.OhmicConduction.setup">
-<span class="sig-name descname"><span class="pre">setup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quantity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conductance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/OhmicConduction.html#OhmicConduction.setup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.OhmicConduction.setup" title="Permalink to this definition">¶</a></dt>
-<dd><p>This method takes several arguments that are essential to running the
-algorithm and adds them to the settings.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>%</strong><strong>(</strong><strong>OhmicConductionSettings.parameters</strong><strong>)</strong><strong>s</strong> – </p>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<p>Any additional arguments are added to the <code class="docutils literal notranslate"><span class="pre">settings</span></code> dictionary of
-the object.</p>
-</dd></dl>
-
-</dd></dl>
-
 </div>
 
 
