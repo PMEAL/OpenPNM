@@ -9,6 +9,7 @@ import scipy.sparse
 import time as _time
 from collections import OrderedDict
 from docrep import DocstringProcessor
+from IPython.core.magics.execution import _format_time
 
 __all__ = [
     "Docorator",
@@ -301,9 +302,8 @@ def toc(quiet=False):
     if "_startTime_for_tictoc" in globals():
         t = _time.time() - _startTime_for_tictoc
         if quiet is False:
-            print(f"Elapsed time in seconds: {t:0.2f}")
-        else:
-            return t
+            print(f"Elapsed time: {_format_time(t)}")
+        return t
     else:
         raise Exception("Start time not set, call tic first")
 
