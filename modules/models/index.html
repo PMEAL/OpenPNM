@@ -589,7 +589,7 @@
 <nav id="bd-toc-nav">
     <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#overview-of-module">
+  <a class="reference internal nav-link" href="#module-openpnm.models">
    Overview of Module
   </a>
  </li>
@@ -626,36 +626,102 @@
 <ul class="simple">
 <li><p><a class="reference internal" href="#models" id="id1">Models</a></p>
 <ul>
-<li><p><a class="reference internal" href="#overview-of-module" id="id2">Overview of Module</a></p></li>
+<li><p><a class="reference internal" href="#module-openpnm.models" id="id2">Overview of Module</a></p></li>
 <li><p><a class="reference internal" href="#links-to-detailed-submodule-documentation" id="id3">Links to Detailed Submodule Documentation</a></p></li>
 </ul>
 </li>
 </ul>
 </div>
-<div class="section" id="overview-of-module">
-<h2><a class="toc-backref" href="#id2">Overview of Module</a><a class="headerlink" href="#overview-of-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-openpnm.models">
+<span id="overview-of-module"></span><h2><a class="toc-backref" href="#id2">Overview of Module</a><a class="headerlink" href="#module-openpnm.models" title="Permalink to this headline">¶</a></h2>
+<p><strong>openpnm.models</strong></p>
+<hr class="docutils" />
+<p>This module contains a selection of pore-scale models for calculating
+geometrical, thermophysical, and multiphysics transport properties.</p>
+<hr class="docutils" />
+<p><strong>Using Prewritten Models from the Library</strong></p>
+<p>OpenPNM includes a solid library of pre-written models for most basic and
+standard scenarios.  These are broken up into 4 categores: <em>geometry</em>,
+<em>phases</em>, <em>physics</em>, and <em>misc</em>.  These are further categorized by the type
+of information they calculate, such as grouping all models that calculate
+viscosity or throat length.</p>
+<p>Utilizing a model on a object requires using the <code class="docutils literal notranslate"><span class="pre">add_model</span></code> method. This
+is demonstrated below:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">([</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.seed&#39;</span><span class="p">,</span>
+<span class="gp">... </span>             <span class="n">model</span><span class="o">=</span><span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">misc</span><span class="o">.</span><span class="n">random</span><span class="p">,</span>
+<span class="gp">... </span>             <span class="n">element</span><span class="o">=</span><span class="s1">&#39;pore&#39;</span><span class="p">,</span>
+<span class="gp">... </span>             <span class="n">num_range</span><span class="o">=</span><span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Upon being added to the object the models are run.  The resulting data is
+placed into the object using the <code class="docutils literal notranslate"><span class="pre">propname</span></code> as a key.  Inspecting the
+object reveals that these two data items are indeed present.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pn</span><span class="o">.</span><span class="n">props</span><span class="p">())</span>
+<span class="go">――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――</span>
+<span class="go">1     : pore.coords</span>
+<span class="go">2     : pore.seed</span>
+<span class="go">3     : throat.conns</span>
+<span class="go">――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――</span>
+</pre></div>
+</div>
+<p>The actual models and their respective parameters are also stored on the
+object under the <code class="docutils literal notranslate"><span class="pre">models</span></code> attribute, which is dictionary with the same keys
+as the <code class="docutils literal notranslate"><span class="pre">propnames</span></code>.  This can also be inspected:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pn</span><span class="o">.</span><span class="n">models</span><span class="p">)</span>
+<span class="go">―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――</span>
+<span class="go">#   Property Name                       Parameter                 Value</span>
+<span class="go">―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――</span>
+<span class="go">1   pore.coordination_number            model:                    coordination_number</span>
+<span class="go">                                        regeneration mode:        explicit</span>
+<span class="go">―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――</span>
+<span class="go">2   pore.seed                           model:                    random</span>
+<span class="go">                                        element:                  pore</span>
+<span class="go">                                        num_range:                [0.1, 0.9]</span>
+<span class="go">                                        seed:                     None</span>
+<span class="go">                                        regeneration mode:        normal</span>
+<span class="go">―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――</span>
+</pre></div>
+</div>
+<p>Note that the model ‘pore.coordination_number’ is added to all GenericNetworks
+upon instantiation, but not run.  This is why the model appears in the
+<code class="docutils literal notranslate"><span class="pre">models</span></code> attribute but the data does not yet appear when the <code class="docutils literal notranslate"><span class="pre">props</span></code> method
+is called.</p>
+<p>Finally, any of the models parameters can be edited by reaching into the
+<code class="docutils literal notranslate"><span class="pre">models</span></code> dictionary as follows:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span><span class="o">.</span><span class="n">models</span><span class="p">[</span><span class="s1">&#39;pore.seed&#39;</span><span class="p">][</span><span class="s1">&#39;num_range&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">'pore.seed'</span></code> values must be regenerated for this new parameter to take
+effect, and the <code class="docutils literal notranslate"><span class="pre">'pore.diameter'</span></code> model must also be regenerated to utilized
+the new seeds.  This is accomplished using <code class="docutils literal notranslate"><span class="pre">regenerate_models</span></code> which
+automatically ensures that models are called in the correct order.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span><span class="o">.</span><span class="n">regenerate_models</span><span class="p">()</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="links-to-detailed-submodule-documentation">
 <h2><a class="toc-backref" href="#id3">Links to Detailed Submodule Documentation</a><a class="headerlink" href="#links-to-detailed-submodule-documentation" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="misc.html">Miscellaneous Models</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="misc.html#overview-of-submodule">Overview of Submodule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="misc.html#module-openpnm.models.misc">Overview of Submodule</a></li>
 <li class="toctree-l2"><a class="reference internal" href="misc.html#detailed-model-documentation">Detailed Model Documentation</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="geometry.html">Geometry Models</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="geometry.html#overview-of-submodule">Overview of Submodule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geometry.html#module-openpnm.models.geometry">Overview of Submodule</a></li>
 <li class="toctree-l2"><a class="reference internal" href="geometry.html#detailed-model-documentation">Detailed Model Documentation</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="phase.html">Phase Models</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="phase.html#overview-of-submodule">Overview of Submodule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="phase.html#module-openpnm.models.phases">Overview of Submodule</a></li>
 <li class="toctree-l2"><a class="reference internal" href="phase.html#detailed-model-documentation">Detailed Model Documentation</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="physics.html">Physics Models</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="physics.html#overview-of-submodule">Overview of Submodule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="physics.html#module-openpnm.models.physics">Overview of Submodule</a></li>
 <li class="toctree-l2"><a class="reference internal" href="physics.html#detailed-model-documentation">Detailed Model Documentation</a></li>
 </ul>
 </li>
