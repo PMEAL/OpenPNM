@@ -589,7 +589,7 @@
 <nav id="bd-toc-nav">
     <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#overview-of-module">
+  <a class="reference internal nav-link" href="#module-openpnm.network">
    Overview of Module
   </a>
  </li>
@@ -626,14 +626,135 @@
 <ul class="simple">
 <li><p><a class="reference internal" href="#network" id="id1">Network</a></p>
 <ul>
-<li><p><a class="reference internal" href="#overview-of-module" id="id2">Overview of Module</a></p></li>
+<li><p><a class="reference internal" href="#module-openpnm.network" id="id2">Overview of Module</a></p></li>
 <li><p><a class="reference internal" href="#links-to-detailed-class-documentation" id="id3">Links to Detailed Class Documentation</a></p></li>
 </ul>
 </li>
 </ul>
 </div>
-<div class="section" id="overview-of-module">
-<h2><a class="toc-backref" href="#id2">Overview of Module</a><a class="headerlink" href="#overview-of-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-openpnm.network">
+<span id="overview-of-module"></span><h2><a class="toc-backref" href="#id2">Overview of Module</a><a class="headerlink" href="#module-openpnm.network" title="Permalink to this headline">¶</a></h2>
+<p><strong>openpnm.network</strong></p>
+<hr class="docutils" />
+<p>This module contains the <code class="docutils literal notranslate"><span class="pre">GenericNetwork</span></code> class, whose main purpose is to
+manage the topological representation of the Network.  It also houses a
+collection of Network generators.</p>
+<hr class="docutils" />
+<p><strong>Available Network Generators</strong></p>
+<p>OpenPNM includes a variety of Network generators.  The basically include two
+families of topology: periodic lattices and tessellations of random points.</p>
+<table class="table">
+<colgroup>
+<col style="width: 28%" />
+<col style="width: 72%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Generator Name</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Cubic</p></td>
+<td><p>Simple cubic lattice with connectivity from 6 to 26</p></td>
+</tr>
+<tr class="row-odd"><td><p>CubicDual</p></td>
+<td><p>Body centered cubic lattice plus face centered nodes
+on the surfaces</p></td>
+</tr>
+<tr class="row-even"><td><p>CubicTemplate</p></td>
+<td><p>Simple cubic lattice with arbitrary domain shape
+specified by a template image</p></td>
+</tr>
+<tr class="row-odd"><td><p>Bravais</p></td>
+<td><p>Crystal lattice types including fcc, bcc, sc, and hcp</p></td>
+</tr>
+<tr class="row-even"><td><p>Delaunay</p></td>
+<td><p>Random network formed by Delaunay tessellation of
+arbitrary base points</p></td>
+</tr>
+<tr class="row-odd"><td><p>Voronoi</p></td>
+<td><p>Random network formed by Voronoi tessellation of
+arbitrary base points</p></td>
+</tr>
+<tr class="row-even"><td><p>Gabriel</p></td>
+<td><p>Random network formed by Gabriel tessellation of
+arbitrary base points</p></td>
+</tr>
+<tr class="row-odd"><td><p>DelaunayVoronoiDual</p></td>
+<td><p>Combined and interconnected Voronoi and Delaunay
+tessellations</p></td>
+</tr>
+</tbody>
+</table>
+<hr class="docutils" />
+<p><strong>The GenericNetwork Class</strong></p>
+<p>All of the above Network classes derive from the GenericNetwork class.  It is
+a subclass of <code class="docutils literal notranslate"><span class="pre">Base</span></code> so contains methods for retrieving sets of pores based
+on labels and so forth, but also contains the following additional methods
+that are used soley for topological queries.</p>
+<dl class="simple">
+<dt>Pore networks require two essential pieces of information:</dt><dd><ul class="simple">
+<li><p>the spatial location of pores</p></li>
+<li><p>the connectivity of which throats connect which pores</p></li>
+</ul>
+</dd>
+</dl>
+<p>The <code class="docutils literal notranslate"><span class="pre">GenericNetwork</span></code> class and it’s subclasses are responsible for storing,
+managing, and utilizing this information.</p>
+<p>Network topology is stored using <a class="reference external" href="https://en.wikipedia.org/wiki/Adjacency_matrix">adjacency matrices</a>.  Moreover, this is stored
+using a <a class="reference external" href="https://en.wikipedia.org/wiki/Sparse_matrix">sparse matrix format</a>
+known as COO.  All netowrk objects store the COO matrix as <code class="docutils literal notranslate"><span class="pre">'throat.conns'</span></code>.</p>
+<p>The spatial location of each pore is stored in Cartesian coordinates [x, y, z],
+under <code class="docutils literal notranslate"><span class="pre">'pore.coords'</span></code>.  All networks must be 3D, so even a 2D network must
+have a z-component (but set to 0).</p>
+<p>The following methods are implemented on <code class="docutils literal notranslate"><span class="pre">GenericNetwork</span></code>, and look into
+the <code class="docutils literal notranslate"><span class="pre">'throat.conns'</span></code> and <code class="docutils literal notranslate"><span class="pre">'pore.coords'</span></code> as needed.</p>
+<table class="table">
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 67%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Method</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>num_neighbors</p></td>
+<td><p>Counts the number of neighbors with a given label</p></td>
+</tr>
+<tr class="row-odd"><td><p>find_neighbor_pores</p></td>
+<td><p>Gets indices of pores neighboring a given pore</p></td>
+</tr>
+<tr class="row-even"><td><p>find_neighbor_throats</p></td>
+<td><p>Gets indices of neighbor throats to a given pore</p></td>
+</tr>
+<tr class="row-odd"><td><p>find_connected_pores</p></td>
+<td><p>Gets indices of pores connected by a given throat</p></td>
+</tr>
+<tr class="row-even"><td><p>find_connecting_throat</p></td>
+<td><p>Gets indices of the throat joining pairs of pores</p></td>
+</tr>
+<tr class="row-odd"><td><p>find_nearby_pores</p></td>
+<td><p>Find all pores within given distance of given pore</p></td>
+</tr>
+<tr class="row-even"><td><p>create_adjacency_matrix</p></td>
+<td><p>Generates a weighted adjacency matrix</p></td>
+</tr>
+<tr class="row-odd"><td><p>create_incidence_matrix</p></td>
+<td><p>Creates a weighted incidence matrix</p></td>
+</tr>
+<tr class="row-even"><td><p>get_adjacency_matrix</p></td>
+<td><p>Returns an adjacency matrix with default weights</p></td>
+</tr>
+<tr class="row-odd"><td><p>get_incidence_matrix</p></td>
+<td><p>Returns an incidence matrix with default weights</p></td>
+</tr>
+<tr class="row-even"><td><p>check_network_health</p></td>
+<td><p>Check various aspects of topology for problems</p></td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="section" id="links-to-detailed-class-documentation">
 <h2><a class="toc-backref" href="#id3">Links to Detailed Class Documentation</a><a class="headerlink" href="#links-to-detailed-class-documentation" title="Permalink to this headline">¶</a></h2>

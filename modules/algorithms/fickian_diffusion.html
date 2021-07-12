@@ -35,6 +35,8 @@
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "document", "processHtmlClass": "math|output_area"}}</script>
     <script src="../../_static/js/custom.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -606,6 +608,81 @@
                 
   <div class="section" id="fickiandiffusion">
 <span id="fickian-diffusion-api"></span><h1>FickianDiffusion<a class="headerlink" href="#fickiandiffusion" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="openpnm.algorithms.FickianDiffusion">
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">FickianDiffusion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/FickianDiffusion.html#FickianDiffusion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.FickianDiffusion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="reactive_transport.html#openpnm.algorithms.ReactiveTransport" title="openpnm.algorithms.ReactiveTransport.ReactiveTransport"><code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.algorithms.ReactiveTransport.ReactiveTransport</span></code></a></p>
+<p>A class to simulate binary diffusion with reactions</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>network</strong> (<em>(</em><em>OpenPNM Network object</em><em>)</em>) – The network object to which this algorithm will apply.</p></li>
+<li><p><strong>name</strong> (<em>(</em><em>string</em><em>, </em><em>optional</em><em>)</em>) – Name of the algorithm</p></li>
+<li><p><strong>project</strong> (<em>(</em><em>OpenPNM Project object</em><em>, </em><em>optional</em><em>)</em>) – Either a Network or a Project must be supplied</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Fickian diffusion in porous materials occurs in the void space, but
+becuase the diffusion is defined to pores it is impacted by the porosity
+and tortuosity of the network.  Thus the total diffusive flux through the
+network is reduced.  This class can be used to simualte diffusion-reaction
+in domains with arbitrarily complex boundary conditions, or it can be used
+to calculate the effective diffusivity of the network by applying
+controlled boundary conditions on opposing faces, calculate the diffusion
+rate, and inverting Fick’s first law:</p>
+<div class="math notranslate nohighlight">
+\[D_{eff} = N_{A}*L/(A*\Delta C_{A})\]</div>
+<p>This class includes a method for calculating Deff automatically assuming
+appropriate boundary conditions were applied (<code class="docutils literal notranslate"><span class="pre">calc_eff_diffusivity</span></code>).
+The length and area of the domain should be supplied, but if they are
+not an attempt is made to calculate them.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.algorithms.FickianDiffusion.calc_effective_diffusivity">
+<span class="sig-name descname"><span class="pre">calc_effective_diffusivity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inlets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outlets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain_area</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/FickianDiffusion.html#FickianDiffusion.calc_effective_diffusivity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.FickianDiffusion.calc_effective_diffusivity" title="Permalink to this definition">¶</a></dt>
+<dd><p>This calculates the effective diffusivity in this linear transport
+algorithm.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>inlets</strong> (<em>array_like</em>) – The pores where the inlet composition boundary conditions were
+applied.  If not given an attempt is made to infer them from the
+algorithm.</p></li>
+<li><p><strong>outlets</strong> (<em>array_like</em>) – The pores where the outlet composition boundary conditions were
+applied.  If not given an attempt is made to infer them from the
+algorithm.</p></li>
+<li><p><strong>domain_area</strong> (<em>scalar</em><em>, </em><em>optional</em>) – The area of the inlet (and outlet) boundary faces.  If not given
+then an attempt is made to estimate it, but it is usually
+underestimated.</p></li>
+<li><p><strong>domain_length</strong> (<em>scalar</em><em>, </em><em>optional</em>) – The length of the domain between the inlet and outlet boundary
+faces.  If not given then an attempt is made to estimate it, but it
+is usually underestimated.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The area and length of the domain are found using the bounding box
+around the inlet and outlet pores which do not necessarily lie on the
+edge of the domain, resulting in underestimation of sizes.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.algorithms.FickianDiffusion.setup">
+<span class="sig-name descname"><span class="pre">setup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quantity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conductance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/FickianDiffusion.html#FickianDiffusion.setup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.FickianDiffusion.setup" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method takes several arguments that are essential to running the
+algorithm and adds them to the settings.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>%</strong><strong>(</strong><strong>FickianDiffusionSettings.parameters</strong><strong>)</strong><strong>s</strong> – </p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Any additional arguments are added to the <code class="docutils literal notranslate"><span class="pre">settings</span></code> dictionary of
+the object.</p>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 
 
