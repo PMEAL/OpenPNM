@@ -54,7 +54,7 @@
     
 
 <a class="navbar-brand" href="https://www.openpnm.org">
-  <img src="../../../_static/openpnm_logo.png" class="logo" alt="logo">
+  <img src="../../../_static/_static/images/openpnm_logo.png" class="logo" alt="logo">
 </a>
 
 
@@ -291,6 +291,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="n">phase</span><span class="o">=</span><span class="n">phase</span><span class="p">)</span>
         <span class="c1"># Initialize the initial condition</span>
         <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;pore.ic&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+        <span class="c1"># Initial f-values needed for time stepping schemes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_f_values</span><span class="p">()</span>
 
 <div class="viewcode-block" id="TransientReactiveTransport.setup"><a class="viewcode-back" href="../../../modules/algorithms/transient_reactive_transport.html#openpnm.algorithms.TransientReactiveTransport.setup">[docs]</a>    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">quantity</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">conductance</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
               <span class="n">t_initial</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">t_final</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">t_step</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">t_output</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -328,12 +330,9 @@
         <span class="k">if</span> <span class="n">t_precision</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;t_precision&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">t_precision</span>
         <span class="k">if</span> <span class="n">t_scheme</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">t_scheme</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;implicit&#39;</span><span class="p">,</span> <span class="s1">&#39;cranknicolson&#39;</span><span class="p">,</span> <span class="s1">&#39;steady&#39;</span><span class="p">]:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;t_scheme&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">t_scheme</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_set_f_values</span><span class="p">()</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Unsupported t_scheme: &quot;</span><span class="si">{</span><span class="n">t_scheme</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;t_scheme&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">t_scheme</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_f_values</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="TransientReactiveTransport.set_IC"><a class="viewcode-back" href="../../../modules/algorithms/transient_reactive_transport.html#openpnm.algorithms.TransientReactiveTransport.set_IC">[docs]</a>    <span class="k">def</span> <span class="nf">set_IC</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -367,7 +366,7 @@
 
     <span class="k">def</span> <span class="nf">_set_f_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Helper method: returns f1, f2, and f3 for _t_update_A and _t_update_b methods.</span>
+<span class="sd">        Sets f1, f2, and f3 values based on the time stepping scheme.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">scheme</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;t_scheme&#39;</span><span class="p">]</span>
         <span class="n">fdict</span> <span class="o">=</span> <span class="p">{</span>
@@ -375,7 +374,10 @@
             <span class="s1">&#39;cranknicolson&#39;</span><span class="p">:</span>    <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
             <span class="s1">&#39;steady&#39;</span><span class="p">:</span>           <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span>
         <span class="p">}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_f1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_f2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_f3</span> <span class="o">=</span> <span class="n">fdict</span><span class="p">[</span><span class="n">scheme</span><span class="p">]</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_f1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_f2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_f3</span> <span class="o">=</span> <span class="n">fdict</span><span class="p">[</span><span class="n">scheme</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported settings[&#39;t_scheme&#39;]: </span><span class="si">{</span><span class="n">scheme</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_t_update_A</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -492,7 +494,6 @@
         <span class="k">if</span> <span class="n">s</span> <span class="o">==</span> <span class="s1">&#39;steady&#39;</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;    Running in steady mode&#39;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_t_run_reactive</span><span class="p">()</span>
-
         <span class="c1"># Time marching step</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># Export the initial field (t=t_initial)</span>
@@ -547,6 +548,7 @@
 <span class="sd">        found in the parent class &#39;ReactiveTransport&#39; documentation.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">tic</span><span class="p">,</span> <span class="n">toc</span>
         <span class="n">quantity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;quantity&#39;</span><span class="p">]</span>
         <span class="n">w</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;relaxation_quantity&#39;</span><span class="p">]</span>
         <span class="n">max_it</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;nlin_max_iter&#39;</span><span class="p">])</span>
@@ -554,7 +556,6 @@
 
         <span class="c1"># Write initial guess to algorithm for _update_iterative_props to work</span>
         <span class="bp">self</span><span class="p">[</span><span class="n">quantity</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span>
-
         <span class="k">for</span> <span class="n">itr</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_it</span><span class="p">):</span>
             <span class="c1"># Update iterative properties on phase and physics</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_update_iterative_props</span><span class="p">()</span>
@@ -570,8 +571,9 @@
                 <span class="k">return</span> <span class="n">x</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Tolerance not met: </span><span class="si">{</span><span class="n">res</span><span class="si">:</span><span class="s1">.4e</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
             <span class="c1"># Solve, use relaxation, and update solution on algorithm obj</span>
+            <span class="n">tic</span><span class="p">()</span>
             <span class="bp">self</span><span class="p">[</span><span class="n">quantity</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_solve</span><span class="p">(</span><span class="n">x0</span><span class="o">=</span><span class="n">x</span><span class="p">)</span> <span class="o">*</span> <span class="n">w</span> <span class="o">+</span> <span class="n">x</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">w</span><span class="p">)</span>
-
+            <span class="n">toc</span><span class="p">()</span>
         <span class="c1"># Check solution convergence after max_it iterations</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_converged</span><span class="p">():</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Not converged after </span><span class="si">{</span><span class="n">max_it</span><span class="si">}</span><span class="s2"> iterations.&quot;</span><span class="p">)</span>
@@ -691,7 +693,7 @@
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.0.2.<br/>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.1.0.<br/>
 </p>
     </div>
     
