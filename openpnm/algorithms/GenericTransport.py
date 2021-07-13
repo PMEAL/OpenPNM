@@ -672,23 +672,11 @@ class GenericTransport(GenericAlgorithm):
                 return x
         # PyPardiso
         elif self.settings['solver_family'] in ['pypardiso', 'pardiso']:
-            try:
-                import pypardiso
-            except ModuleNotFoundError:
-                msg = op.utils.prettify_logger_message(
-                    "Pardiso missing, reverting to much slower spsolve."
-                    " Install pardiso with: conda install -c conda-forge pardiso4py")
-                if self.Np <= 8000:
-                    logger.critical(msg)
-                    self.settings['solver_family'] = 'scipy'
-                    return self._get_solver()
-                msg = "Pardiso missing. Install via: conda install -c conda-forge pardiso4py"
-                raise Exception(msg)
-
             def solver(A, b, **kwargs):
                 r"""
                 Wrapper method for PyPardiso sparse linear solver.
                 """
+                import pypardiso
                 x = pypardiso.spsolve(A=A, b=b)
                 return x
         # CuPy
