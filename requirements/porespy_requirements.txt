@@ -1,4 +1,3 @@
-array_split
 dask
 edt
 imageio
@@ -10,7 +9,9 @@ numpy-stl
 pandas
 pyamg
 pyevtk
+scikit-fmm
 scikit-image
 scipy
 tqdm
+trimesh
 transforms3d
