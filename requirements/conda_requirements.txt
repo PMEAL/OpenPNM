@@ -10,7 +10,7 @@ networkx
 numba
 numpy
 pandas
-pardiso4py
+pypardiso
 scikit-image
 scipy
 sympy
