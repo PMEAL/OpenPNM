@@ -33,7 +33,7 @@ Having the code locally is not enough to run it, since you must tell python abou
   * The ``.`` tell pip to find the ``setup.py`` file in the "current directory" and run it.  
   * Alternatively you could have told pip where to look, such as ``pip install -e "C:\users\username\code\OpenPNM"``. 
 
-> Note: As of version 2.5 OpenPNM relies on "conda" to install packages since we use some package that cannot be distributed via pip (i.e. pardiso4py).  So you may need to run ``conda install -c conda-forge pardiso4py``...though you probably already have this if you install openpnm from conda previously.  
+> Note: As of version 2.5 OpenPNM relies on "conda" to install packages since we use some package that cannot be distributed via pip (i.e. pypardiso).  So you may need to run ``conda install -c conda-forge pypardiso``...though you probably already have this if you install openpnm from conda previously.
 
 ## Conributing to OpenPNM
 
