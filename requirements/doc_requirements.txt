@@ -1,8 +1,8 @@
-sphinx
-pydata-sphinx-theme
 jupyterlab_widgets
-sphinx-copybutton
-sphinx-panels
 nbsphinx
 nbsphinx-link
 pandoc
+pydata-sphinx-theme
+sphinx
+sphinx-copybutton
+sphinx-panels
