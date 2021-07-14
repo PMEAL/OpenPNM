@@ -55,12 +55,12 @@ It consists of the following submodules:
 from .__version__ import __version__
 
 from . import core
+from . import models
 from . import utils
 from . import network
 from . import geometry
 from . import phases
 from . import physics
-from . import models
 from . import algorithms
 from . import materials
 from . import topotools

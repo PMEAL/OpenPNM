@@ -15,7 +15,6 @@ on each end.
 
 import numpy as _np
 import openpnm.models.geometry.conduit_lengths as _conduit_lengths
-import openpnm.geometry.GenericGeometry as _GenericGeometry
 from .misc import _get_conduit_diameters
 
 __all__ = [
@@ -34,7 +33,7 @@ __all__ = [
 
 
 def spheres_and_cylinders(
-    target: _GenericGeometry,
+    target,
     pore_diameter="pore.diameter",
     throat_diameter="throat.diameter",
 ):
@@ -483,7 +482,7 @@ def intersecting_trapezoids(
 
 
 def intersecting_pyramids(
-    target: _GenericGeometry,
+    target,
     pore_diameter="pore.diameter",
     throat_diameter="throat.diameter",
     midpoint=None,
@@ -523,7 +522,7 @@ def intersecting_pyramids(
 
 
 def ncylinders_in_series(
-    target: _GenericGeometry,
+    target,
     pore_diameter="pore.diameter",
     throat_diameter="throat.diameter",
     n=5

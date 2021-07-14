@@ -101,3 +101,4 @@ from .PyramidsAndCuboids import PyramidsAndCuboids
 from .TrapezoidsAndRectangles import TrapezoidsAndRectangles
 from .CubesAndCuboids import CubesAndCuboids
 from .SquaresAndRectangles import SquaresAndRectangles
+from . import collections

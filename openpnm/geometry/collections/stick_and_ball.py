@@ -1,11 +1,7 @@
 import openpnm.models as mods
 
-__all__ = [
-    "stick_and_ball",
-]
 
-def stick_and_ball():
-    d = {
+stick_and_ball = {
         'pore.seed': {
             'model': mods.misc.random,
             'element':'pore',
@@ -81,4 +77,3 @@ def stick_and_ball():
             'regen_mode': 'deferred',
             },
          }
-    return d
