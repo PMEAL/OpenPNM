@@ -22,6 +22,7 @@ from . import throat_vector
 from . import hydraulic_size_factors
 from . import diffusive_size_factors
 from . import conduit_lengths
+from . import collections
 
 # Up for deprecation
 pore_area = pore_cross_sectional_area
