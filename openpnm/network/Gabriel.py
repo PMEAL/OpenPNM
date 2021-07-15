@@ -1,12 +1,13 @@
 import numpy as np
 import scipy.spatial as sptl
-from openpnm.network import Delaunay
+from openpnm.network.generators import delaunay, gabriel
+from openpnm.network import GenericNetwork
 from openpnm.topotools import trim
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 
 
-class Gabriel(Delaunay):
+class Gabriel(GenericNetwork):
     r"""
     Random network formed by Gabriel tessellation of arbitrary base points
 
@@ -72,20 +73,11 @@ class Gabriel(Delaunay):
 
     """
 
-    def __init__(self, shape=[1, 1, 1], num_points=None, points=None, **kwargs):
+    def __init__(self, shape=[1, 1, 1], points=None, **kwargs):
         # Generate Delaunay tessellation from super class, then trim
-        super().__init__(shape=shape, num_points=num_points, points=points, **kwargs)
-        if 'pore.coords' in self.keys():
-            points = self['pore.coords']
-            conns = self['throat.conns']
-            # Find centroid of each pair of nodes
-            c = points[conns]
-            m = (c[:, 0, :] + c[:, 1, :])/2
-            # Find radius of circle connecting each pair of nodes
-            r = np.sqrt(np.sum((c[:, 0, :] - c[:, 1, :])**2, axis=1))/2
-            # Use KD-Tree to find distance to nearest neighbors
-            tree = sptl.cKDTree(points)
-            n = tree.query(x=m, k=1)[0]
-            # Identify throats whose centroid is not near an unconnected node
-            g = np.around(n, decimals=5) == np.around(r, decimals=5)
-            trim(self, throats=~g)
+        super().__init__(**kwargs)
+        self.update(gabriel(delaunay(shape=shape, points=points)))
+        Np = self['pore.coords'][:, 0].shape[0]
+        Nt = self['throat.conns'][:, 0].shape[0]
+        self['pore.all'] = np.ones((Np, ), dtype=bool)
+        self['throat.all'] = np.ones((Nt, ), dtype=bool)

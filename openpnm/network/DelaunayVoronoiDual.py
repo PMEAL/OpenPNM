@@ -150,17 +150,6 @@ class DelaunayVoronoiDual(GenericNetwork):
             self._trim_external_pores(shape=shape)
             self._label_faces()
 
-    @property
-    def tri(self):
-        if not hasattr(self, '_tri'):
-            points = self._vor.points
-            self._tri = sptl.Delaunay(points=points)
-        return self._tri
-
-    @property
-    def vor(self):
-        return self._vor
-
     def _trim_external_pores(self, shape):
         r'''
         '''
@@ -304,48 +293,4 @@ class DelaunayVoronoiDual(GenericNetwork):
 
         return points
 
-    def _label_faces(self):
-        r'''
-        Label the pores sitting on the faces of the domain in accordance with
-        the conventions used for cubic etc.
-        '''
-        coords = np.around(self['pore.coords'], decimals=10)
-        min_labels = ['front', 'left', 'bottom']
-        max_labels = ['back', 'right', 'top']
-        min_coords = np.amin(coords, axis=0)
-        max_coords = np.amax(coords, axis=0)
-        for ax in range(3):
-            self['pore.' + min_labels[ax]] = coords[:, ax] == min_coords[ax]
-            self['pore.' + max_labels[ax]] = coords[:, ax] == max_coords[ax]
 
-    def add_boundary_pores(self, labels=['top', 'bottom', 'front', 'back',
-                                         'left', 'right'], offset=None):
-        r"""
-        Add boundary pores to the specified faces of the network
-
-        Pores are offset from the faces of the domain.
-
-        Parameters
-        ----------
-        labels : string or list of strings
-            The labels indicating the pores defining each face where boundary
-            pores are to be added (e.g. 'left' or ['left', 'right'])
-
-        offset : scalar or array_like
-            The spacing of the network (e.g. [1, 1, 1]).  This must be given
-            since it can be quite difficult to infer from the network,
-            for instance if boundary pores have already added to other faces.
-
-        """
-        offset = np.array(offset)
-        if offset.size == 1:
-            offset = np.ones(3)*offset
-        for item in labels:
-            Ps = self.pores(item)
-            coords = np.absolute(self['pore.coords'][Ps])
-            axis = np.count_nonzero(np.diff(coords, axis=0), axis=0) == 0
-            ax_off = np.array(axis, dtype=int)*offset
-            if np.amin(coords) == np.amin(coords[:, np.where(axis)[0]]):
-                ax_off = -1*ax_off
-            topotools.add_boundary_pores(network=self, pores=Ps, offset=ax_off,
-                                         apply_label=item + '_boundary')
