@@ -158,7 +158,7 @@ class MultiphysicsNernstPlanckSolverTest:
                             phase=self.sw,
                             p_alg=self.p,
                             e_alg=[self.eA, self.eB],
-                            assumption='poisson_2D')
+                            assumption='poisson')
         y = np.linalg.norm(self.phys['pore.charge_conservation.rate'])
         assert_allclose(actual=y, desired=2.79553e-7, rtol=1e-4)
 

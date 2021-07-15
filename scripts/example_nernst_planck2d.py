@@ -52,7 +52,7 @@ phys.add_model(propname='throat.hydraulic_conductance',
                throat_viscosity='throat.viscosity',
                model=flow, regen_mode='normal')
 
-current = op.models.physics.ionic_conductance.electroneutrality_2d
+current = op.models.physics.ionic_conductance.electroneutrality
 phys.add_model(propname='throat.ionic_conductance', ions=[Na.name, Cl.name],
                model=current, regen_mode='normal')
 
@@ -94,7 +94,7 @@ sw.update(sf.results())
 p = op.algorithms.IonicConduction(network=net, phase=sw, settings=setts1)
 p.set_value_BC(pores=net.pores('left'), values=0.02)
 p.set_value_BC(pores=net.pores('right'), values=0.01)
-p.settings['charge_conservation'] = 'electroneutrality_2D'
+p.settings['charge_conservation'] = 'electroneutrality'
 
 eA = op.algorithms.NernstPlanck(network=net, phase=sw, ion=Na.name,
                                 settings=setts1)
