@@ -70,16 +70,18 @@ def charge_conservation(target, phase, p_alg, e_alg, assumption):
     rhs = _np.zeros(shape=(p_alg.Np, ), dtype=float)
     network = p_alg.project.network
     if assumption == 'poisson':
-        v = network['pore.volume']
-        for e in e_alg:
-            rhs += (v * F * phase['pore.valence.'+e.settings['ion']]
-                    * e[e.settings['quantity']])
-    elif assumption == 'poisson_2D':
-        s = network['pore.area']
-        for e in e_alg:
-            rhs += (s * F * phase['pore.valence.'+e.settings['ion']]
-                    * e[e.settings['quantity']])
-    elif assumption in ['electroneutrality', 'electroneutrality_2D']:
+        ndim = len(_np.where(network.shape > 1)[0])
+        if ndim == 3:
+            v = network['pore.volume']
+            for e in e_alg:
+                rhs += (v * F * phase['pore.valence.'+e.settings['ion']]
+                        * e[e.settings['quantity']])
+        elif ndim < 3:
+            s = network['pore.area']
+            for e in e_alg:
+                rhs += (s * F * phase['pore.valence.'+e.settings['ion']]
+                        * e[e.settings['quantity']])
+    elif assumption in ['electroneutrality']:
         for e in e_alg:
             try:
                 c = e[e.settings['quantity']]
@@ -90,13 +92,12 @@ def charge_conservation(target, phase, p_alg, e_alg, assumption):
             am = network.create_adjacency_matrix(weights=g, fmt='coo')
             A = _spgr.laplacian(am)
             rhs += - F * phase['pore.valence.'+e.settings['ion']] * (A * c)
-    elif assumption in ['laplace', 'laplace_2D']:
+    elif assumption in ['laplace']:
         pass  # rhs should remain 0
     else:
         raise Exception('Unknown keyword for "charge_conservation", can '
-                        + 'only be "poisson", "poisson_2D", "laplace", '
-                        + '"laplace_2D", "electroneutrality" or '
-                        + "electroneutrality_2D")
+                        + 'only be "poisson", "laplace", '
+                        + '"electroneutrality" ')
     S1 = _np.zeros(shape=(p_alg.Np, ), dtype=float)
     values = {'S1': S1, 'S2': rhs, 'rate': rhs}
     return values
