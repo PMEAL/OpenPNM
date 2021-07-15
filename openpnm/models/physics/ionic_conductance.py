@@ -92,6 +92,10 @@ def poisson(target,
 
     """
     network = target.project.network
+    ndim = len(_np.where(network.shape > 1)[0])
+    if ndim < 3:
+        pore_area = 'pore.diameter'
+        throat_area = 'throat.diameter'
     throats = network.map_throats(throats=target.Ts, origin=target)
     phase = target.project.find_phase(target)
     cn = network['throat.conns'][throats]
@@ -514,6 +518,10 @@ def electroneutrality(target,
 
     """
     network = target.project.network
+    ndim = len(_np.where(network.shape > 1)[0])
+    if ndim < 3:
+        pore_area = 'pore.diameter'
+        throat_area = 'throat.diameter'
     throats = network.map_throats(throats=target.Ts, origin=target)
     phase = target.project.find_phase(target)
     cn = network['throat.conns'][throats]
