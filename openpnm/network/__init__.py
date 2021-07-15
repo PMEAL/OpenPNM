@@ -106,3 +106,4 @@ from .DelaunayVoronoiDual import DelaunayVoronoiDual
 from .Voronoi import Voronoi
 from .Delaunay import Delaunay
 from .Gabriel import Gabriel
+from . import generators

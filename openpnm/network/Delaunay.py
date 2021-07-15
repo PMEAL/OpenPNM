@@ -1,20 +1,17 @@
+import numpy as np
 from openpnm import topotools
 from openpnm.utils import logging
-from openpnm.network import DelaunayVoronoiDual
+from openpnm.network import GenericNetwork
+from openpnm.network.generators import delaunay
 logger = logging.getLogger(__name__)
 
 
-class Delaunay(DelaunayVoronoiDual):
+class Delaunay(GenericNetwork):
     r"""
     Random network formed by Delaunay tessellation of arbitrary base points
 
     Parameters
     ----------
-    num_points : scalar
-        The number of points to place in the domain, which will become the
-        pore centers after the tessellation is performed.  This value is
-        ignored if ``points`` are given.
-
     points : array_like
         An array of coordinates indicating the [x, y, z] locations of each
         point to use in the tessellation.  Note that the points must be given
@@ -95,19 +92,11 @@ class Delaunay(DelaunayVoronoiDual):
 
     """
 
-    def __init__(self, shape=[1, 1, 1], num_points=None, points=None, **kwargs):
+    def __init__(self, shape=[1, 1, 1], points=None, **kwargs):
         # Clean-up input points
-        points = self._parse_points(shape=shape,
-                                    num_points=num_points,
-                                    points=points)
-        super().__init__(shape=shape, points=points, **kwargs)
-        # Initialize network object
-        topotools.trim(network=self, pores=self.pores(['voronoi']))
-        pop = ['pore.voronoi', 'throat.voronoi', 'throat.interconnect',
-               'pore.delaunay', 'throat.delaunay']
-        for item in pop:
-            del self[item]
-
-        # Trim additional pores that are missed by the parent class's trimming
-        Ps = topotools.isoutside(coords=self['pore.coords'], shape=shape)
-        topotools.trim(network=self, pores=Ps)
+        super().__init__(**kwargs)
+        self.update(delaunay(points=points, shape=shape))
+        Np = self['pore.coords'][:, 0].shape[0]
+        Nt = self['throat.conns'][:, 0].shape[0]
+        self['pore.all'] = np.ones((Np, ), dtype=bool)
+        self['throat.all'] = np.ones((Nt, ), dtype=bool)
