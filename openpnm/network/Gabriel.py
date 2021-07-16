@@ -21,17 +21,12 @@ class Gabriel(GenericNetwork):
 
     Parameters
     ----------
-    points : array_like
+    points : array_like, or scalar
         An array of coordinates indicating the [x, y, z] locations of each
         point to use in the tessellation.  Note that the points must be given
         in rectilinear coordinates regardless of which domain ``shape`` was
         specified.  To convert between coordinate systems see the
         ``convert_coords`` function in the ``openpnm.topotools`` module.
-
-    num_points : scalar
-        The number of points to place in the domain, which will become the
-        pore centers after the tessellation is performed.  This value is
-        ignored if ``points`` are given.
 
     shape : array_like
         The size of the domain.  It's possible to create cubic, or 2D square
@@ -76,7 +71,12 @@ class Gabriel(GenericNetwork):
     def __init__(self, shape=[1, 1, 1], points=None, **kwargs):
         # Generate Delaunay tessellation from super class, then trim
         super().__init__(**kwargs)
-        self.update(gabriel(delaunay(shape=shape, points=points)))
+        # Get delaunay tessellation
+        dl = delaunay(shape=shape, points=points)
+        # Pass delaunay to gabriel to trim offending throats
+        gl = gabriel(dl)
+        # Update self with network info
+        self.update(gl)
         Np = self['pore.coords'][:, 0].shape[0]
         Nt = self['throat.conns'][:, 0].shape[0]
         self['pore.all'] = np.ones((Np, ), dtype=bool)
