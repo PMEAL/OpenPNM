@@ -302,20 +302,6 @@ class TopotoolsTest:
         topotools.trim(pn, throats=pn.throats()[trimmers])
         assert ~np.any(pn['throat.random'] < 0.25)
 
-    def test_iscoplanar(self):
-        # Generate planar points with several parallel vectors at start
-        coords = [[0, 0, 0], [0, 0, 0], [0, 0, 1], [0, 0, 2], [0, 1, 2]]
-        assert topotools.iscoplanar(coords)
-        # NON-planar points, also with parallel vectors
-        coords = [[0, 0, 0], [0, 0, 0], [0, 0, 1], [0, 0, 2], [1, 1, 2]]
-        assert ~topotools.iscoplanar(coords)
-        # Planar points, none parallel
-        coords = [[0, 0, 0], [0, 1, 2], [0, 2, 1], [0, 3, 2], [0, 2, 3]]
-        assert topotools.iscoplanar(coords)
-        # Non-planar points, none parallel
-        coords = [[0, 0, 0], [0, 1, 2], [0, 2, 1], [0, 3, 3], [1, 1, 2]]
-        assert ~topotools.iscoplanar(coords)
-
     def test_extend(self):
         pn = op.network.Cubic(shape=[2, 2, 1])
         pn['pore.test_float'] = 1.0
