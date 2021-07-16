@@ -1,8 +1,14 @@
+from openpnm.network.generators import delaunay as _delaunay
 import scipy.spatial as sptl
 import numpy as np
 
 
-def gabriel(delaunay):
+def gabriel(delaunay=None, points=None, shape=None):
+    if delaunay is None:
+        if isinstance(points, int):
+            shape = np.array(shape)
+            points = np.random.rand(points, len(shape))*shape
+        delaunay = _delaunay(points=points, shape=shape)
     # Find centroid or midpoint of each edge in conns
     c = delaunay['pore.coords'][delaunay['throat.conns']]
     m = (c[:, 0, :] + c[:, 1, :])/2
