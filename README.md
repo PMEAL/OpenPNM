@@ -20,7 +20,7 @@ For more details about the package can be found in the [on-line documentation](h
 
 ## Stay Informed
 
-It's surprizingly hard to communicate with our users, since Github doesn't allow sending out email newsletters or announcements. To address this gap, we have created a [Substack channel](https://openpnm.substack.com/), where you can subscribe to our feed to receive periodic news about important events and updates.  Also, follow us on Twitter [(@OpenPnm)](https://twitter.com/OpenPnm) for periodic announcements about new releases and other important events.
+It is surprizingly hard to communicate with our users, since Github doesn't allow sending out email newsletters or announcements. To address this gap, we have created a [Substack channel](https://openpnm.substack.com/), where you can subscribe to our feed to receive periodic news about important events and updates.  Also, follow us on Twitter [(@OpenPnm)](https://twitter.com/OpenPnm) for periodic announcements about new releases and other important events.
 
 ## Installation and Requirements
 
