@@ -118,15 +118,15 @@ class MultiphysicsNernstPlanckSolverTest:
 
     def test_concentration_Na(self):
         y = self.sw['pore.concentration.Na_mix_01'].mean()
-        assert_allclose(actual=y, desired=14.46648, rtol=1e-4)
+        assert_allclose(actual=y, desired=14.46548, rtol=1e-4)
 
     def test_concentration_Cl(self):
         y = self.sw['pore.concentration.Cl_mix_01'].mean()
-        assert_allclose(actual=y, desired=14.31289, rtol=1e-4)
+        assert_allclose(actual=y, desired=14.31085, rtol=1e-4)
 
     def test_potential(self):
         y = self.sw['pore.potential'].mean()
-        assert_allclose(actual=y, desired=0.014705, rtol=1e-4)
+        assert_allclose(actual=y, desired=0.014832, rtol=1e-4)
 
     def teardown_class(self):
         ws = op.Workspace()
@@ -141,7 +141,7 @@ class MultiphysicsNernstPlanckSolverTest:
                             e_alg=[self.eA, self.eB],
                             assumption='electroneutrality')
         y = np.linalg.norm(self.phys['pore.charge_conservation.rate'])
-        assert_allclose(actual=y, desired=6.980951e-11, rtol=1e-4)
+        assert_allclose(actual=y, desired=7.1303e-11, rtol=1e-4)
 
     def test_charge_conservation_poisson(self):
         model = op.models.physics.generic_source_term.charge_conservation
@@ -152,15 +152,7 @@ class MultiphysicsNernstPlanckSolverTest:
                             e_alg=[self.eA, self.eB],
                             assumption='poisson')
         y = np.linalg.norm(self.phys['pore.charge_conservation.rate'])
-        assert_allclose(actual=y, desired=1.15140e-13, rtol=1e-4)
-        self.phys.add_model(propname='pore.charge_conservation',
-                            model=model,
-                            phase=self.sw,
-                            p_alg=self.p,
-                            e_alg=[self.eA, self.eB],
-                            assumption='poisson')
-        y = np.linalg.norm(self.phys['pore.charge_conservation.rate'])
-        assert_allclose(actual=y, desired=2.79553e-7, rtol=1e-4)
+        assert_allclose(actual=y, desired=2.851004e-07, rtol=1e-4)
 
 
 if __name__ == '__main__':
