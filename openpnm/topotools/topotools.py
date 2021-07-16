@@ -8,28 +8,35 @@ logger = logging.getLogger(__name__)
 ws = Workspace()
 
 
-def isoutside(coords, shape):
+def isoutside(coords, shape, thresh=1e-6):
     r"""
     Identifies points that lie outside the specified shape
 
     Parameters
     ----------
     coords : array_like
-        The coordinates which are to be checked
+        The coordinates which are to be checked, in cartesian coordinates
+
     shape : array_like
         The shape of the domain beyond which points should be trimmed.
         The argument is treated as follows:
 
         **sphere** : If a scalar or single element list is received, it's
-        treated as the radius [r] of a sphere centered on [0, 0, 0].
+        treated as the radius [r] of a sphere centered on the origin.
 
         **cylinder** : If a two-element list is received it's treated as
         the radius and height of a cylinder [r, z] whose central axis
-        starts at [0, 0, 0] and extends in the positive z-direction.
+        starts at the origin and extends in the positive z-direction.
 
         **rectangle** : If a three element list is received, it's treated
         as the outer corner of rectangle [x, y, z] whose opposite corner
-        lies at [0, 0, 0].
+        lies at the origin.
+
+    thresh : float
+        Controls how far outside the region a point must lie to be considered
+        outside.  If the ``shape=[1, 1, 1]``, then a ``thresh==0.1`` would ensure
+        that points are only excluded if they lie beyond 1.1 (or -0.1) in at least
+        one axis.  The default is 1e-6.
 
     Returns
     -------
@@ -39,27 +46,36 @@ def isoutside(coords, shape):
     """
     # Label external pores for trimming below
     if len(shape) == 1:  # Spherical
+        shape = np.array(shape, dtype=float)
+        thresh = shape*1e-9
+        r_lim = shape[0] + thresh[0]
         # Find external points
-        r = np.sqrt(np.sum(coords**2, axis=1))
-        Ps = r > shape[0]
+        r, theta, phi = to_sph(*coords.T)
+        Ps = r > r_lim
     elif len(shape) == 2:  # Cylindrical
+        shape = np.array(shape, dtype=float)
+        thresh = shape*1e-9
+        r_lim = shape[0] + thresh[0]
+        hi_lim = shape[1] + thresh[1]
+        lo_lim = 0 - thresh[1]
         # Find external pores outside radius
-        r = np.sqrt(np.sum(coords[:, [0, 1]]**2, axis=1))
-        Ps = r > shape[0]
+        r, theta, z = to_cyl(*coords.T)
+        Ps = r > r_lim
         # Find external pores above and below cylinder
-        if shape[1] > 0:
-            Ps = Ps + (coords[:, 2] > shape[1])
-            Ps = Ps + (coords[:, 2] < 0)
+        if shape[1] > 0:  # Skip if disk (z=0)
+            Ps = Ps + (z > hi_lim)
+            Ps = Ps + (z < lo_lim)
         else:
             pass
     elif len(shape) == 3:  # Rectilinear
         shape = np.array(shape, dtype=float)
+        thresh = shape*1e-9
         try:
             lo_lim = shape[:, 0]
             hi_lim = shape[:, 1]
         except IndexError:
-            lo_lim = np.array([0, 0, 0])
-            hi_lim = shape
+            lo_lim = np.array([0, 0, 0]) - thresh
+            hi_lim = shape + thresh
         Ps1 = np.any(coords > hi_lim, axis=1)
         Ps2 = np.any(coords < lo_lim, axis=1)
         Ps = Ps1 + Ps2
@@ -1443,9 +1459,9 @@ def generate_base_points(num_points, domain_size, density_map=None,
         shape will still be returned, but with too few points in it.
 
     reflect : boolean
-        If True, the the base points are generated as specified, the reflected
+        If ``True``, the the base points are generated as specified, the reflected
         about each face of the domain.  This essentially tricks the
-        tessellation functions into creating smooth flat faces at the
+        tessellation functions into creating smoothfaces at the
         boundaries once these excess pores are trimmed.
 
     Notes
@@ -1520,9 +1536,7 @@ def generate_base_points(num_points, domain_size, density_map=None,
             r, theta, phi = reflect_base_points(np.vstack((r, theta, phi)),
                                                 domain_size)
         # Convert to Cartesean coordinates
-        X = r*np.cos(theta)*np.sin(phi)
-        Y = r*np.sin(theta)*np.sin(phi)
-        Z = r*np.cos(phi)
+        X, Y, Z = from_sph(r, theta, phi)
         base_pts = np.vstack([X, Y, Z]).T
 
     elif len(domain_size) == 2:  # Cylindrical or Disk
@@ -1548,9 +1562,7 @@ def generate_base_points(num_points, domain_size, density_map=None,
             r, theta, z = reflect_base_points(np.vstack([r, theta, z]),
                                               domain_size)
         # Convert to Cartesean coordinates
-        X = r*np.cos(theta)
-        Y = r*np.sin(theta)
-        Z = z
+        X, Y, Z = from_cyl(r, theta, z)
         base_pts = np.vstack([X, Y, Z]).T
 
     elif len(domain_size) == 3:  # Cube or square
@@ -1564,6 +1576,34 @@ def generate_base_points(num_points, domain_size, density_map=None,
             base_pts = reflect_base_points(base_pts, domain_size)
 
     return base_pts
+
+
+def to_cyl(X, Y, Z):
+    r = 2*np.sqrt(X**2 + Y**2)
+    theta = 2*np.arctan(Y/X)
+    z = Z
+    return np.vstack((r, theta, z))
+
+
+def from_cyl(r, theta, z):
+    X = r*np.cos(theta)
+    Y = r*np.sin(theta)
+    Z = z
+    return np.vstack((X, Y, Z))
+
+
+def to_sph(X, Y, Z):
+    r = 2*np.sqrt(X**2 + Y**2 + Z**2)
+    theta = 2*np.arctan(Y/X)
+    phi = 2*np.arctan(np.sqrt(X**2 + Y**2)/Z)
+    return np.vstack((r, theta, phi))
+
+
+def from_sph(r, theta, phi):
+    X = r*np.cos(theta)*np.sin(phi)
+    Y = r*np.sin(theta)*np.sin(phi)
+    Z = r*np.cos(phi)
+    return np.vstack([X, Y, Z])
 
 
 def reflect_base_points(base_pts, domain_size):
@@ -1596,6 +1636,12 @@ def reflect_base_points(base_pts, domain_size):
         as the outer corner of rectangle [x, y, z] whose opposite corner lies
         at [0, 0, 0].  If the z dimension is 0, a rectangle of size X-by-Y is
         created.
+
+    Notes
+    -----
+    The base points can be either [N x 3] or [3 x N].  There transposed internally
+    as needed and returned to the original shape.  If N=3 then the transposing is
+    skipped so the user needs to ensure the the form of [3 x N].
 
     '''
     domain_size = np.array(domain_size)
