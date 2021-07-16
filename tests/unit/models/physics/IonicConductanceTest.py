@@ -26,9 +26,10 @@ class IonicConductanceTest:
         self.phys.add_model(propname='throat.ionic_conductance_2D_from_mod',
                             model=mod)
         self.phys.regenerate_models()
-        mod_input = mod(pore_area='pore.diameter', throat_area='throat.diameter')
         self.phys.add_model(propname='throat.ionic_conductance_2D_input',
-                            model=mod_input)
+                            model=mod,
+                            pore_area='pore.diameter',
+                            throat_area='throat.diameter')
         self.phys.regenerate_models()
         actual = self.phys['throat.ionic_conductance_2D_from_mod']
         desired = self.phys['throat.ionic_conductance_2D_input']
