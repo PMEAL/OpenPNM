@@ -133,7 +133,7 @@ def poisson(target,
     g_inv1[f1] = 1/g1[f1]
     g_inv2[f2] = 1/g2[f2]
     g_invt[ft] = 1/gt[ft]
-    # Apply shape factors and calculate the final conductance
+    # Applying shape factors and calculate the final conductance
     g = g_inv1/SF1 + g_inv2/SF2 + g_invt/SFt
     g[g != 0] = g[g != 0]**(-1)
     return g
