@@ -148,7 +148,6 @@ class DelaunayVoronoiDual(GenericNetwork):
             pass
         else:
             self._trim_external_pores(shape=shape)
-            self._label_faces()
 
     def _trim_external_pores(self, shape):
         r'''
