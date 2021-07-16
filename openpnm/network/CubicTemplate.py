@@ -1,11 +1,12 @@
 import numpy as np
-from openpnm.network import Cubic
+from openpnm.network import GenericNetwork
+from openpnm.network.generators import cubic
 from openpnm import topotools
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 
 
-class CubicTemplate(Cubic):
+class CubicTemplate(GenericNetwork):
     r"""
     Simple cubic lattice with arbitrary domain shape specified by a template
     image
@@ -64,16 +65,17 @@ class CubicTemplate(Cubic):
     """
 
     def __init__(self, template, spacing=[1, 1, 1], **kwargs):
+        super().__init__(**kwargs)
         template = np.atleast_3d(template)
-        super().__init__(shape=template.shape, spacing=spacing, **kwargs)
+        # Generate a full cubic network
+        self.update(cubic(shape=template.shape, spacing=spacing))
+        Np = self['pore.coords'].shape[0]
+        Nt = self['throat.conns'].shape[0]
+        self['pore.all'] = np.ones((Np, ), dtype=bool)
+        self['throat.all'] = np.ones((Nt, ), dtype=bool)
+        # Store some info about template
         coords = np.unravel_index(range(template.size), template.shape)
         self['pore.template_coords'] = np.vstack(coords).T
         self['pore.template_indices'] = self.Ps
+        # Trim pores not present in template
         topotools.trim(network=self, pores=template.flatten() == 0)
-        # Add "internal_surface" label to "fake" surface pores!
-        ndims = topotools.dimensionality(self).sum()
-        max_neighbors = 6 if ndims == 3 else 4
-        num_neighbors = np.diff(self.get_adjacency_matrix(fmt="csr").indptr)
-        mask_surface = self["pore.surface"]
-        mask_internal_surface = (num_neighbors < max_neighbors) & ~mask_surface
-        self.set_label("pore.internal_surface", pores=mask_internal_surface)
