@@ -513,21 +513,17 @@ def tri_to_am(tri):
     weights are set to 1.
 
     """
-    # Create an empty list-of-list matrix
-    lil = sprs.lil_matrix((tri.npoints, tri.npoints))
-    # Scan through Delaunay triangulation to retrieve pairs
     indices, indptr = tri.vertex_neighbor_vertices
+    coo = [[],[]]
     for k in range(tri.npoints):
-        lil.rows[k] = indptr[indices[k]:indices[k + 1]]
-    # Convert to coo format
-    lil.data = lil.rows  # Just a dummy array to make things work properly
-    coo = lil.tocoo()
-    # Set weights to 1's
-    coo.data = np.ones_like(coo.data)
-    # Remove diagonal, and convert to csr remove duplicates
-    am = sprs.triu(A=coo, k=1, format='csr')
-    # The convert back to COO and return
-    am = am.tocoo()
+        col = indptr[indices[k]:indices[k+1]]
+        coo[0].extend(np.ones_like(col)*k)
+        coo[1].extend(col)
+    coo = sprs.coo_matrix((np.ones_like(coo[0]), (coo[0], coo[1])))
+    # Convert to csr and back to remove duplicates
+    coo = coo.tocsr().tocoo()
+    # Keep only upper triangular entries
+    am = sprs.triu(coo, k=1)
     return am
 
 
