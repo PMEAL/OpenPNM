@@ -50,7 +50,7 @@ air = {
     'pore.diffusivity': {
         'model': mods.phases.diffusivity.fuller,
         'MA': 0.032,
-        'MB':0.028,
+        'MB': 0.028,
         'vA': 16.6,
         'vB': 17.9,
         'regen_mode': 'deferred',
@@ -69,7 +69,7 @@ air = {
     'pore.viscosity': {
         'model': mods.misc.polynomial,
         'prop': 'pore.temperature',
-        'a': [0.00000182082, 6.51815E-08, -3.48553E-11,1.11409E-14],
+        'a': [0.00000182082, 6.51815E-08, -3.48553E-11, 1.11409E-14],
         'regen_mode': 'deferred',
         },
     }
