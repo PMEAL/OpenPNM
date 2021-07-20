@@ -86,7 +86,7 @@ setup(
         'gitpython',
         'jsonschema',
         'terminaltables',
-        'docrep',
+        'docrep>=0.3',
         'json-tricks',
     ],
     author='OpenPNM Team',
