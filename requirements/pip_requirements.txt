@@ -1,7 +1,9 @@
+chemicals
 docrep>=0.3
 flatdict
 gitpython
 h5py
+ipython
 jsonschema
 json-tricks
 matplotlib
@@ -16,4 +18,3 @@ sympy
 terminaltables
 tqdm
 transforms3d
-unyt
