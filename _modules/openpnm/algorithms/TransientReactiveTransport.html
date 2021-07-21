@@ -1,0 +1,711 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>openpnm.algorithms.TransientReactiveTransport &#8212; OpenPNM  documentation</title>
+    
+  <link href="../../../_static/css/theme.css" rel="stylesheet" />
+  <link href="../../../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
+
+    
+  <link rel="stylesheet"
+    href="../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/basic.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
+    
+  <link rel="preload" as="script" href="../../../_static/js/index.1c5a1a01449ed65a7b51.js">
+
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/clipboard.min.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/custom.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+
+<a class="navbar-brand" href="https://www.openpnm.org">
+  <img src="../../../_static/openpnm_logo.png" class="logo" alt="logo">
+</a>
+
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class=" collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../userguide/index.html">
+  <strong>
+   User Guide
+  </strong>
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../modules/index.html">
+  <strong>
+   Module Reference
+  </strong>
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../examples/examples.html">
+  Examples
+ </a>
+</li>
+
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/PMEAL/OpenPNM" rel="noopener" target="_blank" title="GitHub">
+            <span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://openpnm.substack.com/" rel="noopener" target="_blank" title="Substack">
+            <span><i class="fas fa-envelope-square"></i></span>
+            <label class="sr-only">Substack</label>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://twitter.com/OpenPnm" rel="noopener" target="_blank" title="Twitter">
+            <span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label>
+          </a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    
+  </div>
+</nav>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <h1>Source code for openpnm.algorithms.TransientReactiveTransport</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">decimal</span> <span class="kn">import</span> <span class="n">Decimal</span> <span class="k">as</span> <span class="n">dc</span>
+<span class="kn">from</span> <span class="nn">openpnm.algorithms</span> <span class="kn">import</span> <span class="n">ReactiveTransport</span>
+<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">logging</span><span class="p">,</span> <span class="n">GenericSettings</span><span class="p">,</span> <span class="n">Docorator</span>
+<span class="n">docstr</span> <span class="o">=</span> <span class="n">Docorator</span><span class="p">()</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<span class="nd">@docstr</span><span class="o">.</span><span class="n">get_sections</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="s1">&#39;TransientReactiveTransportSettings&#39;</span><span class="p">,</span>
+                     <span class="n">sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Parameters&#39;</span><span class="p">,</span> <span class="s1">&#39;Other Parameters&#39;</span><span class="p">])</span>
+<span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+<span class="k">class</span> <span class="nc">TransientReactiveTransportSettings</span><span class="p">(</span><span class="n">GenericSettings</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    %(ReactiveTransportSettings.parameters)s</span>
+
+<span class="sd">    quantity : (str)</span>
+<span class="sd">        The name of the physical quantity to be calculated</span>
+<span class="sd">    conductance : (str)</span>
+<span class="sd">        The name of the pore-scale transport conductance values. These are</span>
+<span class="sd">        typically calculated by a model attached to a *Physics* object</span>
+<span class="sd">        associated with the given *Phase*.</span>
+<span class="sd">    pore_volume : (str)</span>
+<span class="sd">        The name of the pore volume property to use in setting up the transient</span>
+<span class="sd">        system. Default is &#39;pore.volume&#39; but &#39;pore.volume_effective&#39; could be</span>
+<span class="sd">        used if needed.</span>
+
+<span class="sd">    Other Parameters</span>
+<span class="sd">    ----------------</span>
+<span class="sd">    t_initial : scalar</span>
+<span class="sd">        The simulation&#39;s start time, which must be smaller than</span>
+<span class="sd">        &#39;t_final&#39;. The default value is 0.</span>
+<span class="sd">    t_final : scalar</span>
+<span class="sd">        The simulation&#39;s end time, which must be bigger than &#39;t_initial&#39;.</span>
+<span class="sd">        The default value is 10.</span>
+<span class="sd">    t_step : scalar</span>
+<span class="sd">        The simulation&#39;s time step, which must be smaller than &#39;t_final&#39; less</span>
+<span class="sd">        and &#39;t_initial&#39;. The default value is 0.1.</span>
+<span class="sd">    t_output : scalar, ND-array, or list</span>
+<span class="sd">        When &#39;t_output&#39; is a scalar, it is considered as an output interval</span>
+<span class="sd">        to store transient solutions. The default value is 1e+08. Initial,</span>
+<span class="sd">        final and steady-state (if reached) fields are always stored. If</span>
+<span class="sd">        &#39;t_output&#39; &gt; &#39;t_final&#39;, no transient data is stored. If &#39;t_output&#39;</span>
+<span class="sd">        is not a multiple of &#39;t_step&#39;, &#39;t_output&#39; will be approximated.</span>
+<span class="sd">        When &#39;t_output&#39; is a list or ND-array, transient solutions</span>
+<span class="sd">        corresponding to this list or array will be stored.</span>
+<span class="sd">    t_solns : list</span>
+<span class="sd">        List of output times at which a solution was written to the</span>
+<span class="sd">        dictionary.  Can be used to iterate over the results.</span>
+<span class="sd">    t_tolerance : scalar</span>
+<span class="sd">        Transient solver tolerance. The simulation stops (before reaching</span>
+<span class="sd">        &#39;t_final&#39;) when the residual falls below &#39;t_tolerance&#39;. The</span>
+<span class="sd">        default value is 1e-06. The &#39;residual&#39; measures the variation from</span>
+<span class="sd">        one time-step to another in the value of the &#39;quantity&#39; solved for.</span>
+<span class="sd">    t_precision : integer</span>
+<span class="sd">        The time precision (number of decimal places).</span>
+<span class="sd">    t_scheme : string</span>
+<span class="sd">        The time discretization scheme. Three options available: &#39;steady&#39;</span>
+<span class="sd">        to perform a steady-state simulation, and &#39;implicit&#39; (fast, 1st</span>
+<span class="sd">        order accurate) and &#39;cranknicolson&#39; (slow, 2nd order accurate) both</span>
+<span class="sd">        for transient simulations. The default value is &#39;implicit&#39;.</span>
+
+<span class="sd">    ----</span>
+
+<span class="sd">    **The following parameters pertain to the ReactiveTransport class**</span>
+
+<span class="sd">    %(ReactiveTransportSettings.other_parameters)s</span>
+
+<span class="sd">    ----</span>
+
+<span class="sd">    **The following parameters pertain to the GenericTransport class**</span>
+
+<span class="sd">    %(GenericTransportSettings.other_parameters)s</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">phase</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">t_initial</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">t_final</span> <span class="o">=</span> <span class="mi">10</span>
+    <span class="n">t_step</span> <span class="o">=</span> <span class="mf">0.1</span>
+    <span class="n">t_output</span> <span class="o">=</span> <span class="mf">1e+08</span>
+    <span class="n">t_tolerance</span> <span class="o">=</span> <span class="mf">1e-06</span>
+    <span class="n">t_precision</span> <span class="o">=</span> <span class="mi">12</span>
+    <span class="n">t_scheme</span> <span class="o">=</span> <span class="s1">&#39;implicit&#39;</span>
+    <span class="n">pore_volume</span> <span class="o">=</span> <span class="s1">&#39;pore.volume&#39;</span>
+    <span class="n">t_solns</span> <span class="o">=</span> <span class="p">[]</span>
+
+
+<div class="viewcode-block" id="TransientReactiveTransport"><a class="viewcode-back" href="../../../modules/algorithms/transient_reactive_transport.html#openpnm.algorithms.TransientReactiveTransport">[docs]</a><span class="k">class</span> <span class="nc">TransientReactiveTransport</span><span class="p">(</span><span class="n">ReactiveTransport</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A subclass of ReactiveTransport for transient/steady-state simulations</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    network : OpenPNM Network object</span>
+<span class="sd">        The Network with which this algorithm is associated.</span>
+<span class="sd">    project : OpenPNM Project object</span>
+<span class="sd">        Either a Network or a Project must be specified.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This subclass performs steady and transient simulations of transport</span>
+<span class="sd">    phenomena with reactions when source terms are added. It supports 3 time</span>
+<span class="sd">    discretization schemes; &#39;steady&#39; to perform a steady-state simulation, and</span>
+<span class="sd">    &#39;implicit&#39; (fast, 1st order accurate) and &#39;cranknicolson&#39; (slow, 2nd order</span>
+<span class="sd">    accurate) both for transient simulations.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="o">=</span><span class="p">{},</span> <span class="n">phase</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">_update_settings_and_docs</span><span class="p">(</span><span class="n">TransientReactiveTransportSettings</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span>
+        <span class="c1"># Initialize the steady sys of eqs A matrix</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_A_steady</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">phase</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="n">phase</span><span class="o">=</span><span class="n">phase</span><span class="p">)</span>
+        <span class="c1"># Initialize the initial condition</span>
+        <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;pore.ic&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+
+<div class="viewcode-block" id="TransientReactiveTransport.setup"><a class="viewcode-back" href="../../../modules/algorithms/transient_reactive_transport.html#openpnm.algorithms.TransientReactiveTransport.setup">[docs]</a>    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">quantity</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">conductance</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+              <span class="n">t_initial</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">t_final</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">t_step</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">t_output</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+              <span class="n">t_tolerance</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">t_precision</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">t_scheme</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method takes several arguments that are essential to running the</span>
+<span class="sd">        algorithm and adds them to the settings</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        More settings can be adjusted in the presence of a non-linear source</span>
+<span class="sd">        term such as under-relaxation.</span>
+<span class="sd">        See the &#39;ReactiveTransport&#39; class documentation for details.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">phase</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;phase&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">phase</span><span class="o">.</span><span class="n">name</span>
+        <span class="k">if</span> <span class="n">quantity</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;quantity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">quantity</span>
+        <span class="k">if</span> <span class="n">conductance</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;conductance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">conductance</span>
+        <span class="k">if</span> <span class="n">t_initial</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;t_initial&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">t_initial</span>
+        <span class="k">if</span> <span class="n">t_final</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;t_final&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">t_final</span>
+        <span class="k">if</span> <span class="n">t_step</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;t_step&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">t_step</span>
+        <span class="k">if</span> <span class="n">t_output</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;t_output&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">t_output</span>
+        <span class="k">if</span> <span class="n">t_tolerance</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;t_tolerance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">t_tolerance</span>
+        <span class="k">if</span> <span class="n">t_precision</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;t_precision&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">t_precision</span>
+        <span class="k">if</span> <span class="n">t_scheme</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;t_scheme&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">t_scheme</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TransientReactiveTransport.set_IC"><a class="viewcode-back" href="../../../modules/algorithms/transient_reactive_transport.html#openpnm.algorithms.TransientReactiveTransport.set_IC">[docs]</a>    <span class="k">def</span> <span class="nf">set_IC</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A method to set simulation initial conditions</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        values : ND-array or scalar</span>
+<span class="sd">            Set the initial conditions using an &#39;Np&#39; long array. &#39;Np&#39; being</span>
+<span class="sd">            the number of pores. If a scalar is given, the same value is</span>
+<span class="sd">            imposed to all pores.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">Np</span><span class="p">,</span> <span class="p">])</span> <span class="o">*</span> <span class="n">values</span>
+        <span class="k">if</span> <span class="n">values</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">values</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Np</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;The number of initial values must be either 1 or Np&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.ic&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">values</span>
+        <span class="n">quantity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;quantity&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">quantity</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;&quot;quantity&quot; has not been defined on this algorithm&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">[</span><span class="n">quantity</span><span class="p">]</span> <span class="o">=</span> <span class="n">values</span></div>
+
+    <span class="k">def</span> <span class="nf">_overwrite_ICs_with_value_BCs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">ic_vals</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.ic&#39;</span><span class="p">]</span>
+        <span class="c1"># Ensure the given initial conditions have any value BC inserted</span>
+        <span class="n">bc_pores</span> <span class="o">=</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.bc_value&#39;</span><span class="p">])</span>
+        <span class="n">ic_vals</span><span class="p">[</span><span class="n">bc_pores</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.bc_value&#39;</span><span class="p">][</span><span class="n">bc_pores</span><span class="p">]</span>
+        <span class="c1"># Write values to self to to quantity, ic and t=0 array</span>
+        <span class="n">quantity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;quantity&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="p">[</span><span class="n">quantity</span><span class="p">]</span> <span class="o">=</span> <span class="n">ic_vals</span>
+
+    <span class="k">def</span> <span class="nf">_get_f_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns f1, f2, and f3 values based on the time stepping scheme.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">scheme</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;t_scheme&#39;</span><span class="p">]</span>
+        <span class="n">fdict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;implicit&#39;</span><span class="p">:</span>         <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+            <span class="s1">&#39;cranknicolson&#39;</span><span class="p">:</span>    <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+            <span class="s1">&#39;steady&#39;</span><span class="p">:</span>           <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="n">scheme</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;settings[&#39;t_scheme&#39;] hasn&#39;t been set.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">scheme</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">fdict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported settings[&#39;t_scheme&#39;]: </span><span class="si">{</span><span class="n">scheme</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">fdict</span><span class="p">[</span><span class="n">scheme</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_get_f1</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_f_values</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_get_f2</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_f_values</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_get_f3</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_f_values</span><span class="p">()[</span><span class="mi">2</span><span class="p">]</span>
+
+    <span class="n">_f1</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">fget</span><span class="o">=</span><span class="n">_get_f1</span><span class="p">)</span>
+    <span class="n">_f2</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">fget</span><span class="o">=</span><span class="n">_get_f2</span><span class="p">)</span>
+    <span class="n">_f3</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">fget</span><span class="o">=</span><span class="n">_get_f3</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_t_update_A</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A method to update &#39;A&#39; matrix at each time step according to &#39;t_scheme&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">network</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">network</span>
+        <span class="n">Vi</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;pore_volume&#39;</span><span class="p">]]</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;t_step&#39;</span><span class="p">]</span>
+        <span class="n">A</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_f1</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_A_steady</span>
+        <span class="n">A</span><span class="o">.</span><span class="n">setdiag</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">diagonal</span><span class="p">()</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_f2</span><span class="o">/</span><span class="n">dt</span> <span class="o">*</span> <span class="n">Vi</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_A</span> <span class="o">=</span> <span class="n">A</span>
+
+    <span class="k">def</span> <span class="nf">_t_update_b</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A method to update &#39;b&#39; array at each time step according to</span>
+<span class="sd">        &#39;t_scheme&#39; and the source term value</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">quantity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;quantity&#39;</span><span class="p">]</span>
+        <span class="n">network</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">network</span>
+        <span class="n">phase</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">phases</span><span class="p">()[</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;phase&#39;</span><span class="p">]]</span>
+        <span class="n">Vi</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;pore_volume&#39;</span><span class="p">]]</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;t_step&#39;</span><span class="p">]</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">quantity</span><span class="p">]</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_f2</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">_f1</span><span class="p">)</span> <span class="o">*</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">_A_steady</span> <span class="o">*</span> <span class="n">X</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_f2</span> <span class="o">*</span> <span class="n">Vi</span><span class="o">/</span><span class="n">dt</span> <span class="o">*</span> <span class="n">X</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_iterative_props</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;sources&#39;</span><span class="p">]:</span>
+            <span class="n">Ps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+            <span class="n">b</span><span class="p">[</span><span class="n">Ps</span><span class="p">]</span> <span class="o">-=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_f2</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">_f1</span><span class="p">)</span> <span class="o">*</span> <span class="n">phase</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">item</span><span class="si">}</span><span class="s2">.rate&quot;</span><span class="p">][</span><span class="n">Ps</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_b</span> <span class="o">=</span> <span class="n">b</span>
+
+<div class="viewcode-block" id="TransientReactiveTransport.run"><a class="viewcode-back" href="../../../modules/algorithms/transient_reactive_transport.html#openpnm.algorithms.TransientReactiveTransport.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Builds &#39;A&#39; matrix of the steady system of equations to be used at each</span>
+<span class="sd">        time step to build transient &#39;A&#39; and &#39;b&#39;. Imposes the initial</span>
+<span class="sd">        conditions and stores the initial field. Initialize transient &#39;A&#39;, &#39;b&#39;,</span>
+<span class="sd">        and source term (if present) and finally calls the transient solver.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        t : scalar</span>
+<span class="sd">            The time to start the simulation from. If no time is specified, the</span>
+<span class="sd">            simulation starts from &#39;t_initial&#39; defined in the settings.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;―&#39;</span> <span class="o">*</span> <span class="mi">80</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Running TransientTransport&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_settings</span><span class="p">()</span>
+        <span class="c1"># Check if A and b are well-defined</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_data_health</span><span class="p">()</span>
+        <span class="c1"># If ICs are not defined, assume zero</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s2">&quot;pore.ic&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_IC</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_overwrite_ICs_with_value_BCs</span><span class="p">()</span>
+        <span class="c1"># Make sure _A is None to force _build_A, otherwise _A_steady might be wrong</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_A</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># Save A matrix of the steady state problem (without BCs applied)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_A_steady</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="c1"># Initialize A and b with BCs applied</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_t_update_A</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_t_update_b</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_apply_BCs</span><span class="p">()</span>
+        <span class="c1"># Save copies of A and b to be used in _t_run_reactive()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_A_t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_A</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_b_t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_b</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;t_initial&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">t</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">t</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_iterative_props</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_run_transient</span><span class="p">(</span><span class="n">t</span><span class="o">=</span><span class="n">t</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_run_transient</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;r</span>
+<span class="sd">        Performs a transient simulation according to the specified settings</span>
+<span class="sd">        updating &#39;b&#39; and calling &#39;_t_run_reactive&#39; at each time step.</span>
+<span class="sd">        Stops after reaching the end time &#39;t_final&#39; or after achieving the</span>
+<span class="sd">        specified tolerance &#39;t_tolerance&#39;. Stores the initial and steady-state</span>
+<span class="sd">        (if obtained) fields in addition to transient data (according to the</span>
+<span class="sd">        specified &#39;t_output&#39;).</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        t : scalar</span>
+<span class="sd">            The time to start the simulation from.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Transient solutions are stored on the object under</span>
+<span class="sd">        ``pore.quantity_timeStepIndex`` where *quantity* is specified in the</span>
+<span class="sd">        ``settings`` attribute. Initial field is stored as</span>
+<span class="sd">        ``pore.quantity_initial``. Steady-state solution (if reached) is stored</span>
+<span class="sd">        as ``pore.quantity_steady``. Current solution is stored as</span>
+<span class="sd">        ``pore.quantity``.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">tf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;t_final&#39;</span><span class="p">]</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;t_step&#39;</span><span class="p">]</span>
+        <span class="n">to</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;t_output&#39;</span><span class="p">]</span>
+        <span class="n">t_pre</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;t_precision&#39;</span><span class="p">]</span>
+        <span class="n">quantity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;quantity&#39;</span><span class="p">]</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;t_scheme&#39;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">to</span><span class="p">,</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">)):</span>
+            <span class="c1"># Make sure &#39;tf&#39; and &#39;to&#39; are multiples of &#39;dt&#39;</span>
+            <span class="n">tf</span> <span class="o">=</span> <span class="n">tf</span> <span class="o">+</span> <span class="p">(</span><span class="n">dt</span><span class="o">-</span><span class="p">(</span><span class="n">tf</span> <span class="o">%</span> <span class="n">dt</span><span class="p">))</span><span class="o">*</span><span class="p">((</span><span class="n">tf</span> <span class="o">%</span> <span class="n">dt</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">to</span> <span class="o">=</span> <span class="n">to</span> <span class="o">+</span> <span class="p">(</span><span class="n">dt</span><span class="o">-</span><span class="p">(</span><span class="n">to</span> <span class="o">%</span> <span class="n">dt</span><span class="p">))</span><span class="o">*</span><span class="p">((</span><span class="n">to</span> <span class="o">%</span> <span class="n">dt</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;t_final&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tf</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;t_output&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">to</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">t</span><span class="o">+</span><span class="n">to</span><span class="p">,</span> <span class="n">tf</span><span class="p">,</span> <span class="n">to</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">to</span><span class="p">,</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">to</span><span class="p">)</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">tf</span><span class="p">)</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">around</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="n">t_pre</span><span class="p">)</span>
+
+        <span class="c1"># If solver in steady mode, do one iteration</span>
+        <span class="k">if</span> <span class="n">s</span> <span class="o">==</span> <span class="s1">&#39;steady&#39;</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;    Running in steady mode&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_t_run_reactive</span><span class="p">()</span>
+        <span class="c1"># Time marching step</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Export the initial field (t=t_initial)</span>
+            <span class="n">t_str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nbr_to_str</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+            <span class="n">quant_init</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;pore.ic&quot;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="p">[</span><span class="n">quantity</span> <span class="o">+</span> <span class="s1">&#39;@&#39;</span> <span class="o">+</span> <span class="n">t_str</span><span class="p">]</span> <span class="o">=</span> <span class="n">quant_init</span>
+            <span class="bp">self</span><span class="p">[</span><span class="n">quantity</span><span class="p">]</span> <span class="o">=</span> <span class="n">quant_init</span>
+
+            <span class="n">time</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">for</span> <span class="n">time</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">t</span><span class="o">+</span><span class="n">dt</span><span class="p">,</span> <span class="n">tf</span><span class="o">+</span><span class="n">dt</span><span class="p">,</span> <span class="n">dt</span><span class="p">):</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;    Current time step: </span><span class="si">{</span><span class="n">time</span><span class="si">}</span><span class="s1"> s&#39;</span><span class="p">)</span>
+                <span class="c1"># Update A and b and apply BCs</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_t_update_A</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_t_update_b</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_apply_BCs</span><span class="p">()</span>
+                <span class="c1"># Save copies of A and b to be used in _t_run_reactive()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_A_t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_A</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_b_t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_b</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                <span class="n">x_old</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">quantity</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_t_run_reactive</span><span class="p">(</span><span class="n">x0</span><span class="o">=</span><span class="n">x_old</span><span class="p">)</span>
+                <span class="n">x_new</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">quantity</span><span class="p">]</span>
+                <span class="c1"># Output transient solutions. Round time to ensure every</span>
+                <span class="c1"># value in outputs is exported.</span>
+                <span class="k">if</span> <span class="nb">round</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">t_pre</span><span class="p">)</span> <span class="ow">in</span> <span class="n">out</span><span class="p">:</span>
+                    <span class="n">t_str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nbr_to_str</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="p">[</span><span class="n">quantity</span> <span class="o">+</span> <span class="s1">&#39;@&#39;</span> <span class="o">+</span> <span class="n">t_str</span><span class="p">]</span> <span class="o">=</span> <span class="n">x_new</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;t_solns&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t_str</span><span class="p">)</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;        Exporting time step: </span><span class="si">{</span><span class="n">time</span><span class="si">}</span><span class="s1"> s&#39;</span><span class="p">)</span>
+
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;    Maximum time step reached: </span><span class="si">{</span><span class="n">time</span><span class="si">}</span><span class="s1"> s&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_t_run_reactive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x0</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;r</span>
+<span class="sd">        Repeatedly updates transient &#39;A&#39;, &#39;b&#39;, and the solution guess within</span>
+<span class="sd">        each time step according to the applied source term then calls &#39;_solve&#39;</span>
+<span class="sd">        to solve the resulting system of linear equations. Stops when the</span>
+<span class="sd">        residual falls below &#39;solver_tol&#39;.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        x0 : ND-array</span>
+<span class="sd">            Initial guess of unknown variable</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        x_new : ND-array</span>
+<span class="sd">            Solution array.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Description of &#39;relaxation_quantity&#39; and &#39;nlin_max_iter&#39; settings can be</span>
+<span class="sd">        found in the parent class &#39;ReactiveTransport&#39; documentation.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">quantity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;quantity&#39;</span><span class="p">]</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;relaxation_quantity&#39;</span><span class="p">]</span>
+        <span class="n">max_it</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;nlin_max_iter&#39;</span><span class="p">])</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Np</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span> <span class="k">if</span> <span class="n">x0</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">x0</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="c1"># Write initial guess to algorithm for _update_iterative_props to work</span>
+        <span class="bp">self</span><span class="p">[</span><span class="n">quantity</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="k">for</span> <span class="n">itr</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_it</span><span class="p">):</span>
+            <span class="c1"># Update iterative properties on phase and physics</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_update_iterative_props</span><span class="p">()</span>
+            <span class="c1"># Build A and b, apply source terms and correct according to scheme</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_A</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_A_t</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_b_t</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_apply_sources</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_correct_apply_sources</span><span class="p">()</span>
+            <span class="c1"># Compute the residual</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_residual</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">itr</span> <span class="o">&gt;=</span> <span class="mi">1</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_converged</span><span class="p">():</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Solution converged: </span><span class="si">{</span><span class="n">res</span><span class="si">:</span><span class="s1">.4e</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">x</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Tolerance not met: </span><span class="si">{</span><span class="n">res</span><span class="si">:</span><span class="s1">.4e</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="c1"># Solve, use relaxation, and update solution on algorithm obj</span>
+            <span class="bp">self</span><span class="p">[</span><span class="n">quantity</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_solve</span><span class="p">(</span><span class="n">x0</span><span class="o">=</span><span class="n">x</span><span class="p">)</span> <span class="o">*</span> <span class="n">w</span> <span class="o">+</span> <span class="n">x</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">w</span><span class="p">)</span>
+        <span class="c1"># Check solution convergence after max_it iterations</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_converged</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Not converged after </span><span class="si">{</span><span class="n">max_it</span><span class="si">}</span><span class="s2"> iterations.&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TransientReactiveTransport.results"><a class="viewcode-back" href="../../../modules/algorithms/transient_reactive_transport.html#openpnm.algorithms.TransientReactiveTransport.results">[docs]</a>    <span class="k">def</span> <span class="nf">results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">times</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Fetches the calculated quantity from the algorithm and returns it as</span>
+<span class="sd">        an array.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        times : scalar, ND-array, list of scalars, None, or string</span>
+<span class="sd">            Time steps to be returned. The default value is None which results</span>
+<span class="sd">            in returning all time steps. If times is a scalar, only the</span>
+<span class="sd">            corresponding time step is returned. If times is an ND-array or a</span>
+<span class="sd">            list of scalars, time steps in the provided array or list are</span>
+<span class="sd">            returned. If times is &#39;final&#39; or &#39;actual&#39;, the current value of the</span>
+<span class="sd">            quantity is returned.</span>
+
+<span class="sd">        t_precision : integer</span>
+<span class="sd">            The time precision (number of decimal places). Default value is 12.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        The keyword steps is interpreted in the same way as times.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s1">&#39;steps&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">times</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;steps&#39;</span><span class="p">]</span>
+        <span class="n">t_pre</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;t_precision&#39;</span><span class="p">]</span>
+        <span class="n">quantity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;quantity&#39;</span><span class="p">]</span>
+        <span class="n">q</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="k">if</span> <span class="n">quantity</span> <span class="ow">in</span> <span class="n">k</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">times</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="n">q</span>
+        <span class="k">elif</span> <span class="n">times</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;final&#39;</span><span class="p">,</span> <span class="s1">&#39;actual&#39;</span><span class="p">]:</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="p">[</span><span class="n">quantity</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">)):</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">times</span><span class="p">)</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">around</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="n">t_pre</span><span class="p">)</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">out</span><span class="p">:</span>
+                <span class="n">j</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nbr_to_str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+                <span class="n">t_str</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">q</span> <span class="k">if</span> <span class="n">j</span> <span class="o">==</span> <span class="n">k</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;@&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+                <span class="n">t</span> <span class="o">+=</span> <span class="p">(</span><span class="n">t_str</span><span class="p">)</span>
+            <span class="c1"># Times stored by the transient algorithm</span>
+            <span class="n">strd_t</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;@&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span> <span class="k">for</span> <span class="n">st</span> <span class="ow">in</span> <span class="n">q</span> <span class="k">if</span> <span class="s1">&#39;@&#39;</span> <span class="ow">in</span> <span class="n">st</span><span class="p">]</span>
+            <span class="n">strd_t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">strd_t</span><span class="p">)</span>
+            <span class="c1"># Times requested but non stored by the algorithm</span>
+            <span class="n">missing_t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">setdiff1d</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">around</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="n">t_pre</span><span class="p">),</span>
+                                     <span class="n">np</span><span class="o">.</span><span class="n">around</span><span class="p">(</span><span class="n">strd_t</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="n">t_pre</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">missing_t</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Time(s) &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">missing_t</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39; not stored.&#39;</span><span class="p">)</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="bp">self</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">t</span><span class="p">}</span>
+        <span class="k">return</span> <span class="n">d</span></div>
+
+    <span class="k">def</span> <span class="nf">_nbr_to_str</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nbr</span><span class="p">,</span> <span class="n">t_pre</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Converts a scalar into a string in scientific (exponential) notation</span>
+<span class="sd">        without the decimal point.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        nbr : scalar</span>
+<span class="sd">            The number to be converted into a scalar.</span>
+<span class="sd">        t_precision : int</span>
+<span class="sd">            The time precision (number of decimal places). Default value is 12.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">t_pre</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;t_precision&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">t_pre</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">t_pre</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="o">-</span><span class="n">dc</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">nbr</span><span class="p">,</span> <span class="n">t_pre</span><span class="p">)))</span><span class="o">.</span><span class="n">as_tuple</span><span class="p">()</span><span class="o">.</span><span class="n">exponent</span>
+                <span class="o">*</span> <span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">nbr</span><span class="p">,</span> <span class="n">t_pre</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">int</span><span class="p">(</span><span class="n">nbr</span><span class="p">)))</span>
+        <span class="n">nbr_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">nbr</span><span class="p">,</span> <span class="n">t_pre</span><span class="p">)</span><span class="o">*</span><span class="mi">10</span><span class="o">**</span><span class="n">n</span><span class="p">))</span> <span class="o">+</span> <span class="p">(</span><span class="s1">&#39;e-&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">n</span><span class="p">))</span><span class="o">*</span><span class="p">(</span><span class="n">n</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">nbr_str</span>
+
+    <span class="k">def</span> <span class="nf">_correct_apply_sources</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;r</span>
+<span class="sd">        Update &#39;A&#39; and &#39;b&#39; correcting the already applied source terms to</span>
+<span class="sd">        specified pores</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Correction (built for transient simulations) depends on the time scheme</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">phase</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">phases</span><span class="p">()[</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;phase&#39;</span><span class="p">]]</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;sources&#39;</span><span class="p">]:</span>
+            <span class="n">Ps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+            <span class="c1"># Fetch already added relaxed source term</span>
+            <span class="n">S1</span><span class="p">,</span> <span class="n">S2</span> <span class="o">=</span> <span class="p">[</span><span class="n">phase</span><span class="p">[</span><span class="n">item</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">x</span><span class="p">][</span><span class="n">Ps</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;S1&#39;</span><span class="p">,</span> <span class="s1">&#39;S2&#39;</span><span class="p">]]</span>
+            <span class="c1"># Correct S1 and S2 in A and b as a function of t_scheme</span>
+            <span class="n">datadiag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_A</span><span class="o">.</span><span class="n">diagonal</span><span class="p">()</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">datadiag</span><span class="p">[</span><span class="n">Ps</span><span class="p">]</span> <span class="o">=</span> <span class="n">datadiag</span><span class="p">[</span><span class="n">Ps</span><span class="p">]</span> <span class="o">-</span> <span class="n">S1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_f1</span><span class="o">*</span><span class="n">S1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_A</span><span class="o">.</span><span class="n">setdiag</span><span class="p">(</span><span class="n">datadiag</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_b</span><span class="p">[</span><span class="n">Ps</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_b</span><span class="p">[</span><span class="n">Ps</span><span class="p">]</span> <span class="o">+</span> <span class="n">S2</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_f1</span><span class="o">*</span><span class="n">S2</span></div>
+</pre></div>
+
+              </div>
+              
+              
+          </main>
+          
+
+      </div>
+    </div>
+  
+  <script src="../../../_static/js/index.1c5a1a01449ed65a7b51.js"></script>
+
+  <footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2021 OpenPNM Team.<br/>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.1.1.<br/>
+</p>
+    </div>
+    
+  </div>
+</footer>
+  </body>
+</html>

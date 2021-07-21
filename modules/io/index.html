@@ -589,7 +589,7 @@
 <nav id="bd-toc-nav">
     <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#overview-of-module">
+  <a class="reference internal nav-link" href="#module-openpnm.io">
    Overview of Module
   </a>
  </li>
@@ -626,14 +626,99 @@
 <ul class="simple">
 <li><p><a class="reference internal" href="#io" id="id1">IO</a></p>
 <ul>
-<li><p><a class="reference internal" href="#overview-of-module" id="id2">Overview of Module</a></p></li>
+<li><p><a class="reference internal" href="#module-openpnm.io" id="id2">Overview of Module</a></p></li>
 <li><p><a class="reference internal" href="#links-to-detailed-class-documentation" id="id3">Links to Detailed Class Documentation</a></p></li>
 </ul>
 </li>
 </ul>
 </div>
-<div class="section" id="overview-of-module">
-<h2><a class="toc-backref" href="#id2">Overview of Module</a><a class="headerlink" href="#overview-of-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-openpnm.io">
+<span id="overview-of-module"></span><h2><a class="toc-backref" href="#id2">Overview of Module</a><a class="headerlink" href="#module-openpnm.io" title="Permalink to this headline">¶</a></h2>
+<p><strong>openpnm.io</strong></p>
+<hr class="docutils" />
+<p>This module contains functionality for importing and exporting data between
+OpenPNM and other formats.</p>
+<p>Note that saving and loading OpenPNM data in its own format is done through
+the Workspace and Project objects.  Saving data through these classes losses
+lots of vital information about the simulation, such as pore scale-models and
+parameters.</p>
+<hr class="docutils" />
+<p><strong>Available Import and Export Options</strong></p>
+<table class="table">
+<colgroup>
+<col style="width: 13%" />
+<col style="width: 87%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Format</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Dict</p></td>
+<td><p>Generates hierarchical <code class="docutils literal notranslate"><span class="pre">dicts</span></code> with a high degree of control
+over the structure</p></td>
+</tr>
+<tr class="row-odd"><td><p>Pandas</p></td>
+<td><p>Combines all data arrays into a Pandas DataFrame object</p></td>
+</tr>
+<tr class="row-even"><td><p>Pickle</p></td>
+<td><p>Read and write OpenPNM Workspaces, Projects, objects as Pickles</p></td>
+</tr>
+<tr class="row-odd"><td><p>CSV</p></td>
+<td><p>Reads and writes CSV (comma-separated-value files) containing
+pore and throat data</p></td>
+</tr>
+<tr class="row-even"><td><p>HDF5</p></td>
+<td><p>The HDF5 (Hierarchical Data Format) file is good for high-
+peformance, long term data storage</p></td>
+</tr>
+<tr class="row-odd"><td><p>XDMF</p></td>
+<td><p>The eXtensible Data Model Format combines XML descriptors with
+HDF5 data storage</p></td>
+</tr>
+<tr class="row-even"><td><p>VTK</p></td>
+<td><p>The Visualization Toolkit (VTK) format defined by Kitware and
+used by Paraview</p></td>
+</tr>
+<tr class="row-odd"><td><p>NetworkX</p></td>
+<td><p>NetworkX is a common tool for dealing with network structures</p></td>
+</tr>
+<tr class="row-even"><td><p>MAT</p></td>
+<td><p>MAT files are a format used by Matlab</p></td>
+</tr>
+<tr class="row-odd"><td><p>JGF</p></td>
+<td><p>The JSON Graph Format is a schema specification of how to write
+a graph object into JSON format</p></td>
+</tr>
+<tr class="row-even"><td><p>STL</p></td>
+<td><p>The STL Format is a Standard Triangle (or Tessellation) Language
+supported by many CAD packages and used for 3D printing</p></td>
+</tr>
+<tr class="row-odd"><td><p>Salome</p></td>
+<td><p>A .py instruction file to be read by Salome to build a geomertry</p></td>
+</tr>
+<tr class="row-even"><td><p>PerGeos</p></td>
+<td><p>The PerGeos format is used by the commercial software Avizo</p></td>
+</tr>
+<tr class="row-odd"><td><p>PoreSpy</p></td>
+<td><p>PoreSpy contains the snow extraction algorithm</p></td>
+</tr>
+<tr class="row-even"><td><p>iMorph</p></td>
+<td><p>iMorph is a graphical interface program that provides some image
+analysis tools for porous media</p></td>
+</tr>
+<tr class="row-odd"><td><p>MARock</p></td>
+<td><p>3DMA-Rock is a network extraction algorithm</p></td>
+</tr>
+<tr class="row-even"><td><p>Statoil</p></td>
+<td><p>The StatOil format is used by the Maximal Ball network extraction
+code of the Imperial College London group</p></td>
+</tr>
+</tbody>
+</table>
+<p>Of the above, the last three only support <em>reading</em> from files and there are
+no plans to implement writing such files.</p>
 </div>
 <div class="section" id="links-to-detailed-class-documentation">
 <h2><a class="toc-backref" href="#id3">Links to Detailed Class Documentation</a><a class="headerlink" href="#links-to-detailed-class-documentation" title="Permalink to this headline">¶</a></h2>

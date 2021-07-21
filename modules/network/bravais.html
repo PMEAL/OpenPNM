@@ -606,6 +606,107 @@
                 
   <div class="section" id="bravais">
 <span id="bravais-api"></span><h1>Bravais<a class="headerlink" href="#bravais" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="openpnm.network.Bravais">
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">Bravais</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/network/Bravais.html#Bravais"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.network.Bravais" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="generic.html#openpnm.network.GenericNetwork" title="openpnm.network.GenericNetwork.GenericNetwork"><code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.network.GenericNetwork.GenericNetwork</span></code></a></p>
+<p>Crystal lattice types including fcc, bcc, sc, and hcp</p>
+<p>These arrangements not only allow more dense packing than the standard
+Cubic for higher porosity materials, but also have more interesting
+non-straight connections between the various pore sites.</p>
+<p>More information on Bravais lattice notation can be <a class="reference external" href="https://en.wikipedia.org/wiki/Bravais_lattice">found on wikipedia</a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>shape</strong> (<em>array_like</em>) – The number of pores in each direction.  This value is a bit ambiguous
+for the more complex unit cells used here, but generally refers to the
+the number for ‘corner’ sites</p></li>
+<li><p><strong>spacing</strong> (<em>array_like</em><em> (</em><em>optional</em><em>)</em>) – The spacing between pores in all three directions.  Like the <code class="docutils literal notranslate"><span class="pre">shape</span></code>
+this is a bit ambiguous but refers to the spacing between corner sites.
+Essentially it controls the dimensions of the unit cell.  It a scalar
+is given it is applied to all directions.  The default is 1.</p></li>
+<li><p><strong>mode</strong> (<em>string</em>) – <p>The type of lattice to create.  Options are:</p>
+<ul>
+<li><p>’sc’ : Simple cubic (Same as <code class="docutils literal notranslate"><span class="pre">Cubic</span></code>)</p></li>
+<li><p>’bcc’ : Body-centered cubic lattice</p></li>
+<li><p>’fcc’ : Face-centered cubic lattice</p></li>
+<li><p>’hcp’ : Hexagonal close packed (Note Implemented Yet)</p></li>
+</ul>
+</p></li>
+<li><p><strong>name</strong> (<em>string</em>) – An optional name for the object to help identify it.  If not given,
+one will be generated.</p></li>
+<li><p><strong>project</strong> (<em>OpenPNM Project object</em><em>, </em><em>optional</em>) – Each OpenPNM object must be part of a Project.  If none is supplied
+then one will be created and this Network will be automatically
+assigned to it.  To create a Project use <code class="docutils literal notranslate"><span class="pre">openpnm.Project()</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="cubic.html#openpnm.network.Cubic" title="openpnm.network.Cubic"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Cubic</span></code></a>, <a class="reference internal" href="cubic_dual.html#openpnm.network.CubicDual" title="openpnm.network.CubicDual"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CubicDual</span></code></a></p>
+</div>
+<p class="rubric">Notes</p>
+<p>The pores are labelled as beloning to ‘corner_sites’ and ‘body_sites’ in
+bcc or ‘face_sites’ in fcc.  Throats are labelled by the which type of
+pores they connect, e.g. ‘throat.corner_to_body’.</p>
+<p>Limitations:</p>
+<ul class="simple">
+<li><p>Bravais lattice can also have a skew to them, but this is not
+implemented yet.</p></li>
+<li><p>Support for 2D networks has not been added yet.</p></li>
+<li><p>Hexagonal Close Packed (hcp) has not been implemented yet, but is on
+the todo list.</p></li>
+</ul>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sc</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Bravais</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;sc&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bcc</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Bravais</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;bcc&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fcc</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Bravais</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;fcc&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sc</span><span class="o">.</span><span class="n">Np</span><span class="p">,</span> <span class="n">bcc</span><span class="o">.</span><span class="n">Np</span><span class="p">,</span> <span class="n">fcc</span><span class="o">.</span><span class="n">Np</span>
+<span class="go">(27, 35, 63)</span>
+</pre></div>
+</div>
+<p>Since these three networks all have the same domain size, it is clear that
+both ‘bcc’ and ‘fcc’ have more pores per unit volume.  This is particularly
+helpful for modeling higher porosity materials.</p>
+<p>They all have the same number corner sites, which corresponds to the
+[3, 3, 3] shape that was specified:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sc</span><span class="o">.</span><span class="n">num_pores</span><span class="p">(</span><span class="s1">&#39;corner*&#39;</span><span class="p">),</span> <span class="n">bcc</span><span class="o">.</span><span class="n">num_pores</span><span class="p">(</span><span class="s1">&#39;cor*&#39;</span><span class="p">),</span> <span class="n">fcc</span><span class="o">.</span><span class="n">num_pores</span><span class="p">(</span><span class="s1">&#39;cor*&#39;</span><span class="p">)</span>
+<span class="go">(27, 27, 27)</span>
+</pre></div>
+</div>
+<p>Visualization of these three networks can be done quickly using the
+functions in topotools.  Firstly, merge them all into a single network
+for convenience:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">bcc</span><span class="p">[</span><span class="s1">&#39;pore.coords&#39;</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fcc</span><span class="p">[</span><span class="s1">&#39;pore.coords&#39;</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">6</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">op</span><span class="o">.</span><span class="n">topotools</span><span class="o">.</span><span class="n">merge_networks</span><span class="p">(</span><span class="n">sc</span><span class="p">,</span> <span class="p">[</span><span class="n">bcc</span><span class="p">,</span> <span class="n">fcc</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fig</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">topotools</span><span class="o">.</span><span class="n">plot_connections</span><span class="p">(</span><span class="n">sc</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="../../_images/bravais_networks.png" class="align-center" src="../../_images/bravais_networks.png" />
+<p>For larger networks and more control over presentation use <a class="reference external" href="http://www.paraview.org">Paraview</a>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.network.Bravais.add_boundary_pores">
+<span class="sig-name descname"><span class="pre">add_boundary_pores</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">labels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spacing</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/network/Bravais.html#Bravais.add_boundary_pores"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.network.Bravais.add_boundary_pores" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add boundary pores to the specified faces of the network</p>
+<p>Pores are offset from the faces by 1/2 of the given <code class="docutils literal notranslate"><span class="pre">spacing</span></code>, such
+that they lie directly on the boundaries.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>labels</strong> (<em>string</em><em> or </em><em>list of strings</em>) – The labels indicating the pores defining each face where boundary
+pores are to be added (e.g. ‘left’ or [‘left’, ‘right’])</p></li>
+<li><p><strong>spacing</strong> (<em>scalar</em><em> or </em><em>array_like</em>) – The spacing of the network (e.g. [1, 1, 1]).  This must be given
+since it can be quite difficult to infer from the network,
+for instance if boundary pores have already added to other faces.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 
 
