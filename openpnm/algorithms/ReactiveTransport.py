@@ -139,26 +139,6 @@ class ReactiveTransport(GenericTransport):
             self.settings['relaxation_quantity'] = relaxation_quantity
         super().setup(**kwargs)
 
-    def run(self, x0=None):
-        r"""
-        Builds the A and b matrices, and calls the solver specified in the
-        ``settings`` attribute.
-
-        Parameters
-        ----------
-        x0 : ND-array
-            Initial guess of unknown variable
-        """
-        self._validate_settings()
-        # Check if A and b are well-defined
-        self._validate_data_health()
-        quantity = self.settings['quantity']
-        logger.info('Running ReactiveTransport')
-        x0 = np.zeros(self.Np, dtype=float) if x0 is None else x0
-        self["pore.initial_guess"] = x0
-        x = self._run_reactive(x0)
-        self[quantity] = x
-
     @docstr.dedent
     def reset(self, source_terms=False, **kwargs):
         r"""
@@ -172,12 +152,14 @@ class ReactiveTransport(GenericTransport):
 
         """
         super().reset(**kwargs)
-        if source_terms:
-            # Remove item from label dictionary
-            for item in self.settings['sources']:
-                self.pop(item)
-            # Reset the settings dict
-            self.settings['sources'] = []
+        if not source_terms:
+            return
+        # Remove item from label dictionary
+        for item in self.settings['sources']:
+            self.pop(item)
+        # Reset the settings dict
+        self.settings['sources'] = []
+        # TODO: clean up S1/S2.old temp variables stored on self
 
     def set_source(self, propname, pores, mode='overwrite'):
         r"""
@@ -190,34 +172,39 @@ class ReactiveTransport(GenericTransport):
         pores : array_like
             The pore indices where the source term should be applied.
         mode : str
-            Controls how the sources are applied. Options are:
-
-            'merge' - Adds supplied source term to already existing ones.
-            'overwrite' - (default) Deletes all existing source terms of the
-            given ``propname`` then adds the specified new ones
+            Controls how the sources are applied (see table under Notes).
+            The default is 'overwrite'.
 
         Notes
         -----
+        The following ``mode`` values are supported:
+
+        ===========  =====================================================
+        mode         meaning
+        ===========  =====================================================
+        'merge'      Adds supplied source term to already existing ones.
+        'overwrite'  Deletes all existing source terms of the given
+                     ``propname`` then adds the specified new ones.
+        ===========  =====================================================
+
         Source terms cannot be applied in pores where boundary conditions have
         already been set. Attempting to do so will result in an error being
         raised.
 
         """
+        propname = self._parse_prop(propname, "pore")
         locs = self.tomask(pores=pores)
         # Check if any BC is already set in the same locations
         locs_BC = np.isfinite(self['pore.bc_value']) + np.isfinite(self['pore.bc_rate'])
         if (locs & locs_BC).any():
-            raise Exception('Boundary conditions already present in given '
-                            + 'pores, cannot also assign source terms')
-        if propname not in self.keys():
-            self[propname] = False
-        if mode == 'merge':
-            self[propname][locs] = True
-        elif mode == 'overwrite':
-            self[propname] = locs
+            raise Exception("BCs present in given pores, can't assign source term")
+        self.set_label(propname, pores=locs, mode=mode)
         # Check if propname already in source term list
         if propname not in self.settings['sources']:
             self.settings['sources'].append(propname)
+        # Initialize '_propname.S1/S2.old' for optional under-relaxation
+        _propname = "._".join(propname.split("."))
+        self[f"{_propname}.S1.old"] = self[f"{_propname}.S2.old"] = 0.0
 
     def remove_source(self, propname, pores=None):
         r"""
@@ -231,48 +218,50 @@ class ReactiveTransport(GenericTransport):
             The pore indices where the source term should be applied.
 
         """
-        if pores is None:
-            pores = self.Ps
-        locs = self.tomask(pores=pores)
-        if propname not in self.keys():
-            self[propname] = False
-        self[propname][locs] = False
+        locs = self.tomask(pores=pores or self.Ps)
+        self.set_label(propname, pores=locs, mode='remove')
+        # TODO: if pores=None: remove the label -> reuse in reset method
 
     def _update_iterative_props(self):
         """r
-        Update physics using the current value of ``quantity``.
+        Regenerates phase, geometries, and physics objects using the
+        current value of ``quantity``.
 
         Notes
         -----
         The algorithm directly writes the value of 'quantity' into the
-        phase. This method was implemented relaxing one of the OpenPNM
-        rules of algorithms not being able to write into phases.
+        phase, which is against one of the OpenPNM rules of objects not
+        being able to write into each other.
 
         """
-        phase = self.project.phases()[self.settings['phase']]
+        iterative_props = self._get_iterative_props()
+        if not iterative_props:
+            return
+        # Fetch objects associated with the algorithm
+        phase = self.project.find_phase(self)
         physics = self.project.find_physics(phase=phase)
         geometries = self.project.geometries().values()
-        # Regenerate iterative props with new guess
-        iterative_props = self._get_iterative_props()
-        if len(iterative_props) > 0:
-            # Put quantity on phase so physics finds it when regenerating
-            key = self.settings['quantity']
-            phase[key] = self[key]
-            phase.regenerate_models(propnames=iterative_props)
-            for geometry in geometries:
-                geometry.regenerate_models(iterative_props)
-            for phys in physics:
-                phys.regenerate_models(iterative_props)
+        # Update 'quantity' on phase with the most recent value
+        quantity = self.settings['quantity']
+        phase[quantity] = self[quantity]
+        # Regenerate all associated objects
+        phase.regenerate_models(propnames=iterative_props)
+        for geom in geometries:
+            geom.regenerate_models(iterative_props)
+        for phys in physics:
+            phys.regenerate_models(iterative_props)
 
     def _apply_sources(self):
         """r
-        Update ``A`` and ``b`` applying source terms to specified pores.
+        Updates ``A`` and ``b``, applying source terms to specified pores.
 
         Notes
         -----
         Applying source terms to ``A`` and ``b`` is performed after
         (optionally) under-relaxing the source term to improve numerical
-        stability. Physics are also updated before applying source terms
+        stability.
+
+        Physics are also updated before applying source terms
         to ensure that source terms values are associated with the current
         value of 'quantity'.
 
@@ -286,37 +275,32 @@ class ReactiveTransport(GenericTransport):
 
         Warnings
         --------
-        In the case of a transient simulation, the updates in ``A`` and ``b``
-        also depend on the time scheme. So, ``_correct_apply_sources()`` needs to
-        be run afterwards to correct the already applied relaxed source terms.
+        In the case of a transient simulation, the updates in ``A``, ``b``
+        also depend on the time scheme. So, ``_correct_apply_sources()``
+        needs to be run afterwards to correct the already applied relaxed
+        source terms.
 
         """
-        phase = self.project.phases()[self.settings['phase']]
+        phase = self.project.find_phase(self)
         w = self.settings['relaxation_source']
-
         for item in self.settings['sources']:
             element, prop = item.split(".")
             _item = ".".join([element, "_" + prop])
-            first_iter = False if _item + ".S1.old" in self.keys() else True
             Ps = self.pores(item)
-            # Fetch S1/S2 and their old values (don't exist on 1st iter)
-            S1 = phase[item + ".S1"][Ps]
-            S2 = phase[item + ".S2"][Ps]
-            X1 = self[_item + ".S1.old"][Ps] if not first_iter else S1
-            X2 = self[_item + ".S2.old"][Ps] if not first_iter else S2
+            S1, S2 = [phase[f"{item}.{Si}"] for Si in ["S1", "S2"]]
+            X1, X2 = [self[f"{_item}.{Xi}"] for Xi in ["S1.old", "S2.old"]]
             # Source term relaxation
-            S1 = phase[item + '.S1'][Ps] = w * S1 + (1.0 - w) * X1
-            S2 = phase[item + '.S2'][Ps] = w * S2 + (1.0 - w) * X2
+            S1 = phase[f"{item}.S1"][:] = w * S1 + (1 - w) * X1
+            S2 = phase[f"{item}.S2"][:] = w * S2 + (1 - w) * X2
             # Modify A and b based on "relaxed" S1/S2
-            datadiag = self._A.diagonal().copy()
-            datadiag[Ps] = datadiag[Ps] - S1
-            self._A.setdiag(datadiag)
-            self._b[Ps] = self._b[Ps] + S2
+            diag = self.A.diagonal()
+            diag[Ps] += -S1[Ps]
+            self.A.setdiag(diag)
+            self.b[Ps] += S2[Ps]
             # Replace old values of S1/S2 by their current values
-            self[_item + ".S1.old"] = phase[item + ".S1"]
-            self[_item + ".S2.old"] = phase[item + ".S2"]
+            X1[:], X2[:] = S1, S2
 
-    def _run_reactive(self, x0):
+    def _run_special(self, solver, x0):
         r"""
         Repeatedly updates ``A``, ``b``, and the solution guess within
         according to the applied source term then calls ``_solve`` to
@@ -335,51 +319,26 @@ class ReactiveTransport(GenericTransport):
         x : ndarray
             Solution array.
 
-        Notes
-        -----
-        The algorithm must at least complete one iteration, and hence the
-        check for itr >= 1, because otherwise, _check_for_nans() never
-        gets called in case there's something wrong with the data, and
-        therefore, the user won't get notified about the root cause of the
-        algorithm divergence.
-
         """
         w = self.settings['relaxation_quantity']
         quantity = self.settings['quantity']
-        max_it = self.settings['nlin_max_iter']
-        # Write initial guess to algorithm obj (for _update_iterative_props to work)
-        self[quantity] = x = x0
-        # Update A and b based on self[quantity]
-        self._update_A_and_b()
-        # Just in case you got a lucky guess, i.e. x0!
-        if self._is_converged():
-            logger.info(f'Solution converged: {self._get_residual():.4e}')
-            return x
-
-        for itr in range(max_it):
-            # Solve, use relaxation, and update solution on algorithm obj
-            self[quantity] = x = self._solve(x0=x) * w + x * (1 - w)
-            self._update_A_and_b()
-            # Check solution convergence
+        max_iter = self.settings['nlin_max_iter']
+        for itr in range(max_iter):
+            super()._run_special(solver=solver, x0=x0, w=w)
+            x0 = self[quantity]  # Update x0 for next iteration
             if self._is_converged():
                 logger.info(f'Solution converged: {self._get_residual():.4e}')
-                return x
+                return
             logger.info(f'Tolerance not met: {self._get_residual():.4e}')
-
-        if not self._is_converged():
-            raise Exception(f"Not converged after {max_it} iterations.")
+        raise
+        logger.critical(f"Not converged after {max_iter} iterations.")
 
     def _update_A_and_b(self):
         r"""
-        Updates A and b based on the most recent solution stored on
-        algorithm object.
+        Builds/updates A, b based on the recent solution on algorithm object.
         """
-        # Update iterative properties on phase, geometries, and physics
         self._update_iterative_props()
-        # Build A and b, apply BCs/source terms
-        self._build_A()
-        self._build_b()
-        self._apply_BCs()
+        super()._update_A_and_b()
         self._apply_sources()
 
     def _get_iterative_props(self):
@@ -396,28 +355,20 @@ class ReactiveTransport(GenericTransport):
 
         """
         import networkx as nx
-        phase = self.project.phases(self.settings['phase'])
+        phase = self.project.find_phase(self)
         physics = self.project.find_physics(phase=phase)
         geometries = self.project.geometries().values()
-        # Combine dependency graphs of phase and all physics/geometries
-        dg = phase.models.dependency_graph(deep=True)
-        for g in geometries:
-            dg = nx.compose(dg, g.models.dependency_graph(deep=True))
-        for p in physics:
-            dg = nx.compose(dg, p.models.dependency_graph(deep=True))
+        # Generate global dependency graph
+        dg = nx.compose_all([x.models.dependency_graph(deep=True)
+                             for x in [phase, *geometries, *physics]])
         base_props = [self.settings["quantity"]]
-        if base_props is None:
-            return []
-        # Find all props downstream that rely on "quantity"
+        # Find all props downstream that depend on 'quantity'
         dg = nx.DiGraph(nx.edge_dfs(dg, source=base_props))
         if len(dg.nodes) == 0:
             return []
         iterative_props = list(nx.dag.lexicographical_topological_sort(dg))
-        # "quantity" shouldn't be in the returned list but "variable_props" should
-        try:
-            iterative_props.remove(self.settings["quantity"])
-        except ValueError:
-            pass
+        # Remove 'quantity' from iterative_props since it is not!
+        iterative_props.remove(self.settings["quantity"])
         return iterative_props
 
     @docstr.dedent
@@ -435,12 +386,10 @@ class ReactiveTransport(GenericTransport):
         %(GenericTransport._set_BC.notes)s
 
         """
-        # First check that given pores do not have source terms already set
+        msg = "Source term already present in given pores, can't assign BCs"
+        # Ensure that given pores do not have source terms already set
         for item in self.settings['sources']:
             if np.any(self[item][pores]):
-                raise Exception(
-                    'Source term already present in given pores, cannot also'
-                    ' assign boundary conditions'
-                )
-        # Then call parent class function if above check passes
+                raise Exception(msg)
+        # Assign BCs if above check passes
         super()._set_BC(pores=pores, bctype=bctype, bcvalues=bcvalues, mode=mode)
