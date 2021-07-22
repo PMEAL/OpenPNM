@@ -775,29 +775,26 @@ class GenericTransport(GenericAlgorithm):
 
     def _validate_settings(self):
         if self.settings['quantity'] is None:
-            raise Exception('"quantity" has not been defined on this algorithm')
+            raise Exception("'quantity' hasn't been defined on this algorithm")
         if self.settings['conductance'] is None:
-            raise Exception('"conductance" has not been defined on this algorithm')
+            raise Exception("'conductance' hans't been defined on this algorithm")
 
     def _validate_geometry_health(self):
         h = self.project.check_geometry_health()
-        issues = []
-        for k, v in h.items():
-            if len(v) > 0:
-                issues.append(k)
-        if len(issues) > 0:
-            raise Exception(
-                r"Found the following critical issues with your geometry(ies):"
-                f" {', '.join(issues)}. Run network.project.check_geometry_health() for"
-                r" more details.")
+        issues = [k for k, v in h.items() if v]
+        if issues:
+            msg = (r"Found the following critical issues with your geomet"
+                   f"ry objects: {', '.join(issues)}. Run project.check_g"
+                   "eometry_health() for more details.")
+            raise Exception(msg)
 
     def _validate_topology_health(self):
         Ps = (self['pore.bc_rate'] > 0) + (self['pore.bc_value'] > 0)
         if not is_fully_connected(network=self.network, pores_BC=Ps):
-            raise Exception(
-                "Your network is clustered. Run h = net.check_network_health() followed"
-                " by op.topotools.trim(net, pores=h['trim_pores']) to make your network"
-                " fully connected.")
+            msg = ("Your network is clustered. Run h = net.check_network_"
+                   "health() followed by op.topotools.trim(net, pores=h['"
+                   "trim_pores']) to make your network fully connected.")
+            raise Exception(msg)
 
     def _validate_data_health(self):
         r"""
@@ -1013,7 +1010,7 @@ class GenericTransport(GenericAlgorithm):
     def _calc_eff_prop(self, inlets=None, outlets=None,
                        domain_area=None, domain_length=None):
         r"""
-        Calculate the effective transport through the network
+        Calculates the effective transport through the network.
 
         Parameters
         ----------
@@ -1023,9 +1020,9 @@ class GenericTransport(GenericAlgorithm):
         outlets : array_like
             The pores where the outlet boundary conditions were applied.  If
             not given an attempt is made to infer them from the algorithm.
-        domain_area : scalar
+        domain_area : float
             The area of the inlet and/or outlet face (which shold match)
-        domain_length : scalar
+        domain_length : float
             The length of the domain between the inlet and outlet faces
 
         Returns
@@ -1034,80 +1031,78 @@ class GenericTransport(GenericAlgorithm):
 
         """
         if self.settings['quantity'] not in self.keys():
-            raise Exception('The algorithm has not been run yet. Cannot '
-                            + 'calculate effective property.')
-
+            raise Exception('You need to run the algorithm first.')
         Ps = np.isfinite(self['pore.bc_value'])
         BCs = np.unique(self['pore.bc_value'][Ps])
-        Dx = np.abs(np.diff(BCs))
-        if inlets is None:
-            inlets = self._get_inlets()
+        if BCs.size != 2:
+            raise Exception('More/less than 2 unique value BCs were found.')
+        Dx = np.ptp(BCs)
+        inlets = self._get_inlets() if inlets is None else inlets
         flow = self.rate(pores=inlets)
-        # Fetch area and length of domain
         if domain_area is None:
-            domain_area = self._get_domain_area(inlets=inlets,
-                                                outlets=outlets)
+            domain_area = self._get_domain_area(inlets=inlets, outlets=outlets)
         if domain_length is None:
-            domain_length = self._get_domain_length(inlets=inlets,
-                                                    outlets=outlets)
-        D = np.sum(flow)*domain_length/domain_area/Dx
-        return D
+            domain_length = self._get_domain_length(inlets=inlets, outlets=outlets)
+        D = np.sum(flow) * domain_length / domain_area / Dx
+        return np.atleast_1d(D)
 
     def _get_inlets(self):
-        # Determine boundary conditions by analyzing algorithm object
+        r"""
+        Determines inlet BCs by analyzing the algorithm object.
+        """
         Ps = np.isfinite(self['pore.bc_value'])
         BCs = np.unique(self['pore.bc_value'][Ps])
         inlets = np.where(self['pore.bc_value'] == np.amax(BCs))[0]
         return inlets
 
     def _get_outlets(self):
-        # Determine boundary conditions by analyzing algorithm object
+        r"""
+        Determines outlet BCs by analyzing the algorithm object.
+        """
         Ps = np.isfinite(self['pore.bc_value'])
         BCs = np.unique(self['pore.bc_value'][Ps])
         outlets = np.where(self['pore.bc_value'] == np.amin(BCs))[0]
         return outlets
 
     def _get_domain_area(self, inlets=None, outlets=None):
+        r"""
+        Determines the cross sectional area relative to the inlets/outlets.
+        """
         logger.warning('Attempting to estimate inlet area...will be low')
-        network = self.project.network
-        # Abort if network is not 3D
-        if np.sum(np.ptp(network['pore.coords'], axis=0) == 0) > 0:
+        if op.topotools.dimensionality(self.network).sum() != 3:
             raise Exception('The network is not 3D, specify area manually')
-        if inlets is None:
-            inlets = self._get_inlets()
-        if outlets is None:
-            outlets = self._get_outlets()
-        inlets = network['pore.coords'][inlets]
-        outlets = network['pore.coords'][outlets]
+        inlets = self._get_inlets() if inlets is None else inlets
+        outlets = self._get_outlets() if outlets is None else outlets
+        inlets = self.network.coords[inlets]
+        outlets = self.network.coords[outlets]
         if not iscoplanar(inlets):
             logger.error('Detected inlet pores are not coplanar')
         if not iscoplanar(outlets):
             logger.error('Detected outlet pores are not coplanar')
         Nin = np.ptp(inlets, axis=0) > 0
         if Nin.all():
-            logger.warning('Detected inlets are not oriented along a '
-                           + 'principle axis')
+            logger.warning('Detected inlets are not oriented along a principle axis')
         Nout = np.ptp(outlets, axis=0) > 0
         if Nout.all():
-            logger.warning('Detected outlets are not oriented along a '
-                           + 'principle axis')
+            logger.warning('Detected outlets are not oriented along a principle axis')
         hull_in = ConvexHull(points=inlets[:, Nin])
         hull_out = ConvexHull(points=outlets[:, Nout])
         if hull_in.volume != hull_out.volume:
             logger.error('Inlet and outlet faces are different area')
-        area = hull_in.volume  # In 2D volume=area, area=perimeter
+        area = hull_in.volume  # In 2D: volume=area, area=perimeter
         return area
 
     def _get_domain_length(self, inlets=None, outlets=None):
-        logger.warning('Attempting to estimate domain length...'
-                       + 'could be low if boundary pores were not added')
-        network = self.project.network
-        if inlets is None:
-            inlets = self._get_inlets()
-        if outlets is None:
-            outlets = self._get_outlets()
-        inlets = network['pore.coords'][inlets]
-        outlets = network['pore.coords'][outlets]
+        r"""
+        Determines the domain length relative to the inlets/outlets.
+        """
+        msg = ('Attempting to estimate domain length...could be low if'
+               ' boundary pores were not added')
+        logger.warning(prettify_logger_message(msg))
+        inlets = self._get_inlets() if inlets is None else inlets
+        outlets = self._get_outlets() if outlets is None else outlets
+        inlets = self.network.coords[inlets]
+        outlets = self.network.coords[outlets]
         if not iscoplanar(inlets):
             logger.error('Detected inlet pores are not coplanar')
         if not iscoplanar(outlets):
