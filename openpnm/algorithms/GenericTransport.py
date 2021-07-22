@@ -9,6 +9,7 @@ from scipy.spatial import cKDTree
 from openpnm.topotools import iscoplanar, is_fully_connected
 from openpnm.algorithms import GenericAlgorithm
 from openpnm.utils import logging, Docorator, GenericSettings, prettify_logger_message
+from openpnm.solvers import ScipySpsolve
 # Uncomment this line when we stop supporting Python 3.6
 # from dataclasses import dataclass, field
 # from typing import List
@@ -442,10 +443,17 @@ class GenericTransport(GenericAlgorithm):
 
     def _build_A(self):
         r"""
-        Builds the coefficient matrix based on conductances between pores.
-        The conductance to use is specified in the algorithm's ``settings``
-        under ``conductance``.  In subclasses (e.g. ``FickianDiffusion``)
-        this is set by default, though it can be overwritten.
+        Builds the coefficient matrix based on throat conductance values.
+
+        Notes
+        -----
+        The conductance to use is specified in stored in the algorithm's
+        settings under ``alg.settings['conductance']``.
+
+        In subclasses, conductance is set by default. For instance, in
+        ``FickianDiffusion``, it is set to ``throat.diffusive_conductance``,
+        although it can be changed.
+
         """
         gvals = self.settings['conductance']
         if not gvals:
@@ -480,7 +488,7 @@ class GenericTransport(GenericAlgorithm):
         if not cache_b:
             self._pure_b = None
         if self._pure_b is None:
-            b = np.zeros(shape=self.Np, dtype=float)  # Create vector of 0s
+            b = np.zeros(self.Np, dtype=float)
             self._pure_b = b
         self.b = self._pure_b.copy()
 
@@ -525,13 +533,15 @@ class GenericTransport(GenericAlgorithm):
             # Update A
             P_bc = self.toindices(ind)
             mask = np.isin(self.A.row, P_bc) | np.isin(self.A.col, P_bc)
-            self.A.data[mask] = 0  # Remove entries from A for all BC rows/cols
-            datadiag = self.A.diagonal()  # Add diagonal entries back into A
+            # Remove entries from A for all BC rows/cols
+            self.A.data[mask] = 0
+            # Add diagonal entries back into A
+            datadiag = self.A.diagonal()
             datadiag[P_bc] = np.ones_like(P_bc, dtype=float) * f
             self.A.setdiag(datadiag)
-            self.A.eliminate_zeros()  # Remove 0 entries
+            self.A.eliminate_zeros()
 
-    def run(self, x0=None):
+    def run(self, solver=None, x0=None):
         r"""
         Builds the A and b matrices, and calls the solver specified in the
         ``settings`` attribute.
@@ -541,33 +551,40 @@ class GenericTransport(GenericAlgorithm):
         x0 : ND-array
             Initial guess of unknown variable
 
-        Returns
-        -------
-        Nothing is returned...the solution is stored on the objecxt under
-        ``pore.quantity`` where *quantity* is specified in the ``settings``
-        attribute.
+        Notes
+        -----
+        This method doesn't return anything. The solution is stored on
+        the object under ``pore.quantity`` where *quantity* is specified
+        in the ``settings`` attribute.
 
         """
-        logger.info('―' * 80)
         logger.info('Running GenericTransport')
+        solver = ScipySpsolve() if solver is None else solver
+        # Perform pre-solve validations
         self._validate_settings()
-        # Check if A and b are well-defined
         self._validate_data_health()
+        # Write x0 to algorithm the obj (needed by _update_iterative_props)
         x0 = np.zeros_like(self.b) if x0 is None else x0
+        self[self.settings["quantity"]] = x0
         self["pore.initial_guess"] = x0
-        self._run_generic(x0)
+        # Build A and b, then solve the system of equations
+        self._update_A_and_b()
+        self._run_special(solver=solver, x0=x0)
 
-    def _run_generic(self, x0):
-        # (Re)build A,b in case phase/physics are updated and alg.run()
-        # is to be called a second time
+    def _run_special(self, solver, x0, w=1):
+        x_new = solver.solve(A=self.A, b=self.b, x0=x0)
+        quantity = self.settings['quantity']
+        self[quantity] = w * x_new + (1 - w) * self[quantity]
+        # Update A and b using the recent solution
+        self._update_A_and_b()
+
+    def _update_A_and_b(self):
+        r"""
+        Builds/updates A, b based on the recent solution on algorithm object.
+        """
         self._build_A()
         self._build_b()
         self._apply_BCs()
-        x_new = self._solve(x0=x0)
-        quantity = self.settings['quantity']
-        if not quantity:
-            raise Exception('"quantity" has not been defined on this algorithm')
-        self[quantity] = x_new
 
     def _solve(self, A=None, b=None, x0=None):
         r"""
@@ -765,10 +782,10 @@ class GenericTransport(GenericAlgorithm):
         res = self._get_residual(x=x)
         # Verify that residual is finite (i.e. not inf/nan)
         if not np.isfinite(res):
-            logger.error(f'Solution diverged: {res:.4e}')
             raise Exception(f"Solution diverged, undefined residual: {res:.4e}")
         # Check convergence
         tol = self.settings["solver_tol"]
+        # TODO: should we use self.b at iteration #0 ?
         res_tol = norm(self.b) * tol
         flag_converged = True if res <= res_tol else False
         return flag_converged
