@@ -645,9 +645,11 @@ def _validate_conduit_array(arr):
 
 
 def prettify_logger_message(msg):
-    r"""Prettifies logger messages by breaking them up into multi lines"""
+    r"""
+    Prettifies logger messages by breaking them up into multi lines
+    """
     from textwrap import wrap
-    linewidth = 75
+    linewidth = 75 - 13
     indent = "\n" + " " * 13
     temp = wrap(msg, width=linewidth)
     return indent.join(temp)
