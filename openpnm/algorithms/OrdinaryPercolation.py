@@ -1,10 +1,10 @@
-import scipy as sp
 import numpy as np
 from collections import namedtuple
 from openpnm.algorithms import GenericAlgorithm
 from openpnm.topotools import site_percolation, bond_percolation
 from openpnm.topotools import remove_isolated_clusters, ispercolating
 from openpnm.utils import logging
+from openpnm.utils import prettify_logger_message
 logger = logging.getLogger(__name__)
 
 
@@ -444,8 +444,8 @@ class OrdinaryPercolation(GenericAlgorithm):
         Tvol = net[self.settings['throat_volume']]
         Total_vol = np.sum(Pvol) + np.sum(Tvol)
         if np.sum(Pvol[self['pore.inlets']]) > 0.0:
-            logger.warning(
-                "Inlets have non-zero volume, percolation curve won't start at 0.")
+            msg = "Inlets have non-zero volume, perc. curve won't start at 0."
+            logger.warning(prettify_logger_message(msg))
         # Find cumulative filled volume at each applied capillary pressure
         Vnwp_t = []
         Vnwp_p = []
