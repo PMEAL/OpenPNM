@@ -3,6 +3,8 @@ docrep>=0.3
 flatdict
 gitpython
 h5py
+ipympl
+ipython
 jsonschema
 json_tricks
 matplotlib
