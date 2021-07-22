@@ -61,6 +61,7 @@ from . import geometry
 from . import phases
 from . import physics
 from . import models
+from . import solvers
 from . import algorithms
 from . import materials
 from . import topotools
