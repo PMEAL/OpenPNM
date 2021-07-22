@@ -1,3 +1,4 @@
+ipympl
 jupyterlab_widgets
 nbsphinx
 nbsphinx-link
