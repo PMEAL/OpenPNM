@@ -1,5 +1,5 @@
 from openpnm.geometry import GenericGeometry
-from openpnm.geometry.collections import cubes_and_cuboids
+from openpnm.models.collections.geometry import cubes_and_cuboids
 from openpnm.utils import logging, Docorator, GenericSettings
 docstr = Docorator()
 logger = logging.getLogger(__name__)

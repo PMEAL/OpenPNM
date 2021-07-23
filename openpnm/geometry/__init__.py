@@ -9,7 +9,6 @@ assortment of subclasses that implement specific pore-scale geometrical models.
 
 
 """
-from . import collections
 from .GenericGeometry import GenericGeometry
 from .Imported import Imported
 from .SpheresAndCylinders import SpheresAndCylinders

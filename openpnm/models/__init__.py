@@ -80,3 +80,4 @@ from . import topology
 from . import geometry
 from . import phases
 from . import physics
+from . import collections

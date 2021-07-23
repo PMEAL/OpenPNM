@@ -1,5 +1,5 @@
 from openpnm.geometry import GenericGeometry
-from openpnm.geometry.collections import cones_and_cylinders
+from openpnm.models.collections.geometry import cones_and_cylinders
 from openpnm.utils import logging, Docorator, GenericSettings
 docstr = Docorator()
 logger = logging.getLogger(__name__)

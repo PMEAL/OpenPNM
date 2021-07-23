@@ -1,5 +1,5 @@
 from openpnm.geometry import GenericGeometry
-from openpnm.geometry.collections import trapezoids_and_rectangles
+from openpnm.models.collections.geometry import trapezoids_and_rectangles
 from openpnm.utils import logging, Docorator, GenericSettings
 docstr = Docorator()
 logger = logging.getLogger(__name__)
