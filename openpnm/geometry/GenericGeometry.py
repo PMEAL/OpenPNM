@@ -1,9 +1,13 @@
 from openpnm.core import Subdomain, ModelsMixin
-from openpnm.utils import Workspace, logging
-logger = logging.getLogger(__name__)
+from openpnm.utils import Workspace, Docorator, GenericSettings, logging
 ws = Workspace()
+docstr = Docorator()
+logger = logging.getLogger(__name__)
 
 
+@docstr.get_sections(base='GenericGeometry',
+                     sections=['Parameters'])
+@docstr.dedent
 class GenericGeometry(Subdomain, ModelsMixin):
     r"""
     This generic class is meant as a starter for custom Geometry objects
@@ -16,6 +20,8 @@ class GenericGeometry(Subdomain, ModelsMixin):
     ----------
     network : GenericNetwork
         The Network object to which this Geometry applies.
+    project : Project, optional
+        A Project can be specified instead of ``network``.
     pores : array_like
         The list of pores where this Geometry applies.
     throats : array_like
@@ -23,46 +29,6 @@ class GenericGeometry(Subdomain, ModelsMixin):
     name : str
         A unique name to apply to the object.  This name will also be used as a
         label to identify where this Geometry applies.
-    project : Project, optional
-        A Project can be specified instead of ``network``.
-
-    Examples
-    --------
-    >>> import openpnm as op
-    >>> pn = op.network.Cubic(shape=[5, 5, 5])
-    >>> Ps = pn.pores('all')    # Get all pores
-    >>> Ts = pn.throats('all')  # Get all throats
-    >>> geom = op.geometry.GenericGeometry(network=pn, pores=Ps, throats=Ts)
-
-    Now assign pore-scale models to the empty object:
-
-    >>> geom.add_model(propname='pore.size',
-    ...                model=op.models.misc.random,
-    ...                element='pore',
-    ...                num_range=[0.01, 0.1])
-
-    Confirm that the object has one added model:
-
-    >>> print(geom.models)
-    ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-    #   Property Name                       Parameter                 Value
-    ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-    1   pore.size                           model:                    random
-                                            element:                  pore
-                                            num_range:                [0.01, 0.1]
-                                            seed:                     None
-                                            regeneration mode:        normal
-    ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-
-    The results of the model can be seen using the ``show_hist`` function:
-
-    >>> import matplotlib as mpl
-    >>> mpl.use('Agg')
-    >>> geom.show_hist('pore.size')
-
-    .. image:: /../docs/_static/images/generic_geometry_histogram.png
-        :width: 500px
-        :align: center
 
     """
 
