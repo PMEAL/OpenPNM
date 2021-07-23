@@ -19,4 +19,4 @@ class CubesAndCuboids(GenericGeometry):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.update(cubes_and_cuboids)
+        self.models.update(cubes_and_cuboids)

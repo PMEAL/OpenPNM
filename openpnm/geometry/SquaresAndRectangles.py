@@ -17,4 +17,4 @@ class SquaresAndRectangles(GenericGeometry):
     """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.update(squares_and_rectangles)
+        self.models.update(squares_and_rectangles)

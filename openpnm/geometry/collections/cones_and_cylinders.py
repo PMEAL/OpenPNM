@@ -48,12 +48,12 @@ cones_and_cylinders = {
 		'throat_diameter': 'throat.diameter',
 		},
 	'throat.diffusive_size_factors': {
-		'model': mods.diffusive_size_factors.cones_and_cylinders,
+		'model': mods.geometry.diffusive_size_factors.cones_and_cylinders,
 		'pore_diameter': 'pore.diameter',
 		'throat_diameter': 'throat.diameter',
 		},
 	'throat.hydraulic_size_factors': {
-		'model': mods.hydraulic_size_factors.cones_and_cylinders,
+		'model': mods.geometry.hydraulic_size_factors.cones_and_cylinders,
 		'pore_diameter': 'pore.diameter',
         'throat_diameter': 'throat.diameter',
         },

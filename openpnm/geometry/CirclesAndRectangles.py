@@ -19,4 +19,4 @@ class CirclesAndRectangles(GenericGeometry):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.update(circles_and_rectangles)
+        self.models.update(circles_and_rectangles)

@@ -1,1 +1,1 @@
-from .stick_and_ball import stick_and_ball
+from .spheres_and_cylinders import spheres_and_cylinders

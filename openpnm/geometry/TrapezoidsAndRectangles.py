@@ -17,5 +17,5 @@ class TrapezoidsAndRectangles(GenericGeometry):
     """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.update(trapezoids_and_rectangles)
+        self.models.update(trapezoids_and_rectangles)
 

@@ -18,4 +18,4 @@ class PyramidsAndCuboids(GenericGeometry):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.update(pyramids_and_cuboids)
+        self.models.update(pyramids_and_cuboids)

@@ -1,5 +1,5 @@
 from openpnm.geometry import GenericGeometry
-from openpnm.geometry import spheres_and_cylinders
+from openpnm.geometry.collections import spheres_and_cylinders
 from openpnm.utils import logging, Docorator, GenericSettings
 docstr = Docorator()
 logger = logging.getLogger(__name__)
@@ -18,4 +18,5 @@ class SpheresAndCylinders(GenericGeometry):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.update(spheres_and_cylinders)
+        self.models.update(spheres_and_cylinders)
+        self.regenerate_models()
