@@ -1,5 +1,5 @@
 from openpnm.phases import GenericPhase
-import openpnm.models as mods
+from openpnm.models.collections.phase import water
 
 
 class Water(GenericPhase):
@@ -93,18 +93,5 @@ class Water(GenericPhase):
         self['pore.contact_angle'] = 110.0
         self['pore.electrical_conductivity'] = 1e-15
         self['pore.diffusivity'] = 1e-9
+        self.models.update(water)
 
-        self.add_model(propname='pore.density',
-                       model=mods.phases.density.water)
-        self.add_model(propname='pore.molar_density',
-                       model=mods.phases.molar_density.standard)
-        self.add_model(propname='pore.surface_tension',
-                       model=mods.phases.surface_tension.water)
-        self.add_model(propname='pore.thermal_conductivity',
-                       model=mods.phases.thermal_conductivity.water)
-        self.add_model(propname='pore.vapor_pressure',
-                       model=mods.phases.vapor_pressure.antoine,
-                       A=8.088, B=1750.71, C=236.191)
-        self.add_model(propname='pore.viscosity',
-                       model=mods.phases.viscosity.water)
-        self.regenerate_models()
