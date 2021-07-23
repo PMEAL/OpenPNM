@@ -4,13 +4,13 @@ proj = ws.new_project()
 export = False
 
 pn = op.network.Cubic(shape=[10, 10, 10], spacing=1e-4, project=proj)
-geo = op.geometry.StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts)
+geo = op.geometry.SpheresAndCylinders(network=pn, pores=pn.Ps, throats=pn.Ts)
 air = op.phases.Air(network=pn, name='air')
 water = op.phases.Water(network=pn, name='h2o')
 hg = op.phases.Mercury(network=pn, name='hg')
-phys_air = op.physics.Standard(network=pn, phase=air, geometry=geo)
-phys_water = op.physics.Standard(network=pn, phase=water, geometry=geo)
-phys_hg = op.physics.Standard(network=pn, phase=hg, geometry=geo)
+phys_air = op.physics.Basic(network=pn, phase=air, geometry=geo)
+phys_water = op.physics.Basic(network=pn, phase=water, geometry=geo)
+phys_hg = op.physics.Basic(network=pn, phase=hg, geometry=geo)
 
 mip = op.algorithms.Porosimetry(network=pn)
 mip.setup(phase=hg)
