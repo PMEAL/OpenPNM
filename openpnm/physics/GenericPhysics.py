@@ -1,10 +1,13 @@
 import numpy as np
 from openpnm.core import Subdomain, ModelsMixin
-from openpnm.utils import Workspace, logging
+from openpnm.utils import logging, Docorator, GenericSettings
+docstr = Docorator()
 logger = logging.getLogger(__name__)
-ws = Workspace()
 
 
+@docstr.get_sections(base='GenericPhysics',
+                     sections=['Parameters'])
+@docstr.dedent
 class GenericPhysics(Subdomain, ModelsMixin):
     r"""
     This generic class is meant as a starter for custom Physics objects
@@ -16,14 +19,11 @@ class GenericPhysics(Subdomain, ModelsMixin):
     ----------
     network : OpenPNM Network object
         The network to which this Physics should be attached
-
     phase : OpenPNM Phase object
         The Phase object to which this Physics applies
-
     geometry : OpenPNM Geometry object
         The Geometry object that defines the pores/throats where this Physics
         should be applied.
-
     name : str, optional
         A unique string name to identify the Physics object, typically same as
         instance name but can be anything.  If left blank, and name will be
