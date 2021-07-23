@@ -13,6 +13,7 @@ from . import collections
 from .GenericGeometry import GenericGeometry
 from .Imported import Imported
 from .SpheresAndCylinders import SpheresAndCylinders
+from .StickAndBall import StickAndBall
 from .CirclesAndRectangles import CirclesAndRectangles
 from .ConesAndCylinders import ConesAndCylinders
 from .PyramidsAndCuboids import PyramidsAndCuboids
