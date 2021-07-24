@@ -19,3 +19,4 @@ class Standard(GenericPhysics):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.models.update(standard)
+        self.regenerate_models()

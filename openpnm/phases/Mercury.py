@@ -7,6 +7,7 @@ class Mercury(GenericPhase):
 
 
     """
+
     def __init__(self, name=None, **kwargs):
         super().__init__(name=name, **kwargs)
         self['pore.molecular_weight'] = 0.2006
@@ -17,4 +18,4 @@ class Mercury(GenericPhase):
         self['pore.electrical_conductivity'] = 1e6
         self['pore.diffusivity'] = 1e-15
         self.models.update(mercury)
-
+        self.regenerate_models()
