@@ -21,7 +21,7 @@ class RelativePermeabilityTest:
         self.geo["throat.conduit_lengths.pore2"] = 0.9
         self.non_wet_phase = op.phases.Air(network=self.net)
         self.wet_phase = op.phases.Water(network=self.net)
-        mod = op.models.physics.hydraulic_conductance.hagen_poiseuille
+        mod = op.models.physics.hydraulic_conductance.generic_hydraulic
         self.non_wet_phase.add_model(propname='throat.hydraulic_conductance',
                                      model=mod)
         self.wet_phase.add_model(propname='throat.hydraulic_conductance',

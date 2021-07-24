@@ -96,7 +96,7 @@ class FormationFactor(GenericMetric):
         phase = GenericPhase(network=self.network)
         phase['pore.diffusivity'] = 1.0
         phase['throat.diffusivity'] = 1.0
-        mod = models.physics.diffusive_conductance.ordinary_diffusion
+        mod = models.physics.diffusive_conductance.generic_diffusive
         for geom in self.project.geometries().values():
             phys = GenericPhysics(network=self.network,
                                   phase=phase, geometry=geom)
