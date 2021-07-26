@@ -55,18 +55,6 @@ class Cubic(GenericNetwork):
         then one will be created and this Network will be automatically
         assigned to it.  To create a *Project* use ``openpnm.Project()``.
 
-    Attributes
-    ----------
-    spacing : int or array
-        The distance between pore centers.  This value becomes meaningless
-        if the topology is manipulated at all (i.e. by adding boundary pores)
-        since there is not unique or consistent value.  In such cases an
-        exception is thrown.
-
-    shape : array
-        The shape of the network.  Like ``spacing`` this values is meaningless
-        if the topology is manipulated, so an Exception is thrown.
-
     Examples
     --------
     >>> import openpnm as op
