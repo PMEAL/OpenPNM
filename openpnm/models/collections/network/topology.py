@@ -7,5 +7,5 @@ topology = {
         },
     'throat.total_length': {
         'model': mods.topology.total_length,
-        }
+        },
     }
