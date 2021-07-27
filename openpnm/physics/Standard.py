@@ -14,6 +14,10 @@ class Standard(GenericPhysics):
     ----------
     %(GenericPhysics.parameters)s
 
+    Returns
+    -------
+    %(GenericPhysics.returns)s
+
     """
 
     def __init__(self, **kwargs):

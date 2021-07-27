@@ -17,10 +17,10 @@ class Base(dict):
     Parameters
     ----------
     project : OpenPNM Project object, optional
-        The Project with which the object should be assigned.  If not supplied
+        The Project with which the object should be associated. If not supplied
         then a new Project is created
     name : string, optional
-        The unique name of the object.  If not given one will be generated.
+        The unique name of the object. If not given one will be generated.
 
     Np : int, default is 0
         The total number of pores to be assigned to the object

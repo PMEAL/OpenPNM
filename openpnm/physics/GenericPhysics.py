@@ -6,14 +6,11 @@ logger = logging.getLogger(__name__)
 
 
 @docstr.get_sections(base='GenericPhysics',
-                     sections=['Parameters'])
+                     sections=['Parameters', 'Returns'])
 @docstr.dedent
 class GenericPhysics(Subdomain, ModelsMixin):
     r"""
-    This generic class is meant as a starter for custom Physics objects
-
-    It produces a blank object with no pore-scale models attached.  Users can
-    add models from the ``models`` module (or create their own).
+    A generic class meant as a starter for customized Physics objects
 
     Parameters
     ----------
@@ -25,10 +22,15 @@ class GenericPhysics(Subdomain, ModelsMixin):
         The Geometry object that defines the pores/throats where this Physics
         should be applied.
     name : str, optional
-        A unique string name to identify the Physics object, typically same as
+        A unique string name to identify the object, typically same as
         instance name but can be anything.  If left blank, and name will be
         generated that includes the class name and an integer index.
 
+    Returns
+    -------
+    phys : GenericPhysics
+        An object that manages physics models associated with certain pores
+        and throats
     """
 
     def __init__(self, project=None, network=None, phase=None,
