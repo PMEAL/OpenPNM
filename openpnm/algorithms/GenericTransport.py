@@ -1,8 +1,6 @@
 import numpy as np
 import openpnm as op
-import scipy.sparse.linalg
 import warnings
-from numpy.linalg import norm
 import scipy.sparse.csgraph as spgr
 from scipy.spatial import ConvexHull
 from scipy.spatial import cKDTree
@@ -41,9 +39,9 @@ class GenericTransportSettings(GenericSettings):
     Other Parameters
     ----------------
     cache_A : bool
-        If ``True``, A matrix is cached and reused rather than getting rebuilt.
+        If ``True``, A matrix is cached and rather than getting rebuilt.
     cache_b : bool
-        If ``True``, b vector is cached and reused rather than getting rebuilt.
+        If ``True``, b vector is cached and rather than getting rebuilt.
 
     """
 
@@ -96,17 +94,19 @@ class GenericTransport(GenericAlgorithm):
         r"""
         Resets the algorithm to enable re-use.
 
-        This allows the reuse of an algorithm inside a for-loop for parametric
-        studies.  The default behavior means that only ``alg.reset()`` and
-        ``alg.run()`` must be called inside a loop.  To reset the algorithm
-        more completely requires overriding the default arguments.
+        This allows the reuse of an algorithm inside a for-loop for
+        parametric studies. The default behavior means that only
+        ``alg.reset()`` and ``alg.run()`` must be called inside a loop.
+        To reset the algorithm more completely requires overriding the
+        default arguments.
 
         Parameters
         ----------
-        results : boolean
-            If ``True`` (default) all previously calculated values pertaining
-            to results of the algorithm are removed.
-        bcs : boolean (default = ``False``)
+        results : bool
+            If ``True`` all previously calculated values pertaining to
+            results of the algorithm are removed. The default value is
+            ``True``.
+        bcs : bool
             If ``True`` all previous boundary conditions are removed.
 
         """
@@ -121,7 +121,7 @@ class GenericTransport(GenericAlgorithm):
     @docstr.dedent
     def set_value_BC(self, pores, values, mode='merge'):
         r"""
-        Apply constant value boundary conditons to the specified locations.
+        Applues constant value boundary conditons to the specified pores.
 
         These are sometimes referred to as Dirichlet conditions.
 
@@ -129,20 +129,26 @@ class GenericTransport(GenericAlgorithm):
         ----------
         pores : array_like
             The pore indices where the condition should be applied
-        values : scalar or array_like
-            The value to apply in each pore.  If a scalar is supplied
+        values : float or array_like
+            The value to apply in each pore. If a scalar is supplied
             it is assigne to all locations, and if a vector is applied is
             must be the same size as the indices given in ``pores``.
-        mode : string, optional
-            Controls how the boundary conditions are applied.  Options are:
+        mode : str, optional
+            Controls how the boundary conditions are applied. The default
+            value is 'merge'. Options are:
 
-            'merge' - (Default) Adds supplied boundary conditions to already
-            existing conditions, and also overwrites any existing values.
-            If BCs of the complementary type already exist in the given
-            locations, those values are kept.
-            'overwrite' - Deletes all boundary conditions of the given type
-            then adds the specified new ones (unless locations already have
-            BCs of the other type).
+            ===========  =====================================================
+            mode         meaning
+            ===========  =====================================================
+            'merge'      Adds supplied boundary conditions to already
+                         existing conditions, and also overwrites any
+                         existing values. If BCs of the complementary type
+                         already exist in the given locations, those
+                         values are kept.
+            'overwrite'  Deletes all boundary conditions of the given type
+                         then adds the specified new ones (unless
+                         locations already have BCs of the other type)
+            ===========  =====================================================
 
         Notes
         -----
@@ -161,24 +167,31 @@ class GenericTransport(GenericAlgorithm):
         ----------
         pores : array_like
             The pore indices where the condition should be applied
-        rates : scalar or array_like, optional
-            The rates to apply in each pore.  If a scalar is supplied that
+        rates : float or array_like, optional
+            The rates to apply in each pore. If a scalar is supplied that
             rate is assigned to all locations, and if a vector is supplied
             it must be the same size as the indices given in ``pores``.
         total_rate : float, optional
-            The total rate supplied to all pores.  The rate supplied by this
-            argument is divided evenly among all pores. A scalar must be
-            supplied! Total_rate cannot be specified if rate is specified.
+            The total rate supplied to all pores. The rate supplied by
+            this argument is divided evenly among all pores. A scalar must
+            be supplied! Total_rate cannot be specified if rate is
+            specified.
         mode : str, optional
-            Controls how the boundary conditions are applied.  Options are:
+            Controls how the boundary conditions are applied. The default
+            value is 'merge'. Options are:
 
-            'merge' - (Default) Adds supplied boundary conditions to already
-            existing conditions, and also overwrites any existing values.
-            If BCs of the complementary type already exist in the given
-            locations, these values are kept.
-            'overwrite' - Deletes all boundary conditions of the given type
-            then adds the specified new ones (unless locations already have
-            BCs of the other type).
+            ===========  =====================================================
+            mode         meaning
+            ===========  =====================================================
+            'merge'      Adds supplied boundary conditions to already
+                         existing conditions, and also overwrites any
+                         existing values. If BCs of the complementary type
+                         already exist in the given locations, those
+                         values are kept.
+            'overwrite'  Deletes all boundary conditions of the given type
+                         then adds the specified new ones (unless
+                         locations already have BCs of the other type)
+            ===========  =====================================================
 
         Notes
         -----
@@ -206,29 +219,35 @@ class GenericTransport(GenericAlgorithm):
                          sections=['Parameters', 'Notes'])
     def _set_BC(self, pores, bctype, bcvalues=None, mode='merge'):
         r"""
-        This private method is called by public facing BC methods, to apply
-        boundary conditions to specified pores
+        This private method is called by public facing BC methods, to
+        apply boundary conditions to specified pores
 
         Parameters
         ----------
         pores : array_like
             The pores where the boundary conditions should be applied
-        bctype : string
-            Specifies the type or the name of boundary condition to apply. The
-            types can be one one of the following:
+        bctype : str
+            Specifies the type or the name of boundary condition to apply.
+            The types can be one one of the following:
 
-            'value' - Specify the value of the quantity in each location
-            'rate' - Specify the flow rate into each location
+            ===========  =====================================================
+            bctype       meaning
+            ===========  =====================================================
+            'value'      Specify the value of the quantity in each pore
+            'rate'       Specify the flow rate into each pore
+            ===========  =====================================================
 
         bcvalues : int or array_like
-            The boundary value to apply, such as concentration or rate.  If
-            a single value is given, it's assumed to apply to all locations
-            unless the 'total_rate' bc_type is supplied whereby a single value
-            corresponds to a total rate to be divded evenly among all pores.
-            Otherwise, different values can be applied to all pores in the form
-            of an array of the same length as ``pores``.
-        mode : string, optional
-            Controls how the boundary conditions are applied. Options are:
+            The boundary value to apply, such as concentration or rate.
+            If a single value is given, it's assumed to apply to all
+            locations unless the 'total_rate' bc_type is supplied whereby
+            a single value corresponds to a total rate to be divded evenly
+            among all pores. Otherwise, different values can be applied to
+            all pores in the form of an array of the same length as
+            ``pores``.
+        mode : str, optional
+            Controls how the boundary conditions are applied. The default
+            value is 'merge'. Options are:
 
             ===========  =====================================================
             mode         meaning
@@ -280,20 +299,26 @@ class GenericTransport(GenericAlgorithm):
 
     def remove_BC(self, pores=None, bctype='all'):
         r"""
-        Removes boundary conditions from the specified pores
+        Removes boundary conditions from the specified pores.
 
         Parameters
         ----------
         pores : array_like, optional
-            The pores from which boundary conditions are to be removed.  If no
-            pores are specified, then BCs are removed from all pores. No error
-            is thrown if the provided pores do not have any BCs assigned.
-        bctype : string, or list of strings
-            Specifies which type of boundary condition to remove. Options are:
+            The pores from which boundary conditions are to be removed. If
+            no pores are specified, then BCs are removed from all pores.
+            No error is thrown if the provided pores do not have any BCs
+            assigned.
+        bctype : str, or List[str]
+            Specifies which type of boundary condition to remove. The
+            default value is 'all'. Options are:
 
-            -*'all'*: (default) Removes all boundary conditions
-            -*'value'*: Removes only value conditions
-            -*'rate'*: Removes only rate conditions
+            ===========  =====================================================
+            bctype       meaning
+            ===========  =====================================================
+            'all'        Removes all boundary conditions
+            'value'      Removes only value conditions
+            'rate'       Removes only rate conditions
+            ===========  =====================================================
 
         """
         if isinstance(bctype, str):
@@ -317,8 +342,8 @@ class GenericTransport(GenericAlgorithm):
         settings under ``alg.settings['conductance']``.
 
         In subclasses, conductance is set by default. For instance, in
-        ``FickianDiffusion``, it is set to ``throat.diffusive_conductance``,
-        although it can be changed.
+        ``FickianDiffusion``, it is set to
+        ``throat.diffusive_conductance``, although it can be changed.
 
         """
         gvals = self.settings['conductance']
@@ -407,7 +432,7 @@ class GenericTransport(GenericAlgorithm):
 
         Parameters
         ----------
-        x0 : ND-array
+        x0 : ndarray
             Initial guess of unknown variable
 
         Notes
@@ -442,7 +467,8 @@ class GenericTransport(GenericAlgorithm):
 
     def _update_A_and_b(self):
         r"""
-        Builds/updates A, b based on the recent solution on algorithm object.
+        Builds/updates A, b based on the recent solution on the algorithm
+        object.
         """
         self._build_A()
         self._build_b()
@@ -538,16 +564,16 @@ class GenericTransport(GenericAlgorithm):
 
     def results(self):
         r"""
-        Fetches the calculated quantity from the algorithm and returns it as
-        an array.
+        Fetches the calculated quantity from the algorithm and returns it
+        as an array.
         """
         quantity = self.settings['quantity']
         return {quantity: self[quantity]}
 
     def rate(self, pores=[], throats=[], mode='group'):
         r"""
-        Calculates the net rate of material moving into a given set of pores or
-        throats
+        Calculates the net rate of material moving into a given set of
+        pores or throats
 
         Parameters
         ----------
@@ -555,11 +581,16 @@ class GenericTransport(GenericAlgorithm):
             The pores for which the rate should be calculated
         throats : array_like
             The throats through which the rate should be calculated
-        mode : string, optional
-            Controls how to return the rate. Options are:
-            - *'group'*: (default) Returns the cumulative rate of material
-            moving into the given set of pores
-            - *'single'* : Calculates the rate for each pore individually
+        mode : str, optional
+            Controls how to return the rate. The default value is 'group'.
+            Options are:
+
+            ===========  =====================================================
+            mode         meaning
+            ===========  =====================================================
+            'group'      Returns the cumulative rate of material
+            'single'     Calculates the rate for each pore individually
+            ===========  =====================================================
 
         Returns
         -------
@@ -568,12 +599,13 @@ class GenericTransport(GenericAlgorithm):
         rate indicates material is leaving the pores, and negative values
         mean material is entering.
 
-        If ``throats`` are specified the rate is calculated in the direction of
-        the gradient, thus is always positive.
+        If ``throats`` are specified the rate is calculated in the
+        direction of the gradient, thus is always positive.
 
         If ``mode`` is 'single' then the cumulative rate through the given
-        pores (or throats) are returned as a vector, if ``mode`` is 'group'
-        then the individual rates are summed and returned as a scalar.
+        pores (or throats) are returned as a vector, if ``mode`` is
+        'group' then the individual rates are summed and returned as a
+        scalar.
 
         """
         pores = self._parse_indices(pores)
@@ -620,11 +652,12 @@ class GenericTransport(GenericAlgorithm):
         Parameters
         ----------
         inlets : array_like
-            The pores where the inlet boundary conditions were applied.  If
+            The pores where the inlet boundary conditions were applied. If
             not given an attempt is made to infer them from the algorithm.
         outlets : array_like
-            The pores where the outlet boundary conditions were applied.  If
-            not given an attempt is made to infer them from the algorithm.
+            The pores where the outlet boundary conditions were applied.
+            If not given an attempt is made to infer them from the
+            algorithm.
         domain_area : float
             The area of the inlet and/or outlet face (which shold match)
         domain_length : float
