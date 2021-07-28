@@ -1,25 +1,13 @@
 import numpy as np
-from openpnm.algorithms import GenericTransport
+from numpy.linalg import norm
+from scipy.optimize.nonlin import TerminationCondition
 # Uncomment this line when we stop supporting Python 3.6
 # from dataclasses import dataclass, field
 # from typing import List
+from openpnm.algorithms import GenericTransport
 from openpnm.utils import logging, Docorator, GenericSettings
 docstr = Docorator()
 logger = logging.getLogger(__name__)
-
-
-# class RelaxationSettings(GenericSettings):
-#     r"""
-#     This class is a demonstration of how we can add nested settings classes
-#     to other settings classes to make categories for some settings.  This is
-#     being appended to the ReactiveTransportSettings class under the
-#     'relaxation' attribute, and it works as planned by allowing the nested
-#     dot access to its parameters. More work would be required to get it
-#     functional such as dealing with deeply nested dicts and so on, but it
-#     works in principal.
-#     """
-#     source = 1.0
-#     quantity = 1.0
 
 
 @docstr.get_sections(base='ReactiveTransportSettings',
@@ -45,19 +33,14 @@ class ReactiveTransportSettings(GenericSettings):
     ----------------
     sources : list
         List of source terms that have been added
-    relaxation_source : float (default = 1.0)
-        A relaxation factor to control under-relaxation of the source term.
-        Factor approaching 0 leads to improved stability but slower simulation.
-        Factor approaching 1 gives fast simulation but may be unstable.
     relaxation_quantity : float (default = 1.0)
         A relaxation factor to control under-relaxation for the quantity
         solving for. Factor approaching 0 leads to improved stability but
         slower simulation. Factor approaching 1 gives fast simulation but
         may be unstable.
-    nlin_max_iter : int
+    newton_maxiter : int
         Maximum number of iterations allowed for the nonlinear solver to
-        converge. This parameter is different that ``GenericTransport``'s
-        ``solver_max_iter``.
+        converge.
 
     ----
 
@@ -67,9 +50,7 @@ class ReactiveTransportSettings(GenericSettings):
 
     """
 
-    nlin_max_iter = 5000
-    # relaxation = RelaxationSettings()
-    relaxation_source = 1.0
+    newton_maxiter = 5000
     relaxation_quantity = 1.0
     # Swap the following 2 lines when we stop supporting Python 3.6
     # sources: List = field(default_factory=lambda: [])
@@ -93,51 +74,10 @@ class ReactiveTransport(GenericTransport):
 
     """
 
-    def __init__(self, settings={}, phase=None, **kwargs):
+    def __init__(self, settings={}, **kwargs):
         super().__init__(**kwargs)
         self.settings._update_settings_and_docs(ReactiveTransportSettings)
         self.settings.update(settings)
-        if phase is not None:
-            self.setup(phase=phase)
-
-    @docstr.get_sections(base='ReactiveTransport.setup',
-                         sections=['Parameters', 'Notes'])
-    @docstr.dedent
-    def setup(self, phase=None, quantity='', conductance='',
-              nlin_max_iter=None, relaxation_source=None,
-              relaxation_quantity=None, **kwargs):
-        r"""
-        This method takes several arguments that are essential to running
-        the algorithm and adds them to the settings.
-
-        Parameters
-        ----------
-        %(GenericTransportSettings.parameters)s
-        %(ReactiveTransportSettings.parameters)s
-
-        Notes
-        -----
-        Under-relaxation is a technique used for improving stability of a
-        computation, particularly in the presence of highly non-linear
-        terms. Under-relaxation used here limits the change in a variable
-        from one iteration to the next. An optimum choice of the
-        relaxation factor is one that is small enough to ensure stable
-        simulation and large enough to speed up the computation.
-
-        """
-        if phase:
-            self.settings['phase'] = phase.name
-        if quantity:
-            self.settings['quantity'] = quantity
-        if conductance:
-            self.settings['conductance'] = conductance
-        if nlin_max_iter:
-            self.settings['nlin_max_iter'] = nlin_max_iter
-        if relaxation_source:
-            self.settings['relaxation_source'] = relaxation_source
-        if relaxation_quantity:
-            self.settings['relaxation_quantity'] = relaxation_quantity
-        super().setup(**kwargs)
 
     @docstr.dedent
     def reset(self, source_terms=False, **kwargs):
@@ -147,7 +87,7 @@ class ReactiveTransport(GenericTransport):
         Parameters
         ----------
         %(GenericTransport.reset.parameters)s
-        source_terms : boolean
+        source_terms : bool
             If ``True`` removes source terms. The default is ``False``.
 
         """
@@ -159,7 +99,6 @@ class ReactiveTransport(GenericTransport):
             self.pop(item)
         # Reset the settings dict
         self.settings['sources'] = []
-        # TODO: clean up S1/S2.old temp variables stored on self
 
     def set_source(self, propname, pores, mode='overwrite'):
         r"""
@@ -167,29 +106,28 @@ class ReactiveTransport(GenericTransport):
 
         Parameters
         ----------
-        propname : string
+        propname : str
             The property name of the source term model to be applied.
         pores : array_like
             The pore indices where the source term should be applied.
         mode : str
             Controls how the sources are applied (see table under Notes).
-            The default is 'overwrite'.
+            The default is 'overwrite'. Options are:
+
+            ===========  =====================================================
+            mode         meaning
+            ===========  =====================================================
+            'merge'      Adds supplied source term to already existing
+                         ones.
+            'overwrite'  Deletes all existing source terms of the given
+                         ``propname`` then adds the specified new ones.
+            ===========  =====================================================
 
         Notes
         -----
-        The following ``mode`` values are supported:
-
-        ===========  =====================================================
-        mode         meaning
-        ===========  =====================================================
-        'merge'      Adds supplied source term to already existing ones.
-        'overwrite'  Deletes all existing source terms of the given
-                     ``propname`` then adds the specified new ones.
-        ===========  =====================================================
-
-        Source terms cannot be applied in pores where boundary conditions have
-        already been set. Attempting to do so will result in an error being
-        raised.
+        Source terms cannot be applied in pores where boundary conditions
+        have already been set. Attempting to do so will result in an error
+        being raised.
 
         """
         propname = self._parse_prop(propname, "pore")
@@ -202,9 +140,6 @@ class ReactiveTransport(GenericTransport):
         # Check if propname already in source term list
         if propname not in self.settings['sources']:
             self.settings['sources'].append(propname)
-        # Initialize '_propname.S1/S2.old' for optional under-relaxation
-        _propname = "._".join(propname.split("."))
-        self[f"{_propname}.S1.old"] = self[f"{_propname}.S2.old"] = 0.0
 
     def remove_source(self, propname, pores=None):
         r"""
@@ -257,48 +192,21 @@ class ReactiveTransport(GenericTransport):
 
         Notes
         -----
-        Applying source terms to ``A`` and ``b`` is performed after
-        (optionally) under-relaxing the source term to improve numerical
-        stability.
-
-        Physics are also updated before applying source terms
-        to ensure that source terms values are associated with the current
-        value of 'quantity'.
-
-        For source term under-relaxation, old values of S1 and S2 need
-        to be stored somewhere, we chose to store them on the algorithm
-        object. This is because storing them on phase/physics creates
-        unintended problems, ex. storing them on physics -> IO complains
-        added depth to the NestedDict, and storing them on the phase
-        object results in NaNs in case source term is only added to a
-        subset of nodes, which breaks our _check_for_nans algorithm.
-
-        Warnings
-        --------
-        In the case of a transient simulation, the updates in ``A``, ``b``
-        also depend on the time scheme. So, ``_correct_apply_sources()``
-        needs to be run afterwards to correct the already applied relaxed
-        source terms.
+        Phase and physics objects are also updated before applying source
+        terms to ensure that source terms values are associated with the
+        current value of 'quantity'.
 
         """
         phase = self.project.find_phase(self)
-        w = self.settings['relaxation_source']
         for item in self.settings['sources']:
-            element, prop = item.split(".")
-            _item = ".".join([element, "_" + prop])
+            # Fetch linearized values of the source term
             Ps = self.pores(item)
             S1, S2 = [phase[f"{item}.{Si}"] for Si in ["S1", "S2"]]
-            X1, X2 = [self[f"{_item}.{Xi}"] for Xi in ["S1.old", "S2.old"]]
-            # Source term relaxation
-            S1 = phase[f"{item}.S1"][:] = w * S1 + (1 - w) * X1
-            S2 = phase[f"{item}.S2"][:] = w * S2 + (1 - w) * X2
-            # Modify A and b based on "relaxed" S1/S2
+            # Modify A and b: diag(A) += -S1, b += S2
             diag = self.A.diagonal()
             diag[Ps] += -S1[Ps]
             self.A.setdiag(diag)
             self.b[Ps] += S2[Ps]
-            # Replace old values of S1/S2 by their current values
-            X1[:], X2[:] = S1, S2
 
     def _run_special(self, solver, x0):
         r"""
@@ -306,32 +214,46 @@ class ReactiveTransport(GenericTransport):
         according to the applied source term then calls ``_solve`` to
         solve the resulting system of linear equations.
 
-        Stops when the residual falls below ``solver_tol * norm(b)`` or
-        when the maximum number of iterations is reached.
+        Stops when the max-norm of the residual drops by at least
+        ``f_rtol``:
+
+            ``norm(R_n) < norm(R_0) * f_rtol``
+
+        AND
+
+            ``norm(dx) < norm(x) * x_rtol``
+
+        where R_i is the residual at ith iteration, x is the solution at
+        current iteration, and dx is the change in the solution between two
+        consecutive iterations. ``f_rtol`` and ``x_rtol`` are defined in
+        the algorithm's settings under: ``alg.settings['f_rtol']``, and
+        ``alg.settings['x_rtol']``, respectively.
 
         Parameters
         ----------
         x0 : ndarray
-            Initial guess of unknown variable
-
-        Returns
-        -------
-        x : ndarray
-            Solution array.
+            Initial guess of the unknown variable
 
         """
         w = self.settings['relaxation_quantity']
         quantity = self.settings['quantity']
-        max_iter = self.settings['nlin_max_iter']
-        for itr in range(max_iter):
-            super()._run_special(solver=solver, x0=x0, w=w)
-            x0 = self[quantity]  # Update x0 for next iteration
-            if self._is_converged():
-                logger.info(f'Solution converged: {self._get_residual():.4e}')
+        maxiter = self.settings['newton_maxiter']
+        f_rtol = self.settings['f_rtol']
+        x_rtol = self.settings['f_xtol']
+        xold = self[quantity]
+        condition = TerminationCondition(f_rtol=f_rtol, x_rtol=x_rtol)
+
+        for i in range(maxiter):
+            dx = self[quantity] - xold
+            res = self._get_residual()
+            is_converged = condition.check(f=res, x=xold, dx=dx)
+            if is_converged:
+                logger.info(f'Solution converged, residual norm: {norm(res):.4e}')
                 return
-            logger.info(f'Tolerance not met: {self._get_residual():.4e}')
-        raise
-        logger.critical(f"Not converged after {max_iter} iterations.")
+            super()._run_special(solver=solver, x0=xold, w=w)
+            xold = self[quantity]
+            logger.info(f'Iteration #{i:<4d} | Residual norm: {norm(res):.4e}')
+        logger.critical(f"{self.name} didn't converge after {maxiter} iterations")
 
     def _update_A_and_b(self):
         r"""
@@ -345,14 +267,6 @@ class ReactiveTransport(GenericTransport):
         r"""
         Find and return properties that need to be iterated while running
         the algorithm.
-
-        Notes
-        -----
-        This method was moved from ReactiveTransport class to
-        GenericTransport because source terms are not necessarily the only
-        properties that need iteration during an algorithm (ex.
-        concentration-dependent conductance)
-
         """
         import networkx as nx
         phase = self.project.find_phase(self)
@@ -370,6 +284,17 @@ class ReactiveTransport(GenericTransport):
         # Remove 'quantity' from iterative_props since it is not!
         iterative_props.remove(self.settings["quantity"])
         return iterative_props
+
+    def _get_residual(self, x=None):
+        r"""
+        Calculate solution residual based on the given ``x`` based on the
+        following formula:
+            ``res = norm(A*x - b)``
+        """
+        if x is None:
+            quantity = self.settings['quantity']
+            x = self[quantity]
+        return self.A * x - self.b
 
     @docstr.dedent
     def _set_BC(self, pores, bctype, bcvalues=None, mode='merge'):
