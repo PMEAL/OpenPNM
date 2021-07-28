@@ -13,31 +13,12 @@ class GenericAlgorithm(Base):
 
     Parameters
     ----------
-    network : (OpenPNM Network object)
+    network : GenericNetwork
         The network object to which this algorithm will apply.
-    name : (string, optional)
+    name : str, optional
         Name of the algorithm
-    project : (OpenPNM Project object, optional)
+    project : Project, optional
         Either a Network or a Project must be supplied
-
-    Notes
-    -----
-    This class defines the following methods, which all raise a
-    ``NotImplementedError`` and must be defined by the various subclasses
-
-    +---------------------+---------------------------------------------------+
-    | Methods             | Description                                       |
-    +=====================+===================================================+
-    | ``results``         | Generates an array or arrays of data produced by  |
-    |                     | the algorithm to be returned to the Phase         |
-    +---------------------+---------------------------------------------------+
-    | ``setup``           | Collects values to be placed in ``settings``. The |
-    |                     | main benefit is defining default values and       |
-    |                     | providing documentation on each settings          |
-    +---------------------+---------------------------------------------------+
-    | ``reset``           | Removes generated data, specified values, and     |
-    |                     | any other information lingering on an Algorithm   |
-    +---------------------+---------------------------------------------------+
 
     """
 
@@ -55,8 +36,8 @@ class GenericAlgorithm(Base):
             else:
                 project = network.project
         if project:
-            self['pore.all'] = np.ones((project.network.Np, ), dtype=bool)
-            self['throat.all'] = np.ones((project.network.Nt, ), dtype=bool)
+            self['pore.all'] = np.ones(project.network.Np, dtype=bool)
+            self['throat.all'] = np.ones(project.network.Nt, dtype=bool)
 
     def results(self):
         r"""
@@ -64,11 +45,6 @@ class GenericAlgorithm(Base):
         raise NotImplementedError("This method must be subclassed")
 
     def reset(self):
-        r"""
-        """
-        raise NotImplementedError("This method must be subclassed")
-
-    def setup(self):
         r"""
         """
         raise NotImplementedError("This method must be subclassed")
