@@ -41,6 +41,10 @@ class ReactiveTransportSettings(GenericSettings):
     newton_maxiter : int
         Maximum number of iterations allowed for the nonlinear solver to
         converge.
+    f_rtol : float
+        Relative tolerance for the solution residual
+    x_rtol : float
+        Relative tolerance for the solution vector
 
     ----
 
@@ -50,11 +54,14 @@ class ReactiveTransportSettings(GenericSettings):
 
     """
 
-    newton_maxiter = 5000
-    relaxation_quantity = 1.0
     # Swap the following 2 lines when we stop supporting Python 3.6
     # sources: List = field(default_factory=lambda: [])
     sources = []
+    relaxation_quantity = 1.0
+    newton_maxiter = 5000
+    f_rtol = 1e-6
+    x_rtol = 1e-6
+
 
 
 @docstr.get_sections(base='ReactiveTransport', sections=['Parameters'])
@@ -246,8 +253,8 @@ class ReactiveTransport(GenericTransport):
         for i in range(maxiter):
             dx = self[quantity] - xold
             res = self._get_residual()
-            is_converged = condition.check(f=res, x=xold, dx=dx)
-            if is_converged:
+            self.is_converged = condition.check(f=res, x=xold, dx=dx)
+            if self.is_converged:
                 logger.info(f'Solution converged, residual norm: {norm(res):.4e}')
                 return
             super()._run_special(solver=solver, x0=xold, w=w)
@@ -265,8 +272,8 @@ class ReactiveTransport(GenericTransport):
 
     def _get_iterative_props(self):
         r"""
-        Find and return properties that need to be iterated while running
-        the algorithm.
+        Finds and returns properties that need to be iterated while
+        running the algorithm.
         """
         import networkx as nx
         phase = self.project.find_phase(self)
@@ -287,9 +294,11 @@ class ReactiveTransport(GenericTransport):
 
     def _get_residual(self, x=None):
         r"""
-        Calculate solution residual based on the given ``x`` based on the
+        Calculates solution residual based on the given ``x`` based on the
         following formula:
-            ``res = norm(A*x - b)``
+
+            ``R = A * x - b``
+
         """
         if x is None:
             quantity = self.settings['quantity']
@@ -299,7 +308,7 @@ class ReactiveTransport(GenericTransport):
     @docstr.dedent
     def _set_BC(self, pores, bctype, bcvalues=None, mode='merge'):
         r"""
-        Apply boundary conditions to specified pores if no source terms
+        Applies boundary conditions to specified pores if no source terms
         are already assigned to these pores. Otherwise, raise an error.
 
         Parameters

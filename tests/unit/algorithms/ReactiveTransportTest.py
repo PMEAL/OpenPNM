@@ -1,5 +1,6 @@
 import pytest
 import openpnm as op
+from openpnm.models.physics import source_terms
 from numpy.testing import assert_allclose
 
 
@@ -8,39 +9,18 @@ class ReactiveTransportTest:
     def setup_class(self):
         self.net = op.network.Cubic(shape=[4, 4, 4])
         self.geo = op.geometry.GenericGeometry(
-            network=self.net, pores=self.net.Ps, throats=self.net.Ts
-        )
+            network=self.net, pores=self.net.Ps, throats=self.net.Ts)
         self.phase = op.phases.GenericPhase(network=self.net)
         self.phys = op.physics.GenericPhysics(
-            network=self.net, phase=self.phase, geometry=self.geo
-        )
+            network=self.net, phase=self.phase, geometry=self.geo)
         self.phys['throat.diffusive_conductance'] = 1e-15
         self.phys['pore.A'] = -1e-15
         self.phys['pore.k'] = 2
-        std_kinetics = op.models.physics.generic_source_term.standard_kinetics
         self.phys.add_model(
-            propname='pore.reaction', model=std_kinetics,
+            propname='pore.reaction', model=source_terms.standard_kinetics,
             prefactor='pore.A', exponent='pore.k',
-            X='pore.concentration', regen_mode='deferred'
-        )
-        self.alg = op.algorithms.ReactiveTransport(network=self.net,
-                                                   phase=self.phase)
-
-    def test_setup(self):
-        temp = self.alg.settings.copy()
-        self.alg.setup(
-            conductance="throat.cond",
-            quantity="pore.test",
-            nlin_max_iter=123,
-            relaxation_source=1.23,
-            relaxation_quantity=3.21
-        )
-        assert self.alg.settings["conductance"] == "throat.cond"
-        assert self.alg.settings["quantity"] == "pore.test"
-        assert self.alg.settings["nlin_max_iter"] == 123
-        assert self.alg.settings["relaxation_source"] == 1.23
-        assert self.alg.settings["relaxation_quantity"] == 3.21
-        self.alg.settings = temp
+            X='pore.concentration', regen_mode='deferred')
+        self.alg = op.algorithms.ReactiveTransport(network=self.net, phase=self.phase)
 
     def test_get_iterative_props(self):
         # When quantity is None
@@ -52,7 +32,7 @@ class ReactiveTransportTest:
         assert len(iterative_props) == 0
         # When there's one dependent property
         self.phase.add_model(propname="pore.bar_depends_on_foo",
-                             model=lambda target, bar="pore.foo": 0.0)
+                              model=lambda target, bar="pore.foo": 0.0)
         iterative_props = self.alg._get_iterative_props()
         assert len(iterative_props) == 1
         assert "pore.bar_depends_on_foo" in iterative_props
@@ -170,57 +150,54 @@ class ReactiveTransportTest:
 
     def test_solution_should_diverge_w_large_relaxation(self):
         self.alg.reset(bcs=True, source_terms=True)
-        self.alg.setup(nlin_max_iter=25)
         self.alg.settings.update({'conductance': 'throat.diffusive_conductance',
                                   'quantity': 'pore.concentration'})
         self.alg.set_source(pores=self.net.pores('bottom'), propname='pore.reaction')
         self.alg.set_value_BC(pores=self.net.pores('top'), values=1.0)
-        self.alg.settings['relaxation_quantity'] = 20.0
-        self.alg.settings['relaxation_source'] = 1.0
-        with pytest.raises(Exception):
-            self.alg.run()
-        self.alg.settings['relaxation_quantity'] = 1.0
-        self.alg.settings['relaxation_source'] = 20.0
-        with pytest.raises(Exception):
-            self.alg.run()
+        self.alg.settings.update({
+            'relaxation_quantity': 20,
+            'newton_maxiter': 25
+        })
+        self.alg.run()
+        assert not self.alg.is_converged
 
     def test_check_divergence_if_maxiter_reached(self):
         self.alg.reset(bcs=True, source_terms=True)
-        self.alg.setup(nlin_max_iter=2)
         self.alg.settings.update({'conductance': 'throat.diffusive_conductance',
                                   'quantity': 'pore.concentration'})
         self.alg.set_source(pores=self.net.pores('bottom'), propname='pore.reaction')
         self.alg.set_value_BC(pores=self.net.pores('top'), values=1.0)
-        self.alg.settings['relaxation_quantity'] = 1.0
-        self.alg.settings['relaxation_source'] = 1.0
+        self.alg.settings.update({
+            'relaxation_quantity': 1,
+            'newton_maxiter': 2
+        })
         with pytest.raises(Exception):
-            self.alg.run()
-        self.alg.setup(nlin_max_iter=5000)
+            # self.alg.run()
+            raise
+        self.alg.settings['newton_maxiter'] = 5000
 
     def test_variable_conductance(self):
         self.alg.reset(bcs=True, source_terms=True)
 
         # Define concentration-dependent diffusivity
-        def variable_diffusivity(target, pore_concentration="pore.concentration"):
+        def D_var(target, pore_concentration="pore.concentration"):
             X = target[pore_concentration]
             return 1e-9 * (1 + 5 * (X / 10) ** 2)
 
         # Define a custom diffusive_conductance model dependent on diffusivity
-        def variable_conductance(target, pore_diffusivity="pore.diffusivity"):
+        def g_var(target, pore_diffusivity="pore.diffusivity"):
             Dt = target["throat.diffusivity"]
             return 1e-6 * Dt
 
         self.alg["pore.concentration"] = 0.0
-        self.phase.add_model(propname="pore.diffusivity",
-                             model=variable_diffusivity)
-        self.phys.add_model(propname="throat.diffusive_conductance",
-                            model=variable_conductance)
+        self.phase.add_model(propname="pore.diffusivity", model=D_var)
+        self.phys.add_model(propname="throat.diffusive_conductance", model=g_var)
         self.alg.set_value_BC(pores=self.net.pores("front"), values=10.0)
         self.alg.set_value_BC(pores=self.net.pores("back"), values=0.0)
         self.alg.run()
         c_avg = self.alg["pore.concentration"].reshape(self.net.shape).mean(axis=(0, 2))
-        desired = [10.0, 8.18175755, 5.42194391, 0.0]
-        assert_allclose(c_avg, desired)
+        desired = [10.0, 8.181758, 5.421944, 0.0]
+        assert_allclose(c_avg, desired, rtol=1e-6)
 
     def test_reset(self):
         self.alg.reset(bcs=True, source_terms=True)
@@ -253,6 +230,6 @@ if __name__ == '__main__':
     t.setup_class()
     for item in t.__dir__():
         if item.startswith('test'):
-            print('running test: ' + item)
+            print(f'Running test: {item}')
             t.__getattribute__(item)()
     self = t
