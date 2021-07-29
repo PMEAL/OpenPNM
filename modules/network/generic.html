@@ -606,6 +606,703 @@
                 
   <div class="section" id="genericnetwork">
 <span id="generic-network-api"></span><h1>GenericNetwork<a class="headerlink" href="#genericnetwork" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="openpnm.network.GenericNetwork">
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">GenericNetwork</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/network/GenericNetwork.html#GenericNetwork"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.network.GenericNetwork" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="../core/base.html#openpnm.core.Base" title="openpnm.core.Base.Base"><code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.core.Base.Base</span></code></a>, <a class="reference internal" href="../core/modelsmixin.html#openpnm.core.ModelsMixin" title="openpnm.core.ModelsMixin.ModelsMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.core.ModelsMixin.ModelsMixin</span></code></a></p>
+<p>This generic class contains the main functionality used by all networks</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>coords</strong> (<em>array_like</em>) – An Np-by-3 array of [x, y, z] coordinates for each pore.</p></li>
+<li><p><strong>conns</strong> (<em>array_like</em>) – An Nt-by-2 array of [head, tail] connections between pores.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The GenericNetwork class houses a number of methods used for querying and
+managing the network’s spatial and topological information.  The following
+table gives a very short overview of the methods added those already found
+on the <code class="docutils literal notranslate"><span class="pre">openpnm.core.Base</span></code> class.</p>
+<table class="table">
+<colgroup>
+<col style="width: 40%" />
+<col style="width: 60%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Method or Attribute</p></th>
+<th class="head"><p>Functionality</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">create_adjacency_matrix</span></code></p></td>
+<td><p>Create an adjacency matrix using given
+weights in a specified format</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">create_incidence_matrix</span></code></p></td>
+<td><p>Create an incidence matrix using given
+weights in a specified format</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">get_adjacency_matrix</span></code></p></td>
+<td><p>Retrieve an existing adjacency matrix in
+the specified format (from <code class="docutils literal notranslate"><span class="pre">am</span></code>)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">get_incidence_matrix</span></code></p></td>
+<td><p>Retrieve an existing incidence matrix in
+the specified format (from <code class="docutils literal notranslate"><span class="pre">im</span></code>)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">am</span></code></p></td>
+<td><p>Returns the adjacency matrix in COO format</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">im</span></code></p></td>
+<td><p>Returns the incidence matrix in COO format</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">find_neighbor_pores</span></code></p></td>
+<td><p>For a given set of pores, find all
+neighboring pores</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">find_neighbor_throats</span></code></p></td>
+<td><p>For a given set of pores, find all
+neighboring throats</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">find_connecting_throat</span></code></p></td>
+<td><p>For each pair of throats find the pores
+they connect</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">find_connected_pores</span></code></p></td>
+<td><p>For each throat, find the pores which it
+connects</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">num_neighbors</span></code></p></td>
+<td><p>For a given set of pores find the number
+of neighbors for each</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">find_nearby_pores</span></code></p></td>
+<td><p>For a given set of pores, find pores that
+are within a certain distance</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">check_network_health</span></code></p></td>
+<td><p>Check the topology for any problems such
+as isolated pores</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+</pre></div>
+</div>
+<p>Create some pore coordinates and connections manually and assign to a
+GenericNetwork instance.  Consider a linear network of 4 pores and 3
+throats:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>0 ―― 1 ―― 3 ―― 2
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">coords</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">conns</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">GenericNetwork</span><span class="p">(</span><span class="n">conns</span><span class="o">=</span><span class="n">conns</span><span class="p">,</span> <span class="n">coords</span><span class="o">=</span><span class="n">coords</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Networks have two required properties: ‘pore.coords’ and ‘throat.conns’.
+These arrays indicate the spatial location of each pore, and which pores
+are connected to which.  Without these the Network object cannot function.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pn</span><span class="o">.</span><span class="n">props</span><span class="p">())</span>
+<span class="go">――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――</span>
+<span class="go">1     : pore.coords</span>
+<span class="go">2     : throat.conns</span>
+<span class="go">――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――</span>
+</pre></div>
+</div>
+<p>The GenericNetwork class has several methods for querying the topology.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Ps</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">find_neighbor_pores</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">Ps</span><span class="p">)</span>
+<span class="go">[0 3]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Ts</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">find_neighbor_throats</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">Ts</span><span class="p">)</span>
+<span class="go">[0 1]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pn</span><span class="o">.</span><span class="n">num_neighbors</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+<span class="go">[1]</span>
+</pre></div>
+</div>
+<p>All of the topological queries are accomplished by inspecting the adjacency
+and incidence matrices.  They are created on demand, and are stored for
+future use to save construction time.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="openpnm.network.GenericNetwork.am">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">am</span></span><a class="headerlink" href="#openpnm.network.GenericNetwork.am" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an adjacency matrix in the specified sparse format, with throat
+IDs indicating the non-zero values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fmt</strong> (<em>string</em><em>, </em><em>optional</em>) – <p>The sparse storage format to return.  Options are:</p>
+<p><strong>’coo’</strong> : (default) This is the native format of OpenPNM data</p>
+<p><strong>’lil’</strong> : Enables row-wise slice of the matrix</p>
+<p><strong>’csr’</strong> : Favored by most linear algebra routines</p>
+<p><strong>’dok’</strong> : Enables subscript access of locations</p>
+</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This method will only create the requested matrix in the specified
+format if one is not already saved on the object.  If not present,
+this method will create and return the matrix, as well as store it
+for future use.</p>
+<p>To obtain a matrix with weights other than throat IDs at each non-zero
+location use <code class="docutils literal notranslate"><span class="pre">create_adjacency_matrix</span></code>.</p>
+<p>To obtain the non-directed graph, with only upper-triangular entries,
+use <code class="docutils literal notranslate"><span class="pre">sp.sparse.triu(am,</span> <span class="pre">k=1)</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.network.GenericNetwork.check_network_health">
+<span class="sig-name descname"><span class="pre">check_network_health</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/network/GenericNetwork.html#GenericNetwork.check_network_health"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.network.GenericNetwork.check_network_health" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method check the network topological health by checking for:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>Isolated pores</p></li>
+<li><p>Islands or isolated clusters of pores</p></li>
+<li><p>Duplicate throats</p></li>
+<li><p>Bidirectional throats (ie. symmetrical adjacency matrix)</p></li>
+<li><p>Headless throats</p></li>
+</ol>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><em>A dictionary containing the offending pores or throat numbers under</em></p></li>
+<li><p><em>each named key.</em></p></li>
+<li><p><em>It also returns a list of which pores and throats should be trimmed</em></p></li>
+<li><p><em>from the network to restore health.  This list is a suggestion only,</em></p></li>
+<li><p><em>and is based on keeping the largest cluster and trimming the others.</em></p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>Does not yet check for duplicate pores</p></li>
+<li><p>Does not yet suggest which throats to remove</p></li>
+<li><p>This is just a ‘check’ and does not ‘fix’ the problems it finds</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.network.GenericNetwork.create_adjacency_matrix">
+<span class="sig-name descname"><span class="pre">create_adjacency_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">weights</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fmt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'coo'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">triu</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_zeros</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/network/GenericNetwork.html#GenericNetwork.create_adjacency_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.network.GenericNetwork.create_adjacency_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a weighted adjacency matrix in the desired sparse format</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>weights</strong> (<em>array_like</em><em>, </em><em>optional</em>) – <p>An array containing the throat values to enter into the matrix
+(in graph theory these are known as the ‘weights’).</p>
+<p>If the array is Nt-long, it implies that the matrix is symmetric,
+so the upper and lower triangular regions are mirror images.  If
+it is 2*Nt-long then it is assumed that the first Nt elements are
+for the upper triangle, and the last Nt element are for the lower
+triangular.</p>
+<p>If omitted, ones are used to create a standard adjacency matrix
+representing connectivity only.</p>
+</p></li>
+<li><p><strong>fmt</strong> (<em>string</em><em>, </em><em>optional</em>) – <p>The sparse storage format to return.  Options are:</p>
+<p><strong>’coo’</strong> : (default) This is the native format of OpenPNM data</p>
+<p><strong>’lil’</strong> : Enables row-wise slice of the matrix</p>
+<p><strong>’csr’</strong> : Favored by most linear algebra routines</p>
+<p><strong>’dok’</strong> : Enables subscript access of locations</p>
+</p></li>
+<li><p><strong>triu</strong> (boolean (default is <code class="docutils literal notranslate"><span class="pre">False</span></code>)) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the returned sparse matrix only contains the upper-
+triangular elements.  This argument is ignored if the <code class="docutils literal notranslate"><span class="pre">weights</span></code>
+array is 2*Nt-long.</p></li>
+<li><p><strong>drop_zeros</strong> (boolean (default is <code class="docutils literal notranslate"><span class="pre">False</span></code>)) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, applies the <code class="docutils literal notranslate"><span class="pre">eliminate_zeros</span></code> method of the sparse
+array to remove all zero locations.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>An adjacency matrix in the specified Scipy sparse format.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The adjacency matrix is used by OpenPNM for finding the pores
+connected to a give pore or set of pores.  Specifically, an adjacency
+matrix has Np rows and Np columns.  Each row represents a pore,
+containing non-zero values at the locations corresponding to the
+indices of the pores connected to that pore.  The <code class="docutils literal notranslate"><span class="pre">weights</span></code> argument
+indicates what value to place at each location, with the default
+being 1’s to simply indicate connections. Another useful option is
+throat indices, such that the data values on each row indicate which
+throats are connected to the pore.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">pn</span><span class="o">.</span><span class="n">num_throats</span><span class="p">(),</span> <span class="p">)</span> <span class="o">&lt;</span> <span class="mf">0.5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">am</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">create_adjacency_matrix</span><span class="p">(</span><span class="n">weights</span><span class="o">=</span><span class="n">weights</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;csr&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.network.GenericNetwork.create_incidence_matrix">
+<span class="sig-name descname"><span class="pre">create_incidence_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">weights</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fmt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'coo'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_zeros</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/network/GenericNetwork.html#GenericNetwork.create_incidence_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.network.GenericNetwork.create_incidence_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a weighted incidence matrix in the desired sparse format</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>weights</strong> (<em>array_like</em><em>, </em><em>optional</em>) – An array containing the throat values to enter into the matrix (In
+graph theory these are known as the ‘weights’).  If omitted, ones
+are used to create a standard incidence matrix representing
+connectivity only.</p></li>
+<li><p><strong>fmt</strong> (<em>string</em><em>, </em><em>optional</em>) – <p>The sparse storage format to return.  Options are:</p>
+<p><strong>’coo’</strong> : (default) This is the native format of OpenPNMs data</p>
+<p><strong>’lil’</strong> : Enables row-wise slice of the matrix</p>
+<p><strong>’csr’</strong> : Favored by most linear algebra routines</p>
+<p><strong>’dok’</strong> : Enables subscript access of locations</p>
+</p></li>
+<li><p><strong>drop_zeros</strong> (boolean (default is <code class="docutils literal notranslate"><span class="pre">False</span></code>)) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, applies the <code class="docutils literal notranslate"><span class="pre">eliminate_zeros</span></code> method of the sparse
+array to remove all zero locations.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>An incidence matrix in the specified sparse format</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The incidence matrix is a cousin to the adjacency matrix, and used by
+OpenPNM for finding the throats connected to a give pore or set of
+pores.  Specifically, an incidence matrix has Np rows and Nt columns,
+and each row represents a pore, containing non-zero values at the
+locations corresponding to the indices of the throats connected to that
+pore.  The <code class="docutils literal notranslate"><span class="pre">weights</span></code> argument indicates what value to place at each
+location, with the default being 1’s to simply indicate connections.
+Another useful option is throat indices, such that the data values
+on each row indicate which throats are connected to the pore, though
+this is redundant as it is identical to the locations of non-zeros.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">pn</span><span class="o">.</span><span class="n">num_throats</span><span class="p">(),</span> <span class="p">)</span> <span class="o">&lt;</span> <span class="mf">0.5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">im</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">create_incidence_matrix</span><span class="p">(</span><span class="n">weights</span><span class="o">=</span><span class="n">weights</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;csr&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.network.GenericNetwork.find_connected_pores">
+<span class="sig-name descname"><span class="pre">find_connected_pores</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">throats</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flatten</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'union'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/network/GenericNetwork.html#GenericNetwork.find_connected_pores"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.network.GenericNetwork.find_connected_pores" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of pores connected to the given list of throats</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>throats</strong> (<em>array_like</em>) – List of throats numbers</p></li>
+<li><p><strong>flatten</strong> (<em>boolean</em><em>, </em><em>optional</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> (default) a 1D array of unique pore numbers is
+returned. If <code class="docutils literal notranslate"><span class="pre">False</span></code> each location in the the returned array
+contains a sub-arras of neighboring pores for each input throat,
+in the order they were sent.</p></li>
+<li><p><strong>mode</strong> (<em>string</em>) – <p>Specifies logic to filter the resulting list.  Options are:</p>
+<p><strong>’or’</strong> : (default) All neighbors of the input throats.  This is
+also known as the ‘union’ in set theory or ‘any’ in boolean logic.
+Both keywords are accepted and treated as ‘or’.</p>
+<p><strong>’xor’</strong> : Only neighbors of one and only one input throat.  This
+is useful for finding the sites that are not shared by any of the
+input throats.</p>
+<p><strong>’xnor’</strong> : Neighbors that are shared by two or more input
+throats. This is equivalent to finding all neighbors with ‘or’,
+minus those found with ‘xor’, and is useful for finding neighbors
+that the inputs have in common.</p>
+<p><strong>’and’</strong> : Only neighbors shared by all input throats.  This is
+also known as ‘intersection’ in set theory and (somtimes) as ‘all’
+in boolean logic.  Both keywords are accepted and treated as ‘and’.</p>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p>1D array (if <code class="docutils literal notranslate"><span class="pre">flatten</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>) or ndarray of arrays (if</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">flatten</span></code> is <code class="docutils literal notranslate"><span class="pre">False</span></code>)</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Ps</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">find_connected_pores</span><span class="p">(</span><span class="n">throats</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">Ps</span><span class="p">)</span>
+<span class="go">[[0 1]</span>
+<span class="go"> [1 2]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Ps</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">find_connected_pores</span><span class="p">(</span><span class="n">throats</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">flatten</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">Ps</span><span class="p">)</span>
+<span class="go">[0 1 2]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.network.GenericNetwork.find_connecting_throat">
+<span class="sig-name descname"><span class="pre">find_connecting_throat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">P1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">P2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/network/GenericNetwork.html#GenericNetwork.find_connecting_throat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.network.GenericNetwork.find_connecting_throat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the throat index connecting pairs of pores</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>P1</strong> (<em>array_like</em>) – The indices of the pores whose throats are sought.  These can be
+vectors of indices, but must be the same length</p></li>
+<li><p><strong>P2</strong> (<em>array_like</em>) – The indices of the pores whose throats are sought.  These can be
+vectors of indices, but must be the same length</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>Returns a list the same length as P1 (and P2) with the each element</em></p></li>
+<li><p><em>containing the throat index that connects the corresponding pores,</em></p></li>
+<li><p>or <cite>None`</cite> if pores are not connected.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The returned list can be converted to an ND-array, which will convert
+the <code class="docutils literal notranslate"><span class="pre">None</span></code> values to <code class="docutils literal notranslate"><span class="pre">nan</span></code>.  These can then be found using
+<code class="docutils literal notranslate"><span class="pre">numpy.isnan</span></code>.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Ts</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">find_connecting_throat</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">Ts</span><span class="p">)</span>
+<span class="go">[None, 1, None]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.network.GenericNetwork.find_nearby_pores">
+<span class="sig-name descname"><span class="pre">find_nearby_pores</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pores</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flatten</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_input</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/network/GenericNetwork.html#GenericNetwork.find_nearby_pores"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.network.GenericNetwork.find_nearby_pores" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find all pores within a given radial distance of the input pore(s)
+regardless of whether or not they are toplogically connected.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pores</strong> (<em>array_like</em>) – The list of pores for whom nearby neighbors are to be found</p></li>
+<li><p><strong>r</strong> (<em>scalar</em>) – The maximum radius within which the search should be performed</p></li>
+<li><p><strong>include_input</strong> (<em>bool</em>) – Controls whether the input pores should be included in the list of
+pores nearby the <em>other pores</em> in the input list.  So if
+<code class="docutils literal notranslate"><span class="pre">pores=[1,</span> <span class="pre">2]</span></code> and 1 and 2 are within <code class="docutils literal notranslate"><span class="pre">r</span></code> of each other,
+then 1 will be included in the returned for pores near 2, and
+vice-versa <em>if</em> this argument is <code class="docutils literal notranslate"><span class="pre">True</span></code>.  The default is
+<code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><strong>flatten</strong> (<em>bool</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> returns a single list of all pores that match the
+criteria, otherwise returns an array containing a sub-array for
+each input pore, where each sub-array contains the pores that
+are nearby to each given input pore.  The default is False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>A list of pores which are within the given spatial distance.  If a</em></p></li>
+<li><p><em>list of N pores is supplied, then a an N-long list of such lists is</em></p></li>
+<li><p><em>returned.  The returned lists each contain the pore for which the</em></p></li>
+<li><p><em>neighbors were sought.</em></p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Ps</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">find_nearby_pores</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">r</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">Ps</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="go">[3 9]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">Ps</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="go">[ 2  4 10]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Ps</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">find_nearby_pores</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">r</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">Ps</span><span class="p">)</span>
+<span class="go">[array([], dtype=int64), array([], dtype=int64)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Ps</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">find_nearby_pores</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">r</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">flatten</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">Ps</span><span class="p">)</span>
+<span class="go">[ 2  3  4  9 10]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.network.GenericNetwork.find_neighbor_pores">
+<span class="sig-name descname"><span class="pre">find_neighbor_pores</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pores</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'union'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flatten</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_input</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/network/GenericNetwork.html#GenericNetwork.find_neighbor_pores"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.network.GenericNetwork.find_neighbor_pores" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of pores that are direct neighbors to the given pore(s)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pores</strong> (<em>array_like</em>) – Indices of the pores whose neighbors are sought</p></li>
+<li><p><strong>flatten</strong> (<em>boolean</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> (default) the returned result is a compressed array of
+all neighbors.  If <code class="docutils literal notranslate"><span class="pre">False</span></code>, a list of lists with each sub-list
+containing the neighbors for each input site.  Note that an
+<em>unflattened</em> list might be slow to generate since it is a Python
+<code class="docutils literal notranslate"><span class="pre">list</span></code> rather than a Numpy <code class="docutils literal notranslate"><span class="pre">array</span></code>.</p></li>
+<li><p><strong>include_input</strong> (<em>bool</em>) – If <code class="docutils literal notranslate"><span class="pre">False</span></code> (default) then the input pores are not included in
+the returned list(s). Note that since pores are not neighbors of
+themselves, the neighbors of pore N will not include N, even if
+this flag is <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
+<li><p><strong>mode</strong> (<em>string</em>) – <p>Specifies logic to filter the resulting list.  Options are:</p>
+<p><strong>’or’</strong> : (default) All neighbors of the input pores.  This is
+also known as the ‘union’ in set theory or ‘any’ in boolean logic.
+Both keywords are accepted and treated as ‘or’.</p>
+<p><strong>’xor’</strong> : Only neighbors of one and only one input pore.  This
+is useful for finding the pores that are not shared by any of the
+input pores.  This is known as ‘exclusive_or’ in set theory, and
+is an accepted input.</p>
+<p><strong>’xnor’</strong> : Neighbors that are shared by two or more input pores.
+This is equivalent to finding all neighbors with ‘or’, minus those
+found with ‘xor’, and is useful for finding neighbors that the
+inputs have in common.</p>
+<p><strong>’and’</strong> : Only neighbors shared by all input pores.  This is also
+known as ‘intersection’ in set theory and (somtimes) as ‘all’ in
+boolean logic.  Both keywords are accepted and treated as ‘and’.</p>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p>If <code class="docutils literal notranslate"><span class="pre">flatten</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, returns a 1D array of pore indices filtered</p></li>
+<li><p>according to the specified mode.  If <code class="docutils literal notranslate"><span class="pre">flatten</span></code> is <code class="docutils literal notranslate"><span class="pre">False</span></code>, returns</p></li>
+<li><p><em>a list of lists, where each list contains the neighbors of the</em></p></li>
+<li><p><em>corresponding input pores.</em></p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">logic</span></code> options are applied to neighboring pores only, thus it
+is not possible to obtain pores that are part of the global set but
+not neighbors. This is because (a) the list of global pores might be
+very large, and (b) it is not possible to return a list of neighbors
+for each input pores if global pores are considered.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Ps</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">find_neighbor_pores</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">Ps</span><span class="p">)</span>
+<span class="go">[ 1  3  5  7 25 27]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Ps</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">find_neighbor_pores</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">Ps</span><span class="p">)</span>
+<span class="go">[ 2  5  6 25 26]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Ps</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">find_neighbor_pores</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;union&#39;</span><span class="p">,</span>
+<span class="gp">... </span>                            <span class="n">include_input</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">Ps</span><span class="p">)</span>
+<span class="go">[ 0  1  2  5  6 25 26]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Ps</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">find_neighbor_pores</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">flatten</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">Ps</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="go">[ 1  5 25]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">Ps</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="go">[ 1  3  7 27]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Ps</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">find_neighbor_pores</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;xnor&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">Ps</span><span class="p">)</span>
+<span class="go">[1]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Ps</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">find_neighbor_pores</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;xor&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">Ps</span><span class="p">)</span>
+<span class="go">[ 3  5  7 25 27]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.network.GenericNetwork.find_neighbor_throats">
+<span class="sig-name descname"><span class="pre">find_neighbor_throats</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pores</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'union'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flatten</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/network/GenericNetwork.html#GenericNetwork.find_neighbor_throats"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.network.GenericNetwork.find_neighbor_throats" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of throats neighboring the given pore(s)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pores</strong> (<em>array_like</em>) – Indices of pores whose neighbors are sought</p></li>
+<li><p><strong>flatten</strong> (<em>boolean</em><em>, </em><em>optional</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> (default) a 1D array of unique throat indices is
+returned. If <code class="docutils literal notranslate"><span class="pre">False</span></code> the returned array contains arrays of
+neighboring throat indices for each input pore, in the order
+they were sent.</p></li>
+<li><p><strong>mode</strong> (<em>string</em>) – <p>Specifies logic to filter the resulting list.  Options are:</p>
+<p><strong>’or’</strong> : (default) All neighbors of the input pores.  This is
+also known as the ‘union’ in set theory or ‘any’ in boolean logic.
+Both keywords are accepted and treated as ‘or’.</p>
+<p><strong>’xor’</strong> : Only neighbors of one and only one input pore.  This
+is useful for finding the thraots that are not shared by any of the
+input pores.</p>
+<p><strong>’xnor’</strong> : Neighbors that are shared by two or more input pores.
+This is equivalent to finding all neighbors with ‘or’, minus those
+found with ‘xor’, and is useful for finding neighbors that the
+inputs have in common.</p>
+<p><strong>’and’</strong> : Only neighbors shared by all input pores.  This is also
+known as ‘intersection’ in set theory and (somtimes) as ‘all’ in
+boolean logic.  Both keywords are accepted and treated as ‘and’.</p>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p>If <code class="docutils literal notranslate"><span class="pre">flatten</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, returns a 1D array of throat indices</p></li>
+<li><p>filtered according to the specified mode.  If <code class="docutils literal notranslate"><span class="pre">flatten</span></code> is <code class="docutils literal notranslate"><span class="pre">False</span></code>,</p></li>
+<li><p><em>returns a list of lists, where each list contains the neighbors of the</em></p></li>
+<li><p><em>corresponding input pores.</em></p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">logic</span></code> options are applied to neighboring bonds only, thus it
+is not possible to obtain bonds that are part of the global set but
+not neighbors. This is because (a) the list of global bonds might be
+very large, and (b) it is not possible to return a list of neighbors
+for each input site if global sites are considered.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Ts</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">find_neighbor_throats</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">Ts</span><span class="p">)</span>
+<span class="go">[  0   1 100 101 200 201]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Ts</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">find_neighbor_throats</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">flatten</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">Ts</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="go">[  0 100 200]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">Ts</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="go">[  0   1 101 201]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.network.GenericNetwork.get_adjacency_matrix">
+<span class="sig-name descname"><span class="pre">get_adjacency_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fmt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'coo'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/network/GenericNetwork.html#GenericNetwork.get_adjacency_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.network.GenericNetwork.get_adjacency_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an adjacency matrix in the specified sparse format, with throat
+IDs indicating the non-zero values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fmt</strong> (<em>string</em><em>, </em><em>optional</em>) – <p>The sparse storage format to return.  Options are:</p>
+<p><strong>’coo’</strong> : (default) This is the native format of OpenPNM data</p>
+<p><strong>’lil’</strong> : Enables row-wise slice of the matrix</p>
+<p><strong>’csr’</strong> : Favored by most linear algebra routines</p>
+<p><strong>’dok’</strong> : Enables subscript access of locations</p>
+</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This method will only create the requested matrix in the specified
+format if one is not already saved on the object.  If not present,
+this method will create and return the matrix, as well as store it
+for future use.</p>
+<p>To obtain a matrix with weights other than throat IDs at each non-zero
+location use <code class="docutils literal notranslate"><span class="pre">create_adjacency_matrix</span></code>.</p>
+<p>To obtain the non-directed graph, with only upper-triangular entries,
+use <code class="docutils literal notranslate"><span class="pre">sp.sparse.triu(am,</span> <span class="pre">k=1)</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.network.GenericNetwork.get_incidence_matrix">
+<span class="sig-name descname"><span class="pre">get_incidence_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fmt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'coo'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/network/GenericNetwork.html#GenericNetwork.get_incidence_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.network.GenericNetwork.get_incidence_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an incidence matrix in the specified sparse format, with pore
+IDs indicating the non-zero values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fmt</strong> (<em>string</em><em>, </em><em>optional</em>) – <p>The sparse storage format to return.  Options are:</p>
+<p><strong>’coo’</strong> : (default) This is the native format of OpenPNM data</p>
+<p><strong>’lil’</strong> : Enables row-wise slice of the matrix</p>
+<p><strong>’csr’</strong> : Favored by most linear algebra routines</p>
+<p><strong>’dok’</strong> : Enables subscript access of locations</p>
+</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This method will only create the requested matrix in the specified
+format if one is not already saved on the object.  If not present,
+this method will create and return the matrix, as well as store it
+for future use.</p>
+<p>To obtain a matrix with weights other than pore IDs at each non-zero
+location use <code class="docutils literal notranslate"><span class="pre">create_incidence_matrix</span></code>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="openpnm.network.GenericNetwork.im">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">im</span></span><a class="headerlink" href="#openpnm.network.GenericNetwork.im" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an incidence matrix in the specified sparse format, with pore
+IDs indicating the non-zero values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fmt</strong> (<em>string</em><em>, </em><em>optional</em>) – <p>The sparse storage format to return.  Options are:</p>
+<p><strong>’coo’</strong> : (default) This is the native format of OpenPNM data</p>
+<p><strong>’lil’</strong> : Enables row-wise slice of the matrix</p>
+<p><strong>’csr’</strong> : Favored by most linear algebra routines</p>
+<p><strong>’dok’</strong> : Enables subscript access of locations</p>
+</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This method will only create the requested matrix in the specified
+format if one is not already saved on the object.  If not present,
+this method will create and return the matrix, as well as store it
+for future use.</p>
+<p>To obtain a matrix with weights other than pore IDs at each non-zero
+location use <code class="docutils literal notranslate"><span class="pre">create_incidence_matrix</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.network.GenericNetwork.num_neighbors">
+<span class="sig-name descname"><span class="pre">num_neighbors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pores</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'or'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flatten</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/network/GenericNetwork.html#GenericNetwork.num_neighbors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.network.GenericNetwork.num_neighbors" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number of neigbhoring pores for each given input pore</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pores</strong> (<em>array_like</em>) – Pores whose neighbors are to be counted</p></li>
+<li><p><strong>flatten</strong> (<em>boolean</em><em> (</em><em>optional</em><em>)</em>) – If <code class="docutils literal notranslate"><span class="pre">False</span></code> (default) the number of pores neighboring each input
+pore as an array the same length as <code class="docutils literal notranslate"><span class="pre">pores</span></code>.  If <code class="docutils literal notranslate"><span class="pre">True</span></code> the
+sum total number of is counted.</p></li>
+<li><p><strong>mode</strong> (<em>string</em>) – <p>The logic to apply to the returned count of pores.</p>
+<p><strong>’or’</strong> : (default) All neighbors of the input pores.  This is
+also known as the ‘union’ in set theory or ‘any’ in boolean logic.
+Both keywords are accepted and treated as ‘or’.</p>
+<p><strong>’xor’</strong> : Only neighbors of one and only one input pore.  This
+is useful for counting the pores that are not shared by any of the
+input pores.  This is known as ‘exclusive_or’ in set theory, and
+is an accepted input.</p>
+<p><strong>’xnor’</strong> : Neighbors that are shared by two or more input pores.
+This is equivalent to counting all neighbors with ‘or’, minus those
+found with ‘xor’, and is useful for finding neighbors that the
+inputs have in common.</p>
+<p><strong>’and’</strong> : Only neighbors shared by all input pores.  This is also
+known as ‘intersection’ in set theory and (somtimes) as ‘all’ in
+boolean logic.  Both keywords are accepted and treated as ‘and’.</p>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p>If <code class="docutils literal notranslate"><span class="pre">flatten</span></code> is False, a 1D array with number of neighbors in each</p></li>
+<li><p><em>element, otherwise a scalar value of the number of neighbors.</em></p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This method literally just counts the number of elements in the array
+returned by <code class="docutils literal notranslate"><span class="pre">find_neighbor_pores</span></code> using the same logic.  Explore
+those methods if uncertain about the meaning of the <code class="docutils literal notranslate"><span class="pre">mode</span></code> argument
+here.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#openpnm.network.GenericNetwork.find_neighbor_pores" title="openpnm.network.GenericNetwork.find_neighbor_pores"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_neighbor_pores</span></code></a>, <a class="reference internal" href="#openpnm.network.GenericNetwork.find_neighbor_throats" title="openpnm.network.GenericNetwork.find_neighbor_throats"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_neighbor_throats</span></code></a></p>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Np</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">num_neighbors</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">flatten</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">Np</span><span class="p">)</span>
+<span class="go">[3 4]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Np</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">num_neighbors</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">flatten</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">Np</span><span class="p">)</span>
+<span class="go">6</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Np</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">num_neighbors</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;and&#39;</span><span class="p">,</span> <span class="n">flatten</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">Np</span><span class="p">)</span>
+<span class="go">1</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 
 
@@ -631,7 +1328,7 @@
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.1.1.<br/>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.1.2.<br/>
 </p>
     </div>
     

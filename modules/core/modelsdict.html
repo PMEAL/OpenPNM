@@ -606,6 +606,92 @@
                 
   <div class="section" id="modelsdict">
 <span id="modelsdict-api"></span><h1>ModelsDict<a class="headerlink" href="#modelsdict" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="openpnm.core.ModelsDict">
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">ModelsDict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/core/ModelsMixin.html#ModelsDict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.core.ModelsDict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="../utils/misc.html#openpnm.utils.PrintableDict" title="openpnm.utils.misc.PrintableDict"><code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.utils.misc.PrintableDict</span></code></a></p>
+<p>This subclassed dictionary is assigned to the <code class="docutils literal notranslate"><span class="pre">models</span></code> attribute of
+all objects that inherit from the <code class="docutils literal notranslate"><span class="pre">ModelsMixin</span></code> class.  Each
+dictionary entry corresponds to an entry in the target object’s
+dictionary, and contains the models and associated parameters for
+generating the model.</p>
+<p>The main features of this subclass are three methods the help resolve
+the order in which models should be called: <code class="docutils literal notranslate"><span class="pre">dependency_list</span></code>,
+<code class="docutils literal notranslate"><span class="pre">dependency_graph</span></code>, and <code class="docutils literal notranslate"><span class="pre">dependency_map</span></code>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.core.ModelsDict.dependency_graph">
+<span class="sig-name descname"><span class="pre">dependency_graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">deep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/core/ModelsMixin.html#ModelsDict.dependency_graph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.core.ModelsDict.dependency_graph" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a NetworkX graph object of the dependencies</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>deep</strong> (<em>bool</em><em>, </em><em>optional</em>) – Defines whether intra- or inter-object dependency graph is
+desired. Default is False, i.e. only returns dependencies
+within the object.</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#openpnm.core.ModelsDict.dependency_list" title="openpnm.core.ModelsDict.dependency_list"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dependency_list</span></code></a>, <a class="reference internal" href="#openpnm.core.ModelsDict.dependency_map" title="openpnm.core.ModelsDict.dependency_map"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dependency_map</span></code></a></p>
+</div>
+<p class="rubric">Notes</p>
+<p>To visualize the dependencies, the following NetworkX function and
+settings is helpful:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">net</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">geo</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">StickAndBall</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">net</span><span class="p">,</span>
+<span class="gp">... </span>                               <span class="n">pores</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">Ps</span><span class="p">,</span>
+<span class="gp">... </span>                               <span class="n">throats</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">Ts</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dtree</span> <span class="o">=</span> <span class="n">geo</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">dependency_graph</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nx</span><span class="o">.</span><span class="n">draw_spectral</span><span class="p">(</span><span class="n">dtree</span><span class="p">,</span>
+<span class="gp">... </span>                 <span class="n">arrowsize</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+<span class="gp">... </span>                 <span class="n">font_size</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
+<span class="gp">... </span>                 <span class="n">with_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="gp">... </span>                 <span class="n">node_size</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span>
+<span class="gp">... </span>                 <span class="n">width</span><span class="o">=</span><span class="mf">3.0</span><span class="p">,</span>
+<span class="gp">... </span>                 <span class="n">edge_color</span><span class="o">=</span><span class="s1">&#39;lightgrey&#39;</span><span class="p">,</span>
+<span class="gp">... </span>                 <span class="n">font_weight</span><span class="o">=</span><span class="s1">&#39;bold&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.core.ModelsDict.dependency_list">
+<span class="sig-name descname"><span class="pre">dependency_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/core/ModelsMixin.html#ModelsDict.dependency_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.core.ModelsDict.dependency_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of dependencies in the order with which they should
+be called to ensure data is calculated by one model before it’s
+asked for by another.</p>
+<p class="rubric">Notes</p>
+<p>This raises an exception if the graph has cycles which means the
+dependencies are unresolvable (i.e. there is no order which the
+models can be called that will work).  In this case it is possible
+to visually inspect the graph using <code class="docutils literal notranslate"><span class="pre">dependency_graph</span></code>.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#openpnm.core.ModelsDict.dependency_graph" title="openpnm.core.ModelsDict.dependency_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dependency_graph</span></code></a>, <a class="reference internal" href="#openpnm.core.ModelsDict.dependency_map" title="openpnm.core.ModelsDict.dependency_map"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dependency_map</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.core.ModelsDict.dependency_map">
+<span class="sig-name descname"><span class="pre">dependency_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">style</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'shell'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/core/ModelsMixin.html#ModelsDict.dependency_map"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.core.ModelsDict.dependency_map" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a graph of the dependency graph in a decent format</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ax</strong> (<em>matplotlib.axis</em><em>, </em><em>optional</em>) – Matplotlib axis object on which dependency map is to be drawn.</p></li>
+<li><p><strong>figsize</strong> (<em>tuple</em><em>, </em><em>optional</em>) – Tuple containing frame size.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#openpnm.core.ModelsDict.dependency_graph" title="openpnm.core.ModelsDict.dependency_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dependency_graph</span></code></a>, <a class="reference internal" href="#openpnm.core.ModelsDict.dependency_list" title="openpnm.core.ModelsDict.dependency_list"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dependency_list</span></code></a></p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 
 
@@ -631,7 +717,7 @@
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.1.1.<br/>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.1.2.<br/>
 </p>
     </div>
     
