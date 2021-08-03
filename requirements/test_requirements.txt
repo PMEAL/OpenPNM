@@ -7,3 +7,4 @@ pytest-codestyle
 testfixtures
 jupyter
 nbval
+porespy

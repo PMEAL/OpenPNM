@@ -17,10 +17,10 @@ data = {
     'resolution': 5.345e-6,
     'porosity':	19.6,
     'permeability': {
-        'Kx (mD)': 1360,
-        'Ky (mD)': 1304,
-        'Kz (mD)': 1193,
-        'Kave (mD)': 1286,
+        'Kx': 1360,
+        'Ky': 1304,
+        'Kz': 1193,
+        'Kave': 1286,
         },
     'formation factor': {
         'Fx': 23.12,
@@ -36,10 +36,10 @@ snow = ps.networks.snow2(im, voxel_size=data['resolution'],
 ps.imshow(snow.regions/snow.phases)
 
 # %% Open network in OpenPNM
-settings={'pore_shape': 'pyramid',
-          'throat_shape': 'cuboid',
-          'pore_diameter': 'equivalent_diameter',
-          'throat_diameter': 'inscribed_diameter'}
+settings = {'pore_shape': 'pyramid',
+            'throat_shape': 'cuboid',
+            'pore_diameter': 'equivalent_diameter',
+            'throat_diameter': 'inscribed_diameter'}
 pn, geo = op.io.PoreSpy.import_data(snow.network, settings=settings)
 h = pn.check_network_health()
 op.topotools.trim(network=pn, pores=h['trim_pores'])
@@ -59,7 +59,9 @@ L = (data['shape']['x'] + 6)*data['resolution']
 A = data['shape']['y']*data['shape']['z']*data['resolution']**2
 Deff = fd.rate(pores=pn.pores('xmin'))*(L/A)/dC
 F = 1/Deff
-print(f'Formation factor is {F}')
+print(f"The Formation factor of the extracted network is {F}")
+print(f"The compares to a value of {data['formation factor']['Fx']} from DNS")
+assert F/data['formation factor']['Fx'] < 1.9  # within 9%
 
 # %% Perform Stokes flow to find Permeability coefficient
 sf = op.algorithms.StokesFlow(network=pn, phase=gas)
@@ -70,4 +72,6 @@ dP = 1.0
 L = (data['shape']['x'] + 6)*data['resolution']
 A = data['shape']['y']*data['shape']['z']*data['resolution']**2
 K = sf.rate(pores=pn.pores('xmin'))*(L/A)/dP*1e12
-print(f'Permeability coefficient is {K}')
+print(f'Permeability coefficient is {K} Darcy')
+print(f"The compares to a value of {data['permeability']['Kx']/1000} from DNS")
+assert K/(data['permeability']['Kx']/1000) > 0.95  # within 5%
