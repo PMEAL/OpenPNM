@@ -843,19 +843,18 @@
                 <span class="n">x</span> <span class="o">=</span> <span class="n">ml</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">b</span><span class="o">=</span><span class="n">b</span><span class="p">,</span> <span class="n">x0</span><span class="o">=</span><span class="n">x0</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="n">rtol</span><span class="p">,</span> <span class="n">maxiter</span><span class="o">=</span><span class="n">max_it</span><span class="p">,</span> <span class="n">accel</span><span class="o">=</span><span class="s2">&quot;bicgstab&quot;</span><span class="p">)</span>
                 <span class="k">return</span> <span class="n">x</span>
         <span class="c1"># PyPardiso</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;solver_family&#39;</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;pypardiso&#39;</span><span class="p">,</span> <span class="s1">&#39;pardiso&#39;</span><span class="p">]:</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;solver_family&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;pypardiso&#39;</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="kn">import</span> <span class="nn">pypardiso</span>
             <span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>
-                <span class="n">msg</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">prettify_logger_message</span><span class="p">(</span>
-                    <span class="s2">&quot;Pardiso missing, reverting to much slower spsolve.&quot;</span>
-                    <span class="s2">&quot; Install pardiso with: conda install -c conda-forge pardiso4py&quot;</span><span class="p">)</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">Np</span> <span class="o">&lt;=</span> <span class="mi">8000</span><span class="p">:</span>
-                    <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s2">&quot;Pardiso not found, reverting to much &quot;</span>
+                                    <span class="o">+</span> <span class="s2">&quot;slower spsolve.  Install pardiso with: &quot;</span>
+                                    <span class="o">+</span> <span class="s2">&quot;conda install -c conda-forge pardiso4py&quot;</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;solver_family&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;scipy&#39;</span>
                     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_solver</span><span class="p">()</span>
-                <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Pardiso missing. Install via: conda install -c conda-forge pardiso4py&quot;</span>
-                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Pardiso not found. Install it with: &quot;</span>
+                                <span class="o">+</span> <span class="s2">&quot;conda install -c conda-forge pardiso4py&quot;</span><span class="p">)</span>
 
             <span class="k">def</span> <span class="nf">solver</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
                 <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -863,36 +862,6 @@
 <span class="sd">                &quot;&quot;&quot;</span>
                 <span class="n">x</span> <span class="o">=</span> <span class="n">pypardiso</span><span class="o">.</span><span class="n">spsolve</span><span class="p">(</span><span class="n">A</span><span class="o">=</span><span class="n">A</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="n">b</span><span class="p">)</span>
                 <span class="k">return</span> <span class="n">x</span>
-        <span class="c1"># CuPy</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;solver_family&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;cupy&#39;</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="kn">import</span> <span class="nn">cupy</span>
-                <span class="kn">import</span> <span class="nn">cupyx.scipy.sparse.linalg</span>
-                <span class="n">cupyx</span><span class="o">.</span><span class="n">scipy</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">lschol</span> <span class="o">=</span> <span class="n">cupyx</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">lschol</span>
-            <span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>
-                <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;CuPy missing. Install via: conda install -c conda-forge cupy&quot;</span>
-                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-
-            <span class="k">def</span> <span class="nf">solver</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">max_it</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">x0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-                <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">                Wrapper method for CuPy sparse linear solvers.</span>
-<span class="sd">                &quot;&quot;&quot;</span>
-                <span class="n">x0</span> <span class="o">=</span> <span class="n">x0</span> <span class="k">if</span> <span class="n">x0</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">cupy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x0</span><span class="p">)</span>
-                <span class="n">b</span> <span class="o">=</span> <span class="n">cupy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
-                <span class="n">A</span> <span class="o">=</span> <span class="n">cupy</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
-                <span class="n">direct</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;spsolve&quot;</span><span class="p">,</span> <span class="s2">&quot;lsqr&quot;</span><span class="p">,</span> <span class="s2">&quot;lschol&quot;</span><span class="p">]</span>
-                <span class="n">iterative</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;cg&quot;</span><span class="p">,</span> <span class="s2">&quot;gmres&quot;</span><span class="p">]</span>
-                <span class="n">solver_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;solver_type&quot;</span><span class="p">]</span>
-                <span class="n">args</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="n">A</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="n">b</span><span class="p">}</span>
-                <span class="k">if</span> <span class="n">solver_type</span> <span class="ow">in</span> <span class="n">direct</span> <span class="o">+</span> <span class="n">iterative</span><span class="p">:</span>
-                    <span class="n">ls</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">cupyx</span><span class="o">.</span><span class="n">scipy</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">linalg</span><span class="p">,</span> <span class="n">solver_type</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="n">solver_type</span> <span class="ow">in</span> <span class="n">iterative</span><span class="p">:</span>
-                        <span class="n">args</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;tol&quot;</span><span class="p">:</span> <span class="n">rtol</span><span class="p">,</span> <span class="s2">&quot;maxiter&quot;</span><span class="p">:</span> <span class="n">max_it</span><span class="p">,</span> <span class="s2">&quot;x0&quot;</span><span class="p">:</span> <span class="n">x0</span><span class="p">})</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported solver type: </span><span class="si">{</span><span class="n">solver_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                <span class="n">out</span> <span class="o">=</span> <span class="n">ls</span><span class="p">(</span><span class="o">**</span><span class="n">args</span><span class="p">)</span>
-                <span class="n">x</span> <span class="o">=</span> <span class="n">out</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="k">else</span> <span class="n">out</span>
-                <span class="k">return</span> <span class="n">cupy</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;solver_family&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> not available.&quot;</span><span class="p">)</span>
 
