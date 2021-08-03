@@ -1,10 +1,15 @@
 import openpnm as op
 import porespy as ps
 import numpy as np
+import os
+from pathlib import Path
 
 
 # %% Read image from file in fixtures
-data = np.load('../fixtures/berea_100_to_300.npz')
+
+path = Path(os.path.realpath(__file__),
+            '../../../tests/fixtures/berea_100_to_300.npz')
+data = np.load(path.resolve())
 im = data['im']
 
 # %% Note meta data for this image
