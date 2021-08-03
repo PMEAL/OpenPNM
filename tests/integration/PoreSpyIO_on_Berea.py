@@ -52,7 +52,6 @@ gas = op.phases.GenericPhase(network=pn)
 gas['pore.diffusivity'] = 1.0
 gas['pore.viscosity'] = 1.0
 phys = op.physics.Basic(network=pn, phase=gas, geometry=geo)
-phys.models.pop('throat.ad_dif_conductance')
 
 # %% Perform Fickian Diffusion to find formation factor
 fd = op.algorithms.FickianDiffusion(network=pn, phase=gas)
