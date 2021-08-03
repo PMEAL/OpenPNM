@@ -27,8 +27,8 @@ class ImportedTest:
         assert 'throat.endpoints' not in geo.keys()
         assert 'throat.conduit_lengths' not in geo.keys()
         assert 'throat.length' in geo.models.keys()
-        assert 'throat.endpoints' in geo.models.keys()
-        assert 'throat.conduit_lengths' in geo.models.keys()
+        assert 'throat.diffusive_size_factors' in geo.models.keys()
+        assert 'throat.hydraulic_size_factors' in geo.models.keys()
 
     def test_with_added_pores(self):
         net = op.network.Cubic(shape=[3, 3, 3])
