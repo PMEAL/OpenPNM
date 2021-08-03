@@ -98,11 +98,11 @@ class Imported(GenericGeometry):
             except KeyError:
                 logger.error(pdia + " not found, can't assign 'pore.diameter'")
 
-        if 'pore.volume' not in self.keys():
-            pore_shape = self.settings['pore_shape']
-            m = getattr(mods.geometry.pore_volume, pore_shape)
-            self.add_model(propname='pore.volume',
-                           model=m, pore_diameter='pore.diameter')
+        # if 'pore.volume' not in self.keys():
+        #     pore_shape = self.settings['pore_shape']
+        #     m = getattr(mods.geometry.pore_volume, pore_shape)
+        #     self.add_model(propname='pore.volume',
+        #                    model=m, pore_diameter='pore.diameter')
 
         # if 'pore.area' not in self.keys():
         #     pore_shape = self.settings['pore_shape']
