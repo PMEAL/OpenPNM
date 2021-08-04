@@ -851,10 +851,10 @@ class Base(dict):
         --------
         >>> import openpnm as op
         >>> pn = op.network.Cubic(shape=[5, 5, 5])
-        >>> Ps = pn.pores(labels=['top', 'front'], mode='union')
+        >>> Ps = pn.pores(labels=['top', 'back'], mode='union')
         >>> Ps[:5]  # Look at first 5 pore indices
         array([ 4,  9, 14, 19, 20])
-        >>> pn.pores(labels=['top', 'front'], mode='xnor')
+        >>> pn.pores(labels=['top', 'back'], mode='xnor')
         array([ 24,  49,  74,  99, 124])
         """
         ind = self._get_indices(element='pore', labels=labels, mode=mode)
@@ -1359,8 +1359,8 @@ class Base(dict):
         >>> pn = op.network.Cubic(shape=[5, 5, 5])
         >>> pn.filter_by_label(pores=[0, 1, 25, 32], labels='left')
         array([0, 1])
-        >>> Ps = pn.pores(['top', 'bottom', 'front'], mode='or')
-        >>> pn.filter_by_label(pores=Ps, labels=['top', 'front'],
+        >>> Ps = pn.pores(['top', 'bottom', 'back'], mode='or')
+        >>> pn.filter_by_label(pores=Ps, labels=['top', 'back'],
         ...                    mode='and')
         array([ 24,  49,  74,  99, 124])
         """

@@ -433,14 +433,14 @@ class BaseTest:
 
     def test_labels_on_one_pore(self):
         a = self.net.labels(pores=0)
-        b = ['pore.all', 'pore.bottom', 'pore.back',
+        b = ['pore.all', 'pore.bottom', 'pore.front',
              'pore.internal', 'pore.surface',
              'pore.left', 'pore.'+self.geo.name]
         assert sorted(a) == sorted(b)
 
     def test_labels_on_list_of_pores(self):
         a = self.net.labels(pores=[0, 1])
-        b = ['pore.all', 'pore.bottom', 'pore.back',
+        b = ['pore.all', 'pore.bottom', 'pore.front',
              'pore.internal', 'pore.surface',
              'pore.left', 'pore.'+self.geo.name]
         assert sorted(a) == sorted(b)
@@ -449,21 +449,21 @@ class BaseTest:
         ind = np.zeros((self.net.Np), dtype=bool)
         ind[[0, 1]] = True
         a = self.net.labels(pores=ind)
-        b = ['pore.all', 'pore.bottom', 'pore.back',
+        b = ['pore.all', 'pore.bottom', 'pore.front',
              'pore.internal', 'pore.surface',
              'pore.left', 'pore.'+self.geo.name]
         assert sorted(a) == sorted(b)
 
     def test_labels_pores_mode_or(self):
         a = self.net.labels(pores=[0, 1, 2], mode='or')
-        b = ['pore.all', 'pore.bottom', 'pore.back',
+        b = ['pore.all', 'pore.bottom', 'pore.front',
              'pore.internal', 'pore.surface',
              'pore.left', 'pore.'+self.geo.name, 'pore.top']
         assert sorted(a) == sorted(b)
 
     def test_labels_pores_mode_and(self):
         a = self.net.labels(pores=[0, 1, 2], mode='and')
-        b = ['pore.all', 'pore.back', 'pore.geo_01',
+        b = ['pore.all', 'pore.front', 'pore.geo_01',
              'pore.internal', 'pore.left', 'pore.surface']
         assert sorted(a) == sorted(b)
 
@@ -479,13 +479,13 @@ class BaseTest:
 
     def test_labels_pores_mode_xnor(self):
         a = self.net.labels(pores=[0, 1, 2], mode='xnor')
-        b = ['pore.all', 'pore.back', 'pore.internal',
+        b = ['pore.all', 'pore.front', 'pore.internal',
              'pore.surface', 'pore.left', 'pore.'+self.geo.name]
         assert sorted(a) == sorted(b)
 
     def test_labels_pores_mode_nor(self):
         a = self.net.labels(pores=[0, 1, 2], mode='nor')
-        b = ['pore.front', 'pore.right']
+        b = ['pore.back', 'pore.right']
         assert sorted(a) == sorted(b)
 
     def test_labels_pores_mode_foo(self):
@@ -657,9 +657,9 @@ class BaseTest:
         self.net.update({'pore.all': temp})
 
     def test_get_indices_wildcard(self):
-        a = self.net._get_indices(element='pore', labels='fr*')
+        a = self.net._get_indices(element='pore', labels='ba*')
         assert np.all(a == [6, 7, 8, 15, 16, 17, 24, 25, 26])
-        b = self.net._get_indices(element='pore', labels='*ont')
+        b = self.net._get_indices(element='pore', labels='*ck')
         assert np.all(a == b)
 
     def test_write_dict(self):
@@ -714,7 +714,7 @@ class BaseTest:
     def test_getitem_with_no_matches(self):
         self.geo.pop('pore.blah', None)
         with pytest.raises(KeyError):
-            self.geo['pore.blah']
+            _ = self.geo['pore.blah']
 
     def test_interpolate_data(self):
         self.geo['throat.tester'] = np.linspace(0, 1.0, self.geo.network.Nt)
@@ -729,7 +729,7 @@ class BaseTest:
     def test_get_no_matches(self):
         self.geo.pop('pore.blah', None)
         with pytest.raises(KeyError):
-            self.geo['pore.blah']
+            _ = self.geo['pore.blah']
 
     def test_get_string(self):
         a = self.net.get('pore.coords')
@@ -899,9 +899,9 @@ class BaseTest:
         pn['pore.foo.bar'] = 1
         pn['pore.foo.baz'] = 2
         with pytest.raises(KeyError):
-            pn['pore.foo.b']
+            _ = pn['pore.foo.b']
         with pytest.raises(KeyError):
-            pn['pore.fo']
+            _ = pn['pore.fo']
 
     def test_set_label_add_to_pores(self):
         pn = op.network.Cubic(shape=[5, 5, 5])

@@ -9,11 +9,11 @@ h5py
 jsonschema
 json_tricks
 terminaltables
-unyt
 gitpython
 flatdict
 transforms3d
+tqdm
 sympy
 docrep
 pardiso4py
-zarr
+chemicals

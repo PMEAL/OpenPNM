@@ -86,7 +86,7 @@ class ConesAndCylinders(GenericGeometry):
                        prop2='pore.seed')
 
         self.add_model(propname='pore.volume',
-                       model=mods.geometry.pore_volume.cone,
+                       model=mods.geometry.pore_volume.sphere,
                        pore_diameter='pore.diameter',
                        regen_mode="explicit")
 

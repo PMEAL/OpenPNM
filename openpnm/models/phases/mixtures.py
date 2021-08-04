@@ -105,7 +105,7 @@ def fuller_diffusivity(target, molecular_weight='pore.molecular_weight',
         is 'pore.temperature'
     pressure : string
         Dictionary key contain the pressure of the mixture.  The default
-        is 'pore.pressure'
+        is 'pore.pressure'.
 
     Returns
     -------
@@ -126,10 +126,12 @@ def fuller_diffusivity(target, molecular_weight='pore.molecular_weight',
     return value
 
 
-def wilke_fuller_diffusivity(target, molecular_weight='pore.molecular_weight',
-                             molar_diffusion_volume='pore.molar_diffusion_volume',
-                             temperature='pore.temperature',
-                             pressure='pore.pressure'):
+def wilke_fuller_diffusivity(
+        target,
+        molecular_weight='pore.molecular_weight',
+        molar_diffusion_volume='pore.molar_diffusion_volume',
+        temperature='pore.temperature',
+        pressure='pore.pressure'):
     r"""
     Estimates the diffusion coeffient of each species in a gas mixture
 
@@ -151,10 +153,10 @@ def wilke_fuller_diffusivity(target, molecular_weight='pore.molecular_weight',
         This is used by the Fuller correlation.  The default is
         'pore.molar_diffusion_volume'
     temperature : string
-        Dictionary key contain the temperature of the mixture.  The default
+        Dictionary key containing the temperature of the mixture.  The default
         is 'pore.temperature'
     pressure : string
-        Dictionary key contain the pressure of the mixture.  The default
+        Dictionary key containing the pressure of the mixture.  The default
         is 'pore.pressure'
 
     Returns

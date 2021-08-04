@@ -36,9 +36,9 @@ class TransientImplicitReactiveTransportTest:
                        conductance='throat.diffusive_conductance',
                        t_initial=0, t_final=1, t_step=0.1, t_tolerance=1e-7,
                        t_precision=10, rxn_tolerance=1e-6)
-        self.alg.set_value_BC(pores=self.net.pores('back'), values=2)
+        self.alg.set_value_BC(pores=self.net.pores('front'), values=2)
         self.alg.set_source(propname='pore.reaction',
-                            pores=self.net.pores('front'))
+                            pores=self.net.pores('back'))
         self.alg.set_IC(0)
 
     def test_transient_implicit_reactive_transport(self):

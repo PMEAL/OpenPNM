@@ -1,11 +1,11 @@
 .. _quick_start:
 
 Getting Started
-###############
+---------------
 
 It is relatively easy to get going with a quick simulation in OpenPNM.
 In fact the following code block produces a mercury intrusion simulation in
-just 9 lines:
+just a few lines:
 
 .. code-block:: python
 

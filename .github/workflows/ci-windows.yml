@@ -27,9 +27,9 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Cache conda
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         env:
-          CACHE_NUMBER: 0  # increase value -> force reset cache
+          CACHE_NUMBER: 1  # increase value -> force reset cache
         with:
           path: ~/conda_pkgs_dir
           key: ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-${{ hashFiles('**/conda_requirements.txt') }}
@@ -39,7 +39,6 @@ jobs:
         with:
           mamba-version: "*"
           allow-softlinks: true
-          auto-update-conda: true
           use-only-tar-bz2: true
           show-channel-urls: false
           auto-activate-base: true

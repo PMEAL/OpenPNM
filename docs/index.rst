@@ -1,45 +1,38 @@
 .. _front_page:
 
-###############################
-Pore-network modeling made easy
-###############################
+.. module:: openpnm
+   :noindex:
 
-.. sidebar:: Highlight
+.. toctree::
+   :hidden:
+   :maxdepth: 1
 
-    The image below was extracted using the SNOW algorithm from PoreSpy,
-    then imported into OpenPNM for use, then exported to Paraview for
-    visualization.
+   userguide/index
+   modules/index
+   examples/examples
 
-    .. image:: /../docs/static/images/extracted_berea.png
-        :width: 600px
-        :align: center
+.. raw:: html
+
+   <p align="center">
+     <img src=".\_static\images\openpnm_logo.png" width="80%"></img>
+   </p>
 
 *OpenPNM* is an open source project to provide porous media researchers
 with a ready-made framework for performing a wide range of pore network
 simulations.
 
-Highly customizable
-###################
+#########################################
+Pore-network Modeling Framework in Python
+#########################################
 
-*OpenPNM* is highly customizable, meaning that you can customize it almost
-at every level. Usually, it's sufficient to use of our built-in classes,
-and customize it by adding your own models. However, if need be, you can
-write your own *Network*, *Geometry*, *Phase*, *Physics*, and *Algorithm*
-from scratch easily by using our generic classes.
+*OpenPNM* is an open source project to provide a ready-made framework for
+performing pore network simulations of transport in porous materials.
 
-Rich IO ecosystem
-#################
-If you already have a network model in a typical file format, but want to
-use OpenPNM to perform simulations, that's not a problem! OpenPNM supports
-a wide variety of :mod:`~openpnm.io` file formats to import from and export
-to such as :class:`~openpnm.io.Statoil`, :class:`~openpnm.io.NetworkX`,
-etc.
+Citing
+######
 
-.. toctree::
-    :maxdepth: 1
+If you use OpenPNM in your work, please include the following citation:
 
-    installation.rst
-    quick_start.rst
-    userguide.rst
-    modules/index.rst
-    citation.rst
+.. topic:: Citation
+
+    Gostick J, Aghighi M, Hinebaugh J, Tranter T, Hoeh MA, Day H, Spellacy B, Sharqawy MH, Bazylak A, Burns A, Lehnert W. **OpenPNM: a pore network modeling package**. Computing in Science & Engineering. 2016 May 25;18(4):60-74. `doi:10.1109/MCSE.2016.49 <https://doi.org/10.1109/MCSE.2016.49>`_.

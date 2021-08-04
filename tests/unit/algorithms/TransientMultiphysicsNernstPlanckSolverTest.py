@@ -90,8 +90,8 @@ class TransientMultiphysicsNernstPlanckSolverTest:
         self.p = op.algorithms.TransientIonicConduction(network=self.net,
                                                         phase=self.sw,
                                                         settings=setts1)
-        self.p.set_value_BC(pores=self.net.pores('back'), values=0.02)
-        self.p.set_value_BC(pores=self.net.pores('front'), values=0.01)
+        self.p.set_value_BC(pores=self.net.pores('front'), values=0.02)
+        self.p.set_value_BC(pores=self.net.pores('back'), values=0.01)
         self.p.settings['charge_conservation'] = 'laplace'
 
         self.eA = op.algorithms.TransientNernstPlanck(network=self.net,
