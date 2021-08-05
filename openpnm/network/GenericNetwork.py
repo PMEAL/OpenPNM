@@ -141,8 +141,7 @@ class GenericNetwork(Base, ModelsMixin):
                 logger.error('Wrong size for throat conns!')
             else:
                 if np.any(value[:, 0] > value[:, 1]):
-                    logger.warning('Converting throat.conns to be upper '
-                                   + 'triangular')
+                    logger.debug('Converting throat.conns to be upper triangular')
                     value = np.sort(value, axis=1)
         super().__setitem__(key, value)
 

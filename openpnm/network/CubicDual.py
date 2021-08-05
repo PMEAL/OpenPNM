@@ -49,6 +49,7 @@ class CubicDual(GenericNetwork):
     Examples
     --------
     >>> import openpnm as op
+    >>> import matplotlib.pyplot as plt
     >>> pn = op.network.CubicDual(shape=[3, 3, 3])
     >>> pn.num_pores('pore.primary')  # Normal cubic network is present
     27
@@ -57,15 +58,16 @@ class CubicDual(GenericNetwork):
 
     And it can be plotted for quick visualization using:
 
-    >>> fig = op.topotools.plot_connections(network=pn,
-    ...                                     throats=pn.throats('primary'),
-    ...                                     color='b')
-    >>> fig = op.topotools.plot_connections(network=pn,
-    ...                                     throats=pn.throats('secondary'),
-    ...                                     color='r')
-    >>> fig = op.topotools.plot_coordinates(network=pn, c='r', s=75, fig=fig)
+    >>> fig, ax = plt.subplots()
+    >>> _ = op.topotools.plot_connections(network=pn,
+    ...                                   throats=pn.throats('primary'),
+    ...                                   color='b', ax=ax)
+    >>> _ = op.topotools.plot_connections(network=pn,
+    ...                                   throats=pn.throats('secondary'),
+    ...                                   color='r', ax=ax)
+    >>> _ = op.topotools.plot_coordinates(network=pn, c='r', s=75, ax=ax)
 
-    .. image:: /../docs/static/images/cubic_dual_network.png
+    .. image:: /../docs/_static/images/cubic_dual_network.png
         :align: center
 
     For larger networks and more control over presentation use `Paraview

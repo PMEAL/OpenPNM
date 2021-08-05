@@ -55,7 +55,7 @@ class CubicTemplate(Cubic):
 
     >>> fig = op.topotools.plot_connections(network=pn)
 
-    .. image:: /../docs/static/images/cubic_template_network.png
+    .. image:: /../docs/_static/images/cubic_template_network.png
         :align: center
 
     For larger networks and more control over presentation use `Paraview

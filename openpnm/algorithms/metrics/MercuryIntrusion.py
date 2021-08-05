@@ -2,7 +2,7 @@ import numpy as np
 from openpnm.utils import logging
 from openpnm.phases import Mercury
 from openpnm.physics import GenericPhysics
-from openpnm.algorithms import Porosimetry, GenericAlgorithm
+from openpnm.algorithms import Porosimetry
 from openpnm import models
 from openpnm import topotools
 logger = logging.getLogger(__name__)
@@ -75,11 +75,13 @@ class MercuryIntrusion(Porosimetry):
 
     pc_data = property(fget=_get_pc_data, fset=_set_pc_data)
 
-    def plot_intrusion_curve(self, fig=None):
-        fig = super().plot_intrusion_curve(fig=fig)
-        ax = fig.gca()
+    def plot_intrusion_curve(self, ax=None, num_markers=25):
+        r""""""
+        import matplotlib.pyplot as plt
+
+        super().plot_intrusion_curve(ax=ax)
+        ax = plt.gca() if ax is None else ax
         x = self.pc_data
         y = self.snwp_data
-        if (x is not None) and (y is not None):
-            ax.plot(x, y, 'r*-')
-        return fig
+        markevery = max(self.pc_data.size // num_markers, 1)
+        ax.plot(x, y, 'r*-', markevery=markevery)

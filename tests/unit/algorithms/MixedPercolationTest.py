@@ -241,10 +241,10 @@ class MixedPercolationTest:
         phys['throat.entry_pressure']=np.arange(0, net.Nt, dtype=float)
         phys['pore.entry_pressure']=0.0
         self.run_mp(False, False, False)
-        fig = plt.figure()
-        self.alg.plot_intrusion_curve(fig)
+        fig, ax = plt.subplots()
+        self.alg.plot_intrusion_curve(ax=ax)
         plt.close()
-        fig = self.alg.plot_intrusion_curve()
+        self.alg.plot_intrusion_curve()
         plt.close()
 
     def test_cluster_merging(self):

@@ -70,7 +70,7 @@ class Delaunay(DelaunayVoronoiDual):
 
     >>> fig = op.topotools.plot_connections(network=gn)
 
-    .. image:: /../docs/static/images/delaunay_network_given_points.png
+    .. image:: /../docs/_static/images/delaunay_network_given_points.png
         :align: center
 
     Upon visualization it can be seen that this network is not very cubic.
@@ -87,7 +87,7 @@ class Delaunay(DelaunayVoronoiDual):
 
     >>> fig = op.topotools.plot_connections(network=gn)
 
-    .. image:: /../docs/static/images/delaunay_network_w_trimmed_points.png
+    .. image:: /../docs/_static/images/delaunay_network_w_trimmed_points.png
         :align: center
 
     If a domain with random base points but flat faces is needed use

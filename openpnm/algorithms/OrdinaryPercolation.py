@@ -428,7 +428,7 @@ class OrdinaryPercolation(GenericAlgorithm):
 
     def get_intrusion_data(self, Pc=None):
         r"""
-        Obtain the numerical values of the calculated intrusion curve
+        Obtain the numerical values of the calculated intrusion curve.
 
         Returns
         -------
@@ -437,17 +437,15 @@ class OrdinaryPercolation(GenericAlgorithm):
 
         """
         net = self.project.network
-        if Pc is None:
-            points = self._points
-        else:
-            points = np.array(Pc)
+        points = self._points if Pc is None else np.array(Pc)
+
         # Get pore and throat volumes
         Pvol = net[self.settings['pore_volume']]
         Tvol = net[self.settings['throat_volume']]
         Total_vol = np.sum(Pvol) + np.sum(Tvol)
         if np.sum(Pvol[self['pore.inlets']]) > 0.0:
-            logger.warning('Inlets have non-zero volume, percolation curve '
-                           + 'will not start at 0')
+            logger.warning(
+                "Inlets have non-zero volume, percolation curve won't start at 0.")
         # Find cumulative filled volume at each applied capillary pressure
         Vnwp_t = []
         Vnwp_p = []
@@ -460,28 +458,30 @@ class OrdinaryPercolation(GenericAlgorithm):
             Vnwp_p.append(Vp)
             Vnwp_t.append(Vt)
             Vnwp_all.append(Vp + Vt)
+
         # Convert volumes to saturations by normalizing with total pore volume
         Snwp_all = [V/Total_vol for V in Vnwp_all]
         pc_curve = namedtuple('pc_curve', ('Pcap', 'Snwp'))
         data = pc_curve(points, Snwp_all)
+
         return data
 
-    def plot_intrusion_curve(self, fig=None):
+    def plot_intrusion_curve(self, ax=None, num_markers=25):
         r"""
         Plot the percolation curve as the invader volume or number fraction vs
         the applied capillary pressure.
-
         """
         import matplotlib.pyplot as plt
+
         # Begin creating nicely formatted plot
         x, y = self.get_intrusion_data()
-        if fig is None:
-            fig = plt.figure()
-        plt.semilogx(x, y, 'ko-')
-        plt.ylabel('Invading Phase Saturation')
-        plt.xlabel('Capillary Pressure')
-        plt.grid(True)
-        return fig
+        if ax is None:
+            fig, ax = plt.subplots()
+        markevery = max(x.size // num_markers, 1)
+        ax.semilogx(x, y, 'ko-', markevery=markevery)
+        ax.set_ylabel('Invading phase saturation')
+        ax.set_xlabel('Capillary pressure')
+        ax.grid(True)
 
     def results(self, Pc=None):
         r"""

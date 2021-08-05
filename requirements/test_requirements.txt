@@ -1,9 +1,11 @@
 codecov
 coverage
+jupyter
+nbval
 pytest
 pytest-cache
-pytest-cov
 pytest-codestyle
+pytest-cov
 testfixtures
 jupyter
 nbval
