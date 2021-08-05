@@ -331,7 +331,8 @@
         <span class="c1"># Perform initial analysis on input pores</span>
         <span class="n">Ts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">find_neighbor_throats</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pores</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">queue</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="p">[</span><span class="n">hq</span><span class="o">.</span><span class="n">heappush</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">queue</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span> <span class="k">for</span> <span class="n">T</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.order&#39;</span><span class="p">][</span><span class="n">Ts</span><span class="p">]]</span></div>
+        <span class="k">for</span> <span class="n">T</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.order&#39;</span><span class="p">][</span><span class="n">Ts</span><span class="p">]:</span>
+            <span class="n">hq</span><span class="o">.</span><span class="n">heappush</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">queue</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="InvasionPercolation.run"><a class="viewcode-back" href="../../../modules/algorithms/invasion_percolation.html#openpnm.algorithms.InvasionPercolation.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_steps</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -572,7 +573,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="s1">&#39;pore.invasion_pressure&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">props</span><span class="p">():</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Algorithm must be run first&#39;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Algorithm must be run first.&#39;</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="n">net</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">network</span>
         <span class="n">pvols</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;pore_volume&#39;</span><span class="p">]]</span>
@@ -602,27 +603,23 @@
         <span class="n">data</span> <span class="o">=</span> <span class="n">pc_curve</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">Pc</span><span class="p">,</span> <span class="n">sat</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">data</span></div>
 
-<div class="viewcode-block" id="InvasionPercolation.plot_intrusion_curve"><a class="viewcode-back" href="../../../modules/algorithms/invasion_percolation.html#openpnm.algorithms.InvasionPercolation.plot_intrusion_curve">[docs]</a>    <span class="k">def</span> <span class="nf">plot_intrusion_curve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fig</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="InvasionPercolation.plot_intrusion_curve"><a class="viewcode-back" href="../../../modules/algorithms/invasion_percolation.html#openpnm.algorithms.InvasionPercolation.plot_intrusion_curve">[docs]</a>    <span class="k">def</span> <span class="nf">plot_intrusion_curve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">num_markers</span><span class="o">=</span><span class="mi">25</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Plot the percolation curve as the invader volume or number fraction vs</span>
 <span class="sd">        the capillary capillary pressure.</span>
-
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 
         <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_intrusion_data</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">fig</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
-            <span class="n">ax</span><span class="o">.</span><span class="n">semilogx</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">Pcap</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">S_tot</span><span class="p">,)</span>
-            <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Invading Phase Saturation&#39;</span><span class="p">)</span>
-            <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Capillary Pressure&#39;</span><span class="p">)</span>
-            <span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">fig</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">None</span></div>
+        <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;You must run the algorithm first.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+        <span class="n">markevery</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">Pcap</span><span class="o">.</span><span class="n">size</span> <span class="o">//</span> <span class="n">num_markers</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">semilogx</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">Pcap</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">S_tot</span><span class="p">,</span> <span class="n">markevery</span><span class="o">=</span><span class="n">markevery</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;invading phase saturation&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;capillary pressure&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_run_accelerated</span><span class="p">(</span><span class="n">queue</span><span class="p">,</span> <span class="n">t_sorted</span><span class="p">,</span> <span class="n">t_order</span><span class="p">,</span> <span class="n">t_inv</span><span class="p">,</span> <span class="n">p_inv</span><span class="p">,</span> <span class="n">p_inv_t</span><span class="p">,</span>
                          <span class="n">conns</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">indptr</span><span class="p">,</span> <span class="n">n_steps</span><span class="p">):</span>

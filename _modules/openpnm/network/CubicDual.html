@@ -221,6 +221,7 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import openpnm as op</span>
+<span class="sd">    &gt;&gt;&gt; import matplotlib.pyplot as plt</span>
 <span class="sd">    &gt;&gt;&gt; pn = op.network.CubicDual(shape=[3, 3, 3])</span>
 <span class="sd">    &gt;&gt;&gt; pn.num_pores(&#39;pore.primary&#39;)  # Normal cubic network is present</span>
 <span class="sd">    27</span>
@@ -229,15 +230,16 @@
 
 <span class="sd">    And it can be plotted for quick visualization using:</span>
 
-<span class="sd">    &gt;&gt;&gt; fig = op.topotools.plot_connections(network=pn,</span>
-<span class="sd">    ...                                     throats=pn.throats(&#39;primary&#39;),</span>
-<span class="sd">    ...                                     color=&#39;b&#39;)</span>
-<span class="sd">    &gt;&gt;&gt; fig = op.topotools.plot_connections(network=pn,</span>
-<span class="sd">    ...                                     throats=pn.throats(&#39;secondary&#39;),</span>
-<span class="sd">    ...                                     color=&#39;r&#39;)</span>
-<span class="sd">    &gt;&gt;&gt; fig = op.topotools.plot_coordinates(network=pn, c=&#39;r&#39;, s=75, fig=fig)</span>
+<span class="sd">    &gt;&gt;&gt; fig, ax = plt.subplots()</span>
+<span class="sd">    &gt;&gt;&gt; _ = op.topotools.plot_connections(network=pn,</span>
+<span class="sd">    ...                                   throats=pn.throats(&#39;primary&#39;),</span>
+<span class="sd">    ...                                   color=&#39;b&#39;, ax=ax)</span>
+<span class="sd">    &gt;&gt;&gt; _ = op.topotools.plot_connections(network=pn,</span>
+<span class="sd">    ...                                   throats=pn.throats(&#39;secondary&#39;),</span>
+<span class="sd">    ...                                   color=&#39;r&#39;, ax=ax)</span>
+<span class="sd">    &gt;&gt;&gt; _ = op.topotools.plot_coordinates(network=pn, c=&#39;r&#39;, s=75, ax=ax)</span>
 
-<span class="sd">    .. image:: /../docs/static/images/cubic_dual_network.png</span>
+<span class="sd">    .. image:: /../docs/_static/images/cubic_dual_network.png</span>
 <span class="sd">        :align: center</span>
 
 <span class="sd">    For larger networks and more control over presentation use `Paraview</span>

@@ -226,6 +226,7 @@
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import openpnm as op</span>
 <span class="sd">    &gt;&gt;&gt; import scipy as sp</span>
+<span class="sd">    &gt;&gt;&gt; import matplotlib.pyplot as plt</span>
 <span class="sd">    &gt;&gt;&gt; pts = np.random.rand(100, 3) * [1, 1, 0]  # Set z-axis to 0</span>
 <span class="sd">    &gt;&gt;&gt; gn = op.network.Gabriel(shape=[1, 1, 0], points=pts)</span>
 <span class="sd">    &gt;&gt;&gt; dn = op.network.Delaunay(shape=[1, 1, 0], points=pts)</span>
@@ -234,10 +235,11 @@
 
 <span class="sd">    &gt;&gt;&gt; gn[&#39;pore.coords&#39;] += [1, 0, 0]</span>
 <span class="sd">    &gt;&gt;&gt; op.topotools.merge_networks(dn, gn)</span>
-<span class="sd">    &gt;&gt;&gt; fig = op.topotools.plot_connections(dn)</span>
-<span class="sd">    &gt;&gt;&gt; fig = op.topotools.plot_coordinates(dn, c=&#39;r&#39;, s=100, fig=fig)</span>
+<span class="sd">    &gt;&gt;&gt; fig, ax = plt.subplots()</span>
+<span class="sd">    &gt;&gt;&gt; _ = op.topotools.plot_connections(dn, ax=ax)</span>
+<span class="sd">    &gt;&gt;&gt; _ = op.topotools.plot_coordinates(dn, c=&#39;r&#39;, s=100, ax=ax)</span>
 
-<span class="sd">    .. image:: /../docs/static/images/gabriel_network.png</span>
+<span class="sd">    .. image:: /../docs/_static/images/gabriel_network.png</span>
 <span class="sd">        :align: center</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>

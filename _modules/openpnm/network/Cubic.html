@@ -241,16 +241,18 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import openpnm as op</span>
+<span class="sd">    &gt;&gt;&gt; import matplotlib.pyplot as plt</span>
 <span class="sd">    &gt;&gt;&gt; pn = op.network.Cubic(shape=[5, 5, 5], spacing=[1, 1, 1])</span>
 <span class="sd">    &gt;&gt;&gt; pn.Np</span>
 <span class="sd">    125</span>
 
 <span class="sd">    And it can be plotted for quick visualization using:</span>
 
-<span class="sd">    &gt;&gt;&gt; fig = op.topotools.plot_connections(network=pn)</span>
-<span class="sd">    &gt;&gt;&gt; fig = op.topotools.plot_coordinates(network=pn, c=&#39;r&#39;, s=75, fig=fig)</span>
+<span class="sd">    &gt;&gt;&gt; fig, ax = plt.subplots()</span>
+<span class="sd">    &gt;&gt;&gt; _ = op.topotools.plot_connections(network=pn, ax=ax)</span>
+<span class="sd">    &gt;&gt;&gt; _ = op.topotools.plot_coordinates(network=pn, c=&#39;r&#39;, s=75, ax=ax)</span>
 
-<span class="sd">    .. image:: /../docs/static/images/cubic_network.png</span>
+<span class="sd">    .. image:: /../docs/_static/images/cubic_network.png</span>
 <span class="sd">        :align: center</span>
 
 <span class="sd">    For larger networks and more control over presentation use `Paraview</span>

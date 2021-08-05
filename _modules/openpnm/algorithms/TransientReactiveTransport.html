@@ -171,7 +171,6 @@
                 
   <h1>Source code for openpnm.algorithms.TransientReactiveTransport</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">scipy.sparse</span> <span class="k">as</span> <span class="nn">sprs</span>
 <span class="kn">from</span> <span class="nn">decimal</span> <span class="kn">import</span> <span class="n">Decimal</span> <span class="k">as</span> <span class="n">dc</span>
 <span class="kn">from</span> <span class="nn">openpnm.algorithms</span> <span class="kn">import</span> <span class="n">ReactiveTransport</span>
 <span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">logging</span><span class="p">,</span> <span class="n">GenericSettings</span><span class="p">,</span> <span class="n">Docorator</span>
@@ -362,38 +361,45 @@
         <span class="n">quantity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;quantity&#39;</span><span class="p">]</span>
         <span class="bp">self</span><span class="p">[</span><span class="n">quantity</span><span class="p">]</span> <span class="o">=</span> <span class="n">ic_vals</span>
 
-    <span class="k">def</span> <span class="nf">_get_f1_f2_f3</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_get_f_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Helper method: returns f1, f2, and f3 for _t_update_A and _t_update_b methods.</span>
+<span class="sd">        Returns f1, f2, and f3 values based on the time stepping scheme.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;t_scheme&#39;</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">s</span> <span class="o">==</span> <span class="s1">&#39;implicit&#39;</span><span class="p">:</span>
-            <span class="n">f1</span><span class="p">,</span> <span class="n">f2</span><span class="p">,</span> <span class="n">f3</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span>
-        <span class="k">elif</span> <span class="n">s</span> <span class="o">==</span> <span class="s1">&#39;cranknicolson&#39;</span><span class="p">:</span>
-            <span class="n">f1</span><span class="p">,</span> <span class="n">f2</span><span class="p">,</span> <span class="n">f3</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span>
-        <span class="k">elif</span> <span class="n">s</span> <span class="o">==</span> <span class="s1">&#39;steady&#39;</span><span class="p">:</span>
-            <span class="n">f1</span><span class="p">,</span> <span class="n">f2</span><span class="p">,</span> <span class="n">f3</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Unsupported t_scheme: &quot;</span><span class="si">{</span><span class="n">s</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">f1</span><span class="p">,</span> <span class="n">f2</span><span class="p">,</span> <span class="n">f3</span>
+        <span class="n">scheme</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;t_scheme&#39;</span><span class="p">]</span>
+        <span class="n">fdict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;implicit&#39;</span><span class="p">:</span>         <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+            <span class="s1">&#39;cranknicolson&#39;</span><span class="p">:</span>    <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+            <span class="s1">&#39;steady&#39;</span><span class="p">:</span>           <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="n">scheme</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;settings[&#39;t_scheme&#39;] hasn&#39;t been set.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">scheme</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">fdict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported settings[&#39;t_scheme&#39;]: </span><span class="si">{</span><span class="n">scheme</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">fdict</span><span class="p">[</span><span class="n">scheme</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_get_f1</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_f_values</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_get_f2</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_f_values</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_get_f3</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_f_values</span><span class="p">()[</span><span class="mi">2</span><span class="p">]</span>
+
+    <span class="n">_f1</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">fget</span><span class="o">=</span><span class="n">_get_f1</span><span class="p">)</span>
+    <span class="n">_f2</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">fget</span><span class="o">=</span><span class="n">_get_f2</span><span class="p">)</span>
+    <span class="n">_f3</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">fget</span><span class="o">=</span><span class="n">_get_f3</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_t_update_A</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        A method to update &#39;A&#39; matrix at each time step according to &#39;t_scheme&#39;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">network</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">network</span>
-        <span class="n">pore_volume</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;pore_volume&#39;</span><span class="p">]</span>
-        <span class="n">Vi</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="n">pore_volume</span><span class="p">]</span>
+        <span class="n">Vi</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;pore_volume&#39;</span><span class="p">]]</span>
         <span class="n">dt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;t_step&#39;</span><span class="p">]</span>
-        <span class="n">f1</span><span class="p">,</span> <span class="n">f2</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_f1_f2_f3</span><span class="p">()</span>
-        <span class="c1"># Compute A (operations involve conversion to &#39;csr&#39;)</span>
-        <span class="n">A</span> <span class="o">=</span> <span class="p">((</span><span class="n">f2</span><span class="o">/</span><span class="n">dt</span><span class="p">)</span> <span class="o">*</span> <span class="n">sprs</span><span class="o">.</span><span class="n">coo_matrix</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span>
-            <span class="n">sprs</span><span class="o">.</span><span class="n">coo_matrix</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">Vi</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Np</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Np</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span>
-            <span class="n">sprs</span><span class="o">.</span><span class="n">identity</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Np</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;coo&#39;</span><span class="p">))</span> <span class="o">+</span> <span class="n">f1</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_A_steady</span><span class="p">)</span>
-        <span class="c1"># Convert A to &#39;coo&#39; format to apply BCs</span>
-        <span class="n">A</span> <span class="o">=</span> <span class="n">sprs</span><span class="o">.</span><span class="n">coo_matrix</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+        <span class="n">A</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_f1</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_A_steady</span>
+        <span class="n">A</span><span class="o">.</span><span class="n">setdiag</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">diagonal</span><span class="p">()</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_f2</span><span class="o">/</span><span class="n">dt</span> <span class="o">*</span> <span class="n">Vi</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_A</span> <span class="o">=</span> <span class="n">A</span>
-        <span class="k">return</span> <span class="n">A</span>
 
     <span class="k">def</span> <span class="nf">_t_update_b</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -403,21 +409,15 @@
         <span class="n">quantity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;quantity&#39;</span><span class="p">]</span>
         <span class="n">network</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">network</span>
         <span class="n">phase</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">phases</span><span class="p">()[</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;phase&#39;</span><span class="p">]]</span>
-        <span class="n">pore_volume</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;pore_volume&#39;</span><span class="p">]</span>
-        <span class="n">Vi</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="n">pore_volume</span><span class="p">]</span>
+        <span class="n">Vi</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;pore_volume&#39;</span><span class="p">]]</span>
         <span class="n">dt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;t_step&#39;</span><span class="p">]</span>
-        <span class="n">f1</span><span class="p">,</span> <span class="n">f2</span><span class="p">,</span> <span class="n">f3</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_f1_f2_f3</span><span class="p">()</span>
-        <span class="n">x_old</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">quantity</span><span class="p">]</span>
-        <span class="n">b</span> <span class="o">=</span> <span class="p">(</span><span class="n">f2</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">f1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">_A_steady</span><span class="p">)</span> <span class="o">*</span> <span class="n">x_old</span>
-             <span class="o">+</span> <span class="n">f2</span> <span class="o">*</span> <span class="p">(</span><span class="n">Vi</span><span class="o">/</span><span class="n">dt</span><span class="p">)</span> <span class="o">*</span> <span class="n">x_old</span>
-             <span class="o">+</span> <span class="n">f3</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Np</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">))</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">quantity</span><span class="p">]</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_f2</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">_f1</span><span class="p">)</span> <span class="o">*</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">_A_steady</span> <span class="o">*</span> <span class="n">X</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_f2</span> <span class="o">*</span> <span class="n">Vi</span><span class="o">/</span><span class="n">dt</span> <span class="o">*</span> <span class="n">X</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_update_iterative_props</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;sources&#39;</span><span class="p">]:</span>
             <span class="n">Ps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
-            <span class="c1"># Update b</span>
-            <span class="n">b</span><span class="p">[</span><span class="n">Ps</span><span class="p">]</span> <span class="o">=</span> <span class="n">b</span><span class="p">[</span><span class="n">Ps</span><span class="p">]</span> <span class="o">-</span> <span class="n">f2</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">f1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">phase</span><span class="p">[</span><span class="n">item</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="s1">&#39;rate&#39;</span><span class="p">][</span><span class="n">Ps</span><span class="p">])</span>
+            <span class="n">b</span><span class="p">[</span><span class="n">Ps</span><span class="p">]</span> <span class="o">-=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_f2</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">_f1</span><span class="p">)</span> <span class="o">*</span> <span class="n">phase</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">item</span><span class="si">}</span><span class="s2">.rate&quot;</span><span class="p">][</span><span class="n">Ps</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_b</span> <span class="o">=</span> <span class="n">b</span>
-        <span class="k">return</span> <span class="n">b</span>
 
 <div class="viewcode-block" id="TransientReactiveTransport.run"><a class="viewcode-back" href="../../../modules/algorithms/transient_reactive_transport.html#openpnm.algorithms.TransientReactiveTransport.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -453,8 +453,7 @@
         <span class="c1"># Save copies of A and b to be used in _t_run_reactive()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_A_t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_A</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_b_t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_b</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">t</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;t_initial&#39;</span><span class="p">]</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;t_initial&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">t</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">t</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_update_iterative_props</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_run_transient</span><span class="p">(</span><span class="n">t</span><span class="o">=</span><span class="n">t</span><span class="p">)</span></div>
 
@@ -506,7 +505,6 @@
         <span class="k">if</span> <span class="n">s</span> <span class="o">==</span> <span class="s1">&#39;steady&#39;</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;    Running in steady mode&#39;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_t_run_reactive</span><span class="p">()</span>
-
         <span class="c1"># Time marching step</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># Export the initial field (t=t_initial)</span>
@@ -568,7 +566,6 @@
 
         <span class="c1"># Write initial guess to algorithm for _update_iterative_props to work</span>
         <span class="bp">self</span><span class="p">[</span><span class="n">quantity</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span>
-
         <span class="k">for</span> <span class="n">itr</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_it</span><span class="p">):</span>
             <span class="c1"># Update iterative properties on phase and physics</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_update_iterative_props</span><span class="p">()</span>
@@ -585,7 +582,6 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Tolerance not met: </span><span class="si">{</span><span class="n">res</span><span class="si">:</span><span class="s1">.4e</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
             <span class="c1"># Solve, use relaxation, and update solution on algorithm obj</span>
             <span class="bp">self</span><span class="p">[</span><span class="n">quantity</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_solve</span><span class="p">(</span><span class="n">x0</span><span class="o">=</span><span class="n">x</span><span class="p">)</span> <span class="o">*</span> <span class="n">w</span> <span class="o">+</span> <span class="n">x</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">w</span><span class="p">)</span>
-
         <span class="c1"># Check solution convergence after max_it iterations</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_converged</span><span class="p">():</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Not converged after </span><span class="si">{</span><span class="n">max_it</span><span class="si">}</span><span class="s2"> iterations.&quot;</span><span class="p">)</span>
@@ -651,15 +647,14 @@
 <span class="sd">        ----------</span>
 <span class="sd">        nbr : scalar</span>
 <span class="sd">            The number to be converted into a scalar.</span>
-<span class="sd">        t_precision : integer</span>
+<span class="sd">        t_precision : int</span>
 <span class="sd">            The time precision (number of decimal places). Default value is 12.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">t_pre</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">t_pre</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;t_precision&#39;</span><span class="p">]</span>
+        <span class="n">t_pre</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;t_precision&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">t_pre</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">t_pre</span>
         <span class="n">n</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="o">-</span><span class="n">dc</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">nbr</span><span class="p">,</span> <span class="n">t_pre</span><span class="p">)))</span><span class="o">.</span><span class="n">as_tuple</span><span class="p">()</span><span class="o">.</span><span class="n">exponent</span>
                 <span class="o">*</span> <span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">nbr</span><span class="p">,</span> <span class="n">t_pre</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">int</span><span class="p">(</span><span class="n">nbr</span><span class="p">)))</span>
-        <span class="n">nbr_str</span> <span class="o">=</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">nbr</span><span class="p">,</span> <span class="n">t_pre</span><span class="p">)</span><span class="o">*</span><span class="mi">10</span><span class="o">**</span><span class="n">n</span><span class="p">))</span> <span class="o">+</span> <span class="p">(</span><span class="s1">&#39;e-&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">n</span><span class="p">))</span><span class="o">*</span><span class="p">(</span><span class="n">n</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">))</span>
+        <span class="n">nbr_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">nbr</span><span class="p">,</span> <span class="n">t_pre</span><span class="p">)</span><span class="o">*</span><span class="mi">10</span><span class="o">**</span><span class="n">n</span><span class="p">))</span> <span class="o">+</span> <span class="p">(</span><span class="s1">&#39;e-&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">n</span><span class="p">))</span><span class="o">*</span><span class="p">(</span><span class="n">n</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">nbr_str</span>
 
     <span class="k">def</span> <span class="nf">_correct_apply_sources</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -672,17 +667,16 @@
 <span class="sd">        Correction (built for transient simulations) depends on the time scheme</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">f1</span><span class="p">,</span> <span class="n">f2</span><span class="p">,</span> <span class="n">f3</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_f1_f2_f3</span><span class="p">()</span>
         <span class="n">phase</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">phases</span><span class="p">()[</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;phase&#39;</span><span class="p">]]</span>
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;sources&#39;</span><span class="p">]:</span>
             <span class="n">Ps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
-            <span class="c1"># get already added relaxed source term</span>
+            <span class="c1"># Fetch already added relaxed source term</span>
             <span class="n">S1</span><span class="p">,</span> <span class="n">S2</span> <span class="o">=</span> <span class="p">[</span><span class="n">phase</span><span class="p">[</span><span class="n">item</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">x</span><span class="p">][</span><span class="n">Ps</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;S1&#39;</span><span class="p">,</span> <span class="s1">&#39;S2&#39;</span><span class="p">]]</span>
-            <span class="c1"># correct S1 and S2 in A and b as a function of t_scheme</span>
+            <span class="c1"># Correct S1 and S2 in A and b as a function of t_scheme</span>
             <span class="n">datadiag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_A</span><span class="o">.</span><span class="n">diagonal</span><span class="p">()</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-            <span class="n">datadiag</span><span class="p">[</span><span class="n">Ps</span><span class="p">]</span> <span class="o">=</span> <span class="n">datadiag</span><span class="p">[</span><span class="n">Ps</span><span class="p">]</span> <span class="o">-</span> <span class="n">S1</span> <span class="o">+</span> <span class="n">f1</span><span class="o">*</span><span class="n">S1</span>
+            <span class="n">datadiag</span><span class="p">[</span><span class="n">Ps</span><span class="p">]</span> <span class="o">=</span> <span class="n">datadiag</span><span class="p">[</span><span class="n">Ps</span><span class="p">]</span> <span class="o">-</span> <span class="n">S1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_f1</span><span class="o">*</span><span class="n">S1</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_A</span><span class="o">.</span><span class="n">setdiag</span><span class="p">(</span><span class="n">datadiag</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_b</span><span class="p">[</span><span class="n">Ps</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_b</span><span class="p">[</span><span class="n">Ps</span><span class="p">]</span> <span class="o">+</span> <span class="n">S2</span> <span class="o">-</span> <span class="n">f1</span><span class="o">*</span><span class="n">S2</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_b</span><span class="p">[</span><span class="n">Ps</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_b</span><span class="p">[</span><span class="n">Ps</span><span class="p">]</span> <span class="o">+</span> <span class="n">S2</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_f1</span><span class="o">*</span><span class="n">S2</span></div>
 </pre></div>
 
               </div>
