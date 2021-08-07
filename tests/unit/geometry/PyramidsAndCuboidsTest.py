@@ -17,7 +17,7 @@ class SpheresAndCylindersTest:
 
     def test_models(self):
         models = self.geo.models
-        assert models["pore.volume"]["model"] == gmods.pore_volume.pyramid
+        assert models["pore.volume"]["model"] == gmods.pore_volume.sphere
         mod = gmods.throat_length.pyramids_and_cuboids
         assert models["throat.length"]["model"] == mod
         mod = gmods.throat_cross_sectional_area.cuboid

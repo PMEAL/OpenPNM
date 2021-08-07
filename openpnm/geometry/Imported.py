@@ -25,10 +25,11 @@ class ImportedSettings(GenericSettings):
         such as volume and surface area.
 
     """
-    pore_diameter = 'pore.extended_diameter'
-    throat_diameter = 'throat.equivalent_diameter'
-    pore_shape = 'sphere'
+    pore_diameter = 'extended_diameter'
+    throat_diameter = 'inscribed_diameter'
+    pore_shape = 'cone'
     throat_shape = 'cylinder'
+    exclude_props = []
 
 
 class Imported(GenericGeometry):
@@ -71,7 +72,7 @@ class Imported(GenericGeometry):
 
     """
 
-    def __init__(self, exclude=[], settings={}, **kwargs):
+    def __init__(self, settings={}, **kwargs):
         self.settings._update_settings_and_docs(ImportedSettings())
         self.settings.update(settings)
         if 'network' in kwargs.keys():
@@ -82,14 +83,14 @@ class Imported(GenericGeometry):
         super().__init__(network=network, pores=network.Ps, throats=network.Ts,
                          **kwargs)
         # Transfer all geometrical properties off of network
-        exclude.extend(['pore.coords', 'throat.conns'])
+        exclude = self.settings['exclude_props']
+        exclude.extend(['pore.coords', 'throat.conns', 'pore.region_label'])
         for item in network.props():
             if item not in exclude:
                 self[item] = network.pop(item)
 
         # If the following 'essential' props are not already defined, then
         # they should be added using the specified values or models
-
         if 'pore.diameter' not in self.keys():
             pdia = 'pore.'+self.settings['pore_diameter'].split('pore.')[-1]
             try:
@@ -97,17 +98,17 @@ class Imported(GenericGeometry):
             except KeyError:
                 logger.error(pdia + " not found, can't assign 'pore.diameter'")
 
-        if 'pore.volume' not in self.keys():
-            pore_shape = self.settings['pore_shape']
-            m = getattr(mods.geometry.pore_volume, pore_shape)
-            self.add_model(propname='pore.volume',
-                           model=m, pore_diameter='pore.diameter')
+        # if 'pore.volume' not in self.keys():
+        #     pore_shape = self.settings['pore_shape']
+        #     m = getattr(mods.geometry.pore_volume, pore_shape)
+        #     self.add_model(propname='pore.volume',
+        #                    model=m, pore_diameter='pore.diameter')
 
-        if 'pore.area' not in self.keys():
-            pore_shape = self.settings['pore_shape']
-            m = getattr(mods.geometry.pore_area, pore_shape)
-            self.add_model(propname='pore.area',
-                           model=m)
+        # if 'pore.area' not in self.keys():
+        #     pore_shape = self.settings['pore_shape']
+        #     m = getattr(mods.geometry.pore_area, pore_shape)
+        #     self.add_model(propname='pore.area',
+        #                    model=m)
 
         if 'throat.diameter' not in self.keys():
             tdia = 'throat.'+self.settings['throat_diameter'].split('throat.')[-1]
@@ -116,16 +117,14 @@ class Imported(GenericGeometry):
             except KeyError:
                 logger.error(tdia + " not found, can't assign 'throat.diameter'")
 
-        if 'throat.endpoints' not in self.keys():
-            self.add_model(propname='throat.endpoints',
-                           model=mods.geometry.throat_endpoints.spherical_pores,
-                           pore_diameter='pore.diameter',
-                           throat_diameter='throat.diameter')
-
+        t_shape = self.settings['throat_shape'] + 's'
+        p_shape = self.settings['pore_shape'] + 's'
         if 'throat.length' not in self.keys():
+            m = getattr(mods.geometry.throat_length, p_shape + '_and_' + t_shape)
             self.add_model(propname='throat.length',
-                           model=mods.geometry.throat_length.piecewise,
-                           throat_endpoints='throat.endpoints')
+                           model=m,
+                           throat_diameter='throat.diameter',
+                           pore_diameter='pore.diameter')
 
         if 'throat.volume' not in self.keys():
             shape = self.settings['throat_shape']
@@ -134,9 +133,7 @@ class Imported(GenericGeometry):
                            model=m,
                            throat_length='throat.length',
                            throat_diameter='throat.diameter')
-
-        if 'throat.conduit_lengths' not in self.keys():
-            self.add_model(propname='throat.conduit_lengths',
-                           model=mods.geometry.throat_length.conduit_lengths,
-                           throat_endpoints='throat.endpoints',
-                           throat_length='throat.length')
+        m = getattr(mods.geometry.diffusive_size_factors, p_shape + '_and_' + t_shape)
+        self.add_model(propname='throat.diffusive_size_factors', model=m)
+        m = getattr(mods.geometry.hydraulic_size_factors, p_shape + '_and_' + t_shape)
+        self.add_model(propname='throat.hydraulic_size_factors', model=m)
