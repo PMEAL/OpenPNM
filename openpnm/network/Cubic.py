@@ -91,6 +91,8 @@ class Cubic(GenericNetwork):
                  name=None, project=None, **kwargs):
 
         super().__init__(name=name, project=project, **kwargs)
+        logger.critical('front and back labels have been switched to obey ' +
+                        'the right-hand rule')
 
         # Take care of 1D/2D networks
         shape = np.array(shape, ndmin=1)
