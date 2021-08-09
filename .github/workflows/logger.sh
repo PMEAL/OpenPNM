@@ -96,7 +96,7 @@ fi
 echo -e "## ${tag_new}\n" >> entry
 append_to_entry_with_label "$features" entry ":rocket: New features"
 append_to_entry_with_label "$enhancements" entry ":cake: Enhancements"
-append_to_entry_with_label "$maintenance" entry ":wrench: Maintenace"
+append_to_entry_with_label "$maintenance" entry ":wrench: Maintenance"
 append_to_entry_with_label "$changes" entry ":warning: API changes"
 append_to_entry_with_label "$fixes" entry ":bug: Bugfixes"
 append_to_entry_with_label "$documentation" entry ":green_book: Documentation"

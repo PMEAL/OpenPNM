@@ -65,7 +65,7 @@ Deff = fd.rate(pores=pn.pores('xmin'))*(L/A)/dC
 F = 1/Deff
 print(f"The Formation factor of the extracted network is {F}")
 print(f"The compares to a value of {data['formation factor']['Fx']} from DNS")
-assert F/data['formation factor']['Fx'] < 1.9  # within 9%
+np.testing.assert_allclose(F, data['formation factor']['Fx'], rtol=0.09)
 
 # %% Perform Stokes flow to find Permeability coefficient
 sf = op.algorithms.StokesFlow(network=pn, phase=gas)
@@ -78,4 +78,4 @@ A = data['shape']['y']*data['shape']['z']*data['resolution']**2
 K = sf.rate(pores=pn.pores('xmin'))*(L/A)/dP*1e12
 print(f'Permeability coefficient is {K} Darcy')
 print(f"The compares to a value of {data['permeability']['Kx']/1000} from DNS")
-assert K/(data['permeability']['Kx']/1000) > 0.95  # within 5%
+np.testing.assert_allclose(K, data['permeability']['Kx']/1000, rtol=0.05)
