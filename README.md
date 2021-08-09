@@ -10,17 +10,17 @@
 
 -----
 
-**Please cite as:**
-> _Gostick et al._ "**OpenPNM: a pore network modeling package.**" Computing in Science & Engineering 18, no. 4 (2016): 60-74.
-> [doi:10.1109/MCSE.2016.49](https://ieeexplore.ieee.org/document/7478437)
-
 # Overview of OpenPNM
 
 *OpenPNM* is a comprehensive framework for performing pore network simulations of porous materials.
 
-For more details about the package can be found in the [on-line documentation](https://pmeal.github.io/OpenPNM)
+## More Information
 
-To be notified of new releases click the `Watch` button on the Github repo page.  To show your support for this project click the `Star` button, as we use this as a proxy for the size of our userbase when applying for funding.
+For more details about the package can be found in the [on-line documentation](https://openpnm.org)
+
+## Stay Informed
+
+It is surprizingly hard to communicate with our users, since Github doesn't allow sending out email newsletters or announcements. To address this gap, we have created a [Substack channel](https://openpnm.substack.com/), where you can subscribe to our feed to receive periodic news about important events and updates.  Also, follow us on Twitter [(@OpenPnm)](https://twitter.com/OpenPnm) for periodic announcements about new releases and other important events.
 
 ## Installation and Requirements
 
@@ -92,3 +92,16 @@ Github now has a [Discussions](https://github.com/PMEAL/OpenPNM/discussions) fun
 OpenPNM is developed by the Porous Materials Engineering and Analysis Lab [(PMEAL)](http://pmeal.com), in the [Department of Chemical Engineering](https://uwaterloo.ca/chemical-engineering/) at the [University of Waterloo](https://uwaterloo.ca/) in Waterloo, Ontario, Canada.
 
 The lead developer for this project is Prof. Jeff Gostick (jgostick@gmail.com).
+
+## Acknowledgements
+
+OpenPNM is grateful to [CANARIE](https://canarie.ca) for their generous funding over the past few years.  We would also like to acknowledge the support of [NSERC of Canada](https://www.nserc-crsng.gc.ca/) for funding many of the student that have contributed to OpenPNM since it's inception in 2011.
+
+## Citation
+
+If you use OpenPNM in a publication, please cite the following paper:
+
+> _Gostick et al._ "**OpenPNM: a pore network modeling package.**" Computing in Science & Engineering 18, no. 4 (2016): 60-74.
+> [doi:10.1109/MCSE.2016.49](https://ieeexplore.ieee.org/document/7478437)
+
+Also, we ask that you "star" :star: this repository so we can track the number of users who are interested in this project, which is helpful for securing future grant funding.

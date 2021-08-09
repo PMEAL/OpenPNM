@@ -21,6 +21,24 @@ class DiffusiveConductanceTest:
                                               phase=self.phase,
                                               geometry=self.geo)
 
+    def test_generic_diffusive(self):
+        # Pass size factors as dict
+        self.geo['throat.diffusive_size_factors'] = {
+            "pore1": 0.123, "throat": 0.981, "pore2": 0.551
+        }
+        mod = op.models.physics.diffusive_conductance.generic_diffusive
+        self.phys.add_model(propname='throat.g_diffusive_conductance', model=mod)
+        self.phys.regenerate_models()
+        actual = self.phys['throat.g_diffusive_conductance'].mean()
+        assert_allclose(actual, desired=0.091204832 * 1.3)
+        # Pass size factors as an array
+        for elem in ["pore1", "throat", "pore2"]:
+            del self.geo[f"throat.diffusive_size_factors.{elem}"]
+        self.geo['throat.diffusive_size_factors'] = 0.896
+        self.phys.regenerate_models("throat.g_diffusive_conductance")
+        actual = self.phys['throat.g_diffusive_conductance'].mean()
+        assert_allclose(actual, desired=0.896 * 1.3)
+
     def test_ordinary_diffusion(self):
         self.geo['throat.conduit_lengths.pore1'] = 0.15
         self.geo['throat.conduit_lengths.throat'] = 0.6

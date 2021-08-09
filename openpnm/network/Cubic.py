@@ -69,16 +69,18 @@ class Cubic(GenericNetwork):
     Examples
     --------
     >>> import openpnm as op
+    >>> import matplotlib.pyplot as plt
     >>> pn = op.network.Cubic(shape=[5, 5, 5], spacing=[1, 1, 1])
     >>> pn.Np
     125
 
     And it can be plotted for quick visualization using:
 
-    >>> fig = op.topotools.plot_connections(network=pn)
-    >>> fig = op.topotools.plot_coordinates(network=pn, c='r', s=75, fig=fig)
+    >>> fig, ax = plt.subplots()
+    >>> _ = op.topotools.plot_connections(network=pn, ax=ax)
+    >>> _ = op.topotools.plot_coordinates(network=pn, c='r', s=75, ax=ax)
 
-    .. image:: /../docs/static/images/cubic_network.png
+    .. image:: /../docs/_static/images/cubic_network.png
         :align: center
 
     For larger networks and more control over presentation use `Paraview
@@ -89,6 +91,8 @@ class Cubic(GenericNetwork):
                  name=None, project=None, **kwargs):
 
         super().__init__(name=name, project=project, **kwargs)
+        logger.critical('front and back labels have been switched to obey ' +
+                        'the right-hand rule')
 
         # Take care of 1D/2D networks
         shape = np.array(shape, ndmin=1)
@@ -207,14 +211,14 @@ class Cubic(GenericNetwork):
 
         offset = {}
         shape = self.settings['shape']
-        offset["back"] = offset["left"] = offset["bottom"] = [0, 0, 0]
+        offset["front"] = offset["left"] = offset["bottom"] = [0, 0, 0]
         offset["right"] = [Lcx * shape[0], 0, 0]
-        offset["front"] = [0, Lcy * shape[1], 0]
+        offset["back"] = [0, Lcy * shape[1], 0]
         offset["top"] = [0, 0, Lcz * shape[2]]
 
         scale = {}
         scale["left"] = scale["right"] = [0, 1, 1]
-        scale["back"] = scale["front"] = [1, 0, 1]
+        scale["front"] = scale["back"] = [1, 0, 1]
         scale["bottom"] = scale["top"] = [1, 1, 0]
 
         for label in labels:

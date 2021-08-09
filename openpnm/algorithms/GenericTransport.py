@@ -671,26 +671,44 @@ class GenericTransport(GenericAlgorithm):
                 x = ml.solve(b=b, x0=x0, tol=rtol, maxiter=max_it, accel="bicgstab")
                 return x
         # PyPardiso
-        elif self.settings['solver_family'] == 'pypardiso':
-            try:
-                import pypardiso
-            except ModuleNotFoundError:
-                if self.Np <= 8000:
-                    logger.critical("Pardiso not found, reverting to much "
-                                    + "slower spsolve.  Install pardiso with: "
-                                    + "conda install -c conda-forge pardiso4py")
-                    self.settings['solver_family'] = 'scipy'
-                    return self._get_solver()
-                else:
-                    raise Exception("Pardiso not found. Install it with: "
-                                    + "conda install -c conda-forge pardiso4py")
-
+        elif self.settings['solver_family'] in ['pypardiso', 'pardiso']:
             def solver(A, b, **kwargs):
                 r"""
                 Wrapper method for PyPardiso sparse linear solver.
                 """
+                import pypardiso
                 x = pypardiso.spsolve(A=A, b=b)
                 return x
+        # CuPy
+        elif self.settings['solver_family'] == 'cupy':  # pragma: no cover
+            try:
+                import cupy
+                import cupyx.scipy.sparse.linalg
+                cupyx.scipy.sparse.linalg.lschol = cupyx.linalg.sparse.lschol
+            except ModuleNotFoundError:
+                msg = "CuPy missing. Install via: conda install -c conda-forge cupy"
+                raise Exception(msg)
+
+            def solver(A, b, atol=None, rtol=None, max_it=None, x0=None, **kwargs):
+                r"""
+                Wrapper method for CuPy sparse linear solvers.
+                """
+                x0 = x0 if x0 is None else cupy.array(x0)
+                b = cupy.array(b)
+                A = cupy.sparse.csr_matrix(A)
+                direct = ["spsolve", "lsqr", "lschol"]
+                iterative = ["cg", "gmres"]
+                solver_type = self.settings["solver_type"]
+                args = {"A": A, "b": b}
+                if solver_type in direct + iterative:
+                    ls = getattr(cupyx.scipy.sparse.linalg, solver_type)
+                    if solver_type in iterative:
+                        args.update({"tol": rtol, "maxiter": max_it, "x0": x0})
+                else:
+                    raise Exception(f"Unsupported solver type: {solver_type}")
+                out = ls(**args)
+                x = out[0] if isinstance(out, tuple) else out
+                return cupy.asnumpy(x)
         else:
             raise Exception(f"{self.settings['solver_family']} not available.")
 

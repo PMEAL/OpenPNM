@@ -63,7 +63,7 @@ class StickAndBall2D(GenericGeometry):
     The resulting figure shows that these two Geometry object each have a
     different pore size distribution, with ``geo2`` being much smaller:
 
-    .. image:: /../docs/static/images/stick_and_ball_histogram.png
+    .. image:: /../docs/_static/images/stick_and_ball_histogram.png
         :align: center
 
     Notes
@@ -175,7 +175,7 @@ class StickAndBall2D(GenericGeometry):
         self.add_model(propname='pore.seed',
                        model=mods.misc.random,
                        element='pore',
-                       num_range=[0.5, 0.5],
+                       num_range=[0.2, 0.7],
                        seed=None)
 
         self.add_model(propname='pore.max_size',

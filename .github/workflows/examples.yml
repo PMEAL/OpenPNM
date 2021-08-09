@@ -28,7 +28,7 @@ jobs:
       - name: Cache conda
         uses: actions/cache@v1
         env:
-          CACHE_NUMBER: 0  # increase value -> force reset cache
+          CACHE_NUMBER: 1  # increase value -> force reset cache
         with:
           path: ~/conda_pkgs_dir
           key: ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-${{ hashFiles('**/conda_requirements.txt') }}
@@ -61,6 +61,7 @@ jobs:
 
       - name: Running tests
         run:
-          pytest --nbval examples/
-          --ignore="examples/paper_recreations/Blunt et al. (2013)"
-          --ignore="examples/paper_recreations/Wu et al. (2010)"
+          pytest examples/
+            --nbval-lax
+            --ignore="examples/paper_recreations/Blunt et al. (2013)"
+            --ignore="examples/paper_recreations/Wu et al. (2010)"

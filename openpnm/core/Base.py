@@ -247,7 +247,7 @@ class Base(dict):
             if self._count(element) == 0:
                 self.update({key: value})
             else:
-                raise Exception('Provided array is wrong legth for ' + key)
+                raise Exception('Provided array is wrong length for ' + key)
 
     def __getitem__(self, key):
         element, prop = key.split('.', 1)
@@ -273,6 +273,12 @@ class Base(dict):
         elif hasattr(self, 'models') and key in self.models:
             self.regenerate_models(key)
             vals = super().__getitem__(key)
+        # The following is probably a bad idea, but just trying it for fun
+        # elif self.settings['interpolation_mode'] is not None:
+        #     temp = list(set(['pore', 'throat']).difference(set([element])))[0]
+        #     vals = self.interpolate_data(temp + '.' + prop,
+        #                                  mode=self.settings['interpolation_mode'])
+        #     self[element + '.' + prop] = vals
         else:
             raise KeyError(key)
         return vals
@@ -845,10 +851,10 @@ class Base(dict):
         --------
         >>> import openpnm as op
         >>> pn = op.network.Cubic(shape=[5, 5, 5])
-        >>> Ps = pn.pores(labels=['top', 'front'], mode='union')
+        >>> Ps = pn.pores(labels=['top', 'back'], mode='union')
         >>> Ps[:5]  # Look at first 5 pore indices
         array([ 4,  9, 14, 19, 20])
-        >>> pn.pores(labels=['top', 'front'], mode='xnor')
+        >>> pn.pores(labels=['top', 'back'], mode='xnor')
         array([ 24,  49,  74,  99, 124])
         """
         ind = self._get_indices(element='pore', labels=labels, mode=mode)
@@ -1353,8 +1359,8 @@ class Base(dict):
         >>> pn = op.network.Cubic(shape=[5, 5, 5])
         >>> pn.filter_by_label(pores=[0, 1, 25, 32], labels='left')
         array([0, 1])
-        >>> Ps = pn.pores(['top', 'bottom', 'front'], mode='or')
-        >>> pn.filter_by_label(pores=Ps, labels=['top', 'front'],
+        >>> Ps = pn.pores(['top', 'bottom', 'back'], mode='or')
+        >>> pn.filter_by_label(pores=Ps, labels=['top', 'back'],
         ...                    mode='and')
         array([ 24,  49,  74,  99, 124])
         """
@@ -1598,6 +1604,7 @@ class Base(dict):
             r, c = N // 3 + 1, 3
         fig, ax = plt.subplots(r, c, figsize=(3*c, 3*r))
         axs = np.array(ax).flatten()
+        i = None
         for i, _ in enumerate(props):
             try:
                 # Update kwargs with some default values
@@ -1610,7 +1617,7 @@ class Base(dict):
             except KeyError:
                 pass
         # Hide unpopulated subplots from the grid
-        for j in range(i+1, len(axs)):
+        for j in range(i + 1, len(axs)):
             axs[j].set_axis_off()
         plt.rcParams['font.size'] = temp
         plt.tight_layout(h_pad=0.9, w_pad=0.9)

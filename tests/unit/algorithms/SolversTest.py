@@ -22,7 +22,7 @@ class SolversTest:
         self.alg.settings.update(quantity='pore.x',
                                  conductance='throat.conductance')
         self.alg.setup(phase=self.phase)
-        self.alg.set_value_BC(pores=self.net.pores('back'), values=1.0)
+        self.alg.set_value_BC(pores=self.net.pores('front'), values=1.0)
         self.alg.set_value_BC(pores=self.net.pores('bottom'), values=0.0)
 
     def test_solver_not_available(self):
@@ -67,12 +67,13 @@ class SolversTest:
             with pytest.raises(Exception):
                 self.alg.run()
 
-    @catch_module_not_found
-    def test_pyamg(self):
-        self.alg.settings['solver_family'] = 'pyamg'
-        self.alg.run()
-        xmean = self.alg['pore.x'].mean()
-        nt.assert_allclose(actual=xmean, desired=0.587595, rtol=1e-5)
+    # TODO: Uncomment this test once pyamg/pyamg#273 is fixed
+    # @catch_module_not_found
+    # def test_pyamg(self):
+    #     self.alg.settings['solver_family'] = 'pyamg'
+    #     self.alg.run()
+    #     xmean = self.alg['pore.x'].mean()
+    #     nt.assert_allclose(actual=xmean, desired=0.587595, rtol=1e-5)
 
     def test_pypardiso_exception_if_not_found(self):
         self.alg.settings['solver_family'] = 'pypardiso'

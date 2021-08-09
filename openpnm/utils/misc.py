@@ -9,6 +9,26 @@ import scipy.sparse
 import time as _time
 from collections import OrderedDict
 from docrep import DocstringProcessor
+from IPython.core.magics.execution import _format_time
+
+__all__ = [
+    "Docorator",
+    "PrintableDict",
+    "PrintableList",
+    "NestedDict",
+    "SubDict",
+    "SettingsDict",
+    "GenericSettings",
+    "HealthDict",
+    "flat_list",
+    "sanitize_dict",
+    "unique_list",
+    "tic", "toc",
+    "is_symmetric",
+    "nbr_to_str",
+    "conduit_dict_to_array",
+    "conduit_array_to_dict"
+]
 
 
 class Docorator(DocstringProcessor):
@@ -279,14 +299,12 @@ def toc(quiet=False):
     tic
 
     """
-    if "_startTime_for_tictoc" in globals():
-        t = _time.time() - _startTime_for_tictoc
-        if quiet is False:
-            print(f"Elapsed time in seconds: {t:0.2f}")
-        else:
-            return t
-    else:
+    if "_startTime_for_tictoc" not in globals():
         raise Exception("Start time not set, call tic first")
+    t = _time.time() - _startTime_for_tictoc
+    if quiet is False:
+        print(f"Elapsed time: {_format_time(t)}")
+    return t
 
 
 def unique_list(input_list):
@@ -323,8 +341,7 @@ def flat_list(input_list):
     x = input_list
     if isinstance(x, list):
         return [a for i in x for a in flat_list(i)]
-    else:
-        return [x]
+    return [x]
 
 
 def sanitize_dict(input_dict):
@@ -556,6 +573,75 @@ def nbr_to_str(nbr, t_precision):
             * (round(nbr, t_precision) != int(nbr)))
     nbr_str = (str(int(round(nbr, t_precision) * 10**n)) + (f'e-{n}') * (n != 0))
     return nbr_str
+
+
+def conduit_dict_to_array(d):
+    r"""
+    Converts a conduit dict to a 3-column wide ndarray.
+
+    A conduit dict contains 3 arrays pertaining to pore1, throat, and
+    pore2. These arrays can be accessed via keys: 'pore1', 'throat',
+    and 'pore2'.
+
+    Parameters
+    ----------
+    d : dict
+        Conduit dictionary with keys 'pore1', 'throat', and 'pore2'.
+
+    Returns
+    -------
+    ndarray
+        Conduit array, i.e. 3-column wide, with columns pertaining to
+        pore1, throat, and pore2, respectively.
+
+    """
+    _validate_conduit_dict(d)
+    return _np.vstack((d["pore1"], d["throat"], d["pore2"])).T
+
+
+def conduit_array_to_dict(arr):
+    r"""
+    Converts a conduit array to a conduit dict.
+
+    A conduit array is 3 columns wide, each pertaining to a conduit
+    property for pore1, throat, and pore2, respectively.
+
+    Parameters
+    ----------
+    arr : ndarray
+        Conduit array.
+
+    Returns
+    -------
+    dict
+        Conduit dictionary with keys 'pore1', 'throat', and 'pore2'.
+
+    """
+    _validate_conduit_array(arr)
+    return {"pore1": arr[:, 0], "throat": arr[:, 1], "pore2": arr[:, 2]}
+
+
+def _validate_conduit_dict(d):
+    r"""
+    Validates whether the given dictionary is a proper conduit dict.
+    """
+    if not isinstance(d, dict):
+        raise Exception("Conduit dictionary must be of type dict.")
+    allowed_keys = set(["pore1", "throat", "pore2"])
+    if allowed_keys != set(d.keys()):
+        raise Exception("Conduit dictionary keys must be 'pore1', 'throat', and 'pore2'")
+    elem_lengths = [len(x) for x in d.values()]
+    if len(_np.unique(elem_lengths)) != 1:
+        raise Exception("Conduit dictionary must have arrays of the same length.")
+
+
+def _validate_conduit_array(arr):
+    r"""
+    Validates whether the given array is a proper conduit array.
+    """
+    arr = _np.array(arr)
+    if arr.shape[1] != 3:
+        raise Exception("Conduit array must be exactly 3 columns wide.")
 
 
 def prettify_logger_message(msg):

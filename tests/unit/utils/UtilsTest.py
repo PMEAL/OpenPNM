@@ -1,15 +1,15 @@
 import pytest
 import numpy as np
 import openpnm as op
+from time import sleep
 
 
 class UtilsTest:
 
     def setup_class(self):
         self.net = op.network.Cubic(shape=[3, 3, 3])
-        self.geo = op.geometry.StickAndBall(network=self.net,
-                                            pores=self.net.Ps,
-                                            throats=self.net.Ts)
+        self.geo = op.geometry.StickAndBall(
+            network=self.net, pores=self.net.Ps, throats=self.net.Ts)
 
     def teardown_class(self):
         ws = op.Workspace()
@@ -19,9 +19,12 @@ class UtilsTest:
         with pytest.raises(Exception):
             op.utils.toc()
         op.utils.tic()
-        t1 = op.utils.toc()
-        assert t1 is None
-        t2 = op.utils.toc(quiet=True)
+        sleep(0.5)
+        t1 = op.utils.toc(quiet=True)
+        assert t1 >= 0
+        op.utils.tic()
+        sleep(0.5)
+        t2 = op.utils.toc()
         assert t2 >= 0
 
     def test_nested_dict(self):

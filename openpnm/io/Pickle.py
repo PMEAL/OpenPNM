@@ -196,7 +196,7 @@ class Pickle(GenericIO):
                 raise Exception(filename.name + ' contains multiple'
                                 + ' projects, use load_workspace instead')
             # If pickle contains a single list
-            elif isinstance(d, list):
+            if isinstance(d, list):
                 if projname not in ws.keys():
                     ws[projname] = d
                     return ws[projname]
@@ -206,5 +206,5 @@ class Pickle(GenericIO):
                                + ' renaming to ' + newname)
                 ws[newname] = d
                 return ws[newname]
-            else:
-                raise Exception('File contents are not understood')
+            # Otherwise, raise exception
+            raise Exception('File contents are not understood')

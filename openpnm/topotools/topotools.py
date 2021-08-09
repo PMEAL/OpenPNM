@@ -432,8 +432,8 @@ def label_faces(network, tol=0.0, label='surface'):
         network['pore.left'] = (crds[:, 0] <= (xmin + tol*xspan)) * Psurf
         network['pore.right'] = (crds[:, 0] >= (xmax - tol*xspan)) * Psurf
     if dims[1]:
-        network['pore.back'] = (crds[:, 1] <= (ymin + tol*yspan)) * Psurf
-        network['pore.front'] = (crds[:, 1] >= (ymax - tol*yspan)) * Psurf
+        network['pore.front'] = (crds[:, 1] <= (ymin + tol*yspan)) * Psurf
+        network['pore.back'] = (crds[:, 1] >= (ymax - tol*yspan)) * Psurf
     if dims[2]:
         network['pore.top'] = (crds[:, 2] >= (zmax - tol*zspan)) * Psurf
         network['pore.bottom'] = (crds[:, 2] <= (zmin + tol*zspan)) * Psurf
@@ -1068,9 +1068,8 @@ def subdivide(network, pores, shape, labels=[]):
                          does not support another subdivision')
     # Assigning right shape and division
     if np.size(shape) != 2 and np.size(shape) != 3:
-        raise Exception('Subdivide not implemented for Networks other than 2D \
-                         and 3D')
-    elif np.size(shape) == 3 and 1 not in shape:
+        raise Exception('Subdivide not implemented for Networks other than 2D and 3D')
+    if np.size(shape) == 3 and 1 not in shape:
         div = np.array(shape, ndmin=1)
         single_dim = None
     else:
@@ -1616,7 +1615,7 @@ def reflect_base_points(base_pts, domain_size):
         if domain_size[1] != 0:  # If not a disk
             r = np.hstack([r, r, r])
             theta = np.hstack([theta, theta, theta])
-            z = np.hstack([z, -z, 2-z])
+            z = np.hstack([z, -z, 2*domain_size[1]-z])
         base_pts = np.vstack((r, theta, z))
     elif len(domain_size) == 3:
         Nx, Ny, Nz = domain_size

@@ -54,6 +54,7 @@ class Gabriel(Delaunay):
     --------
     >>> import openpnm as op
     >>> import scipy as sp
+    >>> import matplotlib.pyplot as plt
     >>> pts = np.random.rand(100, 3) * [1, 1, 0]  # Set z-axis to 0
     >>> gn = op.network.Gabriel(shape=[1, 1, 0], points=pts)
     >>> dn = op.network.Delaunay(shape=[1, 1, 0], points=pts)
@@ -62,10 +63,11 @@ class Gabriel(Delaunay):
 
     >>> gn['pore.coords'] += [1, 0, 0]
     >>> op.topotools.merge_networks(dn, gn)
-    >>> fig = op.topotools.plot_connections(dn)
-    >>> fig = op.topotools.plot_coordinates(dn, c='r', s=100, fig=fig)
+    >>> fig, ax = plt.subplots()
+    >>> _ = op.topotools.plot_connections(dn, ax=ax)
+    >>> _ = op.topotools.plot_coordinates(dn, c='r', s=100, ax=ax)
 
-    .. image:: /../docs/static/images/gabriel_network.png
+    .. image:: /../docs/_static/images/gabriel_network.png
         :align: center
 
     """

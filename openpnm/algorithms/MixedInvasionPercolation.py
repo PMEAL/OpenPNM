@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 ===============================================================================
 MixedInvasionPercolation: IP allowing pores and throats to invade separately
@@ -7,7 +6,6 @@ MixedInvasionPercolation: IP allowing pores and throats to invade separately
 """
 import logging
 import heapq as hq
-import scipy as sp
 import numpy as np
 from collections import namedtuple
 from openpnm.algorithms import GenericAlgorithm
@@ -18,18 +16,18 @@ logger = logging.getLogger(__name__)
 
 class MixedInvasionPercolation(GenericAlgorithm):
     r"""
-    An implemetation of invasion percolation which can invade bonds, sites or a
-    mixture of both. Inlets can be treated as individual injection points that
-    share a common pressure or have their own and progess independently.
-    Inlets can also be single pores or clusters.
+    An implemetation of invasion percolation which can invade bonds,
+    sites or a mixture of both. Inlets can be treated as individual
+    injection points that share a common pressure or have their own and
+    progess independently. Inlets can also be single pores or clusters.
 
     Parameters
     ----------
-    network : OpenPNM Network object
-        The Network upon which the invasion should occur.
+    network : GenericNetwork
+        The network upon which the invasion should occur.
 
     Notes
-    ----
+    -----
     n/a
 
     """
@@ -185,14 +183,9 @@ class MixedInvasionPercolation(GenericAlgorithm):
         elif clusters is not None:
             logger.info("Setting inlet clusters at individual pressures")
         else:
-            logger.error(
-                "Either 'inlets' or 'clusters' must be passed to" + " setup method"
-            )
+            logger.error("Either 'inlets' or 'clusters' must be passed to" + " setup method")
         self.queue = []
-        if self.settings["cooperative_pore_filling"] and hasattr(self, "tt_Pc"):
-            check_coop = True
-        else:
-            check_coop = False
+        check_coop = self.settings["cooperative_pore_filling"] and hasattr(self, "tt_Pc")
         for i, cluster in enumerate(clusters):
             self.queue.append([])
             # Perform initial analysis on input pores
@@ -527,11 +520,14 @@ class MixedInvasionPercolation(GenericAlgorithm):
 
     def get_intrusion_data(self, inv_points=None):
         r"""
-        Plot a simple drainage curve
+        Returns the intrusion data.
         """
         net = self.project.network
+
         if "pore.invasion_pressure" not in self.props():
-            logger.error("Cannot plot drainage curve. Please run " + " algorithm first")
+            logger.error("You must run the algorithm first.")
+            return None
+
         if inv_points is None:
             mask = ~np.isnan(self["throat.invasion_pressure"])
             ok_Pc = self["throat.invasion_pressure"][mask]
@@ -548,32 +544,35 @@ class MixedInvasionPercolation(GenericAlgorithm):
         tvol = np.sum(net["throat.volume"])
         tot_vol = pvol + tvol
         tot_sat = sat_p + sat_t
+
         # Normalize
         sat_p /= tot_vol
         sat_t /= tot_vol
         tot_sat /= tot_vol
         pc_curve = namedtuple("pc_curve", ("Pcap", "S_pore", "S_throat", "S_tot"))
         data = pc_curve(inv_points, sat_p, sat_t, tot_sat)
+
         return data
 
-    def plot_intrusion_curve(self, fig=None, inv_points=None):
+    def plot_intrusion_curve(self, ax=None, inv_points=None, num_markers=25):
         r"""
-        Plot a simple drainage curve
+        Plot a simple drainage curve.
         """
         import matplotlib.pyplot as plt
 
         data = self.get_intrusion_data(inv_points)
-        if fig is None:
-            fig = plt.figure()
-        a = fig.add_subplot(111)
-        a.plot(data.Pcap, data.S_pore, "r*-", label="pore")
-        a.plot(data.Pcap, data.S_throat, "b*-", label="throat")
-        a.plot(data.Pcap, data.S_tot, "g*-", label="total")
-        a.legend(bbox_to_anchor=(0, 1.02, 1, 0.102), loc=3, ncol=3, borderaxespad=0)
-        a.set_xlabel("Capillary Pressure [Pa]")
-        a.set_ylabel("Saturation")
-        a.set_ybound(lower=0.0, upper=1.0)
-        return fig
+        if data is None:
+            raise Exception("You must run the algorithm first.")
+        if ax is None:
+            fig, ax = plt.subplots()
+        markevery = max(data.Pcap.size // num_markers, 1)
+        ax.plot(data.Pcap, data.S_pore, "r*-", label="pore", markevery=markevery)
+        ax.plot(data.Pcap, data.S_throat, "b*-", label="throat", markevery=markevery)
+        ax.plot(data.Pcap, data.S_tot, "g*-", label="total", markevery=markevery)
+        ax.legend(bbox_to_anchor=(0, 1.02, 1, 0.102), loc=3, ncol=3, borderaxespad=0)
+        ax.set_xlabel("Capillary pressure [Pa]")
+        ax.set_ylabel("Saturation")
+        ax.set_ybound(lower=0.0, upper=1.0)
 
     def apply_trapping(self, partial=False):
         """

@@ -10,18 +10,18 @@ effects
 
 """
 
-from . import capillary_pressure
-from . import diffusive_conductance
-from . import electrical_conductance
-from . import thermal_conductance
-from . import hydraulic_conductance
-from . import dispersive_conductance
-from . import multiphase
-from . import source_terms
-from . import source_terms as generic_source_term
-from . import flow_shape_factors
-from . import poisson_shape_factors
-from . import meniscus
-from . import ionic_conductance
 from . import ad_dif_mig_conductance
 from . import ad_dif_conductance
+from . import diffusive_conductance
+from . import dispersive_conductance
+from . import electrical_conductance
+from . import hydraulic_conductance
+from . import ionic_conductance
+from . import thermal_conductance
+from . import source_terms
+from . import source_terms as generic_source_term
+from . import capillary_pressure
+from . import meniscus
+from . import multiphase
+from . import poisson_shape_factors
+from . import flow_shape_factors
