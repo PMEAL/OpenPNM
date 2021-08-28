@@ -80,7 +80,7 @@ class TransientIonicConduction(TransientReactiveTransport,
         if t_tolerance is not None:
             self.settings['t_tolerance'] = t_tolerance
         if t_precision is not None:
-            self.settings['t_tolerance'] = t_precision
+            self.settings['t_precision'] = t_precision
         if t_scheme:
             self.settings['t_scheme'] = t_scheme
         self.settings.update(kwargs)
