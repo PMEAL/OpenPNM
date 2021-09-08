@@ -9,8 +9,6 @@ __all__ = ["ad_dif_mig"]
 
 def ad_dif_mig(
     target,
-    conduit_lengths="throat.conduit_lengths",
-    conduit_shape_factors="throat.poisson_shape_factors",
     pore_pressure="pore.pressure",
     pore_potential="pore.potential",
     throat_hydraulic_conductance="throat.hydraulic_conductance",
@@ -32,37 +30,22 @@ def ad_dif_mig(
         The object which this model is associated with. This controls the
         length of the calculated array, and also provides access to other
         necessary properties.
-
-    conduit_lengths : string
-        Dictionary key of the conduit length values
-
-    conduit_shape_factors : string
-        Dictionary key of the conduit DIFFUSION shape factor values
-
     pore_pressure : string
         Dictionary key of the pore pressure values
-
     pore_potential : string
         Dictionary key of the pore potential values
-
     throat_hydraulic_conductance : string
         Dictionary key of the throat hydraulic conductance values
-
     throat_diffusive_conductance : string
         Dictionary key of the throat diffusive conductance values
-
     throat_valence : string
         Dictionary key of the throat ionic species valence values
-
     pore_temperature : string
         Dictionary key of the pore temperature values
-
     throat_temperature : string
         Dictionary key of the throat temperature values
-
     ion : string
         Name of the ionic species
-
     s_scheme : string
         Name of the space discretization scheme to use
 
@@ -96,23 +79,6 @@ def ad_dif_mig(
     throats = network.map_throats(throats=target.Ts, origin=target)
     phase = target.project.find_phase(target)
     cn = network["throat.conns"][throats]
-    # Getting conduit lengths
-    L1 = network[conduit_lengths + ".pore1"][throats]
-    Lt = network[conduit_lengths + ".throat"][throats]
-    L2 = network[conduit_lengths + ".pore2"][throats]
-    # Preallocating g
-    g1, g2, gt = _np.zeros((3, len(Lt)))
-    # Setting g to inf when Li = 0 (ex. boundary pores)
-    # INFO: This is needed since area could also be zero, which confuses NumPy
-    m1, m2, mt = [Li != 0 for Li in [L1, L2, Lt]]
-    g1[~m1] = g2[~m2] = gt[~mt] = _np.inf
-    # Getting shape factors
-    try:
-        SF1 = phase[conduit_shape_factors + ".pore1"][throats]
-        SFt = phase[conduit_shape_factors + ".throat"][throats]
-        SF2 = phase[conduit_shape_factors + ".pore2"][throats]
-    except KeyError:
-        SF1 = SF2 = SFt = 1.0
 
     # Interpolate pore phase property values to throats
     try:
