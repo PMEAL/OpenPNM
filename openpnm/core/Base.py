@@ -1307,6 +1307,45 @@ class Base(dict):
             values *= self[propname].units
         return values
 
+    def get_conduit_data(self, prop, mode='mean'):
+        r"""
+        Combined requested data into a single 3-column array
+
+        Parameters
+        ----------
+        prop : string
+            The dictionary key to the property of interest
+        mode : string
+            How interpolation should be peformed for missing values. If values
+            are present for both pores and throats, then this argument is
+            ignored.  The ``interpolate`` data method is used.  Options are:
+
+                * 'mean' (default)
+                    Finds the mean value of the neighboring pores (or throats)
+                * 'min'
+                    Finds the minimuem of the neighboring pores (or throats)
+                * 'max'
+                    Finds the maximum of the neighboring pores (or throats)
+
+        Returns
+        -------
+        conduit_data : ndarray
+            An Nt-by-3 array with each column containg the requested property
+            for each pore-throat-pore conduit.
+
+        """
+        try:
+            T = self['throat.' + prop]
+            try:
+                P1, P2 = self['pore.' + prop][self.network.conns].T
+            except KeyError:
+                P = self.interpolate_data(propname='throat.'+prop, mode=mode)
+                P1, P2 = P[self.network.conns].T
+        except KeyError:
+            P1, P2 = self['pore.' + prop][self.network.conns].T
+            T = self.interpolate_data(propname='pore.'+prop, mode=mode)
+        return np.vstack((P1, T, P2)).T
+
     def filter_by_label(self, pores=[], throats=[], labels=None, mode='or'):
         r"""
         Returns which of the supplied pores (or throats) has the specified
