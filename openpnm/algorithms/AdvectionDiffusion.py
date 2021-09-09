@@ -63,33 +63,6 @@ class AdvectionDiffusion(ReactiveTransport):
         self.settings._update_settings_and_docs(AdvectionDiffusionSettings())
         self.settings.update(settings)
 
-    def setup(
-            self,
-            phase=None,
-            quantity='',
-            conductance='',
-            diffusive_conductance='',
-            hydraulic_conductance='',
-            pressure='',
-            **kwargs
-    ):
-        r"""
-        Setup method for setting/modifying algorithm settings
-        """
-        if phase:
-            self.settings['phase'] = phase.name
-        if quantity:
-            self.settings['quantity'] = quantity
-        if conductance:
-            self.settings['conductance'] = conductance
-        if diffusive_conductance:
-            self.settings['diffusive_conductance'] = diffusive_conductance
-        if hydraulic_conductance:
-            self.settings['hydraulic_conductance'] = hydraulic_conductance
-        if pressure:
-            self.settings['pressure'] = pressure
-        super().setup(**kwargs)
-
     def set_outflow_BC(self, pores, mode='merge'):
         r"""
         Adds outflow boundary condition to the selected pores

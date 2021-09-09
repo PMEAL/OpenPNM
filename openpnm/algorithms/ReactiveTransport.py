@@ -98,7 +98,7 @@ class ReactiveTransport(GenericTransport):
         self.settings._update_settings_and_docs(ReactiveTransportSettings)
         self.settings.update(settings)
         if phase is not None:
-            self.setup(phase=phase)
+            self.settings['phase'] = phase.name
 
     def run(self, x0=None):
         r"""

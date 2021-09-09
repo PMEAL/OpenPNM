@@ -189,7 +189,8 @@ class GenericTransport(GenericAlgorithm):
         # Overwrite any given in init
         self.settings.update(settings)
         # Assign phase if given during init
-        self.setup(phase=phase)
+        if phase is not None:
+            self.settings['phase'] = phase.name
         # If network given, get project, otherwise let parent class create it
         if network is not None:
             project = network.project

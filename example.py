@@ -3,7 +3,7 @@ import openpnm as op
 from openpnm.models.physics import source_terms
 
 
-# %% Initialization: create Workspace and project objects
+# %% Initialization: create Workspace and project objects.
 ws = op.Workspace()
 proj = ws.new_project()
 np.random.seed(9)
@@ -19,16 +19,14 @@ phys_water = op.physics.Standard(network=pn, phase=water, geometry=geo)
 phys_hg = op.physics.Standard(network=pn, phase=hg, geometry=geo)
 
 # %% Perform porosimetry simulation
-mip = op.algorithms.Porosimetry(network=pn)
-mip.setup(phase=hg)
+mip = op.algorithms.Porosimetry(network=pn, phase=hg)
 mip.set_inlets(pores=pn.pores(['top', 'bottom']))
 mip.run()
 hg.update(mip.results(Pc=70000))
 mip.plot_intrusion_curve()
 
 # %% Perform Stokes flow simulation
-perm = op.algorithms.StokesFlow(network=pn)
-perm.setup(phase=water)
+perm = op.algorithms.StokesFlow(network=pn, phase=water)
 perm.set_value_BC(pores=pn.pores('right'), values=0)
 perm.set_value_BC(pores=pn.pores('left'), values=101325)
 perm.run()
@@ -47,8 +45,8 @@ phys_air.add_model(
     regen_mode='deferred'
 )
 # Set up Fickian diffusion simulation
-rxn = op.algorithms.FickianDiffusion(network=pn)
-rxn.setup(phase=air, solver='spsolve')
+rxn = op.algorithms.FickianDiffusion(network=pn, phase=air)
+rxn.settings['solver'] = 'spsolve'
 Ps = pn.find_nearby_pores(pores=50, r=5e-4, flatten=True)
 rxn.set_source(propname='pore.2nd_order_rxn', pores=Ps)
 rxn.set_value_BC(pores=pn.pores('top'), values=1)
@@ -56,8 +54,7 @@ rxn.run()
 air.update(rxn.results())
 
 # %% Perform pure diffusion simulation to get effective diffusivity
-fd = op.algorithms.FickianDiffusion(network=pn)
-fd.setup(phase=air)
+fd = op.algorithms.FickianDiffusion(network=pn, phase=air)
 fd.set_value_BC(pores=pn.pores('left'), values=1)
 fd.set_value_BC(pores=pn.pores('right'), values=0)
 fd.run()

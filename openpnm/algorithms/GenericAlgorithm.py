@@ -67,8 +67,3 @@ class GenericAlgorithm(Base):
         r"""
         """
         raise NotImplementedError("This method must be subclassed")
-
-    def setup(self):
-        r"""
-        """
-        raise NotImplementedError("This method must be subclassed")
