@@ -802,35 +802,6 @@ Step 5. (in run) When isolated cluster is met my invading cluster it
 merges in and starts invading</p>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="openpnm.algorithms.MixedInvasionPercolation.setup">
-<span class="sig-name descname"><span class="pre">setup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_entry_pressure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.entry_pressure'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_entry_pressure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.entry_pressure'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snap_off</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">invade_isolated_Ts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">late_pore_filling</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">late_throat_filling</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/MixedInvasionPercolation.html#MixedInvasionPercolation.setup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.MixedInvasionPercolation.setup" title="Permalink to this definition">¶</a></dt>
-<dd><p>Used to specify necessary arguments to the simulation.  This method is
-useful for resetting the algorithm or applying more explicit control.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>phase</strong> (<em>OpenPNM Phase object</em>) – The Phase object containing the physical properties of the invading
-fluid.</p></li>
-<li><p><strong>pore_entry_pressure</strong> (<em>string</em>) – The dictionary key on the Phase object where the pore entry
-pressure values are stored.  The default is
-‘pore.entry_pressure’.</p></li>
-<li><p><strong>throat_entry_pressure</strong> (<em>string</em>) – The dictionary key on the Phase object where the throat entry
-pressure values are stored.  The default is
-‘throat.entry_pressure’.</p></li>
-<li><p><strong>snap_off</strong> (<em>string</em>) – The dictionary key on the Phase object where the throat snap-off
-pressure values are stored.</p></li>
-<li><p><strong>invade_isolated_Ts</strong> (<em>boolean</em>) – If True, isolated throats are invaded at the higher invasion
-pressure of their connected pores.</p></li>
-<li><p><strong>late_pore_filling</strong> (<em>string</em>) – The name of the model used to determine late pore filling as
-a function of applied pressure.</p></li>
-<li><p><strong>late_throat_filling</strong> (<em>string</em>) – The name of the model used to determine late throat filling as
-a function of applied pressure.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
 </dd></dl>
 
 </div>

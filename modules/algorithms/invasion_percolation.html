@@ -647,8 +647,7 @@ wikipedia page on <a class="reference external" href="https://en.wikipedia.org/w
 </pre></div>
 </div>
 <p>Initialize an invasion percolation object and define inlets:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ip</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">InvasionPercolation</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ip</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="n">phase</span><span class="o">=</span><span class="n">water</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ip</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">InvasionPercolation</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="n">water</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ip</span><span class="o">.</span><span class="n">set_inlets</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ip</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
 </pre></div>
@@ -782,27 +781,6 @@ desired.</p>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>pores</strong> (<em>array_like</em>) – The list of inlet pores from which the Phase can enter the Network</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="openpnm.algorithms.InvasionPercolation.setup">
-<span class="sig-name descname"><span class="pre">setup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phase</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">entry_pressure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_volume</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_volume</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/InvasionPercolation.html#InvasionPercolation.setup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.InvasionPercolation.setup" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set up the required parameters for the algorithm</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>phase</strong> (<em>OpenPNM Phase object</em>) – The phase to be injected into the Network.  The Phase must have the
-capillary entry pressure values for the system.</p></li>
-<li><p><strong>entry_pressure</strong> (<em>string</em>) – The dictionary key to the capillary entry pressure.  If none is
-supplied then the current value is retained. The default is
-‘throat.capillary_pressure’.</p></li>
-<li><p><strong>pore_volume</strong> (<em>string</em>) – The dictionary key to the pore volume.  If none is supplied then
-the current value is retained. The default is ‘pore.volume’.</p></li>
-<li><p><strong>throat_volume</strong> (<em>string</em>) – The dictionary key to the throat volume.  If none is supplied then
-the current value is retained. The default is ‘throat.volume’.</p></li>
-</ul>
 </dd>
 </dl>
 </dd></dl>
