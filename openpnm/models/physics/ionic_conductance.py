@@ -5,7 +5,7 @@ import numpy as _np
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 
-__all__ = ["poisson", "laplace", "electroneutrality"]
+__all__ = ["poisson", "electroneutrality"]
 
 
 def poisson_laplace_generic(target,
@@ -35,16 +35,8 @@ def poisson_laplace_generic(target,
 def poisson(target,
             pore_area='pore.area',
             throat_area='throat.area',
-            pore_diffusivity='pore.diffusivity',
-            throat_diffusivity='throat.diffusivity',
             conduit_lengths='throat.conduit_lengths',
-            conduit_shape_factors='throat.poisson_shape_factors',
-            pore_volume='pore.volume',
-            pore_temperature='pore.temperature',
-            throat_temperature='throat.temperature',
-            pore_valence='pore.valence',
-            throat_valence='throat.valence',
-            pore_concentration='pore.concentration'):
+            conduit_shape_factors='throat.poisson_shape_factors'):
     r"""
     Calculate the ionic conductance of conduits in network (using the Poisson
     equation for charge conservation), where a conduit is
@@ -63,35 +55,11 @@ def poisson(target,
     throat_area : string
         Dictionary key of the throat area values
 
-    pore_diffusivity : string
-        Dictionary key of the pore diffusivity values
-
-    throat_diffusivity : string
-        Dictionary key of the throat diffusivity values
-
     conduit_lengths : string
         Dictionary key of the conduit length values
 
     conduit_shape_factors : string
         Dictionary key of the conduit DIFFUSION shape factor values
-
-    pore_volume : string
-        Dictionary key of the pore volume values
-
-    pore_temperature : string
-        Dictionary key of the pore temperature values
-
-    throat_temperature : string
-        Dictionary key of the throat temperature values
-
-    pore_valence : string
-       Dictionary key of the pore ionic species valence values
-
-    throat_valence : string
-       Dictionary key of the throat ionic species valence values
-
-    pore_concentration : string
-       Dictionary key of the pore ionic species concentration values
 
     Returns
     -------
