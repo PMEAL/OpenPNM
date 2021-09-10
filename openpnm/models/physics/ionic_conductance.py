@@ -8,6 +8,30 @@ logger = logging.getLogger(__name__)
 __all__ = ["poisson", "laplace", "electroneutrality"]
 
 
+def poisson_generic(target,
+            conduit_lengths='throat.conduit_lengths',
+            size_factors="throat.diffusive_size_factors"):
+    network = target.project.network
+    throats = target.throats(target=network)
+    # conns = network.conns[throats] not needed as e_r is assumed to be constant
+    phase = target.project.find_phase(target)
+    F = network[size_factors]
+    # Poisson or Laplace
+    epsilon0 = 8.854187817e-12
+    epsilonr = phase['pore.permittivity'][0]
+    eps_factor = epsilon0 * epsilonr
+
+    if isinstance(F, dict):
+        g1 = eps_factor * F[f"{size_factors}.pore1"][throats]
+        gt = eps_factor * F[f"{size_factors}.throat"][throats]
+        g2 = eps_factor * F[f"{size_factors}.pore2"][throats]
+        gic = 1 / (1 / g1 + 1 / gt + 1 / g2)
+    else:
+        gic = eps_factor * F
+
+    return gic
+
+
 def poisson(target,
             pore_area='pore.area',
             throat_area='throat.area',
