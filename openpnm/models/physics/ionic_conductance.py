@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 __all__ = ["poisson", "laplace", "electroneutrality"]
 
 
-def poisson_generic(target,
+def poisson_laplace_generic(target,
             conduit_lengths='throat.conduit_lengths',
             size_factors="throat.diffusive_size_factors"):
     network = target.project.network
@@ -157,104 +157,6 @@ def poisson(target,
     g = g_inv1/SF1 + g_inv2/SF2 + g_invt/SFt
     g[g != 0] = g[g != 0]**(-1)
     return g
-
-
-def laplace(target,
-            pore_area='pore.area',
-            throat_area='throat.area',
-            pore_diffusivity='pore.diffusivity',
-            throat_diffusivity='throat.diffusivity',
-            conduit_lengths='throat.conduit_lengths',
-            conduit_shape_factors='throat.poisson_shape_factors',
-            pore_volume='pore.volume',
-            pore_temperature='pore.temperature',
-            throat_temperature='throat.temperature',
-            pore_valence='pore.valence',
-            throat_valence='throat.valence',
-            pore_concentration='pore.concentration'):
-    r"""
-    Calculate the ionic conductance of conduits in network (using the Laplace
-    equation for charge conservation), where a conduit is
-    ( 1/2 pore - full throat - 1/2 pore ). See the notes section.
-
-    Parameters
-    ----------
-    target : OpenPNM Object
-        The object which this model is associated with. This controls the
-        length of the calculated array, and also provides access to other
-        necessary properties.
-
-    pore_area : string
-        Dictionary key of the pore area values
-
-    throat_area : string
-        Dictionary key of the throat area values
-
-    pore_diffusivity : string
-        Dictionary key of the pore diffusivity values
-
-    throat_diffusivity : string
-        Dictionary key of the throat diffusivity values
-
-    conduit_lengths : string
-        Dictionary key of the conduit length values
-
-    conduit_shape_factors : string
-        Dictionary key of the conduit DIFFUSION shape factor values
-
-    pore_volume : string
-        Dictionary key of the pore volume values
-
-    pore_temperature : string
-        Dictionary key of the pore temperature values
-
-    throat_temperature : string
-        Dictionary key of the throat temperature values
-
-    pore_valence : string
-       Dictionary key of the pore ionic species valence values
-
-    throat_valence : string
-       Dictionary key of the throat ionic species valence values
-
-    pore_concentration : string
-       Dictionary key of the pore ionic species concentration values
-
-    Returns
-    -------
-    g : ndarray
-        Array containing ionic conductance values for conduits in the
-        geometry attached to the given physics object.
-
-    Notes
-    -----
-    (1) This function requires that all the necessary phase properties already
-    be calculated.
-
-    (2) This function calculates the specified property for the *entire*
-    network then extracts the values for the appropriate throats at the end.
-
-    (3) This function assumes cylindrical throats with constant cross-section
-    area. Corrections for different shapes and variable cross-section area can
-    be imposed by passing the proper conduit_shape_factors argument.
-
-    (4) shape_factor depends on the physics of the problem, i.e. diffusion-like
-    processes and fluid flow need different shape factors.
-
-    """
-    return poisson(target=target,
-                   pore_area=pore_area,
-                   throat_area=throat_area,
-                   pore_diffusivity=pore_diffusivity,
-                   throat_diffusivity=throat_diffusivity,
-                   conduit_lengths=conduit_lengths,
-                   pore_volume=pore_volume,
-                   pore_temperature=pore_temperature,
-                   throat_temperature=throat_temperature,
-                   pore_valence=pore_valence,
-                   throat_valence=throat_valence,
-                   pore_concentration=pore_concentration,
-                   conduit_shape_factors=conduit_shape_factors)
 
 
 def electroneutrality(target,
