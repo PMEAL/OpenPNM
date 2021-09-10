@@ -101,6 +101,8 @@ class InvasionPercolation(GenericAlgorithm):
         self.settings.update(settings)
         if phase is not None:
             self.settings['phase'] = phase.name
+        self['pore.invasion_sequence'] = -1
+        self['throat.invasion_sequence'] = -1
 
     def set_inlets(self, pores=[], overwrite=False):
         r"""
