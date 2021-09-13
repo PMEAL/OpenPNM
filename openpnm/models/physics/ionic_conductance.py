@@ -5,7 +5,7 @@ import numpy as _np
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 
-__all__ = ["poisson", "electroneutrality"]
+__all__ = ["poisson_laplace_generic", "poisson", "electroneutrality"]
 
 
 def poisson_laplace_generic(target,
