@@ -216,7 +216,7 @@
             <span class="n">project</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">project</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">network</span><span class="p">,</span> <span class="n">project</span><span class="o">=</span><span class="n">project</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="n">hg</span> <span class="o">=</span> <span class="n">Mercury</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">network</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;phase&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">phase</span><span class="o">.</span><span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="n">phase</span><span class="o">=</span><span class="n">hg</span><span class="p">)</span>
         <span class="n">mod</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">physics</span><span class="o">.</span><span class="n">capillary_pressure</span><span class="o">.</span><span class="n">washburn</span>
         <span class="k">for</span> <span class="n">geom</span> <span class="ow">in</span> <span class="n">project</span><span class="o">.</span><span class="n">geometries</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="n">phys</span> <span class="o">=</span> <span class="n">GenericPhysics</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">network</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="n">hg</span><span class="p">,</span> <span class="n">geometry</span><span class="o">=</span><span class="n">geom</span><span class="p">)</span>
@@ -281,7 +281,7 @@
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.1.2.<br/>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br/>
 </p>
     </div>
     
