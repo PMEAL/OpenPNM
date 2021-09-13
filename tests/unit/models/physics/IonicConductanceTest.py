@@ -42,7 +42,29 @@ class IonicConductanceTest:
         actual = self.phys['throat.ionic_conductance_from_mod']
         desired = self.phys['throat.ionic_conductance_generic']
         assert_allclose(actual, desired, rtol=1e-5)
-
+        
+    def test_ionic_conductance_poisson_2D(self):
+        self.geo['pore.area'] = self.geo['pore.diameter']
+        self.geo['throat.area'] = self.geo['throat.diameter']
+        # old poisson model, shape factor
+        mpo = op.models.physics.poisson_shape_factors.ball_and_stick_2d
+        self.phys.add_model(propname="throat.poisson_shape_factors", model=mpo)
+        mod1 = op.models.physics.ionic_conductance.poisson
+        self.phys.add_model(propname='throat.ionic_conductance_from_mod',
+                            model=mod1)
+        self.phys.regenerate_models()
+        # new poisson model, size factor
+        mpo2 = op.models.geometry.diffusive_size_factors.circles_and_rectangles
+        self.geo.add_model(propname="throat.diffusive_size_factors",
+                           model=mpo2)
+        mod2 = op.models.physics.ionic_conductance.poisson_laplace_generic
+        self.phys.add_model(propname='throat.ionic_conductance_generic',
+                            model=mod2)
+        self.phys.regenerate_models()
+        actual = self.phys['throat.ionic_conductance_from_mod']
+        desired = self.phys['throat.ionic_conductance_generic']
+        assert_allclose(actual, desired, rtol=1e-5)
+        
 
 if __name__ == '__main__':
 

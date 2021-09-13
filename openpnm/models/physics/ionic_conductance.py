@@ -9,8 +9,8 @@ __all__ = ["poisson_laplace_generic", "poisson", "electroneutrality"]
 
 
 def poisson_laplace_generic(target,
-            conduit_lengths='throat.conduit_lengths',
-            size_factors="throat.diffusive_size_factors"):
+                            conduit_lengths='throat.conduit_lengths',
+                            size_factors="throat.diffusive_size_factors"):
     network = target.project.network
     throats = target.throats(target=network)
     # conns = network.conns[throats] not needed as e_r is assumed to be constant
@@ -33,19 +33,19 @@ def poisson_laplace_generic(target,
 
 
 def electroneutrality_generic(target,
-                      pore_area='pore.area',
-                      throat_area='throat.area',
-                      pore_diffusivity='pore.diffusivity',
-                      throat_diffusivity='throat.diffusivity',
-                      conduit_lengths='throat.conduit_lengths',
-                      size_factors="throat.diffusive_size_factors",
-                      pore_volume='pore.volume',
-                      pore_temperature='pore.temperature',
-                      throat_temperature='throat.temperature',
-                      pore_valence='pore.valence',
-                      throat_valence='throat.valence',
-                      pore_concentration='pore.concentration',
-                      ions=[]):
+                              pore_area='pore.area',
+                              throat_area='throat.area',
+                              pore_diffusivity='pore.diffusivity',
+                              throat_diffusivity='throat.diffusivity',
+                              conduit_lengths='throat.conduit_lengths',
+                              size_factors="throat.diffusive_size_factors",
+                              pore_volume='pore.volume',
+                              pore_temperature='pore.temperature',
+                              throat_temperature='throat.temperature',
+                              pore_valence='pore.valence',
+                              throat_valence='throat.valence',
+                              pore_concentration='pore.concentration',
+                              ions=[]):
     r"""
     Calculate the ionic conductance of conduits in network (assuming
     electroneutrality for charge conservation), where a conduit is
@@ -176,9 +176,9 @@ def electroneutrality_generic(target,
                 propname=throat_valence+i)[cn[:, 0]]
             V2 = phase.interpolate_data(
                 propname=throat_valence+i)[cn[:, 1]]
-        g1[throats] += F**2 * V1**2 * (D1*c1)/ (R * T1 )
-        g2[throats] += F**2 * V2**2 * (D2*c2) / (R * T2 )
-        gt[throats] += F**2 * Vt**2 * (Dt*ct)/ (R * Tt )
+        g1[throats] += F**2 * V1**2 * (D1*c1) / (R * T1)
+        g2[throats] += F**2 * V2**2 * (D2*c2) / (R * T2)
+        gt[throats] += F**2 * Vt**2 * (Dt*ct) / (R * Tt)
     # Preallocating g_inv
     g_inv1, g_inv2, g_invt = _np.zeros((3, len(cn)))
     f1, f2, ft = [gi != 0 for gi in [g1, g2, gt]]
