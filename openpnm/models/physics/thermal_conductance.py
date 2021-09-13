@@ -6,6 +6,78 @@ import numpy as _np
 __all__ = ["series_resistors"]
 
 
+def series_resistors_generic(target,
+                             pore_conductivity='pore.thermal_conductivity',
+                             throat_conductivity='throat.thermal_conductivity',
+                             size_factors='throat.diffusive_size_factors'):
+    r"""
+    Calculate the electrical conductance of conduits in network, where a
+    conduit is ( 1/2 pore - full throat - 1/2 pore ). See the notes section.
+
+    Parameters
+    ----------
+    target : OpenPNM Object
+        The object which this model is associated with. This controls the
+        length of the calculated array, and also provides access to other
+        necessary properties.
+
+    pore_conductivity : string
+        Dictionary key of the pore thermal conductivity values
+
+    throat_conductivity : string
+        Dictionary key of the throat thermal conductivity values
+
+    size_factors: str
+        Dictionary key of the conduit diffusive shape factors' values.
+
+    Returns
+    -------
+    g : ndarray
+        Array containing electrical conductance values for conduits in the
+        geometry attached to the given physics object.
+
+    Notes
+    -----
+    (1) This function requires that all the necessary phase properties already
+    be calculated.
+
+    (2) This function calculates the specified property for the *entire*
+    network then extracts the values for the appropriate throats at the end.
+
+    (3) This function assumes cylindrical throats with constant cross-section
+    area. Corrections for different shapes and variable cross-section area can
+    be imposed by passing the proper conduit_shape_factors argument.
+
+    (4) shape_factor depends on the physics of the problem, i.e. diffusion-like
+    processes and fluid flow need different shape factors.
+
+    """
+    network = target.project.network
+    throats = network.map_throats(throats=target.Ts, origin=target)
+    phase = target.project.find_phase(target)
+    cn = network['throat.conns'][throats]
+    F = network[size_factors]
+    # Interpolate pore phase property values to throats
+    try:
+        Dt = phase[throat_conductivity][throats]
+    except KeyError:
+        Dt = phase.interpolate_data(propname=pore_conductivity)[throats]
+    try:
+        D1 = phase[pore_conductivity][cn[:, 0]]
+        D2 = phase[pore_conductivity][cn[:, 1]]
+    except KeyError:
+        D1 = phase.interpolate_data(propname=throat_conductivity)[cn[:, 0]]
+        D2 = phase.interpolate_data(propname=throat_conductivity)[cn[:, 1]]
+    if isinstance(F, dict):
+        g1 = D1 * F[f"{size_factors}.pore1"][throats]
+        gt = Dt * F[f"{size_factors}.throat"][throats]
+        g2 = D2 * F[f"{size_factors}.pore2"][throats]
+        gtherm = 1 / (1 / g1 + 1 / gt + 1 / g2)
+    else:
+        gtherm = Dt * F
+    return gtherm
+
+
 def series_resistors(target,
                      pore_area='pore.area',
                      throat_area='throat.area',
