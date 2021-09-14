@@ -17,7 +17,7 @@ class SquaresAndRectanglesTest:
 
     def test_models(self):
         models = self.geo.models
-        assert models["pore.volume"]["model"] == gmods.pore_volume.trapezoid
+        assert models["pore.volume"]["model"] == gmods.pore_volume.circle
         mod = gmods.throat_length.trapezoids_and_rectangles
         assert models["throat.length"]["model"] == mod
         mod = gmods.throat_cross_sectional_area.rectangle

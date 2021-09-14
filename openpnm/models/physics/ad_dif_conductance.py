@@ -9,7 +9,6 @@ __all__ = ["ad_dif"]
 
 def ad_dif(target,
            pore_pressure='pore.pressure',
-           conduit_lengths='throat.conduit_lengths',
            throat_hydraulic_conductance='throat.hydraulic_conductance',
            throat_diffusive_conductance='throat.diffusive_conductance',
            s_scheme='powerlaw'):
@@ -25,8 +24,6 @@ def ad_dif(target,
         The Physics object which this model is associated with. This
         controls the length of the calculated array, and also provides
         access to other necessary properties.
-    conduit_lengths : str
-        Dictionary key of the conduit length values
     pore_pressure : str
         Dictionary key of the pore pressure values
    throat_hydraulic_conductance : str
@@ -64,16 +61,6 @@ def ad_dif(target,
     throats = network.map_throats(throats=target.Ts, origin=target)
     phase = target.project.find_phase(target)
     cn = network['throat.conns'][throats]
-    # Getting conduit lengths
-    L1 = network[conduit_lengths + '.pore1'][throats]
-    Lt = network[conduit_lengths + '.throat'][throats]
-    L2 = network[conduit_lengths + '.pore2'][throats]
-    # Preallocating g
-    g1, g2, gt = _np.zeros((3, len(Lt)))
-    # Setting g to inf when Li = 0 (ex. boundary pores)
-    # INFO: This is needed since area could also be zero, which confuses NumPy
-    m1, m2, mt = [Li != 0 for Li in [L1, L2, Lt]]
-    g1[~m1] = g2[~m2] = gt[~mt] = _np.inf
     # Find g for half of pore 1, throat, and half of pore 2
     P = phase[pore_pressure]
     gh = phase[throat_hydraulic_conductance][throats]
