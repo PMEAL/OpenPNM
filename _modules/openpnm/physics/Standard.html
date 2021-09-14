@@ -170,70 +170,32 @@
               <div>
                 
   <h1>Source code for openpnm.physics.Standard</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">Workspace</span><span class="p">,</span> <span class="n">logging</span>
-<span class="kn">from</span> <span class="nn">openpnm.physics</span> <span class="kn">import</span> <span class="n">GenericPhysics</span>
-<span class="kn">from</span> <span class="nn">openpnm.models</span> <span class="kn">import</span> <span class="n">physics</span> <span class="k">as</span> <span class="n">mods</span>
+<span></span><span class="kn">from</span> <span class="nn">openpnm.physics</span> <span class="kn">import</span> <span class="n">GenericPhysics</span>
+<span class="kn">from</span> <span class="nn">openpnm.models.collections.physics</span> <span class="kn">import</span> <span class="n">standard</span>
+<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">logging</span><span class="p">,</span> <span class="n">Docorator</span><span class="p">,</span> <span class="n">GenericSettings</span>
+<span class="n">docstr</span> <span class="o">=</span> <span class="n">Docorator</span><span class="p">()</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
-<span class="n">ws</span> <span class="o">=</span> <span class="n">Workspace</span><span class="p">()</span>
 
 
-<div class="viewcode-block" id="Standard"><a class="viewcode-back" href="../../../modules/physics/standard.html#openpnm.physics.Standard">[docs]</a><span class="k">class</span> <span class="nc">Standard</span><span class="p">(</span><span class="n">GenericPhysics</span><span class="p">):</span>
+<div class="viewcode-block" id="Standard"><a class="viewcode-back" href="../../../modules/physics/standard.html#openpnm.physics.Standard">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+<span class="k">class</span> <span class="nc">Standard</span><span class="p">(</span><span class="n">GenericPhysics</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Generic class to generate Physics objects</span>
+<span class="sd">    blah</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    network : OpenPNM Network object</span>
-<span class="sd">        The network to which this Physics should be attached</span>
+<span class="sd">    %(GenericPhysics.parameters)s</span>
 
-<span class="sd">    phase : OpenPNM Phase object</span>
-<span class="sd">        The Phase object to which this Physics applies</span>
-
-<span class="sd">    geometry : OpenPNM Geometry object</span>
-<span class="sd">        The Geometry object that defines the pores/throats where this Physics</span>
-<span class="sd">        should be applied.</span>
-
-<span class="sd">    name : str, optional</span>
-<span class="sd">        A unique string name to identify the Physics object, typically same as</span>
-<span class="sd">        instance name but can be anything.  If left blank, and name will be</span>
-<span class="sd">        generated that include the class name and a random string.</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    %(GenericPhysics.returns)s</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">geometry</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">settings</span><span class="o">=</span><span class="p">{},</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-
-        <span class="c1"># Define some default settings</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;prefix&#39;</span><span class="p">:</span> <span class="s1">&#39;phys&#39;</span><span class="p">})</span>
-        <span class="c1"># Overwrite with user supplied settings, if any</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span>
-
-        <span class="c1"># Deal with network or project arguments</span>
-        <span class="k">if</span> <span class="n">network</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">project</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">assert</span> <span class="n">network</span> <span class="ow">is</span> <span class="n">project</span><span class="o">.</span><span class="n">network</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">project</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">project</span>
-
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">project</span><span class="o">=</span><span class="n">project</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="n">phase</span><span class="p">,</span> <span class="n">geometry</span><span class="o">=</span><span class="n">geometry</span><span class="p">,</span>
-                         <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.flow_shape_factors&#39;</span><span class="p">,</span>
-                       <span class="n">model</span><span class="o">=</span><span class="n">mods</span><span class="o">.</span><span class="n">flow_shape_factors</span><span class="o">.</span><span class="n">conical_frustum_and_stick</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.hydraulic_conductance&#39;</span><span class="p">,</span>
-                       <span class="n">model</span><span class="o">=</span><span class="n">mods</span><span class="o">.</span><span class="n">hydraulic_conductance</span><span class="o">.</span><span class="n">hagen_poiseuille</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.poisson_shape_factors&#39;</span><span class="p">,</span>
-                       <span class="n">model</span><span class="o">=</span><span class="n">mods</span><span class="o">.</span><span class="n">poisson_shape_factors</span><span class="o">.</span><span class="n">conical_frustum_and_stick</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.diffusive_conductance&#39;</span><span class="p">,</span>
-                       <span class="n">model</span><span class="o">=</span><span class="n">mods</span><span class="o">.</span><span class="n">diffusive_conductance</span><span class="o">.</span><span class="n">mixed_diffusion</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.ad_dif_conductance&#39;</span><span class="p">,</span>
-                       <span class="n">model</span><span class="o">=</span><span class="n">mods</span><span class="o">.</span><span class="n">ad_dif_conductance</span><span class="o">.</span><span class="n">ad_dif</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.entry_pressure&#39;</span><span class="p">,</span>
-                       <span class="n">model</span><span class="o">=</span><span class="n">mods</span><span class="o">.</span><span class="n">capillary_pressure</span><span class="o">.</span><span class="n">washburn</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.thermal_conductance&#39;</span><span class="p">,</span>
-                       <span class="n">model</span><span class="o">=</span><span class="n">mods</span><span class="o">.</span><span class="n">thermal_conductance</span><span class="o">.</span><span class="n">series_resistors</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.electrical_conductance&#39;</span><span class="p">,</span>
-                       <span class="n">model</span><span class="o">=</span><span class="n">mods</span><span class="o">.</span><span class="n">electrical_conductance</span><span class="o">.</span><span class="n">series_resistors</span><span class="p">)</span></div>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">standard</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">regenerate_models</span><span class="p">()</span></div>
 </pre></div>
 
               </div>
