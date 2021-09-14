@@ -64,3 +64,4 @@ from .plottools import plot_connections
 from .plottools import plot_coordinates
 from .plottools import plot_networkx
 from .plottools import plot_vpython
+from .plottools import plot_network_interactive
