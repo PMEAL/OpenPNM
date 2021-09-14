@@ -23,10 +23,14 @@ class TransientFickianDiffusionTest:
     def test_transient_fickian_diffusion(self):
         alg = op.algorithms.TransientFickianDiffusion(network=self.net,
                                                       phase=self.phase)
-        alg.setup(quantity='pore.concentration',
-                  conductance='throat.diffusive_conductance',
-                  t_initial=0, t_final=1000, t_step=1, t_output=100,
-                  t_tolerance=1e-08, t_scheme='implicit')
+        alg.settings.update({'quantity': 'pore.concentration',
+                             'conductance': 'throat.diffusive_conductance',
+                             't_initial': 0,
+                             't_final': 1000,
+                             't_step':1,
+                             't_output': 100,
+                             't_tolerance': 1e-08,
+                             't_scheme': 'implicit'})
         alg.set_IC(0)
         alg.set_value_BC(pores=self.net.pores('right'), values=1)
         alg.set_value_BC(pores=self.net.pores('left'), values=0)
