@@ -235,33 +235,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">_update_settings_and_docs</span><span class="p">(</span><span class="n">AdvectionDiffusionSettings</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span>
 
-<div class="viewcode-block" id="AdvectionDiffusion.setup"><a class="viewcode-back" href="../../../modules/algorithms/advection_diffusion.html#openpnm.algorithms.AdvectionDiffusion.setup">[docs]</a>    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span>
-            <span class="n">phase</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-            <span class="n">quantity</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
-            <span class="n">conductance</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
-            <span class="n">diffusive_conductance</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
-            <span class="n">hydraulic_conductance</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
-            <span class="n">pressure</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
-            <span class="o">**</span><span class="n">kwargs</span>
-    <span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Setup method for setting/modifying algorithm settings</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">phase</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;phase&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">phase</span><span class="o">.</span><span class="n">name</span>
-        <span class="k">if</span> <span class="n">quantity</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;quantity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">quantity</span>
-        <span class="k">if</span> <span class="n">conductance</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;conductance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">conductance</span>
-        <span class="k">if</span> <span class="n">diffusive_conductance</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;diffusive_conductance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">diffusive_conductance</span>
-        <span class="k">if</span> <span class="n">hydraulic_conductance</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;hydraulic_conductance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">hydraulic_conductance</span>
-        <span class="k">if</span> <span class="n">pressure</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;pressure&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pressure</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
-
 <div class="viewcode-block" id="AdvectionDiffusion.set_outflow_BC"><a class="viewcode-back" href="../../../modules/algorithms/advection_diffusion.html#openpnm.algorithms.AdvectionDiffusion.set_outflow_BC">[docs]</a>    <span class="k">def</span> <span class="nf">set_outflow_BC</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;merge&#39;</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Adds outflow boundary condition to the selected pores</span>
