@@ -116,11 +116,6 @@ class InvasionPercolation(GenericAlgorithm):
             self['pore.invasion_sequence'] = -1
         self['pore.invasion_sequence'][pores] = 0
 
-        # Perform initial analysis on input pores
-        Ts = self.project.network.find_neighbor_throats(pores=pores)
-        self.queue = []
-        for T in self['throat.order'][Ts]:
-            hq.heappush(self.queue, T)
 
     def run(self, n_steps=None):
         r"""
@@ -132,6 +127,22 @@ class InvasionPercolation(GenericAlgorithm):
             The number of throats to invaded during this step
 
         """
+
+        # Setup arrays and info
+        phase = self.project[self.settings['phase']]
+        self['throat.entry_pressure'] = phase[self.settings['entry_pressure']]
+        # Indices into t_entry giving a sorted list
+        self['throat.sorted'] = np.argsort(self['throat.entry_pressure'], axis=0)
+        self['throat.order'] = 0
+        self['throat.order'][self['throat.sorted']] = np.arange(0, self.Nt)
+
+        # Perform initial analysis on input pores
+        pores = self['pore.invasion_sequence'] == 0
+        Ts = self.project.network.find_neighbor_throats(pores=pores)
+        self.queue = []
+        for T in self['throat.order'][Ts]:
+            hq.heappush(self.queue, T)
+
         if n_steps is None:
             n_steps = np.inf
 

@@ -23,7 +23,7 @@ mip = op.algorithms.Porosimetry(network=pn, phase=hg)
 mip.set_inlets(pores=pn.pores(['top', 'bottom']))
 mip.run()
 hg.update(mip.results(Pc=70000))
-mip.plot_intrusion_curve()
+# mip.plot_intrusion_curve()
 
 # %% Perform Stokes flow simulation
 perm = op.algorithms.StokesFlow(network=pn, phase=water)
