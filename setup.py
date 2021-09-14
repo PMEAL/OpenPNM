@@ -69,7 +69,7 @@ setup(
         'openpnm.models.collections',
         'openpnm.models.collections.network',
         'openpnm.models.collections.geometry',
-        'openpnm.models.collections.phases',
+        'openpnm.models.collections.phase',
         'openpnm.models.collections.physics',
         'openpnm.algorithms',
         'openpnm.algorithms.metrics',
