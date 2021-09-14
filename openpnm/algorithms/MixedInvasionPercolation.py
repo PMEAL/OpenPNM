@@ -58,6 +58,77 @@ class MixedInvasionPercolation(GenericAlgorithm):
         self.settings.update(def_set)
         self.settings.update(settings)
 
+    def setup(
+        self,
+        phase=None,
+        pore_entry_pressure="pore.entry_pressure",
+        throat_entry_pressure="throat.entry_pressure",
+        snap_off="",
+        invade_isolated_Ts=False,
+        late_pore_filling="",
+        late_throat_filling="",
+    ):
+        r"""
+        Used to specify necessary arguments to the simulation.  This method is
+        useful for resetting the algorithm or applying more explicit control.
+
+        Parameters
+        ----------
+        phase : OpenPNM Phase object
+            The Phase object containing the physical properties of the invading
+            fluid.
+
+        pore_entry_pressure : string
+            The dictionary key on the Phase object where the pore entry
+            pressure values are stored.  The default is
+            'pore.entry_pressure'.
+
+        throat_entry_pressure : string
+            The dictionary key on the Phase object where the throat entry
+            pressure values are stored.  The default is
+            'throat.entry_pressure'.
+
+        snap_off : string
+            The dictionary key on the Phase object where the throat snap-off
+            pressure values are stored.
+
+        invade_isolated_Ts : boolean
+            If True, isolated throats are invaded at the higher invasion
+            pressure of their connected pores.
+
+        late_pore_filling : string
+            The name of the model used to determine late pore filling as
+            a function of applied pressure.
+
+        late_throat_filling : string
+            The name of the model used to determine late throat filling as
+            a function of applied pressure.
+
+        """
+        if phase:
+            self.settings["phase"] = phase.name
+        if throat_entry_pressure:
+            self.settings["throat_entry_pressure"] = throat_entry_pressure
+            phase = self.project.find_phase(self)
+        self["throat.entry_pressure"] = phase[self.settings["throat_entry_pressure"]]
+        if len(np.shape(self["throat.entry_pressure"])) > 1:
+            self._bidirectional = True
+        else:
+            self._bidirectional = False
+        if pore_entry_pressure:
+            self.settings["pore_entry_pressure"] = pore_entry_pressure
+            phase = self.project.find_phase(self)
+        self["pore.entry_pressure"] = phase[self.settings["pore_entry_pressure"]]
+        if snap_off:
+            self.settings["snap_off"] = snap_off
+        if invade_isolated_Ts:
+            self.settings["invade_isolated_Ts"] = invade_isolated_Ts
+        if late_pore_filling:
+            self.settings["late_pore_filling"] = late_pore_filling
+        if late_throat_filling:
+            self.settings["late_throat_filling"] = late_throat_filling
+        self.reset()
+
     def reset(self):
         r"""
         Resets the various data arrays on the object back to their original
