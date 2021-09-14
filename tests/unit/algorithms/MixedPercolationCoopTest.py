@@ -42,9 +42,9 @@ class MixedPercolationCoopTest:
     def run_mp(self, trapping=False, residual=False, snap=False,
                plot=False, flowrate=None):
         IP_1 = mpc(network=self.net)
-        IP_1.settings['phase'] = self.phase.name
         if snap:
             IP_1.settings['snap_off'] = 'throat.snap_off'
+        IP_1.setup(phase=self.phase)
         IP_1.set_inlets(pores=self.inlets)
         if residual:
             IP_1.set_residual(pores=self.phase['pore.occupancy'])
@@ -92,8 +92,8 @@ class MixedPercolationCoopTest:
                        target_Pc=5000)
         phys['pore.entry_pressure'] = 0.0
         ip = op.algorithms.MixedInvasionPercolationCoop(network=pn)
-        ip.settings['phase'] = water.name
-        ip.settings['cooperative_pore_filling'] = 'throat.meniscus'
+        ip.setup(phase=water)
+        ip.setup(cooperative_pore_filling='throat.meniscus')
         points = np.arange(0.1, 1, 0.05)*ip._max_pressure()
         ip.setup_coop_filling(inv_points=points)
         ip.set_inlets(pores=pn.pores('bottom'))
