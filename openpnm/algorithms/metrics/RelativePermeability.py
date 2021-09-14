@@ -204,7 +204,7 @@ class RelativePermeability(GenericAlgorithm):
         St_mp_nwp = StokesFlow(network=network, phase=nwp)
         St_mp_nwp.set_value_BC(pores=flow_pores[0], values=1)
         St_mp_nwp.set_value_BC(pores=flow_pores[1], values=0)
-        St_mp_nwp.settings['conductance']: 'throat.conduit_hydraulic_conductance'
+        St_mp_nwp.settings['conductance'] = 'throat.conduit_hydraulic_conductance'
         St_mp_nwp.run()
         Kenwp = np.sum(abs(St_mp_nwp.rate(pores=flow_pores[1])))
         Kenwp = Kenwp
