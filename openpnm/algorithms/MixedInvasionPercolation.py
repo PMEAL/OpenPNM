@@ -57,6 +57,20 @@ class MixedInvasionPercolation(GenericAlgorithm):
         super().__init__(**kwargs)
         self.settings.update(def_set)
         self.settings.update(settings)
+        self["pore.invasion_pressure"] = np.inf
+        self["throat.invasion_pressure"] = np.inf
+        self["pore.invasion_sequence"] = -1
+        self["throat.invasion_sequence"] = -1
+        self["pore.invasion_saturation"] = -1
+        self["throat.invasion_saturation"] = -1
+        self["pore.cluster"] = -1
+        self["throat.cluster"] = -1
+        self["pore.trapped"] = np.inf
+        self["throat.trapped"] = np.inf
+        self["pore.inlets"] = False
+        self["pore.outlets"] = False
+        self["pore.residual"] = False
+        self["throat.residual"] = False
 
     def reset(self):
         r"""

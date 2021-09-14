@@ -36,7 +36,7 @@ class AdvectionDiffusionTest:
         self.ad.set_value_BC(pores=self.net.pores('right'), values=2)
         self.ad.set_value_BC(pores=self.net.pores('left'), values=0)
 
-    def test_setup(self):
+    def test_settings(self):
         self.ad.settings.update({'quantity': "pore.blah",
                                  'conductance': "throat.foo",
                                  'diffusive_conductance': "throat.foo2",

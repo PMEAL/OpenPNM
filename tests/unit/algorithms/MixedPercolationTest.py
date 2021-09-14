@@ -42,9 +42,9 @@ class MixedPercolationTest:
     def run_mp(self, trapping=False, residual=False, snap=False,
                plot=False, flowrate=None):
         IP_1 = mp(network=self.net)
+        IP_1.settings['phase'] = self.phase.name
         if snap:
             IP_1.settings['snap_off'] = 'throat.snap_off'
-        IP_1.setup(phase=self.phase)
         IP_1.set_inlets(pores=self.inlets)
         if residual:
             IP_1.set_residual(pores=self.phase['pore.occupancy'])

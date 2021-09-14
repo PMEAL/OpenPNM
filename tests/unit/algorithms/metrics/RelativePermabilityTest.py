@@ -40,8 +40,8 @@ class RelativePermeabilityTest:
 
     def test_one_phase_definition(self):
         rp = op.algorithms.metrics.RelativePermeability(network=self.net)
-        rp.setup(invading_phase=self.non_wet_phase.name,
-                 invasion_sequence='invasion_sequence')
+        rp.settings.update({'invading_phase': self.non_wet_phase.name,
+                            'invasion_sequence': 'invasion_sequence'})
         rp.run(Snwp_num=10)
         results = rp.get_Kr_data()
         assert results['kr_wp'] is None
@@ -50,11 +50,11 @@ class RelativePermeabilityTest:
         inlets = {'x': 'back', 'y': 'back', 'z': 'back'}
         outlets = {'x': 'front', 'y': 'front', 'z': 'front'}
         rp = op.algorithms.metrics.RelativePermeability(network=self.net)
-        rp.setup(invading_phase=self.non_wet_phase.name,
-                 defending_phase=self.wet_phase.name,
-                 invasion_sequence='invasion_sequence',
-                 flow_inlets=inlets,
-                 flow_outlets=outlets)
+        rp.settings.update({'invading_phase': self.non_wet_phase.name,
+                            'defending_phase': self.wet_phase.name,
+                            'invasion_sequence': 'invasion_sequence',
+                            'flow_inlets': inlets,
+                            'flow_outlets': outlets})
         rp.run(Snwp_num=10)
         results = rp.get_Kr_data()
         kx = results['kr_wp']['x']
@@ -69,11 +69,11 @@ class RelativePermeabilityTest:
         inlets = {'x': 'top'}
         outlets = {'x': 'bottom'}
         rp = op.algorithms.metrics.RelativePermeability(network=self.net)
-        rp.setup(invading_phase=self.non_wet_phase.name,
-                 defending_phase=self.wet_phase.name,
-                 invasion_sequence='invasion_sequence',
-                 flow_inlets=inlets,
-                 flow_outlets=outlets)
+        rp.settings.update({'invading_phase': self.non_wet_phase.name,
+                            'defending_phase': self.wet_phase.name,
+                            'invasion_sequence': 'invasion_sequence',
+                            'flow_inlets': inlets,
+                            'flow_outlets': outlets})
         rp.run(Snwp_num=10)
         results = rp.get_Kr_data()
         kx = results['kr_wp']['x']
@@ -92,11 +92,11 @@ class RelativePermeabilityTest:
         inlets = {'x': 'pore_in'}
         outlets = {'x': 'pore_out'}
         rp = op.algorithms.metrics.RelativePermeability(network=self.net)
-        rp.setup(invading_phase=self.non_wet_phase.name,
-                 defending_phase=self.wet_phase.name,
-                 invasion_sequence='invasion_sequence',
-                 flow_inlets=inlets,
-                 flow_outlets=outlets)
+        rp.settings.update({'invading_phase': self.non_wet_phase.name,
+                            'defending_phase': self.wet_phase.name,
+                            'invasion_sequence': 'invasion_sequence',
+                            'flow_inlets': inlets,
+                            'flow_outlets': outlets})
         rp.run(Snwp_num=10)
         results = rp.get_Kr_data()
         kx = results['kr_wp']['x']
@@ -140,8 +140,8 @@ class RelativePermeabilityTest:
             shape[i] = 1
             self.setup_2D_model(shape=shape)
             rp = op.algorithms.metrics.RelativePermeability(network=self.net)
-            rp.setup(invading_phase=self.non_wet_phase.name,
-                     invasion_sequence='invasion_sequence')
+            rp.settings.update({'invading_phase': self.non_wet_phase.name,
+                                'invasion_sequence': 'invasion_sequence'})
             rp.run(Snwp_num=10)
             results = rp.get_Kr_data()
             assert results['kr_wp'] is None
@@ -153,9 +153,9 @@ class RelativePermeabilityTest:
             shape[i] = 1
             self.setup_2D_model(shape=shape)
             rp = op.algorithms.metrics.RelativePermeability(network=self.net)
-            rp.setup(invading_phase=self.non_wet_phase.name,
-                     defending_phase=self.wet_phase.name,
-                     invasion_sequence='invasion_sequence')
+            rp.setting.update({'invading_phase': self.non_wet_phase.name,
+                               'defending_phase': self.wet_phase.name,
+                               'invasion_sequence': 'invasion_sequence'})
             rp.run(Snwp_num=10)
             results = rp.get_Kr_data()
             nt.assert_allclose(len(results['kr_wp']), 2)
