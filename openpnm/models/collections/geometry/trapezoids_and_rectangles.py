@@ -21,7 +21,7 @@ trapezoids_and_rectangles = {
         'regen_mode': 'deferred',
         },
 	'pore.volume': {
-		'model': mods.geometry.pore_volume.trapezoid,
+		'model': mods.geometry.pore_volume.circle,
 		'pore_diameter': 'pore.diameter',
         'regen_mode': 'explicit',
         'regen_mode': 'deferred',

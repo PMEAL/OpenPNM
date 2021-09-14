@@ -21,7 +21,7 @@ pyramids_and_cuboids = {
         'regen_mode': 'deferred',
         },
 	'pore.volume': {
-		'model': mods.geometry.pore_volume.pyramid,
+		'model': mods.geometry.pore_volume.sphere,
 		'pore_diameter': 'pore.diameter',
         'regen_mode': 'explicit',
         'regen_mode': 'deferred',
