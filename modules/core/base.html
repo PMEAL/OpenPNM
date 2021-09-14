@@ -614,9 +614,9 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>project</strong> (<em>OpenPNM Project object</em><em>, </em><em>optional</em>) – The Project with which the object should be associated. If not supplied
+<li><p><strong>project</strong> (<em>OpenPNM Project object</em><em>, </em><em>optional</em>) – The Project with which the object should be assigned.  If not supplied
 then a new Project is created</p></li>
-<li><p><strong>name</strong> (<em>string</em><em>, </em><em>optional</em>) – The unique name of the object. If not given one will be generated.</p></li>
+<li><p><strong>name</strong> (<em>string</em><em>, </em><em>optional</em>) – The unique name of the object.  If not given one will be generated.</p></li>
 <li><p><strong>Np</strong> (<em>int</em><em>, </em><em>default is 0</em>) – The total number of pores to be assigned to the object</p></li>
 <li><p><strong>Nt</strong> (<em>int</em><em>, </em><em>default is 0</em>) – The total number of throats to be assigned to the object</p></li>
 </ul>
@@ -921,49 +921,6 @@ labels are returned.</p>
 <span class="go">array([ 24,  49,  74,  99, 124])</span>
 </pre></div>
 </div>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="openpnm.core.Base.get_conduit_data">
-<span class="sig-name descname"><span class="pre">get_conduit_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prop</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mean'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/core/Base.html#Base.get_conduit_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.core.Base.get_conduit_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Combined requested data into a single 3-column array</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>prop</strong> (<em>string</em>) – The dictionary key to the property of interest</p></li>
-<li><p><strong>mode</strong> (<em>string</em>) – <p>How interpolation should be peformed for missing values. If values
-are present for both pores and throats, then this argument is
-ignored.  The <code class="docutils literal notranslate"><span class="pre">interpolate</span></code> data method is used.  Options are:</p>
-<blockquote>
-<div><ul>
-<li><dl class="simple">
-<dt>’mean’ (default)</dt><dd><p>Finds the mean value of the neighboring pores (or throats)</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>’min’</dt><dd><p>Finds the minimuem of the neighboring pores (or throats)</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>’max’</dt><dd><p>Finds the maximum of the neighboring pores (or throats)</p>
-</dd>
-</dl>
-</li>
-</ul>
-</div></blockquote>
-</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>conduit_data</strong> – An Nt-by-3 array with each column containg the requested property
-for each pore-throat-pore conduit.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>ndarray</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py method">

@@ -606,6 +606,35 @@
                 
   <div class="section" id="mercuryintrusion">
 <span id="mercury-intrusion-api"></span><h1>MercuryIntrusion<a class="headerlink" href="#mercuryintrusion" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="openpnm.algorithms.metrics.MercuryIntrusion">
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">MercuryIntrusion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/openpnm/algorithms/metrics/MercuryIntrusion.html#MercuryIntrusion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.metrics.MercuryIntrusion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="../porosimetry.html#openpnm.algorithms.Porosimetry" title="openpnm.algorithms.Porosimetry.Porosimetry"><code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.algorithms.Porosimetry.Porosimetry</span></code></a></p>
+<p>A ready-made Mercury Intrusion Porosimetry algorithm</p>
+<p>This class accepts a pre-existing Project, including a Network and any
+associated Geometries, then internally creates a new Mercury Phase object
+and a new Physics for each Geometry associated with the Network.  Finally,
+the Washburn capillary pressure model is added to each Physics object (
+or to the Mercury object if there are no Geometries defined).</p>
+<p>The results can be plotted using <cite>plot_intrusion_data</cite>, and numerical data
+can be obtained with <cite>get_intrusion_data</cite>.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span> <span class="n">spacing</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">geo</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">StickAndBall</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mip</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">MercuryIntrusion</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mip</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>You can then plot the results using <code class="docutils literal notranslate"><span class="pre">`mip.plot_intrusion_curve()`</span></code>.</p>
+<p>It is also possible to add some experimental data to the algorithm which
+will the be plotted along with the simulated data:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mip</span><span class="o">.</span><span class="n">pc_data</span> <span class="o">=</span> <span class="p">[</span><span class="mi">10000</span><span class="p">,</span> <span class="mi">20000</span><span class="p">,</span> <span class="mi">30000</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mip</span><span class="o">.</span><span class="n">snwp_data</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">]</span>
+</pre></div>
+</div>
+</dd></dl>
+
 </div>
 
 
