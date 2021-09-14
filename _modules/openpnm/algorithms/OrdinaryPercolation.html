@@ -188,11 +188,9 @@
 <span class="sd">    ----------</span>
 <span class="sd">    network : OpenPNM Network object</span>
 <span class="sd">        The Network upon which this simulation should be run</span>
-
 <span class="sd">    name : string, optional</span>
 <span class="sd">        An identifying name for the object.  If none is given then one is</span>
 <span class="sd">        generated.</span>
-
 <span class="sd">    project : OpenPNM Project object</span>
 <span class="sd">        Either a Network or a Project must be specified</span>
 
@@ -213,30 +211,6 @@
 <span class="sd">    entire domain is invaded, then a percoaltion curve is obtained.  The</span>
 <span class="sd">    threshold at which each site and bond was invaded is recorded, so it is</span>
 <span class="sd">    possible to find invading configurations easily using Boolean logic.</span>
-
-<span class="sd">    +----------------------+-------------------------------------------------+</span>
-<span class="sd">    | Method               | Description                                     |</span>
-<span class="sd">    +======================+=================================================+</span>
-<span class="sd">    | reset                | Resets the various data arrays on the object... |</span>
-<span class="sd">    +----------------------+-------------------------------------------------+</span>
-<span class="sd">    | setup                | Used to specify necessary arguments to the s... |</span>
-<span class="sd">    +----------------------+-------------------------------------------------+</span>
-<span class="sd">    | set_inlets           | Set the locations from which the invader ent... |</span>
-<span class="sd">    +----------------------+-------------------------------------------------+</span>
-<span class="sd">    | set_outlets          | Set the locations through which defender exi... |</span>
-<span class="sd">    +----------------------+-------------------------------------------------+</span>
-<span class="sd">    | set_residual         | Specify locations of any residual invader.  ... |</span>
-<span class="sd">    +----------------------+-------------------------------------------------+</span>
-<span class="sd">    | run                  | Runs the percolation algorithm to determine ... |</span>
-<span class="sd">    +----------------------+-------------------------------------------------+</span>
-<span class="sd">    | get_percolation_t... | Finds the threshold value where a percolating...|</span>
-<span class="sd">    +----------------------+-------------------------------------------------+</span>
-<span class="sd">    | is_percolating       | Returns a True or False value to indicate if... |</span>
-<span class="sd">    +----------------------+-------------------------------------------------+</span>
-<span class="sd">    | get_intrusion_data   | Obtain the numerical values of the calculate... |</span>
-<span class="sd">    +----------------------+-------------------------------------------------+</span>
-<span class="sd">    | plot_intrusion_curve | Plot the percolation curve as the invader vo... |</span>
-<span class="sd">    +----------------------+-------------------------------------------------+</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -271,81 +245,7 @@
         <span class="c1"># Apply user settings, if any</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">phase</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="n">phase</span><span class="o">=</span><span class="n">phase</span><span class="p">)</span>
-
-<div class="viewcode-block" id="OrdinaryPercolation.setup"><a class="viewcode-back" href="../../../modules/algorithms/ordinary_percolation.html#openpnm.algorithms.OrdinaryPercolation.setup">[docs]</a>    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-              <span class="n">phase</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-              <span class="n">access_limited</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-              <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
-              <span class="n">throat_entry_pressure</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
-              <span class="n">pore_entry_pressure</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
-              <span class="n">pore_volume</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
-              <span class="n">throat_volume</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Used to specify necessary arguments to the simulation.  This method is</span>
-<span class="sd">        useful for resetting the algorithm or applying more explicit control.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        phase : OpenPNM Phase object</span>
-<span class="sd">            The Phase object containing the physical properties of the invading</span>
-<span class="sd">            fluid.</span>
-
-<span class="sd">        access_limited : boolean</span>
-<span class="sd">            If ``True`` the invading phase can only enter the network from the</span>
-<span class="sd">            invasion sites specified with ``set_inlets``.  Otherwise, invading</span>
-<span class="sd">            clusters can appear anywhere in the network.  This second case is</span>
-<span class="sd">            the normal *ordinary percolation* in the traditional sense, while</span>
-<span class="sd">            the first case is more physically representative of invading</span>
-<span class="sd">            fluids.</span>
-
-<span class="sd">        mode : string</span>
-<span class="sd">            Specifies the type of percolation process to simulate.  Options</span>
-<span class="sd">            are:</span>
-
-<span class="sd">            **&#39;bond&#39;** - The percolation process is controlled by bond entry</span>
-<span class="sd">            thresholds.</span>
-
-<span class="sd">            **&#39;site&#39;** - The percolation process is controlled by site entry</span>
-<span class="sd">            thresholds.</span>
-
-<span class="sd">        pore_entry_pressure : string</span>
-<span class="sd">            The dictionary key on the Phase object where the pore entry</span>
-<span class="sd">            pressure values are stored.  The default is</span>
-<span class="sd">            &#39;pore.capillary_pressure&#39;.  This is only accessed if the ``mode``</span>
-<span class="sd">            is set to site percolation.</span>
-
-<span class="sd">        throat_entry_pressure : string</span>
-<span class="sd">            The dictionary key on the Phase object where the throat entry</span>
-<span class="sd">            pressure values are stored.  The default is</span>
-<span class="sd">            &#39;throat.capillary_pressure&#39;.  This is only accessed if the ``mode``</span>
-<span class="sd">            is set to bond percolation.</span>
-
-<span class="sd">        &#39;pore_volume&#39; : string</span>
-<span class="sd">            The dictionary key containing the pore volume information.</span>
-
-<span class="sd">        &#39;throat_volume&#39; : string</span>
-<span class="sd">            The dictionary key containing the pore volume information.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">phase</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;phase&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">phase</span><span class="o">.</span><span class="n">name</span>
-        <span class="k">if</span> <span class="n">throat_entry_pressure</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;throat_entry_pressure&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">throat_entry_pressure</span>
-            <span class="n">phase</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">find_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-            <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.entry_pressure&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">throat_entry_pressure</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">pore_entry_pressure</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;pore_entry_pressure&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pore_entry_pressure</span>
-            <span class="n">phase</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">find_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-            <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.entry_pressure&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">pore_entry_pressure</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">mode</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;mode&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">mode</span>
-        <span class="k">if</span> <span class="n">access_limited</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;access_limited&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">access_limited</span>
-        <span class="k">if</span> <span class="n">pore_volume</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;pore_volume&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pore_volume</span>
-        <span class="k">if</span> <span class="n">throat_volume</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;throat_volume&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">throat_volume</span></div>
 
 <div class="viewcode-block" id="OrdinaryPercolation.reset"><a class="viewcode-back" href="../../../modules/algorithms/ordinary_percolation.html#openpnm.algorithms.OrdinaryPercolation.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>

@@ -692,36 +692,6 @@ already been set. Attempting to do so will result in an error being
 raised.</p>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="openpnm.algorithms.ReactiveTransport.setup">
-<span class="sig-name descname"><span class="pre">setup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quantity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conductance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nlin_max_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relaxation_source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relaxation_quantity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/ReactiveTransport.html#ReactiveTransport.setup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.ReactiveTransport.setup" title="Permalink to this definition">¶</a></dt>
-<dd><p>This method takes several arguments that are essential to running
-the algorithm and adds them to the settings.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>phase</strong> (<em>str</em>) – The name of the phase on which the algorithm acts</p></li>
-<li><p><strong>quantity</strong> (<em>str</em>) – The name of the physical quantity to be calculated</p></li>
-<li><p><strong>conductance</strong> (<em>str</em>) – The name of the pore-scale transport conductance values. These are
-typically calculated by a model attached to a <em>Physics</em> object
-associated with the given <em>Phase</em>.</p></li>
-<li><p><strong>phase</strong> – The name of the phase on which the algorithm acts</p></li>
-<li><p><strong>quantity</strong> – The name of the physical quantity to be calculated</p></li>
-<li><p><strong>conductance</strong> – The name of the pore-scale transport conductance values. These are
-typically calculated by a model attached to a <em>Physics</em> object
-associated with the given <em>Phase</em>.</p></li>
-</ul>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<p>Under-relaxation is a technique used for improving stability of a
-computation, particularly in the presence of highly non-linear
-terms. Under-relaxation used here limits the change in a variable
-from one iteration to the next. An optimum choice of the
-relaxation factor is one that is small enough to ensure stable
-simulation and large enough to speed up the computation.</p>
-</dd></dl>
-
 </dd></dl>
 
 </div>
