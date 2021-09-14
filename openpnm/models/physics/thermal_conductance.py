@@ -11,7 +11,7 @@ def series_resistors_generic(target,
                              throat_conductivity='throat.thermal_conductivity',
                              size_factors='throat.diffusive_size_factors'):
     r"""
-    Calculate the electrical conductance of conduits in network, where a
+    Calculate the thermal conductance of conduits in network, where a
     conduit is ( 1/2 pore - full throat - 1/2 pore ). See the notes section.
 
     Parameters
@@ -28,12 +28,12 @@ def series_resistors_generic(target,
         Dictionary key of the throat thermal conductivity values
 
     size_factors: str
-        Dictionary key of the conduit diffusive shape factors' values.
+        Dictionary key of the conduit diffusive size factors' values.
 
     Returns
     -------
     g : ndarray
-        Array containing electrical conductance values for conduits in the
+        Array containing thermal conductance values for conduits in the
         geometry attached to the given physics object.
 
     Notes
@@ -43,13 +43,6 @@ def series_resistors_generic(target,
 
     (2) This function calculates the specified property for the *entire*
     network then extracts the values for the appropriate throats at the end.
-
-    (3) This function assumes cylindrical throats with constant cross-section
-    area. Corrections for different shapes and variable cross-section area can
-    be imposed by passing the proper conduit_shape_factors argument.
-
-    (4) shape_factor depends on the physics of the problem, i.e. diffusion-like
-    processes and fluid flow need different shape factors.
 
     """
     network = target.project.network

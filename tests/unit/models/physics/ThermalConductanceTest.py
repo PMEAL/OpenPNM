@@ -1,6 +1,7 @@
 import openpnm as op
-from numpy.testing import assert_approx_equal,assert_allclose
+from numpy.testing import assert_approx_equal, assert_allclose
 import openpnm.models.geometry.conduit_lengths as _conduit_lengths
+
 
 class ThermalConductanceTest:
     def setup_class(self):

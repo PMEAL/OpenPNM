@@ -11,6 +11,39 @@ __all__ = ["poisson_laplace_generic", "poisson", "electroneutrality"]
 def poisson_laplace_generic(target,
                             conduit_lengths='throat.conduit_lengths',
                             size_factors="throat.diffusive_size_factors"):
+    r"""
+    Calculate the ionic conductance of conduits in network (using the Poisson
+    equation for charge conservation), where a conduit is
+    ( 1/2 pore - full throat - 1/2 pore ). See the notes section.
+
+    Parameters
+    ----------
+    target : OpenPNM Object
+        The object which this model is associated with. This controls the
+        length of the calculated array, and also provides access to other
+        necessary properties.
+
+    conduit_lengths : string
+        Dictionary key of the conduit length values
+
+    size_factors : string
+        Dictionary key of the conduit DIFFUSION size shape factor values
+
+    Returns
+    -------
+    g : ndarray
+        Array containing ionic conductance values for conduits in the
+        geometry attached to the given physics object.
+
+    Notes
+    -----
+    (1) This function requires that all the necessary phase properties already
+    be calculated.
+
+    (2) This function calculates the specified property for the *entire*
+    network then extracts the values for the appropriate throats at the end.
+
+    """
     network = target.project.network
     throats = target.throats(target=network)
     # conns = network.conns[throats] not needed as e_r is assumed to be constant
@@ -73,8 +106,8 @@ def electroneutrality_generic(target,
     conduit_lengths : string
         Dictionary key of the conduit length values
 
-    conduit_shape_factors : string
-        Dictionary key of the conduit DIFFUSION shape factor values
+    size_factors : string
+        Dictionary key of the conduit DIFFUSION size factor values
 
     pore_volume : string
         Dictionary key of the pore volume values
@@ -107,13 +140,6 @@ def electroneutrality_generic(target,
 
     (2) This function calculates the specified property for the *entire*
     network then extracts the values for the appropriate throats at the end.
-
-    (3) This function assumes cylindrical throats with constant cross-section
-    area. Corrections for different shapes and variable cross-section area can
-    be imposed by passing the proper conduit_shape_factors argument.
-
-    (4) shape_factor depends on the physics of the problem, i.e. diffusion-like
-    processes and fluid flow need different shape factors.
 
     """
     network = target.project.network

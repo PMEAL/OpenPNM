@@ -22,13 +22,13 @@ def series_resistors_generic(target,
         necessary properties.
 
     pore_conductivity : string
-        Dictionary key of the pore thermal conductivity values
+        Dictionary key of the pore electrical conductivity values
 
     throat_conductivity : string
-        Dictionary key of the throat thermal conductivity values
+        Dictionary key of the throat electrical conductivity values
 
     size_factors: str
-        Dictionary key of the conduit diffusive shape factors' values.
+        Dictionary key of the conduit diffusive size factors' values.
 
     Returns
     -------
@@ -43,13 +43,6 @@ def series_resistors_generic(target,
 
     (2) This function calculates the specified property for the *entire*
     network then extracts the values for the appropriate throats at the end.
-
-    (3) This function assumes cylindrical throats with constant cross-section
-    area. Corrections for different shapes and variable cross-section area can
-    be imposed by passing the proper conduit_shape_factors argument.
-
-    (4) shape_factor depends on the physics of the problem, i.e. diffusion-like
-    processes and fluid flow need different shape factors.
 
     """
     network = target.project.network
