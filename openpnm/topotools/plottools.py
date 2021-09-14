@@ -611,7 +611,7 @@ def plot_network_interactive(network,
                              edge_prop=None,
                              node_color=None,
                              edge_color=None,
-                             node_scale=0.5,
+                             node_scale=50,
                              edge_scale=5):
     r"""
     Visualize a network in 3D using Plotly. The pores and throats are scaled
