@@ -604,3 +604,154 @@ def plot_tutorial(network,
     fig.set_size_inches(5, 5 / aspect_ratio)
 
     return gplot
+
+
+def plot_network_interactive(network,
+                             node_labels=None,
+                             edge_prop=None,
+                             node_color=None,
+                             edge_color=None,
+                             node_scale=0.5,
+                             edge_scale=5):
+    r"""
+    Visualize a network in 3D using Plotly. The pores and throats are scaled
+    and colored by their properties. The final figure can be rotated and
+    zoomed.
+
+    Parameters
+    ----------
+    network : GenericNetwork
+        The network to visualize.
+
+    node_labels : Array of str
+        Array of labels to be shown as a text when hovering on each pore. If not
+        given, the coordinates and diameter of the pores is used as node_labels.
+
+    edge_prop : str
+        The property of the throats to be used for coloring the throats and
+        showing as a text when hovering on each throat. If not given, 'diameter'
+        is defined as the edge_prop.
+
+    node_color : Array
+        An array of values used for coloring the pores. If not given, the pores
+        are colored by a normalized scale of their diameter in the range of [0,255]
+
+    edge_color : Array
+        An array of values used for coloring the throats. If not given, the throats
+        are colored by edge_prop.
+
+    node_scale : scaler
+        A scaler to resize the pores' sphere. The pores' sphere diameter
+        is defined as node_scale*network['pore.diameter']
+
+    edge_scale : scaler
+        A scaler to define the throat's wireframe thickness (width).
+
+    Returns
+    -------
+    fig : Plotly graph object
+        The graph object containing the generated plots. The object has
+        several useful methods.
+
+    Notes
+    -----
+    **Important**
+
+    a) This does not work in Spyder. It should only be called from a
+    Jupyter Notebook.
+
+    b) This is only meant for relatively small networks. For proper
+    visualization use Paraview.
+
+    """
+    try:
+        import plotly.graph_objects as go
+    except ImportError:
+        raise Exception('Plotly is not installed.'
+                        'Please install Plotly using "pip install plotly"')
+    x_nodes, y_nodes, z_nodes = network.coords.T
+
+    # If the network diameter(geometry obj) is not defined assume d_p=1, d_t=0.5
+    try:
+        diam = network['pore.diameter']
+    except KeyError:
+        network['pore.diameter'] = 1
+        network['throat.diamter'] = 0.5
+        diam = network['pore.diameter']
+
+    if node_labels is None:
+        # Labels of each pore shown while hovering
+        node_labels = ['X='+str(i)+' Y='+str(j)+' Z='+str(k)+' Diam='+str(g)
+                       for i, j, k, g in zip(x_nodes, y_nodes, z_nodes, diam.astype('float16'))]
+    if node_color is None:
+        # coloring based on normalized pore diameter
+        largest, smallest = diam.max(), diam.min()
+        # x scaled into [0,1]
+
+        def normalize(x):
+            return np.log10(x/smallest)/np.log10(largest/smallest)
+        node_color = np.round(normalize(diam)*255)
+
+    if edge_prop is None:
+        # throat property to be used for coloring and labeling
+        edge_prop = 'diameter'
+    if edge_color is None:
+        edge_color = network['throat.'+edge_prop]
+    edge_labels = ['throat'+edge_prop+'='+str(network['throat.'+edge_prop][i].astype('float16'))
+                   for i in network.Ts]
+
+    # Create edges and nodes coordinates
+    N = network.Nt*3
+
+    x_edges = np.zeros(N)
+    x_edges[np.arange(0, N, 3)] = network.coords[network.conns[:, 0]][:, 0]
+    x_edges[np.arange(1, N, 3)] = network.coords[network.conns[:, 1]][:, 0]
+    x_edges[np.arange(2, N, 3)] = np.nan
+
+    y_edges = np.zeros(network.Nt*3)
+    y_edges[np.arange(0, N, 3)] = network.coords[network.conns[:, 0]][:, 1]
+    y_edges[np.arange(1, N, 3)] = network.coords[network.conns[:, 1]][:, 1]
+    y_edges[np.arange(2, N, 3)] = np.nan
+
+    z_edges = np.zeros(network.Nt*3)
+    z_edges[np.arange(0, N, 3)] = network.coords[network.conns[:, 0]][:, 2]
+    z_edges[np.arange(1, N, 3)] = network.coords[network.conns[:, 1]][:, 2]
+    z_edges[np.arange(2, N, 3)] = np.nan
+
+    # Create plotly's Scatter3d object for pores and throats
+    trace_edges = go.Scatter3d(x=x_edges,
+                               y=y_edges,
+                               z=z_edges,
+                               mode='lines',
+                               line=dict(color=edge_color, width=edge_scale),
+                               text=edge_labels, hoverinfo='text')
+
+    trace_nodes = go.Scatter3d(x=x_nodes,
+                               y=y_nodes,
+                               z=z_nodes,
+                               mode='markers',
+                               marker=dict(symbol='circle',
+                                           size=diam*node_scale,
+                                           color=node_color,
+                                           line=dict(color='black', width=0.5)),
+                               text=node_labels, hoverinfo='text')
+
+    axis = dict(showbackground=False,
+                showline=False,
+                zeroline=False,
+                showgrid=False,
+                showticklabels=False,
+                title='')
+
+    layout = go.Layout(width=650,
+                       height=625,
+                       showlegend=False,
+                       scene=dict(xaxis=dict(axis),
+                                  yaxis=dict(axis),
+                                  zaxis=dict(axis),),
+                       margin=dict(t=100),
+                       hovermode='closest')
+
+    data = [trace_edges, trace_nodes]
+    fig = go.Figure(data=data, layout=layout)
+    return fig
