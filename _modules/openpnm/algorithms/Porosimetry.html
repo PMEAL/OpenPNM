@@ -184,9 +184,11 @@
 <span class="sd">    ----------</span>
 <span class="sd">    network : OpenPNM Network object</span>
 <span class="sd">        The Network upon which this simulation should be run</span>
+
 <span class="sd">    name : string, optional</span>
 <span class="sd">        An identifying name for the object.  If none is given then one is</span>
 <span class="sd">        generated.</span>
+
 <span class="sd">    project : OpenPNM Project object</span>
 <span class="sd">        Either a Network or a Project must be specified</span>
 
@@ -239,7 +241,72 @@
         <span class="c1"># Use the reset method to initialize all arrays</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">phase</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="n">phase</span><span class="o">=</span><span class="n">phase</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Porosimetry.setup"><a class="viewcode-back" href="../../../modules/algorithms/porosimetry.html#openpnm.algorithms.Porosimetry.setup">[docs]</a>    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+              <span class="n">phase</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+              <span class="n">quantity</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+              <span class="n">throat_entry_pressure</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+              <span class="n">pore_volume</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+              <span class="n">throat_volume</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+              <span class="n">late_pore_filling</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+              <span class="n">late_throat_filling</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Used to specify necessary arguments to the simulation.  This method is</span>
+<span class="sd">        useful for resetting the algorithm or applying more explicit control.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        phase : OpenPNM Phase object</span>
+<span class="sd">            The Phase object containing the physical properties of the invading</span>
+<span class="sd">            fluid.</span>
+
+<span class="sd">        quantity : string</span>
+<span class="sd">            The name of the quantity calculated by this algorithm.  This is</span>
+<span class="sd">            used for instance, by the late pore and throat filling models</span>
+<span class="sd">            to indicate the prevailing fluid pressure in the invading phase</span>
+<span class="sd">            for calculating the extent of filling.  The default is</span>
+<span class="sd">            &#39;pressure&#39;.  Note that there is no need to specify &#39;pore&#39; and/or</span>
+<span class="sd">            &#39;throat&#39; with this as the given value will apply to both.</span>
+
+<span class="sd">        throat_entry_pressure : string</span>
+<span class="sd">            The dictionary key on the Phase object where the throat entry</span>
+<span class="sd">            pressure values are stored.  The default is</span>
+<span class="sd">            &#39;throat.entry_pressure&#39;.</span>
+
+<span class="sd">        pore_volume : string</span>
+<span class="sd">            The dictionary key containing the pore volume information. The</span>
+<span class="sd">            default is &#39;pore.volume&#39;.</span>
+
+<span class="sd">        throat_volume : string</span>
+<span class="sd">            The dictionary key containing the throat volume information.  The</span>
+<span class="sd">            default is &#39;throat.volume&#39;.</span>
+
+<span class="sd">        pore_partial_filling : string</span>
+<span class="sd">            The name of the model used to determine partial pore filling as</span>
+<span class="sd">            a function of applied pressure.</span>
+
+<span class="sd">        throat_partial_filling : string</span>
+<span class="sd">            The name of the model used to determine partial throat filling as</span>
+<span class="sd">            a function of applied pressure.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">phase</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;phase&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">phase</span><span class="o">.</span><span class="n">name</span>
+        <span class="k">if</span> <span class="n">quantity</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;quantity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">quantity</span>
+        <span class="k">if</span> <span class="n">throat_entry_pressure</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;throat_entry_pressure&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">throat_entry_pressure</span>
+            <span class="n">phase</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">find_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.entry_pressure&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">throat_entry_pressure</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">pore_volume</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;pore_volume&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pore_volume</span>
+        <span class="k">if</span> <span class="n">throat_volume</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;throat_volume&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">throat_volume</span>
+        <span class="k">if</span> <span class="n">late_pore_filling</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;late_pore_filling&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">late_pore_filling</span>
+        <span class="k">if</span> <span class="n">late_throat_filling</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;late_throat_filling&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">late_throat_filling</span></div>
 
 <div class="viewcode-block" id="Porosimetry.set_partial_filling"><a class="viewcode-back" href="../../../modules/algorithms/porosimetry.html#openpnm.algorithms.Porosimetry.set_partial_filling">[docs]</a>    <span class="k">def</span> <span class="nf">set_partial_filling</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">propname</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>

@@ -270,7 +270,46 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">_update_settings_and_docs</span><span class="p">(</span><span class="n">ReactiveTransportSettings</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">phase</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="n">phase</span><span class="o">=</span><span class="n">phase</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ReactiveTransport.setup"><a class="viewcode-back" href="../../../modules/algorithms/reactive_transport.html#openpnm.algorithms.ReactiveTransport.setup">[docs]</a>    <span class="nd">@docstr</span><span class="o">.</span><span class="n">get_sections</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="s1">&#39;ReactiveTransport.setup&#39;</span><span class="p">,</span>
+                         <span class="n">sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Parameters&#39;</span><span class="p">,</span> <span class="s1">&#39;Notes&#39;</span><span class="p">])</span>
+    <span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">quantity</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">conductance</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+              <span class="n">nlin_max_iter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">relaxation_source</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+              <span class="n">relaxation_quantity</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method takes several arguments that are essential to running</span>
+<span class="sd">        the algorithm and adds them to the settings.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        %(GenericTransportSettings.parameters)s</span>
+<span class="sd">        %(ReactiveTransportSettings.parameters)s</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Under-relaxation is a technique used for improving stability of a</span>
+<span class="sd">        computation, particularly in the presence of highly non-linear</span>
+<span class="sd">        terms. Under-relaxation used here limits the change in a variable</span>
+<span class="sd">        from one iteration to the next. An optimum choice of the</span>
+<span class="sd">        relaxation factor is one that is small enough to ensure stable</span>
+<span class="sd">        simulation and large enough to speed up the computation.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">phase</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;phase&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">phase</span><span class="o">.</span><span class="n">name</span>
+        <span class="k">if</span> <span class="n">quantity</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;quantity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">quantity</span>
+        <span class="k">if</span> <span class="n">conductance</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;conductance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">conductance</span>
+        <span class="k">if</span> <span class="n">nlin_max_iter</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;nlin_max_iter&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">nlin_max_iter</span>
+        <span class="k">if</span> <span class="n">relaxation_source</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;relaxation_source&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">relaxation_source</span>
+        <span class="k">if</span> <span class="n">relaxation_quantity</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;relaxation_quantity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">relaxation_quantity</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ReactiveTransport.run"><a class="viewcode-back" href="../../../modules/algorithms/reactive_transport.html#openpnm.algorithms.ReactiveTransport.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x0</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
