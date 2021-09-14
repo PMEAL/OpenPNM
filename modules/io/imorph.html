@@ -606,50 +606,6 @@
                 
   <div class="section" id="imorph">
 <span id="imorph-api"></span><h1>iMorph<a class="headerlink" href="#imorph" title="Permalink to this headline">¶</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="openpnm.io.iMorph">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">iMorph</span></span><a class="reference internal" href="../../_modules/openpnm/io/iMorph.html#iMorph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.io.iMorph" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.io.GenericIO.GenericIO</span></code></p>
-<p>iMorph is a graphical interface program that provides some image analysis
-tools for porous media</p>
-<p>Combines two output files from the iMorph program to build a pore network.
-throats_cellsThroatsGraph_Nodes.txt - stores node shape and type
-information throats_cellsThroatsGraph.txt - stores node connectivity</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="openpnm.io.iMorph.import_data">
-<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">import_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throats_cellsThroatsGraph_Nodes.txt'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graph_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throats_cellsThroatsGraph.txt'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">voxel_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/io/iMorph.html#iMorph.import_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.io.iMorph.import_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Loads network data from an iMorph processed image stack</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>path</strong> (<em>string</em>) – The path of the folder where the subfiles are held</p></li>
-<li><p><strong>node_file</strong> (<em>string</em>) – The file that describes the pores and throats, the
-default iMorph name is: throats_cellsThroatsGraph_Nodes.txt</p></li>
-<li><p><strong>graph_file</strong> (<em>string</em>) – The file that describes the connectivity of the network, the
-default iMorph name is: throats_cellsThroatsGraph.txt</p></li>
-<li><p><strong>voxel_size</strong> (<em>float</em>) – Allows the user to define a voxel size different than what is
-contained in the node_file. The value must be in meters.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>project</strong> – An OpenPNM project object containing a network and a geometry
-object.  The geometry-related data are automatically placed on the
-geometry object using the <code class="docutils literal notranslate"><span class="pre">Imported</span></code> geometry class.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>list</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="openpnm.io.iMorph.load">
-<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/io/iMorph.html#iMorph.load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.io.iMorph.load" title="Permalink to this definition">¶</a></dt>
-<dd><p>This method is being deprecated.  Use <code class="docutils literal notranslate"><span class="pre">import_data</span></code> instead.</p>
-</dd></dl>
-
-</dd></dl>
-
 </div>
 
 

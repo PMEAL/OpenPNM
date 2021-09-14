@@ -189,10 +189,10 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    project : OpenPNM Project object, optional</span>
-<span class="sd">        The Project with which the object should be assigned.  If not supplied</span>
+<span class="sd">        The Project with which the object should be associated. If not supplied</span>
 <span class="sd">        then a new Project is created</span>
 <span class="sd">    name : string, optional</span>
-<span class="sd">        The unique name of the object.  If not given one will be generated.</span>
+<span class="sd">        The unique name of the object. If not given one will be generated.</span>
 
 <span class="sd">    Np : int, default is 0</span>
 <span class="sd">        The total number of pores to be assigned to the object</span>
@@ -1478,6 +1478,45 @@
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">propname</span><span class="p">],</span> <span class="s1">&#39;units&#39;</span><span class="p">):</span>
             <span class="n">values</span> <span class="o">*=</span> <span class="bp">self</span><span class="p">[</span><span class="n">propname</span><span class="p">]</span><span class="o">.</span><span class="n">units</span>
         <span class="k">return</span> <span class="n">values</span></div>
+
+<div class="viewcode-block" id="Base.get_conduit_data"><a class="viewcode-back" href="../../../modules/core/base.html#openpnm.core.Base.get_conduit_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_conduit_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prop</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;mean&#39;</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Combined requested data into a single 3-column array</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        prop : string</span>
+<span class="sd">            The dictionary key to the property of interest</span>
+<span class="sd">        mode : string</span>
+<span class="sd">            How interpolation should be peformed for missing values. If values</span>
+<span class="sd">            are present for both pores and throats, then this argument is</span>
+<span class="sd">            ignored.  The ``interpolate`` data method is used.  Options are:</span>
+
+<span class="sd">                * &#39;mean&#39; (default)</span>
+<span class="sd">                    Finds the mean value of the neighboring pores (or throats)</span>
+<span class="sd">                * &#39;min&#39;</span>
+<span class="sd">                    Finds the minimuem of the neighboring pores (or throats)</span>
+<span class="sd">                * &#39;max&#39;</span>
+<span class="sd">                    Finds the maximum of the neighboring pores (or throats)</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        conduit_data : ndarray</span>
+<span class="sd">            An Nt-by-3 array with each column containg the requested property</span>
+<span class="sd">            for each pore-throat-pore conduit.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">T</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.&#39;</span> <span class="o">+</span> <span class="n">prop</span><span class="p">]</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">P1</span><span class="p">,</span> <span class="n">P2</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.&#39;</span> <span class="o">+</span> <span class="n">prop</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">conns</span><span class="p">]</span><span class="o">.</span><span class="n">T</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="n">P</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interpolate_data</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.&#39;</span><span class="o">+</span><span class="n">prop</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
+                <span class="n">P1</span><span class="p">,</span> <span class="n">P2</span> <span class="o">=</span> <span class="n">P</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">conns</span><span class="p">]</span><span class="o">.</span><span class="n">T</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">P1</span><span class="p">,</span> <span class="n">P2</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.&#39;</span> <span class="o">+</span> <span class="n">prop</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">conns</span><span class="p">]</span><span class="o">.</span><span class="n">T</span>
+            <span class="n">T</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interpolate_data</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.&#39;</span><span class="o">+</span><span class="n">prop</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">P1</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">P2</span><span class="p">))</span><span class="o">.</span><span class="n">T</span></div>
 
 <div class="viewcode-block" id="Base.filter_by_label"><a class="viewcode-back" href="../../../modules/core/base.html#openpnm.core.Base.filter_by_label">[docs]</a>    <span class="k">def</span> <span class="nf">filter_by_label</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="p">[],</span> <span class="n">throats</span><span class="o">=</span><span class="p">[],</span> <span class="n">labels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;or&#39;</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
