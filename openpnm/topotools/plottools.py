@@ -606,13 +606,12 @@ def plot_tutorial(network,
     return gplot
 
 
-def plot_network_interactive(network,
-                             node_labels=None,
-                             edge_prop=None,
-                             node_color=None,
-                             edge_color=None,
-                             node_scale=20,
-                             edge_scale=5):
+def plot_network_jupyter(network,
+                         node_labels=None,
+                         node_color=None,
+                         edge_color=None,
+                         node_scale=20,
+                         edge_scale=5):
     r"""
     Visualize a network in 3D using Plotly. The pores and throats are scaled
     and colored by their properties. The final figure can be rotated and
@@ -626,25 +625,16 @@ def plot_network_interactive(network,
     node_labels : Array of str
         Array of labels to be shown as a text when hovering on each pore. If not
         given, the coordinates and diameter of the pores is used as node_labels.
-
-    edge_prop : str
-        The property of the throats to be used for coloring the throats and
-        showing as a text when hovering on each throat. If not given, 'diameter'
-        is defined as the edge_prop.
-
-    node_color : Array
+    node_color : ndarray
         An array of values used for coloring the pores. If not given, the pores
         are colored by a normalized scale of their diameter in the range of [0,255]
-
-    edge_color : Array
+    edge_color : ndarray
         An array of values used for coloring the throats. If not given, the throats
         are colored by edge_prop.
-
-    node_scale : scaler
+    node_scale : scalar
         A scaler to resize the pores' sphere. The pores' sphere diameter
         is defined as node_scale*network['pore.diameter']
-
-    edge_scale : scaler
+    edge_scale : scalar
         A scaler to define the throat's wireframe thickness (width).
 
     Returns
@@ -664,6 +654,7 @@ def plot_network_interactive(network,
     visualization use Paraview.
 
     """
+    a = b
     try:
         import plotly.graph_objects as go
     except ImportError:
@@ -675,9 +666,7 @@ def plot_network_interactive(network,
     try:
         diam = network['pore.diameter']
     except KeyError:
-        network['pore.diameter'] = 1
-        network['throat.diamter'] = 0.5
-        diam = network['pore.diameter']
+        diam = np.ones(network.Np)
 
     if node_labels is None:
         # Labels of each pore shown while hovering
@@ -692,9 +681,6 @@ def plot_network_interactive(network,
             return np.log10(x/smallest)/np.log10(largest/smallest)
         node_color = np.round(normalize(diam)*255)
 
-    if edge_prop is None:
-        # throat property to be used for coloring and labeling
-        edge_prop = 'diameter'
     if edge_color is None:
         edge_color = network['throat.'+edge_prop]
     edge_labels = ['throat'+edge_prop+'='+str(network['throat.'+edge_prop][i].astype('float16'))
