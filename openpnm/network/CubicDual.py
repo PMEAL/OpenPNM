@@ -10,34 +10,24 @@ class CubicDual(GenericNetwork):
     r"""
     Body centered cubic lattice plus face centered nodes on the surfaces
 
-    This network is essentially a *'bcc'* lattice, *except* that the seconary
-    network (body-centered pores) has pores on each face of the domain, which
-    breaks the body-centric arranagement.  This allows boundary conditions to
-    be applied to the seconary network for transport simuations.
-
     Parameters
     ----------
     shape : list of ints
         The size and shape of the primary cubic network in terms of the
         number of pores in each direction.  Secondary nodes will be added at
         centers of each unit cell.
-
     spacing : list of floats
         The distance between pores of the primary network in each of the
         principal directions
-
     label_1 : string
         The label to apply to the primary cubic lattices, which defaults to
         'primary'
-
     label_2 : string
         The label to apply to the secondary cubic lattices, which defaults to
         'seconary'
-
     project : OpenPNM Project object (optional)
         If not provided one will be generated and the network will be assigned
         to it.  It can be retrieved from ``net.project``.
-
     name : string
         An optional name for the object to help identify it.  If not given,
         one will be generated.
@@ -46,33 +36,12 @@ class CubicDual(GenericNetwork):
     --------
     Bravais
 
-    Examples
-    --------
-    >>> import openpnm as op
-    >>> import matplotlib.pyplot as plt
-    >>> pn = op.network.CubicDual(shape=[3, 3, 3])
-    >>> pn.num_pores('pore.primary')  # Normal cubic network is present
-    27
-    >>> pn.Np  # But more pores are present from seconary network
-    59
-
-    And it can be plotted for quick visualization using:
-
-    >>> fig, ax = plt.subplots()
-    >>> _ = op.topotools.plot_connections(network=pn,
-    ...                                   throats=pn.throats('primary'),
-    ...                                   color='b', ax=ax)
-    >>> _ = op.topotools.plot_connections(network=pn,
-    ...                                   throats=pn.throats('secondary'),
-    ...                                   color='r', ax=ax)
-    >>> _ = op.topotools.plot_coordinates(network=pn, c='r', s=75, ax=ax)
-
-    .. image:: /../docs/_static/images/cubic_dual_network.png
-        :align: center
-
-    For larger networks and more control over presentation use `Paraview
-    <http://www.paraview.org>`_.
-
+    Notes
+    -----
+    This network is essentially a *'bcc'* lattice, *except* that the seconary
+    network (body-centered pores) has pores on each face of the domain, which
+    breaks the body-centric arrangement.  This allows boundary conditions to
+    be applied to the seconary network for transport simuations.
     """
     def __init__(self, shape, spacing=1, label_1='primary',
                  label_2='secondary', **kwargs):
