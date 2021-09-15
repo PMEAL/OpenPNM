@@ -616,9 +616,9 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>network</strong> (<a class="reference internal" href="../network/generic.html#openpnm.network.GenericNetwork" title="openpnm.network.GenericNetwork"><em>GenericNetwork</em></a>) – The network object to which this algorithm will apply.</p></li>
-<li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of the algorithm</p></li>
-<li><p><strong>project</strong> (<a class="reference internal" href="../utils/project.html#openpnm.utils.Project" title="openpnm.utils.Project"><em>Project</em></a><em>, </em><em>optional</em>) – Either a Network or a Project must be supplied</p></li>
+<li><p><strong>network</strong> (<em>(</em><em>OpenPNM Network object</em><em>)</em>) – The network object to which this algorithm will apply.</p></li>
+<li><p><strong>name</strong> (<em>(</em><em>string</em><em>, </em><em>optional</em><em>)</em>) – Name of the algorithm</p></li>
+<li><p><strong>project</strong> (<em>(</em><em>OpenPNM Project object</em><em>, </em><em>optional</em><em>)</em>) – Either a Network or a Project must be supplied</p></li>
 </ul>
 </dd>
 </dl>
@@ -664,21 +664,6 @@ is usually underestimated.</p></li>
 <p>The area and length of the domain are found using the bounding box
 around the inlet and outlet pores which do not necessarily lie on the
 edge of the domain, resulting in underestimation of sizes.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="openpnm.algorithms.FickianDiffusion.setup">
-<span class="sig-name descname"><span class="pre">setup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quantity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conductance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/FickianDiffusion.html#FickianDiffusion.setup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.FickianDiffusion.setup" title="Permalink to this definition">¶</a></dt>
-<dd><p>This method takes several arguments that are essential to running the
-algorithm and adds them to the settings.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>%</strong><strong>(</strong><strong>FickianDiffusionSettings.parameters</strong><strong>)</strong><strong>s</strong> – </p>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<p>Any additional arguments are added to the <code class="docutils literal notranslate"><span class="pre">settings</span></code> dictionary of
-the object.</p>
 </dd></dl>
 
 </dd></dl>
