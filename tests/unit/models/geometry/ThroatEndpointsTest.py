@@ -378,8 +378,7 @@ class ThroatEndpointsTest:
                                               geometry=boun)
             physb.add_model(propname='throat.diffusive_conductance',
                             model=pm.diffusive_conductance.ordinary_diffusion)
-            FD = op.algorithms.FickianDiffusion(network=net)
-            FD.setup(phase=air)
+            FD = op.algorithms.FickianDiffusion(network=net, phase=air)
             FD.set_value_BC(pores=net.pores('left_boundary'), values=1.0)
             FD.set_value_BC(pores=net.pores('right_boundary'), values=0.0)
             FD.run()

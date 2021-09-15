@@ -17,8 +17,7 @@ class IPTest:
         self.phys.add_model(propname="throat.entry_pressure", model=mod)
 
     def test_set_inlets_overwrite(self):
-        alg = op.algorithms.InvasionPercolation(network=self.net)
-        alg.setup(phase=self.water)
+        alg = op.algorithms.InvasionPercolation(network=self.net, phase=self.water)
         alg.set_inlets(pores=self.net.pores("top"))
         assert np.sum(alg["pore.invasion_sequence"] == 0) == 100
 
@@ -32,15 +31,13 @@ class IPTest:
         assert np.sum(alg["pore.invasion_sequence"] == 0) == 0
 
     def test_run(self):
-        alg = op.algorithms.InvasionPercolation(network=self.net)
-        alg.setup(phase=self.water)
+        alg = op.algorithms.InvasionPercolation(network=self.net, phase=self.water)
         alg.set_inlets(pores=self.net.pores("top"))
         alg.run()
         assert alg["throat.invasion_sequence"].max() == (alg.Nt - 1)
 
     def test_results(self):
-        alg = op.algorithms.InvasionPercolation(network=self.net)
-        alg.setup(phase=self.water)
+        alg = op.algorithms.InvasionPercolation(network=self.net, phase=self.water)
         alg.set_inlets(pores=self.net.pores("top"))
         alg.run()
         d = alg.results(Snwp=0.5)
@@ -56,16 +53,14 @@ class IPTest:
         assert S > 0.4
 
     def test_trapping(self):
-        alg = op.algorithms.InvasionPercolation(network=self.net)
-        alg.setup(phase=self.water)
+        alg = op.algorithms.InvasionPercolation(network=self.net, phase=self.water)
         alg.set_inlets(pores=self.net.pores("top"))
         alg.run()
         alg.apply_trapping(outlets=self.net.pores("bottom"))
         assert "pore.trapped" in alg.labels()
 
     def test_plot_intrusion_curve(self):
-        alg = op.algorithms.InvasionPercolation(network=self.net)
-        alg.setup(phase=self.water)
+        alg = op.algorithms.InvasionPercolation(network=self.net, phase=self.water)
         alg.set_inlets(pores=self.net.pores("top"))
         with pytest.raises(Exception):
             alg.plot_intrusion_curve()

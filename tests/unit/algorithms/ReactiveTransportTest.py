@@ -26,15 +26,15 @@ class ReactiveTransportTest:
         self.alg = op.algorithms.ReactiveTransport(network=self.net,
                                                    phase=self.phase)
 
-    def test_setup(self):
+    def test_settings(self):
         temp = self.alg.settings.copy()
-        self.alg.setup(
-            conductance="throat.cond",
-            quantity="pore.test",
-            nlin_max_iter=123,
-            relaxation_source=1.23,
-            relaxation_quantity=3.21
-        )
+        self.alg.settings.update({
+            'conductance': "throat.cond",
+            'quantity': "pore.test",
+            'nlin_max_iter': 123,
+            'relaxation_source': 1.23,
+            'relaxation_quantity': 3.21
+        })
         assert self.alg.settings["conductance"] == "throat.cond"
         assert self.alg.settings["quantity"] == "pore.test"
         assert self.alg.settings["nlin_max_iter"] == 123
@@ -170,9 +170,9 @@ class ReactiveTransportTest:
 
     def test_solution_should_diverge_w_large_relaxation(self):
         self.alg.reset(bcs=True, source_terms=True)
-        self.alg.setup(nlin_max_iter=25)
         self.alg.settings.update({'conductance': 'throat.diffusive_conductance',
-                                  'quantity': 'pore.concentration'})
+                                  'quantity': 'pore.concentration',
+                                  'nlin_max_iter': 25})
         self.alg.set_source(pores=self.net.pores('bottom'), propname='pore.reaction')
         self.alg.set_value_BC(pores=self.net.pores('top'), values=1.0)
         self.alg.settings['relaxation_quantity'] = 20.0
@@ -186,16 +186,16 @@ class ReactiveTransportTest:
 
     def test_check_divergence_if_maxiter_reached(self):
         self.alg.reset(bcs=True, source_terms=True)
-        self.alg.setup(nlin_max_iter=2)
         self.alg.settings.update({'conductance': 'throat.diffusive_conductance',
-                                  'quantity': 'pore.concentration'})
+                                  'quantity': 'pore.concentration',
+                                  'nlin_max_iter': 2})
         self.alg.set_source(pores=self.net.pores('bottom'), propname='pore.reaction')
         self.alg.set_value_BC(pores=self.net.pores('top'), values=1.0)
         self.alg.settings['relaxation_quantity'] = 1.0
         self.alg.settings['relaxation_source'] = 1.0
         with pytest.raises(Exception):
             self.alg.run()
-        self.alg.setup(nlin_max_iter=5000)
+        self.alg.settings['nlin_max_iter'] = 5000
 
     def test_variable_conductance(self):
         self.alg.reset(bcs=True, source_terms=True)

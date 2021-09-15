@@ -54,26 +54,6 @@ class NernstPlanckMultiphysicsSolver(GenericAlgorithm):
         settings['phase'] = phase.name
         self.settings.update(settings)
 
-    @docstr.dedent
-    def setup(self, phase=None, potential_field='', ions=[], g_tol=None,
-              g_max_iter=None, **kwargs):
-        r"""
-
-        Parameters
-        ----------
-        %(NernstPlanckMultiphysicsSolverSettings.parameters)s
-        """
-        if phase:
-            self.settings['phase'] = phase.name
-        if potential_field:
-            self.settings['potential_field'] = potential_field
-        if ions:
-            self.settings['ions'] = ions
-        if g_tol:
-            self.settings['g_tol'] = g_tol
-        if g_max_iter:
-            self.settings['g_max_iter'] = g_max_iter
-
     def run(self, t=None):
         r"""
         """
