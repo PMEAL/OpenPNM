@@ -51,6 +51,7 @@ setup(
         'openpnm',
         'openpnm.core',
         'openpnm.network',
+        'openpnm.network.generators',
         'openpnm.geometry',
         'openpnm.phases',
         'openpnm.phases.mixtures',
