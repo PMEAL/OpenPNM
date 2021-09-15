@@ -213,7 +213,7 @@ def electroneutrality_generic(target,
     g_inv2[f2] = 1/g2[f2]
     g_invt[ft] = 1/gt[ft]
     # Apply shape factors and calculate the final conductance
-    g = g_inv1*F_integral[f"{size_factors}.pore1"][throats] + g_inv2*F_integral[f"{size_factors}.pore2"][throats] + g_invt*F_integral[f"{size_factors}.throat"][throats]
+    g = g_inv1/F_integral[f"{size_factors}.pore1"][throats] + g_inv2/F_integral[f"{size_factors}.pore2"][throats] + g_invt/F_integral[f"{size_factors}.throat"][throats]
     g[g != 0] = g[g != 0]**(-1)
     return g
 
