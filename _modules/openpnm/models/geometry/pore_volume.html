@@ -260,6 +260,102 @@
     <span class="k">return</span> <span class="n">target</span><span class="p">[</span><span class="n">pore_diameter</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span></div>
 
 
+<div class="viewcode-block" id="cylinder"><a class="viewcode-back" href="../../../../modules/models/geometry.html#openpnm.models.geometry.pore_volume.cylinder">[docs]</a><span class="k">def</span> <span class="nf">cylinder</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">pore_diameter</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate pore volume from diameter assuming a cylindrical pore body</span>
+<span class="sd">    with a height equal to its diameter.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    target : OpenPNM Object</span>
+<span class="sd">        The object which this model is associated with. This controls</span>
+<span class="sd">        the length of the calculated array, and also provides access to other</span>
+<span class="sd">        necessary geometric properties.</span>
+
+<span class="sd">    pore_diameter : string</span>
+<span class="sd">        The dictionary key of the pore diameter values</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    value : NumPy ndarray</span>
+<span class="sd">        Array containing pore volume values.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">diams</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">pore_diameter</span><span class="p">]</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="n">_pi</span><span class="o">/</span><span class="mi">4</span><span class="o">*</span><span class="n">diams</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">diams</span>
+    <span class="k">return</span> <span class="n">value</span></div>
+
+
+<div class="viewcode-block" id="pyramid"><a class="viewcode-back" href="../../../../modules/models/geometry.html#openpnm.models.geometry.pore_volume.pyramid">[docs]</a><span class="k">def</span> <span class="nf">pyramid</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">pore_diameter</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates pore volume from diameter assuming a truncated pyramid pore</span>
+<span class="sd">    body.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    target : OpenPNM Object</span>
+<span class="sd">        The object which this model is associated with. This controls</span>
+<span class="sd">        the length of the calculated array, and also provides access to other</span>
+<span class="sd">        necessary geometric properties.</span>
+
+<span class="sd">    pore_diameter : string</span>
+<span class="sd">        The dictionary key of the pore diameter values</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    value : NumPy ndarray</span>
+<span class="sd">        Array containing pore volume values.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+
+<div class="viewcode-block" id="cone"><a class="viewcode-back" href="../../../../modules/models/geometry.html#openpnm.models.geometry.pore_volume.cone">[docs]</a><span class="k">def</span> <span class="nf">cone</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">pore_diameter</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates pore volume from diameter assuming a conical pore body.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    target : OpenPNM Object</span>
+<span class="sd">        The object which this model is associated with. This controls</span>
+<span class="sd">        the length of the calculated array, and also provides access to other</span>
+<span class="sd">        necessary geometric properties.</span>
+
+<span class="sd">    pore_diameter : string</span>
+<span class="sd">        The dictionary key of the pore diameter values</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    value : NumPy ndarray</span>
+<span class="sd">        Array containing pore volume values.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+
+<div class="viewcode-block" id="trapezoid"><a class="viewcode-back" href="../../../../modules/models/geometry.html#openpnm.models.geometry.pore_volume.trapezoid">[docs]</a><span class="k">def</span> <span class="nf">trapezoid</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">pore_diameter</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates pore volume from diameter assuming a trapezoidal pore body.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    target : OpenPNM Object</span>
+<span class="sd">        The object which this model is associated with. This controls</span>
+<span class="sd">        the length of the calculated array, and also provides access to other</span>
+<span class="sd">        necessary geometric properties.</span>
+
+<span class="sd">    pore_diameter : string</span>
+<span class="sd">        The dictionary key of the pore diameter values</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    value : NumPy ndarray</span>
+<span class="sd">        Array containing pore volume values.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+
 <div class="viewcode-block" id="effective"><a class="viewcode-back" href="../../../../modules/models/geometry.html#openpnm.models.geometry.pore_volume.effective">[docs]</a><span class="k">def</span> <span class="nf">effective</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">pore_volume</span><span class="o">=</span><span class="s1">&#39;pore.volume&#39;</span><span class="p">,</span>
               <span class="n">throat_volume</span><span class="o">=</span><span class="s1">&#39;throat.volume&#39;</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>

@@ -170,13 +170,13 @@
               <div>
                 
   <h1>Source code for openpnm.algorithms.OrdinaryPercolation</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">scipy</span> <span class="k">as</span> <span class="nn">sp</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
 <span class="kn">from</span> <span class="nn">openpnm.algorithms</span> <span class="kn">import</span> <span class="n">GenericAlgorithm</span>
 <span class="kn">from</span> <span class="nn">openpnm.topotools</span> <span class="kn">import</span> <span class="n">site_percolation</span><span class="p">,</span> <span class="n">bond_percolation</span>
 <span class="kn">from</span> <span class="nn">openpnm.topotools</span> <span class="kn">import</span> <span class="n">remove_isolated_clusters</span><span class="p">,</span> <span class="n">ispercolating</span>
 <span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">logging</span>
+<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">prettify_logger_message</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
@@ -616,8 +616,8 @@
         <span class="n">Tvol</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;throat_volume&#39;</span><span class="p">]]</span>
         <span class="n">Total_vol</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">Pvol</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">Tvol</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">Pvol</span><span class="p">[</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.inlets&#39;</span><span class="p">]])</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                <span class="s2">&quot;Inlets have non-zero volume, percolation curve won&#39;t start at 0.&quot;</span><span class="p">)</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Inlets have non-zero volume, perc. curve won&#39;t start at 0.&quot;</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">prettify_logger_message</span><span class="p">(</span><span class="n">msg</span><span class="p">))</span>
         <span class="c1"># Find cumulative filled volume at each applied capillary pressure</span>
         <span class="n">Vnwp_t</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">Vnwp_p</span> <span class="o">=</span> <span class="p">[]</span>

@@ -996,9 +996,54 @@ necessary geometric properties.</p></li>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="openpnm.models.geometry.pore_volume.cone">
+<span class="sig-name descname"><span class="pre">cone</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.diameter'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/pore_volume.html#cone"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.pore_volume.cone" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates pore volume from diameter assuming a conical pore body.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target</strong> (<em>OpenPNM Object</em>) – The object which this model is associated with. This controls
+the length of the calculated array, and also provides access to other
+necessary geometric properties.</p></li>
+<li><p><strong>pore_diameter</strong> (<em>string</em>) – The dictionary key of the pore diameter values</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>value</strong> – Array containing pore volume values.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>NumPy ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="openpnm.models.geometry.pore_volume.cube">
 <span class="sig-name descname"><span class="pre">cube</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.diameter'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/pore_volume.html#cube"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.pore_volume.cube" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate pore volume from diameter assuming a cubic pore body</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target</strong> (<em>OpenPNM Object</em>) – The object which this model is associated with. This controls
+the length of the calculated array, and also provides access to other
+necessary geometric properties.</p></li>
+<li><p><strong>pore_diameter</strong> (<em>string</em>) – The dictionary key of the pore diameter values</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>value</strong> – Array containing pore volume values.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>NumPy ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="openpnm.models.geometry.pore_volume.cylinder">
+<span class="sig-name descname"><span class="pre">cylinder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.diameter'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/pore_volume.html#cylinder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.pore_volume.cylinder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate pore volume from diameter assuming a cylindrical pore body
+with a height equal to its diameter.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -1031,6 +1076,29 @@ the length of the calculated array, and also provides access to other
 necessary geometric properties.</p></li>
 <li><p><strong>pore_volume</strong> (<em>string</em>) – The dictionary key of the pore volume values</p></li>
 <li><p><strong>throat_volume</strong> (<em>string</em>) – The dictionary key of the throat volume values</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>value</strong> – Array containing pore volume values.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>NumPy ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="openpnm.models.geometry.pore_volume.pyramid">
+<span class="sig-name descname"><span class="pre">pyramid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.diameter'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/pore_volume.html#pyramid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.pore_volume.pyramid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates pore volume from diameter assuming a truncated pyramid pore
+body.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target</strong> (<em>OpenPNM Object</em>) – The object which this model is associated with. This controls
+the length of the calculated array, and also provides access to other
+necessary geometric properties.</p></li>
+<li><p><strong>pore_diameter</strong> (<em>string</em>) – The dictionary key of the pore diameter values</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -1076,6 +1144,28 @@ the length of the calculated array, and also provides access to other
 necessary geometric properties.</p></li>
 <li><p><strong>pore_diameter</strong> (<em>string</em>) – The dictionary key of the pore diameter values</p></li>
 </ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="openpnm.models.geometry.pore_volume.trapezoid">
+<span class="sig-name descname"><span class="pre">trapezoid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.diameter'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/pore_volume.html#trapezoid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.pore_volume.trapezoid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates pore volume from diameter assuming a trapezoidal pore body.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target</strong> (<em>OpenPNM Object</em>) – The object which this model is associated with. This controls
+the length of the calculated array, and also provides access to other
+necessary geometric properties.</p></li>
+<li><p><strong>pore_diameter</strong> (<em>string</em>) – The dictionary key of the pore diameter values</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>value</strong> – Array containing pore volume values.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>NumPy ndarray</p>
 </dd>
 </dl>
 </dd></dl>

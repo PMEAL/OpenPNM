@@ -206,13 +206,15 @@
 </li>
       <li><a href="modules/algorithms/generic_transport.html#openpnm.algorithms.GenericTransport._build_A">_build_A() (GenericTransport method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/algorithms/generic_transport.html#openpnm.algorithms.GenericTransport._build_b">_build_b() (GenericTransport method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/algorithms/generic_transport.html#openpnm.algorithms.GenericTransport._calc_eff_prop">_calc_eff_prop() (GenericTransport method)</a>
 </li>
-      <li><a href="modules/algorithms/generic_transport.html#openpnm.algorithms.GenericTransport._solve">_solve() (GenericTransport method)</a>
+      <li><a href="modules/algorithms/generic_transport.html#openpnm.algorithms.GenericTransport._get_domain_area">_get_domain_area() (GenericTransport method)</a>
+</li>
+      <li><a href="modules/algorithms/generic_transport.html#openpnm.algorithms.GenericTransport._get_domain_length">_get_domain_length() (GenericTransport method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -320,6 +322,8 @@
 </li>
       <li><a href="modules/models/geometry.html#openpnm.models.geometry.throat_length.conduit_lengths">conduit_lengths() (in module openpnm.models.geometry.throat_length)</a>
 </li>
+      <li><a href="modules/models/geometry.html#openpnm.models.geometry.pore_volume.cone">cone() (in module openpnm.models.geometry.pore_volume)</a>
+</li>
       <li><a href="modules/models/geometry.html#openpnm.models.geometry.throat_length.cones_and_cylinders">cones_and_cylinders() (in module openpnm.models.geometry.throat_length)</a>
 </li>
   </ul></td>
@@ -364,9 +368,11 @@
         <li><a href="modules/models/geometry.html#openpnm.models.geometry.throat_volume.cuboid">(in module openpnm.models.geometry.throat_volume)</a>
 </li>
       </ul></li>
-      <li><a href="modules/models/geometry.html#openpnm.models.geometry.throat_cross_sectional_area.cylinder">cylinder() (in module openpnm.models.geometry.throat_cross_sectional_area)</a>
+      <li><a href="modules/models/geometry.html#openpnm.models.geometry.pore_volume.cylinder">cylinder() (in module openpnm.models.geometry.pore_volume)</a>
 
       <ul>
+        <li><a href="modules/models/geometry.html#openpnm.models.geometry.throat_cross_sectional_area.cylinder">(in module openpnm.models.geometry.throat_cross_sectional_area)</a>
+</li>
         <li><a href="modules/models/geometry.html#openpnm.models.geometry.throat_perimeter.cylinder">(in module openpnm.models.geometry.throat_perimeter)</a>
 </li>
         <li><a href="modules/models/geometry.html#openpnm.models.geometry.throat_surface_area.cylinder">(in module openpnm.models.geometry.throat_surface_area)</a>
@@ -1202,6 +1208,8 @@
 </li>
       <li><a href="modules/utils/project.html#openpnm.utils.Project.purge_object">purge_object() (Project method)</a>
 </li>
+      <li><a href="modules/models/geometry.html#openpnm.models.geometry.pore_volume.pyramid">pyramid() (in module openpnm.models.geometry.pore_volume)</a>
+</li>
       <li><a href="modules/models/geometry.html#openpnm.models.geometry.throat_length.pyramids_and_cuboids">pyramids_and_cuboids() (in module openpnm.models.geometry.throat_length)</a>
 </li>
   </ul></td>
@@ -1283,8 +1291,6 @@
 </li>
         <li><a href="modules/algorithms/porosimetry.html#openpnm.algorithms.Porosimetry.run">(Porosimetry method)</a>
 </li>
-        <li><a href="modules/algorithms/reactive_transport.html#openpnm.algorithms.ReactiveTransport.run">(ReactiveTransport method)</a>
-</li>
         <li><a href="modules/algorithms/metrics/relative_permeability.html#openpnm.algorithms.metrics.RelativePermeability.run">(RelativePermeability method)</a>
 </li>
         <li><a href="modules/algorithms/transient_reactive_transport.html#openpnm.algorithms.TransientReactiveTransport.run">(TransientReactiveTransport method)</a>
@@ -1364,10 +1370,10 @@
       </ul></li>
       <li><a href="modules/algorithms/reactive_transport.html#openpnm.algorithms.ReactiveTransport.set_source">set_source() (ReactiveTransport method)</a>
 </li>
-      <li><a href="modules/algorithms/generic_transport.html#openpnm.algorithms.GenericTransport.set_value_BC">set_value_BC() (GenericTransport method)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/algorithms/generic_transport.html#openpnm.algorithms.GenericTransport.set_value_BC">set_value_BC() (GenericTransport method)</a>
+</li>
       <li><a href="modules/utils/misc.html#openpnm.utils.SettingsDict">SettingsDict (class in openpnm.utils)</a>
 </li>
       <li><a href="modules/algorithms/advection_diffusion.html#openpnm.algorithms.AdvectionDiffusion.setup">setup() (AdvectionDiffusion method)</a>
@@ -1376,10 +1382,6 @@
         <li><a href="modules/algorithms/fickian_diffusion.html#openpnm.algorithms.FickianDiffusion.setup">(FickianDiffusion method)</a>
 </li>
         <li><a href="modules/algorithms/fourier_conduction.html#openpnm.algorithms.FourierConduction.setup">(FourierConduction method)</a>
-</li>
-        <li><a href="modules/algorithms/generic_algorithm.html#openpnm.algorithms.GenericAlgorithm.setup">(GenericAlgorithm method)</a>
-</li>
-        <li><a href="modules/algorithms/generic_transport.html#openpnm.algorithms.GenericTransport.setup">(GenericTransport method)</a>
 </li>
         <li><a href="modules/algorithms/invasion_percolation.html#openpnm.algorithms.InvasionPercolation.setup">(InvasionPercolation method)</a>
 </li>
@@ -1390,8 +1392,6 @@
         <li><a href="modules/algorithms/ordinary_percolation.html#openpnm.algorithms.OrdinaryPercolation.setup">(OrdinaryPercolation method)</a>
 </li>
         <li><a href="modules/algorithms/porosimetry.html#openpnm.algorithms.Porosimetry.setup">(Porosimetry method)</a>
-</li>
-        <li><a href="modules/algorithms/reactive_transport.html#openpnm.algorithms.ReactiveTransport.setup">(ReactiveTransport method)</a>
 </li>
         <li><a href="modules/algorithms/metrics/relative_permeability.html#openpnm.algorithms.metrics.RelativePermeability.setup">(RelativePermeability method)</a>
 </li>
@@ -1454,10 +1454,10 @@
 </li>
       <li><a href="modules/io/HDF5.html#openpnm.io.HDF5.to_hdf5">to_hdf5() (HDF5 class method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/io/networkx.html#openpnm.io.NetworkX.to_networkx">to_networkx() (NetworkX class method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/utils/misc.html#openpnm.utils.toc">toc() (in module openpnm.utils)</a>
 </li>
       <li><a href="modules/core/base.html#openpnm.core.Base.toindices">toindices() (Base method)</a>
@@ -1465,6 +1465,8 @@
       <li><a href="modules/core/base.html#openpnm.core.Base.tomask">tomask() (Base method)</a>
 </li>
       <li><a href="modules/algorithms/transient_reactive_transport.html#openpnm.algorithms.TransientReactiveTransport">TransientReactiveTransport (class in openpnm.algorithms)</a>
+</li>
+      <li><a href="modules/models/geometry.html#openpnm.models.geometry.pore_volume.trapezoid">trapezoid() (in module openpnm.models.geometry.pore_volume)</a>
 </li>
       <li><a href="modules/models/geometry.html#openpnm.models.geometry.throat_length.trapezoids_and_rectangles">trapezoids_and_rectangles() (in module openpnm.models.geometry.throat_length)</a>
 </li>
