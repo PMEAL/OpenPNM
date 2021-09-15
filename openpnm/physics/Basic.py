@@ -59,3 +59,5 @@ class Basic(GenericPhysics):
                        model=mods.diffusive_conductance.generic_diffusive)
         self.add_model(propname='throat.entry_pressure',
                        model=mods.capillary_pressure.washburn)
+        self.add_model(propname='throat.ad_dif_conductance',
+                       model=op.models.physics.ad_dif_conductance.ad_dif)

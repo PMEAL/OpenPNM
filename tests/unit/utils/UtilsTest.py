@@ -74,7 +74,9 @@ class UtilsTest:
                                         pores=net.Ps,
                                         throats=net.Ts)
         air = op.phases.Air(network=net)
-        phys = op.physics.Standard(network=net, phase=air, geometry=geom)
+        phys = op.physics.Basic(network=net, phase=air, geometry=geom)
+        phys.add_model(propname='throat.ad_dif_conductance',
+                       model=op.models.physics.ad_dif_conductance.ad_dif)
         ad = op.algorithms.AdvectionDiffusion(network=net, phase=air)
         ad.set_value_BC(pores=net.pores("left"), values=1.0)
         ad.set_value_BC(pores=net.pores("right"), values=0.1)
