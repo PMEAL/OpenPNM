@@ -48,6 +48,7 @@ def bcc(shape, spacing, mode='kdtree'):
     d['throat.conns'] = conns
     return d
 
+
 if __name__ == '__main__':
     import openpnm as op
     pn = op.network.GenericNetwork()

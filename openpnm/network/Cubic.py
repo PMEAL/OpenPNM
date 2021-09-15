@@ -81,9 +81,11 @@ class Cubic(GenericNetwork):
 
         super().__init__(name=name, project=project, **kwargs)
 
-        self.update(cubic(shape=shape,
-                          spacing=spacing,
-                          connectivity=connectivity))
+        temp = cubic(shape=shape,
+                     spacing=spacing,
+                     connectivity=connectivity)
+        # fix temp by adding pore and throat prefix
+        self.update(temp)
         Np = self['pore.coords'].shape[0]
         Nt = self['throat.conns'].shape[0]
         self['pore.all'] = np.ones((Np, ), dtype=bool)
