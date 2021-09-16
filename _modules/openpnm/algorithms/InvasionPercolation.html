@@ -227,8 +227,7 @@
 
 <span class="sd">    Initialize an invasion percolation object and define inlets:</span>
 
-<span class="sd">    &gt;&gt;&gt; ip = op.algorithms.InvasionPercolation(network=pn)</span>
-<span class="sd">    &gt;&gt;&gt; ip.setup(phase=water)</span>
+<span class="sd">    &gt;&gt;&gt; ip = op.algorithms.InvasionPercolation(network=pn, phase=water)</span>
 <span class="sd">    &gt;&gt;&gt; ip.set_inlets(pores=0)</span>
 <span class="sd">    &gt;&gt;&gt; ip.run()</span>
 
@@ -273,48 +272,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">def_set</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">phase</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="n">phase</span><span class="o">=</span><span class="n">phase</span><span class="p">)</span>
-
-<div class="viewcode-block" id="InvasionPercolation.setup"><a class="viewcode-back" href="../../../modules/algorithms/invasion_percolation.html#openpnm.algorithms.InvasionPercolation.setup">[docs]</a>    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">entry_pressure</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">pore_volume</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">throat_volume</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Set up the required parameters for the algorithm</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        phase : OpenPNM Phase object</span>
-<span class="sd">            The phase to be injected into the Network.  The Phase must have the</span>
-<span class="sd">            capillary entry pressure values for the system.</span>
-
-<span class="sd">        entry_pressure : string</span>
-<span class="sd">            The dictionary key to the capillary entry pressure.  If none is</span>
-<span class="sd">            supplied then the current value is retained. The default is</span>
-<span class="sd">            &#39;throat.capillary_pressure&#39;.</span>
-
-<span class="sd">        pore_volume : string</span>
-<span class="sd">            The dictionary key to the pore volume.  If none is supplied then</span>
-<span class="sd">            the current value is retained. The default is &#39;pore.volume&#39;.</span>
-
-<span class="sd">        throat_volume : string</span>
-<span class="sd">            The dictionary key to the throat volume.  If none is supplied then</span>
-<span class="sd">            the current value is retained. The default is &#39;throat.volume&#39;.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;phase&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">phase</span><span class="o">.</span><span class="n">name</span>
-        <span class="k">if</span> <span class="n">pore_volume</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;pore_volume&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pore_volume</span>
-        <span class="k">if</span> <span class="n">throat_volume</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;throat_volume&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">throat_volume</span>
-        <span class="k">if</span> <span class="n">entry_pressure</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;entry_pressure&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">entry_pressure</span>
-
-        <span class="c1"># Setup arrays and info</span>
-        <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.entry_pressure&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;entry_pressure&#39;</span><span class="p">]]</span>
-        <span class="c1"># Indices into t_entry giving a sorted list</span>
-        <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.sorted&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.entry_pressure&#39;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-        <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.order&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.order&#39;</span><span class="p">][</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.sorted&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Nt</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;phase&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">phase</span><span class="o">.</span><span class="n">name</span>
+        <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.invasion_sequence&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
         <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.invasion_sequence&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
-        <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.invasion_sequence&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span></div>
 
 <div class="viewcode-block" id="InvasionPercolation.set_inlets"><a class="viewcode-back" href="../../../modules/algorithms/invasion_percolation.html#openpnm.algorithms.InvasionPercolation.set_inlets">[docs]</a>    <span class="k">def</span> <span class="nf">set_inlets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="p">[],</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -326,13 +286,8 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">overwrite</span><span class="p">:</span>
             <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.invasion_sequence&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
-        <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.invasion_sequence&#39;</span><span class="p">][</span><span class="n">pores</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.invasion_sequence&#39;</span><span class="p">][</span><span class="n">pores</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span></div>
 
-        <span class="c1"># Perform initial analysis on input pores</span>
-        <span class="n">Ts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">find_neighbor_throats</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pores</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">queue</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">T</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.order&#39;</span><span class="p">][</span><span class="n">Ts</span><span class="p">]:</span>
-            <span class="n">hq</span><span class="o">.</span><span class="n">heappush</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">queue</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="InvasionPercolation.run"><a class="viewcode-back" href="../../../modules/algorithms/invasion_percolation.html#openpnm.algorithms.InvasionPercolation.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_steps</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -344,6 +299,22 @@
 <span class="sd">            The number of throats to invaded during this step</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Setup arrays and info</span>
+        <span class="n">phase</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;phase&#39;</span><span class="p">]]</span>
+        <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.entry_pressure&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;entry_pressure&#39;</span><span class="p">]]</span>
+        <span class="c1"># Indices into t_entry giving a sorted list</span>
+        <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.sorted&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.entry_pressure&#39;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.order&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.order&#39;</span><span class="p">][</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.sorted&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Nt</span><span class="p">)</span>
+
+        <span class="c1"># Perform initial analysis on input pores</span>
+        <span class="n">pores</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.invasion_sequence&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span>
+        <span class="n">Ts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">find_neighbor_throats</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pores</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">queue</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">T</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.order&#39;</span><span class="p">][</span><span class="n">Ts</span><span class="p">]:</span>
+            <span class="n">hq</span><span class="o">.</span><span class="n">heappush</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">queue</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="n">n_steps</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">n_steps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
 
