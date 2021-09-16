@@ -607,35 +607,37 @@ def plot_tutorial(network,
 
 
 def plot_network_jupyter(network,
-                         node_labels=None,
-                         node_color=None,
-                         edge_color=None,
+                         node_color=0,
+                         edge_color=0,
+                         node_size=1,
                          node_scale=20,
-                         edge_scale=5):
+                         edge_scale=5,
+                         colormap='viridis'):
     r"""
-    Visualize a network in 3D using Plotly. The pores and throats are scaled
-    and colored by their properties. The final figure can be rotated and
-    zoomed.
+    Visualize a network in 3D using Plotly.
+
+    The pores and throats are scaled and colored by their properties.
+    The final figure can be rotated and zoomed.
 
     Parameters
     ----------
-    network : GenericNetwork
-        The network to visualize.
-
-    node_labels : Array of str
-        Array of labels to be shown as a text when hovering on each pore. If not
-        given, the coordinates and diameter of the pores is used as node_labels.
+    network : OpenPNM Network object
+        The network to visualize
     node_color : ndarray
-        An array of values used for coloring the pores. If not given, the pores
-        are colored by a normalized scale of their diameter in the range of [0,255]
+        An array of values used for coloring the pores. If not given, the
+        lowest value of the employed colormap is assigned to all markers.
     edge_color : ndarray
-        An array of values used for coloring the throats. If not given, the throats
-        are colored by edge_prop.
+        An array of values used for coloring the throats. If not given, the
+        lowest value of the employed colormap is assigned to all lines.
+    node_size : ndarray
+        An array of values controlling the size of the markers.  If not given
+        all markers will be the same size
     node_scale : scalar
-        A scaler to resize the pores' sphere. The pores' sphere diameter
-        is defined as node_scale*network['pore.diameter']
+        A scaler to resize the markers
     edge_scale : scalar
-        A scaler to define the throat's wireframe thickness (width).
+        A scaler to the line thickness
+    colormap : str
+        The colormap to use
 
     Returns
     -------
@@ -654,37 +656,21 @@ def plot_network_jupyter(network,
     visualization use Paraview.
 
     """
-    a = b
     try:
         import plotly.graph_objects as go
     except ImportError:
         raise Exception('Plotly is not installed.'
                         'Please install Plotly using "pip install plotly"')
+
+    # Get xyz coords for points
     x_nodes, y_nodes, z_nodes = network.coords.T
 
-    # If the network diameter(geometry obj) is not defined assume d_p=1, d_t=0.5
-    try:
-        diam = network['pore.diameter']
-    except KeyError:
-        diam = np.ones(network.Np)
+    node_size = np.ones(network.Np)*node_size
+    node_color = np.ones(network.Np)*node_color
+    edge_color = np.ones(network.Nt)*edge_color
 
-    if node_labels is None:
-        # Labels of each pore shown while hovering
-        node_labels = ['X='+str(i)+' Y='+str(j)+' Z='+str(k)+' Diam='+str(g)
-                       for i, j, k, g in zip(x_nodes, y_nodes, z_nodes, diam.astype('float16'))]
-    if node_color is None:
-        # coloring based on normalized pore diameter
-        largest, smallest = diam.max(), diam.min()
-        # x scaled into [0,1]
-
-        def normalize(x):
-            return np.log10(x/smallest)/np.log10(largest/smallest)
-        node_color = np.round(normalize(diam)*255)
-
-    if edge_color is None:
-        edge_color = network['throat.'+edge_prop]
-    edge_labels = ['throat'+edge_prop+'='+str(network['throat.'+edge_prop][i].astype('float16'))
-                   for i in network.Ts]
+    node_labels = [str(i)+ ': ' + str(x) for i, x in enumerate(zip(node_size, node_color))]
+    edge_labels = [str(i)+ ': ' + str(x) for i, x in enumerate(edge_color)]
 
     # Create edges and nodes coordinates
     N = network.Nt*3
@@ -709,7 +695,9 @@ def plot_network_jupyter(network,
                                y=y_edges,
                                z=z_edges,
                                mode='lines',
-                               line=dict(color=edge_color, width=edge_scale),
+                               line=dict(color=edge_color,
+                                         width=edge_scale,
+                                         colorscale=colormap),
                                text=edge_labels, hoverinfo='text')
 
     trace_nodes = go.Scatter3d(x=x_nodes,
@@ -717,8 +705,9 @@ def plot_network_jupyter(network,
                                z=z_nodes,
                                mode='markers',
                                marker=dict(symbol='circle',
-                                           size=diam*node_scale,
+                                           size=node_size*node_scale,
                                            color=node_color,
+                                           colorscale=colormap,
                                            line=dict(color='black', width=0.5)),
                                text=node_labels, hoverinfo='text')
 
