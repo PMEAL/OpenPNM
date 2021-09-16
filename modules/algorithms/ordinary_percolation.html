@@ -633,6 +633,49 @@ an uninvaded state.</p>
 entire domain is invaded, then a percoaltion curve is obtained.  The
 threshold at which each site and bond was invaded is recorded, so it is
 possible to find invading configurations easily using Boolean logic.</p>
+<table class="table">
+<colgroup>
+<col style="width: 31%" />
+<col style="width: 69%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Method</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>reset</p></td>
+<td><p>Resets the various data arrays on the object…</p></td>
+</tr>
+<tr class="row-odd"><td><p>setup</p></td>
+<td><p>Used to specify necessary arguments to the s…</p></td>
+</tr>
+<tr class="row-even"><td><p>set_inlets</p></td>
+<td><p>Set the locations from which the invader ent…</p></td>
+</tr>
+<tr class="row-odd"><td><p>set_outlets</p></td>
+<td><p>Set the locations through which defender exi…</p></td>
+</tr>
+<tr class="row-even"><td><p>set_residual</p></td>
+<td><p>Specify locations of any residual invader.  …</p></td>
+</tr>
+<tr class="row-odd"><td><p>run</p></td>
+<td><p>Runs the percolation algorithm to determine …</p></td>
+</tr>
+<tr class="row-even"><td><p>get_percolation_t…</p></td>
+<td><p>Finds the threshold value where a percolating…</p></td>
+</tr>
+<tr class="row-odd"><td><p>is_percolating</p></td>
+<td><p>Returns a True or False value to indicate if…</p></td>
+</tr>
+<tr class="row-even"><td><p>get_intrusion_data</p></td>
+<td><p>Obtain the numerical values of the calculate…</p></td>
+</tr>
+<tr class="row-odd"><td><p>plot_intrusion_curve</p></td>
+<td><p>Plot the percolation curve as the invader vo…</p></td>
+</tr>
+</tbody>
+</table>
 <dl class="py method">
 <dt class="sig sig-object py" id="openpnm.algorithms.OrdinaryPercolation.get_intrusion_data">
 <span class="sig-name descname"><span class="pre">get_intrusion_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Pc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/OrdinaryPercolation.html#OrdinaryPercolation.get_intrusion_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.OrdinaryPercolation.get_intrusion_data" title="Permalink to this definition">¶</a></dt>
@@ -804,6 +847,44 @@ beginning of the simulation.</p></li>
 <li><p><strong>overwrite</strong> (<em>boolean</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> then all existing inlet locations will be removed and
 then the supplied locations will be added.  If <code class="docutils literal notranslate"><span class="pre">False</span></code>, then
 supplied locations are added to any already existing locations.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.algorithms.OrdinaryPercolation.setup">
+<span class="sig-name descname"><span class="pre">setup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">access_limited</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_entry_pressure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_entry_pressure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_volume</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_volume</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/OrdinaryPercolation.html#OrdinaryPercolation.setup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.OrdinaryPercolation.setup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used to specify necessary arguments to the simulation.  This method is
+useful for resetting the algorithm or applying more explicit control.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>phase</strong> (<em>OpenPNM Phase object</em>) – The Phase object containing the physical properties of the invading
+fluid.</p></li>
+<li><p><strong>access_limited</strong> (<em>boolean</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> the invading phase can only enter the network from the
+invasion sites specified with <code class="docutils literal notranslate"><span class="pre">set_inlets</span></code>.  Otherwise, invading
+clusters can appear anywhere in the network.  This second case is
+the normal <em>ordinary percolation</em> in the traditional sense, while
+the first case is more physically representative of invading
+fluids.</p></li>
+<li><p><strong>mode</strong> (<em>string</em>) – <p>Specifies the type of percolation process to simulate.  Options
+are:</p>
+<p><strong>’bond’</strong> - The percolation process is controlled by bond entry
+thresholds.</p>
+<p><strong>’site’</strong> - The percolation process is controlled by site entry
+thresholds.</p>
+</p></li>
+<li><p><strong>pore_entry_pressure</strong> (<em>string</em>) – The dictionary key on the Phase object where the pore entry
+pressure values are stored.  The default is
+‘pore.capillary_pressure’.  This is only accessed if the <code class="docutils literal notranslate"><span class="pre">mode</span></code>
+is set to site percolation.</p></li>
+<li><p><strong>throat_entry_pressure</strong> (<em>string</em>) – The dictionary key on the Phase object where the throat entry
+pressure values are stored.  The default is
+‘throat.capillary_pressure’.  This is only accessed if the <code class="docutils literal notranslate"><span class="pre">mode</span></code>
+is set to bond percolation.</p></li>
+<li><p><strong>'pore_volume'</strong> (<em>string</em>) – The dictionary key containing the pore volume information.</p></li>
+<li><p><strong>'throat_volume'</strong> (<em>string</em>) – The dictionary key containing the pore volume information.</p></li>
 </ul>
 </dd>
 </dl>

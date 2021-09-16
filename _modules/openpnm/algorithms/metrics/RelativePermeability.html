@@ -227,41 +227,96 @@
                           <span class="s1">&#39;perm_abs_wp&#39;</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(),</span>
                           <span class="s1">&#39;perm_abs_nwp&#39;</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(),</span>
                           <span class="s1">&#39;results&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;sat&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;kr_wp&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;kr_nwp&#39;</span><span class="p">:</span> <span class="p">[]}}</span>
-        <span class="n">network</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">network</span>
-        <span class="n">dimension</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span>
-        <span class="k">if</span> <span class="s1">&#39;pore.left&#39;</span> <span class="ow">in</span> <span class="n">network</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="n">dimension</span> <span class="o">+=</span> <span class="mi">1</span>
-            <span class="n">x</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="k">if</span> <span class="s1">&#39;pore.front&#39;</span> <span class="ow">in</span> <span class="n">network</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="n">dimension</span> <span class="o">+=</span> <span class="mi">1</span>
-            <span class="n">y</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="k">if</span> <span class="s1">&#39;pore.top&#39;</span> <span class="ow">in</span> <span class="n">network</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="n">dimension</span> <span class="o">+=</span> <span class="mi">1</span>
-            <span class="n">z</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="k">if</span> <span class="n">dimension</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="k">if</span> <span class="p">(</span><span class="n">x</span> <span class="ow">and</span> <span class="n">y</span><span class="p">):</span>
+
+<div class="viewcode-block" id="RelativePermeability.setup"><a class="viewcode-back" href="../../../../modules/algorithms/metrics/relative_permeability.html#openpnm.algorithms.metrics.RelativePermeability.setup">[docs]</a>    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">invading_phase</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">defending_phase</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+              <span class="n">invasion_sequence</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">flow_inlets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">flow_outlets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+              <span class="n">Snwp_num</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Assigns values to the algorithm ``settings``.</span>
+
+<span class="sd">        This part is revised so that it can be applied on either 2D or 3D</span>
+<span class="sd">        networks. The dimension is found by the number of boundary faces</span>
+<span class="sd">        existed in the network asumming all boundary faces are labeled.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        invading_phase: str</span>
+<span class="sd">            The invading or non-wetting phase.</span>
+
+<span class="sd">        defending_phase: str, optional</span>
+<span class="sd">            If defending phase is specified, then it&#39;s permeability will</span>
+<span class="sd">            also be calculated, otherwise only the invading phase is</span>
+<span class="sd">            considered.</span>
+
+<span class="sd">        invasion_sequence: str (default is &#39;invasion_sequence&#39;)</span>
+<span class="sd">            The dictionary key on the invading phase object where the</span>
+<span class="sd">            invasion sequence is stored. The default from both the IP and</span>
+<span class="sd">            OP algorithms is &#39;invasion_sequence&#39;, so this is the default</span>
+<span class="sd">            here.</span>
+
+<span class="sd">        flow_inlets: dict, optional</span>
+<span class="sd">            A dictionary containing the direction of the flow and the</span>
+<span class="sd">            label of the pores as the inlet pores of that direction.</span>
+
+<span class="sd">        flow_outlets: dict, optional</span>
+<span class="sd">            A dictionary containing the direction of the flow and the</span>
+<span class="sd">            label of the pores as the outlet pores of that direction.</span>
+
+<span class="sd">        swnp_num: int</span>
+<span class="sd">           The number of saturation points (equidistant points), at which</span>
+<span class="sd">           the Kr values will be calculated.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;Snwp_num&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Snwp_num</span>
+        <span class="n">network</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">network</span>
+        <span class="k">if</span> <span class="n">invading_phase</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;nwp&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">invading_phase</span>
+        <span class="k">if</span> <span class="n">defending_phase</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;wp&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">defending_phase</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">invasion_sequence</span> <span class="o">==</span> <span class="s1">&#39;invasion_sequence&#39;</span><span class="p">):</span>
+            <span class="n">nwp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;nwp&#39;</span><span class="p">]]</span>
+            <span class="n">seq_p</span> <span class="o">=</span> <span class="n">nwp</span><span class="p">[</span><span class="s1">&#39;pore.invasion_sequence&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.invasion_sequence&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">seq_p</span>
+            <span class="n">seq_t</span> <span class="o">=</span> <span class="n">nwp</span><span class="p">[</span><span class="s1">&#39;throat.invasion_sequence&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.invasion_sequence&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">seq_t</span>
+            <span class="n">dimension</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span>
+            <span class="k">if</span> <span class="s1">&#39;pore.left&#39;</span> <span class="ow">in</span> <span class="n">network</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">dimension</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">if</span> <span class="s1">&#39;pore.front&#39;</span> <span class="ow">in</span> <span class="n">network</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">dimension</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">y</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">if</span> <span class="s1">&#39;pore.top&#39;</span> <span class="ow">in</span> <span class="n">network</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">dimension</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">z</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">if</span> <span class="n">dimension</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">x</span> <span class="ow">and</span> <span class="n">y</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;flow_inlets&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="s1">&#39;left&#39;</span><span class="p">,</span>
+                                                    <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="s1">&#39;front&#39;</span><span class="p">}</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;flow_outlets&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="s1">&#39;right&#39;</span><span class="p">,</span>
+                                                     <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="s1">&#39;back&#39;</span><span class="p">}</span>
+                <span class="k">elif</span> <span class="p">(</span><span class="n">y</span> <span class="ow">and</span> <span class="n">z</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;flow_inlets&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="s1">&#39;front&#39;</span><span class="p">,</span>
+                                                    <span class="s1">&#39;z&#39;</span><span class="p">:</span> <span class="s1">&#39;top&#39;</span><span class="p">}</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;flow_outlets&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="s1">&#39;back&#39;</span><span class="p">,</span>
+                                                     <span class="s1">&#39;z&#39;</span><span class="p">:</span> <span class="s1">&#39;bottom&#39;</span><span class="p">}</span>
+                <span class="k">elif</span> <span class="p">(</span><span class="n">x</span> <span class="ow">and</span> <span class="n">z</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;flow_inlets&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="s1">&#39;left&#39;</span><span class="p">,</span>
+                                                    <span class="s1">&#39;z&#39;</span><span class="p">:</span> <span class="s1">&#39;top&#39;</span><span class="p">}</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;flow_outlets&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="s1">&#39;right&#39;</span><span class="p">,</span>
+                                                     <span class="s1">&#39;z&#39;</span><span class="p">:</span> <span class="s1">&#39;bottom&#39;</span><span class="p">}</span>
+            <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;flow_inlets&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="s1">&#39;left&#39;</span><span class="p">,</span>
-                                                <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="s1">&#39;front&#39;</span><span class="p">}</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;flow_outlets&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="s1">&#39;right&#39;</span><span class="p">,</span>
-                                                 <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="s1">&#39;back&#39;</span><span class="p">}</span>
-            <span class="k">elif</span> <span class="p">(</span><span class="n">y</span> <span class="ow">and</span> <span class="n">z</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;flow_inlets&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="s1">&#39;front&#39;</span><span class="p">,</span>
-                                                <span class="s1">&#39;z&#39;</span><span class="p">:</span> <span class="s1">&#39;top&#39;</span><span class="p">}</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;flow_outlets&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="s1">&#39;back&#39;</span><span class="p">,</span>
-                                                 <span class="s1">&#39;z&#39;</span><span class="p">:</span> <span class="s1">&#39;bottom&#39;</span><span class="p">}</span>
-            <span class="k">elif</span> <span class="p">(</span><span class="n">x</span> <span class="ow">and</span> <span class="n">z</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;flow_inlets&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="s1">&#39;left&#39;</span><span class="p">,</span>
+                                                <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="s1">&#39;front&#39;</span><span class="p">,</span>
                                                 <span class="s1">&#39;z&#39;</span><span class="p">:</span> <span class="s1">&#39;top&#39;</span><span class="p">}</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;flow_outlets&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="s1">&#39;right&#39;</span><span class="p">,</span>
+                                                 <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="s1">&#39;back&#39;</span><span class="p">,</span>
                                                  <span class="s1">&#39;z&#39;</span><span class="p">:</span> <span class="s1">&#39;bottom&#39;</span><span class="p">}</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;flow_inlets&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="s1">&#39;left&#39;</span><span class="p">,</span>
-                                            <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="s1">&#39;front&#39;</span><span class="p">,</span>
-                                            <span class="s1">&#39;z&#39;</span><span class="p">:</span> <span class="s1">&#39;top&#39;</span><span class="p">}</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;flow_outlets&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="s1">&#39;right&#39;</span><span class="p">,</span>
-                                             <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="s1">&#39;back&#39;</span><span class="p">,</span>
-                                             <span class="s1">&#39;z&#39;</span><span class="p">:</span> <span class="s1">&#39;bottom&#39;</span><span class="p">}</span>
+        <span class="k">if</span> <span class="n">flow_inlets</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">keys</span> <span class="ow">in</span> <span class="n">flow_inlets</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;flow_inlets&#39;</span><span class="p">][</span><span class="n">keys</span><span class="p">]</span> <span class="o">=</span> <span class="n">flow_inlets</span><span class="p">[</span><span class="n">keys</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;flow_outlets&#39;</span><span class="p">][</span><span class="n">keys</span><span class="p">]</span> <span class="o">=</span> <span class="n">flow_outlets</span><span class="p">[</span><span class="n">keys</span><span class="p">]</span></div>
 
     <span class="k">def</span> <span class="nf">_regenerate_models</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -363,7 +418,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;wp&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">wp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;wp&#39;</span><span class="p">]]</span>
             <span class="n">St_mp_wp</span> <span class="o">=</span> <span class="n">StokesFlow</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">network</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="n">wp</span><span class="p">)</span>
-            <span class="n">St_mp_wp</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;conductance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;throat.conduit_hydraulic_conductance&#39;</span>
+            <span class="n">St_mp_wp</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="n">conductance</span><span class="o">=</span><span class="s1">&#39;throat.conduit_hydraulic_conductance&#39;</span><span class="p">)</span>
             <span class="n">St_mp_wp</span><span class="o">.</span><span class="n">set_value_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">flow_pores</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">values</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
             <span class="n">St_mp_wp</span><span class="o">.</span><span class="n">set_value_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">flow_pores</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">values</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
             <span class="n">St_mp_wp</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
@@ -376,7 +431,7 @@
         <span class="n">St_mp_nwp</span> <span class="o">=</span> <span class="n">StokesFlow</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">network</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="n">nwp</span><span class="p">)</span>
         <span class="n">St_mp_nwp</span><span class="o">.</span><span class="n">set_value_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">flow_pores</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">values</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
         <span class="n">St_mp_nwp</span><span class="o">.</span><span class="n">set_value_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">flow_pores</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">values</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-        <span class="n">St_mp_nwp</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;conductance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;throat.conduit_hydraulic_conductance&#39;</span>
+        <span class="n">St_mp_nwp</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="n">conductance</span><span class="o">=</span><span class="s1">&#39;throat.conduit_hydraulic_conductance&#39;</span><span class="p">)</span>
         <span class="n">St_mp_nwp</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
         <span class="n">Kenwp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">St_mp_nwp</span><span class="o">.</span><span class="n">rate</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">flow_pores</span><span class="p">[</span><span class="mi">1</span><span class="p">])))</span>
         <span class="n">Kenwp</span> <span class="o">=</span> <span class="n">Kenwp</span>
@@ -423,7 +478,7 @@
 <span class="sd">        ----------</span>
 <span class="sd">        Snwp_num: int, optional</span>
 <span class="sd">            Number of saturation point to calculate the relative</span>
-<span class="sd">            permeability values. If not given, default value is 100.</span>
+<span class="sd">            permseability values. If not given, default value is 100.</span>
 <span class="sd">            Saturation points will be Snwp_num (or 100 by default)</span>
 <span class="sd">            equidistant points in range [0,1].</span>
 
@@ -439,12 +494,6 @@
 <span class="sd">           devision of K_eff and K_abs.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">nwp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;nwp&#39;</span><span class="p">]]</span>
-        <span class="n">seq_p</span> <span class="o">=</span> <span class="n">nwp</span><span class="p">[</span><span class="s1">&#39;pore.invasion_sequence&#39;</span><span class="p">]</span>
-        <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.invasion_sequence&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">seq_p</span>
-        <span class="n">seq_t</span> <span class="o">=</span> <span class="n">nwp</span><span class="p">[</span><span class="s1">&#39;throat.invasion_sequence&#39;</span><span class="p">]</span>
-        <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.invasion_sequence&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">seq_t</span>
-
         <span class="k">if</span> <span class="n">Snwp_num</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">Snwp_num</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;Snwp_num&#39;</span><span class="p">]</span>
         <span class="n">net</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">network</span>

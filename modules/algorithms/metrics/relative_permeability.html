@@ -650,7 +650,7 @@ sequence.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>Snwp_num</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of saturation point to calculate the relative
-permeability values. If not given, default value is 100.
+permseability values. If not given, default value is 100.
 Saturation points will be Snwp_num (or 100 by default)
 equidistant points in range [0,1].</p>
 </dd>
@@ -665,6 +665,35 @@ each phase in pores/throats. Effective permeabilities of each
 phase is then calculated. Relative permeability is defined by
 devision of K_eff and K_abs.</p></li>
 </ol>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.algorithms.metrics.RelativePermeability.setup">
+<span class="sig-name descname"><span class="pre">setup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">invading_phase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">defending_phase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">invasion_sequence</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flow_inlets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flow_outlets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Snwp_num</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/openpnm/algorithms/metrics/RelativePermeability.html#RelativePermeability.setup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.metrics.RelativePermeability.setup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Assigns values to the algorithm <code class="docutils literal notranslate"><span class="pre">settings</span></code>.</p>
+<p>This part is revised so that it can be applied on either 2D or 3D
+networks. The dimension is found by the number of boundary faces
+existed in the network asumming all boundary faces are labeled.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>invading_phase</strong> (<em>str</em>) – The invading or non-wetting phase.</p></li>
+<li><p><strong>defending_phase</strong> (<em>str</em><em>, </em><em>optional</em>) – If defending phase is specified, then it’s permeability will
+also be calculated, otherwise only the invading phase is
+considered.</p></li>
+<li><p><strong>invasion_sequence</strong> (<em>str</em><em> (</em><em>default is 'invasion_sequence'</em><em>)</em>) – The dictionary key on the invading phase object where the
+invasion sequence is stored. The default from both the IP and
+OP algorithms is ‘invasion_sequence’, so this is the default
+here.</p></li>
+<li><p><strong>flow_inlets</strong> (<em>dict</em><em>, </em><em>optional</em>) – A dictionary containing the direction of the flow and the
+label of the pores as the inlet pores of that direction.</p></li>
+<li><p><strong>flow_outlets</strong> (<em>dict</em><em>, </em><em>optional</em>) – A dictionary containing the direction of the flow and the
+label of the pores as the outlet pores of that direction.</p></li>
+<li><p><strong>swnp_num</strong> (<em>int</em>) – The number of saturation points (equidistant points), at which
+the Kr values will be calculated.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>

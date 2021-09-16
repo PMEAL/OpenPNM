@@ -684,6 +684,38 @@ corresponding phase just prior to regenerating the given pore-scale
 model(s).</p>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.algorithms.Porosimetry.setup">
+<span class="sig-name descname"><span class="pre">setup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quantity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_entry_pressure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_volume</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_volume</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">late_pore_filling</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">late_throat_filling</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/Porosimetry.html#Porosimetry.setup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.Porosimetry.setup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used to specify necessary arguments to the simulation.  This method is
+useful for resetting the algorithm or applying more explicit control.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>phase</strong> (<em>OpenPNM Phase object</em>) – The Phase object containing the physical properties of the invading
+fluid.</p></li>
+<li><p><strong>quantity</strong> (<em>string</em>) – The name of the quantity calculated by this algorithm.  This is
+used for instance, by the late pore and throat filling models
+to indicate the prevailing fluid pressure in the invading phase
+for calculating the extent of filling.  The default is
+‘pressure’.  Note that there is no need to specify ‘pore’ and/or
+‘throat’ with this as the given value will apply to both.</p></li>
+<li><p><strong>throat_entry_pressure</strong> (<em>string</em>) – The dictionary key on the Phase object where the throat entry
+pressure values are stored.  The default is
+‘throat.entry_pressure’.</p></li>
+<li><p><strong>pore_volume</strong> (<em>string</em>) – The dictionary key containing the pore volume information. The
+default is ‘pore.volume’.</p></li>
+<li><p><strong>throat_volume</strong> (<em>string</em>) – The dictionary key containing the throat volume information.  The
+default is ‘throat.volume’.</p></li>
+<li><p><strong>pore_partial_filling</strong> (<em>string</em>) – The name of the model used to determine partial pore filling as
+a function of applied pressure.</p></li>
+<li><p><strong>throat_partial_filling</strong> (<em>string</em>) – The name of the model used to determine partial throat filling as
+a function of applied pressure.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 </div>

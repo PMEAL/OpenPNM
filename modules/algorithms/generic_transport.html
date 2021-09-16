@@ -897,6 +897,24 @@ BCs of the other type).</p>
 <code class="docutils literal notranslate"><span class="pre">settings</span></code>, e.g. <code class="docutils literal notranslate"><span class="pre">alg.settings['quantity']</span> <span class="pre">=</span> <span class="pre">'pore.pressure'</span></code>.</p>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.algorithms.GenericTransport.setup">
+<span class="sig-name descname"><span class="pre">setup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quantity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conductance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/GenericTransport.html#GenericTransport.setup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.GenericTransport.setup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Customize algorithm settings, e.g. assign phase, set quantity to be
+solved, set conductance dict key, etc.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>phase</strong> (<em>str</em>) – The name of the phase on which the algorithm acts</p></li>
+<li><p><strong>quantity</strong> (<em>str</em>) – The name of the physical quantity to be calculated</p></li>
+<li><p><strong>conductance</strong> (<em>str</em>) – The name of the pore-scale transport conductance values. These are
+typically calculated by a model attached to a <em>Physics</em> object
+associated with the given <em>Phase</em>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 </div>
