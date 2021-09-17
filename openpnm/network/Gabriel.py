@@ -11,14 +11,6 @@ class Gabriel(GenericNetwork):
     r"""
     Random network formed by Gabriel tessellation of arbitrary base points
 
-    This operates by performing a Deluanay tessellation, then removing
-    connections that do not adhere to the definition of the `Gabriel graph
-    <https://en.wikipedia.org/wiki/Gabriel_graph>`_
-
-    This produces a network that has fewer throats than a Delaunay network.
-    Since the longer-range throats tend to be removed this might be more
-    realistic in some cases.
-
     Parameters
     ----------
     points : array_like, or scalar
@@ -43,6 +35,16 @@ class Gabriel(GenericNetwork):
         Each OpenPNM object must be part of a *Project*.  If none is supplied
         then one will be created and this Network will be automatically
         assigned to it.  To create a *Project* use ``openpnm.Project()``.
+
+    Notes
+    -----
+    This operates by performing a Deluanay tessellation, then removing
+    connections that do not adhere to the definition of the `Gabriel graph
+    <https://en.wikipedia.org/wiki/Gabriel_graph>`_
+
+    This produces a network that has fewer throats than a Delaunay network.
+    Since the longer-range throats tend to be removed this might be more
+    realistic in some cases.
 
     """
 

@@ -11,20 +11,6 @@ class DelaunayVoronoiDual(GenericNetwork):
     r"""
     Combined and interconnected Voronoi and Delaunay tessellations
 
-    A Delaunay tessellation is performed on a set of base points then the
-    corresponding Voronoi diagram is generated.  Finally, each Delaunay node
-    is connected to it's neighboring Voronoi vertices to create interaction
-    between the two networks.
-
-    All pores and throats are labelled according to their network (i.e.
-    'pore.delaunay'), so they can be each assigned to a different Geometry.
-
-    The dual-nature of this network is meant for modeling transport in the void
-    and solid space simultaneously by treating one network (i.e. Delaunay) as
-    voids and the other (i.e. Voronoi) as solid.  Interaction such as heat
-    transfer between the solid and void can be accomplished via the
-    interconnections between the Delaunay and Voronoi nodes.
-
     Parameters
     ----------
     points : array_like (num_points x 3)
@@ -48,15 +34,21 @@ class DelaunayVoronoiDual(GenericNetwork):
         then one will be created and this Network will be automatically
         assigned to it.  To create a *Project* use ``openpnm.Project()``.
 
-    Examples
-    --------
-    Points will be automatically generated if none are given:
+    Notes
+    -----
+    A Delaunay tessellation is performed on a set of base points then the
+    corresponding Voronoi diagram is generated.  Finally, each Delaunay node
+    is connected to it's neighboring Voronoi vertices to create interaction
+    between the two networks.
 
-    >>> import openpnm as op
-    >>> net = op.network.DelaunayVoronoiDual(num_points=50, shape=[1, 1, 0])
+    All pores and throats are labelled according to their network (i.e.
+    'pore.delaunay'), so they can be each assigned to a different Geometry.
 
-    The resulting network can be quickly visualized using
-    ``openpnm.topotools.plot_connections``.
+    The dual-nature of this network is meant for modeling transport in the void
+    and solid space simultaneously by treating one network (i.e. Delaunay) as
+    voids and the other (i.e. Voronoi) as solid.  Interaction such as heat
+    transfer between the solid and void can be accomplished via the
+    interconnections between the Delaunay and Voronoi nodes.
 
     """
 

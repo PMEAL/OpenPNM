@@ -31,9 +31,10 @@ class Voronoi(DelaunayVoronoiDual):
 
     Notes
     -----
-    By definition these points will each lie in the center of a Voronoi cell,
-    so they will not be the pore centers.  The number of pores in the
-    returned network thus will differ from the number of points supplied
+    By definition the given points will each lie in the center of a Voronoi
+    cell, so they will not be the pore centers. The pores in the returned
+    network are actually the vertices of the Voronoi tessellation, thus will
+    differ from the number of points supplied.
 
     """
 
