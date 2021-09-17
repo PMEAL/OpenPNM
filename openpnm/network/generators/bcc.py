@@ -12,7 +12,7 @@ def len_lil(lil):
     return indptr
 
 
-def bcc(shape, spacing, mode='kdtree'):
+def bcc(shape, spacing=1, mode='kdtree'):
     shape = np.array(shape)
     spacing = np.array(spacing)
     net1 = cubic(shape=shape, spacing=1)

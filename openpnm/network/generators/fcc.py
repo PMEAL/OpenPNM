@@ -12,7 +12,7 @@ def len_lil(lil):
     return indptr
 
 
-def fcc(shape, spacing, mode='kdtree'):
+def fcc(shape, spacing=1, mode='kdtree'):
     shape = np.array(shape)
     # Create base cubic network of corner sites
     net1 = cubic(shape=shape)

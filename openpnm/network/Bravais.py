@@ -65,16 +65,10 @@ class Bravais(GenericNetwork):
             raise Exception('Bravais lattice networks must have at least 2 '
                             'pores in all directions')
         if mode == 'bcc':
-            # Make a basic cubic for the coner pores
-            net1 = cubic(shape=shape)
-            # Create a smaller cubic for the body pores, and shift it
-            net2 = cubic(shape=shape-1)
-            net2['pore.coords'] += 0.5
-            # Stitch them together
-            net3 = join(net1, net2, L_max=0.99)
-            net3['pore.all'] = np.ones(net3['pore.coords'].shape[0], dtype=bool)
-            net3['throat.all'] = np.ones(net3['throat.conns'].shape[0], dtype=bool)
-            self.update(net3)
+            net = bcc(shape=shape)
+            self.update(net)
+            self['pore.all'] = np.ones(net['pore.coords'].shape[0], dtype=bool)
+            self['throat.all'] = np.ones(net['throat.conns'].shape[0], dtype=bool)
 
             # Deal with labels
             Ps = np.any(np.mod(self['pore.coords'], 1) == 0, axis=1)
@@ -95,23 +89,10 @@ class Bravais(GenericNetwork):
             self['throat.body_to_body'][Ts] = True
 
         elif mode == 'fcc':
-            shape = np.array(shape)
-            # Create base cubic network of corner sites
-            net1 = cubic(shape=shape)
-            # Create 3 networks to become face sites
-            net2 = cubic(shape=shape - [1, 1, 0])
-            net3 = cubic(shape=shape - [1, 0, 1])
-            net4 = cubic(shape=shape - [0, 1, 1])
-            # Offset
-            net2['pore.coords'] += np.array([0.5, 0.5, 0])
-            net3['pore.coords'] += np.array([0.5, 0, 0.5])
-            net4['pore.coords'] += np.array([0, 0.5, 0.5])
-            net2 = join(net2, net3, L_max=0.75)
-            net2 = join(net2, net4, L_max=0.75)
-            net1 = join(net1, net2, L_max=0.75)
-            net1['pore.all'] = np.ones(net1['pore.coords'].shape[0])
-            net1['throat.all'] = np.ones(net1['throat.conns'].shape[0])
-            self.update(net1)
+            net = fcc(shape=shape)
+            self.update(net)
+            self['pore.all'] = np.ones(net['pore.coords'].shape[0], dtype=bool)
+            self['throat.all'] = np.ones(net['throat.conns'].shape[0], dtype=bool)
             # Deal with labels
             self.clear(mode='labels')
             Ps = np.any(np.mod(self['pore.coords'], 1) == 0, axis=1)
