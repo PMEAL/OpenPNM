@@ -12,11 +12,6 @@ class Voronoi(DelaunayVoronoiDual):
     ----------
     points : array_like, optional
         The base points around which to generate the Voronoi tessellation.
-
-    num_points : scalar, optional
-        If ``points`` is not supplied, then this must be given.  A sent of
-        randomly located points will be generated.
-
     shape : array_like
         The size of the domain.  It's possible to create cubic as well as 2D
         square domains by changing the ``shape`` as follows:
@@ -29,7 +24,6 @@ class Voronoi(DelaunayVoronoiDual):
     name : string
         An optional name for the object to help identify it.  If not given,
         one will be generated.
-
     project : OpenPNM Project object, optional
         Each OpenPNM object must be part of a *Project*.  If none is supplied
         then one will be created and this Network will be automatically
@@ -43,11 +37,9 @@ class Voronoi(DelaunayVoronoiDual):
 
     """
 
-    def __init__(self, shape=[1, 1, 1], num_points=None, points=None, **kwargs):
+    def __init__(self, shape=[1, 1, 1], points=None, **kwargs):
         # Clean-up input points
-        points = self._parse_points(shape=shape,
-                                    num_points=num_points,
-                                    points=points)
+        points = self._parse_points(shape=shape, points=points)
         super().__init__(shape=shape, points=points, **kwargs)
         # Initialize network object
         topotools.trim(network=self, pores=self.pores('delaunay'))

@@ -23,25 +23,22 @@ class Bravais(GenericNetwork):
         The number of pores in each direction.  This value is a bit ambiguous
         for the more complex unit cells used here, but generally refers to the
         the number for 'corner' sites
-
     spacing : array_like (optional)
         The spacing between pores in all three directions.  Like the ``shape``
         this is a bit ambiguous but refers to the spacing between corner sites.
         Essentially it controls the dimensions of the unit cell.  It a scalar
         is given it is applied to all directions.  The default is 1.
-
     mode : string
         The type of lattice to create.  Options are:
 
         - 'sc' : Simple cubic (Same as ``Cubic``)
         - 'bcc' : Body-centered cubic lattice
         - 'fcc' : Face-centered cubic lattice
-        - 'hcp' : Hexagonal close packed (Note Implemented Yet)
+        - 'hcp' : Hexagonal close packed (Not Implemented Yet)
 
     name : string
         An optional name for the object to help identify it.  If not given,
         one will be generated.
-
     project : OpenPNM Project object, optional
         Each OpenPNM object must be part of a Project.  If none is supplied
         then one will be created and this Network will be automatically

@@ -22,7 +22,7 @@ class Delaunay(GenericNetwork):
         The size of the domain.  It's possible to create cubic as well as 2D
         square domains by changing the ``shape`` as follows:
 
-        [x, y, z] - will produce a normal cubic domain of dimension x, and
+        [x, y, z] - will produce a normal cubic domain of dimension x, y
         and z
 
         [x, y, 0] - will produce a 2D square domain of size x by y
@@ -51,6 +51,7 @@ class Delaunay(GenericNetwork):
     def __init__(self, shape=[1, 1, 1], points=None, **kwargs):
         # Clean-up input points
         super().__init__(**kwargs)
+        points = self._parse_points(points=points, shape=shape)
         self.update(delaunay(points=points, shape=shape))
         Np = self['pore.coords'][:, 0].shape[0]
         Nt = self['throat.conns'][:, 0].shape[0]
