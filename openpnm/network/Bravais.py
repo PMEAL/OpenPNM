@@ -1,5 +1,5 @@
 from openpnm.network import GenericNetwork
-from openpnm.network.generators import cubic
+from openpnm.network.generators import cubic, fcc, bcc
 from openpnm import topotools
 from openpnm.utils import logging, Workspace
 import numpy as np
@@ -67,10 +67,8 @@ class Bravais(GenericNetwork):
         if mode == 'bcc':
             # Make a basic cubic for the coner pores
             net1 = cubic(shape=shape)
-            net1['pore.corner_sites'] = np.ones(net1['pore.coords'].shape[0], dtype=bool)
             # Create a smaller cubic for the body pores, and shift it
             net2 = cubic(shape=shape-1)
-            net2['pore.body_sites'] = np.ones(net2['pore.coords'].shape[0], dtype=bool)
             net2['pore.coords'] += 0.5
             # Stitch them together
             net3 = join(net1, net2, L_max=0.99)
@@ -79,6 +77,10 @@ class Bravais(GenericNetwork):
             self.update(net3)
 
             # Deal with labels
+            Ps = np.any(np.mod(self['pore.coords'], 1) == 0, axis=1)
+            self['pore.body_sites'] = Ps
+            self['pore.corner_sites'] = ~Ps
+
             Ts = self.find_neighbor_throats(pores=self.pores('body_sites'),
                                             mode='exclusive_or')
             self['throat.corner_to_body'] = False
