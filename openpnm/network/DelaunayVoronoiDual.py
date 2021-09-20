@@ -56,17 +56,14 @@ class DelaunayVoronoiDual(GenericNetwork):
     def __init__(self, shape=[1, 1, 1], points=None, **kwargs):
         super().__init__(**kwargs)
         points = self._parse_points(shape=shape,
-                                    num_points=num_points,
                                     points=points)
 
         net, vor, tri = voronoi_delaunay_dual(points=points, shape=shape)
         self.update(net)
         self._vor = vor
         self._tri = tri
-        self['pore.all'] = np.ones([coords.shape[0]], dtype=bool)
-        self['throat.all'] = np.ones([conns.shape[0]], dtype=bool)
-        self['pore.coords'] = coords
-        self['throat.conns'] = conns
+        self['pore.all'] = np.ones([self['pore.coords'].shape[0]], dtype=bool)
+        self['throat.all'] = np.ones([self['throat.conns'].shape[0]], dtype=bool)
         # Label all pores and throats by type
         self['pore.delaunay'] = False
         self['pore.delaunay'][0:vor.npoints] = True

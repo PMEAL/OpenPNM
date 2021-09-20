@@ -5,7 +5,7 @@ from openpnm.topotools import vor_to_am, isoutside
 
 def voronoi(points, shape=[1, 1, 1], crop=True):
     r"""
-    Generate a network based on a Voronoi tessellation of random points
+    Generate a network based on a Voronoi tessellation of base points
 
     Parameters
     ----------

@@ -1,9 +1,31 @@
 import scipy.spatial as sptl
+import scipy.sparse as sprs
+from openpnm import topotools
 import numpy as np
 
 
 def voronoi_delaunay_dual(points, shape):
+    r"""
+    Generate a dual Voronoi-Delaunay network from given base points
 
+    Parameters
+    ----------
+    points : array_like or scalar
+        The points to be tessellated.  If a scalar is given a set of points
+        of that size is generated.
+    shape : array_like
+        The size of the domain in which the points lie.
+
+    Returns
+    -------
+    network : dict
+        A dictionary containing ``'pore.coords'`` and ``'throat.conns'``.
+    vor : Voronoi object
+        The Voronoi tessellation object produced by ``scipy.spatial.Voronoi``
+    tri : Delaunay object
+        The Delaunay triangulation object produced ``scipy.spatial.Delaunay``
+
+    """
     # Deal with points that are only 2D...they break tessellations
     if points.shape[1] == 3 and len(np.unique(points[:, 2])) == 1:
         points = points[:, :2]
@@ -11,7 +33,6 @@ def voronoi_delaunay_dual(points, shape):
     # Perform tessellation
     vor = sptl.Voronoi(points=points)
     tri = sptl.Delaunay(points=points)
-    self._vor = vor
 
     # Combine points
     pts_all = np.vstack((vor.points, vor.vertices))
@@ -51,5 +72,9 @@ def voronoi_delaunay_dual(points, shape):
     coords = np.around(pts_all, decimals=10)
     if coords.shape[1] == 2:  # Make points back into 3D if necessary
         coords = np.vstack((coords.T, np.zeros((coords.shape[0], )))).T
+
+    network = {}
+    network['pore.coords'] = coords
+    network['throat.conns'] = conns
 
     return network, vor, tri

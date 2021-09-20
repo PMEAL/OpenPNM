@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 class Delaunay(GenericNetwork):
     r"""
-    Random network formed by Delaunay tessellation of arbitrary base points
+    Random network formed by Delaunay tessellation of base points
 
     Parameters
     ----------
