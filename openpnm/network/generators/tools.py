@@ -15,10 +15,16 @@ def trim(network, pores=None, throats=None):
     thraots : array_like
         The list of throats to trim
 
+    Returns
+    -------
+    network : dict
+        The ``network`` object with the specified pores/throats removed
+
     Notes
     -----
     Only one of ``pores`` or ``throats`` can be given.  To trim both types,
-    call the fuction twice.
+    call the fuction twice. This function renumbers the ``'throat.conns'``
+    array when the pores being pointed to are removed.
 
     """
     if (pores is None) and (throats is None):
@@ -50,7 +56,7 @@ def trim(network, pores=None, throats=None):
 
 def join(net1, net2, L_max=0.99):
     r"""
-    Joins two networks together topologically
+    Joins two networks together topologically including new connections
 
     Parameters
     ----------
@@ -64,7 +70,7 @@ def join(net1, net2, L_max=0.99):
 
     Returns
     -------
-    net3 : dictionary
+    network : dict
         A dictionary containing 'pore.coords' with pores from both ``net1`` and
         ``net2``, and ``throat.conns`` with original connections plus new ones
         found during the join process.
