@@ -52,7 +52,9 @@ class Delaunay(GenericNetwork):
         # Clean-up input points
         super().__init__(**kwargs)
         points = self._parse_points(points=points, shape=shape)
-        self.update(delaunay(points=points, shape=shape))
+        net, tri = delaunay(points=points, shape=shape)
+        self.update(net)
+        net._tri = tri
         Np = self['pore.coords'][:, 0].shape[0]
         Nt = self['throat.conns'][:, 0].shape[0]
         self['pore.all'] = np.ones((Np, ), dtype=bool)
