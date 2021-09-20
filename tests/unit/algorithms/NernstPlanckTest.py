@@ -55,7 +55,7 @@ class NernstPlanckTest:
         self.phys.add_model(propname='throat.ad_dif_mig_conductance_powerlaw',
                             model=mod, s_scheme='powerlaw', ion='X')
         self.phys.regenerate_models()
-        self.adm.setup(conductance='throat.ad_dif_mig_conductance_powerlaw')
+        self.adm.settings['conductance'] = 'throat.ad_dif_mig_conductance_powerlaw'
         self.adm.run()
         desired = [
             0., 0., 0.,
@@ -71,7 +71,7 @@ class NernstPlanckTest:
         self.phys.add_model(propname='throat.ad_dif_mig_conductance_upwind',
                             model=mod, s_scheme='upwind', ion='X')
         self.phys.regenerate_models()
-        self.adm.setup(conductance='throat.ad_dif_mig_conductance_upwind')
+        self.adm.settings['conductance'] = 'throat.ad_dif_mig_conductance_upwind'
         self.adm.run()
         desired = [
             0., 0., 0.,
@@ -88,7 +88,7 @@ class NernstPlanckTest:
                             model=mod, s_scheme='hybrid', ion='X')
         self.phys.regenerate_models()
 
-        self.adm.setup(conductance='throat.ad_dif_mig_conductance_hybrid')
+        self.adm.settings['conductance'] = 'throat.ad_dif_mig_conductance_hybrid'
         self.adm.run()
         desired = [
             0., 0., 0.,
@@ -105,7 +105,7 @@ class NernstPlanckTest:
                             model=mod, s_scheme='exponential', ion='X')
         self.phys.regenerate_models()
 
-        self.adm.setup(conductance='throat.ad_dif_mig_conductance_exp')
+        self.adm.settings['conductance'] = 'throat.ad_dif_mig_conductance_exp'
         self.adm.run()
         desired = [
             0., 0., 0.,
@@ -122,7 +122,7 @@ class NernstPlanckTest:
                             model=mod, s_scheme='powerlaw', ion='X')
         self.phys.regenerate_models()
         adm = self.adm
-        adm.setup(conductance='throat.ad_dif_mig_conductance')
+        adm.settings['conductance'] = 'throat.ad_dif_mig_conductance'
         adm.remove_BC()
         adm.set_value_BC(pores=self.net.pores('right'), values=1.)
         adm.set_outflow_BC(pores=self.net.pores('left'))

@@ -52,34 +52,6 @@ class TransientNernstPlanckMultiphysicsSolver(NernstPlanckMultiphysicsSolver):
         self.settings._update_settings_and_docs(c)
         self.settings.update(settings)
 
-    @docstr.dedent
-    def setup(self, t_initial=None, t_final=None, t_step=None,
-              t_output=None, t_tolerance=None, t_precision=None,
-              t_scheme='implicit', **kwargs):
-        r"""
-
-        Parameters
-        ----------
-        %(TransientNernstPlanckMultiphysicsSolverSettings.parameters)s
-
-        """
-        if t_initial is not None:
-            self.settings['t_initial'] = t_initial
-        if t_final is not None:
-            self.settings['t_final'] = t_final
-        if t_step is not None:
-            self.settings['t_step'] = t_step
-        if t_output is not None:
-            self.settings['t_output'] = t_output
-        if t_tolerance is not None:
-            self.settings['t_tolerance'] = t_tolerance
-        if t_precision is not None:
-            self.settings['t_precision'] = t_precision
-        if t_scheme:
-            self.settings['t_scheme'] = t_scheme
-        self.settings.update(kwargs)
-        self.settings.update(**kwargs)
-
     def run(self, t=None):
         r"""
 
@@ -126,13 +98,15 @@ class TransientNernstPlanckMultiphysicsSolver(NernstPlanckMultiphysicsSolver):
 
         # Setup algorithms transient settings
         for e in e_alg:
-            e.setup(t_initial=self.settings['t_initial'],
-                    t_final=self.settings['t_final'],
-                    t_step=self.settings['t_step'],
-                    t_output=self.settings['t_output'],
-                    t_tolerance=self.settings['t_tolerance'],
-                    t_precision=self.settings['t_precision'],
-                    t_scheme=self.settings['t_scheme'])
+            sets = {'t_initial': self.settings['t_initial'],
+                    't_final': self.settings['t_final'],
+                    't_step': self.settings['t_step'],
+                    't_output': self.settings['t_output'],
+                    't_tolerance': self.settings['t_tolerance'],
+                    't_precision': self.settings['t_precision'],
+                    't_scheme': self.settings['t_scheme'],
+                    }
+            e.settings.update(sets)
 
         self._run_transient(t=t)
 
