@@ -21,7 +21,7 @@ def voronoi(points, shape=[1, 1, 1], crop=True):
     Returns
     -------
     network : dict
-        A dictionary containing 'pore.coords' and 'throat.conns'
+        A dictionary containing ``'pore.coords'`` and ``'throat.conns'``
     vor : Voronoi tessellation object
         The Voronoi tessellation object produced by ``scipy.spatial.Voronoi``
 
