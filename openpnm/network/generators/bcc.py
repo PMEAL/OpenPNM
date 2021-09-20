@@ -3,20 +3,40 @@ import scipy.sparse as sprs
 from openpnm.network.generators import cubic
 from openpnm.topotools import tri_to_am
 import numpy as np
-from numba import njit
-
-
-@njit
-def len_lil(lil):
-    indptr = [len(i) for i in lil]
-    return indptr
 
 
 def bcc(shape, spacing=1, mode='kdtree'):
+    r"""
+    Generate a body-centered cubic lattice
+
+    Parameters
+    ----------
+    shape : array_like
+        The number of unit cells in each direction.  A unit cell has 8 pores
+        on each corner and a single pore at its center.
+    spacing : array_like or float
+        The size of a unit cell in each direction. If an scalar is given it is
+        applied in all 3 directions.
+    mode : string
+        Dictate how neighbors are found.  Options are:
+
+        'kdtree'
+            Uses ``scipy.spatial.KDTree`` to find all neighbors within the
+            unit cell.
+        'triangulation'
+            Uses ``scipy.spatial.Delaunay`` find all neighbors.
+
+    Notes
+    -----
+    It is not clear whether KDTree of Delaunay are faster. In fact it is
+    surely possible to find the neighbors formulaically but this is not
+    implemented yet.
+
+    """
     shape = np.array(shape)
     spacing = np.array(spacing)
-    net1 = cubic(shape=shape, spacing=1)
-    net2 = cubic(shape=shape-1, spacing=1)
+    net1 = cubic(shape=shape+1, spacing=1)
+    net2 = cubic(shape=shape, spacing=1)
     net2['pore.coords'] += 0.5
     crds = np.concatenate((net1['pore.coords'], net2['pore.coords']))
     if mode.startswith('tri'):
