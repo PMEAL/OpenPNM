@@ -614,17 +614,38 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="openpnm.algorithms.AdvectionDiffusion.remove_BC">
 <span class="sig-name descname"><span class="pre">remove_BC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bctype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/AdvectionDiffusion.html#AdvectionDiffusion.remove_BC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.AdvectionDiffusion.remove_BC" title="Permalink to this definition">¶</a></dt>
-<dd><p>Removes boundary conditions from the specified pores</p>
+<dd><p>Removes boundary conditions from the specified pores.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pores</strong> (<em>array_like</em><em>, </em><em>optional</em>) – The pores from which boundary conditions are to be removed.  If no
-pores are specified, then BCs are removed from all pores. No error
-is thrown if the provided pores do not have any BCs assigned.</p></li>
-<li><p><strong>bctype</strong> (<em>string</em><em>, or </em><em>list of strings</em>) – <p>Specifies which type of boundary condition to remove. Options are:</p>
-<p>-<em>‘all’</em>: (default) Removes all boundary conditions
--<em>‘value’</em>: Removes only value conditions
--<em>‘rate’</em>: Removes only rate conditions</p>
+<li><p><strong>pores</strong> (<em>array_like</em><em>, </em><em>optional</em>) – The pores from which boundary conditions are to be removed. If
+no pores are specified, then BCs are removed from all pores.
+No error is thrown if the provided pores do not have any BCs
+assigned.</p></li>
+<li><p><strong>bctype</strong> (<em>str</em><em>, or </em><em>List</em><em>[</em><em>str</em><em>]</em>) – <p>Specifies which type of boundary condition to remove. The
+default value is ‘all’. Options are:</p>
+<table class="table">
+<colgroup>
+<col style="width: 17%" />
+<col style="width: 83%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>bctype</p></th>
+<th class="head"><p>meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>’all’</p></td>
+<td><p>Removes all boundary conditions</p></td>
+</tr>
+<tr class="row-odd"><td><p>’value’</p></td>
+<td><p>Removes only value conditions</p></td>
+</tr>
+<tr class="row-even"><td><p>’rate’</p></td>
+<td><p>Removes only rate conditions</p></td>
+</tr>
+</tbody>
+</table>
 </p></li>
 </ul>
 </dd>
