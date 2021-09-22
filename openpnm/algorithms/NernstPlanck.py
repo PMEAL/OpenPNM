@@ -90,27 +90,6 @@ class NernstPlanck(ReactiveTransport):
             diffusive_conductance += ('.' + ion)  # Re-add ion name
             self.settings['diffusive_conductance'] = diffusive_conductance
 
-    def setup(self, phase=None, quantity='', conductance='',
-              diffusive_conductance='', ion='', **kwargs):
-        r"""
-
-        Parameters
-        ----------
-        %(NernstPlanckSettings.parameters)s
-
-        """
-        if phase:
-            self.settings['phase'] = phase.name
-        if quantity:
-            self.settings['quantity'] = quantity  # Add full value to settings
-        if conductance:
-            self.settings['conductance'] = conductance
-        if diffusive_conductance:
-            self.settings['diffusive_conductance'] = diffusive_conductance
-        if ion:
-            self.settings['quantity'] = quantity
-        super().setup(**kwargs)
-
     def set_outflow_BC(self, pores, mode='merge'):
         r"""
         Adds outflow boundary condition to the selected pores.

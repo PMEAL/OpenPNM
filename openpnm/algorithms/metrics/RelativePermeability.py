@@ -55,96 +55,41 @@ class RelativePermeability(GenericAlgorithm):
                           'perm_abs_wp': dict(),
                           'perm_abs_nwp': dict(),
                           'results': {'sat': [], 'kr_wp': [], 'kr_nwp': []}}
-
-    def setup(self, invading_phase=None, defending_phase=None,
-              invasion_sequence=None, flow_inlets=None, flow_outlets=None,
-              Snwp_num=100):
-        r"""
-        Assigns values to the algorithm ``settings``.
-
-        This part is revised so that it can be applied on either 2D or 3D
-        networks. The dimension is found by the number of boundary faces
-        existed in the network asumming all boundary faces are labeled.
-
-        Parameters
-        ----------
-        invading_phase: str
-            The invading or non-wetting phase.
-
-        defending_phase: str, optional
-            If defending phase is specified, then it's permeability will
-            also be calculated, otherwise only the invading phase is
-            considered.
-
-        invasion_sequence: str (default is 'invasion_sequence')
-            The dictionary key on the invading phase object where the
-            invasion sequence is stored. The default from both the IP and
-            OP algorithms is 'invasion_sequence', so this is the default
-            here.
-
-        flow_inlets: dict, optional
-            A dictionary containing the direction of the flow and the
-            label of the pores as the inlet pores of that direction.
-
-        flow_outlets: dict, optional
-            A dictionary containing the direction of the flow and the
-            label of the pores as the outlet pores of that direction.
-
-        swnp_num: int
-           The number of saturation points (equidistant points), at which
-           the Kr values will be calculated.
-
-        """
-        self.settings['Snwp_num'] = Snwp_num
-        network = self.project.network
-        if invading_phase is not None:
-            self.settings['nwp'] = invading_phase
-        if defending_phase is not None:
-            self.settings['wp'] = defending_phase
-        if (invasion_sequence == 'invasion_sequence'):
-            nwp = self.project[self.settings['nwp']]
-            seq_p = nwp['pore.invasion_sequence']
-            self['pore.invasion_sequence'] = seq_p
-            seq_t = nwp['throat.invasion_sequence']
-            self['throat.invasion_sequence'] = seq_t
-            dimension = 0
-            x, y, z = False, False, False
-            if 'pore.left' in network.keys():
-                dimension += 1
-                x = True
-            if 'pore.front' in network.keys():
-                dimension += 1
-                y = True
-            if 'pore.top' in network.keys():
-                dimension += 1
-                z = True
-            if dimension == 2:
-                if (x and y):
-                    self.settings['flow_inlets'] = {'x': 'left',
-                                                    'y': 'front'}
-                    self.settings['flow_outlets'] = {'x': 'right',
-                                                     'y': 'back'}
-                elif (y and z):
-                    self.settings['flow_inlets'] = {'y': 'front',
-                                                    'z': 'top'}
-                    self.settings['flow_outlets'] = {'y': 'back',
-                                                     'z': 'bottom'}
-                elif (x and z):
-                    self.settings['flow_inlets'] = {'x': 'left',
-                                                    'z': 'top'}
-                    self.settings['flow_outlets'] = {'x': 'right',
-                                                     'z': 'bottom'}
-            else:
+        network = self.network
+        dimension = 0
+        x, y, z = False, False, False
+        if 'pore.left' in network.keys():
+            dimension += 1
+            x = True
+        if 'pore.front' in network.keys():
+            dimension += 1
+            y = True
+        if 'pore.top' in network.keys():
+            dimension += 1
+            z = True
+        if dimension == 2:
+            if (x and y):
                 self.settings['flow_inlets'] = {'x': 'left',
-                                                'y': 'front',
+                                                'y': 'front'}
+                self.settings['flow_outlets'] = {'x': 'right',
+                                                 'y': 'back'}
+            elif (y and z):
+                self.settings['flow_inlets'] = {'y': 'front',
+                                                'z': 'top'}
+                self.settings['flow_outlets'] = {'y': 'back',
+                                                 'z': 'bottom'}
+            elif (x and z):
+                self.settings['flow_inlets'] = {'x': 'left',
                                                 'z': 'top'}
                 self.settings['flow_outlets'] = {'x': 'right',
-                                                 'y': 'back',
                                                  'z': 'bottom'}
-        if flow_inlets is not None:
-            for keys in flow_inlets.keys():
-                self.settings['flow_inlets'][keys] = flow_inlets[keys]
-                self.settings['flow_outlets'][keys] = flow_outlets[keys]
+        else:
+            self.settings['flow_inlets'] = {'x': 'left',
+                                            'y': 'front',
+                                            'z': 'top'}
+            self.settings['flow_outlets'] = {'x': 'right',
+                                             'y': 'back',
+                                             'z': 'bottom'}
 
     def _regenerate_models(self):
         r"""
@@ -246,7 +191,7 @@ class RelativePermeability(GenericAlgorithm):
         if self.settings['wp'] is not None:
             wp = self.project[self.settings['wp']]
             St_mp_wp = StokesFlow(network=network, phase=wp)
-            St_mp_wp.setup(conductance='throat.conduit_hydraulic_conductance')
+            St_mp_wp.settings['conductance'] = 'throat.conduit_hydraulic_conductance'
             St_mp_wp.set_value_BC(pores=flow_pores[0], values=1)
             St_mp_wp.set_value_BC(pores=flow_pores[1], values=0)
             St_mp_wp.run()
@@ -259,7 +204,7 @@ class RelativePermeability(GenericAlgorithm):
         St_mp_nwp = StokesFlow(network=network, phase=nwp)
         St_mp_nwp.set_value_BC(pores=flow_pores[0], values=1)
         St_mp_nwp.set_value_BC(pores=flow_pores[1], values=0)
-        St_mp_nwp.setup(conductance='throat.conduit_hydraulic_conductance')
+        St_mp_nwp.settings['conductance'] = 'throat.conduit_hydraulic_conductance'
         St_mp_nwp.run()
         Kenwp = np.sum(abs(St_mp_nwp.rate(pores=flow_pores[1])))
         Kenwp = Kenwp
@@ -306,7 +251,7 @@ class RelativePermeability(GenericAlgorithm):
         ----------
         Snwp_num: int, optional
             Number of saturation point to calculate the relative
-            permseability values. If not given, default value is 100.
+            permeability values. If not given, default value is 100.
             Saturation points will be Snwp_num (or 100 by default)
             equidistant points in range [0,1].
 
@@ -322,6 +267,12 @@ class RelativePermeability(GenericAlgorithm):
            devision of K_eff and K_abs.
 
         """
+        nwp = self.project[self.settings['nwp']]
+        seq_p = nwp['pore.invasion_sequence']
+        self['pore.invasion_sequence'] = seq_p
+        seq_t = nwp['throat.invasion_sequence']
+        self['throat.invasion_sequence'] = seq_t
+
         if Snwp_num is None:
             Snwp_num = self.settings['Snwp_num']
         net = self.project.network

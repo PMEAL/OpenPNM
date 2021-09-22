@@ -22,6 +22,22 @@ class ReactiveTransportTest:
             X='pore.concentration', regen_mode='deferred')
         self.alg = op.algorithms.ReactiveTransport(network=self.net, phase=self.phase)
 
+    def test_settings(self):
+        temp = self.alg.settings.copy()
+        self.alg.settings.update({
+            'conductance': "throat.cond",
+            'quantity': "pore.test",
+            'nlin_max_iter': 123,
+            'relaxation_source': 1.23,
+            'relaxation_quantity': 3.21
+        })
+        assert self.alg.settings["conductance"] == "throat.cond"
+        assert self.alg.settings["quantity"] == "pore.test"
+        assert self.alg.settings["nlin_max_iter"] == 123
+        assert self.alg.settings["relaxation_source"] == 1.23
+        assert self.alg.settings["relaxation_quantity"] == 3.21
+        self.alg.settings = temp
+
     def test_get_iterative_props(self):
         # When quantity is None
         iterative_props = self.alg._get_iterative_props()
@@ -151,7 +167,8 @@ class ReactiveTransportTest:
     def test_solution_should_diverge_w_large_relaxation(self):
         self.alg.reset(bcs=True, source_terms=True)
         self.alg.settings.update({'conductance': 'throat.diffusive_conductance',
-                                  'quantity': 'pore.concentration'})
+                                  'quantity': 'pore.concentration',
+                                  'nlin_max_iter': 25})
         self.alg.set_source(pores=self.net.pores('bottom'), propname='pore.reaction')
         self.alg.set_value_BC(pores=self.net.pores('top'), values=1.0)
         self.alg.settings.update({
@@ -164,7 +181,8 @@ class ReactiveTransportTest:
     def test_check_divergence_if_maxiter_reached(self):
         self.alg.reset(bcs=True, source_terms=True)
         self.alg.settings.update({'conductance': 'throat.diffusive_conductance',
-                                  'quantity': 'pore.concentration'})
+                                  'quantity': 'pore.concentration',
+                                  'nlin_max_iter': 2})
         self.alg.set_source(pores=self.net.pores('bottom'), propname='pore.reaction')
         self.alg.set_value_BC(pores=self.net.pores('top'), values=1.0)
         self.alg.settings.update({

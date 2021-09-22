@@ -604,3 +604,129 @@ def plot_tutorial(network,
     fig.set_size_inches(5, 5 / aspect_ratio)
 
     return gplot
+
+
+def plot_network_jupyter(network,
+                         node_color=0,
+                         edge_color=0,
+                         node_size=1,
+                         node_scale=20,
+                         edge_scale=5,
+                         colormap='viridis'):
+    r"""
+    Visualize a network in 3D using Plotly.
+
+    The pores and throats are scaled and colored by their properties.
+    The final figure can be rotated and zoomed.
+
+    Parameters
+    ----------
+    network : OpenPNM Network object
+        The network to visualize
+    node_color : ndarray
+        An array of values used for coloring the pores. If not given, the
+        lowest value of the employed colormap is assigned to all markers.
+    edge_color : ndarray
+        An array of values used for coloring the throats. If not given, the
+        lowest value of the employed colormap is assigned to all lines.
+    node_size : ndarray
+        An array of values controlling the size of the markers.  If not given
+        all markers will be the same size
+    node_scale : scalar
+        A scaler to resize the markers
+    edge_scale : scalar
+        A scaler to the line thickness
+    colormap : str
+        The colormap to use
+
+    Returns
+    -------
+    fig : Plotly graph object
+        The graph object containing the generated plots. The object has
+        several useful methods.
+
+    Notes
+    -----
+    **Important**
+
+    a) This does not work in Spyder. It should only be called from a
+    Jupyter Notebook.
+
+    b) This is only meant for relatively small networks. For proper
+    visualization use Paraview.
+
+    """
+    try:
+        import plotly.graph_objects as go
+    except ImportError:
+        raise Exception('Plotly is not installed.'
+                        'Please install Plotly using "pip install plotly"')
+
+    # Get xyz coords for points
+    x_nodes, y_nodes, z_nodes = network.coords.T
+
+    node_size = np.ones(network.Np)*node_size
+    node_color = np.ones(network.Np)*node_color
+    edge_color = np.ones(network.Nt)*edge_color
+
+    node_labels = [str(i)+ ': ' + str(x) for i, x in enumerate(zip(node_size, node_color))]
+    edge_labels = [str(i)+ ': ' + str(x) for i, x in enumerate(edge_color)]
+
+    # Create edges and nodes coordinates
+    N = network.Nt*3
+
+    x_edges = np.zeros(N)
+    x_edges[np.arange(0, N, 3)] = network.coords[network.conns[:, 0]][:, 0]
+    x_edges[np.arange(1, N, 3)] = network.coords[network.conns[:, 1]][:, 0]
+    x_edges[np.arange(2, N, 3)] = np.nan
+
+    y_edges = np.zeros(network.Nt*3)
+    y_edges[np.arange(0, N, 3)] = network.coords[network.conns[:, 0]][:, 1]
+    y_edges[np.arange(1, N, 3)] = network.coords[network.conns[:, 1]][:, 1]
+    y_edges[np.arange(2, N, 3)] = np.nan
+
+    z_edges = np.zeros(network.Nt*3)
+    z_edges[np.arange(0, N, 3)] = network.coords[network.conns[:, 0]][:, 2]
+    z_edges[np.arange(1, N, 3)] = network.coords[network.conns[:, 1]][:, 2]
+    z_edges[np.arange(2, N, 3)] = np.nan
+
+    # Create plotly's Scatter3d object for pores and throats
+    trace_edges = go.Scatter3d(x=x_edges,
+                               y=y_edges,
+                               z=z_edges,
+                               mode='lines',
+                               line=dict(color=edge_color,
+                                         width=edge_scale,
+                                         colorscale=colormap),
+                               text=edge_labels, hoverinfo='text')
+
+    trace_nodes = go.Scatter3d(x=x_nodes,
+                               y=y_nodes,
+                               z=z_nodes,
+                               mode='markers',
+                               marker=dict(symbol='circle',
+                                           size=node_size*node_scale,
+                                           color=node_color,
+                                           colorscale=colormap,
+                                           line=dict(color='black', width=0.5)),
+                               text=node_labels, hoverinfo='text')
+
+    axis = dict(showbackground=False,
+                showline=False,
+                zeroline=False,
+                showgrid=False,
+                showticklabels=False,
+                title='')
+
+    layout = go.Layout(width=650,
+                       height=625,
+                       showlegend=False,
+                       scene=dict(xaxis=dict(axis),
+                                  yaxis=dict(axis),
+                                  zaxis=dict(axis),),
+                       margin=dict(t=100),
+                       hovermode='closest')
+
+    data = [trace_edges, trace_nodes]
+    fig = go.Figure(data=data, layout=layout)
+    return fig

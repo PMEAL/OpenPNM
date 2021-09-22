@@ -57,7 +57,5 @@ class Basic(GenericPhysics):
                        model=mods.hydraulic_conductance.generic_hydraulic)
         self.add_model(propname='throat.diffusive_conductance',
                        model=mods.diffusive_conductance.generic_diffusive)
-        self.add_model(propname='throat.ad_dif_conductance',
-                       model=mods.ad_dif_conductance.ad_dif)
         self.add_model(propname='throat.entry_pressure',
                        model=mods.capillary_pressure.washburn)

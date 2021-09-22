@@ -116,48 +116,9 @@ class TransientReactiveTransport(ReactiveTransport):
         # Initialize the steady sys of eqs A matrix
         self._A_steady = None
         if phase is not None:
-            self.setup(phase=phase)
+            self.settings['phase'] = phase.name
         # Initialize the initial condition
         self["pore.ic"] = np.nan
-
-    def setup(self, phase=None, quantity='', conductance='',
-              t_initial=None, t_final=None, t_step=None, t_output=None,
-              t_tolerance=None, t_precision=None, t_scheme='', **kwargs):
-        r"""
-        This method takes several arguments that are essential to running the
-        algorithm and adds them to the settings
-
-        Parameters
-        ----------
-
-        Notes
-        -----
-        More settings can be adjusted in the presence of a non-linear source
-        term such as under-relaxation.
-        See the 'ReactiveTransport' class documentation for details.
-
-        """
-        if phase:
-            self.settings['phase'] = phase.name
-        if quantity:
-            self.settings['quantity'] = quantity
-        if conductance:
-            self.settings['conductance'] = conductance
-        if t_initial is not None:
-            self.settings['t_initial'] = t_initial
-        if t_final is not None:
-            self.settings['t_final'] = t_final
-        if t_step is not None:
-            self.settings['t_step'] = t_step
-        if t_output is not None:
-            self.settings['t_output'] = t_output
-        if t_tolerance is not None:
-            self.settings['t_tolerance'] = t_tolerance
-        if t_precision is not None:
-            self.settings['t_precision'] = t_precision
-        if t_scheme:
-            self.settings['t_scheme'] = t_scheme
-        self.settings.update(kwargs)
 
     def set_IC(self, values):
         r"""

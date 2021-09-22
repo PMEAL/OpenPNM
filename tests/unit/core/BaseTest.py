@@ -976,6 +976,19 @@ class BaseTest:
         with pytest.raises(Exception):
             op.core.Base(name="temp", project=obj.project)
 
+    def test_get_conduit_data(self):
+        pn = op.network.Cubic(shape=[3, 3, 3])
+        pn['pore.diameter'] = 2.0
+        a = pn.get_conduit_data('diameter')
+        assert np.all(a.shape == (54, 3))
+        assert a.sum() == np.prod(a.shape)*2.0
+        pn['throat.volume'] = 2.0
+        b = pn.get_conduit_data('volume')
+        assert np.all(b.shape == (54, 3))
+        assert b.sum() == 2*np.prod(b.shape)
+        with pytest.raises(KeyError):
+            pn.get_conduit_data('blah')
+
 
 if __name__ == '__main__':
 

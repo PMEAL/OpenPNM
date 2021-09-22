@@ -16,11 +16,9 @@ class OrdinaryPercolation(GenericAlgorithm):
     ----------
     network : OpenPNM Network object
         The Network upon which this simulation should be run
-
     name : string, optional
         An identifying name for the object.  If none is given then one is
         generated.
-
     project : OpenPNM Project object
         Either a Network or a Project must be specified
 
@@ -41,30 +39,6 @@ class OrdinaryPercolation(GenericAlgorithm):
     entire domain is invaded, then a percoaltion curve is obtained.  The
     threshold at which each site and bond was invaded is recorded, so it is
     possible to find invading configurations easily using Boolean logic.
-
-    +----------------------+-------------------------------------------------+
-    | Method               | Description                                     |
-    +======================+=================================================+
-    | reset                | Resets the various data arrays on the object... |
-    +----------------------+-------------------------------------------------+
-    | setup                | Used to specify necessary arguments to the s... |
-    +----------------------+-------------------------------------------------+
-    | set_inlets           | Set the locations from which the invader ent... |
-    +----------------------+-------------------------------------------------+
-    | set_outlets          | Set the locations through which defender exi... |
-    +----------------------+-------------------------------------------------+
-    | set_residual         | Specify locations of any residual invader.  ... |
-    +----------------------+-------------------------------------------------+
-    | run                  | Runs the percolation algorithm to determine ... |
-    +----------------------+-------------------------------------------------+
-    | get_percolation_t... | Finds the threshold value where a percolating...|
-    +----------------------+-------------------------------------------------+
-    | is_percolating       | Returns a True or False value to indicate if... |
-    +----------------------+-------------------------------------------------+
-    | get_intrusion_data   | Obtain the numerical values of the calculate... |
-    +----------------------+-------------------------------------------------+
-    | plot_intrusion_curve | Plot the percolation curve as the invader vo... |
-    +----------------------+-------------------------------------------------+
 
     """
 
@@ -99,81 +73,7 @@ class OrdinaryPercolation(GenericAlgorithm):
         # Apply user settings, if any
         self.settings.update(settings)
         if phase is not None:
-            self.setup(phase=phase)
-
-    def setup(self,
-              phase=None,
-              access_limited=None,
-              mode='',
-              throat_entry_pressure='',
-              pore_entry_pressure='',
-              pore_volume='',
-              throat_volume=''):
-        r"""
-        Used to specify necessary arguments to the simulation.  This method is
-        useful for resetting the algorithm or applying more explicit control.
-
-        Parameters
-        ----------
-        phase : OpenPNM Phase object
-            The Phase object containing the physical properties of the invading
-            fluid.
-
-        access_limited : boolean
-            If ``True`` the invading phase can only enter the network from the
-            invasion sites specified with ``set_inlets``.  Otherwise, invading
-            clusters can appear anywhere in the network.  This second case is
-            the normal *ordinary percolation* in the traditional sense, while
-            the first case is more physically representative of invading
-            fluids.
-
-        mode : string
-            Specifies the type of percolation process to simulate.  Options
-            are:
-
-            **'bond'** - The percolation process is controlled by bond entry
-            thresholds.
-
-            **'site'** - The percolation process is controlled by site entry
-            thresholds.
-
-        pore_entry_pressure : string
-            The dictionary key on the Phase object where the pore entry
-            pressure values are stored.  The default is
-            'pore.capillary_pressure'.  This is only accessed if the ``mode``
-            is set to site percolation.
-
-        throat_entry_pressure : string
-            The dictionary key on the Phase object where the throat entry
-            pressure values are stored.  The default is
-            'throat.capillary_pressure'.  This is only accessed if the ``mode``
-            is set to bond percolation.
-
-        'pore_volume' : string
-            The dictionary key containing the pore volume information.
-
-        'throat_volume' : string
-            The dictionary key containing the pore volume information.
-
-        """
-        if phase:
             self.settings['phase'] = phase.name
-        if throat_entry_pressure:
-            self.settings['throat_entry_pressure'] = throat_entry_pressure
-            phase = self.project.find_phase(self)
-            self['throat.entry_pressure'] = phase[throat_entry_pressure]
-        if pore_entry_pressure:
-            self.settings['pore_entry_pressure'] = pore_entry_pressure
-            phase = self.project.find_phase(self)
-            self['pore.entry_pressure'] = phase[pore_entry_pressure]
-        if mode:
-            self.settings['mode'] = mode
-        if access_limited is not None:
-            self.settings['access_limited'] = access_limited
-        if pore_volume:
-            self.settings['pore_volume'] = pore_volume
-        if throat_volume:
-            self.settings['throat_volume'] = throat_volume
 
     def reset(self):
         r"""
