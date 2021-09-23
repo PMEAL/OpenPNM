@@ -52,6 +52,7 @@ def cubic(shape, spacing=1, connectivity=6):
         tails = np.concatenate((tails, T.flatten()))
         heads = np.concatenate((heads, H.flatten()))
     pairs = np.vstack([tails, heads]).T
+    pairs = np.sort(pairs, axis=1)
 
     d = {}
     d["pore.coords"] = points
