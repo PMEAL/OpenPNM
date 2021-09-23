@@ -3,7 +3,7 @@ from openpnm.network.generators import cubic, tools
 
 
 def cubic_template(template, spacing=1):
-    template = np.atleast_3d(template)
+    template = np.atleast_3d(template).astype(bool)
     # Generate a full cubic network
     temp = cubic(shape=template.shape, spacing=spacing)
     # Store some info about template
@@ -13,5 +13,5 @@ def cubic_template(template, spacing=1):
     temp['pore.template_coords'] = coords
     temp['pore.template_indices'] = np.arange(Np)
     # Trim pores not present in template
-    temp = tools.trim(network=temp, pores=template.flatten())
+    temp = tools.trim(network=temp, pores=~template.flatten())
     return temp

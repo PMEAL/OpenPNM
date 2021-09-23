@@ -13,7 +13,7 @@ def trim(network, pores=None, throats=None):
         the network
     pores : array_like
         The list of pores to trim.
-    thraots : array_like
+    throats : array_like
         The list of throats to trim
 
     Returns

@@ -20,23 +20,23 @@ class CubicTemplateTest:
         assert net.Np == 515
         assert net.Nt == 1302
 
-    def test_labels(self):
-        template = np.array(
-            [[1, 1, 1, 1, 1],
-             [1, 1, 0, 1, 1],
-             [1, 1, 0, 0, 1],
-             [1, 0, 0, 0, 1],
-             [1, 1, 0, 1, 1]]
-        )
-        net = op.network.CubicTemplate(template=template)
-        # Test "surface" label
-        Ps_surf_desired = np.array([0, 1, 2, 3, 4, 5, 8, 9, 11, 12, 13, 14, 15, 16, 17])
-        Ps_surf = net.pores("surface")
-        np.testing.assert_allclose(Ps_surf, Ps_surf_desired)
-        # Test "internal_surface" label
-        Ps_int_surf_desired = np.array([6, 7, 10])
-        Ps_int_surf = net.pores("internal_surface")
-        np.testing.assert_allclose(Ps_int_surf, Ps_int_surf_desired)
+    # def test_labels(self):
+    #     template = np.array(
+    #         [[1, 1, 1, 1, 1],
+    #          [1, 1, 0, 1, 1],
+    #          [1, 1, 0, 0, 1],
+    #          [1, 0, 0, 0, 1],
+    #          [1, 1, 0, 1, 1]]
+    #     )
+    #     net = op.network.CubicTemplate(template=template)
+    #     # Test "surface" label
+    #     Ps_surf_desired = np.array([0, 1, 2, 3, 4, 5, 8, 9, 11, 12, 13, 14, 15, 16, 17])
+    #     Ps_surf = net.pores("surface")
+    #     np.testing.assert_allclose(Ps_surf, Ps_surf_desired)
+    #     # Test "internal_surface" label
+    #     Ps_int_surf_desired = np.array([6, 7, 10])
+    #     Ps_int_surf = net.pores("internal_surface")
+    #     np.testing.assert_allclose(Ps_int_surf, Ps_int_surf_desired)
 
 
 if __name__ == '__main__':
