@@ -133,3 +133,49 @@ def parse_points(shape, points):
     return points
 
 
+def get_spacing(network):
+    r"""
+    Determine spacing of a cubic network
+
+    Parameters
+    ----------
+    network : dictionary
+        A network dictionary containing 'pore.coords' and 'throat.conns'
+
+    Returns
+    -------
+    spacing : ndarray
+        An array containing the spacing between pores in each direction.
+
+    Notes
+    -----
+    This function only works on simple cubic networks with no boundary pores.
+    If a unique spacing cannot be found in each direction, and/or the throats
+    are not all oriented perpendicularly, exceptions will be raised.
+
+    """
+    from openpnm.topotools import dimensionality
+    # Find Network spacing
+    P12 = network["throat.conns"]
+    C12 = network["pore.coords"][P12]
+    mag = np.linalg.norm(np.diff(C12, axis=1), axis=2)
+    unit_vec = np.around(np.squeeze(np.diff(C12, axis=1)) / mag, decimals=14)
+    spacing = [0, 0, 0]
+    dims = dimensionality(network)
+    # Ensure vectors point in n-dims unique directions
+    c = {tuple(row): 1 for row in unit_vec}
+    mag = np.atleast_1d(mag.squeeze()).astype(float)
+    if len(c.keys()) > sum(dims):
+        raise Exception(
+            "Spacing is undefined when throats point in more directions"
+            " than network has dimensions."
+        )
+    for ax in [0, 1, 2]:
+        if dims[ax]:
+            inds = np.where(unit_vec[:, ax] == unit_vec[:, ax].max())[0]
+            temp = np.unique(mag[inds])
+            if not np.allclose(temp, temp[0]):
+                raise Exception("A unique value of spacing could not be found.")
+            spacing[ax] = temp[0]
+    return np.array(spacing)
+
