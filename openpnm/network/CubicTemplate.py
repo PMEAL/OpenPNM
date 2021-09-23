@@ -1,3 +1,4 @@
+import numpy as np
 from openpnm.network import GenericNetwork
 from openpnm.network.generators import cubic_template
 from openpnm.utils import logging

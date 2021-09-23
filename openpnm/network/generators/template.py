@@ -8,7 +8,9 @@ def cubic_template(template, spacing=1):
     temp = cubic(shape=template.shape, spacing=spacing)
     # Store some info about template
     coords = np.unravel_index(range(template.size), template.shape)
-    temp['pore.template_coords'] = np.vstack(coords).T
+    coords = np.vstack(coords).T
+    Np = coords.shape[0]
+    temp['pore.template_coords'] = coords
     temp['pore.template_indices'] = np.arange(Np)
     # Trim pores not present in template
     temp = tools.trim(network=temp, pores=template.flatten())
