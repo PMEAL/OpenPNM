@@ -1,10 +1,11 @@
-from openpnm.network import DelaunayVoronoiDual
+from openpnm.network import GenericNetwork
 from openpnm import topotools
+from openpnm.network.generators import voronoi, tools
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 
 
-class Voronoi(DelaunayVoronoiDual):
+class Voronoi(GenericNetwork):
     r"""
     Random network formed by Voronoi tessellation of arbitrary base points
 
@@ -41,7 +42,7 @@ class Voronoi(DelaunayVoronoiDual):
     def __init__(self, shape=[1, 1, 1], points=None, **kwargs):
         # Clean-up input points
         super().__init__(**kwargs)
-        points = self._parse_points(shape=shape, points=points)
+        points = tools.parse_points(shape=shape, points=points)
         network, vor = voronoi(points=points, shape=shape)
         # Initialize network object
         self.update(network)

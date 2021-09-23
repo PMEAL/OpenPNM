@@ -1,4 +1,5 @@
 import numpy as np
+from openpnm.topotools import generate_base_points
 
 
 def trim(network, pores=None, throats=None):
@@ -114,3 +115,21 @@ def join(net1, net2, L_max=0.99):
             temp2 = np.zeros(Np2, dtype=temp1.dtype)
         net3[item] = np.hstack((temp1, temp2)).T
     return net3
+
+
+def parse_points(shape, points):
+    # Deal with input arguments
+    if isinstance(points, int):
+        points = generate_base_points(num_points=points,
+                                      domain_size=shape,
+                                      reflect=True)
+    else:
+        # Should we check to ensure that points are reflected?
+        points = np.array(points)
+    # Deal with points that are only 2D...they break Delaunay
+    if points.shape[1] == 3 and len(np.unique(points[:, 2])) == 1:
+        points = points[:, :2]
+
+    return points
+
+

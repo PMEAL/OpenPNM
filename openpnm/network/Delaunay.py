@@ -2,7 +2,7 @@ import numpy as np
 from openpnm import topotools
 from openpnm.utils import logging
 from openpnm.network import GenericNetwork
-from openpnm.network.generators import delaunay
+from openpnm.network.generators import delaunay, tools
 logger = logging.getLogger(__name__)
 
 
@@ -51,7 +51,7 @@ class Delaunay(GenericNetwork):
     def __init__(self, shape=[1, 1, 1], points=None, **kwargs):
         # Clean-up input points
         super().__init__(**kwargs)
-        points = self._parse_points(points=points, shape=shape)
+        points = tools.parse_points(points=points, shape=shape)
         net, tri = delaunay(points=points, shape=shape)
         self.update(net)
         net._tri = tri

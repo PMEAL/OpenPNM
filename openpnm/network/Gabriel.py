@@ -1,8 +1,7 @@
 import numpy as np
 import scipy.spatial as sptl
-from openpnm.network.generators import delaunay, gabriel
+from openpnm.network.generators import delaunay, gabriel, tools
 from openpnm.network import GenericNetwork
-from openpnm.topotools import trim
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 
@@ -51,7 +50,7 @@ class Gabriel(GenericNetwork):
     def __init__(self, shape=[1, 1, 1], points=None, **kwargs):
         # Generate Delaunay tessellation from super class, then trim
         super().__init__(**kwargs)
-        points = self._parse_points(points=points, shape=shape)
+        points = tools.parse_points(points=points, shape=shape)
         # Get delaunay tessellation
         dl = delaunay(shape=shape, points=points)
         # Pass delaunay to gabriel to trim offending throats

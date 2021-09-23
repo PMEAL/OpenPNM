@@ -212,21 +212,3 @@ class DelaunayVoronoiDual(GenericNetwork):
             Ps = am.rows[p]
             temp.append(Ps)
         return np.array(temp, dtype=object)
-
-    def _parse_points(self, shape, points):
-        # Deal with input arguments
-        if isinstance(points, int):
-            points = topotools.generate_base_points(num_points=points,
-                                                    domain_size=shape,
-                                                    reflect=True)
-        else:
-            # Should we check to ensure that points are reflected?
-            points = np.array(points)
-
-        # Deal with points that are only 2D...they break Delaunay
-        if points.shape[1] == 3 and len(np.unique(points[:, 2])) == 1:
-            points = points[:, :2]
-
-        return points
-
-
