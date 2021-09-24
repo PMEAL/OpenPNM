@@ -11,7 +11,7 @@ class BravaisTest:
         ws.clear()
 
     def test_generation_fcc(self):
-        fcc = op.network.Bravais(shape=[3, 3, 3], mode='fcc')
+        fcc = op.network.Bravais(shape=[2, 2, 2], mode='fcc')
         assert fcc.Np == 63
         assert fcc.Nt == 294
         assert fcc.num_pores('pore.corner_sites') == 27
@@ -20,9 +20,12 @@ class BravaisTest:
         assert fcc.num_throats('throat.corner_to_face') == 240
 
     def test_fcc_add_boundary_pores(self):
-        fcc = op.network.Bravais(shape=[3, 3, 3], mode='fcc')
+        fcc = op.network.Bravais(shape=[2, 2, 2], mode='fcc')
         Np = fcc.Np
-        fcc.add_boundary_pores(labels=['left', 'right'], spacing=1)
+        op.topotools.add_boundary_pores(network=fcc, pores=fcc.pores('left'),
+                                        apply_label='left_boundary')
+        op.topotools.add_boundary_pores(network=fcc, pores=fcc.pores('right'),
+                                        apply_label='right_boundary')
         assert fcc.Np > Np
         assert fcc.Np == (Np + 18 + 8)
         assert 'pore.left_boundary' in fcc.keys()
@@ -31,7 +34,7 @@ class BravaisTest:
         assert 'pore.bottom_boundary' not in fcc.keys()
 
     def test_generation_bcc(self):
-        bcc = op.network.Bravais(shape=[3, 3, 3], mode='bcc')
+        bcc = op.network.Bravais(shape=[2, 2, 2], mode='bcc')
         assert bcc.Np == 35
         assert bcc.Nt == 130
         assert bcc.num_pores('pore.corner_sites') == 27
@@ -41,9 +44,12 @@ class BravaisTest:
         assert bcc.num_throats('throat.body_to_body') == 12
 
     def test_bcc_add_boundary_pores(self):
-        bcc = op.network.Bravais(shape=[3, 3, 3], mode='bcc')
+        bcc = op.network.Bravais(shape=[2, 2, 2], mode='bcc')
         Np = bcc.Np
-        bcc.add_boundary_pores(labels=['left', 'right'], spacing=1)
+        op.topotools.add_boundary_pores(network=bcc, pores=bcc.pores('left'),
+                                        apply_label='left_boundary')
+        op.topotools.add_boundary_pores(network=bcc, pores=bcc.pores('right'),
+                                        apply_label='right_boundary')
         assert bcc.Np > Np
         assert bcc.Np == (Np + 18)
         assert 'pore.left_boundary' in bcc.keys()
