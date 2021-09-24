@@ -154,11 +154,7 @@ def series_resistors(target,
         SF2 = phase[conduit_shape_factors+'.pore2'][throats]
     except KeyError:
         SF1 = SF2 = SFt = 1.0
-    # Interpolate pore phase property values to throats
-    try:
-        Dt = phase[throat_conductivity][throats]
-    except KeyError:
-        Dt = phase.interpolate_data(propname=pore_conductivity)[throats]
+    Dt = phase[throat_conductivity][throats]
     try:
         D1 = phase[pore_conductivity][cn[:, 0]]
         D2 = phase[pore_conductivity][cn[:, 1]]

@@ -179,15 +179,9 @@ def electroneutrality_generic(target,
             c1 = _np.zeros((network.Np))[cn[:, 0]]
             c2 = _np.zeros((network.Np))[cn[:, 1]]
         ct = (c1*Vol1 + c2*Vol2)/(Vol1 + Vol2)
-        # Interpolate pore phase property values to throats
-        try:
-            Dt = phase[throat_diffusivity+i][throats]
-            Vt = phase[throat_valence+i][throats]
-        except KeyError:
-            Dt = phase.interpolate_data(
-                propname=pore_diffusivity+i)[throats]
-            Vt = phase.interpolate_data(
-                propname=pore_valence+i)[throats]
+        Dt = phase[throat_diffusivity+i][throats]
+        Vt = phase[throat_valence+i][throats]
+
         try:
             D1 = phase[pore_diffusivity+i][cn[:, 0]]
             D2 = phase[pore_diffusivity+i][cn[:, 1]]
@@ -428,11 +422,7 @@ def electroneutrality(target,
     # Getting pores volumes
     Vol1 = network[pore_volume][cn[:, 0]]
     Vol2 = network[pore_volume][cn[:, 1]]
-    # Interpolate pore phase property values to throats
-    try:
-        Tt = phase[throat_temperature][throats]
-    except KeyError:
-        Tt = phase.interpolate_data(propname=pore_temperature)[throats]
+    Tt = phase[throat_temperature][throats]
     try:
         T1 = phase[pore_temperature][cn[:, 0]]
         T2 = phase[pore_temperature][cn[:, 1]]
@@ -452,15 +442,8 @@ def electroneutrality(target,
             c1 = _np.zeros((network.Np))[cn[:, 0]]
             c2 = _np.zeros((network.Np))[cn[:, 1]]
         ct = (c1*Vol1 + c2*Vol2)/(Vol1 + Vol2)
-        # Interpolate pore phase property values to throats
-        try:
-            Dt = phase[throat_diffusivity+i][throats]
-            Vt = phase[throat_valence+i][throats]
-        except KeyError:
-            Dt = phase.interpolate_data(
-                propname=pore_diffusivity+i)[throats]
-            Vt = phase.interpolate_data(
-                propname=pore_valence+i)[throats]
+        Dt = phase[throat_diffusivity+i][throats]
+        Vt = phase[throat_valence+i][throats]
         try:
             D1 = phase[pore_diffusivity+i][cn[:, 0]]
             D2 = phase[pore_diffusivity+i][cn[:, 1]]
