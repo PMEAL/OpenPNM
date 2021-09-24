@@ -410,17 +410,17 @@ class TopotoolsTest:
         assert pn.Np == 73
         pores1 = pn.coords[:, 0] < 0.3
         pores2 = pn.coords[:, 0] > 0.6
-        assert pn.Nt == 352
+        assert pn.Nt == 357
         op.topotools.stitch_pores(network=pn,
                                   pores1=pores1,
                                   pores2=pores2, mode='gabriel')
-        assert pn.Nt == 373
+        assert pn.Nt == 378
         op.topotools.trim(network=pn, throats=pn.throats('stitched'))
-        assert pn.Nt == 352
+        assert pn.Nt == 357
         op.topotools.stitch_pores(network=pn,
                                   pores1=pores1,
                                   pores2=pores2, mode='delaunay')
-        assert pn.Nt == 436
+        assert pn.Nt == 445
 
     def test_filter_pores_by_z(self):
         pn = op.network.Cubic(shape=[4, 4, 1])
