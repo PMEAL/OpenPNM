@@ -194,3 +194,17 @@ def add_all_label(network):
     network['throat.all'] = np.ones(network['throat.conns'].shape[0], dtype=bool)
     return network
 
+
+def label_surface_pores(network):
+    r"""
+    """
+    hits = np.zeros_like(network.Ps, dtype=bool)
+    dims = topotools.dimensionality(network)
+    mn = np.amin(network["pore.coords"], axis=0)
+    mx = np.amax(network["pore.coords"], axis=0)
+    for ax in [0, 1, 2]:
+        if dims[ax]:
+            hits += network["pore.coords"][:, ax] <= mn[ax]
+            hits += network["pore.coords"][:, ax] >= mx[ax]
+    network["pore.surface"] = hits
+    return network

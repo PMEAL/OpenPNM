@@ -52,20 +52,13 @@ class Cubic(GenericNetwork):
                      connectivity=connectivity)
         temp = tools.add_all_label(temp)
         self.update(temp)
+        # Add some labels
         topotools.label_faces(network=self)
-
-    def _label_surface_pores(self):
-        r"""
-        """
-        hits = np.zeros_like(self.Ps, dtype=bool)
-        dims = topotools.dimensionality(self)
-        mn = np.amin(self["pore.coords"], axis=0)
-        mx = np.amax(self["pore.coords"], axis=0)
-        for ax in [0, 1, 2]:
-            if dims[ax]:
-                hits += self["pore.coords"][:, ax] <= mn[ax]
-                hits += self["pore.coords"][:, ax] >= mx[ax]
-        self["pore.surface"] = hits
+        Ps = self.pores('surface')
+        Ts = self.find_neighbor_throats(pores=Ps)
+        self.set_label(throats=Ts, label='surface')
+        self['throat.internal'] = True
+        self['pore.internal'] = True
 
     def add_boundary_pores(self, labels=["top", "bottom", "front",
                                          "back", "left", "right"],
