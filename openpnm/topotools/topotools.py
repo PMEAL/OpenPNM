@@ -1069,7 +1069,9 @@ def subdivide(network, pores, shape, labels=[]):
     if 'Cubic' not in mro:
         raise Exception('Subdivide is only supported for Cubic Networks')
     from openpnm.network import Cubic
+    from openpnm.network.generators import tools
     pores = network._parse_indices(pores)
+    network_shape = tools.get_shape(network)
 
     # Checks to find boundary pores in the selected pores
     if 'pore.boundary' in network.labels():
@@ -1087,7 +1089,7 @@ def subdivide(network, pores, shape, labels=[]):
         div = np.array(shape, ndmin=1)
         single_dim = None
     else:
-        single_dim = np.where(np.array(network.shape) == 1)[0]
+        single_dim = np.where(np.array(network_shape) == 1)[0]
         if np.size(single_dim) == 0:
             single_dim = None
         if np.size(shape) == 3:
@@ -1102,8 +1104,8 @@ def subdivide(network, pores, shape, labels=[]):
             div[-np.array(div, ndmin=1, dtype=bool)] = np.array(shape, ndmin=1)
 
     # Creating small network and handling labels
-    networkspacing = network.spacing
-    new_netspacing = networkspacing/div
+    network_spacing = tools.get_spacing(network)
+    new_netspacing = network_spacing/div
     new_net = Cubic(shape=div, spacing=new_netspacing)
     main_labels = ['front', 'back', 'left', 'right', 'top', 'bottom']
     if single_dim is not None:
@@ -1128,7 +1130,7 @@ def subdivide(network, pores, shape, labels=[]):
     for P in pores:
         # Shifting the new network to the right location and attaching it to
         # the main network
-        shift = network['pore.coords'][P] - networkspacing/2
+        shift = network['pore.coords'][P] - network_spacing/2
         new_net['pore.coords'] += shift
         Pn = network.find_neighbor_pores(pores=P)
         try:
@@ -1497,6 +1499,7 @@ def generate_base_points(num_points, domain_size, density_map=None,
     >>> net = op.network.DelaunayVoronoiDual(points=pts, shape=[1, 1, 1])
 
     """
+
     def _try_points(num_points, prob):
         prob = np.atleast_3d(prob)
         prob = np.array(prob)/np.amax(prob)  # Ensure prob is normalized
