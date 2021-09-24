@@ -126,7 +126,7 @@ def parse_points(shape, points):
     else:
         # Should we check to ensure that points are reflected?
         points = np.array(points)
-    # Deal with points that are only 2D...they break Delaunay
+    # Deal with points that are only 2D...they break Delaunay and Voronoi
     if points.shape[1] == 3 and len(np.unique(points[:, 2])) == 1:
         points = points[:, :2]
 
@@ -178,4 +178,10 @@ def get_spacing(network):
                 raise Exception("A unique value of spacing could not be found.")
             spacing[ax] = temp[0]
     return np.array(spacing)
+
+
+def add_all_label(network):
+    network['pore.all'] = np.ones(network['pore.coords'].shape[0], dtype=bool)
+    network['throat.all'] = np.ones(network['throat.conns'].shape[0], dtype=bool)
+    return network
 

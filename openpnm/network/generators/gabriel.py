@@ -1,4 +1,4 @@
-from openpnm.network.generators import delaunay as _delaunay
+from openpnm.network.generators import delaunay as _delaunay, tools
 import scipy.spatial as sptl
 import numpy as np
 
@@ -16,17 +16,15 @@ def gabriel(points=None, delaunay=None, shape=None):
         This can be omitted if ``delaunay`` is provided.
     delaunay : network dictionary, optional
         A dictionary containing 'pore.coords' and 'throat.conns' as produced
-        by the ``delaunay function``.  If ``points`` are provided this is
+        by the ``delaunay`` function.  If ``points`` are provided this is
         ignored.
     shape : array_like
         Indicates the size and shape of the domain
 
     """
-    if points is not NOne:
-        if isinstance(points, int):
-            shape = np.array(shape)
-            points = np.random.rand(points, len(shape))*shape
+    if points is not None:
         delaunay = _delaunay(points=points, shape=shape)
+        points = tools.parse_points(points=points, shape=shape)
     # Find centroid or midpoint of each edge in conns
     c = delaunay['pore.coords'][delaunay['throat.conns']]
     m = (c[:, 0, :] + c[:, 1, :])/2

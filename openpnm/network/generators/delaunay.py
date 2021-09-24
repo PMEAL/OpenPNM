@@ -1,6 +1,7 @@
 import numpy as np
 import scipy.spatial as sptl
 from openpnm.topotools import tri_to_am
+from openpnm.network.generators import tools
 
 
 def delaunay(points, shape=[1, 1, 1], ):
@@ -22,9 +23,7 @@ def delaunay(points, shape=[1, 1, 1], ):
     tri : Delaunay tessellation object
         The Delaunay tessellation object produced by ``scipy.spatial.Delaunay``
     """
-    shape = np.array(shape)
-    if isinstance(points, int):
-        points = np.random.rand(points, len(shape))*shape
+    points = tools.parse_points(points=points, shape=shape)
     tri = sptl.Delaunay(points=points)
     coo = tri_to_am(tri)
     d = {}

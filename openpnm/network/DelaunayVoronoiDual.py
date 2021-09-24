@@ -2,7 +2,7 @@ import numpy as np
 import scipy.sparse as sprs
 import scipy.spatial as sptl
 from openpnm import topotools
-from openpnm.network.generators import voronoi_delaunay_dual
+from openpnm.network.generators import voronoi_delaunay_dual, tools
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 from openpnm.network import GenericNetwork
@@ -59,11 +59,10 @@ class DelaunayVoronoiDual(GenericNetwork):
                                     points=points)
 
         net, vor, tri = voronoi_delaunay_dual(points=points, shape=shape)
+        net = tools.add_all_label(net)
         self.update(net)
         self._vor = vor
         self._tri = tri
-        self['pore.all'] = np.ones([self['pore.coords'].shape[0]], dtype=bool)
-        self['throat.all'] = np.ones([self['throat.conns'].shape[0]], dtype=bool)
         # Label all pores and throats by type
         self['pore.delaunay'] = False
         self['pore.delaunay'][0:vor.npoints] = True

@@ -1,6 +1,6 @@
 import numpy as np
 from openpnm.network import GenericNetwork
-from openpnm.network.generators import cubic_template
+from openpnm.network.generators import cubic_template, tools
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 
@@ -46,8 +46,6 @@ class CubicTemplate(GenericNetwork):
 
     def __init__(self, template, spacing=[1, 1, 1], **kwargs):
         super().__init__(**kwargs)
-        self.update(cubic_template(template=template, spacing=spacing))
-        Np = self['pore.coords'].shape[0]
-        Nt = self['throat.conns'].shape[0]
-        self['pore.all'] = np.ones((Np, ), dtype=bool)
-        self['throat.all'] = np.ones((Nt, ), dtype=bool)
+        net = cubic_template(template=template, spacing=spacing)
+        net = tools.add_all_label(net)
+        self.update(net)

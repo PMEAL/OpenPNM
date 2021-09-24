@@ -1,3 +1,4 @@
+import numpy as np
 from openpnm.network import GenericNetwork
 from openpnm import topotools
 from openpnm.network.generators import voronoi, tools
@@ -43,8 +44,10 @@ class Voronoi(GenericNetwork):
         # Clean-up input points
         super().__init__(**kwargs)
         points = tools.parse_points(shape=shape, points=points)
-        network, vor = voronoi(points=points, shape=shape)
+        net, vor = voronoi(points=points, shape=shape)
+        net = tools.add_all_label(net)
         # Initialize network object
-        self.update(network)
+        self.update(net)
+        self._vor = vor
         topotools.trim(network=self, pores=self.pores('crop'))
         del self['pore.crop']

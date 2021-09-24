@@ -52,12 +52,9 @@ class Gabriel(GenericNetwork):
         super().__init__(**kwargs)
         points = tools.parse_points(points=points, shape=shape)
         # Get delaunay tessellation
-        dl = delaunay(shape=shape, points=points)
+        dl, tri = delaunay(shape=shape, points=points)
         # Pass delaunay to gabriel to trim offending throats
-        gl = gabriel(dl)
+        gl = gabriel(delaunay=dl)
+        gl = tools.add_all_label(gl)
         # Update self with network info
         self.update(gl)
-        Np = self['pore.coords'][:, 0].shape[0]
-        Nt = self['throat.conns'][:, 0].shape[0]
-        self['pore.all'] = np.ones((Np, ), dtype=bool)
-        self['throat.all'] = np.ones((Nt, ), dtype=bool)

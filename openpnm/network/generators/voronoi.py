@@ -1,6 +1,7 @@
 import scipy.spatial as sptl
 import numpy as np
 from openpnm.topotools import vor_to_am, isoutside
+from openpnm.network.generators import tools
 
 
 def voronoi(points, shape=[1, 1, 1], crop=True):
@@ -26,10 +27,7 @@ def voronoi(points, shape=[1, 1, 1], crop=True):
         The Voronoi tessellation object produced by ``scipy.spatial.Voronoi``
 
     """
-    shape = np.array(shape)
-    if isinstance(points, int):
-        points = np.random.rand(points, len(shape))*shape
-
+    points = tools.parse_points(points=points, shape=shape)
     # Perform tessellation
     vor = sptl.Voronoi(points=points)
     # Convert to adjecency matrix

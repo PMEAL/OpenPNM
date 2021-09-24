@@ -1,5 +1,5 @@
 from openpnm.network import GenericNetwork
-from openpnm.network.generators import cubic, fcc, bcc
+from openpnm.network.generators import cubic, fcc, bcc, tools
 from openpnm import topotools
 from openpnm.utils import logging, Workspace
 import numpy as np
@@ -66,9 +66,8 @@ class Bravais(GenericNetwork):
                             'pores in all directions')
         if mode == 'bcc':
             net = bcc(shape=shape)
+            net = tools.add_all_label(net)
             self.update(net)
-            self['pore.all'] = np.ones(net['pore.coords'].shape[0], dtype=bool)
-            self['throat.all'] = np.ones(net['throat.conns'].shape[0], dtype=bool)
 
             # Deal with labels
             Ps = np.any(np.mod(self['pore.coords'], 1) == 0, axis=1)
@@ -90,9 +89,8 @@ class Bravais(GenericNetwork):
 
         elif mode == 'fcc':
             net = fcc(shape=shape)
+            net = tools.add_all_label(net)
             self.update(net)
-            self['pore.all'] = np.ones(net['pore.coords'].shape[0], dtype=bool)
-            self['throat.all'] = np.ones(net['throat.conns'].shape[0], dtype=bool)
             # Deal with labels
             self.clear(mode='labels')
             Ps = np.any(np.mod(self['pore.coords'], 1) == 0, axis=1)
@@ -111,6 +109,7 @@ class Bravais(GenericNetwork):
 
         elif mode == 'sc':
             net = cubic(shape=shape, spacing=1)
+            net = tools.add_all_label(net)
             self.update(net)
             self.clear(mode='labels')
             self['pore.corner_sites'] = True

@@ -1,7 +1,7 @@
 import numpy as np
 from openpnm.network import GenericNetwork
 from openpnm import topotools
-from openpnm.network.generators import cubic
+from openpnm.network.generators import cubic, tools
 from openpnm.utils import logging
 
 logger = logging.getLogger(__name__)
@@ -46,16 +46,10 @@ class Cubic(GenericNetwork):
 
     def __init__(self, shape, spacing=[1, 1, 1], connectivity=6,
                  name=None, project=None, **kwargs):
-
         super().__init__(name=name, project=project, **kwargs)
-
         temp = cubic(shape=shape,
                      spacing=spacing,
                      connectivity=connectivity)
-        # fix temp by adding pore and throat prefix
+        temp = tools.add_all_label(temp)
         self.update(temp)
-        Np = self['pore.coords'].shape[0]
-        Nt = self['throat.conns'].shape[0]
-        self['pore.all'] = np.ones((Np, ), dtype=bool)
-        self['throat.all'] = np.ones((Nt, ), dtype=bool)
         topotools.label_faces(network=self)

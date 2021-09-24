@@ -53,9 +53,6 @@ class Delaunay(GenericNetwork):
         super().__init__(**kwargs)
         points = tools.parse_points(points=points, shape=shape)
         net, tri = delaunay(points=points, shape=shape)
+        net = tools.add_all_label(net)
         self.update(net)
-        net._tri = tri
-        Np = self['pore.coords'][:, 0].shape[0]
-        Nt = self['throat.conns'][:, 0].shape[0]
-        self['pore.all'] = np.ones((Np, ), dtype=bool)
-        self['throat.all'] = np.ones((Nt, ), dtype=bool)
+        self._tri = tri

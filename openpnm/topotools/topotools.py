@@ -69,13 +69,11 @@ def isoutside(coords, shape, thresh=1e-6):
             pass
     elif len(shape) == 3:  # Rectilinear
         shape = np.array(shape, dtype=float)
+        if shape[2] == 0:
+            shape = shape[:2]
         thresh = shape*1e-9
-        try:
-            lo_lim = shape[:, 0]
-            hi_lim = shape[:, 1]
-        except IndexError:
-            lo_lim = np.array([0, 0, 0]) - thresh
-            hi_lim = shape + thresh
+        lo_lim = np.zeros_like(shape) - thresh
+        hi_lim = shape + thresh
         Ps1 = np.any(coords > hi_lim, axis=1)
         Ps2 = np.any(coords < lo_lim, axis=1)
         Ps = Ps1 + Ps2
