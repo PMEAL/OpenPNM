@@ -180,6 +180,15 @@ def get_spacing(network):
     return np.array(spacing)
 
 
+def get_shape(network):
+    L = np.ptp(network["pore.coords"], axis=0)
+    mask = L.astype(bool)
+    S = get_spacing(network)
+    shape = np.array([1, 1, 1], int)
+    shape[mask] = L[mask] / S[mask] + 1
+    return shape
+
+
 def add_all_label(network):
     network['pore.all'] = np.ones(network['pore.coords'].shape[0], dtype=bool)
     network['throat.all'] = np.ones(network['throat.conns'].shape[0], dtype=bool)

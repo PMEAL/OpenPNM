@@ -53,3 +53,71 @@ class Cubic(GenericNetwork):
         temp = tools.add_all_label(temp)
         self.update(temp)
         topotools.label_faces(network=self)
+
+    def _label_surface_pores(self):
+        r"""
+        """
+        hits = np.zeros_like(self.Ps, dtype=bool)
+        dims = topotools.dimensionality(self)
+        mn = np.amin(self["pore.coords"], axis=0)
+        mx = np.amax(self["pore.coords"], axis=0)
+        for ax in [0, 1, 2]:
+            if dims[ax]:
+                hits += self["pore.coords"][:, ax] <= mn[ax]
+                hits += self["pore.coords"][:, ax] >= mx[ax]
+        self["pore.surface"] = hits
+
+    def add_boundary_pores(self, labels=["top", "bottom", "front",
+                                         "back", "left", "right"],
+                           spacing=None):
+        r"""
+        Add pores to the faces of the network for use as boundary pores.
+        Pores are offset from the faces by 1/2 a lattice spacing such that
+        they lie directly on the boundaries.
+        Parameters
+        ----------
+        labels : string or list of strings
+            The labels indicating the pores defining each face where boundary
+            pores are to be added (e.g. 'left' or ['left', 'right'])
+        spacing : scalar or array_like
+            The spacing of the network (e.g. [1, 1, 1]).  This should be given
+            since it can be quite difficult to infer from the network, for
+            instance if boundary pores have already added to other faces.
+        """
+        if isinstance(labels, str):
+            labels = [labels]
+        x, y, z = self["pore.coords"].T
+        if spacing is None:
+            spacing = tools.get_spacing(network=self)
+        else:
+            spacing = np.array(spacing)
+            if spacing.size == 1:
+                spacing = np.ones(3) * spacing
+        Lcx, Lcy, Lcz = spacing
+
+        offset = {}
+        shape = tools.get_shape(self)
+        offset["front"] = offset["left"] = offset["bottom"] = [0, 0, 0]
+        offset["right"] = [Lcx * shape[0], 0, 0]
+        offset["back"] = [0, Lcy * shape[1], 0]
+        offset["top"] = [0, 0, Lcz * shape[2]]
+
+        scale = {}
+        scale["left"] = scale["right"] = [0, 1, 1]
+        scale["front"] = scale["back"] = [1, 0, 1]
+        scale["bottom"] = scale["top"] = [1, 1, 0]
+
+        for label in labels:
+            try:
+                Ps = self.pores(label)
+                topotools.clone_pores(network=self, pores=Ps,
+                                      labels=label + "_boundary",
+                                      mode='parents')
+                # Translate cloned pores
+                ind = self.pores(label + "_boundary")
+                coords = self["pore.coords"][ind]
+                coords = coords * scale[label] + offset[label]
+                self["pore.coords"][ind] = coords
+            except KeyError:
+                logger.warning("No pores labelled " + label
+                               + " were found, skipping boundary addition")
