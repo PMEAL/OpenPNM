@@ -95,7 +95,6 @@ class VoronoiFibers(Project):
     """
 
     def __init__(self,
-                 num_points=None,
                  points=None,
                  fiber_rad=10,
                  resolution=1e-2,
@@ -123,7 +122,6 @@ class VoronoiFibers(Project):
             logger.exception(msg="Please initialize class with a fiber_rad")
 
         net = DelaunayVoronoiDual(project=self,
-                                  num_points=num_points,
                                   points=points,
                                   shape=shape,
                                   name=self.name + "_net",

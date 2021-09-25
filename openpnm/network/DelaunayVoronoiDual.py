@@ -55,9 +55,6 @@ class DelaunayVoronoiDual(GenericNetwork):
 
     def __init__(self, shape=[1, 1, 1], points=None, **kwargs):
         super().__init__(**kwargs)
-        points = self._parse_points(shape=shape,
-                                    points=points)
-
         net, vor, tri = voronoi_delaunay_dual(points=points, shape=shape)
         net = tools.add_all_label(net)
         self.update(net)

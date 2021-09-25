@@ -7,6 +7,7 @@ import numpy as _np
 import scipy as _sp
 from openpnm.models import misc as _misc
 from openpnm.utils import logging as _logging
+from openpnm.network.generators.tools import get_shape
 _logger = _logging.getLogger(__name__)
 
 
@@ -83,7 +84,7 @@ def spatially_correlated(target, weights=None, strel=None):
     import scipy.ndimage as spim
     network = target.project.network
     # The following will only work on Cubic networks
-    x, y, z = network.settings['shape']
+    x, y, z = get_shape(network)
     im = _np.random.rand(x, y, z)
     if strel is None:  # Then generate a strel
         if sum(weights) == 0:
