@@ -69,7 +69,7 @@ class VoronoiTest:
 
     def test_vertex_dimension(self):
         prj = VoronoiFibers(
-            num_points=10,
+            points=10,
             fiber_rad=0.2,
             resolution=0.1,
             shape=[3, 2, 1],
