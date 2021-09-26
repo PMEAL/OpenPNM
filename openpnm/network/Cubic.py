@@ -55,7 +55,7 @@ class Cubic(GenericNetwork):
         # Add some labels
         topotools.label_faces(network=self)
         Ps = self.pores('surface')
-        Ts = self.find_neighbor_throats(pores=Ps)
+        Ts = self.find_neighbor_throats(pores=Ps, mode='xnor')
         self.set_label(throats=Ts, label='surface')
         self['throat.internal'] = True
         self['pore.internal'] = True
