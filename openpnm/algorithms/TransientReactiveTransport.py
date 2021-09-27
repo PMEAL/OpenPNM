@@ -126,20 +126,17 @@ class TransientReactiveTransport(ReactiveTransport):
 
         Parameters
         ----------
-        values : ND-array or scalar
+        values : ndarray or scalar
             Set the initial conditions using an 'Np' long array. 'Np' being
             the number of pores. If a scalar is given, the same value is
             imposed to all pores.
 
         """
-        values = np.ones([self.Np, ]) * values
+        values = np.ones(self.Np, dtype=float) * values
         if values.size > 1 and values.size != self.Np:
             raise Exception('The number of initial values must be either 1 or Np')
         self['pore.ic'] = values
-        quantity = self.settings['quantity']
-        if not quantity:
-            raise Exception('"quantity" has not been defined on this algorithm')
-        self[quantity] = values
+        self[self.settings['quantity']] = values
 
     def _overwrite_ICs_with_value_BCs(self):
         ic_vals = self['pore.ic']
