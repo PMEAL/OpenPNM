@@ -27,13 +27,6 @@ class MAT(GenericIO):
     """
 
     @classmethod
-    def save(cls, *args, **kwargs):
-        r"""
-        This method is being deprecated.  Using ``export_data`` instead.
-        """
-        cls.export_data(*args, **kwargs)
-
-    @classmethod
     def export_data(cls, network, phases=[], filename=''):
         r"""
         Write Network to a Mat file for exporting to Matlab.
@@ -66,13 +59,6 @@ class MAT(GenericIO):
             new_d[new_key] = d.pop(key)
 
         spio.savemat(file_name=filename, mdict=new_d)
-
-    @classmethod
-    def load(cls, *args, **kwargs):
-        r"""
-        This method is being deprecated.  Using ``import_data`` instead.
-        """
-        return cls.import_data(*args, *kwargs)
 
     @classmethod
     def import_data(cls, filename, project=None):
