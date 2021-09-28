@@ -63,7 +63,7 @@ class CSV(GenericIO):
         """
         project, network, phases = cls._parse_args(network=network,
                                                    phases=phases)
-        df = Pandas.to_dataframe(network=network, phases=phases,
+        df = Pandas.export_data(network=network, phases=phases,
                                  join=True, delim=delim)
         # Write to file
         if filename == '':

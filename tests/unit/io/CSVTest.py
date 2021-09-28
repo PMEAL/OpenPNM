@@ -67,7 +67,7 @@ class CSVTest:
 
     def test_load_bad_filename(self, tmpdir):
         with pytest.raises(OSError):
-            op.io.CSV.load(filename='')
+            op.io.CSV.import_data(filename='')
 
     def test_load_categorized_by_object(self, tmpdir):
         fname = tmpdir.join(self.net.project.name)

@@ -18,7 +18,7 @@ class PerGeosTest:
     def test_load_PerGeos_simple(self, tmpdir):
         path = Path(os.path.realpath(__file__),
                     '../../../fixtures/PerGeos/simplePNM.am')
-        project = op.io.PerGeos.load(path)
+        project = op.io.PerGeos.import_data(path)
         network = project.network
         assert network.Np == 3
         assert network.Nt == 3
@@ -26,7 +26,7 @@ class PerGeosTest:
     def test_load_PerGeos_mandatory(self, tmpdir):
         path = Path(os.path.realpath(__file__),
                     '../../../fixtures/PerGeos/mandatory.am')
-        project = op.io.PerGeos.load(path)
+        project = op.io.PerGeos.import_data(path)
         network = project.network
         assert network.Np == 3
         assert network.Nt == 3

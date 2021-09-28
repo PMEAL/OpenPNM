@@ -37,7 +37,7 @@ class NetworkXTest:
         set_node_attributes(G, name='diameter', values=1.123)
         set_edge_attributes(G, name='length', values=1.123)
         set_edge_attributes(G, name='perimeter', values=1.123)
-        project = op.io.NetworkX.from_networkx(G=G)
+        project = op.io.NetworkX.export_data(G=G)
         assert len(project) == 1
         num_nodes = len(G.nodes())
         num_edges = len(G.edges())
