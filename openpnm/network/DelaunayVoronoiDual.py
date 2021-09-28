@@ -60,6 +60,8 @@ class DelaunayVoronoiDual(GenericNetwork):
         self.update(net)
         self._vor = vor
         self._tri = tri
+
+        self._label_faces()
         # Label all pores and throats by type
         self['pore.delaunay'] = False
         self['pore.delaunay'][0:vor.npoints] = True
@@ -208,3 +210,18 @@ class DelaunayVoronoiDual(GenericNetwork):
             Ps = am.rows[p]
             temp.append(Ps)
         return np.array(temp, dtype=object)
+
+
+    def _label_faces(self):
+        r'''
+        Label the pores sitting on the faces of the domain in accordance with
+        the conventions used for cubic etc.
+        '''
+        coords = np.around(self['pore.coords'], decimals=10)
+        min_labels = ['front', 'left', 'bottom']
+        max_labels = ['back', 'right', 'top']
+        min_coords = np.amin(coords, axis=0)
+        max_coords = np.amax(coords, axis=0)
+        for ax in range(3):
+            self['pore.' + min_labels[ax]] = coords[:, ax] == min_coords[ax]
+            self['pore.' + max_labels[ax]] = coords[:, ax] == max_coords[ax]

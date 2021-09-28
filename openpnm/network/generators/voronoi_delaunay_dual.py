@@ -1,6 +1,7 @@
 import scipy.spatial as sptl
 import scipy.sparse as sprs
 from openpnm import topotools
+from openpnm.network.generators import tools
 import numpy as np
 
 
@@ -26,9 +27,7 @@ def voronoi_delaunay_dual(points, shape):
         The Delaunay triangulation object produced ``scipy.spatial.Delaunay``
 
     """
-    # Deal with points that are only 2D...they break tessellations
-    if points.shape[1] == 3 and len(np.unique(points[:, 2])) == 1:
-        points = points[:, :2]
+    points = tools.parse_points(points=points, shape=shape)
 
     # Perform tessellation
     vor = sptl.Voronoi(points=points)

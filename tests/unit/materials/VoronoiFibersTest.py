@@ -73,7 +73,7 @@ class VoronoiTest:
             fiber_rad=0.2,
             resolution=0.1,
             shape=[3, 2, 1],
-            name='test2'
+            # name='test2'
         )
         net = prj.network
         del_geom = prj.geometries()['test2_del']
