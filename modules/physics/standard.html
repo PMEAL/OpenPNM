@@ -606,6 +606,26 @@
                 
   <div class="section" id="standard">
 <span id="standard-api"></span><h1>Standard<a class="headerlink" href="#standard" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="openpnm.physics.Standard">
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">Standard</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/physics/Standard.html#Standard"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.physics.Standard" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="generic_physics.html#openpnm.physics.GenericPhysics" title="openpnm.physics.GenericPhysics.GenericPhysics"><code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.physics.GenericPhysics.GenericPhysics</span></code></a></p>
+<p>Generic class to generate Physics objects</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>network</strong> (<em>OpenPNM Network object</em>) – The network to which this Physics should be attached</p></li>
+<li><p><strong>phase</strong> (<em>OpenPNM Phase object</em>) – The Phase object to which this Physics applies</p></li>
+<li><p><strong>geometry</strong> (<em>OpenPNM Geometry object</em>) – The Geometry object that defines the pores/throats where this Physics
+should be applied.</p></li>
+<li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – A unique string name to identify the Physics object, typically same as
+instance name but can be anything.  If left blank, and name will be
+generated that include the class name and a random string.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </div>
 
 

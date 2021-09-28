@@ -1,0 +1,396 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>openpnm.io.NetworkX &#8212; OpenPNM  documentation</title>
+    
+  <link href="../../../_static/css/theme.css" rel="stylesheet" />
+  <link href="../../../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
+
+    
+  <link rel="stylesheet"
+    href="../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/basic.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
+    
+  <link rel="preload" as="script" href="../../../_static/js/index.1c5a1a01449ed65a7b51.js">
+
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/clipboard.min.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/custom.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+
+<a class="navbar-brand" href="https://www.openpnm.org">
+  <img src="../../../_static/openpnm_logo.png" class="logo" alt="logo">
+</a>
+
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class=" collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../userguide/index.html">
+  <strong>
+   User Guide
+  </strong>
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../modules/index.html">
+  <strong>
+   Module Reference
+  </strong>
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../examples/examples.html">
+  Examples
+ </a>
+</li>
+
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/PMEAL/OpenPNM" rel="noopener" target="_blank" title="GitHub">
+            <span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://openpnm.substack.com/" rel="noopener" target="_blank" title="Substack">
+            <span><i class="fas fa-envelope-square"></i></span>
+            <label class="sr-only">Substack</label>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://twitter.com/OpenPnm" rel="noopener" target="_blank" title="Twitter">
+            <span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label>
+          </a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    
+  </div>
+</nav>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <h1>Source code for openpnm.io.NetworkX</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">openpnm.io</span> <span class="kn">import</span> <span class="n">GenericIO</span>
+<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">logging</span>
+<span class="kn">from</span> <span class="nn">openpnm.network</span> <span class="kn">import</span> <span class="n">GenericNetwork</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="NetworkX"><a class="viewcode-back" href="../../../modules/io/networkx.html#openpnm.io.NetworkX">[docs]</a><span class="k">class</span> <span class="nc">NetworkX</span><span class="p">(</span><span class="n">GenericIO</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    NetworkX is a common tool for dealing with network structures</span>
+
+<span class="sd">    This class actually handles dealing with live NetworkX objects rather than</span>
+<span class="sd">    saved files. NetworkX has a number of export formats, so converting</span>
+<span class="sd">    OpenPNM data to a NetworkX object, then using NetworkX to exprt might be</span>
+<span class="sd">    an option for file formats not supported by OpenPNM yet.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    1. Each node in a NetworkX object (i.e. ``G``) can be assigned properties</span>
+<span class="sd">    using syntax like ``G.node[n][&#39;diameter&#39;] = 0.5`` where ``n`` is the</span>
+<span class="sd">    node number.  There is no need to precede the property name with any</span>
+<span class="sd">    indication that it is pore data such as \&#39;pore\_\&#39;.  OpenPNM will prepend</span>
+<span class="sd">    \&#39;pore.\&#39; to each property name.</span>
+
+<span class="sd">    2. Since \&#39;pore.coords\&#39; is so central to OpenPNM it should be specified</span>
+<span class="sd">    in the NetworkX object as \&#39;coords\&#39;, and the [X, Y, Z] coordinates of</span>
+<span class="sd">    each node should be a 1x3 list.</span>
+
+<span class="sd">    3. Edges in a NetworkX object are accessed using the index numbers of the</span>
+<span class="sd">    two nodes it connects, such as ``G.adj[2][3][&#39;length&#39;] = 0.1``</span>
+<span class="sd">    indicating the edge that connects nodes 2 and 3.  There is no need to</span>
+<span class="sd">    precede the property name with any indication that it is throat data such</span>
+<span class="sd">    as \&#39;throat\_\&#39;.  OpenPNM will prepend \&#39;throat.\&#39; to each property name.</span>
+
+<span class="sd">    4. The \&#39;throat.conns\&#39; property is essential to OpenPNM, but this does NOT</span>
+<span class="sd">    need to be specified explicitly as a property in NetworkX.  The</span>
+<span class="sd">    connectivity is embedded into the network representation and is extracted</span>
+<span class="sd">    by OpenPNM.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="NetworkX.import_data"><a class="viewcode-back" href="../../../modules/io/networkx.html#openpnm.io.NetworkX.import_data">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">import_data</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">project</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add data to an OpenPNM Network from a undirected NetworkX graph object.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        G : networkx.classes.graph.Graph Object</span>
+<span class="sd">            The NetworkX graph. G should be undirected. The numbering of nodes</span>
+<span class="sd">            should be numeric (int&#39;s), zero-based and should not contain any</span>
+<span class="sd">            gaps, i.e. ``G.nodes() = [0,1,3,4,5]`` is not allowed and should be</span>
+<span class="sd">            mapped to ``G.nodes() = [0,1,2,3,4]``.</span>
+
+<span class="sd">        project : OpenPNM Project object</span>
+<span class="sd">            A GenericNetwork is created and added to the specified Project.</span>
+<span class="sd">            If no Project is supplied then one will be created and returned.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        An OpenPNM Project containing a GenericNetwork with all the data from</span>
+<span class="sd">        the NetworkX object.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+
+        <span class="n">net</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1"># Ensure G is an undirected networkX graph with numerically numbered</span>
+        <span class="c1"># nodes for which numbering starts at 0 and does not contain any gaps</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Provided object is not a NetworkX graph.&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">nx</span><span class="o">.</span><span class="n">is_directed</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Provided graph is directed. Convert to undirected graph.&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">()):</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Node numbering is not numeric. Convert to int.&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">min</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">())</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Node numbering does not start at zero.&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">max</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">())</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">()):</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Node numbering contains gaps. Map nodes to remove gaps.&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Parsing node data</span>
+        <span class="n">Np</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+        <span class="n">net</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;pore.all&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">Np</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)})</span>
+        <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">props</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">props</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">val</span> <span class="o">=</span> <span class="n">props</span><span class="p">[</span><span class="n">item</span><span class="p">]</span>
+                <span class="n">dtype</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+                <span class="c1"># Remove prepended pore. and pore_ if present</span>
+                <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;pore.&#39;</span><span class="p">,</span> <span class="s1">&#39;pore_&#39;</span><span class="p">]:</span>
+                    <span class="n">item</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+                <span class="c1"># Create arrays for subsequent indexing, if not present already</span>
+                <span class="k">if</span> <span class="s1">&#39;pore.&#39;</span><span class="o">+</span><span class="n">item</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">net</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="n">dtype</span> <span class="o">==</span> <span class="nb">str</span><span class="p">:</span>  <span class="c1"># handle strings of arbitrary length</span>
+                        <span class="n">net</span><span class="p">[</span><span class="s1">&#39;pore.&#39;</span><span class="o">+</span><span class="n">item</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">((</span><span class="n">Np</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;object&#39;</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="nb">list</span><span class="p">:</span>
+                        <span class="n">dtype</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                        <span class="k">if</span> <span class="n">dtype</span> <span class="o">==</span> <span class="nb">str</span><span class="p">:</span>
+                            <span class="n">dtype</span> <span class="o">=</span> <span class="s1">&#39;object&#39;</span>
+                        <span class="n">cols</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+                        <span class="n">net</span><span class="p">[</span><span class="s1">&#39;pore.&#39;</span><span class="o">+</span><span class="n">item</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">((</span><span class="n">Np</span><span class="p">,</span> <span class="n">cols</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">net</span><span class="p">[</span><span class="s1">&#39;pore.&#39;</span><span class="o">+</span><span class="n">item</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">((</span><span class="n">Np</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+                <span class="n">net</span><span class="p">[</span><span class="s1">&#39;pore.&#39;</span><span class="o">+</span><span class="n">item</span><span class="p">][</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+
+        <span class="c1"># Parsing edge data</span>
+        <span class="c1"># Deal with conns explicitly</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">conns</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">)</span>   <span class="c1"># NetworkX V2</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">conns</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">()</span>       <span class="c1"># NetworkX V1</span>
+        <span class="n">conns</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+
+        <span class="c1"># Add conns to Network</span>
+        <span class="n">Nt</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">conns</span><span class="p">)</span>
+        <span class="n">net</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;throat.all&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">Nt</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)})</span>
+        <span class="n">net</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">conns</span><span class="p">)})</span>
+
+        <span class="c1"># Scan through each edge and extract all its properties</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">conns</span><span class="p">:</span>
+            <span class="n">props</span> <span class="o">=</span> <span class="n">G</span><span class="p">[</span><span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">props</span><span class="p">:</span>
+                <span class="n">val</span> <span class="o">=</span> <span class="n">props</span><span class="p">[</span><span class="n">item</span><span class="p">]</span>
+                <span class="n">dtype</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+                <span class="c1"># Remove prepended throat. and throat_ if present</span>
+                <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;throat.&#39;</span><span class="p">,</span> <span class="s1">&#39;throat_&#39;</span><span class="p">]:</span>
+                    <span class="n">item</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+                <span class="c1"># Create arrays for subsequent indexing, if not present already</span>
+                <span class="k">if</span> <span class="s1">&#39;throat.&#39;</span><span class="o">+</span><span class="n">item</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">net</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="n">dtype</span> <span class="o">==</span> <span class="nb">str</span><span class="p">:</span>
+                        <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.&#39;</span><span class="o">+</span><span class="n">item</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">((</span><span class="n">Nt</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;object&#39;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="nb">list</span><span class="p">:</span>
+                        <span class="n">dtype</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                        <span class="k">if</span> <span class="n">dtype</span> <span class="o">==</span> <span class="nb">str</span><span class="p">:</span>
+                            <span class="n">dtype</span> <span class="o">=</span> <span class="s1">&#39;object&#39;</span>
+                        <span class="n">cols</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+                        <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.&#39;</span><span class="o">+</span><span class="n">item</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">((</span><span class="n">Nt</span><span class="p">,</span> <span class="n">cols</span><span class="p">),</span>
+                                                         <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.&#39;</span><span class="o">+</span><span class="n">item</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">((</span><span class="n">Nt</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+                <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.&#39;</span><span class="o">+</span><span class="n">item</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+            <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="n">network</span> <span class="o">=</span> <span class="n">GenericNetwork</span><span class="p">(</span><span class="n">project</span><span class="o">=</span><span class="n">project</span><span class="p">)</span>
+        <span class="n">network</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_update_network</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">network</span><span class="p">,</span> <span class="n">net</span><span class="o">=</span><span class="n">net</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">network</span><span class="o">.</span><span class="n">project</span></div>
+
+<div class="viewcode-block" id="NetworkX.export_data"><a class="viewcode-back" href="../../../modules/io/networkx.html#openpnm.io.NetworkX.export_data">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">export_data</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">network</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Write OpenPNM Network to a NetworkX object.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        network : OpenPNM Network Object</span>
+<span class="sd">            The OpenPNM Network to be converted to a NetworkX object</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        A NetworkX object with all pore/throat properties attached to it</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+
+        <span class="c1"># Ensure network is an OpenPNM Network object.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">GenericNetwork</span><span class="p">):</span>
+            <span class="k">raise</span><span class="p">(</span><span class="s1">&#39;Provided network is not an OpenPNM Network.&#39;</span><span class="p">)</span>
+
+        <span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
+
+        <span class="c1"># Extracting node list and connectivity matrix from Network</span>
+        <span class="n">nodes</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">network</span><span class="o">.</span><span class="n">Ps</span><span class="p">)</span>
+        <span class="n">conns</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">]</span>
+
+        <span class="c1"># Explicitly add nodes and connectivity matrix</span>
+        <span class="n">G</span><span class="o">.</span><span class="n">add_nodes_from</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
+        <span class="n">G</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">(</span><span class="n">conns</span><span class="p">)</span>
+
+        <span class="c1"># Attach Network properties to G</span>
+        <span class="k">for</span> <span class="n">prop</span> <span class="ow">in</span> <span class="n">network</span><span class="o">.</span><span class="n">props</span><span class="p">(</span><span class="n">deep</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">+</span> <span class="n">network</span><span class="o">.</span><span class="n">labels</span><span class="p">():</span>
+            <span class="k">if</span> <span class="s1">&#39;pore.&#39;</span> <span class="ow">in</span> <span class="n">prop</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">network</span><span class="p">[</span><span class="n">prop</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">val</span> <span class="o">=</span> <span class="p">{</span><span class="n">i</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">network</span><span class="p">[</span><span class="n">prop</span><span class="p">][</span><span class="n">i</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">network</span><span class="o">.</span><span class="n">Ps</span><span class="p">}</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">val</span> <span class="o">=</span> <span class="p">{</span><span class="n">i</span><span class="p">:</span> <span class="n">network</span><span class="p">[</span><span class="n">prop</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">network</span><span class="o">.</span><span class="n">Ps</span><span class="p">}</span>
+                <span class="n">nx</span><span class="o">.</span><span class="n">set_node_attributes</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">prop</span><span class="p">[</span><span class="mi">5</span><span class="p">:],</span> <span class="n">values</span><span class="o">=</span><span class="n">val</span><span class="p">)</span>
+            <span class="k">if</span> <span class="s1">&#39;throat.&#39;</span> <span class="ow">in</span> <span class="n">prop</span><span class="p">:</span>
+                <span class="n">val</span> <span class="o">=</span> <span class="p">{</span><span class="nb">tuple</span><span class="p">(</span><span class="n">conn</span><span class="p">):</span> <span class="n">network</span><span class="p">[</span><span class="n">prop</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">conn</span>
+                       <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">conns</span><span class="p">)}</span>
+                <span class="n">nx</span><span class="o">.</span><span class="n">set_edge_attributes</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">prop</span><span class="p">[</span><span class="mi">7</span><span class="p">:],</span> <span class="n">values</span><span class="o">=</span><span class="n">val</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">G</span></div></div>
+</pre></div>
+
+              </div>
+              
+              
+          </main>
+          
+
+      </div>
+    </div>
+  
+  <script src="../../../_static/js/index.1c5a1a01449ed65a7b51.js"></script>
+
+  <footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2021 OpenPNM Team.<br/>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br/>
+</p>
+    </div>
+    
+  </div>
+</footer>
+  </body>
+</html>
