@@ -50,8 +50,8 @@ class NetworkXTest:
         assert a.issubset(net.props())
 
     def test_save_and_load_networkx_no_phases(self):
-        G = op.io.NetworkX.to_networkx(network=self.net)
-        project = op.io.NetworkX.from_networkx(G)
+        G = op.io.NetworkX.export_data(network=self.net)
+        project = op.io.NetworkX.import_data(G)
         assert len(project) == 1
         net = project.network
         assert net.Np == 8
