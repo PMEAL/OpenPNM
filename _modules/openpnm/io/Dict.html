@@ -424,13 +424,6 @@
             <span class="n">d</span> <span class="o">=</span> <span class="n">new_d</span>
         <span class="k">return</span> <span class="n">d</span></div>
 
-<div class="viewcode-block" id="Dict.save"><a class="viewcode-back" href="../../../modules/io/dict.html#openpnm.io.Dict.save">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        This method is being deprecated.  Use ``export_data`` instead.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">cls</span><span class="o">.</span><span class="n">export_data</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
-
 <div class="viewcode-block" id="Dict.export_data"><a class="viewcode-back" href="../../../modules/io/dict.html#openpnm.io.Dict.export_data">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">export_data</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">dct</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -454,13 +447,6 @@
         <span class="n">dct</span> <span class="o">=</span> <span class="n">sanitize_dict</span><span class="p">(</span><span class="n">dct</span><span class="p">)</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">dct</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="Dict.load"><a class="viewcode-back" href="../../../modules/io/dict.html#openpnm.io.Dict.load">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        This method is being deprecated.  Use ``import_data`` instead.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">import_data</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Dict.import_data"><a class="viewcode-back" href="../../../modules/io/dict.html#openpnm.io.Dict.import_data">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">import_data</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
