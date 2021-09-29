@@ -73,7 +73,7 @@ class VoronoiTest:
             fiber_rad=0.2,
             resolution=0.1,
             shape=[3, 2, 1],
-            # name='test2'
+            name='test2'
         )
         net = prj.network
         del_geom = prj.geometries()['test2_del']
@@ -89,28 +89,30 @@ class VoronoiTest:
             [0.0, 3.0, 0.0, 2.0, 0.0, 1.0]
 
     def test_linear_scale(self):
-        prj = op.materials.VoronoiFibers(num_points=10,
+        n = 5
+        prj = op.materials.VoronoiFibers(points=10,
                                          fiber_rad=0.2,
                                          resolution=0.1,
                                          shape=[2, 2, 2],
-                                         name='test3',
+                                         name=f'test{str(n)}',
                                          linear_scale=[1, 1, 2])
         net = prj.network
-        del_geom = prj.geometries()['test3_del']
+        del_geom = prj.geometries()[f'test{str(n)}_del']
         B1 = net.pores(['top', 'delaunay'], mode='xnor')
         B2 = net.pores(['bottom', 'delaunay'], mode='xnor')
         assert del_geom.vertex_dimension(B1, B2, 'volume') == 8.0
         assert del_geom.vertex_dimension(B1, B2, 'length') == 2.0
 
     def test_linear_scale_wrong_shape(self):
-        prj = op.materials.VoronoiFibers(num_points=10,
+        n = 4
+        prj = op.materials.VoronoiFibers(points=10,
                                          fiber_rad=0.2,
                                          resolution=0.1,
                                          shape=[2, 2, 2],
-                                         name='test4',
+                                         name=f'test{str(n)}',
                                          linear_scale=[1, 1])
         net = prj.network
-        del_geom = prj.geometries()['test4_del']
+        del_geom = prj.geometries()[f'test{str(n)}_del']
         B1 = net.pores(['top', 'delaunay'], mode='xnor')
         B2 = net.pores(['bottom', 'delaunay'], mode='xnor')
         assert del_geom.vertex_dimension(B1, B2, 'volume') == 8.0

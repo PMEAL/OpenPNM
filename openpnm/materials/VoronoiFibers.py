@@ -88,7 +88,7 @@ class VoronoiFibers(Project):
     >>> import openpnm as op
     >>> ws = op.Workspace()
     >>> ws.clear()
-    >>> prj = op.materials.VoronoiFibers(num_points=10,
+    >>> prj = op.materials.VoronoiFibers(points=10,
     ...                                  shape=[1e-4, 1e-4, 1e-4],
     ...                                  fiber_rad=5e-6,
     ...                                  resolution=2e-6)
@@ -108,7 +108,7 @@ class VoronoiFibers(Project):
         scale_applied = False
         if linear_scale is not None:
             if len(linear_scale) != 3:
-                logger.exception(
+                logger.error(
                     msg="linear_scale must have length 3 " + "to scale each axis"
                 )
             else:
