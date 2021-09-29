@@ -589,7 +589,7 @@
 <nav id="bd-toc-nav">
     <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#overview-of-module">
+  <a class="reference internal nav-link" href="#module-openpnm.phases">
    Overview of Module
   </a>
  </li>
@@ -626,14 +626,90 @@
 <ul class="simple">
 <li><p><a class="reference internal" href="#phases" id="id1">Phases</a></p>
 <ul>
-<li><p><a class="reference internal" href="#overview-of-module" id="id2">Overview of Module</a></p></li>
+<li><p><a class="reference internal" href="#module-openpnm.phases" id="id2">Overview of Module</a></p></li>
 <li><p><a class="reference internal" href="#links-to-detailed-class-documentation" id="id3">Links to Detailed Class Documentation</a></p></li>
 </ul>
 </li>
 </ul>
 </div>
-<div class="section" id="overview-of-module">
-<h2><a class="toc-backref" href="#id2">Overview of Module</a><a class="headerlink" href="#overview-of-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-openpnm.phases">
+<span id="overview-of-module"></span><h2><a class="toc-backref" href="#id2">Overview of Module</a><a class="headerlink" href="#module-openpnm.phases" title="Permalink to this headline">¶</a></h2>
+<p><strong>openpnm.phases</strong></p>
+<hr class="docutils" />
+<p>This module contains the GenericPhase class, plus several subclasses which
+are preconfigured to have the properties of specific fluids</p>
+<hr class="docutils" />
+<p><strong>The GenericPhase Class</strong></p>
+<p>The <code class="docutils literal notranslate"><span class="pre">GenericPhase</span></code> class is a direct child of the <code class="docutils literal notranslate"><span class="pre">Base</span></code> class, so contains
+the usual methods such as find pore indices based on labels.  It does, however,
+also inherit from <code class="docutils literal notranslate"><span class="pre">ModelsMixin</span></code> so has methods for add, removing and
+regenerating models.</p>
+<hr class="docutils" />
+<p><strong>Library of Preconfigured Phase Classes</strong></p>
+<p>OpenPNM include a few Phase subclasses that contain a suite of pre-configured
+models that predict the thermophysical properties of certain common phases.</p>
+<table class="table">
+<colgroup>
+<col style="width: 17%" />
+<col style="width: 83%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Class</p></th>
+<th class="head"><p>Comments</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Water</p></td>
+<td><p>Most models include the impact of salinity</p></td>
+</tr>
+<tr class="row-odd"><td><p>Air</p></td>
+<td><p>A mixture of O2 and N2, but no humidity</p></td>
+</tr>
+<tr class="row-even"><td><p>Mercury</p></td>
+<td><p>Useful for porosimetry simulations, assumed theta is 140</p></td>
+</tr>
+</tbody>
+</table>
+<hr class="docutils" />
+<p><strong>Customizing a GenericPhase Instance</strong></p>
+<p>The <code class="docutils literal notranslate"><span class="pre">GenericPhase</span></code> class has no pore-scale models attached, so is a blank
+slate for creating custom Phases.  The following code snippet illustrates how
+to do this to create an <em>oil</em> phase with a temperature dependent viscosity
+model based on a simple 2nd order polynomial:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">([</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">oil</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">phases</span><span class="o">.</span><span class="n">GenericPhase</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now add the pore-scale model for viscosity from the <code class="docutils literal notranslate"><span class="pre">models</span></code> module:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">oil</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.viscosity&#39;</span><span class="p">,</span>
+<span class="gp">... </span>              <span class="n">model</span><span class="o">=</span><span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">misc</span><span class="o">.</span><span class="n">polynomial</span><span class="p">,</span>
+<span class="gp">... </span>              <span class="n">a</span><span class="o">=</span><span class="p">[</span><span class="mi">50000</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mf">.1</span><span class="p">],</span>
+<span class="gp">... </span>              <span class="n">prop</span><span class="o">=</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Upon adding the model, values are immediately calculated at the Phase’s
+current temperature:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">oil</span><span class="p">[</span><span class="s1">&#39;pore.viscosity&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+<span class="go">41418.0</span>
+</pre></div>
+</div>
+<p>If the temperature is changed, the model can be regenerated to update the
+viscosity values:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">oil</span><span class="p">[</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">355</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">oil</span><span class="p">[</span><span class="s1">&#39;pore.viscosity&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+<span class="go">41418.0</span>
+</pre></div>
+</div>
+<p>Note that the oil viscosity has NOT changed!  To propigate the new temperature
+to all the other calculated pore-scale properties, call the
+<code class="docutils literal notranslate"><span class="pre">regenerate_models</span></code> function:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">oil</span><span class="o">.</span><span class="n">regenerate_models</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">oil</span><span class="p">[</span><span class="s1">&#39;pore.viscosity&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+<span class="go">37752.0</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="links-to-detailed-class-documentation">
 <h2><a class="toc-backref" href="#id3">Links to Detailed Class Documentation</a><a class="headerlink" href="#links-to-detailed-class-documentation" title="Permalink to this headline">¶</a></h2>
