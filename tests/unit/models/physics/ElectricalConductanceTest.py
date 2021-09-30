@@ -39,7 +39,7 @@ class ElectricalConductanceTest:
         actual = self.phys['throat.electrical_conductance'].mean()
         assert_approx_equal(actual, desired=2.5)
 
-    def test_electrical_conductance_generic(self):
+    def test_generic_electrical(self):
         self.geo['pore.diameter'] = 1.12
         self.geo['throat.diameter'] = 0.56
         L1, Lt, L2 = _conduit_lengths.spheres_and_cylinders(self.geo).T
@@ -57,7 +57,7 @@ class ElectricalConductanceTest:
         mpo2 = op.models.geometry.diffusive_size_factors.spheres_and_cylinders
         self.geo.add_model(propname="throat.diffusive_size_factors",
                            model=mpo2)
-        mod2 = op.models.physics.electrical_conductance.series_resistors_generic
+        mod2 = op.models.physics.electrical_conductance.generic_electrical
         self.phys.add_model(propname='throat.electrical_conductance_generic',
                             model=mod2)
         self.phys.regenerate_models()

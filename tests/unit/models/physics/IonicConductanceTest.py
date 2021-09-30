@@ -38,7 +38,7 @@ class IonicConductanceTest:
         mpo2 = op.models.geometry.diffusive_size_factors.spheres_and_cylinders
         self.geo.add_model(propname="throat.diffusive_size_factors",
                            model=mpo2)
-        mod2 = op.models.physics.ionic_conductance.poisson_laplace_generic
+        mod2 = op.models.physics.ionic_conductance.generic_ionic_poisson_laplace
         self.phys.add_model(propname='throat.ionic_conductance_generic',
                             model=mod2)
         self.phys.regenerate_models()
@@ -60,7 +60,7 @@ class IonicConductanceTest:
         mpo2 = op.models.geometry.diffusive_size_factors.circles_and_rectangles
         self.geo.add_model(propname="throat.diffusive_size_factors",
                            model=mpo2)
-        mod2 = op.models.physics.ionic_conductance.poisson_laplace_generic
+        mod2 = op.models.physics.ionic_conductance.generic_ionic_poisson_laplace
         self.phys.add_model(propname='throat.ionic_conductance_generic',
                             model=mod2)
         self.phys.regenerate_models()
@@ -99,7 +99,7 @@ class IonicConductanceTest:
         mpo2 = op.models.geometry.diffusive_size_factors.spheres_and_cylinders
         self.geo.add_model(propname="throat.diffusive_size_factors",
                            model=mpo2)
-        current2 = op.models.physics.ionic_conductance.electroneutrality_generic
+        current2 = op.models.physics.ionic_conductance.generic_ionic_electroneutrality
         self.phys.add_model(propname='throat.ionic_conductance_generic',
                             ions=[Na.name, Cl.name],
                             model=current2, regen_mode='normal')
