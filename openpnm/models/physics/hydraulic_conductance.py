@@ -13,12 +13,10 @@ __all__ = [
 ]
 
 
-def generic_hydraulic(
-        target,
-        pore_viscosity='pore.viscosity',
-        throat_viscosity='throat.viscosity',
-        size_factors='throat.hydraulic_size_factors'
-):
+def generic_hydraulic(target,
+                      pore_viscosity='pore.viscosity',
+                      throat_viscosity='throat.viscosity',
+                      size_factors='throat.hydraulic_size_factors'):
     r"""
     Calculates the hydraulic conductance of conduits in network.
 
@@ -56,7 +54,7 @@ def generic_hydraulic(
         g2 = F[f"{size_factors}.pore2"][throats] / mu2
         gh = 1 / (1 / g1 + 1 / gt + 1 / g2)
     else:
-        gh = F / mut
+        gh = F[throats] / mut
 
     return gh
 
@@ -343,24 +341,11 @@ def hagen_poiseuille_power_law(
     except KeyError:
         phase[pore_pressure] = 0
     P = phase[pore_pressure]
+    mu_mint = phase[throat_viscosity_min][throats]
+    mu_maxt = phase[throat_viscosity_max][throats]
+    Ct = phase[throat_consistency][throats]
+    nt = phase[throat_flow_index][throats]
 
-    # Interpolate pore phase property values to throats
-    try:
-        mu_mint = phase[throat_viscosity_min][throats]
-    except KeyError:
-        mu_mint = phase.interpolate_data(propname=pore_viscosity_min)[throats]
-    try:
-        mu_maxt = phase[throat_viscosity_max][throats]
-    except KeyError:
-        mu_maxt = phase.interpolate_data(propname=pore_viscosity_max)[throats]
-    try:
-        Ct = phase[throat_consistency][throats]
-    except KeyError:
-        Ct = phase.interpolate_data(propname=pore_consistency)[throats]
-    try:
-        nt = phase[throat_flow_index][throats]
-    except KeyError:
-        nt = phase.interpolate_data(propname=pore_flow_index)[throats]
     # Interpolate throat phase property values to pores
     try:
         mu_min1 = phase[pore_viscosity_min][cn[:, 0]]
@@ -499,10 +484,7 @@ def valvatne_blunt(
     """
     network = target.project.network
     mu_p = target[pore_viscosity]
-    try:
-        mu_t = target[throat_viscosity]
-    except KeyError:
-        mu_t = target.interpolate_data(pore_viscosity)
+    mu_t = target[throat_viscosity]
     # Throat Portion
     Gt = network[throat_shape_factor]
     tri = Gt <= _np.sqrt(3) / 36.0
