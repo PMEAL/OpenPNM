@@ -60,7 +60,7 @@ def poisson_laplace_generic(target,
         g2 = eps_factor * F[f"{size_factors}.pore2"][throats]
         gic = 1 / (1 / g1 + 1 / gt + 1 / g2)
     else:
-        gic = eps_factor * F
+        gic = eps_factor * F[throats]
 
     return gic
 
@@ -156,10 +156,7 @@ def electroneutrality_generic(target,
     # Preallocating g
     g1, g2, gt = _np.zeros((3, len(cn)))
     # Interpolate pore phase property values to throats
-    try:
-        Tt = phase[throat_temperature][throats]
-    except KeyError:
-        Tt = phase.interpolate_data(propname=pore_temperature)[throats]
+    Tt = phase[throat_temperature][throats]
     try:
         T1 = phase[pore_temperature][cn[:, 0]]
         T2 = phase[pore_temperature][cn[:, 1]]

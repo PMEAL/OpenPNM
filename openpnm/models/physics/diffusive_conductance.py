@@ -50,7 +50,7 @@ def generic_diffusive(
     phase = target.project.find_phase(target)
     F = network[size_factors]
     DAB1, DAB2 = phase[pore_diffusivity][conns].T
-    DABt = phase[throat_diffusivity]
+    DABt = phase[throat_diffusivity][throats]
 
     if isinstance(F, dict):
         g1 = DAB1 * F[f"{size_factors}.pore1"][throats]
@@ -58,7 +58,7 @@ def generic_diffusive(
         g2 = DAB2 * F[f"{size_factors}.pore2"][throats]
         gd = 1 / (1 / g1 + 1 / gt + 1 / g2)
     else:
-        gd = DABt * F
+        gd = DABt * F[throats]
 
     return gd
 

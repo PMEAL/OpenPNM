@@ -50,11 +50,7 @@ def series_resistors_generic(target,
     phase = target.project.find_phase(target)
     cn = network['throat.conns'][throats]
     F = network[size_factors]
-    # Interpolate pore phase property values to throats
-    try:
-        Dt = phase[throat_conductivity][throats]
-    except KeyError:
-        Dt = phase.interpolate_data(propname=pore_conductivity)[throats]
+    Dt = phase[throat_conductivity][throats]
     try:
         D1 = phase[pore_conductivity][cn[:, 0]]
         D2 = phase[pore_conductivity][cn[:, 1]]
@@ -67,7 +63,7 @@ def series_resistors_generic(target,
         g2 = D2 * F[f"{size_factors}.pore2"][throats]
         gelec = 1 / (1 / g1 + 1 / gt + 1 / g2)
     else:
-        gelec = Dt * F
+        gelec = Dt * F[throats]
     return gelec
 
 

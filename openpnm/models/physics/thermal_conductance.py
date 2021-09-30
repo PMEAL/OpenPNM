@@ -63,7 +63,7 @@ def series_resistors_generic(target,
         g2 = D2 * F[f"{size_factors}.pore2"][throats]
         gtherm = 1 / (1 / g1 + 1 / gt + 1 / g2)
     else:
-        gtherm = Dt * F
+        gtherm = Dt * F[throats]
     return gtherm
 
 
