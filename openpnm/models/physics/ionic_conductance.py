@@ -3,14 +3,16 @@ Pore-scale models for calculating ionic conductance of conduits.
 """
 import numpy as _np
 from openpnm.utils import logging
+from openpnm.models.physics.utils import generic_transport_conductance
 logger = logging.getLogger(__name__)
 
-__all__ = ["poisson_laplace_generic", "poisson", "electroneutrality"]
+__all__ = ["generic_ionic_poisson_laplace", "poisson", "electroneutrality"]
 
 
-def poisson_laplace_generic(target,
-                            conduit_lengths='throat.conduit_lengths',
-                            size_factors="throat.diffusive_size_factors"):
+def generic_ionic_poisson_laplace(target,
+                                  pore_conductivity='pore.permittivity',
+                                  throat_conductivity='throat.permittivity',
+                                  size_factors='throat.diffusive_size_factors'):
     r"""
     Calculate the ionic conductance of conduits in network (using the Poisson
     equation for charge conservation), where a conduit is
@@ -37,48 +39,32 @@ def poisson_laplace_generic(target,
 
     Notes
     -----
-    (1) This function requires that all the necessary phase properties already
+    This function requires that all the necessary phase properties already
     be calculated.
 
-    (2) This function calculates the specified property for the *entire*
-    network then extracts the values for the appropriate throats at the end.
-
     """
-    network = target.project.network
-    throats = target.throats(target=network)
-    # conns = network.conns[throats] not needed as e_r is assumed to be constant
-    phase = target.project.find_phase(target)
-    F = network[size_factors]
-    # Poisson or Laplace
     epsilon0 = 8.854187817e-12
-    epsilonr = phase['pore.permittivity'][0]
-    eps_factor = epsilon0 * epsilonr
-
-    if isinstance(F, dict):
-        g1 = eps_factor * F[f"{size_factors}.pore1"][throats]
-        gt = eps_factor * F[f"{size_factors}.throat"][throats]
-        g2 = eps_factor * F[f"{size_factors}.pore2"][throats]
-        gic = 1 / (1 / g1 + 1 / gt + 1 / g2)
-    else:
-        gic = eps_factor * F[throats]
-
+    gic = epsilon0*generic_transport_conductance(target=target,
+                                                 pore_conductivity=pore_conductivity,
+                                                 throat_conductivity=throat_conductivity,
+                                                 size_factors=size_factors)
     return gic
 
 
-def electroneutrality_generic(target,
-                              pore_area='pore.area',
-                              throat_area='throat.area',
-                              pore_diffusivity='pore.diffusivity',
-                              throat_diffusivity='throat.diffusivity',
-                              conduit_lengths='throat.conduit_lengths',
-                              size_factors="throat.diffusive_size_factors",
-                              pore_volume='pore.volume',
-                              pore_temperature='pore.temperature',
-                              throat_temperature='throat.temperature',
-                              pore_valence='pore.valence',
-                              throat_valence='throat.valence',
-                              pore_concentration='pore.concentration',
-                              ions=[]):
+def generic_ionic_electroneutrality(target,
+                                    pore_area='pore.area',
+                                    throat_area='throat.area',
+                                    pore_diffusivity='pore.diffusivity',
+                                    throat_diffusivity='throat.diffusivity',
+                                    conduit_lengths='throat.conduit_lengths',
+                                    size_factors="throat.diffusive_size_factors",
+                                    pore_volume='pore.volume',
+                                    pore_temperature='pore.temperature',
+                                    throat_temperature='throat.temperature',
+                                    pore_valence='pore.valence',
+                                    throat_valence='throat.valence',
+                                    pore_concentration='pore.concentration',
+                                    ions=[]):
     r"""
     Calculate the ionic conductance of conduits in network (assuming
     electroneutrality for charge conservation), where a conduit is

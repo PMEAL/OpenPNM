@@ -4,18 +4,18 @@ Pore-scale models for calculating the electrical conductance of conduits.
 import numpy as _np
 from openpnm.models.physics.utils import generic_transport_conductance
 
-__all__ = ["series_resistors", "series_resistors_generic"]
+__all__ = ["generic_electrical", "series_resistors"]
 
 
-def series_resistors_generic(target,
-                             pore_conductivity='pore.electrical_conductivity',
-                             throat_conductivity='throat.electrical_conductivity',
-                             size_factors='throat.diffusive_size_factors'):
+def generic_electrical(target,
+                       pore_conductivity='pore.electrical_conductivity',
+                       throat_conductivity='throat.electrical_conductivity',
+                       size_factors='throat.diffusive_size_factors'):
     r"""
     Calculate the electrical conductance of conduits in network, where a
     conduit is ( 1/2 pore - full throat - 1/2 pore ). See the notes section.
 
-    Parameters
+    Parameterss
     ----------
     target : OpenPNM Object
         The object which this model is associated with. This controls the

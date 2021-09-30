@@ -4,13 +4,13 @@ Pore-scale models for calculating the thermal conductance of conduits.
 import numpy as _np
 from openpnm.models.physics.utils import generic_transport_conductance
 
-__all__ = ["series_resistors"]
+__all__ = ["generic_thermal", "series_resistors"]
 
 
-def series_resistors_generic(target,
-                             pore_conductivity='pore.thermal_conductivity',
-                             throat_conductivity='throat.thermal_conductivity',
-                             size_factors='throat.diffusive_size_factors'):
+def generic_thermal(target,
+                    pore_conductivity='pore.thermal_conductivity',
+                    throat_conductivity='throat.thermal_conductivity',
+                    size_factors='throat.diffusive_size_factors'):
     r"""
     Calculate the thermal conductance of conduits in network, where a
     conduit is ( 1/2 pore - full throat - 1/2 pore ). See the notes section.
