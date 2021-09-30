@@ -2,6 +2,7 @@ r"""
 Pore-scale models for calculating the thermal conductance of conduits.
 """
 import numpy as _np
+from openpnm.models.physics.utils import generic_transport_conductance
 
 __all__ = ["series_resistors"]
 
@@ -38,33 +39,13 @@ def series_resistors_generic(target,
 
     Notes
     -----
-    (1) This function requires that all the necessary phase properties already
+    This function requires that all the necessary phase properties already
     be calculated.
-
-    (2) This function calculates the specified property for the *entire*
-    network then extracts the values for the appropriate throats at the end.
-
     """
-    network = target.project.network
-    throats = network.map_throats(throats=target.Ts, origin=target)
-    phase = target.project.find_phase(target)
-    cn = network['throat.conns'][throats]
-    F = network[size_factors]
-    Dt = phase[throat_conductivity][throats]
-    try:
-        D1 = phase[pore_conductivity][cn[:, 0]]
-        D2 = phase[pore_conductivity][cn[:, 1]]
-    except KeyError:
-        D1 = phase.interpolate_data(propname=throat_conductivity)[cn[:, 0]]
-        D2 = phase.interpolate_data(propname=throat_conductivity)[cn[:, 1]]
-    if isinstance(F, dict):
-        g1 = D1 * F[f"{size_factors}.pore1"][throats]
-        gt = Dt * F[f"{size_factors}.throat"][throats]
-        g2 = D2 * F[f"{size_factors}.pore2"][throats]
-        gtherm = 1 / (1 / g1 + 1 / gt + 1 / g2)
-    else:
-        gtherm = Dt * F[throats]
-    return gtherm
+    return generic_transport_conductance(target=target,
+                                         pore_conductivity=pore_conductivity,
+                                         throat_conductivity=throat_conductivity,
+                                         size_factors=size_factors)
 
 
 def series_resistors(target,
