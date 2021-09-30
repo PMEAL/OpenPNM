@@ -79,12 +79,7 @@ def ad_dif_mig(
     throats = network.map_throats(throats=target.Ts, origin=target)
     phase = target.project.find_phase(target)
     cn = network["throat.conns"][throats]
-
-    # Interpolate pore phase property values to throats
-    try:
-        T = phase[throat_temperature][throats]
-    except KeyError:
-        T = phase.interpolate_data(propname=pore_temperature)[throats]
+    T = phase[throat_temperature][throats]
     # Check if pressure and potential values exist, otherwise, assign zeros
     try:
         P = phase[pore_pressure]
@@ -160,6 +155,3 @@ def ad_dif_mig(
         raise Exception("Unrecognized discretization scheme: " + s_scheme)
     w = w.reshape(throats.size, 2, order="F")
     return w
-
-    # Apply shape factors and calculate the final conductance
-    return (1 / gt / SFt + 1 / g1 / SF1 + 1 / g2 / SF2) ** (-1)
