@@ -610,122 +610,16 @@
 <dt class="sig sig-object py" id="openpnm.algorithms.GenericTransport">
 <em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">GenericTransport</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/GenericTransport.html#GenericTransport"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.GenericTransport" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="generic_algorithm.html#openpnm.algorithms.GenericAlgorithm" title="openpnm.algorithms.GenericAlgorithm.GenericAlgorithm"><code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.algorithms.GenericAlgorithm.GenericAlgorithm</span></code></a></p>
-<p>This class implements steady-state linear transport calculations</p>
+<p>This class implements steady-state linear transport calculations.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>network</strong> (<em>(</em><em>OpenPNM Network object</em><em>)</em>) – The network object to which this algorithm will apply.</p></li>
-<li><p><strong>name</strong> (<em>(</em><em>string</em><em>, </em><em>optional</em><em>)</em>) – Name of the algorithm</p></li>
-<li><p><strong>project</strong> (<em>(</em><em>OpenPNM Project object</em><em>, </em><em>optional</em><em>)</em>) – Either a Network or a Project must be supplied</p></li>
+<li><p><strong>network</strong> (<a class="reference internal" href="../network/generic.html#openpnm.network.GenericNetwork" title="openpnm.network.GenericNetwork"><em>GenericNetwork</em></a>) – The network object to which this algorithm will apply.</p></li>
+<li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of the algorithm</p></li>
+<li><p><strong>project</strong> (<a class="reference internal" href="../utils/project.html#openpnm.utils.Project" title="openpnm.utils.Project"><em>Project</em></a><em>, </em><em>optional</em>) – Either a Network or a Project must be supplied</p></li>
 </ul>
 </dd>
 </dl>
-<p class="rubric">Notes</p>
-<p>The following table shows the methods that are accessible to the user
-for setting up the simulation.</p>
-<table class="table">
-<colgroup>
-<col style="width: 29%" />
-<col style="width: 71%" />
-</colgroup>
-<thead>
-<tr class="row-odd"><th class="head"><p>Methods</p></th>
-<th class="head"><p>Description</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">set_value_BC</span></code></p></td>
-<td><p>Applies constant value boundary conditions to the
-specified pores</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">set_rate_BC</span></code></p></td>
-<td><p>Applies constant rate boundary conditions to the
-specified pores</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">remove_BC</span></code></p></td>
-<td><p>Removes all boundary conditions from the
-specified pores</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">rate</span></code></p></td>
-<td><p>Calculates the total rate of transfer through the
-given pores or throats</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">setup</span></code></p></td>
-<td><p>A shortcut for applying values in the <code class="docutils literal notranslate"><span class="pre">settings</span></code>
-attribute.</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">results</span></code></p></td>
-<td><p>Returns the results of the calcualtion as a
-<code class="docutils literal notranslate"><span class="pre">dict</span></code> with the data stored under the ‘quantity’
-specified in the <code class="docutils literal notranslate"><span class="pre">settings</span></code></p></td>
-</tr>
-</tbody>
-</table>
-<p>In addition to the above methods there are also the following attributes:</p>
-<table class="table">
-<colgroup>
-<col style="width: 29%" />
-<col style="width: 71%" />
-</colgroup>
-<thead>
-<tr class="row-odd"><th class="head"><p>Attribute</p></th>
-<th class="head"><p>Description</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">A</span></code></p></td>
-<td><p>Retrieves the coefficient matrix</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">b</span></code></p></td>
-<td><p>Retrieves the RHS matrix</p></td>
-</tr>
-</tbody>
-</table>
-<p>This class contains quite a few hidden methods (preceeded by an
-underscore) that are called internally.  Since these are critical to the
-functioning of this algorithm they are worth outlining even though the
-user does not call them directly:</p>
-<table class="table">
-<colgroup>
-<col style="width: 32%" />
-<col style="width: 68%" />
-</colgroup>
-<thead>
-<tr class="row-odd"><th class="head"><p>Method or Attribute</p></th>
-<th class="head"><p>Description</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">_build_A</span></code></p></td>
-<td><p>Builds the <strong>A</strong> matrix based on the
-‘conductance’ specified in <code class="docutils literal notranslate"><span class="pre">settings</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">_build_b</span></code></p></td>
-<td><p>Builds the <strong>b</strong> matrix</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">_apply_BCs</span></code></p></td>
-<td><p>Applies the given BCs by adjust the <strong>A</strong> and
-<strong>b</strong> matrices</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">_calc_eff_prop</span></code></p></td>
-<td><p>Finds the effective property (e.g. permeability
-coefficient) based on the given BCs</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">_solve</span></code></p></td>
-<td><p>Runs the algorithm using the solver specified
-in the <code class="docutils literal notranslate"><span class="pre">settings</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">_get_domain_area</span></code></p></td>
-<td><p>Attempts to estimate the area of the inlet pores
-if not specified by user</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">_get_domain_length</span></code></p></td>
-<td><p>Attempts to estimate the length between the
-inlet and outlet faces if not specified by the
-user</p></td>
-</tr>
-</tbody>
-</table>
 <dl class="py method">
 <dt class="sig sig-object py" id="openpnm.algorithms.GenericTransport._apply_BCs">
 <span class="sig-name descname"><span class="pre">_apply_BCs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/GenericTransport.html#GenericTransport._apply_BCs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.GenericTransport._apply_BCs" title="Permalink to this definition">¶</a></dt>
@@ -736,16 +630,19 @@ adding values to the <em>A</em> and <em>b</em> matrices.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="openpnm.algorithms.GenericTransport._build_A">
 <span class="sig-name descname"><span class="pre">_build_A</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/GenericTransport.html#GenericTransport._build_A"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.GenericTransport._build_A" title="Permalink to this definition">¶</a></dt>
-<dd><p>Builds the coefficient matrix based on conductances between pores.
-The conductance to use is specified in the algorithm’s <code class="docutils literal notranslate"><span class="pre">settings</span></code>
-under <code class="docutils literal notranslate"><span class="pre">conductance</span></code>.  In subclasses (e.g. <code class="docutils literal notranslate"><span class="pre">FickianDiffusion</span></code>)
-this is set by default, though it can be overwritten.</p>
+<dd><p>Builds the coefficient matrix based on throat conductance values.</p>
+<p class="rubric">Notes</p>
+<p>The conductance to use is specified in stored in the algorithm’s
+settings under <code class="docutils literal notranslate"><span class="pre">alg.settings['conductance']</span></code>.</p>
+<p>In subclasses, conductance is set by default. For instance, in
+<code class="docutils literal notranslate"><span class="pre">FickianDiffusion</span></code>, it is set to
+<code class="docutils literal notranslate"><span class="pre">throat.diffusive_conductance</span></code>, although it can be changed.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="openpnm.algorithms.GenericTransport._build_b">
 <span class="sig-name descname"><span class="pre">_build_b</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/GenericTransport.html#GenericTransport._build_b"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.GenericTransport._build_b" title="Permalink to this definition">¶</a></dt>
-<dd><p>Builds the RHS matrix, without applying any boundary conditions or
+<dd><p>Builds the RHS vector, without applying any boundary conditions or
 source terms. This method is trivial an basically creates a column
 vector of 0’s.</p>
 </dd></dl>
@@ -753,16 +650,17 @@ vector of 0’s.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="openpnm.algorithms.GenericTransport._calc_eff_prop">
 <span class="sig-name descname"><span class="pre">_calc_eff_prop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inlets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outlets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain_area</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/GenericTransport.html#GenericTransport._calc_eff_prop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.GenericTransport._calc_eff_prop" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate the effective transport through the network</p>
+<dd><p>Calculates the effective transport through the network.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>inlets</strong> (<em>array_like</em>) – The pores where the inlet boundary conditions were applied.  If
+<li><p><strong>inlets</strong> (<em>array_like</em>) – The pores where the inlet boundary conditions were applied. If
 not given an attempt is made to infer them from the algorithm.</p></li>
-<li><p><strong>outlets</strong> (<em>array_like</em>) – The pores where the outlet boundary conditions were applied.  If
-not given an attempt is made to infer them from the algorithm.</p></li>
-<li><p><strong>domain_area</strong> (<em>scalar</em>) – The area of the inlet and/or outlet face (which shold match)</p></li>
-<li><p><strong>domain_length</strong> (<em>scalar</em>) – The length of the domain between the inlet and outlet faces</p></li>
+<li><p><strong>outlets</strong> (<em>array_like</em>) – The pores where the outlet boundary conditions were applied.
+If not given an attempt is made to infer them from the
+algorithm.</p></li>
+<li><p><strong>domain_area</strong> (<em>float</em>) – The area of the inlet and/or outlet face (which shold match)</p></li>
+<li><p><strong>domain_length</strong> (<em>float</em>) – The length of the domain between the inlet and outlet faces</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -775,42 +673,49 @@ not given an attempt is made to infer them from the algorithm.</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="openpnm.algorithms.GenericTransport._solve">
-<span class="sig-name descname"><span class="pre">_solve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/GenericTransport.html#GenericTransport._solve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.GenericTransport._solve" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sends the A and b matrices to the specified solver, and solves for <em>x</em>
-given the boundary conditions, and source terms based on the present
-value of <em>x</em>.  This method does NOT iterate to solve for non-linear
-source terms or march time steps.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>A</strong> (<em>sparse matrix</em>) – The coefficient matrix in sparse format. If not specified, then
-it uses  the <code class="docutils literal notranslate"><span class="pre">A</span></code> matrix attached to the object.</p></li>
-<li><p><strong>b</strong> (<em>ND-array</em>) – The RHS matrix in any format.  If not specified, then it uses
-the <code class="docutils literal notranslate"><span class="pre">b</span></code> matrix attached to the object.</p></li>
-<li><p><strong>x0</strong> (<em>ND-array</em>) – The initial guess for the solution of Ax = b</p></li>
-</ul>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<p>The solver used here is specified in the <code class="docutils literal notranslate"><span class="pre">settings</span></code> attribute of the
-algorithm.</p>
+<dt class="sig sig-object py" id="openpnm.algorithms.GenericTransport._get_domain_area">
+<span class="sig-name descname"><span class="pre">_get_domain_area</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inlets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outlets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/GenericTransport.html#GenericTransport._get_domain_area"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.GenericTransport._get_domain_area" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determines the cross sectional area relative to the inlets/outlets.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.algorithms.GenericTransport._get_domain_length">
+<span class="sig-name descname"><span class="pre">_get_domain_length</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inlets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outlets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/GenericTransport.html#GenericTransport._get_domain_length"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.GenericTransport._get_domain_length" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determines the domain length relative to the inlets/outlets.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="openpnm.algorithms.GenericTransport.rate">
 <span class="sig-name descname"><span class="pre">rate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throats</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'group'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/GenericTransport.html#GenericTransport.rate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.GenericTransport.rate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculates the net rate of material moving into a given set of pores or
-throats</p>
+<dd><p>Calculates the net rate of material moving into a given set of
+pores or throats</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pores</strong> (<em>array_like</em>) – The pores for which the rate should be calculated</p></li>
 <li><p><strong>throats</strong> (<em>array_like</em>) – The throats through which the rate should be calculated</p></li>
-<li><p><strong>mode</strong> (<em>string</em><em>, </em><em>optional</em>) – Controls how to return the rate. Options are:
-- <em>‘group’</em>: (default) Returns the cumulative rate of material
-moving into the given set of pores
-- <em>‘single’</em> : Calculates the rate for each pore individually</p></li>
+<li><p><strong>mode</strong> (<em>str</em><em>, </em><em>optional</em>) – <p>Controls how to return the rate. The default value is ‘group’.
+Options are:</p>
+<table class="table">
+<colgroup>
+<col style="width: 17%" />
+<col style="width: 83%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>mode</p></th>
+<th class="head"><p>meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>’group’</p></td>
+<td><p>Returns the cumulative rate of material</p></td>
+</tr>
+<tr class="row-odd"><td><p>’single’</p></td>
+<td><p>Calculates the rate for each pore individually</p></td>
+</tr>
+</tbody>
+</table>
+</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -819,11 +724,12 @@ moving into the given set of pores
 <li><p><em>net rate of material exiting the pore or pores.  Thus a positive</em></p></li>
 <li><p><em>rate indicates material is leaving the pores, and negative values</em></p></li>
 <li><p><em>mean material is entering.</em></p></li>
-<li><p>If <code class="docutils literal notranslate"><span class="pre">throats</span></code> are specified the rate is calculated in the direction of</p></li>
-<li><p><em>the gradient, thus is always positive.</em></p></li>
+<li><p>If <code class="docutils literal notranslate"><span class="pre">throats</span></code> are specified the rate is calculated in the</p></li>
+<li><p><em>direction of the gradient, thus is always positive.</em></p></li>
 <li><p>If <code class="docutils literal notranslate"><span class="pre">mode</span></code> is ‘single’ then the cumulative rate through the given</p></li>
-<li><p>pores (or throats) are returned as a vector, if <code class="docutils literal notranslate"><span class="pre">mode</span></code> is ‘group’</p></li>
-<li><p><em>then the individual rates are summed and returned as a scalar.</em></p></li>
+<li><p>pores (or throats) are returned as a vector, if <code class="docutils literal notranslate"><span class="pre">mode</span></code> is</p></li>
+<li><p><em>’group’ then the individual rates are summed and returned as a</em></p></li>
+<li><p><em>scalar.</em></p></li>
 </ul>
 </p>
 </dd>
@@ -833,8 +739,8 @@ moving into the given set of pores
 <dl class="py method">
 <dt class="sig sig-object py" id="openpnm.algorithms.GenericTransport.results">
 <span class="sig-name descname"><span class="pre">results</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/GenericTransport.html#GenericTransport.results"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.GenericTransport.results" title="Permalink to this definition">¶</a></dt>
-<dd><p>Fetches the calculated quantity from the algorithm and returns it as
-an array.</p>
+<dd><p>Fetches the calculated quantity from the algorithm and returns it
+as an array.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -845,20 +751,40 @@ an array.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pores</strong> (<em>array_like</em>) – The pore indices where the condition should be applied</p></li>
-<li><p><strong>rates</strong> (<em>scalar</em><em> or </em><em>array_like</em><em>, </em><em>optional</em>) – The rates to apply in each pore.  If a scalar is supplied that
+<li><p><strong>rates</strong> (<em>float</em><em> or </em><em>array_like</em><em>, </em><em>optional</em>) – The rates to apply in each pore. If a scalar is supplied that
 rate is assigned to all locations, and if a vector is supplied
 it must be the same size as the indices given in <code class="docutils literal notranslate"><span class="pre">pores</span></code>.</p></li>
-<li><p><strong>total_rate</strong> (<em>float</em><em>, </em><em>optional</em>) – The total rate supplied to all pores.  The rate supplied by this
-argument is divided evenly among all pores. A scalar must be
-supplied! Total_rate cannot be specified if rate is specified.</p></li>
-<li><p><strong>mode</strong> (<em>str</em><em>, </em><em>optional</em>) – <p>Controls how the boundary conditions are applied.  Options are:</p>
-<p>’merge’ - (Default) Adds supplied boundary conditions to already
-existing conditions, and also overwrites any existing values.
-If BCs of the complementary type already exist in the given
-locations, these values are kept.
-‘overwrite’ - Deletes all boundary conditions of the given type
-then adds the specified new ones (unless locations already have
-BCs of the other type).</p>
+<li><p><strong>total_rate</strong> (<em>float</em><em>, </em><em>optional</em>) – The total rate supplied to all pores. The rate supplied by
+this argument is divided evenly among all pores. A scalar must
+be supplied! Total_rate cannot be specified if rate is
+specified.</p></li>
+<li><p><strong>mode</strong> (<em>str</em><em>, </em><em>optional</em>) – <p>Controls how the boundary conditions are applied. The default
+value is ‘merge’. Options are:</p>
+<table class="table">
+<colgroup>
+<col style="width: 17%" />
+<col style="width: 83%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>mode</p></th>
+<th class="head"><p>meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>’merge’</p></td>
+<td><p>Adds supplied boundary conditions to already
+existing conditions, and also overwrites any
+existing values. If BCs of the complementary type
+already exist in the given locations, those
+values are kept.</p></td>
+</tr>
+<tr class="row-odd"><td><p>’overwrite’</p></td>
+<td><p>Deletes all boundary conditions of the given type
+then adds the specified new ones (unless
+locations already have BCs of the other type)</p></td>
+</tr>
+</tbody>
+</table>
 </p></li>
 </ul>
 </dd>
@@ -871,23 +797,42 @@ BCs of the other type).</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="openpnm.algorithms.GenericTransport.set_value_BC">
 <span class="sig-name descname"><span class="pre">set_value_BC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pores</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'merge'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/GenericTransport.html#GenericTransport.set_value_BC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.GenericTransport.set_value_BC" title="Permalink to this definition">¶</a></dt>
-<dd><p>Apply constant value boundary conditons to the specified locations.</p>
+<dd><p>Applues constant value boundary conditons to the specified pores.</p>
 <p>These are sometimes referred to as Dirichlet conditions.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pores</strong> (<em>array_like</em>) – The pore indices where the condition should be applied</p></li>
-<li><p><strong>values</strong> (<em>scalar</em><em> or </em><em>array_like</em>) – The value to apply in each pore.  If a scalar is supplied
+<li><p><strong>values</strong> (<em>float</em><em> or </em><em>array_like</em>) – The value to apply in each pore. If a scalar is supplied
 it is assigne to all locations, and if a vector is applied is
 must be the same size as the indices given in <code class="docutils literal notranslate"><span class="pre">pores</span></code>.</p></li>
-<li><p><strong>mode</strong> (<em>string</em><em>, </em><em>optional</em>) – <p>Controls how the boundary conditions are applied.  Options are:</p>
-<p>’merge’ - (Default) Adds supplied boundary conditions to already
-existing conditions, and also overwrites any existing values.
-If BCs of the complementary type already exist in the given
-locations, those values are kept.
-‘overwrite’ - Deletes all boundary conditions of the given type
-then adds the specified new ones (unless locations already have
-BCs of the other type).</p>
+<li><p><strong>mode</strong> (<em>str</em><em>, </em><em>optional</em>) – <p>Controls how the boundary conditions are applied. The default
+value is ‘merge’. Options are:</p>
+<table class="table">
+<colgroup>
+<col style="width: 17%" />
+<col style="width: 83%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>mode</p></th>
+<th class="head"><p>meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>’merge’</p></td>
+<td><p>Adds supplied boundary conditions to already
+existing conditions, and also overwrites any
+existing values. If BCs of the complementary type
+already exist in the given locations, those
+values are kept.</p></td>
+</tr>
+<tr class="row-odd"><td><p>’overwrite’</p></td>
+<td><p>Deletes all boundary conditions of the given type
+then adds the specified new ones (unless
+locations already have BCs of the other type)</p></td>
+</tr>
+</tbody>
+</table>
 </p></li>
 </ul>
 </dd>
