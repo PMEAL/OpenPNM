@@ -3,8 +3,7 @@ from numpy.linalg import norm
 
 class BaseSolver:
 
-    def __init__(self):
-        pass
+    def __init__(self): ...
 
     def solve(self):
         raise NotImplementedError
@@ -54,3 +53,6 @@ class IterativeSolver(BaseSolver):
             ``res = norm(A*x - b)``
         """
         return norm(A*x - b)
+
+
+class Integrator: ...
