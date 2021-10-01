@@ -7,7 +7,7 @@ from scipy.spatial import cKDTree
 from openpnm.topotools import iscoplanar, is_fully_connected
 from openpnm.algorithms import GenericAlgorithm
 from openpnm.utils import logging, Docorator, GenericSettings, prettify_logger_message
-from openpnm.solvers import ScipySpsolve
+from openpnm.solvers import PardisoSpsolve
 # Uncomment this line when we stop supporting Python 3.6
 # from dataclasses import dataclass, field
 # from typing import List
@@ -357,10 +357,9 @@ class GenericTransport(GenericAlgorithm):
         if not self.settings['cache_A']:
             self._pure_A = None
         if self._pure_A is None:
-            network = self.project.network
-            phase = self.project.phases()[self.settings['phase']]
+            phase = self.project.find_phase(self)
             g = phase[gvals]
-            am = network.create_adjacency_matrix(weights=g, fmt='coo')
+            am = self.network.create_adjacency_matrix(weights=g, fmt='coo')
             self._pure_A = spgr.laplacian(am).astype(float)
         self.A = self._pure_A.copy()
 
@@ -444,7 +443,7 @@ class GenericTransport(GenericAlgorithm):
 
         """
         logger.info('Running GenericTransport')
-        solver = ScipySpsolve() if solver is None else solver
+        solver = PardisoSpsolve() if solver is None else solver
         # Perform pre-solve validations
         self._validate_settings()
         self._validate_data_health()
@@ -460,7 +459,7 @@ class GenericTransport(GenericAlgorithm):
         # Make sure A,b are STILL well-defined
         self._validate_data_health()
         # Solve and apply under-relaxation
-        x_new = solver.solve(A=self.A, b=self.b, x0=x0)
+        x_new, exit_code = solver.solve(A=self.A, b=self.b, x0=x0)
         quantity = self.settings['quantity']
         self[quantity] = w * x_new + (1 - w) * self[quantity]
         # Update A and b using the recent solution
