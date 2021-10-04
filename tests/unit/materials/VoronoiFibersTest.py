@@ -69,7 +69,7 @@ class VoronoiTest:
 
     def test_vertex_dimension(self):
         prj = VoronoiFibers(
-            num_points=10,
+            points=10,
             fiber_rad=0.2,
             resolution=0.1,
             shape=[3, 2, 1],
@@ -89,7 +89,7 @@ class VoronoiTest:
             [0.0, 3.0, 0.0, 2.0, 0.0, 1.0]
 
     def test_linear_scale(self):
-        prj = op.materials.VoronoiFibers(num_points=10,
+        prj = op.materials.VoronoiFibers(points=10,
                                          fiber_rad=0.2,
                                          resolution=0.1,
                                          shape=[2, 2, 2],
@@ -103,7 +103,7 @@ class VoronoiTest:
         assert del_geom.vertex_dimension(B1, B2, 'length') == 2.0
 
     def test_linear_scale_wrong_shape(self):
-        prj = op.materials.VoronoiFibers(num_points=10,
+        prj = op.materials.VoronoiFibers(points=10,
                                          fiber_rad=0.2,
                                          resolution=0.1,
                                          shape=[2, 2, 2],

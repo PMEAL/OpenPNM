@@ -290,7 +290,7 @@ class DelaunayVoronoiDual(GenericNetwork):
         if points is None:
             raise Exception('Must specify points')
         if np.isscalar(points):
-            points = topotools.generate_base_points(num_points=points,
+            points = topotools.generate_base_points(points=points,
                                                     domain_size=shape,
                                                     reflect=True)
         else:

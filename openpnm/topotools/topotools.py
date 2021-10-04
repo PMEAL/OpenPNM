@@ -1399,7 +1399,7 @@ def template_cylinder_annulus(height, outer_radius, inner_radius=0):
     return img
 
 
-def generate_base_points(num_points, domain_size, density_map=None,
+def generate_base_points(points, domain_size, density_map=None,
                          reflect=True):
     r"""
     Generates a set of base points for passing into the Tessellation-based
@@ -1483,12 +1483,12 @@ def generate_base_points(num_points, domain_size, density_map=None,
     >>> net = op.network.DelaunayVoronoiDual(points=pts, shape=[1, 1, 1])
 
     """
-    def _try_points(num_points, prob):
+    def _try_points(points, prob):
         prob = np.atleast_3d(prob)
         prob = np.array(prob)/np.amax(prob)  # Ensure prob is normalized
         base_pts = []
         N = 0
-        while N < num_points:
+        while N < points:
             pt = np.random.rand(3)  # Generate a point
             # Test whether to keep it or not
             [indx, indy, indz] = np.floor(pt*np.shape(prob)).astype(int)
@@ -1506,7 +1506,7 @@ def generate_base_points(num_points, domain_size, density_map=None,
             density_map = np.ones([41, 41, 41])
             density_map[20, 20, 20] = 0
             density_map = spim.distance_transform_edt(density_map) < 20
-        base_pts = _try_points(num_points, density_map)
+        base_pts = _try_points(points, density_map)
         # Convert to spherical coordinates
         X, Y, Z = np.array(base_pts - [0.5, 0.5, 0.5]).T
         r = 2*np.sqrt(X**2 + Y**2 + Z**2)*domain_size[0]
@@ -1533,7 +1533,7 @@ def generate_base_points(num_points, domain_size, density_map=None,
             if domain_size[1] == 0:  # Disk
                 density_map = density_map[:, :, 0]
             density_map = spim.distance_transform_edt(density_map) < 20
-        base_pts = _try_points(num_points, density_map)
+        base_pts = _try_points(points, density_map)
         # Convert to cylindrical coordinates
         X, Y, Z = np.array(base_pts - [0.5, 0.5, 0]).T  # Center on z-axis
         r = 2*np.sqrt(X**2 + Y**2)*domain_size[0]
@@ -1558,7 +1558,7 @@ def generate_base_points(num_points, domain_size, density_map=None,
             density_map = np.ones([41, 41, 41])
             if domain_size[2] == 0:
                 density_map = density_map[:, :, 0]
-        base_pts = _try_points(num_points, density_map)
+        base_pts = _try_points(points, density_map)
         base_pts = base_pts*domain_size
         if reflect:
             base_pts = reflect_base_points(base_pts, domain_size)
