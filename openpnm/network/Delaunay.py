@@ -21,7 +21,7 @@ class Delaunay(DelaunayVoronoiDual):
         If a scalar is given, it is the number of points to place in the domain,
         which will become the pore centers after the tessellation is performed.
         A set of randomly located points with the size
-        of the scaler value*3 will be generated.
+        of the scalar value*3 will be generated.
 
     shape : array_like
         The size of the domain.  It's possible to create cubic as well as 2D
