@@ -6,7 +6,7 @@ from openpnm.utils import logging
 from openpnm.models.physics.utils import generic_transport_conductance
 logger = logging.getLogger(__name__)
 
-__all__ = ["generic_ionic_poisson_laplace", "poisson", "electroneutrality"]
+__all__ = ["generic_ionic_poisson_laplace", "generic_ionic_electroneutrality", "poisson", "electroneutrality"]
 
 
 def generic_ionic_poisson_laplace(target,
