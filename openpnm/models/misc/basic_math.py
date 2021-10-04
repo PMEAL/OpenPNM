@@ -162,7 +162,7 @@ def product(target, props):
     value : NumPy ndarray
         Array containing product values of ``target[props[0]]``, ``target[props[1]], etc``
     """
-    value = 1
+    value = np.ones_like(target[props[0]])
     for item in props:
         value *= target[item]
     return value
