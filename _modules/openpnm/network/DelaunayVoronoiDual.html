@@ -243,9 +243,10 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">points</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">num_points</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">points</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="n">points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_points</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span>
+                                    <span class="n">num_points</span><span class="o">=</span><span class="n">num_points</span><span class="p">,</span>
                                     <span class="n">points</span><span class="o">=</span><span class="n">points</span><span class="p">)</span>
 
         <span class="c1"># Deal with points that are only 2D...they break tessellations</span>
@@ -460,12 +461,12 @@
             <span class="n">temp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Ps</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">temp</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">object</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">_parse_points</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">points</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_parse_points</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span> <span class="n">num_points</span><span class="p">):</span>
         <span class="c1"># Deal with input arguments</span>
         <span class="k">if</span> <span class="n">points</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Must specify points&#39;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">points</span><span class="p">):</span>
-            <span class="n">points</span> <span class="o">=</span> <span class="n">topotools</span><span class="o">.</span><span class="n">generate_base_points</span><span class="p">(</span><span class="n">num_points</span><span class="o">=</span><span class="n">points</span><span class="p">,</span>
+            <span class="k">if</span> <span class="n">num_points</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Must specify either &quot;points&quot; or &quot;num_points&quot;&#39;</span><span class="p">)</span>
+            <span class="n">points</span> <span class="o">=</span> <span class="n">topotools</span><span class="o">.</span><span class="n">generate_base_points</span><span class="p">(</span><span class="n">num_points</span><span class="o">=</span><span class="n">num_points</span><span class="p">,</span>
                                                     <span class="n">domain_size</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span>
                                                     <span class="n">reflect</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>

@@ -618,16 +618,14 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>points</strong> (<em>scalar</em><em> or </em><em>array_like</em>) – <p>An array of coordinates indicating the [x, y, z] locations of each
+<li><p><strong>num_points</strong> (<em>scalar</em>) – The number of points to place in the domain, which will become the
+pore centers after the tessellation is performed.  This value is
+ignored if <code class="docutils literal notranslate"><span class="pre">points</span></code> are given.</p></li>
+<li><p><strong>points</strong> (<em>array_like</em>) – An array of coordinates indicating the [x, y, z] locations of each
 point to use in the tessellation.  Note that the points must be given
 in rectilinear coordinates regardless of which domain <code class="docutils literal notranslate"><span class="pre">shape</span></code> was
 specified.  To convert between coordinate systems see the
-<code class="docutils literal notranslate"><span class="pre">convert_coords</span></code> function in the <code class="docutils literal notranslate"><span class="pre">openpnm.topotools</span></code> module.</p>
-<p>If a scalar is given, it is the number of points to place in the domain,
-which will become the pore centers after the tessellation is performed.
-A set of randomly located points with the size
-of the scaler value*3 will be generated.</p>
-</p></li>
+<code class="docutils literal notranslate"><span class="pre">convert_coords</span></code> function in the <code class="docutils literal notranslate"><span class="pre">openpnm.topotools</span></code> module.</p></li>
 <li><p><strong>shape</strong> (<em>array_like</em>) – <p>The size of the domain.  It’s possible to create cubic as well as 2D
 square domains by changing the <code class="docutils literal notranslate"><span class="pre">shape</span></code> as follows:</p>
 <p>[x, y, z] - will produce a normal cubic domain of dimension x, and

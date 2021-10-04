@@ -185,10 +185,12 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    points : scalar or array_like</span>
+<span class="sd">    points : array_like, optional</span>
 <span class="sd">        The base points around which to generate the Voronoi tessellation.</span>
-<span class="sd">        If points is a scalar, a set of randomly located points with the size</span>
-<span class="sd">        of the scaler value*3 will be generated.</span>
+
+<span class="sd">    num_points : scalar, optional</span>
+<span class="sd">        If ``points`` is not supplied, then this must be given.  A sent of</span>
+<span class="sd">        randomly located points will be generated.</span>
 
 <span class="sd">    shape : array_like</span>
 <span class="sd">        The size of the domain.  It&#39;s possible to create cubic as well as 2D</span>
@@ -216,9 +218,10 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">points</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">num_points</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">points</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="c1"># Clean-up input points</span>
         <span class="n">points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_points</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span>
+                                    <span class="n">num_points</span><span class="o">=</span><span class="n">num_points</span><span class="p">,</span>
                                     <span class="n">points</span><span class="o">=</span><span class="n">points</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span> <span class="n">points</span><span class="o">=</span><span class="n">points</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="c1"># Initialize network object</span>

@@ -185,18 +185,17 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
+<span class="sd">    num_points : scalar</span>
+<span class="sd">        The number of points to place in the domain, which will become the</span>
+<span class="sd">        pore centers after the tessellation is performed.  This value is</span>
+<span class="sd">        ignored if ``points`` are given.</span>
 
-<span class="sd">    points : scalar or array_like</span>
+<span class="sd">    points : array_like</span>
 <span class="sd">        An array of coordinates indicating the [x, y, z] locations of each</span>
 <span class="sd">        point to use in the tessellation.  Note that the points must be given</span>
 <span class="sd">        in rectilinear coordinates regardless of which domain ``shape`` was</span>
 <span class="sd">        specified.  To convert between coordinate systems see the</span>
 <span class="sd">        ``convert_coords`` function in the ``openpnm.topotools`` module.</span>
-
-<span class="sd">        If a scalar is given, it is the number of points to place in the domain,</span>
-<span class="sd">        which will become the pore centers after the tessellation is performed.</span>
-<span class="sd">        A set of randomly located points with the size</span>
-<span class="sd">        of the scaler value*3 will be generated.</span>
 
 <span class="sd">    shape : array_like</span>
 <span class="sd">        The size of the domain.  It&#39;s possible to create cubic as well as 2D</span>
@@ -274,6 +273,7 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">num_points</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">points</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="c1"># Clean-up input points</span>
         <span class="n">points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_points</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span>
+                                    <span class="n">num_points</span><span class="o">=</span><span class="n">num_points</span><span class="p">,</span>
                                     <span class="n">points</span><span class="o">=</span><span class="n">points</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span> <span class="n">points</span><span class="o">=</span><span class="n">points</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="c1"># Initialize network object</span>
