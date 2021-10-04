@@ -10,17 +10,18 @@ class Delaunay(DelaunayVoronoiDual):
 
     Parameters
     ----------
-    num_points : scalar
-        The number of points to place in the domain, which will become the
-        pore centers after the tessellation is performed.  This value is
-        ignored if ``points`` are given.
 
-    points : array_like
+    points : scalar or array_like
         An array of coordinates indicating the [x, y, z] locations of each
         point to use in the tessellation.  Note that the points must be given
         in rectilinear coordinates regardless of which domain ``shape`` was
         specified.  To convert between coordinate systems see the
         ``convert_coords`` function in the ``openpnm.topotools`` module.
+
+        If a scalar is given, it is the number of points to place in the domain,
+        which will become the pore centers after the tessellation is performed.
+        A set of randomly located points with the size
+        of the scaler value*3 will be generated.
 
     shape : array_like
         The size of the domain.  It's possible to create cubic as well as 2D

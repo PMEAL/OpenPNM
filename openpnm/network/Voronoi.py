@@ -10,12 +10,10 @@ class Voronoi(DelaunayVoronoiDual):
 
     Parameters
     ----------
-    points : array_like, optional
+    points : scalar or array_like
         The base points around which to generate the Voronoi tessellation.
-
-    num_points : scalar, optional
-        If ``points`` is not supplied, then this must be given.  A sent of
-        randomly located points will be generated.
+        If points is a scalar, a set of randomly located points with the size
+        of the scaler value*3 will be generated.
 
     shape : array_like
         The size of the domain.  It's possible to create cubic as well as 2D
