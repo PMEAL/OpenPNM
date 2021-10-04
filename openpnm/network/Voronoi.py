@@ -43,10 +43,9 @@ class Voronoi(DelaunayVoronoiDual):
 
     """
 
-    def __init__(self, shape=[1, 1, 1], num_points=None, points=None, **kwargs):
+    def __init__(self, shape=[1, 1, 1], points=None, **kwargs):
         # Clean-up input points
         points = self._parse_points(shape=shape,
-                                    num_points=num_points,
                                     points=points)
         super().__init__(shape=shape, points=points, **kwargs)
         # Initialize network object

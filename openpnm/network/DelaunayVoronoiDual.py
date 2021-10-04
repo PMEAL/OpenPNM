@@ -68,10 +68,9 @@ class DelaunayVoronoiDual(GenericNetwork):
 
     """
 
-    def __init__(self, shape=[1, 1, 1], num_points=None, points=None, **kwargs):
+    def __init__(self, shape=[1, 1, 1], points=None, **kwargs):
         super().__init__(**kwargs)
         points = self._parse_points(shape=shape,
-                                    num_points=num_points,
                                     points=points)
 
         # Deal with points that are only 2D...they break tessellations
@@ -286,12 +285,12 @@ class DelaunayVoronoiDual(GenericNetwork):
             temp.append(Ps)
         return np.array(temp, dtype=object)
 
-    def _parse_points(self, shape, points, num_points):
+    def _parse_points(self, shape, points):
         # Deal with input arguments
         if points is None:
-            if num_points is None:
-                raise Exception('Must specify either "points" or "num_points"')
-            points = topotools.generate_base_points(num_points=num_points,
+            raise Exception('Must specify points')
+        if np.isscalar(points):
+            points = topotools.generate_base_points(num_points=points,
                                                     domain_size=shape,
                                                     reflect=True)
         else:
