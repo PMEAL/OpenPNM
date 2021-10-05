@@ -263,20 +263,18 @@ def classic_ordinary_diffusion(target,
         Physics object with which this model is associated.
     pore_molar_density : str
         Dictionary key pointing to pore molar density values.
+    throat_molar_density : str
+        Dictionary key pointing to throat molar density values.
     pore_diffusivity : str
         Dictionary key pointing to pore diffusivity values.
+    throat_diffusivity : str
+        Dictionary key pointing to throat diffusivity values.
     pore_diameter : str
         Dictionary key pointing to pore diameter values.
-    throat_diameter : str
-        Dictionary key pointing to throat diameter values.
     pore_area : str
         Dictionary key pointing to pore area values.
-    throat_area : str
-        Dictionary key pointing to pore area values.
-    throat_length : str
-        Dictionary key pointing to throat length values.
-    shape_factor : str
-        Dictionary key pointing to shape factor values.
+    size_factors: str
+        Dictionary key of the conduit diffusive size factors' values.
 
     Returns
     -------
