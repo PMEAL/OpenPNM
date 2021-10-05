@@ -244,17 +244,14 @@ def taylor_aris_diffusion(target,
     return gtotal
 
 
-def classic_ordinary_diffusion(
-    target,
-    pore_molar_density="pore.molar_density",
-    pore_diffusivity="pore.diffusivity",
-    pore_diameter="pore.diameter",
-    throat_diameter="throat.diameter",
-    pore_area="pore.area",
-    throat_area="throat.area",
-    throat_length="throat.length",
-    shape_factor="throat.shape_factor"
-):
+def classic_ordinary_diffusion(target,
+                               pore_molar_density="pore.molar_density",
+                               throat_molar_density="throat.molar_density",
+                               pore_diffusivity="pore.diffusivity",
+                               throat_diffusivity="pore.diffusivity",
+                               pore_diameter="pore.diameter",
+                               pore_area="pore.area",
+                               size_factors="throat.diffusive_size_factors"):
     r"""
     Legacy method that calculates the diffusive conductance of conduits.
 
@@ -292,52 +289,40 @@ def classic_ordinary_diffusion(
     This method requires that all the necessary phase properties already
     be calculated.
 
-    This method calculates the specified property for the *entire* network
-    then extracts the values for the appropriate throats at the end.
-
     """
     network = target.project.network
     throats = network.map_throats(throats=target.Ts, origin=target)
     phase = target.project.find_phase(target)
-    # Get Nt-by-2 list of pores connected to each throat
-    Ps = network["throat.conns"]
+    cn = network['throat.conns'][throats]
+    F = network[size_factors]
     # Get properties in every pore in the network
     parea = network[pore_area]
     pdia = network[pore_diameter]
     # Get the properties of every throat
-    tdia = network[throat_diameter]
-    tarea = _np.pi * (tdia / 2) ** 2
-    tlen = network[throat_length]
-    # Interpolate pore phase property values to throats
-    DABt = phase.interpolate_data(propname=pore_diffusivity)[throats]
-    ct = phase.interpolate_data(propname=pore_molar_density)[throats]
+    DABt = phase[throat_diffusivity][throats]
+    ct = phase[throat_molar_density][throats]
     # Get pore lengths
-    plen1 = 0.5 * pdia[Ps[:, 0]]
-    plen2 = 0.5 * pdia[Ps[:, 1]]
+    plen1 = 0.5 * pdia[cn[:, 0]]
+    plen2 = 0.5 * pdia[cn[:, 1]]
     # Remove any non-positive lengths
     plen1[plen1 <= 1e-12] = 1e-12
     plen2[plen2 <= 1e-12] = 1e-12
     # Find g for half of pore 1
-    gp1 = ct * DABt * parea[Ps[:, 0]] / plen1
+    gp1 = ct * DABt * parea[cn[:, 0]] / plen1
     gp1[_np.isnan(gp1)] = _np.inf
     gp1[~(gp1 > 0)] = _np.inf  # Set 0 conductance pores (boundaries) to inf
     # Find g for half of pore 2
-    gp2 = ct * DABt * parea[Ps[:, 1]] / plen2
+    gp2 = ct * DABt * parea[cn[:, 1]] / plen2
     gp2[_np.isnan(gp2)] = _np.inf
     gp2[~(gp2 > 0)] = _np.inf  # Set 0 conductance pores (boundaries) to inf
-    # Find g for full throat, remove any non-positive lengths
-    tlen[tlen <= 0] = 1e-12
-    # Get shape factor
-    try:
-        sf = network[shape_factor]
-    except KeyError:
-        sf = _np.ones(network.num_throats())
-    sf[_np.isnan(sf)] = 1.0
-    gt = (1 / sf) * ct * DABt * tarea / tlen
-    # Set 0 conductance pores (boundaries) to inf
-    gt[~(gt > 0)] = _np.inf
-    value = (1 / gt + 1 / gp1 + 1 / gp2) ** (-1)
-    return value
+    if isinstance(F, dict):
+        gt = ct * DABt * F[f"{size_factors}.throat"][throats]
+        # Set 0 conductance pores (boundaries) to inf
+        gt[~(gt > 0)] = _np.inf
+        gtotal = (1 / gt + 1 / gp1 + 1 / gp2) ** (-1)
+    else:
+        gtotal = ct * DABt * F[throats]
+    return gtotal
 
 
 def multiphase_diffusion(
