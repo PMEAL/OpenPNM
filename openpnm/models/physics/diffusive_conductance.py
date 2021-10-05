@@ -8,7 +8,6 @@ from openpnm.models.physics.utils import generic_transport_conductance
 __all__ = [
     "generic_diffusive",
     "ordinary_diffusion",
-    "ordinary_diffusion_2d",
     "mixed_diffusion",
     "taylor_aris_diffusion",
     "classic_ordinary_diffusion",
@@ -49,15 +48,10 @@ def generic_diffusive(target,
                                          size_factors=size_factors)
 
 
-def ordinary_diffusion(
-    target,
-    pore_area="pore.area",
-    throat_area="throat.area",
-    pore_diffusivity="pore.diffusivity",
-    throat_diffusivity="throat.diffusivity",
-    conduit_lengths="throat.conduit_lengths",
-    conduit_shape_factors="throat.poisson_shape_factors",
-):
+def ordinary_diffusion(target,
+                       pore_diffusivity="pore.diffusivity",
+                       throat_diffusivity="throat.diffusivity",
+                       size_factors="throat.diffusive_size_factors"):
     r"""
     Calculates the diffusive conductance of conduits in network.
 
@@ -67,17 +61,11 @@ def ordinary_diffusion(
     ----------
     target : GenericPhysics
         Physics object with which this model is associated.
-    pore_area : str
-        Dictionary key of the pore area values.
-    throat_area : str
-        Dictionary key of the throat area values.
     pore_diffusivity : str
         Dictionary key of the pore diffusivity values.
     throat_diffusivity : str
         Dictionary key of the throat diffusivity values.
-    conduit_lengths : str
-        Dictionary key of the conduit length values.
-    conduit_shape_factors : str
+    size_factors: str
         Dictionary key of the conduit diffusive shape factors' values.
 
     Returns
@@ -86,121 +74,11 @@ def ordinary_diffusion(
         Array containing diffusive conductance values for conduits in the
         geometry attached to the given physics object.
 
-    Notes
-    -----
-    This method assumes cylindrical throats with constant cross-section
-    area, and the pore area corresponds to the cross-sectional area at the
-    largest opening of the pore. Corrections for different shapes and
-    variable cross-section area can be imposed by passing the proper
-    ``conduit_shape_factors`` argument.
-
-    ``conduit_shape_factor`` depends on the physics of the problem,
-    i.e. diffusion-like processes and fluid flow need different shape
-    factors.
-
     """
-    network = target.project.network
-    throats = network.map_throats(throats=target.Ts, origin=target)
-    phase = target.project.find_phase(target)
-    cn = network["throat.conns"][throats]
-    # Getting equivalent areas
-    A1 = network[pore_area][cn[:, 0]]
-    At = network[throat_area][throats]
-    A2 = network[pore_area][cn[:, 1]]
-    # Getting conduit lengths
-    L1 = network[conduit_lengths + ".pore1"][throats]
-    Lt = network[conduit_lengths + ".throat"][throats]
-    L2 = network[conduit_lengths + ".pore2"][throats]
-    # Getting shape factors
-    try:
-        SF1 = phase[conduit_shape_factors + ".pore1"][throats]
-        SFt = phase[conduit_shape_factors + ".throat"][throats]
-        SF2 = phase[conduit_shape_factors + ".pore2"][throats]
-    except KeyError:
-        SF1 = SF2 = SFt = 1.0
-    # Interpolate pore phase property values to throats
-    D1, D2 = phase[pore_diffusivity][cn].T
-    Dt = phase.interpolate_data(propname=pore_diffusivity)[throats]
-    # Find g for half of pore 1, throat, and half of pore 2
-    g1 = (D1 * A1) / L1
-    g2 = (D2 * A2) / L2
-    gt = (Dt * At) / Lt
-    # Ensure infinite conductance for elements with zero length
-    g1[L1 == 0] = _np.inf
-    g2[L2 == 0] = _np.inf
-    gt[Lt == 0] = _np.inf
-    # Apply shape factors and calculate the final conductance
-    return (1 / gt / SFt + 1 / g1 / SF1 + 1 / g2 / SF2) ** (-1)
-
-
-def ordinary_diffusion_2d(
-    target,
-    pore_diameter="pore.diameter",
-    throat_diameter="throat.diameter",
-    pore_diffusivity="pore.diffusivity",
-    throat_diffusivity="throat.diffusivity",
-    conduit_lengths="throat.conduit_lengths",
-    conduit_shape_factors="throat.poisson_shape_factors",
-):
-    r"""
-    Calculates the diffusive conductance of conduits in a 2D network.
-
-    A conduit is defined as ( 1/2 pore - full throat - 1/2 pore ). The
-    conduit consists of 2 flate parallel plates. See the Notes section.
-
-    Parameters
-    ----------
-    target : GenericPhysics
-        Physics object with which this model is associated.
-    pore_diameter : str
-        Dictionary key of the pore diameter values.
-    throat_diameter : str
-        Dictionary key of the throat diameter values.
-    pore_diffusivity : str
-        Dictionary key of the pore diffusivity values.
-    throat_diffusivity : str
-        Dictionary key of the throat diffusivity values.
-    conduit_lengths : str
-        Dictionary key of the conduit length values.
-    conduit_shape_factors : str
-        Dictionary key of the conduit diffusive shape factors' values.
-
-    Returns
-    -------
-    ndarray
-        Array containing diffusive conductance values for conduits in the
-        geometry attached to the given physics object.
-
-    Notes
-    -----
-    This model should only be used for true 2D networks, i.e. with planar
-    symmetry.
-
-    This function requires that all the necessary phase properties already
-    be calculated.
-
-    This function calculates the specified property for the *entire*
-    network then extracts the values for the appropriate throats at the
-    end.
-
-    This function assumes cylindrical throats with constant cross-section
-    area. Corrections for different shapes and variable cross-section area
-    can be imposed by passing the proper conduit_shape_factors argument.
-
-    ``conduit_shape_factors`` depends on the physics of the problem, i.e.
-    diffusion-like processes and fluid flow need different shape factors.
-
-    """
-    # Basically, call the 3D version, but pass area with diameter
-    return ordinary_diffusion(
-        target=target,
-        pore_area=pore_diameter,
-        throat_area=throat_diameter,
-        pore_diffusivity=pore_diffusivity,
-        throat_diffusivity=throat_diffusivity,
-        conduit_lengths=conduit_lengths,
-        conduit_shape_factors=conduit_shape_factors
-    )
+    return generic_transport_conductance(target=target,
+                                         pore_conductivity=pore_diffusivity,
+                                         throat_conductivity=throat_diffusivity,
+                                         size_factors=size_factors)
 
 
 def mixed_diffusion(
