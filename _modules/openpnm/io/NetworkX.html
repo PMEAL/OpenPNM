@@ -339,7 +339,7 @@
 
         <span class="c1"># Ensure network is an OpenPNM Network object.</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">GenericNetwork</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="p">(</span><span class="s1">&#39;Provided network is not an OpenPNM Network.&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Provided network is not an OpenPNM Network.&#39;</span><span class="p">)</span>
 
         <span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
 
