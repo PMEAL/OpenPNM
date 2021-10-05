@@ -81,19 +81,16 @@ def ordinary_diffusion(target,
                                          size_factors=size_factors)
 
 
-def mixed_diffusion(
-    target,
-    pore_area="pore.area",
-    throat_area="throat.area",
-    pore_diameter="pore.diameter",
-    throat_diameter="throat.diameter",
-    pore_diffusivity="pore.diffusivity",
-    throat_diffusivity="throat.diffusivity",
-    pore_temperature="pore.temperature",
-    molecular_weight="pore.molecular_weight",
-    conduit_lengths="throat.conduit_lengths",
-    conduit_shape_factors="throat.poisson_shape_factors",
-):
+def mixed_diffusion(target,
+                    pore_diameter="pore.diameter",
+                    throat_diameter="throat.diameter",
+                    pore_diffusivity="pore.diffusivity",
+                    throat_diffusivity="throat.diffusivity",
+                    pore_temperature="pore.temperature",
+                    throat_temperature="throat.temperature",
+                    pore_molecular_weight="pore.molecular_weight",
+                    throat_molecular_weight="throat.molecular_weight",
+                    size_factors="throat.diffusive_size_factors"):
     r"""
     Calculates the diffusive conductance of conduits in network with
     Knudsen correction.
@@ -105,10 +102,6 @@ def mixed_diffusion(
     ----------
     target : GenericPhysics
         Physics object with which this model is associated.
-    pore_area : str
-        Dictionary key of the pore area values.
-    throat_area : str
-        Dictionary key of the throat area values.
     pore_diameter : str
         Dictionary key of the pore diameter values.
     throat_diameter : str
@@ -119,12 +112,14 @@ def mixed_diffusion(
         Dictionary key of the throat diffusivity values.
     pore_temperature : str
         Dictionary key of the pore temperature values.
-    molecular_weigth : str
+    throat_temperature : str
+        Dictionary key of the throat temperature values.
+    pore_molecular_weigth : str
         Dictionary key of the pore molecular weight values.
-    conduit_lengths : str
-        Dictionary key of the conduit lengths' values.
-    conduit_shape_factors : str
-        Dictionary key of the conduit diffusive shape factors' values.
+    throat_molecular_weigth : str
+        Dictionary key of the throat molecular weight values.
+    size_factors: str
+        Dictionary key of the conduit size factors' values.
 
     Returns
     -------
@@ -140,46 +135,22 @@ def mixed_diffusion(
     This function requires that all the necessary phase properties already
     be calculated.
 
-    This function calculates the specified property for the *entire*
-    network then extracts the values for the appropriate throats at the
-    end.
-
-    This function assumes cylindrical throats with constant cross-section
-    area. Corrections for different shapes and variable cross-section area
-    can be imposed by passing the proper conduit_shape_factors argument.
-
-    ``conduit_shape_factors`` depends on the physics of the problem, i.e.
-    diffusion-like processes and fluid flow need different shape factors.
-
     """
     network = target.project.network
     throats = network.map_throats(throats=target.Ts, origin=target)
     phase = target.project.find_phase(target)
-    cn = network["throat.conns"][throats]
-    # Getting equivalent areas
-    A1, A2 = network[pore_area][cn].T
-    At = network[throat_area][throats]
-    # Getting conduit lengths
-    L1 = network[conduit_lengths + ".pore1"][throats]
-    Lt = network[conduit_lengths + ".throat"][throats]
-    L2 = network[conduit_lengths + ".pore2"][throats]
-    # Getting shape factors
-    try:
-        SF1 = phase[conduit_shape_factors + ".pore1"][throats]
-        SFt = phase[conduit_shape_factors + ".throat"][throats]
-        SF2 = phase[conduit_shape_factors + ".pore2"][throats]
-    except KeyError:
-        SF1 = SF2 = SFt = 1.0
-    # Interpolate pore phase property values to throats
-    D1, D2 = phase[pore_diffusivity][cn].T
-    Dt = phase.interpolate_data(propname=pore_diffusivity)[throats]
+    cn = network['throat.conns'][throats]
+    F = network[size_factors]
+    Dt = phase[throat_diffusivity][throats]
+    D1 = phase[pore_diffusivity][cn[:, 0]]
+    D2 = phase[pore_diffusivity][cn[:, 1]]
     # Calculating Knudsen diffusivity
     d1, d2 = network[pore_diameter][cn].T
     dt = network[throat_diameter][throats]
-    MW1, MW2 = phase[molecular_weight][cn].T
-    MWt = phase.interpolate_data(propname=molecular_weight)[throats]
+    MW1, MW2 = phase[pore_molecular_weight][cn].T
+    MWt = phase[throat_molecular_weight][throats]
     T1, T2 = phase[pore_temperature][cn].T
-    Tt = phase.interpolate_data(propname=pore_temperature)[throats]
+    Tt = phase[throat_temperature][throats]
     DK1 = d1 / 3 * (8 * _const.R * T1 / _const.pi / MW1) ** 0.5
     DK2 = d2 / 3 * (8 * _const.R * T2 / _const.pi / MW2) ** 0.5
     DKt = dt / 3 * (8 * _const.R * Tt / _const.pi / MWt) ** 0.5
@@ -187,16 +158,14 @@ def mixed_diffusion(
     D1e = (1 / DK1 + 1 / D1) ** (-1)
     D2e = (1 / DK2 + 1 / D2) ** (-1)
     Dte = (1 / DKt + 1 / Dt) ** (-1)
-    # Find g for half of pore 1, throat, and half of pore 2
-    g1 = (D1e * A1) / L1
-    g2 = (D2e * A2) / L2
-    gt = (Dte * At) / Lt
-    # Ensure infinite conductance for elements with zero length
-    g1[L1 == 0] = _np.inf
-    g2[L2 == 0] = _np.inf
-    gt[Lt == 0] = _np.inf
-    # Apply shape factors and calculate the final conductance
-    return (1 / gt / SFt + 1 / g1 / SF1 + 1 / g2 / SF2) ** (-1)
+    if isinstance(F, dict):
+        g1 = D1e * F[f"{size_factors}.pore1"][throats]
+        gt = Dte * F[f"{size_factors}.throat"][throats]
+        g2 = D2e * F[f"{size_factors}.pore2"][throats]
+        gtotal = 1 / (1 / g1 + 1 / gt + 1 / g2)
+    else:
+        gtotal = Dte * F[throats]
+    return gtotal
 
 
 def taylor_aris_diffusion(
