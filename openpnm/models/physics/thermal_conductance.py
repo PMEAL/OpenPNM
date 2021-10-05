@@ -132,14 +132,8 @@ def series_resistors(target,
     except KeyError:
         SF1 = SF2 = SFt = 1.0
     Dt = phase[throat_thermal_conductivity][throats]
-    try:
-        D1 = phase[pore_thermal_conductivity][cn[:, 0]]
-        D2 = phase[pore_thermal_conductivity][cn[:, 1]]
-    except KeyError:
-        D1 = phase.interpolate_data(
-            propname=throat_thermal_conductivity)[cn[:, 0]]
-        D2 = phase.interpolate_data(
-            propname=throat_thermal_conductivity)[cn[:, 1]]
+    D1 = phase[pore_thermal_conductivity][cn[:, 0]]
+    D2 = phase[pore_thermal_conductivity][cn[:, 1]]
     # Find g for half of pore 1, throat, and half of pore 2
     g1[m1] = (D1*A1)[m1] / L1[m1]
     g2[m2] = (D2*A2)[m2] / L2[m2]

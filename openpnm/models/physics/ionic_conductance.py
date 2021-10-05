@@ -141,14 +141,9 @@ def generic_ionic_electroneutrality(target,
     Vol2 = network[pore_volume][cn[:, 1]]
     # Preallocating g
     g1, g2, gt = _np.zeros((3, len(cn)))
-    # Interpolate pore phase property values to throats
     Tt = phase[throat_temperature][throats]
-    try:
-        T1 = phase[pore_temperature][cn[:, 0]]
-        T2 = phase[pore_temperature][cn[:, 1]]
-    except KeyError:
-        T1 = phase.interpolate_data(propname=throat_temperature)[cn[:, 0]]
-        T2 = phase.interpolate_data(propname=throat_temperature)[cn[:, 1]]
+    T1 = phase[pore_temperature][cn[:, 0]]
+    T2 = phase[pore_temperature][cn[:, 1]]
     # Iterate over all ions present in the solution
     if ions == []:
         logger.error('List of ions must be provided')
@@ -165,20 +160,11 @@ def generic_ionic_electroneutrality(target,
         Dt = phase[throat_diffusivity+i][throats]
         Vt = phase[throat_valence+i][throats]
 
-        try:
-            D1 = phase[pore_diffusivity+i][cn[:, 0]]
-            D2 = phase[pore_diffusivity+i][cn[:, 1]]
-            V1 = phase[pore_valence+i][cn[:, 0]]
-            V2 = phase[pore_valence+i][cn[:, 1]]
-        except KeyError:
-            D1 = phase.interpolate_data(
-                propname=throat_diffusivity+i)[cn[:, 0]]
-            D2 = phase.interpolate_data(
-                propname=throat_diffusivity+i)[cn[:, 1]]
-            V1 = phase.interpolate_data(
-                propname=throat_valence+i)[cn[:, 0]]
-            V2 = phase.interpolate_data(
-                propname=throat_valence+i)[cn[:, 1]]
+        D1 = phase[pore_diffusivity+i][cn[:, 0]]
+        D2 = phase[pore_diffusivity+i][cn[:, 1]]
+        V1 = phase[pore_valence+i][cn[:, 0]]
+        V2 = phase[pore_valence+i][cn[:, 1]]
+
         g1[throats] += F**2 * V1**2 * (D1*c1) / (R * T1)
         g2[throats] += F**2 * V2**2 * (D2*c2) / (R * T2)
         gt[throats] += F**2 * Vt**2 * (Dt*ct) / (R * Tt)
@@ -406,12 +392,8 @@ def electroneutrality(target,
     Vol1 = network[pore_volume][cn[:, 0]]
     Vol2 = network[pore_volume][cn[:, 1]]
     Tt = phase[throat_temperature][throats]
-    try:
-        T1 = phase[pore_temperature][cn[:, 0]]
-        T2 = phase[pore_temperature][cn[:, 1]]
-    except KeyError:
-        T1 = phase.interpolate_data(propname=throat_temperature)[cn[:, 0]]
-        T2 = phase.interpolate_data(propname=throat_temperature)[cn[:, 1]]
+    T1 = phase[pore_temperature][cn[:, 0]]
+    T2 = phase[pore_temperature][cn[:, 1]]
     # Iterate over all ions present in the solution
     if ions == []:
         logger.error('List of ions must be provided')
@@ -427,20 +409,11 @@ def electroneutrality(target,
         ct = (c1*Vol1 + c2*Vol2)/(Vol1 + Vol2)
         Dt = phase[throat_diffusivity+i][throats]
         Vt = phase[throat_valence+i][throats]
-        try:
-            D1 = phase[pore_diffusivity+i][cn[:, 0]]
-            D2 = phase[pore_diffusivity+i][cn[:, 1]]
-            V1 = phase[pore_valence+i][cn[:, 0]]
-            V2 = phase[pore_valence+i][cn[:, 1]]
-        except KeyError:
-            D1 = phase.interpolate_data(
-                propname=throat_diffusivity+i)[cn[:, 0]]
-            D2 = phase.interpolate_data(
-                propname=throat_diffusivity+i)[cn[:, 1]]
-            V1 = phase.interpolate_data(
-                propname=throat_valence+i)[cn[:, 0]]
-            V2 = phase.interpolate_data(
-                propname=throat_valence+i)[cn[:, 1]]
+
+        D1 = phase[pore_diffusivity+i][cn[:, 0]]
+        D2 = phase[pore_diffusivity+i][cn[:, 1]]
+        V1 = phase[pore_valence+i][cn[:, 0]]
+        V2 = phase[pore_valence+i][cn[:, 1]]
 
         g1[m1] += F**2 * V1**2 * (D1*A1*c1)[m1] / (R * T1 * L1[m1])
         g2[m2] += F**2 * V2**2 * (D2*A2*c2)[m1] / (R * T2 * L2[m2])
