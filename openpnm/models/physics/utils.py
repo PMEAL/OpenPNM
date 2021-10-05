@@ -46,12 +46,8 @@ def generic_transport_conductance(target,
     cn = network['throat.conns'][throats]
     F = network[size_factors]
     Dt = phase[throat_conductivity][throats]
-    try:
-        D1 = phase[pore_conductivity][cn[:, 0]]
-        D2 = phase[pore_conductivity][cn[:, 1]]
-    except KeyError:
-        D1 = phase.interpolate_data(propname=throat_conductivity)[cn[:, 0]]
-        D2 = phase.interpolate_data(propname=throat_conductivity)[cn[:, 1]]
+    D1 = phase[pore_conductivity][cn[:, 0]]
+    D2 = phase[pore_conductivity][cn[:, 1]]
     if isinstance(F, dict):
         g1 = D1 * F[f"{size_factors}.pore1"][throats]
         gt = Dt * F[f"{size_factors}.throat"][throats]
