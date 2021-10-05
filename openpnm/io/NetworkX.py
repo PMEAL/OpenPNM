@@ -164,7 +164,7 @@ class NetworkX(GenericIO):
 
         # Ensure network is an OpenPNM Network object.
         if not isinstance(network, GenericNetwork):
-            raise Exception('Provided network is not an OpenPNM Network.')
+            raise ('Provided network is not an OpenPNM Network.')
 
         G = nx.Graph()
 
