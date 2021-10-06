@@ -213,6 +213,12 @@
 <span class="sd">    by OpenPNM.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="NetworkX.from_networkx"><a class="viewcode-back" href="../../../modules/io/networkx.html#openpnm.io.NetworkX.from_networkx">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_networkx</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method is being deprecated.  Use ``import_data`` instead.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">import_data</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="NetworkX.import_data"><a class="viewcode-back" href="../../../modules/io/networkx.html#openpnm.io.NetworkX.import_data">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">import_data</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">project</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -321,6 +327,13 @@
         <span class="n">network</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_update_network</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">network</span><span class="p">,</span> <span class="n">net</span><span class="o">=</span><span class="n">net</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">network</span><span class="o">.</span><span class="n">project</span></div>
 
+<div class="viewcode-block" id="NetworkX.to_networkx"><a class="viewcode-back" href="../../../modules/io/networkx.html#openpnm.io.NetworkX.to_networkx">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">to_networkx</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method is being deprecated.  Use ``export_data`` instead.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">export_data</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
 <div class="viewcode-block" id="NetworkX.export_data"><a class="viewcode-back" href="../../../modules/io/networkx.html#openpnm.io.NetworkX.export_data">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">export_data</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">network</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -339,7 +352,7 @@
 
         <span class="c1"># Ensure network is an OpenPNM Network object.</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">GenericNetwork</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Provided network is not an OpenPNM Network.&#39;</span><span class="p">)</span>
+            <span class="k">raise</span><span class="p">(</span><span class="s1">&#39;Provided network is not an OpenPNM Network.&#39;</span><span class="p">)</span>
 
         <span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
 

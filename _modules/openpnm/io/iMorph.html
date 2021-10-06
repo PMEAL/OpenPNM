@@ -195,6 +195,13 @@
 <span class="sd">    information throats_cellsThroatsGraph.txt - stores node connectivity</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+<div class="viewcode-block" id="iMorph.load"><a class="viewcode-back" href="../../../modules/io/imorph.html#openpnm.io.iMorph.load">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method is being deprecated.  Use ``import_data`` instead.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">import_data</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
 <div class="viewcode-block" id="iMorph.import_data"><a class="viewcode-back" href="../../../modules/io/imorph.html#openpnm.io.iMorph.import_data">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">import_data</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">node_file</span><span class="o">=</span><span class="s2">&quot;throats_cellsThroatsGraph_Nodes.txt&quot;</span><span class="p">,</span>
                     <span class="n">graph_file</span><span class="o">=</span><span class="s2">&quot;throats_cellsThroatsGraph.txt&quot;</span><span class="p">,</span>
