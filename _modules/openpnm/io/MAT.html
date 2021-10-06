@@ -201,13 +201,6 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="MAT.save"><a class="viewcode-back" href="../../../modules/io/mat.html#openpnm.io.MAT.save">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        This method is being deprecated.  Using ``export_data`` instead.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">cls</span><span class="o">.</span><span class="n">export_data</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
-
 <div class="viewcode-block" id="MAT.export_data"><a class="viewcode-back" href="../../../modules/io/mat.html#openpnm.io.MAT.export_data">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">export_data</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">network</span><span class="p">,</span> <span class="n">phases</span><span class="o">=</span><span class="p">[],</span> <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -241,13 +234,6 @@
             <span class="n">new_d</span><span class="p">[</span><span class="n">new_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
 
         <span class="n">spio</span><span class="o">.</span><span class="n">savemat</span><span class="p">(</span><span class="n">file_name</span><span class="o">=</span><span class="n">filename</span><span class="p">,</span> <span class="n">mdict</span><span class="o">=</span><span class="n">new_d</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="MAT.load"><a class="viewcode-back" href="../../../modules/io/mat.html#openpnm.io.MAT.load">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        This method is being deprecated.  Using ``import_data`` instead.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">import_data</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">*</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="MAT.import_data"><a class="viewcode-back" href="../../../modules/io/mat.html#openpnm.io.MAT.import_data">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">import_data</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">project</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
