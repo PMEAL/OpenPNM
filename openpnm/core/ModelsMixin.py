@@ -114,8 +114,13 @@ class ModelsDict(PrintableDict):
             # Filter pore/throat props only
             dependencies = set()
             for param in self[model].values():
-                if is_valid_propname(param):
-                    dependencies.add(param)
+                if type(param) == list:
+                    for element in param:
+                        if is_valid_propname(element):
+                            dependencies.add(element)
+                else:
+                    if is_valid_propname(param):
+                        dependencies.add(param)
             # Add depenency from model's parameters
             for d in dependencies:
                 if not deep:
