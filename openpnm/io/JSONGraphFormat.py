@@ -44,13 +44,6 @@ class JSONGraphFormat(GenericIO):
             return False
 
     @classmethod
-    def save(cls, *args, **kwargs):
-        r"""
-        This method will be deprecated. Use ``export_data`` instead.
-        """
-        cls.export_data(*args, **kwargs)
-
-    @classmethod
     def export_data(cls, network, filename=''):
         r"""
         Write the network to disk as a JGF file.
@@ -116,13 +109,6 @@ class JSONGraphFormat(GenericIO):
         # Load and validate input JSON
         with open(filename, 'w') as file:
             json.dump(json_obj, file, indent=2)
-
-    @classmethod
-    def load(cls, *args, **kwargs):
-        r"""
-        This method will be deprecated.  Use ``import_data`` instead
-        """
-        return cls.import_data(*args, **kwargs)
 
     @classmethod
     def import_data(cls, filename, project=None):

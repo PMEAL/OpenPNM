@@ -38,13 +38,6 @@ class VTK(GenericIO):
     """.strip()
 
     @classmethod
-    def save(cls, *args, **kwargs):
-        r"""
-        This method is being deprecated.  Use ``export_data`` instead.
-        """
-        cls.export_data(*args, **kwargs)
-
-    @classmethod
     def export_data(cls, network, phases=[], filename="", delim=" | ",
                     fill_nans=None, fill_infs=None):
         r"""
@@ -153,13 +146,6 @@ class VTK(GenericIO):
             f.seek(0)
             # consider adding header: '<?xml version="1.0"?>\n'+
             f.write(string)
-
-    @classmethod
-    def load(cls, *args, **kwargs):
-        r"""
-        This method is being deprecated.  Use ``import_data`` instead.
-        """
-        return cls.import_data(*args, **kwargs)
 
     @classmethod
     def import_data(cls, filename, project=None, delim=" | "):

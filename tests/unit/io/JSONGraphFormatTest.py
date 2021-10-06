@@ -44,7 +44,7 @@ class JSONGraphFormatTest:
 
         # Ensure an exception was thrown
         with pytest.raises(Exception) as e_info:
-            op.io.JSONGraphFormat.save(net, filename=filename)
+            op.io.JSONGraphFormat.export_data(net, filename=filename)
         expected_error = 'Error - network is missing one of:'
         assert expected_error in str(e_info.value)
 
@@ -52,7 +52,7 @@ class JSONGraphFormatTest:
         path = Path(os.path.realpath(__file__),
                     '../../../fixtures/JSONGraphFormat')
         filename = Path(path.resolve(), 'save_success.json')
-        op.io.JSONGraphFormat.save(self.net, filename=filename)
+        op.io.JSONGraphFormat.export_data(self.net, filename=filename)
 
         # Read newly created file
         with open(filename, 'r') as file:
@@ -149,7 +149,7 @@ class JSONGraphFormatTest:
         path = Path(os.path.realpath(__file__),
                     '../../../fixtures/JSONGraphFormat')
         filename = Path(path.resolve(), 'valid.json')
-        project = op.io.JSONGraphFormat.load(filename)
+        project = op.io.JSONGraphFormat.import_data(filename)
         assert len(project) == 2
 
         # Ensure overal network properties
