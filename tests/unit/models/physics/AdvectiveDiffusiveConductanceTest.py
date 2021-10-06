@@ -4,7 +4,7 @@ import openpnm as op
 from numpy.testing import assert_allclose
 
 
-class DispersiveConductanceTest:
+class Ad_diff_ConductanceTest:
     def setup_class(self):
         self.net = op.network.Cubic(shape=[2, 2, 2])
         self.geo = op.geometry.GenericGeometry(network=self.net,
@@ -22,34 +22,34 @@ class DispersiveConductanceTest:
         self.phys["throat.hydraulic_conductance"] = np.arange(self.net.Nt) + 4.0
 
     def test_unsupported_discretization_scheme(self):
-        mod = op.models.physics.dispersive_conductance.ad_dif
+        mod = op.models.physics.ad_dif_conductance.ad_dif
         with pytest.raises(Exception):
             self.phys.add_model(propname='throat.ad_dif_conductance',
                                 model=mod, s_scheme="unsupported_scheme")
 
     def test_upwind(self):
-        mod = op.models.physics.dispersive_conductance.ad_dif
+        mod = op.models.physics.ad_dif_conductance.ad_dif
         self.phys.add_model(propname='throat.ad_dif_conductance',
                             model=mod, s_scheme="upwind")
         actual = self.phys['throat.ad_dif_conductance'].mean()
         assert_allclose(actual, desired=19.583333)
 
     def test_hybrid(self):
-        mod = op.models.physics.dispersive_conductance.ad_dif
+        mod = op.models.physics.ad_dif_conductance.ad_dif
         self.phys.add_model(propname='throat.ad_dif_conductance',
                             model=mod, s_scheme="hybrid")
         actual = self.phys['throat.ad_dif_conductance'].mean()
         assert_allclose(actual, desired=13.125)
 
     def test_powerlaw(self):
-        mod = op.models.physics.dispersive_conductance.ad_dif
+        mod = op.models.physics.ad_dif_conductance.ad_dif
         self.phys.add_model(propname='throat.ad_dif_conductance',
                             model=mod, s_scheme="powerlaw")
         actual = self.phys['throat.ad_dif_conductance'].mean()
         assert_allclose(actual, desired=13.820509)
 
     def test_exponential(self):
-        mod = op.models.physics.dispersive_conductance.ad_dif
+        mod = op.models.physics.ad_dif_conductance.ad_dif
         self.phys.add_model(propname='throat.ad_dif_conductance',
                             model=mod, s_scheme="exponential")
         actual = self.phys['throat.ad_dif_conductance'].mean()
@@ -57,7 +57,7 @@ class DispersiveConductanceTest:
 
     def test_consistency_w_diffusive_conductance_when_no_flow(self):
         self.phase["pore.uniform_pressure"] = 0.0
-        mod = op.models.physics.dispersive_conductance.ad_dif
+        mod = op.models.physics.ad_dif_conductance.ad_dif
         self.phys.add_model(propname='throat.ad_dif_conductance',
                             model=mod, s_scheme="powerlaw",
                             pore_pressure="pore.uniform_pressure")
@@ -68,7 +68,7 @@ class DispersiveConductanceTest:
     def test_consistency_w_Nt_by_2_diffusive_conductance(self):
         gd = self.phase["throat.diffusive_conductance"]
         self.phys["throat.Nt_by_2"] = np.vstack((gd, gd)).T
-        mod = op.models.physics.dispersive_conductance.ad_dif
+        mod = op.models.physics.ad_dif_conductance.ad_dif
         self.phys.add_model(propname='throat.ad_dif_conductance',
                             model=mod, s_scheme="powerlaw",
                             pore_pressure="pore.uniform_pressure",
@@ -81,7 +81,7 @@ class DispersiveConductanceTest:
         gd = self.phase["throat.diffusive_conductance"]
         self.phys["throat.Nt_by_2"] = np.vstack((gd, gd)).T
         self.phys["throat.Nt_by_2"][3, 1] = 7.45
-        mod = op.models.physics.dispersive_conductance.ad_dif
+        mod = op.models.physics.ad_dif_conductance.ad_dif
         self.phys.add_model(propname='throat.ad_dif_conductance',
                             model=mod, s_scheme="powerlaw",
                             pore_pressure="pore.uniform_pressure",
@@ -93,7 +93,7 @@ class DispersiveConductanceTest:
     def test_ad_dif_when_dif_cond_in_wrong_shape(self):
         gd = self.phase["throat.diffusive_conductance"]
         self.phys["throat.Nt_by_3"] = np.vstack((gd, gd, gd)).T
-        mod = op.models.physics.dispersive_conductance.ad_dif
+        mod = op.models.physics.ad_dif_conductance.ad_dif
         with pytest.raises(Exception):
             self.phys.add_model(propname='throat.ad_dif_conductance',
                                 model=mod, s_scheme="powerlaw",
@@ -102,7 +102,7 @@ class DispersiveConductanceTest:
 
 if __name__ == '__main__':
 
-    t = DispersiveConductanceTest()
+    t = Ad_diff_ConductanceTest()
     self = t
     t.setup_class()
     for item in t.__dir__():

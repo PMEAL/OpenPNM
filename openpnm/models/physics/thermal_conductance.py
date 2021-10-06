@@ -2,8 +2,50 @@ r"""
 Pore-scale models for calculating the thermal conductance of conduits.
 """
 import numpy as _np
+from openpnm.models.physics.utils import generic_transport_conductance
 
-__all__ = ["series_resistors"]
+__all__ = ["generic_thermal", "series_resistors"]
+
+
+def generic_thermal(target,
+                    pore_conductivity='pore.thermal_conductivity',
+                    throat_conductivity='throat.thermal_conductivity',
+                    size_factors='throat.diffusive_size_factors'):
+    r"""
+    Calculate the thermal conductance of conduits in network, where a
+    conduit is ( 1/2 pore - full throat - 1/2 pore ). See the notes section.
+
+    Parameters
+    ----------
+    target : OpenPNM Object
+        The object which this model is associated with. This controls the
+        length of the calculated array, and also provides access to other
+        necessary properties.
+
+    pore_conductivity : string
+        Dictionary key of the pore thermal conductivity values
+
+    throat_conductivity : string
+        Dictionary key of the throat thermal conductivity values
+
+    size_factors: str
+        Dictionary key of the conduit diffusive size factors' values.
+
+    Returns
+    -------
+    g : ndarray
+        Array containing thermal conductance values for conduits in the
+        geometry attached to the given physics object.
+
+    Notes
+    -----
+    This function requires that all the necessary phase properties already
+    be calculated.
+    """
+    return generic_transport_conductance(target=target,
+                                         pore_conductivity=pore_conductivity,
+                                         throat_conductivity=throat_conductivity,
+                                         size_factors=size_factors)
 
 
 def series_resistors(target,
@@ -89,20 +131,9 @@ def series_resistors(target,
         SF2 = phase[conduit_shape_factors+'.pore2'][throats]
     except KeyError:
         SF1 = SF2 = SFt = 1.0
-    # Interpolate pore phase property values to throats
-    try:
-        Dt = phase[throat_thermal_conductivity][throats]
-    except KeyError:
-        Dt = phase.interpolate_data(
-            propname=pore_thermal_conductivity)[throats]
-    try:
-        D1 = phase[pore_thermal_conductivity][cn[:, 0]]
-        D2 = phase[pore_thermal_conductivity][cn[:, 1]]
-    except KeyError:
-        D1 = phase.interpolate_data(
-            propname=throat_thermal_conductivity)[cn[:, 0]]
-        D2 = phase.interpolate_data(
-            propname=throat_thermal_conductivity)[cn[:, 1]]
+    Dt = phase[throat_thermal_conductivity][throats]
+    D1 = phase[pore_thermal_conductivity][cn[:, 0]]
+    D2 = phase[pore_thermal_conductivity][cn[:, 1]]
     # Find g for half of pore 1, throat, and half of pore 2
     g1[m1] = (D1*A1)[m1] / L1[m1]
     g2[m2] = (D2*A2)[m2] / L2[m2]
