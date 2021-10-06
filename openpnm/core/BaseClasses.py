@@ -3,11 +3,13 @@ import pytest
 import uuid
 
 
-class Base:
+class Base2:
     r"""
-    This class defines all the organizational details like name and domain.
-    Everything in OpenPNM will descend from this, and have additional
-    functionality added.
+    This class defines all the organizational details like ``name`` and
+    ``domain``
+
+    (Everything in OpenPNM will descend from this, and have additional
+    functionality added)
 
     """
 
@@ -43,6 +45,10 @@ class Base:
 
 
 class NdDataFrame(dict):
+    r"""
+    This class implements a very minimal data frame that does the ONE thing
+    pandas cannot do: put ndarrays in columns
+    """
 
     def __init__(self, d={}):
         for k, v in d.items():
@@ -102,11 +108,15 @@ class NdDataFrame(dict):
 
 
 class DataMixin:
+    r"""
+    This mixin class adds the ability query the ``data`` attribute of
+    ``FullDomain`` objects
+    """
     def __str__(self):
         dom = self.domain
         s = "{"
         for i, key in enumerate(dom.keys()):
-            s += " "*(i > 0) + "\'" + key + "\'': " + str(self[key]) + ",\n"
+            s += " "*(i > 0) + "\'" + key + "\': " + str(self[key]) + ",\n"
         s += "}"
         return s
 
@@ -149,43 +159,48 @@ class DataMixin:
             arr[indices] = values
         self.domain[key] = arr
 
-    def to_mask(self): ...
+    def to_mask(self, indices, element, relative=True):
+        if relative:
+            mask = np.zeros(self.count(element), dtype=bool)
+        else:
+            mask = np.zeros(self.domain.count(element), dtype=bool)
+        mask[indices] = True
+        return mask
 
-    def to_indices(self): ...
+    def to_indices(self, mask, element, relative=True):
+        if relative:
+            mask = mask[self.locs(element)]
+        inds = np.where(mask)[0]
+        return inds
 
     def interpolate_data(self): ...
 
     def get_conduit_data(self): ...
 
-    def _parse_indices(self): ...
-
-    def _parse_element(self): ...
-
-    def _parse_labels(self): ...
-
-    def _parse_mode(self): ...
-
-    def _parse_prop(self): ...
-
 
 class LabelMixin:
+    r"""
+    This mixing class adds functionality for treating boolean arrays as labels
+    """
 
-    def pores(self, label, relative=True):
+    def pores(self, label, asmask=False, relative=True):
         return self._get_locs(element='pore', label=label,
-                              relative=relative)
+                              asmask=asmask, relative=relative)
 
-    def throats(self, label, relative=True):
+    def throats(self, label, asmask=False, relative=True):
         return self._get_locs(element='throat', label=label,
-                              relative=relative)
+                              asmask=asmask, relative=relative)
 
-    def _get_locs(self, element, label, relative):
+    def _get_locs(self, element, label, asmask, relative):
         if label.startswith(element):
             element, label = label.split('.', 1)
         key = element + '.' + label
         if relative:
-            locs = np.where(self.domain[key][self.locs(key)])[0]
+            locs = self.domain[key][self.locs(key)]
         else:
-            locs = np.where(self.domain[key])[0]
+            locs = self.domain[key]
+        if not asmask:
+            locs = np.where(locs)[0]
         return locs
 
     def props(self, element=['pore', 'throat']):
@@ -212,12 +227,35 @@ class LabelMixin:
 
     def filter_by_label(self): ...
 
-    def num_pores(self): ...
+    def num_pores(self, label):
+        Ps = self.pores(label=label, asmask=True, relative=True)
+        return Ps.sum()
 
-    def num_throats(self): ...
+    def num_throats(self, label):
+        Ts = self.throats(label=label, asmask=True, relative=True)
+        return Ts.sum()
 
 
-class FullDomain(Base, DataMixin, LabelMixin):
+class ParserMixin:
+    r"""
+    This mixin class holds methods for parsing arguments of various types
+    """
+
+    def _parse_indices(self): ...
+
+    def _parse_element(self): ...
+
+    def _parse_labels(self): ...
+
+    def _parse_mode(self): ...
+
+    def _parse_prop(self): ...
+
+
+class FullDomain(Base2, DataMixin, LabelMixin):
+    r"""
+    This class is meant to represent Networks and Phases
+    """
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -243,7 +281,10 @@ class FullDomain(Base, DataMixin, LabelMixin):
         return keys
 
 
-class SubDomain(Base, DataMixin, LabelMixin):
+class SubDomain(Base2, DataMixin, LabelMixin):
+    r"""
+    This class is measnt to represent Geometries and Physics
+    """
 
     def __init__(self, domain, name, pores=None, throats=None):
         self.domain = domain
