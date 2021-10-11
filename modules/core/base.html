@@ -627,30 +627,6 @@ then a new Project is created</p></li>
 </dd>
 </dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="openpnm.core.Base.check_data_health">
-<span class="sig-name descname"><span class="pre">check_data_health</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/core/Base.html#Base.check_data_health"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.core.Base.check_data_health" title="Permalink to this definition">¶</a></dt>
-<dd><p>Check the health of pore and throat data arrays.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><strong>health</strong> – A  basic dictionary with an added <code class="docutils literal notranslate"><span class="pre">health</span></code> attribute that is
-<code class="docutils literal notranslate"><span class="pre">True</span></code> if all entries in the dict are deemed healthy
-(empty lists), or <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>HealthDict object</p>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">openpnm</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span> <span class="o">=</span> <span class="n">openpnm</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">h</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">check_data_health</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">h</span><span class="o">.</span><span class="n">health</span>
-<span class="go">True</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="openpnm.core.Base.clear">
 <span class="sig-name descname"><span class="pre">clear</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/core/Base.html#Base.clear"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.core.Base.clear" title="Permalink to this definition">¶</a></dt>
 <dd><p>A subclassed version of the standard dict’s clear method.  This can be

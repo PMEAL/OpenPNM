@@ -248,7 +248,7 @@
             <span class="k">return</span>
         <span class="c1"># Check 1: If value is a dictionary, break it into constituent arrays</span>
         <span class="c1"># and recursively call __setitem__ on each</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s1">&#39;keys&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
                 <span class="n">prop</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;pore.&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;throat.&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="fm">__setitem__</span><span class="p">(</span><span class="n">key</span><span class="o">+</span><span class="s1">&#39;.&#39;</span><span class="o">+</span><span class="n">prop</span><span class="p">,</span> <span class="n">value</span><span class="p">[</span><span class="n">item</span><span class="p">])</span>
@@ -256,8 +256,8 @@
 
         <span class="c1"># Check 3: Enforce correct dict naming</span>
         <span class="n">element</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">element</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;pore&#39;</span><span class="p">,</span> <span class="s1">&#39;throat&#39;</span><span class="p">]:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;All keys must start with either pore or throat&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">element</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;pore&#39;</span><span class="p">,</span> <span class="s1">&#39;throat&#39;</span><span class="p">,</span> <span class="s1">&#39;param&#39;</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;All keys must start with either pore, throat, or param&#39;</span><span class="p">)</span>
 
         <span class="c1"># Check 2: If adding a new key, make sure it has no conflicts</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="p">:</span>
@@ -641,6 +641,8 @@
             <span class="n">N</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">network</span><span class="p">[</span><span class="s1">&#39;pore.coords&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">elif</span> <span class="n">element</span> <span class="o">==</span> <span class="s1">&#39;throat&#39;</span><span class="p">:</span>
             <span class="n">N</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">network</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">element</span> <span class="o">==</span> <span class="s1">&#39;param&#39;</span><span class="p">:</span>
+            <span class="n">N</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="k">return</span> <span class="n">N</span>
 
     <span class="nd">@property</span>
@@ -1011,28 +1013,6 @@
             <span class="n">axs</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">set_axis_off</span><span class="p">()</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;font.size&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">temp</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">(</span><span class="n">h_pad</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span> <span class="n">w_pad</span><span class="o">=</span><span class="mf">0.9</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="Base.check_data_health"><a class="viewcode-back" href="../../../modules/core/base.html#openpnm.core.Base.check_data_health">[docs]</a>    <span class="k">def</span> <span class="nf">check_data_health</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Check the health of pore and throat data arrays.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        health: HealthDict object</span>
-<span class="sd">            A  basic dictionary with an added ``health`` attribute that is</span>
-<span class="sd">            ``True`` if all entries in the dict are deemed healthy</span>
-<span class="sd">            (empty lists), or ``False`` otherwise.</span>
-
-<span class="sd">        Examples</span>
-<span class="sd">        --------</span>
-<span class="sd">        &gt;&gt;&gt; import openpnm</span>
-<span class="sd">        &gt;&gt;&gt; pn = openpnm.network.Cubic(shape=[5, 5, 5])</span>
-<span class="sd">        &gt;&gt;&gt; h = pn.check_data_health()</span>
-<span class="sd">        &gt;&gt;&gt; h.health</span>
-<span class="sd">        True</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">health</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">check_data_health</span><span class="p">(</span><span class="n">obj</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">health</span></div>
 
     <span class="k">def</span> <span class="nf">_parse_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indices</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -1608,8 +1588,8 @@
         <span class="c1"># Parse and validate all input values.</span>
         <span class="n">element</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_element</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">single</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">labels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_labels</span><span class="p">(</span><span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span> <span class="n">element</span><span class="o">=</span><span class="n">element</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">element</span><span class="o">+</span><span class="s1">&#39;.all&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Cannot proceed without </span><span class="si">{}</span><span class="s1">.all&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">element</span><span class="p">))</span>
+        <span class="c1"># if element+&#39;.all&#39; not in self.keys():</span>
+        <span class="c1">#     raise Exception(&#39;Cannot proceed without {}.all&#39;.format(element))</span>
 
         <span class="c1"># Begin computing label array</span>
         <span class="k">if</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;or&#39;</span><span class="p">,</span> <span class="s1">&#39;any&#39;</span><span class="p">,</span> <span class="s1">&#39;union&#39;</span><span class="p">]:</span>
@@ -1867,6 +1847,10 @@
         <span class="c1"># temp = np.size(super(Base, self).__getitem__(element+&#39;.all&#39;))</span>
         <span class="c1"># return temp</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_N</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">check_data_health</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">health</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">check_data_health</span><span class="p">(</span><span class="n">obj</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">health</span>
 
 
 <span class="k">class</span> <span class="nc">MappingMixin</span><span class="p">:</span>
