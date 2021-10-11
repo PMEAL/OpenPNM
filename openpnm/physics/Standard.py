@@ -28,23 +28,14 @@ class Standard(GenericPhysics):
 
     """
 
-    def __init__(self, project=None, network=None, phase=None,
-                 geometry=None, settings={}, **kwargs):
+    def __init__(self, phase=None, geometry=None, settings={}, **kwargs):
 
         # Define some default settings
         self.settings.update({'prefix': 'phys'})
         # Overwrite with user supplied settings, if any
         self.settings.update(settings)
 
-        # Deal with network or project arguments
-        if network is not None:
-            if project is not None:
-                assert network is project.network
-            else:
-                project = network.project
-
-        super().__init__(project=project, phase=phase, geometry=geometry,
-                         **kwargs)
+        super().__init__(phase=phase, geometry=geometry, **kwargs)
 
         self.add_model(propname='throat.flow_shape_factors',
                        model=mods.flow_shape_factors.conical_frustum_and_stick)

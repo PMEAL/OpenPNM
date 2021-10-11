@@ -1,11 +1,11 @@
 import numpy as np
-from openpnm.core import Subdomain, ModelsMixin
+from openpnm.core import Subdomain, LabelMixin, MappingMixin, LegacyMixin, ModelsMixin
 from openpnm.utils import Workspace, logging
 logger = logging.getLogger(__name__)
 ws = Workspace()
 
 
-class GenericPhysics(Subdomain, ModelsMixin):
+class GenericPhysics(Subdomain, LabelMixin, MappingMixin, LegacyMixin, ModelsMixin):
     r"""
     This generic class is meant as a starter for custom Physics objects
 

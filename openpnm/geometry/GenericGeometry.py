@@ -1,10 +1,10 @@
-from openpnm.core import Subdomain, ModelsMixin
+from openpnm.core import Subdomain, LabelMixin, MappingMixin, LegacyMixin, ModelsMixin
 from openpnm.utils import Workspace, logging
 logger = logging.getLogger(__name__)
 ws = Workspace()
 
 
-class GenericGeometry(Subdomain, ModelsMixin):
+class GenericGeometry(Subdomain, LabelMixin, MappingMixin, LegacyMixin, ModelsMixin):
     r"""
     This generic class is meant as a starter for custom Geometry objects
 
@@ -66,21 +66,13 @@ class GenericGeometry(Subdomain, ModelsMixin):
 
     """
 
-    def __init__(self, network=None, project=None, pores=[], throats=[],
-                 settings={}, **kwargs):
+    def __init__(self, pores=[], throats=[], settings={}, **kwargs):
         # Define some default settings
         self.settings.update({'prefix': 'geo'})
         # Overwrite with user supplied settings, if any
         self.settings.update(settings)
 
-        # Deal with network or project arguments
-        if network is not None:
-            if project is not None:
-                assert network is project.network
-            else:
-                project = network.project
-
-        super().__init__(project=project, **kwargs)
+        super().__init__( **kwargs)
 
         network = self.project.network
         if network:

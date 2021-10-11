@@ -79,51 +79,51 @@ class StickAndBall(GenericGeometry):
                        iters=10)
 
         self.add_model(propname='pore.diameter',
-                       model=mods.misc.product,
-                       props=['pore.max_size', 'pore.seed'])
+                        model=mods.misc.product,
+                        props=['pore.max_size', 'pore.seed'])
 
         self.add_model(propname='pore.area',
-                       model=mods.geometry.pore_cross_sectional_area.sphere,
-                       pore_diameter='pore.diameter')
+                        model=mods.geometry.pore_cross_sectional_area.sphere,
+                        pore_diameter='pore.diameter')
 
         self.add_model(propname='pore.volume',
-                       model=mods.geometry.pore_volume.sphere,
-                       pore_diameter='pore.diameter')
+                        model=mods.geometry.pore_volume.sphere,
+                        pore_diameter='pore.diameter')
 
         self.add_model(propname='throat.max_size',
-                       model=mods.misc.from_neighbor_pores,
-                       mode='min',
-                       prop='pore.diameter')
+                        model=mods.misc.from_neighbor_pores,
+                        mode='min',
+                        prop='pore.diameter')
 
         self.add_model(propname='throat.diameter',
-                       model=mods.misc.scaled,
-                       factor=0.5,
-                       prop='throat.max_size')
+                        model=mods.misc.scaled,
+                        factor=0.5,
+                        prop='throat.max_size')
 
         self.add_model(propname='throat.endpoints',
-                       model=mods.geometry.throat_endpoints.spherical_pores,
-                       pore_diameter='pore.diameter',
-                       throat_diameter='throat.diameter')
+                        model=mods.geometry.throat_endpoints.spherical_pores,
+                        pore_diameter='pore.diameter',
+                        throat_diameter='throat.diameter')
 
         self.add_model(propname='throat.length',
-                       model=mods.geometry.throat_length.piecewise,
-                       throat_endpoints='throat.endpoints')
+                        model=mods.geometry.throat_length.piecewise,
+                        throat_endpoints='throat.endpoints')
 
         self.add_model(propname='throat.surface_area',
-                       model=mods.geometry.throat_surface_area.cylinder,
-                       throat_diameter='throat.diameter',
-                       throat_length='throat.length')
+                        model=mods.geometry.throat_surface_area.cylinder,
+                        throat_diameter='throat.diameter',
+                        throat_length='throat.length')
 
         self.add_model(propname='throat.volume',
-                       model=mods.geometry.throat_volume.cylinder,
-                       throat_diameter='throat.diameter',
-                       throat_length='throat.length')
+                        model=mods.geometry.throat_volume.cylinder,
+                        throat_diameter='throat.diameter',
+                        throat_length='throat.length')
 
         self.add_model(propname='throat.area',
-                       model=mods.geometry.throat_cross_sectional_area.cylinder,
-                       throat_diameter='throat.diameter')
+                        model=mods.geometry.throat_cross_sectional_area.cylinder,
+                        throat_diameter='throat.diameter')
 
         self.add_model(propname='throat.conduit_lengths',
-                       model=mods.geometry.throat_length.conduit_lengths,
-                       throat_endpoints='throat.endpoints',
-                       throat_length='throat.length')
+                        model=mods.geometry.throat_length.conduit_lengths,
+                        throat_endpoints='throat.endpoints',
+                        throat_length='throat.length')
