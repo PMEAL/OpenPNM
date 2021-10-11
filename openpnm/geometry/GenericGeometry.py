@@ -72,7 +72,7 @@ class GenericGeometry(Subdomain, LabelMixin, MappingMixin, LegacyMixin, ModelsMi
         # Overwrite with user supplied settings, if any
         self.settings.update(settings)
 
-        super().__init__( **kwargs)
+        super().__init__(**kwargs)
 
         network = self.project.network
         if network:

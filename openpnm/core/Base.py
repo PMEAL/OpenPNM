@@ -73,7 +73,7 @@ class Base(dict):
             return
         # Check 1: If value is a dictionary, break it into constituent arrays
         # and recursively call __setitem__ on each
-        if hasattr(value, 'keys'):
+        if isinstance(value, dict):
             for item in value.keys():
                 prop = item.replace('pore.', '').replace('throat.', '')
                 self.__setitem__(key+'.'+prop, value[item])
@@ -81,8 +81,8 @@ class Base(dict):
 
         # Check 3: Enforce correct dict naming
         element = key.split('.')[0]
-        if element not in ['pore', 'throat']:
-            raise Exception('All keys must start with either pore or throat')
+        if element not in ['pore', 'throat', 'param']:
+            raise Exception('All keys must start with either pore, throat, or param')
 
         # Check 2: If adding a new key, make sure it has no conflicts
         if self.project:
@@ -466,6 +466,8 @@ class Base(dict):
             N = self.project.network['pore.coords'].shape[0]
         elif element == 'throat':
             N = self.project.network['throat.conns'].shape[0]
+        elif element == 'param':
+            N = 1
         return N
 
     @property
@@ -1433,8 +1435,8 @@ class LabelMixin:
         # Parse and validate all input values.
         element = self._parse_element(element, single=True)
         labels = self._parse_labels(labels=labels, element=element)
-        if element+'.all' not in self.keys():
-            raise Exception('Cannot proceed without {}.all'.format(element))
+        # if element+'.all' not in self.keys():
+        #     raise Exception('Cannot proceed without {}.all'.format(element))
 
         # Begin computing label array
         if mode in ['or', 'any', 'union']:
