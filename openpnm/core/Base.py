@@ -839,28 +839,6 @@ class Base(dict):
         plt.rcParams['font.size'] = temp
         plt.tight_layout(h_pad=0.9, w_pad=0.9)
 
-    def check_data_health(self):
-        r"""
-        Check the health of pore and throat data arrays.
-
-        Returns
-        -------
-        health: HealthDict object
-            A  basic dictionary with an added ``health`` attribute that is
-            ``True`` if all entries in the dict are deemed healthy
-            (empty lists), or ``False`` otherwise.
-
-        Examples
-        --------
-        >>> import openpnm
-        >>> pn = openpnm.network.Cubic(shape=[5, 5, 5])
-        >>> h = pn.check_data_health()
-        >>> h.health
-        True
-        """
-        health = self.project.check_data_health(obj=self)
-        return health
-
     def _parse_indices(self, indices):
         r"""
         This private method accepts a list of pores or throats and returns a
@@ -1694,6 +1672,10 @@ class LegacyMixin:
         # temp = np.size(super(Base, self).__getitem__(element+'.all'))
         # return temp
         return self._N(element)
+
+    def check_data_health(self):
+        health = self.project.check_data_health(obj=self)
+        return health
 
 
 class MappingMixin:
