@@ -1,0 +1,359 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>openpnm.models.geometry.pore_surface_area &#8212; OpenPNM  documentation</title>
+    
+  <link href="../../../../_static/css/theme.css" rel="stylesheet">
+  <link href="../../../../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/css/blank.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css" />
+    
+  <link rel="preload" as="script" href="../../../../_static/js/index.be7d3bbb2ef33a8344ce.js">
+
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/clipboard.min.js"></script>
+    <script src="../../../../_static/copybutton.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../../_static/js/custom.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+
+<a class="navbar-brand" href="https://www.openpnm.org">
+  <img src="../../../../_static/openpnm_logo.png" class="logo" alt="logo">
+</a>
+
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class=" collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../../userguide/index.html">
+  <strong>
+   User Guide
+  </strong>
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../../modules/index.html">
+  <strong>
+   Module Reference
+  </strong>
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../../examples/examples.html">
+  Examples
+ </a>
+</li>
+
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/PMEAL/OpenPNM" rel="noopener" target="_blank" title="GitHub">
+            <span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://openpnm.substack.com/" rel="noopener" target="_blank" title="Substack">
+            <span><i class="fas fa-envelope-square"></i></span>
+            <label class="sr-only">Substack</label>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://twitter.com/OpenPnm" rel="noopener" target="_blank" title="Twitter">
+            <span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label>
+          </a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../../../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    
+  </div>
+</nav>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <h1>Source code for openpnm.models.geometry.pore_surface_area</h1><div class="highlight"><pre>
+<span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">_np</span>
+
+
+<div class="viewcode-block" id="sphere"><a class="viewcode-back" href="../../../../modules/models/geometry.html#openpnm.models.geometry.pore_surface_area.sphere">[docs]</a><span class="k">def</span> <span class="nf">sphere</span><span class="p">(</span>
+    <span class="n">target</span><span class="p">,</span>
+    <span class="n">pore_diameter</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">,</span>
+    <span class="n">throat_cross_sectional_area</span><span class="o">=</span><span class="s1">&#39;throat.cross_sectional_area&#39;</span>
+<span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates internal surface area of pore bodies assuming they are</span>
+<span class="sd">    spherical then subtracts the area of the neighboring throats in a</span>
+<span class="sd">    crude way, by simply considering the throat cross-sectional area, thus</span>
+<span class="sd">    not accounting for the actual curvature of the intersection.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    target : GenericGeometry</span>
+<span class="sd">        The Geometry object for which these values are being calculated.</span>
+<span class="sd">        This controls the length of the calculated array, and also</span>
+<span class="sd">        provides access to other necessary thermofluid properties.</span>
+<span class="sd">    pore_diameter : str</span>
+<span class="sd">        The dictionary key to the pore diameter array.</span>
+<span class="sd">    throat_cross_sectional_area : str</span>
+<span class="sd">        The dictionary key to the throat cross sectional area array.</span>
+<span class="sd">        Throat areas are needed since their insection with the pore are</span>
+<span class="sd">        removed from the computation.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    value : NumPy ndarray</span>
+<span class="sd">        Array containing pore surface area values.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">network</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">network</span>
+    <span class="n">R</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">pore_diameter</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span>
+    <span class="n">Asurf</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">_np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">R</span><span class="o">**</span><span class="mi">2</span>
+    <span class="n">Tn</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">find_neighbor_throats</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">target</span><span class="o">.</span><span class="n">Ps</span><span class="p">,</span> <span class="n">flatten</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">Tsurf</span> <span class="o">=</span> <span class="n">_np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">network</span><span class="p">[</span><span class="n">throat_cross_sectional_area</span><span class="p">][</span><span class="n">Ts</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="k">for</span> <span class="n">Ts</span> <span class="ow">in</span> <span class="n">Tn</span><span class="p">])</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="n">Asurf</span> <span class="o">-</span> <span class="n">Tsurf</span>
+    <span class="k">return</span> <span class="n">value</span></div>
+
+
+<div class="viewcode-block" id="circle"><a class="viewcode-back" href="../../../../modules/models/geometry.html#openpnm.models.geometry.pore_surface_area.circle">[docs]</a><span class="k">def</span> <span class="nf">circle</span><span class="p">(</span>
+    <span class="n">target</span><span class="p">,</span>
+    <span class="n">pore_diameter</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">,</span>
+    <span class="n">throat_cross_sectional_area</span><span class="o">=</span><span class="s1">&#39;throat.cross_sectional_area&#39;</span>
+<span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates internal surface area of pore bodies assuming they are</span>
+<span class="sd">    circular then subtracts the area of the neighboring throats in a</span>
+<span class="sd">    crude way, by simply considering the throat cross-sectional area, thus</span>
+<span class="sd">    not accounting for the actual curvature of the intersection.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    target : GenericGeometry</span>
+<span class="sd">        The Geometry object for which these values are being calculated.</span>
+<span class="sd">        This controls the length of the calculated array, and also</span>
+<span class="sd">        provides access to other necessary thermofluid properties.</span>
+<span class="sd">    pore_diameter : str</span>
+<span class="sd">        The dictionary key to the pore diameter array.</span>
+<span class="sd">    throat_cross_sectional_area : str</span>
+<span class="sd">        The dictionary key to the throat cross sectional area array.</span>
+<span class="sd">        Throat areas are needed since their insection with the pore are</span>
+<span class="sd">        removed from the computation.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    value : NumPy ndarray</span>
+<span class="sd">        Array containing pore surface area values.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">network</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">network</span>
+    <span class="n">R</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">pore_diameter</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span>
+    <span class="n">Asurf</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">_np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">R</span>
+    <span class="n">Tn</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">find_neighbor_throats</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">target</span><span class="o">.</span><span class="n">Ps</span><span class="p">,</span> <span class="n">flatten</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">Tsurf</span> <span class="o">=</span> <span class="n">_np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">network</span><span class="p">[</span><span class="n">throat_cross_sectional_area</span><span class="p">][</span><span class="n">Ts</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="k">for</span> <span class="n">Ts</span> <span class="ow">in</span> <span class="n">Tn</span><span class="p">])</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="n">Asurf</span> <span class="o">-</span> <span class="n">Tsurf</span>
+    <span class="k">return</span> <span class="n">value</span></div>
+
+
+<div class="viewcode-block" id="cube"><a class="viewcode-back" href="../../../../modules/models/geometry.html#openpnm.models.geometry.pore_surface_area.cube">[docs]</a><span class="k">def</span> <span class="nf">cube</span><span class="p">(</span>
+    <span class="n">target</span><span class="p">,</span>
+    <span class="n">pore_diameter</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">,</span>
+    <span class="n">throat_cross_sectional_area</span><span class="o">=</span><span class="s1">&#39;throat.cross_sectional_area&#39;</span>
+<span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates internal surface area of pore bodies assuming they are cubes</span>
+<span class="sd">    then subtracts the area of the neighboring throats.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    target : GenericGeometry</span>
+<span class="sd">        The Geometry object for which these values are being calculated.</span>
+<span class="sd">        This controls the length of the calculated array, and also</span>
+<span class="sd">        provides access to other necessary thermofluid properties.</span>
+<span class="sd">    pore_diameter : string</span>
+<span class="sd">        The dictionary key to the pore diameter array.</span>
+<span class="sd">    throat_cross_sectional_area : str</span>
+<span class="sd">        The dictionary key to the throat cross sectional area array.</span>
+<span class="sd">        Throat areas are needed since their insection with the pore are</span>
+<span class="sd">        removed from the computation.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    value : NumPy ndarray</span>
+<span class="sd">        Array containing pore surface area values.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">network</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">network</span>
+    <span class="n">D</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">pore_diameter</span><span class="p">]</span>
+    <span class="n">Tn</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">find_neighbor_throats</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">target</span><span class="o">.</span><span class="n">Ps</span><span class="p">,</span> <span class="n">flatten</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">Tsurf</span> <span class="o">=</span> <span class="n">_np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">network</span><span class="p">[</span><span class="n">throat_cross_sectional_area</span><span class="p">][</span><span class="n">Ts</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="k">for</span> <span class="n">Ts</span> <span class="ow">in</span> <span class="n">Tn</span><span class="p">])</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="mi">6</span> <span class="o">*</span> <span class="n">D</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="n">Tsurf</span>
+    <span class="k">return</span> <span class="n">value</span></div>
+
+
+<div class="viewcode-block" id="square"><a class="viewcode-back" href="../../../../modules/models/geometry.html#openpnm.models.geometry.pore_surface_area.square">[docs]</a><span class="k">def</span> <span class="nf">square</span><span class="p">(</span>
+    <span class="n">target</span><span class="p">,</span>
+    <span class="n">pore_diameter</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">,</span>
+    <span class="n">throat_cross_sectional_area</span><span class="o">=</span><span class="s1">&#39;throat.cross_sectional_area&#39;</span>
+<span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates internal surface area of pore bodies assuming they are</span>
+<span class="sd">    squares then subtracts the area of the neighboring throats.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    target : GenericGeometry</span>
+<span class="sd">        The Geometry object for which these values are being calculated.</span>
+<span class="sd">        This controls the length of the calculated array, and also</span>
+<span class="sd">        provides access to other necessary thermofluid properties.</span>
+<span class="sd">    pore_diameter : str</span>
+<span class="sd">        The dictionary key to the pore diameter array.</span>
+<span class="sd">    throat_cross_sectional_area : str</span>
+<span class="sd">        The dictionary key to the throat cross sectional area array.</span>
+<span class="sd">        Throat areas are needed since their insection with the pore are</span>
+<span class="sd">        removed from the computation.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    value : NumPy ndarray</span>
+<span class="sd">        Array containing pore surface area values.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">network</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">network</span>
+    <span class="n">D</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">pore_diameter</span><span class="p">]</span>
+    <span class="n">Tn</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">find_neighbor_throats</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">target</span><span class="o">.</span><span class="n">Ps</span><span class="p">,</span> <span class="n">flatten</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">Tsurf</span> <span class="o">=</span> <span class="n">_np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">network</span><span class="p">[</span><span class="n">throat_cross_sectional_area</span><span class="p">][</span><span class="n">Ts</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="k">for</span> <span class="n">Ts</span> <span class="ow">in</span> <span class="n">Tn</span><span class="p">])</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">D</span> <span class="o">-</span> <span class="n">Tsurf</span>
+    <span class="k">return</span> <span class="n">value</span></div>
+</pre></div>
+
+              </div>
+              
+              
+          </main>
+          
+
+      </div>
+    </div>
+  
+  <script src="../../../../_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
+<footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2021 OpenPNM Team.<br>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br>
+</p>
+    </div>
+    
+  </div>
+</footer>
+  </body>
+</html>
