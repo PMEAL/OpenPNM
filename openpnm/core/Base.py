@@ -89,52 +89,6 @@ class Base(dict):
     | ``project``    | A handle to the Project containing the object          |
     +----------------+--------------------------------------------------------+
 
-    Examples
-    --------
-    It is possible to create an instance of Base, although it is not very
-    useful except for demonstration purposes as done here.
-
-    >>> import openpnm as op
-    >>> obj = op.core.Base(Np=4, Nt=5)
-
-    Now query the object for its basic properties:
-
-    >>> obj.Np, obj.Nt  # Number of pores and throats
-    (4, 5)
-
-    Add a label to the object, as a boolean with True where the label applies:
-
-    >>> obj['pore.new_label'] = [ True, False, False, True]
-
-    See list of available labels and confirm new_label was added:
-
-    >>> print(obj.labels())
-    ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-    1     : pore.all
-    2     : pore.new_label
-    3     : throat.all
-    ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-
-    Use the label to fetch pores where it was applied:
-
-    >>> Ps = obj.pores('new_label')
-    >>> print(Ps)
-    [0 3]
-
-    Find the number of pores with label:
-
-    >>> print(obj.num_pores('new_label'))
-    2
-
-    Convert between indices and boolean mask
-
-    >>> mask = obj.tomask(throats=[0, 2, 4])
-    >>> print(mask)
-    [ True False  True False  True]
-    >>> inds = obj.toindices(mask)
-    >>> print(inds)
-    [0 2 4]
-
     """
 
     def __new__(cls, *args, **kwargs):
