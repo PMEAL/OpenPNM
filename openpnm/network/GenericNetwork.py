@@ -1,7 +1,7 @@
 import numpy as np
 import scipy.sparse as sprs
 import scipy.spatial as sptl
-from openpnm.core import Base, ModelsMixin
+from openpnm.core import Base, ModelsMixin, LegacyMixin
 from openpnm import topotools
 from openpnm.utils import Workspace, logging
 import openpnm.models.topology as tm
@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 ws = Workspace()
 
 
-class GenericNetwork(Base, ModelsMixin):
+class GenericNetwork(Base, ModelsMixin, LegacyMixin):
     r"""
     This generic class contains the main functionality used by all networks
 

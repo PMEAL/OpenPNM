@@ -1,4 +1,4 @@
-from openpnm.core import Base, ModelsMixin
+from openpnm.core import Base, LegacyMixin, ModelsMixin
 from openpnm.utils import Workspace, logging, Docorator
 from numpy import ones
 import openpnm.models as mods
@@ -9,7 +9,7 @@ ws = Workspace()
 
 @docstr.get_sections(base='GenericPhase', sections=['Parameters'])
 @docstr.dedent
-class GenericPhase(Base, ModelsMixin):
+class GenericPhase(Base, ModelsMixin, LegacyMixin):
     r"""
     This generic class is meant as a starter for custom Phase objects
 

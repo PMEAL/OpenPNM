@@ -952,177 +952,6 @@ class Base(dict):
         """
         return np.arange(0, self.Nt)
 
-    def _map(self, ids, element, filtered):
-        ids = np.array(ids, dtype=np.int64)
-        locations = self._get_indices(element=element)
-        self_in_ids = np.isin(ids, self[element+'._id'], assume_unique=True)
-        ids_in_self = np.isin(self[element+'._id'], ids, assume_unique=True)
-        mask = np.zeros(shape=ids.shape, dtype=bool)
-        mask[self_in_ids] = True
-        ind = np.ones_like(mask, dtype=np.int64) * -1
-        ind[self_in_ids] = locations[ids_in_self]
-        if filtered:
-            return ind[mask]
-        t = namedtuple('index_map', ('indices', 'mask'))
-        return t(ind, mask)
-
-    def map_pores(self, pores, origin, filtered=True):
-        r"""
-        Given a list of pore on a target object, finds indices of those pores
-        on the calling object
-
-        Parameters
-        ----------
-        pores : array_like
-            The indices of the pores on the object specifiedin ``origin``
-
-        origin : OpenPNM Base object
-            The object corresponding to the indices given in ``pores``
-
-        filtered : boolean (default is ``True``)
-            If ``True`` then a ND-array of indices is returned with missing
-            indices removed, otherwise a named-tuple containing both the
-            ``indices`` and a boolean ``mask`` with ``False`` indicating
-            which locations were not found.
-
-        Returns
-        -------
-        Pore indices on the calling object corresponding to the same pores
-        on the ``origin`` object.  Can be an array or a tuple containing an
-        array and a mask, depending on the value of ``filtered``.
-
-        See Also
-        --------
-        pores
-        map_throats
-
-        """
-        ids = origin['pore._id'][pores]
-        return self._map(element='pore', ids=ids, filtered=filtered)
-
-    def map_throats(self, throats, origin, filtered=True):
-        r"""
-        Given a list of throats on a target object, finds indices of
-        those throats on the calling object
-
-        Parameters
-        ----------
-        throats : array_like
-            The indices of the throats on the object specified in ``origin``
-
-        origin : OpenPNM Base object
-            The object corresponding to the indices given in ``throats``
-
-        filtered : boolean (default is ``True``)
-            If ``True`` then a ND-array of indices is returned with missing
-            indices removed, otherwise a named-tuple containing both the
-            ``indices`` and a boolean ``mask`` with ``False`` indicating
-            which locations were not found.
-
-        Returns
-        -------
-        Throat indices on the calling object corresponding to the same throats
-        on the ``origin`` object.  Can be an array or a tuple containing an
-        array and a mask, depending on the value of ``filtered``.
-
-        See Also
-        --------
-        throats
-        map_pores
-
-        """
-        ids = origin['throat._id'][throats]
-        return self._map(element='throat', ids=ids, filtered=filtered)
-
-    def _tomask(self, indices, element):
-        r"""
-        This is a generalized version of tomask that accepts a string of
-        'pore' or 'throat' for programmatic access.
-        """
-        element = self._parse_element(element, single=True)
-        indices = self._parse_indices(indices)
-        N = np.shape(self[element + '.all'])[0]
-        ind = np.array(indices, ndmin=1)
-        mask = np.zeros((N, ), dtype=bool)
-        mask[ind] = True
-        return mask
-
-    def tomask(self, pores=None, throats=None):
-        r"""
-        Convert a list of pore or throat indices into a boolean mask of the
-        correct length
-
-        Parameters
-        ----------
-        pores or throats : array_like
-            List of pore or throat indices.  Only one of these can be specified
-            at a time, and the returned result will be of the corresponding
-            length.
-
-        Returns
-        -------
-        A boolean mask of length Np or Nt with True in the specified pore or
-        throat locations.
-
-        See Also
-        --------
-        toindices
-
-        Examples
-        --------
-        >>> import openpnm as op
-        >>> pn = op.network.Cubic(shape=[5, 5, 5])
-        >>> mask = pn.tomask(pores=[0, 10, 20])
-        >>> sum(mask)  # 3 non-zero elements exist in the mask (0, 10 and 20)
-        3
-        >>> len(mask)  # Mask size is equal to the number of pores in network
-        125
-        >>> mask = pn.tomask(throats=[0, 10, 20])
-        >>> len(mask)  # Mask is now equal to number of throats in network
-        300
-
-        """
-        if (pores is not None) and (throats is None):
-            mask = self._tomask(element='pore', indices=pores)
-        elif (throats is not None) and (pores is None):
-            mask = self._tomask(element='throat', indices=throats)
-        else:
-            raise Exception('Cannot specify both pores and throats')
-        return mask
-
-    def toindices(self, mask):
-        r"""
-        Convert a boolean mask to a list of pore or throat indices
-
-        Parameters
-        ----------
-        mask : array_like booleans
-            A boolean array with True at locations where indices are desired.
-            The appropriate indices are returned based an the length of mask,
-            which must be either Np or Nt long.
-
-        Returns
-        -------
-        A list of pore or throat indices corresponding the locations where
-        the received mask was True.
-
-        See Also
-        --------
-        tomask
-
-        Notes
-        -----
-        This behavior could just as easily be accomplished by using the mask
-        in ``pn.pores()[mask]`` or ``pn.throats()[mask]``.  This method is
-        just a convenience function and is a complement to ``tomask``.
-
-        """
-        if np.amax(mask) > 1:
-            raise Exception('Received mask does not appear to be boolean')
-        mask = np.array(mask, dtype=bool)
-        indices = self._parse_indices(mask)
-        return indices
-
     def interleave_data(self, prop):
         r"""
         Retrieves requested property from associated objects, to produce a full
@@ -1922,3 +1751,177 @@ class Base(dict):
         if obj_type.lower() in mro:
             flag = True
         return flag
+
+
+class LegacyMixin:
+    def _map(self, ids, element, filtered):
+        ids = np.array(ids, dtype=np.int64)
+        locations = self._get_indices(element=element)
+        self_in_ids = np.isin(ids, self[element+'._id'], assume_unique=True)
+        ids_in_self = np.isin(self[element+'._id'], ids, assume_unique=True)
+        mask = np.zeros(shape=ids.shape, dtype=bool)
+        mask[self_in_ids] = True
+        ind = np.ones_like(mask, dtype=np.int64) * -1
+        ind[self_in_ids] = locations[ids_in_self]
+        if filtered:
+            return ind[mask]
+        t = namedtuple('index_map', ('indices', 'mask'))
+        return t(ind, mask)
+
+    def map_pores(self, pores, origin, filtered=True):
+        r"""
+        Given a list of pore on a target object, finds indices of those pores
+        on the calling object
+
+        Parameters
+        ----------
+        pores : array_like
+            The indices of the pores on the object specifiedin ``origin``
+
+        origin : OpenPNM Base object
+            The object corresponding to the indices given in ``pores``
+
+        filtered : boolean (default is ``True``)
+            If ``True`` then a ND-array of indices is returned with missing
+            indices removed, otherwise a named-tuple containing both the
+            ``indices`` and a boolean ``mask`` with ``False`` indicating
+            which locations were not found.
+
+        Returns
+        -------
+        Pore indices on the calling object corresponding to the same pores
+        on the ``origin`` object.  Can be an array or a tuple containing an
+        array and a mask, depending on the value of ``filtered``.
+
+        See Also
+        --------
+        pores
+        map_throats
+
+        """
+        ids = origin['pore._id'][pores]
+        return self._map(element='pore', ids=ids, filtered=filtered)
+
+    def map_throats(self, throats, origin, filtered=True):
+        r"""
+        Given a list of throats on a target object, finds indices of
+        those throats on the calling object
+
+        Parameters
+        ----------
+        throats : array_like
+            The indices of the throats on the object specified in ``origin``
+
+        origin : OpenPNM Base object
+            The object corresponding to the indices given in ``throats``
+
+        filtered : boolean (default is ``True``)
+            If ``True`` then a ND-array of indices is returned with missing
+            indices removed, otherwise a named-tuple containing both the
+            ``indices`` and a boolean ``mask`` with ``False`` indicating
+            which locations were not found.
+
+        Returns
+        -------
+        Throat indices on the calling object corresponding to the same throats
+        on the ``origin`` object.  Can be an array or a tuple containing an
+        array and a mask, depending on the value of ``filtered``.
+
+        See Also
+        --------
+        throats
+        map_pores
+
+        """
+        ids = origin['throat._id'][throats]
+        return self._map(element='throat', ids=ids, filtered=filtered)
+
+    def _tomask(self, indices, element):
+        r"""
+        This is a generalized version of tomask that accepts a string of
+        'pore' or 'throat' for programmatic access.
+        """
+        element = self._parse_element(element, single=True)
+        indices = self._parse_indices(indices)
+        N = np.shape(self[element + '.all'])[0]
+        ind = np.array(indices, ndmin=1)
+        mask = np.zeros((N, ), dtype=bool)
+        mask[ind] = True
+        return mask
+
+    def tomask(self, pores=None, throats=None):
+        r"""
+        Convert a list of pore or throat indices into a boolean mask of the
+        correct length
+
+        Parameters
+        ----------
+        pores or throats : array_like
+            List of pore or throat indices.  Only one of these can be specified
+            at a time, and the returned result will be of the corresponding
+            length.
+
+        Returns
+        -------
+        A boolean mask of length Np or Nt with True in the specified pore or
+        throat locations.
+
+        See Also
+        --------
+        toindices
+
+        Examples
+        --------
+        >>> import openpnm as op
+        >>> pn = op.network.Cubic(shape=[5, 5, 5])
+        >>> mask = pn.tomask(pores=[0, 10, 20])
+        >>> sum(mask)  # 3 non-zero elements exist in the mask (0, 10 and 20)
+        3
+        >>> len(mask)  # Mask size is equal to the number of pores in network
+        125
+        >>> mask = pn.tomask(throats=[0, 10, 20])
+        >>> len(mask)  # Mask is now equal to number of throats in network
+        300
+
+        """
+        if (pores is not None) and (throats is None):
+            mask = self._tomask(element='pore', indices=pores)
+        elif (throats is not None) and (pores is None):
+            mask = self._tomask(element='throat', indices=throats)
+        else:
+            raise Exception('Cannot specify both pores and throats')
+        return mask
+
+    def toindices(self, mask):
+        r"""
+        Convert a boolean mask to a list of pore or throat indices
+
+        Parameters
+        ----------
+        mask : array_like booleans
+            A boolean array with True at locations where indices are desired.
+            The appropriate indices are returned based an the length of mask,
+            which must be either Np or Nt long.
+
+        Returns
+        -------
+        A list of pore or throat indices corresponding the locations where
+        the received mask was True.
+
+        See Also
+        --------
+        tomask
+
+        Notes
+        -----
+        This behavior could just as easily be accomplished by using the mask
+        in ``pn.pores()[mask]`` or ``pn.throats()[mask]``.  This method is
+        just a convenience function and is a complement to ``tomask``.
+
+        """
+        if np.amax(mask) > 1:
+            raise Exception('Received mask does not appear to be boolean')
+        mask = np.array(mask, dtype=bool)
+        indices = self._parse_indices(mask)
+        return indices
+
