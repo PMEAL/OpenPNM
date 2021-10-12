@@ -1,5 +1,5 @@
 import numpy as np
-from openpnm.topotools import generate_base_points
+from openpnm.topotools import generate_base_points, dimensionality
 
 
 def trim(network, pores=None, throats=None):
@@ -122,13 +122,10 @@ def parse_points(shape, points):
     if isinstance(points, int):
         points = generate_base_points(num_points=points,
                                       domain_size=shape,
-                                      reflect=True)
+                                      reflect=False)
     else:
         # Should we check to ensure that points are reflected?
         points = np.array(points)
-    # Deal with points that are only 2D...they break Delaunay and Voronoi
-    if points.shape[1] == 3 and len(np.unique(points[:, 2])) == 1:
-        points = points[:, :2]
 
     return points
 
@@ -199,12 +196,72 @@ def label_surface_pores(network):
     r"""
     """
     hits = np.zeros_like(network.Ps, dtype=bool)
-    dims = topotools.dimensionality(network)
+    dims = dimensionality(network)
     mn = np.amin(network["pore.coords"], axis=0)
     mx = np.amax(network["pore.coords"], axis=0)
-    for ax in [0, 1, 2]:
+    for ax in np.where(dims)[0]:
         if dims[ax]:
             hits += network["pore.coords"][:, ax] <= mn[ax]
             hits += network["pore.coords"][:, ax] >= mx[ax]
     network["pore.surface"] = hits
     return network
+
+
+def label_faces(network):
+        r'''
+        Label the pores sitting on the faces of the domain in accordance with
+        the conventions used for cubic etc.
+        '''
+        dims = dimensionality(network)
+        coords = np.around(network['pore.coords'], decimals=10)
+        min_labels = ['front', 'left', 'bottom']
+        max_labels = ['back', 'right', 'top']
+        min_coords = np.amin(coords, axis=0)
+        max_coords = np.amax(coords, axis=0)
+        for ax in np.where(dims)[0]:
+            network['pore.' + min_labels[ax]] = coords[:, ax] == min_coords[ax]
+            network['pore.' + max_labels[ax]] = coords[:, ax] == max_coords[ax]
+
+
+def trim_reflected_points(network, shape):
+    # Delete all coords that are outside of shape
+    hits = network['pore.coords'] > shape
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
