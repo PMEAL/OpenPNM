@@ -55,4 +55,6 @@ class Delaunay(GenericNetwork):
         net, tri = delaunay(points=points, shape=shape)
         net = tools.add_all_label(net)
         self.update(net)
+        tools.label_surface_pores(network=self)
+        tools.label_faces(network=self)
         self._tri = tri
