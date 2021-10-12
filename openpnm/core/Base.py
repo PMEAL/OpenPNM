@@ -565,307 +565,19 @@ class Base(dict):
                     vals += item.props(element=element, mode=mode, deep=False)
         return vals
 
-    def _get_labels(self, element, locations, mode):
+    @property
+    def Np(self):
         r"""
-        This is the actual label getter method, but it should not be called
-        directly.  Use ``labels`` instead.
+        A shortcut to query the total number of pores on the object'
         """
-        # Parse inputs
-        locations = self._parse_indices(locations)
-        element = self._parse_element(element=element)
-        # Collect list of all pore OR throat labels
-        labels = self.keys(mode='labels', element=element)
-        labels.sort()
-        labels = np.array(labels)  # Convert to ND-array for following checks
-        # Make an 2D array with locations in rows and labels in cols
-        arr = np.vstack([self[item][locations] for item in labels]).T
-        num_hits = np.sum(arr, axis=0)  # Number of locations with each label
-        if mode in ['or', 'union', 'any']:
-            temp = labels[num_hits > 0]
-        elif mode in ['and', 'intersection']:
-            temp = labels[num_hits == locations.size]
-        elif mode in ['xor', 'exclusive_or']:
-            temp = labels[num_hits == 1]
-        elif mode in ['nor', 'not', 'none']:
-            temp = labels[num_hits == 0]
-        elif mode in ['nand']:
-            temp = labels[num_hits == (locations.size - 1)]
-        elif mode in ['xnor', 'nxor']:
-            temp = labels[num_hits > 1]
-        else:
-            raise Exception('Unrecognized mode:'+str(mode))
-        return PrintableList(temp)
+        return np.shape(self.get('pore.all'))[0]
 
-    def labels(self, pores=[], throats=[], element=None, mode='union'):
+    @property
+    def Nt(self):
         r"""
-        Returns a list of labels present on the object
-
-        Additionally, this function can return labels applied to a specified
-        set of pores or throats
-
-        Parameters
-        ----------
-        element : string
-            Controls whether pore or throat labels are returned.  If empty then
-            both are returned (default).
-
-        pores (or throats) : array_like
-            The pores (or throats) whose labels are sought.  If left empty a
-            list containing all pore and throat labels is returned.
-
-        mode : string, optional
-            Controls how the query should be performed.  Only applicable
-            when ``pores`` or ``throats`` are specified:
-
-            **'or', 'union', 'any'**: (default) Returns the labels that are
-            assigned to *any* of the given locations.
-
-            **'and', 'intersection', 'all'**: Labels that are present on *all*
-            the given locations.
-
-            **'xor', 'exclusive_or'** : Labels that are present on *only one*
-            of the given locations.
-
-            **'nor', 'none', 'not'**: Labels that are *not* present on any of
-            the given locations.
-
-            **'nand'**: Labels that are present on *all but one* of the given
-            locations
-
-            **'xnor'**: Labels that are present on *more than one* of the given
-            locations.  'nxor' is also accepted.
-
-        Returns
-        -------
-        A list containing the labels on the object.  If ``pores`` or
-        ``throats`` are given, the results are filtered according to the
-        specified ``mode``.
-
-        See Also
-        --------
-        props
-        keys
-
-        Notes
-        -----
-        Technically, *'nand'* and *'xnor'* should also return pores with *none*
-        of the labels but these are not included.  This makes the returned list
-        more useful.
-
-        Examples
-        --------
-        >>> import openpnm as op
-        >>> pn = op.network.Cubic(shape=[5, 5, 5])
-        >>> pn.labels(pores=[11, 12])
-        ['pore.all', 'pore.internal', 'pore.left', 'pore.surface']
+        A shortcut to query the total number of throats on the object'
         """
-        # Short-circuit query when no pores or throats are given
-        if (np.size(pores) == 0) and (np.size(throats) == 0):
-            labels = PrintableList(self.keys(element=element, mode='labels'))
-        elif (np.size(pores) > 0) and (np.size(throats) > 0):
-            raise Exception('Cannot perform label query on pores and '
-                            + 'throats simultaneously')
-        elif np.size(pores) > 0:
-            labels = self._get_labels(element='pore', locations=pores,
-                                      mode=mode)
-        elif np.size(throats) > 0:
-            labels = self._get_labels(element='throat', locations=throats,
-                                      mode=mode)
-        return labels
-
-    def set_label(self, label, pores=None, throats=None, mode='add'):
-        r"""
-        Creates or updates a label array
-
-        Parameters
-        ----------
-        label : string
-                The label to apply to the specified locations
-        pores : array_like
-            A list of pore indices or a boolean mask of where given label
-            should be added or removed (see ``mode``)
-        throats : array_like
-            A list of throat indices or a boolean mask of where given label
-            should be added or removed (see ``mode``)
-        mode : string
-            Controls how the labels are handled.  Options are:
-
-            *'add'* - Adds the given label to the specified locations while
-            keeping existing labels (default)
-
-            *'overwrite'* - Removes existing label from all locations before
-            adding the label in the specified locations
-
-            *'remove'* - Removes the  given label from the specified locations
-            leaving the remainder intact.
-
-            *'purge'* - Removes the specified label from the object
-
-        """
-        if mode == 'purge':
-            if label.split('.')[0] in ['pore', 'throat']:
-                if label in self.labels():
-                    del self[label]
-                else:
-                    logger.warning(label + ' is not a label, skpping')
-            else:
-                self.set_label(label='pore.'+label, mode='purge')
-                self.set_label(label='throat.'+label, mode='purge')
-        else:
-            if label.split('.')[0] in ['pore', 'throat']:
-                label = label.split('.', 1)[1]
-            if pores is not None:
-                pores = self._parse_indices(pores)
-                if (mode == 'overwrite') or ('pore.'+label not in self.labels()):
-                    self['pore.' + label] = False
-                if mode in ['remove']:
-                    self['pore.' + label][pores] = False
-                else:
-                    self['pore.' + label][pores] = True
-            if throats is not None:
-                throats = self._parse_indices(throats)
-                if (mode == 'overwrite') or ('throat.'+label not in self.labels()):
-                    self['throat.' + label] = False
-                if mode in ['remove']:
-                    self['throat.' + label][throats] = False
-                else:
-                    self['throat.' + label][throats] = True
-            if pores is None and throats is None:
-                del self
-
-    def _get_indices(self, element, labels='all', mode='or'):
-        r"""
-        This is the actual method for getting indices, but should not be called
-        directly.  Use ``pores`` or ``throats`` instead.
-        """
-        # Parse and validate all input values.
-        element = self._parse_element(element, single=True)
-        labels = self._parse_labels(labels=labels, element=element)
-        if element+'.all' not in self.keys():
-            raise Exception('Cannot proceed without {}.all'.format(element))
-
-        # Begin computing label array
-        if mode in ['or', 'any', 'union']:
-            union = np.zeros_like(self[element+'.all'], dtype=bool)
-            for item in labels:  # Iterate over labels and collect all indices
-                union = union + self[element+'.'+item.split('.')[-1]]
-            ind = union
-        elif mode in ['and', 'all', 'intersection']:
-            intersect = np.ones_like(self[element+'.all'], dtype=bool)
-            for item in labels:  # Iterate over labels and collect all indices
-                intersect = intersect*self[element+'.'+item.split('.')[-1]]
-            ind = intersect
-        elif mode in ['xor', 'exclusive_or']:
-            xor = np.zeros_like(self[element+'.all'], dtype=int)
-            for item in labels:  # Iterate over labels and collect all indices
-                info = self[element+'.'+item.split('.')[-1]]
-                xor = xor + np.int8(info)
-            ind = (xor == 1)
-        elif mode in ['nor', 'not', 'none']:
-            nor = np.zeros_like(self[element+'.all'], dtype=int)
-            for item in labels:  # Iterate over labels and collect all indices
-                info = self[element+'.'+item.split('.')[-1]]
-                nor = nor + np.int8(info)
-            ind = (nor == 0)
-        elif mode in ['nand']:
-            nand = np.zeros_like(self[element+'.all'], dtype=int)
-            for item in labels:  # Iterate over labels and collect all indices
-                info = self[element+'.'+item.split('.')[-1]]
-                nand = nand + np.int8(info)
-            ind = (nand < len(labels)) * (nand > 0)
-        elif mode in ['xnor', 'nxor']:
-            xnor = np.zeros_like(self[element+'.all'], dtype=int)
-            for item in labels:  # Iterate over labels and collect all indices
-                info = self[element+'.'+item.split('.')[-1]]
-                xnor = xnor + np.int8(info)
-            ind = (xnor > 1)
-        else:
-            raise Exception('Unsupported mode: '+mode)
-        # Extract indices from boolean mask
-        ind = np.where(ind)[0]
-        ind = ind.astype(dtype=int)
-        return ind
-
-    def pores(self, labels='all', mode='or', asmask=False, target=None):
-        r"""
-        Returns pore indicies where given labels exist, according to the logic
-        specified by the ``mode`` argument.
-
-        Parameters
-        ----------
-        labels : string or list of strings
-            The label(s) whose pores locations are requested.  This argument
-            also accepts '*' for wildcard searches.
-
-        mode : string
-            Specifies how the query should be performed.  The options are:
-
-            **'or', 'union', 'any'** : (default) Pores with *one or more* of
-            the given labels are returned.
-
-            **'and', 'intersection', 'all'** : Pores with *all* of the given
-            labels are returned.
-
-            **'xor', 'exclusive_or'** : Pores with *only one* of the given
-            labels are returned.
-
-            **'nor', 'none', 'not'** : Pores with *none* of the given labels
-            are returned.
-
-            **'nand'** : Pores with *not all* of the given labels are
-            returned.
-
-            **'xnor'** : Pores with *more than one* of the given labels are
-            returned.
-
-        asmask : boolean
-            If ``True`` then a boolean array of length Np is returned with
-            ``True`` values indicating the pores that satisfy the query.
-
-        target : OpenPNM Base object
-            If given, the returned indices will be indexed relative to the
-            ``target`` object.  This can be used to determine how indices on
-            one object map onto another object.
-
-        Returns
-        -------
-        A Numpy array containing pore indices filtered by the logic specified
-        in ``mode``.
-
-        See Also
-        --------
-        throats
-        map_pores
-
-        Notes
-        -----
-        Technically, *nand* and *xnor* should also return pores with *none* of
-        the labels but these are not included.  This makes the returned list
-        more useful.
-
-        To perform more complex or compound queries, you can opt to receive
-        the result a a boolean mask (``asmask=True``), then manipulate the
-        arrays manually.
-
-        Examples
-        --------
-        >>> import openpnm as op
-        >>> pn = op.network.Cubic(shape=[5, 5, 5])
-        >>> Ps = pn.pores(labels=['top', 'back'], mode='union')
-        >>> Ps[:5]  # Look at first 5 pore indices
-        array([ 4,  9, 14, 19, 20])
-        >>> pn.pores(labels=['top', 'back'], mode='xnor')
-        array([ 24,  49,  74,  99, 124])
-        """
-        ind = self._get_indices(element='pore', labels=labels, mode=mode)
-        if target is not None:
-            ind = target.map_pores(pores=ind, origin=self, filtered=True)
-        if asmask:
-            if target is not None:
-                ind = target.tomask(pores=ind)
-            else:
-                ind = self.tomask(pores=ind)
-        return ind
+        return np.shape(self.get('throat.all'))[0]
 
     @property
     def Ps(self):
@@ -873,77 +585,6 @@ class Base(dict):
         A shortcut to get a list of all pores on the object
         """
         return np.arange(0, self.Np)
-
-    def throats(self, labels='all', mode='or', asmask=False, target=None):
-        r"""
-        Returns throat locations where given labels exist, according to the
-        logic specified by the ``mode`` argument.
-
-        Parameters
-        ----------
-        labels : string or list of strings
-            The throat label(s) whose locations are requested.  If omitted,
-            'all' throat inidices are returned.  This argument also accepts
-            '*' for wildcard searches.
-
-        mode : string
-            Specifies how the query should be performed.  The options are:
-
-            **'or', 'union', 'any'** : (default) Throats with *one or more* of
-            the given labels are returned.
-
-            **'and', 'intersection', 'all'** : Throats with *all* of the given
-            labels are returned.
-
-            **'xor', 'exclusive_or'** : Throats with *only one* of the given
-            labels are returned.
-
-            **'nor', 'none', 'not'** : Throats with *none* of the given labels
-            are returned.
-
-            **'nand'** : Throats with *not all* of the given labels are
-            returned.
-
-            **'xnor'** : Throats with *more than one* of the given labels are
-            returned.
-
-        asmask : boolean
-            If ``True`` then a boolean array of length Nt is returned with
-            ``True`` values indicating the throats that satisfy the query.
-
-        target : OpenPNM Base object
-            If given, the returned indices will be indexed relative to the
-            ``target`` object.  This can be used to determine how indices on
-            one object map onto another object.
-
-        Returns
-        -------
-        A Numpy array containing throat indices filtered by the logic specified
-        in ``mode``.
-
-        See Also
-        --------
-        pores
-        map_throats
-
-        Examples
-        --------
-        >>> import openpnm as op
-        >>> pn = op.network.Cubic(shape=[3, 3, 3])
-        >>> Ts = pn.throats()
-        >>> Ts[0:5]  # Look at first 5 throat indices
-        array([0, 1, 2, 3, 4])
-
-        """
-        ind = self._get_indices(element='throat', labels=labels, mode=mode)
-        if target is not None:
-            ind = target.map_throats(throats=ind, origin=self, filtered=True)
-        if asmask:
-            if target is not None:
-                ind = target.tomask(throats=ind)
-            else:
-                ind = self.tomask(throats=ind)
-        return ind
 
     @property
     def Ts(self):
@@ -1174,258 +815,6 @@ class Base(dict):
             P1, P2 = self['pore.' + prop][self.network.conns].T
             T = self.interpolate_data(propname='pore.'+prop, mode=mode)
         return np.vstack((P1, T, P2)).T
-
-    def filter_by_label(self, pores=[], throats=[], labels=None, mode='or'):
-        r"""
-        Returns which of the supplied pores (or throats) has the specified
-        label(s)
-
-        Parameters
-        ----------
-        pores, or throats : array_like
-            List of pores or throats to be filtered
-
-        labels : list of strings
-            The labels to apply as a filter
-
-        mode : string
-
-            Controls how the filter is applied.  Options include:
-
-            **'or', 'union', 'any'**: (default) Returns a list of the given
-            locations where *any* of the given labels exist.
-
-            **'and', 'intersection', 'all'**: Only locations where *all* the
-            given labels are found.
-
-            **'xor', 'exclusive_or'**: Only locations where exactly *one* of
-            the given labels are found.
-
-            **'nor', 'none', 'not'**: Only locations where *none* of the given
-            labels are found.
-
-            **'nand'** : Only locations with *some but not all* of the given
-            labels are returned.
-
-            **'xnor'** : Only locations with *more than one* of the given
-            labels are returned.
-
-        Returns
-        -------
-        A list of pores (or throats) that have been filtered according the
-        given criteria.  The returned list is a subset of the received list of
-        pores (or throats).
-
-        See Also
-        --------
-        pores
-        throats
-
-        Examples
-        --------
-        >>> import openpnm as op
-        >>> pn = op.network.Cubic(shape=[5, 5, 5])
-        >>> pn.filter_by_label(pores=[0, 1, 25, 32], labels='left')
-        array([0, 1])
-        >>> Ps = pn.pores(['top', 'bottom', 'back'], mode='or')
-        >>> pn.filter_by_label(pores=Ps, labels=['top', 'back'],
-        ...                    mode='and')
-        array([ 24,  49,  74,  99, 124])
-        """
-        # Convert inputs to locations and element
-        if (np.size(throats) > 0) and (np.size(pores) > 0):
-            raise Exception('Can only filter either pores OR labels')
-        if np.size(pores) > 0:
-            element = 'pore'
-            locations = self._parse_indices(pores)
-        elif np.size(throats) > 0:
-            element = 'throat'
-            locations = self._parse_indices(throats)
-        else:
-            return(np.array([], dtype=int))
-        labels = self._parse_labels(labels=labels, element=element)
-        labels = [element+'.'+item.split('.')[-1] for item in labels]
-        all_locs = self._get_indices(element=element, labels=labels, mode=mode)
-        mask = self._tomask(indices=all_locs, element=element)
-        ind = mask[locations]
-        return locations[ind]
-
-    def num_pores(self, labels='all', mode='or'):
-        r"""
-        Returns the number of pores of the specified labels
-
-        Parameters
-        ----------
-        labels : list of strings, optional
-            The pore labels that should be included in the count.
-            If not supplied, all pores are counted.
-
-        labels : list of strings
-            Label of pores to be returned
-
-        mode : string, optional
-            Specifies how the count should be performed.  The options are:
-
-            **'or', 'union', 'any'** : (default) Pores with *one or more* of
-            the given labels are counted.
-
-            **'and', 'intersection', 'all'** : Pores with *all* of the given
-            labels are counted.
-
-            **'xor', 'exclusive_or'** : Pores with *only one* of the given
-            labels are counted.
-
-            **'nor', 'none', 'not'** : Pores with *none* of the given labels
-            are counted.
-
-            **'nand'** : Pores with *some but not all* of the given labels are
-            counted.
-
-            **'xnor'** : Pores with *more than one* of the given labels are
-            counted.
-
-        Returns
-        -------
-        Np : int
-            Number of pores with the specified labels
-
-        See Also
-        --------
-        num_throats
-        count
-
-        Notes
-        -----
-        Technically, *'nand'* and *'xnor'* should also count pores with *none*
-        of the labels, however, to make the count more useful these are not
-        included.
-
-        Examples
-        --------
-        >>> import openpnm as op
-        >>> pn = op.network.Cubic(shape=[5, 5, 5])
-        >>> pn.num_pores()
-        125
-        >>> pn.num_pores(labels=['top'])
-        25
-        >>> pn.num_pores(labels=['top', 'front'], mode='or')
-        45
-        >>> pn.num_pores(labels=['top', 'front'], mode='xnor')
-        5
-
-        """
-        # Count number of pores of specified type
-        Ps = self._get_indices(labels=labels, mode=mode, element='pore')
-        Np = np.shape(Ps)[0]
-        return Np
-
-    @property
-    def Np(self):
-        r"""
-        A shortcut to query the total number of pores on the object'
-        """
-        return np.shape(self.get('pore.all'))[0]
-
-    def num_throats(self, labels='all', mode='union'):
-        r"""
-        Return the number of throats of the specified labels
-
-        Parameters
-        ----------
-        labels : list of strings, optional
-            The throat labels that should be included in the count.
-            If not supplied, all throats are counted.
-
-        mode : string, optional
-            Specifies how the count should be performed.  The options are:
-
-            **'or', 'union', 'any'** : (default) Throats with *one or more* of
-            the given labels are counted.
-
-            **'and', 'intersection', 'all'** : Throats with *all* of the given
-            labels are counted.
-
-            **'xor', 'exclusive_or'** : Throats with *only one* of the given
-            labels are counted.
-
-            **'nor', 'none', 'not'** : Throats with *none* of the given labels
-            are counted.
-
-            **'nand'** : Throats with *some but not all* of the given labels
-            are counted.
-
-            **'xnor'** : Throats with *more than one* of the given labels are
-            counted.
-
-        Returns
-        -------
-        Nt : int
-            Number of throats with the specified labels
-
-        See Also
-        --------
-        num_pores
-        count
-
-        Notes
-        -----
-        Technically, *'nand'* and *'xnor'* should also count throats with
-        *none* of the labels, however, to make the count more useful these are
-        not included.
-
-        """
-        # Count number of pores of specified type
-        Ts = self._get_indices(labels=labels, mode=mode, element='throat')
-        Nt = np.shape(Ts)[0]
-        return Nt
-
-    @property
-    def Nt(self):
-        r"""
-        A shortcut to query the total number of throats on the object'
-        """
-        return np.shape(self.get('throat.all'))[0]
-
-    def _count(self, element=None):
-        r"""
-        Returns a dictionary containing the number of pores and throats in
-        the network, stored under the keys 'pore' or 'throat'
-
-        Parameters
-        ----------
-        element : string, optional
-            Can be either 'pore' , 'pores', 'throat' or 'throats', which
-            specifies which count to return.
-
-        Returns
-        -------
-        A dictionary containing the number of pores and throats under the
-        'pore' and 'throat' key respectively.
-
-        See Also
-        --------
-        num_pores
-        num_throats
-
-        Notes
-        -----
-        The ability to send plurals is useful for some types of 'programmatic'
-        access.  For instance, the standard argument for locations is pores
-        or throats.  If these are bundled up in a **kwargs dict then you can
-        just use the dict key in count() without removing the 's'.
-
-        Examples
-        --------
-        >>> import openpnm as op
-        >>> pn = op.network.Cubic(shape=[5, 5, 5])
-        >>> pn._count('pore')
-        125
-        >>> pn._count('throat')
-        300
-        """
-        element = self._parse_element(element=element, single=True)
-        temp = np.size(super(Base, self).__getitem__(element+'.all'))
-        return temp
 
     def show_hist(self,
                   props=['pore.diameter', 'throat.diameter', 'throat.length'],
@@ -1925,3 +1314,615 @@ class LegacyMixin:
         indices = self._parse_indices(mask)
         return indices
 
+
+class LabelMixin:
+    def _get_labels(self, element, locations, mode):
+        r"""
+        This is the actual label getter method, but it should not be called
+        directly.  Use ``labels`` instead.
+        """
+        # Parse inputs
+        locations = self._parse_indices(locations)
+        element = self._parse_element(element=element)
+        # Collect list of all pore OR throat labels
+        labels = self.keys(mode='labels', element=element)
+        labels.sort()
+        labels = np.array(labels)  # Convert to ND-array for following checks
+        # Make an 2D array with locations in rows and labels in cols
+        arr = np.vstack([self[item][locations] for item in labels]).T
+        num_hits = np.sum(arr, axis=0)  # Number of locations with each label
+        if mode in ['or', 'union', 'any']:
+            temp = labels[num_hits > 0]
+        elif mode in ['and', 'intersection']:
+            temp = labels[num_hits == locations.size]
+        elif mode in ['xor', 'exclusive_or']:
+            temp = labels[num_hits == 1]
+        elif mode in ['nor', 'not', 'none']:
+            temp = labels[num_hits == 0]
+        elif mode in ['nand']:
+            temp = labels[num_hits == (locations.size - 1)]
+        elif mode in ['xnor', 'nxor']:
+            temp = labels[num_hits > 1]
+        else:
+            raise Exception('Unrecognized mode:'+str(mode))
+        return PrintableList(temp)
+
+    def labels(self, pores=[], throats=[], element=None, mode='union'):
+        r"""
+        Returns a list of labels present on the object
+
+        Additionally, this function can return labels applied to a specified
+        set of pores or throats
+
+        Parameters
+        ----------
+        element : string
+            Controls whether pore or throat labels are returned.  If empty then
+            both are returned (default).
+
+        pores (or throats) : array_like
+            The pores (or throats) whose labels are sought.  If left empty a
+            list containing all pore and throat labels is returned.
+
+        mode : string, optional
+            Controls how the query should be performed.  Only applicable
+            when ``pores`` or ``throats`` are specified:
+
+            **'or', 'union', 'any'**: (default) Returns the labels that are
+            assigned to *any* of the given locations.
+
+            **'and', 'intersection', 'all'**: Labels that are present on *all*
+            the given locations.
+
+            **'xor', 'exclusive_or'** : Labels that are present on *only one*
+            of the given locations.
+
+            **'nor', 'none', 'not'**: Labels that are *not* present on any of
+            the given locations.
+
+            **'nand'**: Labels that are present on *all but one* of the given
+            locations
+
+            **'xnor'**: Labels that are present on *more than one* of the given
+            locations.  'nxor' is also accepted.
+
+        Returns
+        -------
+        A list containing the labels on the object.  If ``pores`` or
+        ``throats`` are given, the results are filtered according to the
+        specified ``mode``.
+
+        See Also
+        --------
+        props
+        keys
+
+        Notes
+        -----
+        Technically, *'nand'* and *'xnor'* should also return pores with *none*
+        of the labels but these are not included.  This makes the returned list
+        more useful.
+
+        Examples
+        --------
+        >>> import openpnm as op
+        >>> pn = op.network.Cubic(shape=[5, 5, 5])
+        >>> pn.labels(pores=[11, 12])
+        ['pore.all', 'pore.internal', 'pore.left', 'pore.surface']
+        """
+        # Short-circuit query when no pores or throats are given
+        if (np.size(pores) == 0) and (np.size(throats) == 0):
+            labels = PrintableList(self.keys(element=element, mode='labels'))
+        elif (np.size(pores) > 0) and (np.size(throats) > 0):
+            raise Exception('Cannot perform label query on pores and '
+                            + 'throats simultaneously')
+        elif np.size(pores) > 0:
+            labels = self._get_labels(element='pore', locations=pores,
+                                      mode=mode)
+        elif np.size(throats) > 0:
+            labels = self._get_labels(element='throat', locations=throats,
+                                      mode=mode)
+        return labels
+
+    def set_label(self, label, pores=None, throats=None, mode='add'):
+        r"""
+        Creates or updates a label array
+
+        Parameters
+        ----------
+        label : string
+                The label to apply to the specified locations
+        pores : array_like
+            A list of pore indices or a boolean mask of where given label
+            should be added or removed (see ``mode``)
+        throats : array_like
+            A list of throat indices or a boolean mask of where given label
+            should be added or removed (see ``mode``)
+        mode : string
+            Controls how the labels are handled.  Options are:
+
+            *'add'* - Adds the given label to the specified locations while
+            keeping existing labels (default)
+
+            *'overwrite'* - Removes existing label from all locations before
+            adding the label in the specified locations
+
+            *'remove'* - Removes the  given label from the specified locations
+            leaving the remainder intact.
+
+            *'purge'* - Removes the specified label from the object
+
+        """
+        if mode == 'purge':
+            if label.split('.')[0] in ['pore', 'throat']:
+                if label in self.labels():
+                    del self[label]
+                else:
+                    logger.warning(label + ' is not a label, skpping')
+            else:
+                self.set_label(label='pore.'+label, mode='purge')
+                self.set_label(label='throat.'+label, mode='purge')
+        else:
+            if label.split('.')[0] in ['pore', 'throat']:
+                label = label.split('.', 1)[1]
+            if pores is not None:
+                pores = self._parse_indices(pores)
+                if (mode == 'overwrite') or ('pore.'+label not in self.labels()):
+                    self['pore.' + label] = False
+                if mode in ['remove']:
+                    self['pore.' + label][pores] = False
+                else:
+                    self['pore.' + label][pores] = True
+            if throats is not None:
+                throats = self._parse_indices(throats)
+                if (mode == 'overwrite') or ('throat.'+label not in self.labels()):
+                    self['throat.' + label] = False
+                if mode in ['remove']:
+                    self['throat.' + label][throats] = False
+                else:
+                    self['throat.' + label][throats] = True
+            if pores is None and throats is None:
+                del self
+
+    def _get_indices(self, element, labels='all', mode='or'):
+        r"""
+        This is the actual method for getting indices, but should not be called
+        directly.  Use ``pores`` or ``throats`` instead.
+        """
+        # Parse and validate all input values.
+        element = self._parse_element(element, single=True)
+        labels = self._parse_labels(labels=labels, element=element)
+        if element+'.all' not in self.keys():
+            raise Exception('Cannot proceed without {}.all'.format(element))
+
+        # Begin computing label array
+        if mode in ['or', 'any', 'union']:
+            union = np.zeros_like(self[element+'.all'], dtype=bool)
+            for item in labels:  # Iterate over labels and collect all indices
+                union = union + self[element+'.'+item.split('.')[-1]]
+            ind = union
+        elif mode in ['and', 'all', 'intersection']:
+            intersect = np.ones_like(self[element+'.all'], dtype=bool)
+            for item in labels:  # Iterate over labels and collect all indices
+                intersect = intersect*self[element+'.'+item.split('.')[-1]]
+            ind = intersect
+        elif mode in ['xor', 'exclusive_or']:
+            xor = np.zeros_like(self[element+'.all'], dtype=int)
+            for item in labels:  # Iterate over labels and collect all indices
+                info = self[element+'.'+item.split('.')[-1]]
+                xor = xor + np.int8(info)
+            ind = (xor == 1)
+        elif mode in ['nor', 'not', 'none']:
+            nor = np.zeros_like(self[element+'.all'], dtype=int)
+            for item in labels:  # Iterate over labels and collect all indices
+                info = self[element+'.'+item.split('.')[-1]]
+                nor = nor + np.int8(info)
+            ind = (nor == 0)
+        elif mode in ['nand']:
+            nand = np.zeros_like(self[element+'.all'], dtype=int)
+            for item in labels:  # Iterate over labels and collect all indices
+                info = self[element+'.'+item.split('.')[-1]]
+                nand = nand + np.int8(info)
+            ind = (nand < len(labels)) * (nand > 0)
+        elif mode in ['xnor', 'nxor']:
+            xnor = np.zeros_like(self[element+'.all'], dtype=int)
+            for item in labels:  # Iterate over labels and collect all indices
+                info = self[element+'.'+item.split('.')[-1]]
+                xnor = xnor + np.int8(info)
+            ind = (xnor > 1)
+        else:
+            raise Exception('Unsupported mode: '+mode)
+        # Extract indices from boolean mask
+        ind = np.where(ind)[0]
+        ind = ind.astype(dtype=int)
+        return ind
+
+    def pores(self, labels='all', mode='or', asmask=False, target=None):
+        r"""
+        Returns pore indicies where given labels exist, according to the logic
+        specified by the ``mode`` argument.
+
+        Parameters
+        ----------
+        labels : string or list of strings
+            The label(s) whose pores locations are requested.  This argument
+            also accepts '*' for wildcard searches.
+
+        mode : string
+            Specifies how the query should be performed.  The options are:
+
+            **'or', 'union', 'any'** : (default) Pores with *one or more* of
+            the given labels are returned.
+
+            **'and', 'intersection', 'all'** : Pores with *all* of the given
+            labels are returned.
+
+            **'xor', 'exclusive_or'** : Pores with *only one* of the given
+            labels are returned.
+
+            **'nor', 'none', 'not'** : Pores with *none* of the given labels
+            are returned.
+
+            **'nand'** : Pores with *not all* of the given labels are
+            returned.
+
+            **'xnor'** : Pores with *more than one* of the given labels are
+            returned.
+
+        asmask : boolean
+            If ``True`` then a boolean array of length Np is returned with
+            ``True`` values indicating the pores that satisfy the query.
+
+        target : OpenPNM Base object
+            If given, the returned indices will be indexed relative to the
+            ``target`` object.  This can be used to determine how indices on
+            one object map onto another object.
+
+        Returns
+        -------
+        A Numpy array containing pore indices filtered by the logic specified
+        in ``mode``.
+
+        See Also
+        --------
+        throats
+        map_pores
+
+        Notes
+        -----
+        Technically, *nand* and *xnor* should also return pores with *none* of
+        the labels but these are not included.  This makes the returned list
+        more useful.
+
+        To perform more complex or compound queries, you can opt to receive
+        the result a a boolean mask (``asmask=True``), then manipulate the
+        arrays manually.
+
+        Examples
+        --------
+        >>> import openpnm as op
+        >>> pn = op.network.Cubic(shape=[5, 5, 5])
+        >>> Ps = pn.pores(labels=['top', 'back'], mode='union')
+        >>> Ps[:5]  # Look at first 5 pore indices
+        array([ 4,  9, 14, 19, 20])
+        >>> pn.pores(labels=['top', 'back'], mode='xnor')
+        array([ 24,  49,  74,  99, 124])
+        """
+        ind = self._get_indices(element='pore', labels=labels, mode=mode)
+        if target is not None:
+            ind = target.map_pores(pores=ind, origin=self, filtered=True)
+        if asmask:
+            if target is not None:
+                ind = target.tomask(pores=ind)
+            else:
+                ind = self.tomask(pores=ind)
+        return ind
+
+    def throats(self, labels='all', mode='or', asmask=False, target=None):
+        r"""
+        Returns throat locations where given labels exist, according to the
+        logic specified by the ``mode`` argument.
+
+        Parameters
+        ----------
+        labels : string or list of strings
+            The throat label(s) whose locations are requested.  If omitted,
+            'all' throat inidices are returned.  This argument also accepts
+            '*' for wildcard searches.
+
+        mode : string
+            Specifies how the query should be performed.  The options are:
+
+            **'or', 'union', 'any'** : (default) Throats with *one or more* of
+            the given labels are returned.
+
+            **'and', 'intersection', 'all'** : Throats with *all* of the given
+            labels are returned.
+
+            **'xor', 'exclusive_or'** : Throats with *only one* of the given
+            labels are returned.
+
+            **'nor', 'none', 'not'** : Throats with *none* of the given labels
+            are returned.
+
+            **'nand'** : Throats with *not all* of the given labels are
+            returned.
+
+            **'xnor'** : Throats with *more than one* of the given labels are
+            returned.
+
+        asmask : boolean
+            If ``True`` then a boolean array of length Nt is returned with
+            ``True`` values indicating the throats that satisfy the query.
+
+        target : OpenPNM Base object
+            If given, the returned indices will be indexed relative to the
+            ``target`` object.  This can be used to determine how indices on
+            one object map onto another object.
+
+        Returns
+        -------
+        A Numpy array containing throat indices filtered by the logic specified
+        in ``mode``.
+
+        See Also
+        --------
+        pores
+        map_throats
+
+        Examples
+        --------
+        >>> import openpnm as op
+        >>> pn = op.network.Cubic(shape=[3, 3, 3])
+        >>> Ts = pn.throats()
+        >>> Ts[0:5]  # Look at first 5 throat indices
+        array([0, 1, 2, 3, 4])
+
+        """
+        ind = self._get_indices(element='throat', labels=labels, mode=mode)
+        if target is not None:
+            ind = target.map_throats(throats=ind, origin=self, filtered=True)
+        if asmask:
+            if target is not None:
+                ind = target.tomask(throats=ind)
+            else:
+                ind = self.tomask(throats=ind)
+        return ind
+
+    def filter_by_label(self, pores=[], throats=[], labels=None, mode='or'):
+        r"""
+        Returns which of the supplied pores (or throats) has the specified
+        label(s)
+
+        Parameters
+        ----------
+        pores, or throats : array_like
+            List of pores or throats to be filtered
+
+        labels : list of strings
+            The labels to apply as a filter
+
+        mode : string
+
+            Controls how the filter is applied.  Options include:
+
+            **'or', 'union', 'any'**: (default) Returns a list of the given
+            locations where *any* of the given labels exist.
+
+            **'and', 'intersection', 'all'**: Only locations where *all* the
+            given labels are found.
+
+            **'xor', 'exclusive_or'**: Only locations where exactly *one* of
+            the given labels are found.
+
+            **'nor', 'none', 'not'**: Only locations where *none* of the given
+            labels are found.
+
+            **'nand'** : Only locations with *some but not all* of the given
+            labels are returned.
+
+            **'xnor'** : Only locations with *more than one* of the given
+            labels are returned.
+
+        Returns
+        -------
+        A list of pores (or throats) that have been filtered according the
+        given criteria.  The returned list is a subset of the received list of
+        pores (or throats).
+
+        See Also
+        --------
+        pores
+        throats
+
+        Examples
+        --------
+        >>> import openpnm as op
+        >>> pn = op.network.Cubic(shape=[5, 5, 5])
+        >>> pn.filter_by_label(pores=[0, 1, 25, 32], labels='left')
+        array([0, 1])
+        >>> Ps = pn.pores(['top', 'bottom', 'back'], mode='or')
+        >>> pn.filter_by_label(pores=Ps, labels=['top', 'back'],
+        ...                    mode='and')
+        array([ 24,  49,  74,  99, 124])
+        """
+        # Convert inputs to locations and element
+        if (np.size(throats) > 0) and (np.size(pores) > 0):
+            raise Exception('Can only filter either pores OR labels')
+        if np.size(pores) > 0:
+            element = 'pore'
+            locations = self._parse_indices(pores)
+        elif np.size(throats) > 0:
+            element = 'throat'
+            locations = self._parse_indices(throats)
+        else:
+            return(np.array([], dtype=int))
+        labels = self._parse_labels(labels=labels, element=element)
+        labels = [element+'.'+item.split('.')[-1] for item in labels]
+        all_locs = self._get_indices(element=element, labels=labels, mode=mode)
+        mask = self._tomask(indices=all_locs, element=element)
+        ind = mask[locations]
+        return locations[ind]
+
+    def num_pores(self, labels='all', mode='or'):
+        r"""
+        Returns the number of pores of the specified labels
+
+        Parameters
+        ----------
+        labels : list of strings, optional
+            The pore labels that should be included in the count.
+            If not supplied, all pores are counted.
+
+        labels : list of strings
+            Label of pores to be returned
+
+        mode : string, optional
+            Specifies how the count should be performed.  The options are:
+
+            **'or', 'union', 'any'** : (default) Pores with *one or more* of
+            the given labels are counted.
+
+            **'and', 'intersection', 'all'** : Pores with *all* of the given
+            labels are counted.
+
+            **'xor', 'exclusive_or'** : Pores with *only one* of the given
+            labels are counted.
+
+            **'nor', 'none', 'not'** : Pores with *none* of the given labels
+            are counted.
+
+            **'nand'** : Pores with *some but not all* of the given labels are
+            counted.
+
+            **'xnor'** : Pores with *more than one* of the given labels are
+            counted.
+
+        Returns
+        -------
+        Np : int
+            Number of pores with the specified labels
+
+        See Also
+        --------
+        num_throats
+        count
+
+        Notes
+        -----
+        Technically, *'nand'* and *'xnor'* should also count pores with *none*
+        of the labels, however, to make the count more useful these are not
+        included.
+
+        Examples
+        --------
+        >>> import openpnm as op
+        >>> pn = op.network.Cubic(shape=[5, 5, 5])
+        >>> pn.num_pores()
+        125
+        >>> pn.num_pores(labels=['top'])
+        25
+        >>> pn.num_pores(labels=['top', 'front'], mode='or')
+        45
+        >>> pn.num_pores(labels=['top', 'front'], mode='xnor')
+        5
+
+        """
+        # Count number of pores of specified type
+        Ps = self._get_indices(labels=labels, mode=mode, element='pore')
+        Np = np.shape(Ps)[0]
+        return Np
+
+    def num_throats(self, labels='all', mode='union'):
+        r"""
+        Return the number of throats of the specified labels
+
+        Parameters
+        ----------
+        labels : list of strings, optional
+            The throat labels that should be included in the count.
+            If not supplied, all throats are counted.
+
+        mode : string, optional
+            Specifies how the count should be performed.  The options are:
+
+            **'or', 'union', 'any'** : (default) Throats with *one or more* of
+            the given labels are counted.
+
+            **'and', 'intersection', 'all'** : Throats with *all* of the given
+            labels are counted.
+
+            **'xor', 'exclusive_or'** : Throats with *only one* of the given
+            labels are counted.
+
+            **'nor', 'none', 'not'** : Throats with *none* of the given labels
+            are counted.
+
+            **'nand'** : Throats with *some but not all* of the given labels
+            are counted.
+
+            **'xnor'** : Throats with *more than one* of the given labels are
+            counted.
+
+        Returns
+        -------
+        Nt : int
+            Number of throats with the specified labels
+
+        See Also
+        --------
+        num_pores
+        count
+
+        Notes
+        -----
+        Technically, *'nand'* and *'xnor'* should also count throats with
+        *none* of the labels, however, to make the count more useful these are
+        not included.
+
+        """
+        # Count number of pores of specified type
+        Ts = self._get_indices(labels=labels, mode=mode, element='throat')
+        Nt = np.shape(Ts)[0]
+        return Nt
+
+    def _count(self, element=None):
+        r"""
+        Returns a dictionary containing the number of pores and throats in
+        the network, stored under the keys 'pore' or 'throat'
+
+        Parameters
+        ----------
+        element : string, optional
+            Can be either 'pore' , 'pores', 'throat' or 'throats', which
+            specifies which count to return.
+
+        Returns
+        -------
+        A dictionary containing the number of pores and throats under the
+        'pore' and 'throat' key respectively.
+
+        See Also
+        --------
+        num_pores
+        num_throats
+
+        Notes
+        -----
+        The ability to send plurals is useful for some types of 'programmatic'
+        access.  For instance, the standard argument for locations is pores
+        or throats.  If these are bundled up in a **kwargs dict then you can
+        just use the dict key in count() without removing the 's'.
+
+        Examples
+        --------
+        >>> import openpnm as op
+        >>> pn = op.network.Cubic(shape=[5, 5, 5])
+        >>> pn._count('pore')
+        125
+        >>> pn._count('throat')
+        300
+        """
+        element = self._parse_element(element=element, single=True)
+        temp = np.size(super(Base, self).__getitem__(element+'.all'))
+        return temp

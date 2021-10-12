@@ -1,8 +1,8 @@
-from openpnm.core import Base, LegacyMixin
+from openpnm.core import Base, LegacyMixin, LabelMixin
 import numpy as np
 
 
-class Subdomain(Base, LegacyMixin):
+class Subdomain(Base, LegacyMixin, LabelMixin):
     r"""
     This subclass of the Base class provides the ability assign the object
     to specific locations (pores and throats) in the domain.  This class
