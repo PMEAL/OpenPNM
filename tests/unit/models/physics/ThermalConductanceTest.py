@@ -1,4 +1,5 @@
 import openpnm as op
+import numpy as np
 from numpy.testing import assert_approx_equal, assert_allclose
 import openpnm.models.geometry.conduit_lengths as _conduit_lengths
 
@@ -18,30 +19,21 @@ class ThermalConductanceTest:
         self.geo['throat.diameter'] = 1.0
         self.geo['throat.length'] = 1e-9
         self.geo['throat.area'] = 1
-
-    def test_thermal_conductance(self):
-        self.geo['throat.conduit_lengths.pore1'] = 0.25
-        self.geo['throat.conduit_lengths.throat'] = 0.6
-        self.geo['throat.conduit_lengths.pore2'] = 0.15
         self.phase['pore.thermal_conductivity'] = 1
-        mod = op.models.physics.thermal_conductance.series_resistors
-        self.phys.add_model(propname='throat.thermal_conductance',
-                            model=mod)
-        self.phys.regenerate_models()
-        actual = self.phys['throat.thermal_conductance'].mean()
-        assert_approx_equal(actual, desired=1.0)
 
     def test_thermal_conductance_with_zero_length_throats(self):
         self.geo['throat.conduit_lengths.pore1'] = 0.25
         self.geo['throat.conduit_lengths.throat'] = 0.0
         self.geo['throat.conduit_lengths.pore2'] = 0.15
-        self.phase['pore.thermal_conductivity'] = 1
-        mod = op.models.physics.thermal_conductance.series_resistors
+        mpo2 = op.models.geometry.diffusive_size_factors.spheres_and_cylinders
+        self.geo.add_model(propname="throat.diffusive_size_factors",
+                           model=mpo2)
+        mod = op.models.physics.thermal_conductance.generic_thermal
         self.phys.add_model(propname='throat.thermal_conductance',
                             model=mod)
         self.phys.regenerate_models()
         actual = self.phys['throat.thermal_conductance'].mean()
-        assert_approx_equal(actual, desired=2.5)
+        assert_allclose(actual, desired=0.785398, rtol=1e-5)
 
     def test_generic_thermal(self):
         self.geo['pore.diameter'] = 1.12
@@ -50,13 +42,6 @@ class ThermalConductanceTest:
         self.geo['throat.conduit_lengths.pore1'] = L1
         self.geo['throat.conduit_lengths.throat'] = Lt
         self.geo['throat.conduit_lengths.pore2'] = L2
-        # old series resistors model, shape factor
-        mpo = op.models.physics.poisson_shape_factors.ball_and_stick
-        self.phys.add_model(propname="throat.poisson_shape_factors", model=mpo)
-        mod1 = op.models.physics.thermal_conductance.series_resistors
-        self.phys.add_model(propname='throat.thermal_conductance_from_mod',
-                            model=mod1)
-        self.phys.regenerate_models()
         # new series resistors model, size factor
         mpo2 = op.models.geometry.diffusive_size_factors.spheres_and_cylinders
         self.geo.add_model(propname="throat.diffusive_size_factors",
@@ -65,9 +50,8 @@ class ThermalConductanceTest:
         self.phys.add_model(propname='throat.thermal_conductance_generic',
                             model=mod2)
         self.phys.regenerate_models()
-        actual = self.phys['throat.thermal_conductance_from_mod']
-        desired = self.phys['throat.thermal_conductance_generic']
-        assert_allclose(actual, desired, rtol=1e-5)
+        actual = np.mean(self.phys['throat.thermal_conductance_generic'])
+        assert_allclose(actual, desired=0.61263, rtol=1e-5)
 
 
 if __name__ == '__main__':
