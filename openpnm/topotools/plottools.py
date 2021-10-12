@@ -574,7 +574,7 @@ def plot_tutorial(network,
     import matplotlib.pyplot as plt
     from openpnm.io import NetworkX
 
-    G = NetworkX.to_networkx(network=network)
+    G = NetworkX.export_data(network=network)
     pos = {i: network['pore.coords'][i, 0:2] for i in network.Ps}
     labels = {i: i for i in network.Ps}
     edge_labels = {tuple(network['throat.conns'][i, :]): i for i in network.Ts}

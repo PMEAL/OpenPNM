@@ -11,14 +11,6 @@ class HDF5(GenericIO):
     """
 
     @classmethod
-    def to_hdf5(cls, *args, **kwargs):
-        """
-        This method is being deprecated.  Use ``export_data`` instead.
-
-        """
-        return cls.export_data(*args, **kwargs)
-
-    @classmethod
     def export_data(cls, network=None, phases=[], element=['pore', 'throat'],
                     filename='', interleave=True, flatten=False, categorize_by=[]):
         r"""

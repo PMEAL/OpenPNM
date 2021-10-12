@@ -60,13 +60,13 @@ class PandasTest:
         ws.clear()
 
     def test_to_dataframe_not_joined(self):
-        df = Pandas.to_dataframe(network=self.net, phases=[self.phase_1],
+        df = Pandas.export_data(network=self.net, phases=[self.phase_1],
                                  join=False)
         assert len(df.pore.keys()) == 23
         assert len(df.throat.keys()) == 14
 
     def test_to_dataframe_joined(self):
-        df = Pandas.to_dataframe(network=self.net, phases=[self.phase_1],
+        df = Pandas.export_data(network=self.net, phases=[self.phase_1],
                                  join=True)
         assert len(df.keys()) == 37
 

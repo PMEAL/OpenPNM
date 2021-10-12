@@ -27,17 +27,14 @@ class MiscTest:
                            value=2)
         self.geo.add_model(model=mods.product,
                            propname='pore.result1',
-                           prop1='pore.value1',
-                           prop2='pore.value2')
+                           props=['pore.value1', 'pore.value2'])
         assert np.all(np.unique(self.geo['pore.result1']) == 4)
         self.geo.add_model(model=mods.constant,
                            propname='pore.value3',
                            value=2)
         self.geo.add_model(model=mods.product,
                            propname='pore.result2',
-                           prop1='pore.value1',
-                           prop2='pore.value2',
-                           prop3='pore.value3')
+                           props=['pore.value1', 'pore.value2', 'pore.value3'])
         assert np.all(np.unique(self.geo['pore.result2']) == 8)
 
     def test_generic_function(self):
