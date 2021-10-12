@@ -23,8 +23,7 @@ def gabriel(points=None, delaunay=None, shape=None):
 
     """
     if points is not None:
-        delaunay = _delaunay(points=points, shape=shape)
-        points = tools.parse_points(points=points, shape=shape)
+        delaunay, tri = _delaunay(points=points, shape=shape)
     # Find centroid or midpoint of each edge in conns
     c = delaunay['pore.coords'][delaunay['throat.conns']]
     m = (c[:, 0, :] + c[:, 1, :])/2
@@ -42,3 +41,29 @@ def gabriel(points=None, delaunay=None, shape=None):
     d['throat.conns'] = delaunay['throat.conns'][g]
     d['pore.coords'] = delaunay['pore.coords']
     return d
+
+
+if __name__ == '__main__':
+    from openpnm.network.generators import delaunay
+    # Make a 2D network using points
+    gb = gabriel(points=50, shape=[1, 1, 0])
+    print(gb.keys())
+    print(gb['pore.coords'].shape)
+    print(gb['throat.conns'].shape)
+    # Make a 2D network based on a pre-existing delaunay network
+    dn, tri = delaunay(points=50, shape=[1, 1, 0])
+    gb = gabriel(delaunay=dn)
+    print(gb.keys())
+    print(gb['pore.coords'].shape)
+    print(gb['throat.conns'].shape)
+    # Make a 3D network using points
+    gb = gabriel(points=50, shape=[1, 1, 1])
+    print(gb.keys())
+    print(gb['pore.coords'].shape)
+    print(gb['throat.conns'].shape)
+    # Make a 3D network based on a pre-existing delaunay network
+    dn, tri = delaunay(points=50, shape=[1, 1, 1])
+    gb = gabriel(delaunay=dn)
+    print(gb.keys())
+    print(gb['pore.coords'].shape)
+    print(gb['throat.conns'].shape)

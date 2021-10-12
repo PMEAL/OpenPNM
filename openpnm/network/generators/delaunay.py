@@ -24,9 +24,23 @@ def delaunay(points, shape=[1, 1, 1], ):
         The Delaunay tessellation object produced by ``scipy.spatial.Delaunay``
     """
     points = tools.parse_points(points=points, shape=shape)
-    tri = sptl.Delaunay(points=points)
+    mask = ~np.all(points == 0, axis=0)
+    tri = sptl.Delaunay(points=points[:, mask])
     coo = tri_to_am(tri)
     d = {}
     d['pore.coords'] = points
     d['throat.conns'] = np.vstack((coo.row, coo.col)).T
     return d, tri
+
+
+if __name__ == "__main__":
+    # Make a 2D network based on number of points
+    dn, tri = delaunay(points=50, shape=[1, 1, 0])
+    print(dn.keys())
+    print(dn['pore.coords'].shape)
+    print(dn['throat.conns'].shape)
+    # Make a 3D network based on number of points
+    dn, tri = delaunay(points=50, shape=[1, 1, 1])
+    print(dn.keys())
+    print(dn['pore.coords'].shape)
+    print(dn['throat.conns'].shape)
