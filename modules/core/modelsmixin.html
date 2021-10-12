@@ -646,6 +646,42 @@ contains all of the models and their parameters.</p>
 </tr>
 </tbody>
 </table>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+</pre></div>
+</div>
+<p>Create a Demo class using Base and ModelsMixin:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">Demo</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">Base</span><span class="p">,</span> <span class="n">op</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">ModelsMixin</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">pass</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">temp</span> <span class="o">=</span> <span class="n">Demo</span><span class="p">(</span><span class="n">Np</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">Nt</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The new class has the normal Base methods:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">temp</span><span class="o">.</span><span class="n">num_pores</span><span class="p">())</span>
+<span class="go">3</span>
+</pre></div>
+</div>
+<p>But also has those needed for working with models.  For instance, a
+simple model can be added as follows:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">temp</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.test&#39;</span><span class="p">,</span>
+<span class="gp">... </span>               <span class="n">model</span><span class="o">=</span><span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">misc</span><span class="o">.</span><span class="n">constant</span><span class="p">,</span>
+<span class="gp">... </span>               <span class="n">value</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">temp</span><span class="p">[</span><span class="s1">&#39;pore.test&#39;</span><span class="p">])</span>
+<span class="go">[2 2 2]</span>
+</pre></div>
+</div>
+<p>All the models and their respective parameters are stored in the
+<code class="docutils literal notranslate"><span class="pre">models</span></code> attribute:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">temp</span><span class="o">.</span><span class="n">models</span><span class="p">)</span>
+<span class="go">―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――</span>
+<span class="go">#   Property Name                       Parameter                 Value</span>
+<span class="go">―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――</span>
+<span class="go">1   pore.test                           model:                    constant</span>
+<span class="go">                                        value:                    2</span>
+<span class="go">                                        regeneration mode:        normal</span>
+<span class="go">―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――</span>
+</pre></div>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="openpnm.core.ModelsMixin.add_model">
 <span class="sig-name descname"><span class="pre">add_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">propname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regen_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/core/ModelsMixin.html#ModelsMixin.add_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.core.ModelsMixin.add_model" title="Permalink to this definition">¶</a></dt>

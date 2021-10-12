@@ -722,6 +722,51 @@ access to useful items:</p>
 </tr>
 </tbody>
 </table>
+<p class="rubric">Examples</p>
+<p>It is possible to create an instance of Base, although it is not very
+useful except for demonstration purposes as done here.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">Base</span><span class="p">(</span><span class="n">Np</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">Nt</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now query the object for its basic properties:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">Np</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">Nt</span>  <span class="c1"># Number of pores and throats</span>
+<span class="go">(4, 5)</span>
+</pre></div>
+</div>
+<p>Add a label to the object, as a boolean with True where the label applies:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="p">[</span><span class="s1">&#39;pore.new_label&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>See list of available labels and confirm new_label was added:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">labels</span><span class="p">())</span>
+<span class="go">――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――</span>
+<span class="go">1     : pore.all</span>
+<span class="go">2     : pore.new_label</span>
+<span class="go">3     : throat.all</span>
+<span class="go">――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――</span>
+</pre></div>
+</div>
+<p>Use the label to fetch pores where it was applied:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Ps</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;new_label&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">Ps</span><span class="p">)</span>
+<span class="go">[0 3]</span>
+</pre></div>
+</div>
+<p>Find the number of pores with label:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">num_pores</span><span class="p">(</span><span class="s1">&#39;new_label&#39;</span><span class="p">))</span>
+<span class="go">2</span>
+</pre></div>
+</div>
+<p>Convert between indices and boolean mask</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mask</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">tomask</span><span class="p">(</span><span class="n">throats</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span>
+<span class="go">[ True False  True False  True]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">inds</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">toindices</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">inds</span><span class="p">)</span>
+<span class="go">[0 2 4]</span>
+</pre></div>
+</div>
 <dl class="py property">
 <dt class="sig sig-object py" id="openpnm.core.Base.Np">
 <em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">Np</span></span><a class="headerlink" href="#openpnm.core.Base.Np" title="Permalink to this definition">¶</a></dt>
@@ -744,6 +789,30 @@ access to useful items:</p>
 <dt class="sig sig-object py" id="openpnm.core.Base.Ts">
 <em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">Ts</span></span><a class="headerlink" href="#openpnm.core.Base.Ts" title="Permalink to this definition">¶</a></dt>
 <dd><p>A shortcut to get a list of all throats on the object</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.core.Base.check_data_health">
+<span class="sig-name descname"><span class="pre">check_data_health</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/core/Base.html#Base.check_data_health"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.core.Base.check_data_health" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check the health of pore and throat data arrays.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>health</strong> – A  basic dictionary with an added <code class="docutils literal notranslate"><span class="pre">health</span></code> attribute that is
+<code class="docutils literal notranslate"><span class="pre">True</span></code> if all entries in the dict are deemed healthy
+(empty lists), or <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>HealthDict object</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">openpnm</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span> <span class="o">=</span> <span class="n">openpnm</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">h</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">check_data_health</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">h</span><span class="o">.</span><span class="n">health</span>
+<span class="go">True</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -801,6 +870,59 @@ can also be done in a for-loop to remove a list of items.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>  <span class="c1"># Remove everything except protected labels and arrays</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">pn</span><span class="o">.</span><span class="n">keys</span><span class="p">(</span><span class="n">element</span><span class="o">=</span><span class="s1">&#39;pore&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">))))</span>
 <span class="go">[&#39;pore.all&#39;, &#39;pore.coords&#39;, &#39;pore.geo1&#39;]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.core.Base.filter_by_label">
+<span class="sig-name descname"><span class="pre">filter_by_label</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throats</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'or'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/core/Base.html#Base.filter_by_label"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.core.Base.filter_by_label" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns which of the supplied pores (or throats) has the specified
+label(s)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pores</strong> (<em>array_like</em>) – List of pores or throats to be filtered</p></li>
+<li><p><strong>throats</strong> (<em>or</em>) – List of pores or throats to be filtered</p></li>
+<li><p><strong>labels</strong> (<em>list of strings</em>) – The labels to apply as a filter</p></li>
+<li><p><strong>mode</strong> (<em>string</em>) – <p>Controls how the filter is applied.  Options include:</p>
+<p><strong>’or’, ‘union’, ‘any’</strong>: (default) Returns a list of the given
+locations where <em>any</em> of the given labels exist.</p>
+<p><strong>’and’, ‘intersection’, ‘all’</strong>: Only locations where <em>all</em> the
+given labels are found.</p>
+<p><strong>’xor’, ‘exclusive_or’</strong>: Only locations where exactly <em>one</em> of
+the given labels are found.</p>
+<p><strong>’nor’, ‘none’, ‘not’</strong>: Only locations where <em>none</em> of the given
+labels are found.</p>
+<p><strong>’nand’</strong> : Only locations with <em>some but not all</em> of the given
+labels are returned.</p>
+<p><strong>’xnor’</strong> : Only locations with <em>more than one</em> of the given
+labels are returned.</p>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>A list of pores (or throats) that have been filtered according the</em></p></li>
+<li><p><em>given criteria.  The returned list is a subset of the received list of</em></p></li>
+<li><p><em>pores (or throats).</em></p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#openpnm.core.Base.pores" title="openpnm.core.Base.pores"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pores</span></code></a>, <a class="reference internal" href="#openpnm.core.Base.throats" title="openpnm.core.Base.throats"><code class="xref py py-obj docutils literal notranslate"><span class="pre">throats</span></code></a></p>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span><span class="o">.</span><span class="n">filter_by_label</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">32</span><span class="p">],</span> <span class="n">labels</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">)</span>
+<span class="go">array([0, 1])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Ps</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">([</span><span class="s1">&#39;top&#39;</span><span class="p">,</span> <span class="s1">&#39;bottom&#39;</span><span class="p">,</span> <span class="s1">&#39;back&#39;</span><span class="p">],</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;or&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span><span class="o">.</span><span class="n">filter_by_label</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">Ps</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;top&#39;</span><span class="p">,</span> <span class="s1">&#39;back&#39;</span><span class="p">],</span>
+<span class="gp">... </span>                   <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;and&#39;</span><span class="p">)</span>
+<span class="go">array([ 24,  49,  74,  99, 124])</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -957,7 +1079,7 @@ objects are returned as well.</p></li>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#openpnm.core.Base.props" title="openpnm.core.Base.props"><code class="xref py py-obj docutils literal notranslate"><span class="pre">props</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">labels</span></code></p>
+<p><a class="reference internal" href="#openpnm.core.Base.props" title="openpnm.core.Base.props"><code class="xref py py-obj docutils literal notranslate"><span class="pre">props</span></code></a>, <a class="reference internal" href="#openpnm.core.Base.labels" title="openpnm.core.Base.labels"><code class="xref py py-obj docutils literal notranslate"><span class="pre">labels</span></code></a></p>
 </div>
 <p class="rubric">Notes</p>
 <p>This subclass can be used to get dictionary keys of specific kinds of
@@ -975,11 +1097,289 @@ or ‘throats’.)</p>
 </div>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.core.Base.labels">
+<span class="sig-name descname"><span class="pre">labels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throats</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">element</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'union'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/core/Base.html#Base.labels"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.core.Base.labels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of labels present on the object</p>
+<p>Additionally, this function can return labels applied to a specified
+set of pores or throats</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>element</strong> (<em>string</em>) – Controls whether pore or throat labels are returned.  If empty then
+both are returned (default).</p></li>
+<li><p><strong>throats</strong><strong>)</strong> (<em>pores</em><em> (</em><em>or</em>) – The pores (or throats) whose labels are sought.  If left empty a
+list containing all pore and throat labels is returned.</p></li>
+<li><p><strong>mode</strong> (<em>string</em><em>, </em><em>optional</em>) – <p>Controls how the query should be performed.  Only applicable
+when <code class="docutils literal notranslate"><span class="pre">pores</span></code> or <code class="docutils literal notranslate"><span class="pre">throats</span></code> are specified:</p>
+<p><strong>’or’, ‘union’, ‘any’</strong>: (default) Returns the labels that are
+assigned to <em>any</em> of the given locations.</p>
+<p><strong>’and’, ‘intersection’, ‘all’</strong>: Labels that are present on <em>all</em>
+the given locations.</p>
+<p><strong>’xor’, ‘exclusive_or’</strong> : Labels that are present on <em>only one</em>
+of the given locations.</p>
+<p><strong>’nor’, ‘none’, ‘not’</strong>: Labels that are <em>not</em> present on any of
+the given locations.</p>
+<p><strong>’nand’</strong>: Labels that are present on <em>all but one</em> of the given
+locations</p>
+<p><strong>’xnor’</strong>: Labels that are present on <em>more than one</em> of the given
+locations.  ‘nxor’ is also accepted.</p>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p>A list containing the labels on the object.  If <code class="docutils literal notranslate"><span class="pre">pores</span></code> or</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">throats</span></code> are given, the results are filtered according to the</p></li>
+<li><p>specified <code class="docutils literal notranslate"><span class="pre">mode</span></code>.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#openpnm.core.Base.props" title="openpnm.core.Base.props"><code class="xref py py-obj docutils literal notranslate"><span class="pre">props</span></code></a>, <a class="reference internal" href="#openpnm.core.Base.keys" title="openpnm.core.Base.keys"><code class="xref py py-obj docutils literal notranslate"><span class="pre">keys</span></code></a></p>
+</div>
+<p class="rubric">Notes</p>
+<p>Technically, <em>‘nand’</em> and <em>‘xnor’</em> should also return pores with <em>none</em>
+of the labels but these are not included.  This makes the returned list
+more useful.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="p">[</span><span class="mi">11</span><span class="p">,</span> <span class="mi">12</span><span class="p">])</span>
+<span class="go">[&#39;pore.all&#39;, &#39;pore.internal&#39;, &#39;pore.left&#39;, &#39;pore.surface&#39;]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.core.Base.map_pores">
+<span class="sig-name descname"><span class="pre">map_pores</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pores</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">origin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filtered</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/core/Base.html#Base.map_pores"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.core.Base.map_pores" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a list of pore on a target object, finds indices of those pores
+on the calling object</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pores</strong> (<em>array_like</em>) – The indices of the pores on the object specifiedin <code class="docutils literal notranslate"><span class="pre">origin</span></code></p></li>
+<li><p><strong>origin</strong> (<em>OpenPNM Base object</em>) – The object corresponding to the indices given in <code class="docutils literal notranslate"><span class="pre">pores</span></code></p></li>
+<li><p><strong>filtered</strong> (boolean (default is <code class="docutils literal notranslate"><span class="pre">True</span></code>)) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> then a ND-array of indices is returned with missing
+indices removed, otherwise a named-tuple containing both the
+<code class="docutils literal notranslate"><span class="pre">indices</span></code> and a boolean <code class="docutils literal notranslate"><span class="pre">mask</span></code> with <code class="docutils literal notranslate"><span class="pre">False</span></code> indicating
+which locations were not found.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>Pore indices on the calling object corresponding to the same pores</em></p></li>
+<li><p>on the <code class="docutils literal notranslate"><span class="pre">origin</span></code> object.  Can be an array or a tuple containing an</p></li>
+<li><p>array and a mask, depending on the value of <code class="docutils literal notranslate"><span class="pre">filtered</span></code>.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#openpnm.core.Base.pores" title="openpnm.core.Base.pores"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pores</span></code></a>, <a class="reference internal" href="#openpnm.core.Base.map_throats" title="openpnm.core.Base.map_throats"><code class="xref py py-obj docutils literal notranslate"><span class="pre">map_throats</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.core.Base.map_throats">
+<span class="sig-name descname"><span class="pre">map_throats</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">throats</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">origin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filtered</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/core/Base.html#Base.map_throats"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.core.Base.map_throats" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a list of throats on a target object, finds indices of
+those throats on the calling object</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>throats</strong> (<em>array_like</em>) – The indices of the throats on the object specified in <code class="docutils literal notranslate"><span class="pre">origin</span></code></p></li>
+<li><p><strong>origin</strong> (<em>OpenPNM Base object</em>) – The object corresponding to the indices given in <code class="docutils literal notranslate"><span class="pre">throats</span></code></p></li>
+<li><p><strong>filtered</strong> (boolean (default is <code class="docutils literal notranslate"><span class="pre">True</span></code>)) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> then a ND-array of indices is returned with missing
+indices removed, otherwise a named-tuple containing both the
+<code class="docutils literal notranslate"><span class="pre">indices</span></code> and a boolean <code class="docutils literal notranslate"><span class="pre">mask</span></code> with <code class="docutils literal notranslate"><span class="pre">False</span></code> indicating
+which locations were not found.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>Throat indices on the calling object corresponding to the same throats</em></p></li>
+<li><p>on the <code class="docutils literal notranslate"><span class="pre">origin</span></code> object.  Can be an array or a tuple containing an</p></li>
+<li><p>array and a mask, depending on the value of <code class="docutils literal notranslate"><span class="pre">filtered</span></code>.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#openpnm.core.Base.throats" title="openpnm.core.Base.throats"><code class="xref py py-obj docutils literal notranslate"><span class="pre">throats</span></code></a>, <a class="reference internal" href="#openpnm.core.Base.map_pores" title="openpnm.core.Base.map_pores"><code class="xref py py-obj docutils literal notranslate"><span class="pre">map_pores</span></code></a></p>
+</div>
+</dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="openpnm.core.Base.network">
 <em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">network</span></span><a class="headerlink" href="#openpnm.core.Base.network" title="Permalink to this definition">¶</a></dt>
 <dd><p>A shortcut to get a handle to the associated network
 There can only be one so this works</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.core.Base.num_pores">
+<span class="sig-name descname"><span class="pre">num_pores</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'or'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/core/Base.html#Base.num_pores"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.core.Base.num_pores" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number of pores of the specified labels</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>labels</strong> (<em>list of strings</em>) – The pore labels that should be included in the count.
+If not supplied, all pores are counted.</p></li>
+<li><p><strong>labels</strong> – Label of pores to be returned</p></li>
+<li><p><strong>mode</strong> (<em>string</em><em>, </em><em>optional</em>) – <p>Specifies how the count should be performed.  The options are:</p>
+<p><strong>’or’, ‘union’, ‘any’</strong> : (default) Pores with <em>one or more</em> of
+the given labels are counted.</p>
+<p><strong>’and’, ‘intersection’, ‘all’</strong> : Pores with <em>all</em> of the given
+labels are counted.</p>
+<p><strong>’xor’, ‘exclusive_or’</strong> : Pores with <em>only one</em> of the given
+labels are counted.</p>
+<p><strong>’nor’, ‘none’, ‘not’</strong> : Pores with <em>none</em> of the given labels
+are counted.</p>
+<p><strong>’nand’</strong> : Pores with <em>some but not all</em> of the given labels are
+counted.</p>
+<p><strong>’xnor’</strong> : Pores with <em>more than one</em> of the given labels are
+counted.</p>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Np</strong> – Number of pores with the specified labels</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#openpnm.core.Base.num_throats" title="openpnm.core.Base.num_throats"><code class="xref py py-obj docutils literal notranslate"><span class="pre">num_throats</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">count</span></code></p>
+</div>
+<p class="rubric">Notes</p>
+<p>Technically, <em>‘nand’</em> and <em>‘xnor’</em> should also count pores with <em>none</em>
+of the labels, however, to make the count more useful these are not
+included.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span><span class="o">.</span><span class="n">num_pores</span><span class="p">()</span>
+<span class="go">125</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span><span class="o">.</span><span class="n">num_pores</span><span class="p">(</span><span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;top&#39;</span><span class="p">])</span>
+<span class="go">25</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span><span class="o">.</span><span class="n">num_pores</span><span class="p">(</span><span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;top&#39;</span><span class="p">,</span> <span class="s1">&#39;front&#39;</span><span class="p">],</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;or&#39;</span><span class="p">)</span>
+<span class="go">45</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span><span class="o">.</span><span class="n">num_pores</span><span class="p">(</span><span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;top&#39;</span><span class="p">,</span> <span class="s1">&#39;front&#39;</span><span class="p">],</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;xnor&#39;</span><span class="p">)</span>
+<span class="go">5</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.core.Base.num_throats">
+<span class="sig-name descname"><span class="pre">num_throats</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'union'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/core/Base.html#Base.num_throats"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.core.Base.num_throats" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the number of throats of the specified labels</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>labels</strong> (<em>list of strings</em><em>, </em><em>optional</em>) – The throat labels that should be included in the count.
+If not supplied, all throats are counted.</p></li>
+<li><p><strong>mode</strong> (<em>string</em><em>, </em><em>optional</em>) – <p>Specifies how the count should be performed.  The options are:</p>
+<p><strong>’or’, ‘union’, ‘any’</strong> : (default) Throats with <em>one or more</em> of
+the given labels are counted.</p>
+<p><strong>’and’, ‘intersection’, ‘all’</strong> : Throats with <em>all</em> of the given
+labels are counted.</p>
+<p><strong>’xor’, ‘exclusive_or’</strong> : Throats with <em>only one</em> of the given
+labels are counted.</p>
+<p><strong>’nor’, ‘none’, ‘not’</strong> : Throats with <em>none</em> of the given labels
+are counted.</p>
+<p><strong>’nand’</strong> : Throats with <em>some but not all</em> of the given labels
+are counted.</p>
+<p><strong>’xnor’</strong> : Throats with <em>more than one</em> of the given labels are
+counted.</p>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Nt</strong> – Number of throats with the specified labels</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#openpnm.core.Base.num_pores" title="openpnm.core.Base.num_pores"><code class="xref py py-obj docutils literal notranslate"><span class="pre">num_pores</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">count</span></code></p>
+</div>
+<p class="rubric">Notes</p>
+<p>Technically, <em>‘nand’</em> and <em>‘xnor’</em> should also count throats with
+<em>none</em> of the labels, however, to make the count more useful these are
+not included.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.core.Base.pores">
+<span class="sig-name descname"><span class="pre">pores</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'or'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">asmask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/core/Base.html#Base.pores"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.core.Base.pores" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns pore indicies where given labels exist, according to the logic
+specified by the <code class="docutils literal notranslate"><span class="pre">mode</span></code> argument.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>labels</strong> (<em>string</em><em> or </em><em>list of strings</em>) – The label(s) whose pores locations are requested.  This argument
+also accepts ‘*’ for wildcard searches.</p></li>
+<li><p><strong>mode</strong> (<em>string</em>) – <p>Specifies how the query should be performed.  The options are:</p>
+<p><strong>’or’, ‘union’, ‘any’</strong> : (default) Pores with <em>one or more</em> of
+the given labels are returned.</p>
+<p><strong>’and’, ‘intersection’, ‘all’</strong> : Pores with <em>all</em> of the given
+labels are returned.</p>
+<p><strong>’xor’, ‘exclusive_or’</strong> : Pores with <em>only one</em> of the given
+labels are returned.</p>
+<p><strong>’nor’, ‘none’, ‘not’</strong> : Pores with <em>none</em> of the given labels
+are returned.</p>
+<p><strong>’nand’</strong> : Pores with <em>not all</em> of the given labels are
+returned.</p>
+<p><strong>’xnor’</strong> : Pores with <em>more than one</em> of the given labels are
+returned.</p>
+</p></li>
+<li><p><strong>asmask</strong> (<em>boolean</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> then a boolean array of length Np is returned with
+<code class="docutils literal notranslate"><span class="pre">True</span></code> values indicating the pores that satisfy the query.</p></li>
+<li><p><strong>target</strong> (<em>OpenPNM Base object</em>) – If given, the returned indices will be indexed relative to the
+<code class="docutils literal notranslate"><span class="pre">target</span></code> object.  This can be used to determine how indices on
+one object map onto another object.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>A Numpy array containing pore indices filtered by the logic specified</em></p></li>
+<li><p>in <code class="docutils literal notranslate"><span class="pre">mode</span></code>.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#openpnm.core.Base.throats" title="openpnm.core.Base.throats"><code class="xref py py-obj docutils literal notranslate"><span class="pre">throats</span></code></a>, <a class="reference internal" href="#openpnm.core.Base.map_pores" title="openpnm.core.Base.map_pores"><code class="xref py py-obj docutils literal notranslate"><span class="pre">map_pores</span></code></a></p>
+</div>
+<p class="rubric">Notes</p>
+<p>Technically, <em>nand</em> and <em>xnor</em> should also return pores with <em>none</em> of
+the labels but these are not included.  This makes the returned list
+more useful.</p>
+<p>To perform more complex or compound queries, you can opt to receive
+the result a a boolean mask (<code class="docutils literal notranslate"><span class="pre">asmask=True</span></code>), then manipulate the
+arrays manually.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Ps</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;top&#39;</span><span class="p">,</span> <span class="s1">&#39;back&#39;</span><span class="p">],</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;union&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Ps</span><span class="p">[:</span><span class="mi">5</span><span class="p">]</span>  <span class="c1"># Look at first 5 pore indices</span>
+<span class="go">array([ 4,  9, 14, 19, 20])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;top&#39;</span><span class="p">,</span> <span class="s1">&#39;back&#39;</span><span class="p">],</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;xnor&#39;</span><span class="p">)</span>
+<span class="go">array([ 24,  49,  74,  99, 124])</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -1014,7 +1414,7 @@ objects are returned as well.</p></li>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">labels</span></code>, <a class="reference internal" href="#openpnm.core.Base.keys" title="openpnm.core.Base.keys"><code class="xref py py-obj docutils literal notranslate"><span class="pre">keys</span></code></a></p>
+<p><a class="reference internal" href="#openpnm.core.Base.labels" title="openpnm.core.Base.labels"><code class="xref py py-obj docutils literal notranslate"><span class="pre">labels</span></code></a>, <a class="reference internal" href="#openpnm.core.Base.keys" title="openpnm.core.Base.keys"><code class="xref py py-obj docutils literal notranslate"><span class="pre">keys</span></code></a></p>
 </div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
@@ -1027,6 +1427,32 @@ objects are returned as well.</p></li>
 <span class="go">[&#39;pore.coords&#39;, &#39;throat.conns&#39;]</span>
 </pre></div>
 </div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.core.Base.set_label">
+<span class="sig-name descname"><span class="pre">set_label</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throats</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'add'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/core/Base.html#Base.set_label"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.core.Base.set_label" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates or updates a label array</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>label</strong> (<em>string</em>) – The label to apply to the specified locations</p></li>
+<li><p><strong>pores</strong> (<em>array_like</em>) – A list of pore indices or a boolean mask of where given label
+should be added or removed (see <code class="docutils literal notranslate"><span class="pre">mode</span></code>)</p></li>
+<li><p><strong>throats</strong> (<em>array_like</em>) – A list of throat indices or a boolean mask of where given label
+should be added or removed (see <code class="docutils literal notranslate"><span class="pre">mode</span></code>)</p></li>
+<li><p><strong>mode</strong> (<em>string</em>) – <p>Controls how the labels are handled.  Options are:</p>
+<p><em>’add’</em> - Adds the given label to the specified locations while
+keeping existing labels (default)</p>
+<p><em>’overwrite’</em> - Removes existing label from all locations before
+adding the label in the specified locations</p>
+<p><em>’remove’</em> - Removes the  given label from the specified locations
+leaving the remainder intact.</p>
+<p><em>’purge’</em> - Removes the specified label from the object</p>
+</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -1052,6 +1478,126 @@ Note that you can override matplotlib setting globally with
 <p class="rubric">Notes</p>
 <p>Other keyword arguments are passed to the <code class="docutils literal notranslate"><span class="pre">matplotlib.pyplot.hist</span></code>
 function.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.core.Base.throats">
+<span class="sig-name descname"><span class="pre">throats</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'or'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">asmask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/core/Base.html#Base.throats"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.core.Base.throats" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns throat locations where given labels exist, according to the
+logic specified by the <code class="docutils literal notranslate"><span class="pre">mode</span></code> argument.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>labels</strong> (<em>string</em><em> or </em><em>list of strings</em>) – The throat label(s) whose locations are requested.  If omitted,
+‘all’ throat inidices are returned.  This argument also accepts
+‘*’ for wildcard searches.</p></li>
+<li><p><strong>mode</strong> (<em>string</em>) – <p>Specifies how the query should be performed.  The options are:</p>
+<p><strong>’or’, ‘union’, ‘any’</strong> : (default) Throats with <em>one or more</em> of
+the given labels are returned.</p>
+<p><strong>’and’, ‘intersection’, ‘all’</strong> : Throats with <em>all</em> of the given
+labels are returned.</p>
+<p><strong>’xor’, ‘exclusive_or’</strong> : Throats with <em>only one</em> of the given
+labels are returned.</p>
+<p><strong>’nor’, ‘none’, ‘not’</strong> : Throats with <em>none</em> of the given labels
+are returned.</p>
+<p><strong>’nand’</strong> : Throats with <em>not all</em> of the given labels are
+returned.</p>
+<p><strong>’xnor’</strong> : Throats with <em>more than one</em> of the given labels are
+returned.</p>
+</p></li>
+<li><p><strong>asmask</strong> (<em>boolean</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> then a boolean array of length Nt is returned with
+<code class="docutils literal notranslate"><span class="pre">True</span></code> values indicating the throats that satisfy the query.</p></li>
+<li><p><strong>target</strong> (<em>OpenPNM Base object</em>) – If given, the returned indices will be indexed relative to the
+<code class="docutils literal notranslate"><span class="pre">target</span></code> object.  This can be used to determine how indices on
+one object map onto another object.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>A Numpy array containing throat indices filtered by the logic specified</em></p></li>
+<li><p>in <code class="docutils literal notranslate"><span class="pre">mode</span></code>.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#openpnm.core.Base.pores" title="openpnm.core.Base.pores"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pores</span></code></a>, <a class="reference internal" href="#openpnm.core.Base.map_throats" title="openpnm.core.Base.map_throats"><code class="xref py py-obj docutils literal notranslate"><span class="pre">map_throats</span></code></a></p>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Ts</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">throats</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Ts</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">5</span><span class="p">]</span>  <span class="c1"># Look at first 5 throat indices</span>
+<span class="go">array([0, 1, 2, 3, 4])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.core.Base.toindices">
+<span class="sig-name descname"><span class="pre">toindices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mask</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/core/Base.html#Base.toindices"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.core.Base.toindices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a boolean mask to a list of pore or throat indices</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>mask</strong> (<em>array_like booleans</em>) – A boolean array with True at locations where indices are desired.
+The appropriate indices are returned based an the length of mask,
+which must be either Np or Nt long.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>A list of pore or throat indices corresponding the locations where</em></p></li>
+<li><p><em>the received mask was True.</em></p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#openpnm.core.Base.tomask" title="openpnm.core.Base.tomask"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tomask</span></code></a></p>
+</div>
+<p class="rubric">Notes</p>
+<p>This behavior could just as easily be accomplished by using the mask
+in <code class="docutils literal notranslate"><span class="pre">pn.pores()[mask]</span></code> or <code class="docutils literal notranslate"><span class="pre">pn.throats()[mask]</span></code>.  This method is
+just a convenience function and is a complement to <code class="docutils literal notranslate"><span class="pre">tomask</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.core.Base.tomask">
+<span class="sig-name descname"><span class="pre">tomask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throats</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/core/Base.html#Base.tomask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.core.Base.tomask" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a list of pore or throat indices into a boolean mask of the
+correct length</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>throats</strong> (<em>pores or</em>) – List of pore or throat indices.  Only one of these can be specified
+at a time, and the returned result will be of the corresponding
+length.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>A boolean mask of length Np or Nt with True in the specified pore or</em></p></li>
+<li><p><em>throat locations.</em></p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#openpnm.core.Base.toindices" title="openpnm.core.Base.toindices"><code class="xref py py-obj docutils literal notranslate"><span class="pre">toindices</span></code></a></p>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mask</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">tomask</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">sum</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span>  <span class="c1"># 3 non-zero elements exist in the mask (0, 10 and 20)</span>
+<span class="go">3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span>  <span class="c1"># Mask size is equal to the number of pores in network</span>
+<span class="go">125</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mask</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">tomask</span><span class="p">(</span><span class="n">throats</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span>  <span class="c1"># Mask is now equal to number of throats in network</span>
+<span class="go">300</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </dd></dl>
