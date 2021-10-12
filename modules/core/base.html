@@ -722,51 +722,6 @@ access to useful items:</p>
 </tr>
 </tbody>
 </table>
-<p class="rubric">Examples</p>
-<p>It is possible to create an instance of Base, although it is not very
-useful except for demonstration purposes as done here.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">Base</span><span class="p">(</span><span class="n">Np</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">Nt</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Now query the object for its basic properties:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">Np</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">Nt</span>  <span class="c1"># Number of pores and throats</span>
-<span class="go">(4, 5)</span>
-</pre></div>
-</div>
-<p>Add a label to the object, as a boolean with True where the label applies:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="p">[</span><span class="s1">&#39;pore.new_label&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">]</span>
-</pre></div>
-</div>
-<p>See list of available labels and confirm new_label was added:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">labels</span><span class="p">())</span>
-<span class="go">――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――</span>
-<span class="go">1     : pore.all</span>
-<span class="go">2     : pore.new_label</span>
-<span class="go">3     : throat.all</span>
-<span class="go">――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――</span>
-</pre></div>
-</div>
-<p>Use the label to fetch pores where it was applied:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Ps</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;new_label&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">Ps</span><span class="p">)</span>
-<span class="go">[0 3]</span>
-</pre></div>
-</div>
-<p>Find the number of pores with label:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">num_pores</span><span class="p">(</span><span class="s1">&#39;new_label&#39;</span><span class="p">))</span>
-<span class="go">2</span>
-</pre></div>
-</div>
-<p>Convert between indices and boolean mask</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mask</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">tomask</span><span class="p">(</span><span class="n">throats</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span>
-<span class="go">[ True False  True False  True]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">inds</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">toindices</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">inds</span><span class="p">)</span>
-<span class="go">[0 2 4]</span>
-</pre></div>
-</div>
 <dl class="py property">
 <dt class="sig sig-object py" id="openpnm.core.Base.Np">
 <em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">Np</span></span><a class="headerlink" href="#openpnm.core.Base.Np" title="Permalink to this definition">¶</a></dt>

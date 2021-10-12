@@ -264,52 +264,6 @@
 <span class="sd">    | ``project``    | A handle to the Project containing the object          |</span>
 <span class="sd">    +----------------+--------------------------------------------------------+</span>
 
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    It is possible to create an instance of Base, although it is not very</span>
-<span class="sd">    useful except for demonstration purposes as done here.</span>
-
-<span class="sd">    &gt;&gt;&gt; import openpnm as op</span>
-<span class="sd">    &gt;&gt;&gt; obj = op.core.Base(Np=4, Nt=5)</span>
-
-<span class="sd">    Now query the object for its basic properties:</span>
-
-<span class="sd">    &gt;&gt;&gt; obj.Np, obj.Nt  # Number of pores and throats</span>
-<span class="sd">    (4, 5)</span>
-
-<span class="sd">    Add a label to the object, as a boolean with True where the label applies:</span>
-
-<span class="sd">    &gt;&gt;&gt; obj[&#39;pore.new_label&#39;] = [ True, False, False, True]</span>
-
-<span class="sd">    See list of available labels and confirm new_label was added:</span>
-
-<span class="sd">    &gt;&gt;&gt; print(obj.labels())</span>
-<span class="sd">    ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――</span>
-<span class="sd">    1     : pore.all</span>
-<span class="sd">    2     : pore.new_label</span>
-<span class="sd">    3     : throat.all</span>
-<span class="sd">    ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――</span>
-
-<span class="sd">    Use the label to fetch pores where it was applied:</span>
-
-<span class="sd">    &gt;&gt;&gt; Ps = obj.pores(&#39;new_label&#39;)</span>
-<span class="sd">    &gt;&gt;&gt; print(Ps)</span>
-<span class="sd">    [0 3]</span>
-
-<span class="sd">    Find the number of pores with label:</span>
-
-<span class="sd">    &gt;&gt;&gt; print(obj.num_pores(&#39;new_label&#39;))</span>
-<span class="sd">    2</span>
-
-<span class="sd">    Convert between indices and boolean mask</span>
-
-<span class="sd">    &gt;&gt;&gt; mask = obj.tomask(throats=[0, 2, 4])</span>
-<span class="sd">    &gt;&gt;&gt; print(mask)</span>
-<span class="sd">    [ True False  True False  True]</span>
-<span class="sd">    &gt;&gt;&gt; inds = obj.toindices(mask)</span>
-<span class="sd">    &gt;&gt;&gt; print(inds)</span>
-<span class="sd">    [0 2 4]</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
