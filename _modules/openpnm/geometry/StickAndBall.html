@@ -254,54 +254,54 @@
                        <span class="n">iters</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">,</span>
-                        <span class="n">model</span><span class="o">=</span><span class="n">mods</span><span class="o">.</span><span class="n">misc</span><span class="o">.</span><span class="n">product</span><span class="p">,</span>
-                        <span class="n">props</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;pore.max_size&#39;</span><span class="p">,</span> <span class="s1">&#39;pore.seed&#39;</span><span class="p">])</span>
+                       <span class="n">model</span><span class="o">=</span><span class="n">mods</span><span class="o">.</span><span class="n">misc</span><span class="o">.</span><span class="n">product</span><span class="p">,</span>
+                       <span class="n">props</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;pore.max_size&#39;</span><span class="p">,</span> <span class="s1">&#39;pore.seed&#39;</span><span class="p">])</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.area&#39;</span><span class="p">,</span>
-                        <span class="n">model</span><span class="o">=</span><span class="n">mods</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">pore_cross_sectional_area</span><span class="o">.</span><span class="n">sphere</span><span class="p">,</span>
-                        <span class="n">pore_diameter</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">)</span>
+                       <span class="n">model</span><span class="o">=</span><span class="n">mods</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">pore_cross_sectional_area</span><span class="o">.</span><span class="n">sphere</span><span class="p">,</span>
+                       <span class="n">pore_diameter</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.volume&#39;</span><span class="p">,</span>
-                        <span class="n">model</span><span class="o">=</span><span class="n">mods</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">pore_volume</span><span class="o">.</span><span class="n">sphere</span><span class="p">,</span>
-                        <span class="n">pore_diameter</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">)</span>
+                       <span class="n">model</span><span class="o">=</span><span class="n">mods</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">pore_volume</span><span class="o">.</span><span class="n">sphere</span><span class="p">,</span>
+                       <span class="n">pore_diameter</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.max_size&#39;</span><span class="p">,</span>
-                        <span class="n">model</span><span class="o">=</span><span class="n">mods</span><span class="o">.</span><span class="n">misc</span><span class="o">.</span><span class="n">from_neighbor_pores</span><span class="p">,</span>
-                        <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;min&#39;</span><span class="p">,</span>
-                        <span class="n">prop</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">)</span>
+                       <span class="n">model</span><span class="o">=</span><span class="n">mods</span><span class="o">.</span><span class="n">misc</span><span class="o">.</span><span class="n">from_neighbor_pores</span><span class="p">,</span>
+                       <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;min&#39;</span><span class="p">,</span>
+                       <span class="n">prop</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">,</span>
-                        <span class="n">model</span><span class="o">=</span><span class="n">mods</span><span class="o">.</span><span class="n">misc</span><span class="o">.</span><span class="n">scaled</span><span class="p">,</span>
-                        <span class="n">factor</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
-                        <span class="n">prop</span><span class="o">=</span><span class="s1">&#39;throat.max_size&#39;</span><span class="p">)</span>
+                       <span class="n">model</span><span class="o">=</span><span class="n">mods</span><span class="o">.</span><span class="n">misc</span><span class="o">.</span><span class="n">scaled</span><span class="p">,</span>
+                       <span class="n">factor</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+                       <span class="n">prop</span><span class="o">=</span><span class="s1">&#39;throat.max_size&#39;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.endpoints&#39;</span><span class="p">,</span>
-                        <span class="n">model</span><span class="o">=</span><span class="n">mods</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">throat_endpoints</span><span class="o">.</span><span class="n">spherical_pores</span><span class="p">,</span>
-                        <span class="n">pore_diameter</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">,</span>
-                        <span class="n">throat_diameter</span><span class="o">=</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">)</span>
+                       <span class="n">model</span><span class="o">=</span><span class="n">mods</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">throat_endpoints</span><span class="o">.</span><span class="n">spherical_pores</span><span class="p">,</span>
+                       <span class="n">pore_diameter</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">,</span>
+                       <span class="n">throat_diameter</span><span class="o">=</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.length&#39;</span><span class="p">,</span>
-                        <span class="n">model</span><span class="o">=</span><span class="n">mods</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">throat_length</span><span class="o">.</span><span class="n">piecewise</span><span class="p">,</span>
-                        <span class="n">throat_endpoints</span><span class="o">=</span><span class="s1">&#39;throat.endpoints&#39;</span><span class="p">)</span>
+                       <span class="n">model</span><span class="o">=</span><span class="n">mods</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">throat_length</span><span class="o">.</span><span class="n">piecewise</span><span class="p">,</span>
+                       <span class="n">throat_endpoints</span><span class="o">=</span><span class="s1">&#39;throat.endpoints&#39;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.surface_area&#39;</span><span class="p">,</span>
-                        <span class="n">model</span><span class="o">=</span><span class="n">mods</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">throat_surface_area</span><span class="o">.</span><span class="n">cylinder</span><span class="p">,</span>
-                        <span class="n">throat_diameter</span><span class="o">=</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">,</span>
-                        <span class="n">throat_length</span><span class="o">=</span><span class="s1">&#39;throat.length&#39;</span><span class="p">)</span>
+                       <span class="n">model</span><span class="o">=</span><span class="n">mods</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">throat_surface_area</span><span class="o">.</span><span class="n">cylinder</span><span class="p">,</span>
+                       <span class="n">throat_diameter</span><span class="o">=</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">,</span>
+                       <span class="n">throat_length</span><span class="o">=</span><span class="s1">&#39;throat.length&#39;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.volume&#39;</span><span class="p">,</span>
-                        <span class="n">model</span><span class="o">=</span><span class="n">mods</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">throat_volume</span><span class="o">.</span><span class="n">cylinder</span><span class="p">,</span>
-                        <span class="n">throat_diameter</span><span class="o">=</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">,</span>
-                        <span class="n">throat_length</span><span class="o">=</span><span class="s1">&#39;throat.length&#39;</span><span class="p">)</span>
+                       <span class="n">model</span><span class="o">=</span><span class="n">mods</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">throat_volume</span><span class="o">.</span><span class="n">cylinder</span><span class="p">,</span>
+                       <span class="n">throat_diameter</span><span class="o">=</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">,</span>
+                       <span class="n">throat_length</span><span class="o">=</span><span class="s1">&#39;throat.length&#39;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.area&#39;</span><span class="p">,</span>
-                        <span class="n">model</span><span class="o">=</span><span class="n">mods</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">throat_cross_sectional_area</span><span class="o">.</span><span class="n">cylinder</span><span class="p">,</span>
-                        <span class="n">throat_diameter</span><span class="o">=</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">)</span>
+                       <span class="n">model</span><span class="o">=</span><span class="n">mods</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">throat_cross_sectional_area</span><span class="o">.</span><span class="n">cylinder</span><span class="p">,</span>
+                       <span class="n">throat_diameter</span><span class="o">=</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.conduit_lengths&#39;</span><span class="p">,</span>
-                        <span class="n">model</span><span class="o">=</span><span class="n">mods</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">throat_length</span><span class="o">.</span><span class="n">conduit_lengths</span><span class="p">,</span>
-                        <span class="n">throat_endpoints</span><span class="o">=</span><span class="s1">&#39;throat.endpoints&#39;</span><span class="p">,</span>
-                        <span class="n">throat_length</span><span class="o">=</span><span class="s1">&#39;throat.length&#39;</span><span class="p">)</span></div>
+                       <span class="n">model</span><span class="o">=</span><span class="n">mods</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">throat_length</span><span class="o">.</span><span class="n">conduit_lengths</span><span class="p">,</span>
+                       <span class="n">throat_endpoints</span><span class="o">=</span><span class="s1">&#39;throat.endpoints&#39;</span><span class="p">,</span>
+                       <span class="n">throat_length</span><span class="o">=</span><span class="s1">&#39;throat.length&#39;</span><span class="p">)</span></div>
 </pre></div>
 
               </div>
