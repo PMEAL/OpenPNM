@@ -248,7 +248,7 @@ def classic_ordinary_diffusion(target,
                                pore_molar_density="pore.molar_density",
                                throat_molar_density="throat.molar_density",
                                pore_diffusivity="pore.diffusivity",
-                               throat_diffusivity="pore.diffusivity",
+                               throat_diffusivity="throat.diffusivity",
                                pore_diameter="pore.diameter",
                                pore_area="pore.area",
                                size_factors="throat.diffusive_size_factors"):
