@@ -1,6 +1,6 @@
 import numpy as np
 import openpnm as op
-from numpy.testing import assert_approx_equal, assert_allclose
+from numpy.testing import assert_allclose
 import openpnm.models.geometry.conduit_lengths as _conduit_lengths
 
 
@@ -47,7 +47,7 @@ class ElectricalConductanceTest:
                             model=mod2)
         self.phys.regenerate_models()
         actual = np.mean(self.phys['throat.electrical_conductance_generic'])
-        assert_allclose(actual, desired=0.612635, rtol=1e-5)
+        assert_allclose(actual, desired=0.61263, rtol=1e-5)
 
 
 if __name__ == '__main__':

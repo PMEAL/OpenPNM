@@ -56,6 +56,34 @@ class DiffusiveConductanceTest:
         actual = phys['throat.g_diffusive_conductance'].mean()
         assert (actual == 0.65 and len(phys['throat.g_diffusive_conductance']) == 5)
 
+    def test_generic_diffusive_multi_domain(self):
+        net = op.network.Cubic(shape=[3, 3, 3])
+        conns = net.conns
+        Ps1 = np.hstack(np.unique(conns[0:10]))
+        Ps2 = np.setdiff1d(net.Ps, Ps1)
+        geo1 = op.geometry.GenericGeometry(network=net,
+                                           pores=Ps1,
+                                           throats=net.Ts[0:10])
+        geo2 = op.geometry.GenericGeometry(network=net,
+                                           pores=Ps2,
+                                           throats=net.Ts[10:])
+        phase = op.phases.GenericPhase(network=net)
+        phase['pore.diffusivity'] = 1.3
+        geo1['throat.diffusive_size_factors'] = 0.5
+        geo2['throat.diffusive_size_factors'] = 0.25
+        phys1 = op.physics.GenericPhysics(network=net,
+                                          phase=phase,
+                                          geometry=geo1)
+        phys2 = op.physics.GenericPhysics(network=net,
+                                          phase=phase,
+                                          geometry=geo2)
+        mod = op.models.physics.diffusive_conductance.generic_diffusive
+        phys1.add_model(propname='throat.g1_diffusive_conductance', model=mod)
+        phys2.add_model(propname='throat.g2_diffusive_conductance', model=mod)
+        phys1_g = np.mean(phys1['throat.g1_diffusive_conductance'])
+        phys2_g = np.mean(phys2['throat.g2_diffusive_conductance'])
+        assert_allclose(phys1_g, 2*phys2_g)
+
     def test_ordinary_diffusion(self):
         mod = op.models.physics.diffusive_conductance.ordinary_diffusion
         self.phys.add_model(propname='throat.o_diffusive_conductance', model=mod)
