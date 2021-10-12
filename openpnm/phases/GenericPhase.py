@@ -59,16 +59,9 @@ class GenericPhase(Base, ModelsMixin, LegacyMixin, LabelMixin):
         # Overwrite with user supplied settings, if any
         self.settings.update(settings)
 
-        # Deal with network or project arguments
-        if network is not None:
-            if project is not None:
-                assert network is project.network
-            else:
-                project = network.project
+        super().__init__(network=network, project=project, **kwargs)
 
-        super().__init__(project=project, **kwargs)
-
-        # If project has a network object, adjust pore and throat sizes
+        # If project has a network object, adjust pore and throat array sizes
         network = self.project.network
         if network:
             self['pore.all'] = ones((network.Np, ), dtype=bool)
