@@ -146,12 +146,15 @@ class Base(dict):
         instance.settings['_uuid'] = str(uuid.uuid4())
         return instance
 
-    def __init__(self, Np=0, Nt=0, name=None, project=None, settings={}):
+    def __init__(self, Np=0, Nt=0, name=None, project=None, network=None, settings={}):
         self.settings.setdefault('prefix', 'base')
         self.settings.update(settings)
         super().__init__()
         if project is None:
-            project = ws.new_project()
+            if network is None:
+                project = ws.new_project()
+            else:
+                project = network.project
         if name is None:
             name = project._generate_name(self)
         project._validate_name(name)
