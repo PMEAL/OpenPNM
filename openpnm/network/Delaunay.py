@@ -27,6 +27,12 @@ class Delaunay(GenericNetwork):
 
         [x, y, 0] - will produce a 2D square domain of size x by y
 
+        [r, z] - will produce a cylildner of radius r and height z
+
+        [r, 0] - will produce a 2D circle of radius r
+
+        [r] - will produce a 3D sphere of radius r
+
     name : string
         An optional name for the object to help identify it.  If not given,
         one will be generated.
@@ -48,7 +54,7 @@ class Delaunay(GenericNetwork):
 
     """
 
-    def __init__(self, shape=[1, 1, 1], points=None, **kwargs):
+    def __init__(self, points, shape=[1, 1, 1], **kwargs):
         # Clean-up input points
         super().__init__(**kwargs)
         points = tools.parse_points(points=points, shape=shape)
@@ -58,3 +64,10 @@ class Delaunay(GenericNetwork):
         tools.label_surface_pores(network=self)
         tools.label_faces(network=self)
         self._tri = tri
+
+
+if __name__ == "__main__":
+    dn = Delaunay(points = 50, shape=[1, 1, 1])
+    print(dn)
+
+

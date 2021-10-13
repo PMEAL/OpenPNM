@@ -12,9 +12,9 @@ def delaunay(points, shape=[1, 1, 1], ):
     ----------
     points : array_like or int
         Can either be an N-by-3 array of point coordinates which will be used,
-        or a scalar value indicating the number of points to generate.
+        or a scalar value indicating the number of points to generate
     shape : array_like
-        Indicates the size and shape of the domain.
+        Indicates the size and shape of the domain
 
     Returns
     -------
@@ -39,8 +39,28 @@ if __name__ == "__main__":
     print(dn.keys())
     print(dn['pore.coords'].shape)
     print(dn['throat.conns'].shape)
+    # Make a 2D network based on number of points
+    dn, tri = delaunay(points=50, shape=[1, 0, 1])
+    print(dn.keys())
+    print(dn['pore.coords'].shape)
+    print(dn['throat.conns'].shape)
     # Make a 3D network based on number of points
     dn, tri = delaunay(points=50, shape=[1, 1, 1])
+    print(dn.keys())
+    print(dn['pore.coords'].shape)
+    print(dn['throat.conns'].shape)
+    # Make a 3D cylinder
+    dn, tri = delaunay(points=50, shape=[1, 1])
+    print(dn.keys())
+    print(dn['pore.coords'].shape)
+    print(dn['throat.conns'].shape)
+    # Make a 2D circle
+    dn, tri = delaunay(points=50, shape=[1, 0])
+    print(dn.keys())
+    print(dn['pore.coords'].shape)
+    print(dn['throat.conns'].shape)
+    # Make a 3D sphere
+    dn, tri = delaunay(points=50, shape=[1])
     print(dn.keys())
     print(dn['pore.coords'].shape)
     print(dn['throat.conns'].shape)

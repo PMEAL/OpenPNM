@@ -53,106 +53,37 @@ class DelaunayVoronoiDual(GenericNetwork):
 
     """
 
-    def __init__(self, shape=[1, 1, 1], points=None, **kwargs):
+    def __init__(self, points, shape=[1, 1, 1], crop=True, **kwargs):
         super().__init__(**kwargs)
-        net, vor, tri = voronoi_delaunay_dual(points=points, shape=shape)
+        net, vor, tri = voronoi_delaunay_dual(points=points, shape=shape, crop=False)
+
+        # Label pores and throats
+        Np = net['pore.coords'].shape[0]
+        net['pore.delaunay'] = np.zeros(Np, dtype=bool)
+        net['pore.delaunay'][0:vor.npoints] = True
+        net['pore.voronoi'] = np.zeros(Np, dtype=bool)
+        net['pore.voronoi'][vor.npoints:] = True
+        # Label throats between Delaunay pores
+        net['throat.delaunay'] = np.all(net['throat.conns'] < vor.npoints, axis=1)
+        # Label throats between Voronoi pores
+        net['throat.voronoi'] = np.all(net['throat.conns'] >= vor.npoints, axis=1)
+        net['throat.interconnect'] = (~net['throat.delaunay']) * (~net['throat.voronoi'])
         net = tools.add_all_label(net)
+
+        # Trim all pores that lie outside of the specified domain
+        if crop:
+            net = tools.trim_reflected_points(network=net, shape=shape)
+
+        net = tools.label_faces(net)
+
         self.update(net)
         self._vor = vor
         self._tri = tri
 
-        self._label_faces()
-        # Label all pores and throats by type
-        self['pore.delaunay'] = False
-        self['pore.delaunay'][0:vor.npoints] = True
-        self['pore.voronoi'] = False
-        self['pore.voronoi'][vor.npoints:] = True
-        # Label throats between Delaunay pores
-        self['throat.delaunay'] = False
-        Ts = np.all(self['throat.conns'] < vor.npoints, axis=1)
-        self['throat.delaunay'][Ts] = True
-        # Label throats between Voronoi pores
-        self['throat.voronoi'] = False
-        Ts = np.all(self['throat.conns'] >= vor.npoints, axis=1)
-        self['throat.voronoi'][Ts] = True
-        # Label throats connecting a Delaunay and a Voronoi pore
-        self['throat.interconnect'] = False
-        Ts = self.throats(labels=['delaunay', 'voronoi'], mode='not')
-        self['throat.interconnect'][Ts] = True
-
-        # Trim all pores that lie outside of the specified domain
-        if self.settings['trim'] == False:
-            pass
-        else:
-            self._trim_external_pores(shape=shape)
-            self._label_faces()
-
-    def _trim_external_pores(self, shape):
-        r'''
-        '''
-        # Find all pores within the domain
-        Ps = topotools.isoutside(coords=self['pore.coords'], shape=shape)
-        self['pore.external'] = False
-        self['pore.external'][Ps] = True
-
-        # Find which internal pores are delaunay
-        Ps = (~self['pore.external'])*self['pore.delaunay']
-
-        # Find all pores connected to an internal delaunay pore
-        Ps = self.find_neighbor_pores(pores=Ps, include_input=True)
-
-        # Mark them all as keepers
-        self['pore.keep'] = False
-        self['pore.keep'][Ps] = True
-
-        # Trim all bad pores
-        topotools.trim(network=self, pores=~self['pore.keep'])
-
-        # Now label boundary pores
-        self['pore.boundary'] = False
-        self['pore.boundary'] = self['pore.delaunay']*self['pore.external']
-
-        # Label Voronoi pores on boundary
-        Ps = self.find_neighbor_pores(pores=self.pores('boundary'))
-        Ps = self['pore.voronoi']*self.tomask(pores=Ps)
-        self['pore.boundary'][Ps] = True
-
-        # Label Voronoi and interconnect throats on boundary
-        self['throat.boundary'] = False
-        Ps = self.pores('boundary')
-        Ts = self.find_neighbor_throats(pores=Ps, mode='xnor')
-        self['throat.boundary'][Ts] = True
-
-        # Trim throats between Delaunay boundary pores
-        Ps = self.pores(labels=['boundary', 'delaunay'], mode='xnor')
-        Ts = self.find_neighbor_throats(pores=Ps, mode='xnor')
-        topotools.trim(network=self, throats=Ts)
-
-        # Move Delaunay boundary pores to centroid of Voronoi facet
-        Ps = self.pores(labels=['boundary', 'delaunay'], mode='xnor')
-        for P in Ps:
-            Ns = self.find_neighbor_pores(pores=P)
-            Ns = Ps = self['pore.voronoi']*self.tomask(pores=Ns)
-            coords = np.mean(self['pore.coords'][Ns], axis=0)
-            self['pore.coords'][P] = coords
-
-        self['pore.internal'] = ~self['pore.boundary']
-        Ps = self.pores('internal')
-        Ts = self.find_neighbor_throats(pores=Ps, mode='xnor')
-        self['throat.internal'] = False
-        self['throat.internal'][Ts] = True
-
-        # Label surface pores and throats between boundary and internal
-        Ts = self.throats(['boundary', 'internal'], mode='not')
-        self['throat.surface'] = False
-        self['throat.surface'][Ts] = True
-        surf_pores = self['throat.conns'][Ts].flatten()
-        surf_pores = np.unique(surf_pores[~self['pore.boundary'][surf_pores]])
-        self['pore.surface'] = False
-        self['pore.surface'][surf_pores] = True
-        # Clean-up
-        del self['pore.external']
-        del self['pore.keep']
+        for p in self.pores('outside'):
+            Ps = self.find_neighbor_pores(p)
+            Ps = self.filter_by_label(pores=Ps, labels='voronoi')
+            self['pore.coords'][p] = self.coords[Ps].mean(axis=0)
 
     def find_throat_facets(self, throats=None):
         r"""
@@ -226,3 +157,18 @@ class DelaunayVoronoiDual(GenericNetwork):
         for ax in range(3):
             self['pore.' + min_labels[ax]] = coords[:, ax] == min_coords[ax]
             self['pore.' + max_labels[ax]] = coords[:, ax] == max_coords[ax]
+
+
+if __name__ == "__main__":
+    import openpnm as op
+    np.random.seed(2)
+    points = op.topotools.generate_base_points(50, [1, 1, 0], reflect=True)
+    dvd = DelaunayVoronoiDual(points=points, shape=[1, 1, 0], crop=True)
+    print(dvd)
+    fig = op.topotools.plot_connections(dvd, throats=dvd.throats('voronoi'), c='g')
+    fig = op.topotools.plot_connections(dvd, throats=dvd.throats('delaunay'), c='r', ax=fig)
+    # fig = op.topotools.plot_connections(dvd, throats=dvd.throats('interconnect'), c='b', ax=fig)
+    fig = op.topotools.plot_coordinates(dvd, pores=dvd.pores('outside'), c='k', ax=fig, markersize=100)
+
+
+

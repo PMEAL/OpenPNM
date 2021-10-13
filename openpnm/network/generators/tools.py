@@ -1,5 +1,5 @@
 import numpy as np
-from openpnm.topotools import generate_base_points, dimensionality
+from openpnm.topotools import generate_base_points, dimensionality, isoutside
 
 
 def trim(network, pores=None, throats=None):
@@ -28,7 +28,7 @@ def trim(network, pores=None, throats=None):
     array when the pores being pointed to are removed.
 
     """
-    if (pores is None) and (throats is None):
+    if (pores is not None) and (throats is not None):
         raise Exception('Cannot trim pores and throats at the same time')
     if throats is not None:
         throats = np.atleast_1d(throats)
@@ -117,12 +117,12 @@ def join(net1, net2, L_max=0.99):
     return net3
 
 
-def parse_points(shape, points):
+def parse_points(shape, points, reflect=False):
     # Deal with input arguments
     if isinstance(points, int):
         points = generate_base_points(num_points=points,
                                       domain_size=shape,
-                                      reflect=False)
+                                      reflect=reflect)
     else:
         # Should we check to ensure that points are reflected?
         points = np.array(points)
@@ -207,25 +207,43 @@ def label_surface_pores(network):
     return network
 
 
-def label_faces(network):
-        r'''
-        Label the pores sitting on the faces of the domain in accordance with
-        the conventions used for cubic etc.
-        '''
-        dims = dimensionality(network)
-        coords = np.around(network['pore.coords'], decimals=10)
-        min_labels = ['front', 'left', 'bottom']
-        max_labels = ['back', 'right', 'top']
-        min_coords = np.amin(coords, axis=0)
-        max_coords = np.amax(coords, axis=0)
-        for ax in np.where(dims)[0]:
-            network['pore.' + min_labels[ax]] = coords[:, ax] == min_coords[ax]
-            network['pore.' + max_labels[ax]] = coords[:, ax] == max_coords[ax]
+def label_faces(network, threshold=0.05):
+    r'''
+    Label the pores sitting on the faces of the domain in accordance with
+    the conventions used for cubic etc.
+    '''
+    dims = dimensionality(network)
+    coords = np.around(network['pore.coords'], decimals=10)
+    min_labels = ['front', 'left', 'bottom']
+    max_labels = ['back', 'right', 'top']
+    min_coords = np.amin(coords, axis=0)
+    max_coords = np.amax(coords, axis=0)
+    for ax in np.where(dims)[0]:
+        network['pore.' + min_labels[ax]] = coords[:, ax] <= threshold*min_coords[ax]
+        network['pore.' + max_labels[ax]] = coords[:, ax] >= (1-threshold)*max_coords[ax]
+    return network
 
 
 def trim_reflected_points(network, shape):
-    # Delete all coords that are outside of shape
-    hits = network['pore.coords'] > shape
+    Pdrop = isoutside(network['pore.coords'], shape=shape)
+    # Find all throats associated with pores to be dropped
+    Ts = np.sum(Pdrop[network['throat.conns']], axis=1)
+    # From throats find delaunay throats with one internal pore
+    Ts = (Ts == 1)*network['throat.delaunay']
+    # Keep the pores on the ends of these throats
+    Pkeep = np.unique(network['throat.conns'][Ts])
+    Pdrop = np.where(Pdrop)[0]
+    Ps = np.array(list(set(Pdrop).difference(set(Pkeep))))
+    network = trim(network=network, pores=Ps)
+    # Now remove extraneous throats
+    Pdrop = isoutside(network['pore.coords'], shape=shape)
+    Ts = np.all(Pdrop[network['throat.conns']], axis=1)
+    network = trim(network=network, throats=Ts)
+    # Lastly label the surviving pores as outside for further processing
+    network['pore.outside'] = np.zeros(network['pore.coords'].shape[0], dtype=bool)
+    network['pore.outside'][Pdrop] = True
+    return network
+
 
 
 

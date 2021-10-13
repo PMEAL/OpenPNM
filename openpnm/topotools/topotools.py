@@ -47,35 +47,29 @@ def isoutside(coords, shape, thresh=1e-6):
     # Label external pores for trimming below
     if len(shape) == 1:  # Spherical
         shape = np.array(shape, dtype=float)
-        thresh = shape*1e-9
         r_lim = shape[0] + thresh[0]
-        # Find external points
         r, theta, phi = to_sph(*coords.T)
         Ps = r > r_lim
     elif len(shape) == 2:  # Cylindrical
         shape = np.array(shape, dtype=float)
-        thresh = shape*1e-9
-        r_lim = shape[0] + thresh[0]
-        hi_lim = shape[1] + thresh[1]
-        lo_lim = 0 - thresh[1]
-        # Find external pores outside radius
+        r_lim = shape[0] + thresh
+        hi_lim = shape[1] + thresh
+        lo_lim = 0 - thresh
         r, theta, z = to_cyl(*coords.T)
         Ps = r > r_lim
         # Find external pores above and below cylinder
         if shape[1] > 0:  # Skip if disk (z=0)
             Ps = Ps + (z > hi_lim)
             Ps = Ps + (z < lo_lim)
-        else:
-            pass
     elif len(shape) == 3:  # Rectilinear
         shape = np.array(shape, dtype=float)
-        if shape[2] == 0:
-            shape = shape[:2]
-        thresh = shape*1e-9
+        mask = shape == 0
+        if np.any(mask == False):
+            shape = shape[~mask]
         lo_lim = np.zeros_like(shape) - thresh
         hi_lim = shape + thresh
-        Ps1 = np.any(coords > hi_lim, axis=1)
-        Ps2 = np.any(coords < lo_lim, axis=1)
+        Ps1 = np.any(coords[:, ~mask] > hi_lim, axis=1)
+        Ps2 = np.any(coords[:, ~mask] < lo_lim, axis=1)
         Ps = Ps1 + Ps2
     return Ps
 
