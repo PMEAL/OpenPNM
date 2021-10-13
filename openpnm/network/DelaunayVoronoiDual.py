@@ -1,11 +1,10 @@
 import numpy as np
 import scipy.sparse as sprs
-import scipy.spatial as sptl
+from openpnm.network import GenericNetwork
 from openpnm import topotools
 from openpnm.network.generators import voronoi_delaunay_dual, tools
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)
-from openpnm.network import GenericNetwork
 
 
 class DelaunayVoronoiDual(GenericNetwork):
@@ -70,20 +69,29 @@ class DelaunayVoronoiDual(GenericNetwork):
         net['throat.interconnect'] = (~net['throat.delaunay']) * (~net['throat.voronoi'])
         net = tools.add_all_label(net)
 
-        # Trim all pores that lie outside of the specified domain
         if crop:
+            # Trim all pores that lie outside of the specified domain
             net = tools.crop(network=net, shape=shape, mode='mixed')
+            # Move delaunay pores to domain edge
+            am = sprs.coo_matrix((np.ones_like(net['throat.conns'][:, 0]),
+                                  (net['throat.conns'].T))).tolil()
+            for p in np.where(net['pore.outside'])[0]:
+                Ps = np.array(am.rows[p], dtype=int)
+                Ps = Ps[net['pore.voronoi'][Ps]]
+                if len(Ps) > 0:
+                    net['pore.coords'][p] = net['pore.coords'][Ps].mean(axis=0)
+            # Remove any lingering voronoi pores
+            Ps = np.where(net['pore.voronoi']*net['pore.outside'])[0]
+            net = tools.trim(network=net, pores=Ps)
 
+        # Label faces, which will be nice and flat if crop was True
         net = tools.label_faces(net)
 
+        # Convert to an OpenPNM network object
         self.update(net)
         self._vor = vor
         self._tri = tri
 
-        for p in self.pores('outside'):
-            Ps = self.find_neighbor_pores(p)
-            Ps = self.filter_by_label(pores=Ps, labels='voronoi')
-            self['pore.coords'][p] = self.coords[Ps].mean(axis=0)
 
     def find_throat_facets(self, throats=None):
         r"""
@@ -160,9 +168,11 @@ class DelaunayVoronoiDual(GenericNetwork):
 
 
 if __name__ == "__main__":
-    np.random.seed(2)
-    points = topotools.generate_base_points(50, [1, 1, 0], reflect=True)
-    dvd = DelaunayVoronoiDual(points=points, shape=[1, 1, 0], crop=True)
+    # np.random.seed(2)
+    points = 1000
+    shape = [1, 0]
+    points = topotools.generate_base_points(num_points=points, domain_size=shape, reflect=True)
+    dvd = DelaunayVoronoiDual(points=points, shape=shape, crop=True)
     print(dvd)
     fig = topotools.plot_connections(dvd, throats=dvd.throats('voronoi'), c='g')
     fig = topotools.plot_connections(dvd, throats=dvd.throats('delaunay'), c='r', ax=fig)

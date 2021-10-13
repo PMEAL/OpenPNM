@@ -225,20 +225,17 @@ def label_faces(network, threshold=0.05):
 
 
 def crop(network, shape, mode='full'):
-    Pdrop = isoutside(network['pore.coords'], shape=shape)
+    Pdrop = isoutside(network['pore.coords'], shape=shape, thresh=0)
     if mode == 'full':
         network = trim(network=network, pores=np.where(Pdrop)[0])
     elif mode == 'mixed':
-        # Find all throats associated with pores to be dropped
-        Ts = np.sum(Pdrop[network['throat.conns']], axis=1)
-        # From throats, find delaunay throats with one internal pore
-        Ts = (Ts == 1)*network['throat.delaunay']
+        # # Find throats connecting internal to external pores
+        Ts = np.sum(Pdrop[network['throat.conns']], axis=1) == 1
         # Keep the pores on the ends of these throats
         Pkeep = np.unique(network['throat.conns'][Ts])
-        Pdrop = np.where(Pdrop)[0]
-        Ps = np.array(list(set(Pdrop).difference(set(Pkeep))))
+        Ps = np.array(list(set(np.where(Pdrop)[0]).difference(set(Pkeep))))
         network = trim(network=network, pores=Ps)
-        # Now remove extraneous throats
+        # Remove throats between these surviving external pores
         Pdrop = isoutside(network['pore.coords'], shape=shape)
         Ts = np.all(Pdrop[network['throat.conns']], axis=1)
         network = trim(network=network, throats=Ts)
