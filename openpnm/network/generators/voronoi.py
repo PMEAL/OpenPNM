@@ -4,7 +4,7 @@ from openpnm.topotools import vor_to_am, isoutside
 from openpnm.network.generators import tools
 
 
-def voronoi(points, shape=[1, 1, 1], crop=False):
+def voronoi(points, shape=[1, 1, 1]):
     r"""
     Generate a network based on a Voronoi tessellation of base points
 
@@ -15,10 +15,6 @@ def voronoi(points, shape=[1, 1, 1], crop=False):
         or a scalar value indicating the number of points to generate.
     shape : array_like
         Indicates the size and shape of the domain.
-    crop : boolean (default = ``False``)
-        If ``True`` (default) any points in the tessellation that lie outside
-        the domain (defined by ``shape``) are removed, along with any throats
-        which were connected to them
 
     Returns
     -------
@@ -46,10 +42,6 @@ def voronoi(points, shape=[1, 1, 1], crop=False):
         verts = np.copy(vor.vertices)
     d['pore.coords'] = verts
 
-    if crop:
-        Ps = isoutside(verts, shape=shape)
-        d = tools.trim(network=d, pores=np.where(Ps)[0])
-
     return d, vor
 
 
@@ -58,7 +50,7 @@ if __name__ == "__main__":
     print(vn.keys())
     print(vn['pore.coords'].shape)
     print(vn['throat.conns'].shape)
-    vn, vor = voronoi(points=50, shape=[1, 0, 1], crop=True)
+    vn, vor = voronoi(points=50, shape=[1, 0, 1])
     print(vn.keys())
     print(vn['pore.coords'].shape)
     print(vn['throat.conns'].shape)

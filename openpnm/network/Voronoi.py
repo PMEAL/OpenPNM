@@ -43,11 +43,27 @@ class Voronoi(GenericNetwork):
     def __init__(self, shape=[1, 1, 1], points=None, **kwargs):
         # Clean-up input points
         super().__init__(**kwargs)
-        points = tools.parse_points(shape=shape, points=points)
         net, vor = voronoi(points=points, shape=shape)
         net = tools.add_all_label(net)
+        net = tools.crop(network=net, shape=shape, mode='full')
         # Initialize network object
         self.update(net)
         self._vor = vor
-        topotools.trim(network=self, pores=self.pores('crop'))
-        del self['pore.crop']
+
+
+if __name__ == "__main__":
+    points = 50
+    shape = [1, 1, 0]
+    vn = Voronoi(points=points, shape=shape)
+    topotools.plot_connections(vn)
+
+
+
+
+
+
+
+
+
+
+

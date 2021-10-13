@@ -72,7 +72,7 @@ class DelaunayVoronoiDual(GenericNetwork):
 
         # Trim all pores that lie outside of the specified domain
         if crop:
-            net = tools.trim_reflected_points(network=net, shape=shape)
+            net = tools.crop(network=net, shape=shape, mode='mixed')
 
         net = tools.label_faces(net)
 
@@ -160,15 +160,14 @@ class DelaunayVoronoiDual(GenericNetwork):
 
 
 if __name__ == "__main__":
-    import openpnm as op
     np.random.seed(2)
-    points = op.topotools.generate_base_points(50, [1, 1, 0], reflect=True)
+    points = topotools.generate_base_points(50, [1, 1, 0], reflect=True)
     dvd = DelaunayVoronoiDual(points=points, shape=[1, 1, 0], crop=True)
     print(dvd)
-    fig = op.topotools.plot_connections(dvd, throats=dvd.throats('voronoi'), c='g')
-    fig = op.topotools.plot_connections(dvd, throats=dvd.throats('delaunay'), c='r', ax=fig)
-    # fig = op.topotools.plot_connections(dvd, throats=dvd.throats('interconnect'), c='b', ax=fig)
-    fig = op.topotools.plot_coordinates(dvd, pores=dvd.pores('outside'), c='k', ax=fig, markersize=100)
+    fig = topotools.plot_connections(dvd, throats=dvd.throats('voronoi'), c='g')
+    fig = topotools.plot_connections(dvd, throats=dvd.throats('delaunay'), c='r', ax=fig)
+    # fig = topotools.plot_connections(dvd, throats=dvd.throats('interconnect'), c='b', ax=fig)
+    fig = topotools.plot_coordinates(dvd, pores=dvd.pores('outside'), c='k', ax=fig, markersize=100)
 
 
 
