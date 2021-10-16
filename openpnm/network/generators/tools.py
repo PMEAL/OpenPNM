@@ -233,7 +233,7 @@ def crop(network, shape, mode='full'):
         Ts = np.sum(Pdrop[network['throat.conns']], axis=1) == 1
         # Keep the pores on the ends of these throats
         Pkeep = np.unique(network['throat.conns'][Ts])
-        Ps = np.array(list(set(np.where(Pdrop)[0]).difference(set(Pkeep))))
+        Ps = np.array(list(set(np.where(Pdrop)[0]).difference(set(Pkeep)))).astype(int)
         network = trim(network=network, pores=Ps)
         # Remove throats between these surviving external pores
         Pdrop = isoutside(network['pore.coords'], shape=shape)
