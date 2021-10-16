@@ -122,9 +122,9 @@ class VoronoiTest:
 if __name__ == '__main__':
 
     t = VoronoiTest()
+    self = t
     t.setup_class()
     for item in t.__dir__():
         if item.startswith('test'):
             print(f'Running test: {item}')
             t.__getattribute__(item)()
-    self = t
