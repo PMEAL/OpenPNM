@@ -49,7 +49,7 @@ def isoutside(coords, shape, thresh=1e-6):
         shape = np.array(shape, dtype=float)
         r_lim = shape[0] + thresh
         r, theta, phi = to_sph(*coords.T)
-        Ps = r > r_lim
+        Ps = r >= r_lim
     elif len(shape) == 2:  # Cylindrical
         shape = np.array(shape, dtype=float)
         r_lim = shape[0] + thresh
@@ -59,8 +59,8 @@ def isoutside(coords, shape, thresh=1e-6):
         Ps = r > r_lim
         # Find external pores above and below cylinder
         if shape[1] > 0:  # Skip if disk (z=0)
-            Ps = Ps + (z > hi_lim)
-            Ps = Ps + (z < lo_lim)
+            Ps = Ps + (z >= hi_lim)
+            Ps = Ps + (z <= lo_lim)
     elif len(shape) == 3:  # Rectilinear
         shape = np.array(shape, dtype=float)
         mask = shape == 0
@@ -68,8 +68,8 @@ def isoutside(coords, shape, thresh=1e-6):
             shape = shape[~mask]
         lo_lim = np.zeros_like(shape) - thresh
         hi_lim = shape + thresh
-        Ps1 = np.any(coords[:, ~mask] > hi_lim, axis=1)
-        Ps2 = np.any(coords[:, ~mask] < lo_lim, axis=1)
+        Ps1 = np.any(coords[:, ~mask] >= hi_lim, axis=1)
+        Ps2 = np.any(coords[:, ~mask] <= lo_lim, axis=1)
         Ps = Ps1 + Ps2
     return Ps
 
