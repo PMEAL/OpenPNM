@@ -87,6 +87,11 @@ class DelaunayVoronoiDual(GenericNetwork):
         # Label faces, which will be nice and flat if crop was True
         net = tools.label_faces(net)
 
+        # Add some additional labels
+        mask = topotools.isoutside(net['pore.coords'], shape=shape, thresh=0)
+        net['pore.surface'] = mask
+        net['pore.internal'] = ~mask
+
         # Convert to an OpenPNM network object
         self.update(net)
         self._vor = vor
@@ -169,15 +174,14 @@ class DelaunayVoronoiDual(GenericNetwork):
 
 if __name__ == "__main__":
     # np.random.seed(2)
-    points = 1000
-    shape = [1, 0]
+    points = 10
+    shape = [1, 1, 1]
     points = topotools.generate_base_points(num_points=points, domain_size=shape, reflect=True)
     dvd = DelaunayVoronoiDual(points=points, shape=shape, crop=True)
     print(dvd)
     fig = topotools.plot_connections(dvd, throats=dvd.throats('voronoi'), c='g')
     fig = topotools.plot_connections(dvd, throats=dvd.throats('delaunay'), c='r', ax=fig)
     # fig = topotools.plot_connections(dvd, throats=dvd.throats('interconnect'), c='b', ax=fig)
-    fig = topotools.plot_coordinates(dvd, pores=dvd.pores('outside'), c='k', ax=fig, markersize=100)
-
+    fig = topotools.plot_coordinates(dvd, pores=dvd.pores('surface'), c='k', ax=fig, markersize=100)
 
 

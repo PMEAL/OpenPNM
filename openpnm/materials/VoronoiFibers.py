@@ -125,6 +125,7 @@ class VoronoiFibers(Project):
                                   points=points,
                                   shape=shape,
                                   name=self.name + "_net",
+                                  crop=True,
                                   **kwargs)
         if scale_applied:
             net["pore.coords"] /= ls
@@ -1211,3 +1212,8 @@ class VoronoiGeometry(GenericGeometry):
         self["throat.normal"] = normals
         self["throat.centroid"] = (coords[p1] + coords[p2]) / 2
         self["throat.incenter"] = self["throat.centroid"]
+
+
+if __name__ == "__main__":
+    np.random.seed(0)
+    prj = VoronoiFibers(points=50, shape=[1e-4, 1e-4, 1e-4], fiber_rad=5e-6, resolution=2e-6)
