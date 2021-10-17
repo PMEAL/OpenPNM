@@ -611,7 +611,7 @@ class DelaunayGeometry(GenericGeometry):
             for i, _ in enumerate(face):
                 vec = face[i] - face[i - 1]
                 vec_length = np.linalg.norm(vec)
-                increments = np.int(np.ceil(vec_length / dx))
+                increments = np.int64(np.ceil(vec_length / dx))
                 check_p_old = np.array([-1, -1, -1])
                 for x in np.linspace(0, 1, increments):
                     check_p_new = face[i - 1] + (vec * x)
@@ -642,9 +642,9 @@ class DelaunayGeometry(GenericGeometry):
             np.array([(vxmax - vxmin), (vymax - vymin), (vzmax - vzmin)]), 6
         )
         logger.info("Creating fibers in range: " + str(np.around(cdomain, 5)))
-        lx = np.int(np.around(cdomain[0] / vox_len) + 1)
-        ly = np.int(np.around(cdomain[1] / vox_len) + 1)
-        lz = np.int(np.around(cdomain[2] / vox_len) + 1)
+        lx = np.int64(np.around(cdomain[0] / vox_len) + 1)
+        ly = np.int64(np.around(cdomain[1] / vox_len) + 1)
+        lz = np.int64(np.around(cdomain[2] / vox_len) + 1)
         logger.info("Voxels: " + str(lx) + " " + str(ly) + " " + str(lz))
         # Try to create all the arrays we will need at total domain size
         try:
@@ -685,7 +685,7 @@ class DelaunayGeometry(GenericGeometry):
                     "Some elements in image processing are out" + "of bounds"
                 )
 
-        num_chunks = np.int(cx * cy * cz)
+        num_chunks = np.int64(cx * cy * cz)
         cnum = 1
         for ci in range(cx):
             for cj in range(cy):
@@ -698,11 +698,11 @@ class DelaunayGeometry(GenericGeometry):
                         + str(num_chunks)
                     )
                     cxmin = ci * chunk_len
-                    cxmax = np.int(np.ceil((ci + 1) * chunk_len + 5 * fiber_rad))
+                    cxmax = np.int64(np.ceil((ci + 1) * chunk_len + 5 * fiber_rad))
                     cymin = cj * chunk_len
-                    cymax = np.int(np.ceil((cj + 1) * chunk_len + 5 * fiber_rad))
+                    cymax = np.int64(np.ceil((cj + 1) * chunk_len + 5 * fiber_rad))
                     czmin = ck * chunk_len
-                    czmax = np.int(np.ceil((ck + 1) * chunk_len + 5 * fiber_rad))
+                    czmax = np.int64(np.ceil((ck + 1) * chunk_len + 5 * fiber_rad))
                     # Don't overshoot
                     if cxmax > lx:
                         cxmax = lx
