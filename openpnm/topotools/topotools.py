@@ -47,12 +47,12 @@ def isoutside(coords, shape, thresh=1e-6):
     # Label external pores for trimming below
     if len(shape) == 1:  # Spherical
         shape = np.array(shape, dtype=float)
-        r_lim = shape[0] + thresh
+        r_lim = shape[0]*2 + thresh
         r, theta, phi = to_sph(*coords.T)
         Ps = r >= r_lim
     elif len(shape) == 2:  # Cylindrical
         shape = np.array(shape, dtype=float)
-        r_lim = shape[0] + thresh
+        r_lim = shape[0]*2 + thresh
         hi_lim = shape[1] + thresh
         lo_lim = 0 - thresh
         r, theta, z = to_cyl(*coords.T)

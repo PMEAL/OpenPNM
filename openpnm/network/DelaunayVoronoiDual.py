@@ -69,34 +69,39 @@ class DelaunayVoronoiDual(GenericNetwork):
         net['throat.interconnect'] = (~net['throat.delaunay']) * (~net['throat.voronoi'])
         net = tools.add_all_label(net)
 
-        if crop:
-            # Trim all pores that lie outside of the specified domain
-            net = tools.crop(network=net, shape=shape, mode='mixed')
-            # Move delaunay pores to domain edge
-            am = sprs.coo_matrix((np.ones_like(net['throat.conns'][:, 0]),
-                                  (net['throat.conns'].T))).tolil()
-            for p in np.where(net['pore.outside'])[0]:
-                Ps = np.array(am.rows[p], dtype=int)
-                Ps = Ps[net['pore.voronoi'][Ps]]
-                if len(Ps) > 0:
-                    net['pore.coords'][p] = net['pore.coords'][Ps].mean(axis=0)
-            # Remove any lingering voronoi pores
-            Ps = np.where(net['pore.voronoi']*net['pore.outside'])[0]
-            net = tools.trim(network=net, pores=Ps)
-
-        # Label faces, which will be nice and flat if crop was True
-        net = tools.label_faces(net)
-
-        # Add some additional labels
-        mask = topotools.isoutside(net['pore.coords'], shape=shape, thresh=0)
-        net['pore.surface'] = mask
-        net['pore.internal'] = ~mask
-
         # Convert to an OpenPNM network object
         self.update(net)
         self._vor = vor
         self._tri = tri
 
+        thresh =1e-6
+        Ps = topotools.isoutside(coords=self.coords, shape=shape, thresh=thresh)
+        self['pore.outside'] = Ps
+        if crop:
+            # Drop pores that are outside the domain, unless a neighbor is not
+            Tdrop = np.all(Ps[self.conns], axis=1)
+            topotools.trim(network=self, throats=Tdrop)
+            Pdrop = np.where(self.num_neighbors(pores=self.Ps) == 0)[0]
+            topotools.trim(network=self, pores=Pdrop)
+            Pdrop = self.pores(['voronoi', 'outside'], mode='and')
+            topotools.trim(network=self, pores=Pdrop)
+            Pmove = self.pores(['delaunay', 'outside'], mode='and')
+            for p in Pmove:
+                Pn = self.find_neighbor_pores(p)
+                Pn = self.filter_by_label(pores=Pn, labels=['voronoi'])
+                if len(Pn) > 0:
+                    self['pore.coords'][p] = self['pore.coords'][Pn].mean(axis=0)
+
+        # Label faces, which will be nice and flat if crop was True
+        topotools.label_faces(network=self)
+
+        # Add some additional labels
+        self['pore.boundary'] = np.copy(self['pore.outside'])
+        Ps = self.find_neighbor_pores(pores=self.pores('boundary'))
+        # Ps = self.filter_by_label(pores=Ps, labels=['delaunay'])
+        self['pore.surface'] = self.tomask(pores=Ps)
+        Ps = self.pores(['boundary', 'surface'], mode='not')
+        self['pore.internal'] = self.tomask(pores=Ps)
 
     def find_throat_facets(self, throats=None):
         r"""
@@ -174,14 +179,16 @@ class DelaunayVoronoiDual(GenericNetwork):
 
 if __name__ == "__main__":
     # np.random.seed(2)
-    points = 10
-    shape = [1, 1, 1]
+    points = 1000
+    shape = [1, 1, 0]
     points = topotools.generate_base_points(num_points=points, domain_size=shape, reflect=True)
-    dvd = DelaunayVoronoiDual(points=points, shape=shape, crop=True)
+    dvd = DelaunayVoronoiDual(points=points, shape=shape, crop=False)
     print(dvd)
     fig = topotools.plot_connections(dvd, throats=dvd.throats('voronoi'), c='g')
     fig = topotools.plot_connections(dvd, throats=dvd.throats('delaunay'), c='r', ax=fig)
-    # fig = topotools.plot_connections(dvd, throats=dvd.throats('interconnect'), c='b', ax=fig)
-    fig = topotools.plot_coordinates(dvd, pores=dvd.pores('surface'), c='k', ax=fig, markersize=100)
+    fig = topotools.plot_connections(dvd, throats=dvd.throats('interconnect'), c='b', ax=fig)
+    # fig = topotools.plot_coordinates(dvd, pores=dvd.pores('internal'), c='k', ax=fig, markersize=100)
+    fig = topotools.plot_coordinates(dvd, pores=dvd.pores('surface'), c='m', ax=fig, markersize=100)
+    fig = topotools.plot_coordinates(dvd, pores=dvd.pores('boundary'), c='c', ax=fig, markersize=100)
 
 

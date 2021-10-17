@@ -229,7 +229,7 @@ def crop(network, shape, mode='full'):
     if mode == 'full':
         network = trim(network=network, pores=np.where(Pdrop)[0])
     elif mode == 'mixed':
-        # # Find throats connecting internal to external pores
+        # Find throats connecting internal to external pores
         Ts = np.sum(Pdrop[network['throat.conns']], axis=1) == 1
         # Keep the pores on the ends of these throats
         Pkeep = np.unique(network['throat.conns'][Ts])
