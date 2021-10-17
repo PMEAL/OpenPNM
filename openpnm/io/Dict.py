@@ -253,13 +253,6 @@ class Dict(GenericIO):
         return d
 
     @classmethod
-    def save(cls, *args, **kwargs):
-        r"""
-        This method is being deprecated.  Use ``export_data`` instead.
-        """
-        cls.export_data(*args, **kwargs)
-
-    @classmethod
     def export_data(cls, dct, filename):
         r"""
         Saves data from the given dictionary into the specified file.
@@ -282,13 +275,6 @@ class Dict(GenericIO):
         dct = sanitize_dict(dct)
         with open(fname, 'wb') as f:
             pickle.dump(dct, f)
-
-    @classmethod
-    def load(cls, *args, **kwargs):
-        r"""
-        This method is being deprecated.  Use ``import_data`` instead.
-        """
-        return cls.import_data(*args, **kwargs)
 
     @classmethod
     def import_data(cls, filename):

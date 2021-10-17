@@ -62,7 +62,7 @@ class HDF5Test:
 
     def test_to_hdf5(self, tmpdir):
         fname = tmpdir.join(self.net.project.name)
-        f = op.io.HDF5.to_hdf5(network=[self.net],
+        f = op.io.HDF5.export_data(network=[self.net],
                                phases=[self.phase_1, self.phase_2],
                                filename=fname)
         assert list(f.keys()) == ['net_01', 'phase_01', 'phase_02']
@@ -72,7 +72,7 @@ class HDF5Test:
 
     def test_print(self, tmpdir):
         fname = tmpdir.join(self.net.project.name)
-        f = op.io.HDF5.to_hdf5(network=[self.net], filename=fname,
+        f = op.io.HDF5.export_data(network=[self.net], filename=fname,
                                interleave=False)
         op.io.HDF5.print_levels(f)
         op.io.HDF5.print_flattened(f)

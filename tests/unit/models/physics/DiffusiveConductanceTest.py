@@ -39,6 +39,23 @@ class DiffusiveConductanceTest:
         actual = self.phys['throat.g_diffusive_conductance'].mean()
         assert_allclose(actual, desired=0.896 * 1.3)
 
+    def test_generic_diffusive_partial_domain(self):
+        net = op.network.Cubic(shape=[5, 5, 5])
+        geo = op.geometry.GenericGeometry(network=net,
+                                          pores=net.Ps,
+                                          throats=net.Ts[0:5])
+        phase = op.phases.GenericPhase(network=net)
+        phase['pore.diffusivity'] = 1.3
+        geo['throat.diffusive_size_factors'] = 0.5
+        phys = op.physics.GenericPhysics(network=net,
+                                         phase=phase,
+                                         geometry=geo)
+        mod = op.models.physics.diffusive_conductance.generic_diffusive
+        phys.add_model(propname='throat.g_diffusive_conductance', model=mod)
+        phys.regenerate_models()
+        actual = phys['throat.g_diffusive_conductance'].mean()
+        assert (actual == 0.65 and len(phys['throat.g_diffusive_conductance']) == 5)
+
     def test_ordinary_diffusion(self):
         self.geo['throat.conduit_lengths.pore1'] = 0.15
         self.geo['throat.conduit_lengths.throat'] = 0.6

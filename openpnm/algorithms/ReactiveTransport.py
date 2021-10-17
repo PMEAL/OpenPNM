@@ -98,46 +98,7 @@ class ReactiveTransport(GenericTransport):
         self.settings._update_settings_and_docs(ReactiveTransportSettings)
         self.settings.update(settings)
         if phase is not None:
-            self.setup(phase=phase)
-
-    @docstr.get_sections(base='ReactiveTransport.setup',
-                         sections=['Parameters', 'Notes'])
-    @docstr.dedent
-    def setup(self, phase=None, quantity='', conductance='',
-              nlin_max_iter=None, relaxation_source=None,
-              relaxation_quantity=None, **kwargs):
-        r"""
-        This method takes several arguments that are essential to running
-        the algorithm and adds them to the settings.
-
-        Parameters
-        ----------
-        %(GenericTransportSettings.parameters)s
-        %(ReactiveTransportSettings.parameters)s
-
-        Notes
-        -----
-        Under-relaxation is a technique used for improving stability of a
-        computation, particularly in the presence of highly non-linear
-        terms. Under-relaxation used here limits the change in a variable
-        from one iteration to the next. An optimum choice of the
-        relaxation factor is one that is small enough to ensure stable
-        simulation and large enough to speed up the computation.
-
-        """
-        if phase:
             self.settings['phase'] = phase.name
-        if quantity:
-            self.settings['quantity'] = quantity
-        if conductance:
-            self.settings['conductance'] = conductance
-        if nlin_max_iter:
-            self.settings['nlin_max_iter'] = nlin_max_iter
-        if relaxation_source:
-            self.settings['relaxation_source'] = relaxation_source
-        if relaxation_quantity:
-            self.settings['relaxation_quantity'] = relaxation_quantity
-        super().setup(**kwargs)
 
     def run(self, x0=None):
         r"""

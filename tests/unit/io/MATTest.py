@@ -61,8 +61,8 @@ class MATTest:
 
     def test_save_and_load(self, tmpdir):
         fname = tmpdir.join('test_file')
-        op.io.MAT.save(network=self.net, phases=self.phase_1, filename=fname)
-        project = op.io.MAT.load(fname)
+        op.io.MAT.export_data(network=self.net, phases=self.phase_1, filename=fname)
+        project = op.io.MAT.import_data(fname)
         assert len(project) == 2
         net = project.network
         assert net is None  # Since all classes are Base

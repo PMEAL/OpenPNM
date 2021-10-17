@@ -13,13 +13,6 @@ class PerGeos(GenericIO):
     """
 
     @classmethod
-    def save(cls, *args, **kwargs):
-        r"""
-        This method is being deprecated.  Use ``export_data`` instead.
-        """
-        cls.export_data(*args, **kwargs)
-
-    @classmethod
     def export_data(cls, network=None, phases=[], filename=''):
         r"""
         """
@@ -134,13 +127,6 @@ class PerGeos(GenericIO):
         fname = cls._parse_filename(filename=filename, ext='am')
         with open(fname, 'w') as f:
             f.write(''.join(s))
-
-    @classmethod
-    def load(cls, *args, **kwargs):
-        r"""
-        This method is being deprecated.  Use ``import_data`` instead.
-        """
-        return cls.import_data(*args, **kwargs)
 
     @classmethod
     def import_data(cls, filename, network=None):

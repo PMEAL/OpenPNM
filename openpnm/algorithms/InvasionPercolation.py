@@ -55,8 +55,7 @@ class InvasionPercolation(GenericAlgorithm):
 
     Initialize an invasion percolation object and define inlets:
 
-    >>> ip = op.algorithms.InvasionPercolation(network=pn)
-    >>> ip.setup(phase=water)
+    >>> ip = op.algorithms.InvasionPercolation(network=pn, phase=water)
     >>> ip.set_inlets(pores=0)
     >>> ip.run()
 
@@ -101,48 +100,9 @@ class InvasionPercolation(GenericAlgorithm):
         self.settings.update(def_set)
         self.settings.update(settings)
         if phase is not None:
-            self.setup(phase=phase)
-
-    def setup(self, phase, entry_pressure='', pore_volume='', throat_volume=''):
-        r"""
-        Set up the required parameters for the algorithm
-
-        Parameters
-        ----------
-        phase : OpenPNM Phase object
-            The phase to be injected into the Network.  The Phase must have the
-            capillary entry pressure values for the system.
-
-        entry_pressure : string
-            The dictionary key to the capillary entry pressure.  If none is
-            supplied then the current value is retained. The default is
-            'throat.capillary_pressure'.
-
-        pore_volume : string
-            The dictionary key to the pore volume.  If none is supplied then
-            the current value is retained. The default is 'pore.volume'.
-
-        throat_volume : string
-            The dictionary key to the throat volume.  If none is supplied then
-            the current value is retained. The default is 'throat.volume'.
-
-        """
-        self.settings['phase'] = phase.name
-        if pore_volume:
-            self.settings['pore_volume'] = pore_volume
-        if throat_volume:
-            self.settings['throat_volume'] = throat_volume
-        if entry_pressure:
-            self.settings['entry_pressure'] = entry_pressure
-
-        # Setup arrays and info
-        self['throat.entry_pressure'] = phase[self.settings['entry_pressure']]
-        # Indices into t_entry giving a sorted list
-        self['throat.sorted'] = np.argsort(self['throat.entry_pressure'], axis=0)
-        self['throat.order'] = 0
-        self['throat.order'][self['throat.sorted']] = np.arange(0, self.Nt)
-        self['throat.invasion_sequence'] = -1
+            self.settings['phase'] = phase.name
         self['pore.invasion_sequence'] = -1
+        self['throat.invasion_sequence'] = -1
 
     def set_inlets(self, pores=[], overwrite=False):
         r"""
@@ -156,11 +116,6 @@ class InvasionPercolation(GenericAlgorithm):
             self['pore.invasion_sequence'] = -1
         self['pore.invasion_sequence'][pores] = 0
 
-        # Perform initial analysis on input pores
-        Ts = self.project.network.find_neighbor_throats(pores=pores)
-        self.queue = []
-        for T in self['throat.order'][Ts]:
-            hq.heappush(self.queue, T)
 
     def run(self, n_steps=None):
         r"""
@@ -172,6 +127,22 @@ class InvasionPercolation(GenericAlgorithm):
             The number of throats to invaded during this step
 
         """
+
+        # Setup arrays and info
+        phase = self.project[self.settings['phase']]
+        self['throat.entry_pressure'] = phase[self.settings['entry_pressure']]
+        # Indices into t_entry giving a sorted list
+        self['throat.sorted'] = np.argsort(self['throat.entry_pressure'], axis=0)
+        self['throat.order'] = 0
+        self['throat.order'][self['throat.sorted']] = np.arange(0, self.Nt)
+
+        # Perform initial analysis on input pores
+        pores = self['pore.invasion_sequence'] == 0
+        Ts = self.project.network.find_neighbor_throats(pores=pores)
+        self.queue = []
+        for T in self['throat.order'][Ts]:
+            hq.heappush(self.queue, T)
+
         if n_steps is None:
             n_steps = np.inf
 

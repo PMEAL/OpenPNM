@@ -143,7 +143,7 @@ def constant(target, value):
     return value
 
 
-def product(target, prop1, prop2, **kwargs):
+def product(target, props):
     r"""
     Calculates the product of multiple property values
 
@@ -154,26 +154,16 @@ def product(target, prop1, prop2, **kwargs):
         length of the calculated array, and also provides access to other
         necessary properties.
 
-    prop1 : string
-        The name of the first argument
-
-    prop2 : string
-        The name of the second argument
+    props : Array of string
+        The name of the arguments to be used for the product.
 
     Returns
     -------
     value : NumPy ndarray
-        Array containing product values of ``target[prop1]``, ``target[prop2]``
-
-    Notes
-    -----
-    Additional properties can be specified beyond just ``prop1`` and ``prop2``
-    by including additional arguments in the function call (i.e. ``prop3 =
-    'pore.foo'``).
-
+        Array containing product values of ``target[props[0]]``, ``target[props[1]]``, etc.
     """
-    value = target[prop1]*target[prop2]
-    for item in kwargs.values():
+    value = np.ones_like(target[props[0]])
+    for item in props:
         value *= target[item]
     return value
 

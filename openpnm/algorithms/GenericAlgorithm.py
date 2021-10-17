@@ -1,4 +1,4 @@
-from openpnm.core import Base
+from openpnm.core import Base, LegacyMixin, LabelMixin
 from openpnm.utils import logging, Docorator
 import numpy as np
 logger = logging.getLogger(__name__)
@@ -7,7 +7,7 @@ docstr = Docorator()
 
 @docstr.get_sections(base='GenericAlgorithm', sections=['Parameters'])
 @docstr.dedent
-class GenericAlgorithm(Base):
+class GenericAlgorithm(Base, LegacyMixin, LabelMixin):
     r"""
     Generic class to define the foundation of Algorithms.
 
@@ -44,16 +44,9 @@ class GenericAlgorithm(Base):
     def __init__(self, network=None, project=None, settings={}, **kwargs):
         self.settings.setdefault('prefix', 'alg')
         self.settings.update(settings)
-        if network is not None:
-            project = network.project
-        super().__init__(project=project, **kwargs)
 
-        # Deal with network or project arguments
-        if network is not None:
-            if project is not None:
-                assert network is project.network
-            else:
-                project = network.project
+        super().__init__(project=project, network=network, **kwargs)
+        project = self.network.project
         if project:
             self['pore.all'] = np.ones((project.network.Np, ), dtype=bool)
             self['throat.all'] = np.ones((project.network.Nt, ), dtype=bool)
@@ -64,11 +57,6 @@ class GenericAlgorithm(Base):
         raise NotImplementedError("This method must be subclassed")
 
     def reset(self):
-        r"""
-        """
-        raise NotImplementedError("This method must be subclassed")
-
-    def setup(self):
         r"""
         """
         raise NotImplementedError("This method must be subclassed")

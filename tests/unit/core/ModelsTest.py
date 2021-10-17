@@ -20,9 +20,10 @@ class ModelsTest:
         net = op.network.Cubic(shape=[3, 3, 3])
         geo = op.geometry.SpheresAndCylinders(network=net, pores=net.Ps,
                                        throats=net.Ts)
+
         s = geo.models.__str__().split('\n')
-        assert len(s) == 56
-        assert s.count('―'*85) == 13
+        assert len(s) == 68
+        assert s.count('―'*85) == 15
 
     def test_regenerate_models(self):
         a = len(self.geo.props())

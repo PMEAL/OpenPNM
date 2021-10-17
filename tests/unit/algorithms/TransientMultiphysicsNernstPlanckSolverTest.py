@@ -110,8 +110,8 @@ class TransientMultiphysicsNernstPlanckSolverTest:
 
         mnp = op.algorithms.TransientNernstPlanckMultiphysicsSolver
         self.mnp = mnp(network=self.net, phase=self.sw, settings=setts2)
-        self.mnp.setup(potential_field=self.p.name,
-                       ions=[self.eA.name, self.eB.name])
+        self.mnp.settings.update({'potential_field': self.p.name,
+                                  'ions': [self.eA.name, self.eB.name]})
 
     def test_run_algs(self):
         self.sf.run()

@@ -1,5 +1,6 @@
 import openpnm as op
-from numpy.testing import assert_approx_equal
+from numpy.testing import assert_approx_equal, assert_allclose
+import openpnm.models.geometry.conduit_lengths as _conduit_lengths
 
 
 class ElectricalConductanceTest:
@@ -37,6 +38,32 @@ class ElectricalConductanceTest:
         self.phys.regenerate_models()
         actual = self.phys['throat.electrical_conductance'].mean()
         assert_approx_equal(actual, desired=2.5)
+
+    def test_generic_electrical(self):
+        self.geo['pore.diameter'] = 1.12
+        self.geo['throat.diameter'] = 0.56
+        L1, Lt, L2 = _conduit_lengths.spheres_and_cylinders(self.geo).T
+        self.geo['throat.conduit_lengths.pore1'] = L1
+        self.geo['throat.conduit_lengths.throat'] = Lt
+        self.geo['throat.conduit_lengths.pore2'] = L2
+        # old series resistors model, shape factor
+        mpo = op.models.physics.poisson_shape_factors.ball_and_stick
+        self.phys.add_model(propname="throat.poisson_shape_factors", model=mpo)
+        mod1 = op.models.physics.electrical_conductance.series_resistors
+        self.phys.add_model(propname='throat.electrical_conductance_from_mod',
+                            model=mod1)
+        self.phys.regenerate_models()
+        # new series resistors model, size factor
+        mpo2 = op.models.geometry.diffusive_size_factors.spheres_and_cylinders
+        self.geo.add_model(propname="throat.diffusive_size_factors",
+                           model=mpo2)
+        mod2 = op.models.physics.electrical_conductance.generic_electrical
+        self.phys.add_model(propname='throat.electrical_conductance_generic',
+                            model=mod2)
+        self.phys.regenerate_models()
+        actual = self.phys['throat.electrical_conductance_from_mod']
+        desired = self.phys['throat.electrical_conductance_generic']
+        assert_allclose(actual, desired, rtol=1e-5)
 
 
 if __name__ == '__main__':

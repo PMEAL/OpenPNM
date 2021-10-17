@@ -189,33 +189,14 @@ class GenericTransport(GenericAlgorithm):
         # Overwrite any given in init
         self.settings.update(settings)
         # Assign phase if given during init
-        self.setup(phase=phase)
+        if phase is not None:
+            self.settings['phase'] = phase.name
         # If network given, get project, otherwise let parent class create it
         if network is not None:
             project = network.project
         super().__init__(project=project, **kwargs)
         self['pore.bc_rate'] = np.nan
         self['pore.bc_value'] = np.nan
-
-    @docstr.get_sections(base='GenericTransport.setup', sections=['Parameters'])
-    @docstr.dedent
-    def setup(self, phase=None, quantity='', conductance='', **kwargs):
-        r"""
-        Customize algorithm settings, e.g. assign phase, set quantity to be
-        solved, set conductance dict key, etc.
-
-        Parameters
-        ----------
-        %(GenericTransportSettings.parameters)s
-
-        """
-        if phase:
-            self.settings['phase'] = phase.name
-        if quantity:
-            self.settings['quantity'] = quantity
-        if conductance:
-            self.settings['conductance'] = conductance
-        self.settings.update(**kwargs)
 
     @docstr.get_full_description(base='GenericTransport.reset')
     @docstr.get_sections(base='GenericTransport.reset', sections=['Parameters'])

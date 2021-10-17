@@ -43,14 +43,7 @@ class GenericPhysics(Subdomain, ModelsMixin):
         if phase is None:
             self.settings['freeze_models'] = True
 
-        # Deal with network or project arguments
-        if network is not None:
-            if project is not None:
-                assert network is project.network
-            else:
-                project = network.project
-
-        super().__init__(project=project, **kwargs)
+        super().__init__(project=project, network=network, **kwargs)
 
         network = self.project.network
         if network:

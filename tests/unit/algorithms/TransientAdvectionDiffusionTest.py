@@ -25,8 +25,8 @@ class TransientAdvectionDiffusionTest:
 
     def test_transient_advection_diffusion(self):
         sf = op.algorithms.StokesFlow(network=self.net, phase=self.phase)
-        sf.setup(quantity='pore.pressure',
-                 conductance='throat.hydraulic_conductance')
+        sf.settings.update({'quantity': 'pore.pressure',
+                            'conductance': 'throat.hydraulic_conductance'})
         sf.set_value_BC(pores=self.net.pores('right'), values=1)
         sf.set_value_BC(pores=self.net.pores('left'), values=0)
         sf.run()
@@ -39,13 +39,19 @@ class TransientAdvectionDiffusionTest:
 
         ad = op.algorithms.TransientAdvectionDiffusion(network=self.net,
                                                        phase=self.phase)
-        ad.setup(phase=self.phase, quantity='pore.concentration',
-                 conductance='throat.ad_dif_conductance',
-                 diffusive_conductance='throat.diffusive_conductance',
-                 hydraulic_conductance='throat.hydraulic_conductance',
-                 pressure='pore.pressure', t_initial=0, t_final=100, t_step=1,
-                 t_output=50, t_tolerance=1e-20, t_precision=12,
-                 s_scheme='implicit')
+        ad.settings.update({'phase': self.phase.name,
+                            'quantity': 'pore.concentration',
+                            'conductance':'throat.ad_dif_conductance',
+                            'diffusive_conductance': 'throat.diffusive_conductance',
+                            'hydraulic_conductance': 'throat.hydraulic_conductance',
+                            'pressure': 'pore.pressure',
+                            't_initial': 0,
+                            't_final': 100,
+                            't_step': 1,
+                            't_output': 50,
+                            't_tolerance': 1e-20,
+                            't_precision': 12,
+                            's_schem': 'implicit'})
         ad.set_IC(0)
         ad.set_value_BC(pores=self.net.pores('right'), values=2)
         ad.set_value_BC(pores=self.net.pores('left'), values=0)
