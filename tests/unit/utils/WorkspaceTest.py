@@ -60,7 +60,8 @@ class WorkspaceTest:
         proj = self.ws.load_project(filename='test_proj.pnm')
         assert 'test_proj' in self.ws.keys()
         assert isinstance(proj, op.Project)
-        assert_allclose(proj.network.shape, [3, 3, 3])
+        shape = op.topotools.get_shape(proj.network)
+        assert_allclose(shape, [3, 3, 3])
         self.ws.clear()
         try:
             os.remove('test_proj.pnm')
