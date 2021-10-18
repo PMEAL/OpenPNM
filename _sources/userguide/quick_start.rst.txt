@@ -22,8 +22,7 @@ just a few lines:
    phys = op.physics.Standard(network=pn, phase=Hg, geometry=geo)
 
    # Create algorithm and run simulation
-   mip = op.algorithms.Porosimetry(network=pn)
-   mip.setup(phase=Hg)
+   mip = op.algorithms.Porosimetry(network=pn, phase=Hg)
    mip.set_inlets(pores=pn.pores(['left', 'right', 'top', 'bottom']))
    mip.run()
 
