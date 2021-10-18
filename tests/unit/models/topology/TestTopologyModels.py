@@ -78,7 +78,6 @@ class TopologyModelsTest:
         pn.regenerate_models()
         assert np.all(pn['pore.cluster_size'] == [1, 3, 3, 3, 2, 2])
 
-
     def test_duplicate_throats(self):
         pn = op.network.Cubic(shape=[6, 1, 1])
         op.topotools.extend(network=pn, throat_conns=[[0, 1]])
