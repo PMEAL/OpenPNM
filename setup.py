@@ -69,6 +69,7 @@ setup(
         'openpnm.algorithms',
         'openpnm.algorithms.metrics',
         'openpnm.topotools',
+        'openpnm.topotools.generators',
         'openpnm.materials',
     ],
     install_requires=[

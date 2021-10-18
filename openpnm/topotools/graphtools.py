@@ -518,7 +518,7 @@ def tri_to_am(tri):
     # Scan through Delaunay triangulation to retrieve pairs
     indices, indptr = tri.vertex_neighbor_vertices
     for k in range(tri.npoints):
-        lil.rows[k] = indptr[indices[k]:indices[k + 1]]
+        lil.rows[k] = indptr[indices[k]:indices[k + 1]].tolist()
     # Convert to coo format
     lil.data = lil.rows  # Just a dummy array to make things work properly
     coo = lil.tocoo()
