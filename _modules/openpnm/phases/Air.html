@@ -174,26 +174,135 @@
                 
   <h1>Source code for openpnm.phases.Air</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">openpnm.phases</span> <span class="kn">import</span> <span class="n">GenericPhase</span>
-<span class="kn">from</span> <span class="nn">openpnm.models.collections.phase</span> <span class="kn">import</span> <span class="n">air</span>
-<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">logging</span><span class="p">,</span> <span class="n">Docorator</span><span class="p">,</span> <span class="n">GenericSettings</span>
-<span class="n">docstr</span> <span class="o">=</span> <span class="n">Docorator</span><span class="p">()</span>
-<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="kn">import</span> <span class="nn">openpnm.models</span> <span class="k">as</span> <span class="nn">mods</span>
 
 
-<div class="viewcode-block" id="Air"><a class="viewcode-back" href="../../../modules/phases/air.html#openpnm.phases.Air">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
-<span class="k">class</span> <span class="nc">Air</span><span class="p">(</span><span class="n">GenericPhase</span><span class="p">):</span>
+<div class="viewcode-block" id="Air"><a class="viewcode-back" href="../../../modules/phases/air.html#openpnm.phases.Air">[docs]</a><span class="k">class</span> <span class="nc">Air</span><span class="p">(</span><span class="n">GenericPhase</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates Phase object with preset models and values for air.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(GenericPhase.parameters)s</span>
+<span class="sd">    network : OpenPNM Network object</span>
+<span class="sd">        The network to which this phase object will be attached.</span>
 
+<span class="sd">    project : OpenPNM Project object, optional</span>
+<span class="sd">        The Project with which this phase should be associted.  If a</span>
+<span class="sd">        ``network`` is given then this is ignored and the Network&#39;s project is</span>
+<span class="sd">        used.  If a ``network`` is not given then this is mandatory.</span>
+
+<span class="sd">    name : string, optional</span>
+<span class="sd">        The name of the phase.  This is useful to keep track of the objects</span>
+<span class="sd">        throughout the simulation.  The name must be unique to the project.  If</span>
+<span class="sd">        no name is given, one is generated.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import openpnm as op</span>
+<span class="sd">    &gt;&gt;&gt; pn = op.network.Cubic(shape=[5, 5, 5])</span>
+<span class="sd">    &gt;&gt;&gt; air = op.phases.Air(network=pn)</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The table below shows all of the pore-scale models that are included with</span>
+<span class="sd">    this class to calculate the physical properties of this fluid as functions</span>
+<span class="sd">    of the relevant state variables.</span>
+
+<span class="sd">    This object is initialized at standard conditions of 298 K and 101325 Pa.</span>
+<span class="sd">    If these conditions are changed, the dependent properties can be</span>
+<span class="sd">    recalculated by calling ``regenerate_models``.</span>
+
+<span class="sd">    All of these parameters can be adjusted manually by editing the entries in</span>
+<span class="sd">    the **ModelsDict** stored in the ``models`` attribute of the object.</span>
+
+<span class="sd">    For a full listing of models and their parameters use ``print(obj.models)``</span>
+<span class="sd">    where ``obj`` is the handle to the object.</span>
+
+<span class="sd">    In addition to these models, this class also has a number of constant</span>
+<span class="sd">    values assigned to it which can be found by running</span>
+<span class="sd">    ``props(mode=&#39;constants&#39;)``.</span>
+
+<span class="sd">    +---+----------------------+------------------+--------------------------+</span>
+<span class="sd">    | # | Property Name        | Parameter        | Value                    |</span>
+<span class="sd">    +===+======================+==================+==========================+</span>
+<span class="sd">    | 1 | pore.molar_density   | model:           | ideal_gas                |</span>
+<span class="sd">    +---+----------------------+------------------+--------------------------+</span>
+<span class="sd">    |   |                      | regen_mode       | normal                   |</span>
+<span class="sd">    +---+----------------------+------------------+--------------------------+</span>
+<span class="sd">    |   |                      | pressure         | pore.pressure            |</span>
+<span class="sd">    +---+----------------------+------------------+--------------------------+</span>
+<span class="sd">    |   |                      | temperature      | pore.temperature         |</span>
+<span class="sd">    +---+----------------------+------------------+--------------------------+</span>
+<span class="sd">    | 2 | pore.diffusivity     | model:           | fuller                   |</span>
+<span class="sd">    +---+----------------------+------------------+--------------------------+</span>
+<span class="sd">    |   |                      | MA               | 0.032                    |</span>
+<span class="sd">    +---+----------------------+------------------+--------------------------+</span>
+<span class="sd">    |   |                      | MB               | 0.028                    |</span>
+<span class="sd">    +---+----------------------+------------------+--------------------------+</span>
+<span class="sd">    |   |                      | vA               | 16.6                     |</span>
+<span class="sd">    +---+----------------------+------------------+--------------------------+</span>
+<span class="sd">    |   |                      | vB               | 17.9                     |</span>
+<span class="sd">    +---+----------------------+------------------+--------------------------+</span>
+<span class="sd">    |   |                      | regen_mode       | normal                   |</span>
+<span class="sd">    +---+----------------------+------------------+--------------------------+</span>
+<span class="sd">    |   |                      | temperature      | pore.temperature         |</span>
+<span class="sd">    +---+----------------------+------------------+--------------------------+</span>
+<span class="sd">    |   |                      | pressure         | pore.pressure            |</span>
+<span class="sd">    +---+----------------------+------------------+--------------------------+</span>
+<span class="sd">    | 3 | pore.thermal_cond... | model:           | polynomial               |</span>
+<span class="sd">    +---+----------------------+------------------+--------------------------+</span>
+<span class="sd">    |   |                      | prop             | pore.temperature         |</span>
+<span class="sd">    +---+----------------------+------------------+--------------------------+</span>
+<span class="sd">    |   |                      | a                | [0.00422791, 7.89606e... |</span>
+<span class="sd">    +---+----------------------+------------------+--------------------------+</span>
+<span class="sd">    |   |                      | regen_mode       | normal                   |</span>
+<span class="sd">    +---+----------------------+------------------+--------------------------+</span>
+<span class="sd">    | 4 | pore.viscosity       | model:           | polynomial               |</span>
+<span class="sd">    +---+----------------------+------------------+--------------------------+</span>
+<span class="sd">    |   |                      | prop             | pore.temperature         |</span>
+<span class="sd">    +---+----------------------+------------------+--------------------------+</span>
+<span class="sd">    |   |                      | a                | [1.82082e-06, 6.51815... |</span>
+<span class="sd">    +---+----------------------+------------------+--------------------------+</span>
+<span class="sd">    |   |                      | regen_mode       | normal                   |</span>
+<span class="sd">    +---+----------------------+------------------+--------------------------+</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    The pore scale models for this class are taken from:</span>
+
+<span class="sd">    [1] E.W. Lemmon and R.T. Jacobsen, &quot;Viscosity and Thermal Conductivity</span>
+<span class="sd">    Equations for Nitrogen, Oxygen, Argon, and Air&quot;, Int. J. of Thermophysics,</span>
+<span class="sd">    Vol. 25, No. 1, January 2004, pp. 21-69</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">air</span><span class="p">)</span></div>
+
+        <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.molecular_weight&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0291</span>
+        <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.critical_pressure&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">3.786E6</span>
+        <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.critical_temperature&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">132.5</span>
+        <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.critical_volume&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.002917</span>
+        <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.contact_angle&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">180.0</span>
+        <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.surface_tension&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.072</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.molar_density&#39;</span><span class="p">,</span>
+                       <span class="n">model</span><span class="o">=</span><span class="n">mods</span><span class="o">.</span><span class="n">phases</span><span class="o">.</span><span class="n">molar_density</span><span class="o">.</span><span class="n">ideal_gas</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.diffusivity&#39;</span><span class="p">,</span>
+                       <span class="n">model</span><span class="o">=</span><span class="n">mods</span><span class="o">.</span><span class="n">phases</span><span class="o">.</span><span class="n">diffusivity</span><span class="o">.</span><span class="n">fuller</span><span class="p">,</span>
+                       <span class="n">MA</span><span class="o">=</span><span class="mf">0.032</span><span class="p">,</span> <span class="n">MB</span><span class="o">=</span><span class="mf">0.028</span><span class="p">,</span>
+                       <span class="n">vA</span><span class="o">=</span><span class="mf">16.6</span><span class="p">,</span> <span class="n">vB</span><span class="o">=</span><span class="mf">17.9</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.thermal_conductivity&#39;</span><span class="p">,</span>
+                       <span class="n">model</span><span class="o">=</span><span class="n">mods</span><span class="o">.</span><span class="n">misc</span><span class="o">.</span><span class="n">polynomial</span><span class="p">,</span>
+                       <span class="n">prop</span><span class="o">=</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">,</span>
+                       <span class="n">a</span><span class="o">=</span><span class="p">[</span><span class="mf">0.00422791</span><span class="p">,</span> <span class="mf">0.0000789606</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.56383E-08</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.electrical_conductivity&#39;</span><span class="p">,</span>
+                       <span class="n">model</span><span class="o">=</span><span class="n">mods</span><span class="o">.</span><span class="n">misc</span><span class="o">.</span><span class="n">constant</span><span class="p">,</span>
+                       <span class="n">value</span><span class="o">=</span><span class="mf">1e-15</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.viscosity&#39;</span><span class="p">,</span>
+                       <span class="n">model</span><span class="o">=</span><span class="n">mods</span><span class="o">.</span><span class="n">misc</span><span class="o">.</span><span class="n">polynomial</span><span class="p">,</span>
+                       <span class="n">prop</span><span class="o">=</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">,</span>
+                       <span class="n">a</span><span class="o">=</span><span class="p">[</span><span class="mf">0.00000182082</span><span class="p">,</span> <span class="mf">6.51815E-08</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.48553E-11</span><span class="p">,</span>
+                          <span class="mf">1.11409E-14</span><span class="p">])</span></div>
 </pre></div>
 
               </div>

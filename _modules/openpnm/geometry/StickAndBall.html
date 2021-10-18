@@ -173,28 +173,135 @@
               <div>
                 
   <h1>Source code for openpnm.geometry.StickAndBall</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">openpnm.geometry</span> <span class="kn">import</span> <span class="n">GenericGeometry</span>
-<span class="kn">from</span> <span class="nn">openpnm.models.collections.geometry</span> <span class="kn">import</span> <span class="n">spheres_and_cylinders</span>
-<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">logging</span><span class="p">,</span> <span class="n">Docorator</span><span class="p">,</span> <span class="n">GenericSettings</span>
-<span class="n">docstr</span> <span class="o">=</span> <span class="n">Docorator</span><span class="p">()</span>
-<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span></span><span class="kn">import</span> <span class="nn">openpnm.models</span> <span class="k">as</span> <span class="nn">mods</span>
+<span class="kn">from</span> <span class="nn">openpnm.geometry</span> <span class="kn">import</span> <span class="n">GenericGeometry</span>
 
 
-<div class="viewcode-block" id="StickAndBall"><a class="viewcode-back" href="../../../modules/geometry/stick_and_ball.html#openpnm.geometry.StickAndBall">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
-<span class="k">class</span> <span class="nc">StickAndBall</span><span class="p">(</span><span class="n">GenericGeometry</span><span class="p">):</span>
+<div class="viewcode-block" id="StickAndBall"><a class="viewcode-back" href="../../../modules/geometry/stick_and_ball.html#openpnm.geometry.StickAndBall">[docs]</a><span class="k">class</span> <span class="nc">StickAndBall</span><span class="p">(</span><span class="n">GenericGeometry</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    blah</span>
+<span class="sd">    Stick and Ball subclass of GenericGeometry.  This subclass is meant as a</span>
+<span class="sd">    basic default geometry to get started quickly.</span>
+
+<span class="sd">    Pore diameters are randomly assigned between 0 and the largest sphere that</span>
+<span class="sd">    does not overlap with it&#39;s nearest neighbor.</span>
+
+<span class="sd">    Throat diameters are half the diameter of the smaller of it&#39;s two</span>
+<span class="sd">    neighboring pores.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(GenericGeometry.parameters)s</span>
+<span class="sd">    network : OpenPNM Network object</span>
+<span class="sd">        The network with which this Geometry should be associated</span>
+
+<span class="sd">    project : OpenPNM Project object, optional</span>
+<span class="sd">        Can be supplied instead of a ``network``</span>
+
+<span class="sd">    pores : array_like</span>
+<span class="sd">        The pores in the domain where this Geometry applies</span>
+
+<span class="sd">    throats : array_like</span>
+<span class="sd">        The throats in the domain where this Geometry applies</span>
+
+<span class="sd">    name : string</span>
+<span class="sd">        The name of the object, which is also used as the label where this</span>
+<span class="sd">        geometry is defined.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Geometry objects (along with Physics objects) can be applied to a subset</span>
+<span class="sd">    of pores and/or throats.  This allows for different geometrical property</span>
+<span class="sd">    models to be applied in different regions.  This is illustrated in the</span>
+<span class="sd">    following code:</span>
+
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; import scipy as sp</span>
+<span class="sd">    &gt;&gt;&gt; import openpnm as op</span>
+<span class="sd">    &gt;&gt;&gt; import matplotlib.pyplot as plt</span>
+<span class="sd">    &gt;&gt;&gt; pn = op.network.CubicDual(shape=[5, 5, 5])</span>
+<span class="sd">    &gt;&gt;&gt; Ps = pn.pores(&#39;primary&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; Ts = pn.throats(&#39;primary&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; geo1 = op.geometry.StickAndBall(network=pn, pores=Ps, throats=Ts)</span>
+<span class="sd">    &gt;&gt;&gt; Ps = pn.pores(&#39;secondary&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; Ts = pn.throats([&#39;secondary&#39;, &#39;interconnect&#39;])</span>
+<span class="sd">    &gt;&gt;&gt; geo2 = op.geometry.StickAndBall(network=pn, pores=Ps, throats=Ts)</span>
+
+<span class="sd">    Now override the &#39;pore.diameter&#39; values on the ``geo2`` object:</span>
+
+<span class="sd">    &gt;&gt;&gt; geo2.remove_model(&#39;pore.diameter&#39;)  # Remove model and data</span>
+<span class="sd">    &gt;&gt;&gt; geo2[&#39;pore.diameter&#39;] = np.random.rand(geo2.Np) * 0.05</span>
+
+<span class="sd">    Look at the &#39;pore.diameter&#39; distributions on each object:</span>
+
+<span class="sd">    &gt;&gt;&gt; fig = plt.hist(geo1[&#39;pore.diameter&#39;], bins=20, alpha=0.5)</span>
+<span class="sd">    &gt;&gt;&gt; fig = plt.hist(geo2[&#39;pore.diameter&#39;], bins=20, alpha=0.5)</span>
+
+<span class="sd">    The resulting figure shows that these two Geometry object each have a</span>
+<span class="sd">    different pore size distribution, with ``geo2`` being much smaller:</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">spheres_and_cylinders</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">regenerate_models</span><span class="p">()</span></div>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.seed&#39;</span><span class="p">,</span>
+                       <span class="n">model</span><span class="o">=</span><span class="n">mods</span><span class="o">.</span><span class="n">misc</span><span class="o">.</span><span class="n">random</span><span class="p">,</span>
+                       <span class="n">element</span><span class="o">=</span><span class="s1">&#39;pore&#39;</span><span class="p">,</span>
+                       <span class="n">num_range</span><span class="o">=</span><span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">],</span>
+                       <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.max_size&#39;</span><span class="p">,</span>
+                       <span class="n">model</span><span class="o">=</span><span class="n">mods</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">pore_size</span><span class="o">.</span><span class="n">largest_sphere</span><span class="p">,</span>
+                       <span class="n">iters</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">,</span>
+                       <span class="n">model</span><span class="o">=</span><span class="n">mods</span><span class="o">.</span><span class="n">misc</span><span class="o">.</span><span class="n">product</span><span class="p">,</span>
+                       <span class="n">props</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;pore.max_size&#39;</span><span class="p">,</span> <span class="s1">&#39;pore.seed&#39;</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.area&#39;</span><span class="p">,</span>
+                       <span class="n">model</span><span class="o">=</span><span class="n">mods</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">pore_cross_sectional_area</span><span class="o">.</span><span class="n">sphere</span><span class="p">,</span>
+                       <span class="n">pore_diameter</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.volume&#39;</span><span class="p">,</span>
+                       <span class="n">model</span><span class="o">=</span><span class="n">mods</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">pore_volume</span><span class="o">.</span><span class="n">sphere</span><span class="p">,</span>
+                       <span class="n">pore_diameter</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.max_size&#39;</span><span class="p">,</span>
+                       <span class="n">model</span><span class="o">=</span><span class="n">mods</span><span class="o">.</span><span class="n">misc</span><span class="o">.</span><span class="n">from_neighbor_pores</span><span class="p">,</span>
+                       <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;min&#39;</span><span class="p">,</span>
+                       <span class="n">prop</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">,</span>
+                       <span class="n">model</span><span class="o">=</span><span class="n">mods</span><span class="o">.</span><span class="n">misc</span><span class="o">.</span><span class="n">scaled</span><span class="p">,</span>
+                       <span class="n">factor</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+                       <span class="n">prop</span><span class="o">=</span><span class="s1">&#39;throat.max_size&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.endpoints&#39;</span><span class="p">,</span>
+                       <span class="n">model</span><span class="o">=</span><span class="n">mods</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">throat_endpoints</span><span class="o">.</span><span class="n">spherical_pores</span><span class="p">,</span>
+                       <span class="n">pore_diameter</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">,</span>
+                       <span class="n">throat_diameter</span><span class="o">=</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.length&#39;</span><span class="p">,</span>
+                       <span class="n">model</span><span class="o">=</span><span class="n">mods</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">throat_length</span><span class="o">.</span><span class="n">piecewise</span><span class="p">,</span>
+                       <span class="n">throat_endpoints</span><span class="o">=</span><span class="s1">&#39;throat.endpoints&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.surface_area&#39;</span><span class="p">,</span>
+                       <span class="n">model</span><span class="o">=</span><span class="n">mods</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">throat_surface_area</span><span class="o">.</span><span class="n">cylinder</span><span class="p">,</span>
+                       <span class="n">throat_diameter</span><span class="o">=</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">,</span>
+                       <span class="n">throat_length</span><span class="o">=</span><span class="s1">&#39;throat.length&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.volume&#39;</span><span class="p">,</span>
+                       <span class="n">model</span><span class="o">=</span><span class="n">mods</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">throat_volume</span><span class="o">.</span><span class="n">cylinder</span><span class="p">,</span>
+                       <span class="n">throat_diameter</span><span class="o">=</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">,</span>
+                       <span class="n">throat_length</span><span class="o">=</span><span class="s1">&#39;throat.length&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.area&#39;</span><span class="p">,</span>
+                       <span class="n">model</span><span class="o">=</span><span class="n">mods</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">throat_cross_sectional_area</span><span class="o">.</span><span class="n">cylinder</span><span class="p">,</span>
+                       <span class="n">throat_diameter</span><span class="o">=</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.conduit_lengths&#39;</span><span class="p">,</span>
+                       <span class="n">model</span><span class="o">=</span><span class="n">mods</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">throat_length</span><span class="o">.</span><span class="n">conduit_lengths</span><span class="p">,</span>
+                       <span class="n">throat_endpoints</span><span class="o">=</span><span class="s1">&#39;throat.endpoints&#39;</span><span class="p">,</span>
+                       <span class="n">throat_length</span><span class="o">=</span><span class="s1">&#39;throat.length&#39;</span><span class="p">)</span></div>
 </pre></div>
 
               </div>

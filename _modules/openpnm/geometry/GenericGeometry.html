@@ -174,20 +174,16 @@
                 
   <h1>Source code for openpnm.geometry.GenericGeometry</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">openpnm.core</span> <span class="kn">import</span> <span class="n">Subdomain</span><span class="p">,</span> <span class="n">ModelsMixin</span>
-<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">Workspace</span><span class="p">,</span> <span class="n">Docorator</span><span class="p">,</span> <span class="n">GenericSettings</span><span class="p">,</span> <span class="n">logging</span>
-<span class="n">ws</span> <span class="o">=</span> <span class="n">Workspace</span><span class="p">()</span>
-<span class="n">docstr</span> <span class="o">=</span> <span class="n">Docorator</span><span class="p">()</span>
+<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">Workspace</span><span class="p">,</span> <span class="n">logging</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">ws</span> <span class="o">=</span> <span class="n">Workspace</span><span class="p">()</span>
 
 
-<div class="viewcode-block" id="GenericGeometry"><a class="viewcode-back" href="../../../modules/geometry/generic_geometry.html#openpnm.geometry.GenericGeometry">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">get_sections</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="s1">&#39;GenericGeometry&#39;</span><span class="p">,</span>
-                     <span class="n">sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Parameters&#39;</span><span class="p">])</span>
-<span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
-<span class="k">class</span> <span class="nc">GenericGeometry</span><span class="p">(</span><span class="n">Subdomain</span><span class="p">,</span> <span class="n">ModelsMixin</span><span class="p">):</span>
+<div class="viewcode-block" id="GenericGeometry"><a class="viewcode-back" href="../../../modules/geometry/generic_geometry.html#openpnm.geometry.GenericGeometry">[docs]</a><span class="k">class</span> <span class="nc">GenericGeometry</span><span class="p">(</span><span class="n">Subdomain</span><span class="p">,</span> <span class="n">ModelsMixin</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This generic class is meant as a starter for custom Geometry objects</span>
 
-<span class="sd">    It has no pore-scale models assigned to it, so it is a blank slate.  Note that</span>
+<span class="sd">    It has no pore-scale models assigned to it, so a a blank slate.  Note that</span>
 <span class="sd">    all OpenPNM Geometry sub-classes are just GenericGeometry instances with a</span>
 <span class="sd">    number of models added.</span>
 
@@ -195,8 +191,6 @@
 <span class="sd">    ----------</span>
 <span class="sd">    network : GenericNetwork</span>
 <span class="sd">        The Network object to which this Geometry applies.</span>
-<span class="sd">    project : Project, optional</span>
-<span class="sd">        A Project can be specified instead of ``network``.</span>
 <span class="sd">    pores : array_like</span>
 <span class="sd">        The list of pores where this Geometry applies.</span>
 <span class="sd">    throats : array_like</span>
@@ -204,6 +198,46 @@
 <span class="sd">    name : str</span>
 <span class="sd">        A unique name to apply to the object.  This name will also be used as a</span>
 <span class="sd">        label to identify where this Geometry applies.</span>
+<span class="sd">    project : Project, optional</span>
+<span class="sd">        A Project can be specified instead of ``network``.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import openpnm as op</span>
+<span class="sd">    &gt;&gt;&gt; pn = op.network.Cubic(shape=[5, 5, 5])</span>
+<span class="sd">    &gt;&gt;&gt; Ps = pn.pores(&#39;all&#39;)    # Get all pores</span>
+<span class="sd">    &gt;&gt;&gt; Ts = pn.throats(&#39;all&#39;)  # Get all throats</span>
+<span class="sd">    &gt;&gt;&gt; geom = op.geometry.GenericGeometry(network=pn, pores=Ps, throats=Ts)</span>
+
+<span class="sd">    Now assign pore-scale models to the empty object:</span>
+
+<span class="sd">    &gt;&gt;&gt; geom.add_model(propname=&#39;pore.size&#39;,</span>
+<span class="sd">    ...                model=op.models.misc.random,</span>
+<span class="sd">    ...                element=&#39;pore&#39;,</span>
+<span class="sd">    ...                num_range=[0.01, 0.1])</span>
+
+<span class="sd">    Confirm that the object has one added model:</span>
+
+<span class="sd">    &gt;&gt;&gt; print(geom.models)</span>
+<span class="sd">    ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――</span>
+<span class="sd">    #   Property Name                       Parameter                 Value</span>
+<span class="sd">    ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――</span>
+<span class="sd">    1   pore.size                           model:                    random</span>
+<span class="sd">                                            element:                  pore</span>
+<span class="sd">                                            num_range:                [0.01, 0.1]</span>
+<span class="sd">                                            seed:                     None</span>
+<span class="sd">                                            regeneration mode:        normal</span>
+<span class="sd">    ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――</span>
+
+<span class="sd">    The results of the model can be seen using the ``show_hist`` function:</span>
+
+<span class="sd">    &gt;&gt;&gt; import matplotlib as mpl</span>
+<span class="sd">    &gt;&gt;&gt; mpl.use(&#39;Agg&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; geom.show_hist(&#39;pore.size&#39;)</span>
+
+<span class="sd">    .. image:: /../docs/_static/images/generic_geometry_histogram.png</span>
+<span class="sd">        :width: 500px</span>
+<span class="sd">        :align: center</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
