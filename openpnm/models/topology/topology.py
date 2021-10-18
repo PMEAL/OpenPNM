@@ -70,19 +70,40 @@ def cluster_number(target):
     r"""
     Assign a cluster number to each pore
     """
-    from scipy.sparse import csgraph as csg
     net = target.network
+    from scipy.sparse import csgraph as csg
     am = net.create_adjacency_matrix(fmt='coo', triu=True)
     N, Cs = csg.connected_components(am, directed=False)
     return Cs
 
 
-def cluster_size(target, cluster='pore.cluster_number'):
+def cluster_size(target, cluster=None):
     r"""
     Find the size of the cluster to which each pore belongs
+
+    Parameters
+    ----------
+    network : dict
+        The OpenPNM network object
+    cluster : str, optional
+        Dict key pointing to the array containing the cluster number of each
+        pore.  If not provided then it will be calculated.
+
+    Returns
+    -------
+    cluster_size : ndarray
+        An Np-long array containing the size of the cluster to which each pore
+        belongs
+
     """
     net = target.network
-    Cs, ind, N = _np.unique(net[cluster], return_inverse=True, return_counts=True)
+    if cluster is None:
+        from scipy.sparse import csgraph as csg
+        am = net.create_adjacency_matrix(fmt='coo', triu=True)
+        N, cluster_num = csg.connected_components(am, directed=False)
+    else:
+        cluster_num = net[cluster]
+    Cs, ind, N = _np.unique(cluster_num, return_inverse=True, return_counts=True)
     values = N[ind]
     return values
 
@@ -138,7 +159,7 @@ def duplicate_throats(target):
     return values
 
 
-def nearest_pore(target):
+def distance_to_nearest_pore(target):
     r"""
     Find distance to and index of nearest pore even if not topologically
     connected
@@ -155,6 +176,18 @@ def nearest_pore(target):
 def count_coincident_pores(target, thresh=1e-6):
     r"""
     Count number of pores that are spatially coincident with other pores
+
+    Parameters
+    ----------
+    network : dict
+        The OpenPNM network object
+    thresh : float
+        The distance below which two pores are considered spatially coincident
+
+    Returns
+    -------
+    count : ndarray
+        A numpy array of Np length containing the number coincident pores
     """
     # This needs to be a bit complicated because it cannot be assumed
     # the coincident pores are topologically connected

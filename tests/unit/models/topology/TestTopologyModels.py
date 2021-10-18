@@ -1,6 +1,5 @@
 import numpy as np
 import openpnm as op
-from numpy.testing import assert_allclose
 
 
 class TopologyModelsTest:
@@ -20,7 +19,7 @@ class TopologyModelsTest:
                      model=op.models.topology.pore_to_pore_distance)
         assert np.all(pn['throat.L'][[0, 18, 50]] == np.array([3, 2, 1]))
 
-    def test_nearest_neighbor(self):
+    def test_nearest_and_furthest_neighbor(self):
         pn = op.network.Cubic(shape=[3, 3, 3], spacing=[1, 2, 3])
         pn.add_model(propname='pore.L',
                      model=op.models.topology.distance_to_nearest_neighbor)
@@ -32,7 +31,7 @@ class TopologyModelsTest:
     def test_nearest_pore(self):
         pn = op.network.Cubic(shape=[3, 3, 3], spacing=1)
         pn.add_model(propname='pore.nearby',
-                     model=op.models.topology.nearest_pore)
+                     model=op.models.topology.distance_to_nearest_pore)
         assert pn['pore.nearby'][1] == 1.0
         pn['pore.coords'][1] = pn['pore.coords'][0]
         pn.regenerate_models('pore.nearby')
@@ -71,11 +70,14 @@ class TopologyModelsTest:
     def test_cluster_size(self):
         pn = op.network.Cubic(shape=[6, 1, 1])
         op.topotools.trim(network=pn, throats=[0, 3])
-        pn.add_model(propname='pore.cluster_number',
-                     model=op.models.topology.cluster_number)
         pn.add_model(propname='pore.cluster_size',
                      model=op.models.topology.cluster_size)
         assert np.all(pn['pore.cluster_size'] == [1, 3, 3, 3, 2, 2])
+        pn.add_model(propname='pore.cluster_number',
+                     model=op.models.topology.cluster_number)
+        pn.regenerate_models()
+        assert np.all(pn['pore.cluster_size'] == [1, 3, 3, 3, 2, 2])
+
 
     def test_duplicate_throats(self):
         pn = op.network.Cubic(shape=[6, 1, 1])
