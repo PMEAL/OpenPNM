@@ -2,6 +2,24 @@ import numpy as np
 
 
 def cubic(shape, spacing=1, connectivity=6):
+    r"""
+    Generate a simple cubic lattice
+
+    Parameters
+    ----------
+    shape : array_like
+        The number of unit cells in each direction.  A unit cell has 1 vertex
+        at its center.
+    spacing : array_like or float
+        The size of a unit cell in each direction. If an scalar is given it is
+        applied in all 3 directions.
+
+    Returns
+    -------
+    network : dict
+        A dictionary containing 'vert.coords' and 'edge.conns'
+
+    """
     # Take care of 1D/2D networks
     shape = np.array(shape, ndmin=1)
     shape = np.concatenate((shape, [1] * (3 - shape.size))).astype(int)

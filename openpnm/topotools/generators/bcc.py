@@ -12,8 +12,8 @@ def bcc(shape, spacing=1, mode='kdtree'):
     Parameters
     ----------
     shape : array_like
-        The number of unit cells in each direction.  A unit cell has 8 pores
-        on each corner and a single pore at its center.
+        The number of unit cells in each direction.  A unit cell has vertices
+        on all 8 corners and a single pore at its center.
     spacing : array_like or float
         The size of a unit cell in each direction. If an scalar is given it is
         applied in all 3 directions.
@@ -24,7 +24,12 @@ def bcc(shape, spacing=1, mode='kdtree'):
             Uses ``scipy.spatial.KDTree`` to find all neighbors within the
             unit cell.
         'triangulation'
-            Uses ``scipy.spatial.Delaunay`` find all neighbors.
+            Uses ``scipy.spatial.Delaunay`` to find all neighbors.
+
+    Returns
+    -------
+    network : dict
+        A dictionary containing 'vert.coords' and 'edge.conns'
 
     Notes
     -----

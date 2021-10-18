@@ -4,7 +4,7 @@ from openpnm.topotools import tri_to_am
 from openpnm.topotools.generators import tools
 
 
-def delaunay(points, shape=[1, 1, 1], ):
+def delaunay(points, shape=[1, 1, 1]):
     r"""
     Generate a network based on Delaunay triangulation of random points
 

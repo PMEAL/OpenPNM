@@ -13,6 +13,38 @@ def len_lil(lil):
 
 
 def fcc(shape, spacing=1, mode='kdtree'):
+    r"""
+    Generate a face-centered cubic lattice
+
+    Parameters
+    ----------
+    shape : array_like
+        The number of unit cells in each direction.  A unit cell has vertices
+        on all 8 corners, 6 faces and a single vertex at its center.
+    spacing : array_like or float
+        The size of a unit cell in each direction. If an scalar is given it is
+        applied in all 3 directions.
+    mode : string
+        Dictate how neighbors are found.  Options are:
+
+        'kdtree'
+            Uses ``scipy.spatial.KDTree`` to find all neighbors within the
+            unit cell.
+        'triangulation'
+            Uses ``scipy.spatial.Delaunay`` to find all neighbors.
+
+    Returns
+    -------
+    network : dict
+        A dictionary containing 'vert.coords' and 'edge.conns'
+
+    Notes
+    -----
+    It is not clear whether KDTree of Delaunay are faster. In fact it is
+    surely possible to find the neighbors formulaically but this is not
+    implemented yet.
+
+    """
     shape = np.array(shape) + 1
     # Create base cubic network of corner sites
     net1 = cubic(shape=shape)

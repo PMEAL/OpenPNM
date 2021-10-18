@@ -15,12 +15,15 @@ def voronoi_delaunay_dual(points, shape, crop=False):
         The points to be tessellated.  If a scalar is given a set of points
         of that size is generated.
     shape : array_like
-        The size of the domain in which the points lie.
+        The size of the domain in which the points lie
+    crop : boolean, optional (default is ``False``)
+        If ``True`` then all points lying beyond the given domain shape will
+        be removed
 
     Returns
     -------
     network : dict
-        A dictionary containing ``'pore.coords'`` and ``'throat.conns'``.
+        A dictionary containing 'vert.coords' and 'edge.conns'
     vor : Voronoi object
         The Voronoi tessellation object produced by ``scipy.spatial.Voronoi``
     tri : Delaunay object

@@ -15,11 +15,16 @@ def gabriel(points=None, delaunay=None, shape=None):
         or a scalar value indicating the number of points to generate.
         This can be omitted if ``delaunay`` is provided.
     delaunay : network dictionary, optional
-        A dictionary containing 'pore.coords' and 'throat.conns' as produced
+        A dictionary containing 'vert.coords' and 'edge.conns' as produced
         by the ``delaunay`` function.  If ``points`` are provided this is
         ignored.
     shape : array_like
         Indicates the size and shape of the domain
+
+    Returns
+    -------
+    network : dict
+        A dictionary containing 'vert.coords' and 'edge.conns'
 
     """
     if points is not None:
