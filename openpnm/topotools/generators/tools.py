@@ -107,13 +107,9 @@ def join(net1, net2, L_max=0.99):
     # Finally, expand any other data arrays on given networks
     keys = set(net1.keys()).union(net2.keys())
     for item in keys:
-        temp1 = net1.pop(item, None)
-        temp2 = net2.pop(item, None)
-        if temp1 is None:
-            temp1 = np.zeros(Np1, dtype=temp2.dtype)
-        else:
-            temp2 = np.zeros(Np2, dtype=temp1.dtype)
-        net3[item] = np.hstack((temp1, temp2)).T
+        temp1 = net1.pop(item, np.zeros(Np1)*np.nan)
+        temp2 = net2.pop(item, np.zeros(Np2)*np.nan)
+        net3[item] = np.concatenate((temp1, temp2), axis=0)
     return net3
 
 
@@ -158,7 +154,7 @@ def get_spacing(network):
     mag = np.linalg.norm(np.diff(C12, axis=1), axis=2)
     unit_vec = np.around(np.squeeze(np.diff(C12, axis=1)) / mag, decimals=14)
     spacing = [0, 0, 0]
-    dims = dimensionality(network)
+    dims = dimensionality(coords=network['vert.coords'])
     # Ensure vectors point in n-dims unique directions
     c = {tuple(row): 1 for row in unit_vec}
     mag = np.atleast_1d(mag.squeeze()).astype(float)

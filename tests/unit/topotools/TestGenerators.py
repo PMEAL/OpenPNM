@@ -1,8 +1,5 @@
-import pytest
 import numpy as np
 import openpnm as op
-import matplotlib.pyplot as plt
-from openpnm import topotools
 
 
 class GeneratorTest:

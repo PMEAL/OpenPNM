@@ -538,7 +538,7 @@ def find_surface_pores(network, markers=None, label='surface'):
         network['pore.'+label][neighbors] = True
 
 
-def dimensionality(network):
+def dimensionality(network=None, coords=None):
     r"""
     Checks the dimensionality of the network
 
@@ -555,7 +555,10 @@ def dimensionality(network):
         in that direction.
 
     """
-    xyz = network["pore.coords"]
+    if network is not None:
+        xyz = network["pore.coords"]
+    elif coords is not None:
+        xyz = coords
     eps = np.finfo(float).resolution
     dims_unique = [not np.allclose(xk, xk.mean(), atol=0, rtol=eps) for xk in xyz.T]
     return np.array(dims_unique)
