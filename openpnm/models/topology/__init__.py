@@ -20,5 +20,6 @@ from .topology import find_coincident_pores
 from .topology import headless_throats
 from .topology import isolated_pores
 from .topology import looped_throats
+from .topology import nearest_pore
 from .topology import pore_to_pore_distance
 from .topology import reversed_throats

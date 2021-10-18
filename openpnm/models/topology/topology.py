@@ -73,7 +73,7 @@ def cluster_number(target):
     from scipy.sparse import csgraph as csg
     net = target.network
     am = net.create_adjacency_matrix(fmt='coo', triu=True)
-    N, Cs = csg.connected_components(am, directed=False)[1]
+    N, Cs = csg.connected_components(am, directed=False)
     return Cs
 
 
@@ -135,6 +135,7 @@ def duplicate_throats(target):
     hits, inds = _np.unique(iconns, return_inverse=True)
     values = _np.ones(net.Nt, dtype=bool)
     values[inds] = False
+    return values
 
 
 def nearest_pore(target):
@@ -165,7 +166,7 @@ def count_coincident_pores(target, thresh=1e-6):
     arr = _np.array(list(hits)).flatten()
     v, n = _np.unique(arr, return_counts=True)
     values = _np.zeros(net.Np, dtype=int)
-    values[v] = n
+    values[v.astype(int)] = n
     return values
 
 
@@ -197,12 +198,9 @@ def find_coincident_pores(target, thresh=1e-6):
     tree = sptl.KDTree(coords)
     a = tree.sparse_distance_matrix(tree, max_distance=thresh,
                                     output_type='coo_matrix')
+    a.data += 1.0
     a.setdiag(0)
     a.eliminate_zeros()
+    a.data -= 1.0
     a = a.tolil()
     return a.rows
-
-
-
-
-
