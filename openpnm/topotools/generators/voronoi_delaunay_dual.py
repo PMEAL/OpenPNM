@@ -80,13 +80,13 @@ def voronoi_delaunay_dual(points, shape, crop=False):
 
     # Assign coords and conns to network dict
     network = {}
-    network['pore.coords'] = verts
-    network['throat.conns'] = conns
+    network['vert.coords'] = verts
+    network['edge.conns'] = conns
 
     # Identify and trim pores outside the domain if requested
     if crop:
         Ps = isoutside(verts, shape=shape)
-        network = tools.trim(network=network, pores=np.where(Ps)[0])
+        network = tools.trim(network=network, vert_ids=np.where(Ps)[0])
 
     return network, vor, tri
 
@@ -94,9 +94,9 @@ def voronoi_delaunay_dual(points, shape, crop=False):
 if __name__ == "__main__":
     dvd, vor, tri = voronoi_delaunay_dual(points=50, shape=[1, 0, 1])
     print(dvd.keys())
-    print(dvd['pore.coords'].shape)
-    print(dvd['throat.conns'].shape)
+    print(dvd['vert.coords'].shape)
+    print(dvd['edge.conns'].shape)
     dvd, vor, tri = voronoi_delaunay_dual(points=50, shape=[1, 0, 1], crop=True)
     print(dvd.keys())
-    print(dvd['pore.coords'].shape)
-    print(dvd['throat.conns'].shape)
+    print(dvd['vert.coords'].shape)
+    print(dvd['edge.conns'].shape)

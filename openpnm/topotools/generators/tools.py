@@ -2,56 +2,56 @@ import numpy as np
 from openpnm.topotools import generate_base_points, dimensionality, isoutside
 
 
-def trim(network, pores=None, throats=None):
+def trim(network, vert_ids=None, edge_ids=None):
     r"""
     Remove given pores or throats from a network
 
     Parameters
     ----------
     network : dictionary
-        A dictionary containing 'pore.coords' and 'throat.conns', describing
+        A dictionary containing 'vert.coords' and 'edge.conns', describing
         the network
-    pores : array_like
-        The list of pores to trim.
-    throats : array_like
-        The list of throats to trim
+    vert_ids : array_like
+        The list of vertcies to trim.
+    edge_ids : array_like
+        The list of edges to trim
 
     Returns
     -------
     network : dict
-        The ``network`` object with the specified pores/throats removed
+        The ``network`` object with the specified vertices/edges removed
 
     Notes
     -----
-    Only one of ``pores`` or ``throats`` can be given.  To trim both types,
-    call the fuction twice. This function renumbers the ``'throat.conns'``
-    array when the pores being pointed to are removed.
+    Only one of ``vert_ids`` or ``edge_ids`` can be given.  To trim both types,
+    call the fuction twice. This function renumbers the ``'edge.conns'``
+    array when the vertices being pointed to are removed.
 
     """
-    if (pores is not None) and (throats is not None):
+    if (vert_ids is not None) and (edge_ids is not None):
         raise Exception('Cannot trim pores and throats at the same time')
-    if throats is not None:
-        throats = np.atleast_1d(throats)
-        keep = np.ones(network['throat.conns'].shape[0], dtype=bool)
-        keep[throats] = False
+    if edge_ids is not None:
+        edge_ids = np.atleast_1d(edge_ids)
+        keep = np.ones(network['edge.conns'].shape[0], dtype=bool)
+        keep[edge_ids] = False
         for item in network.keys():
-            if item.startswith('throat'):
+            if item.startswith('edge'):
                 network[item] = network[item][keep]
-    elif pores is not None:
-        pores = np.atleast_1d(pores)
-        if pores.dtype == bool:
-            pores = np.where(pores)[0]
-        keep = np.ones(network['pore.coords'].shape[0], dtype=bool)
-        keep[pores] = False
+    elif vert_ids is not None:
+        vert_ids = np.atleast_1d(vert_ids)
+        if vert_ids.dtype == bool:
+            vert_ids = np.where(vert_ids)[0]
+        keep = np.ones(network['vert.coords'].shape[0], dtype=bool)
+        keep[vert_ids] = False
         for item in network.keys():
-            if item.startswith('pore'):
+            if item.startswith('vert'):
                 network[item] = network[item][keep]
-        # Remove throats
-        throats = np.any(np.isin(network['throat.conns'], pores), axis=1)
-        network = trim(network, throats=throats)
+        # Remove edges
+        edges = np.any(np.isin(network['edge.conns'], vert_ids), axis=1)
+        network = trim(network, edge_ids=edges)
         # Renumber throat conns
         remapping = np.cumsum(keep) - 1
-        network['throat.conns'] = remapping[network['throat.conns']]
+        network['edge.conns'] = remapping[network['edge.conns']]
     return network
 
 
@@ -62,18 +62,18 @@ def join(net1, net2, L_max=0.99):
     Parameters
     ----------
     net1 : dictionary
-        A dictionary containing 'pore.coords' and 'throat.conns'.
+        A dictionary containing 'vert.coords' and 'edge.conns'.
     net2 : dictionary
-        A dictionary containing 'pore.coords' and 'throat.conns'
+        A dictionary containing 'vert.coords' and 'edge.conns'
     L_max : float
-        The maximum distance between pores below which they are called
+        The maximum distance between vertices below which they are called
         neighbors
 
     Returns
     -------
     network : dict
-        A dictionary containing 'pore.coords' with pores from both ``net1`` and
-        ``net2``, and ``throat.conns`` with original connections plus new ones
+        A dictionary containing 'vert.coords' vertices from both ``net1`` and
+        ``net2``, and ``edge.conns`` with original connections plus new ones
         found during the join process.
 
     Notes
@@ -83,17 +83,17 @@ def join(net1, net2, L_max=0.99):
     """
     # Perform neighbor query
     from scipy.spatial import KDTree
-    t1 = KDTree(net1['pore.coords'])
-    t2 = KDTree(net2['pore.coords'])
+    t1 = KDTree(net1['vert.coords'])
+    t2 = KDTree(net2['vert.coords'])
     pairs = t1.query_ball_tree(t2, r=0.99)
     # Combine existing network data
     net3 = {}
-    Np1 = net1['pore.coords'].shape[0]
-    Np2 = net2['pore.coords'].shape[0]
-    net3['pore.coords'] = np.vstack((net1.pop('pore.coords'),
-                                     net2.pop('pore.coords')))
-    net3['throat.conns'] = np.vstack((net1.pop('throat.conns'),
-                                      net2.pop('throat.conns') + Np1))
+    Np1 = net1['vert.coords'].shape[0]
+    Np2 = net2['vert.coords'].shape[0]
+    net3['vert.coords'] = np.vstack((net1.pop('vert.coords'),
+                                     net2.pop('vert.coords')))
+    net3['edge.conns'] = np.vstack((net1.pop('edge.conns'),
+                                    net2.pop('edge.conns') + Np1))
     # Convert kdtree result into new connections
     nnz = sum([len(row) for row in pairs])
     conns = np.zeros((nnz, 2), dtype=int)
@@ -103,7 +103,7 @@ def join(net1, net2, L_max=0.99):
             conns[i, :] = j, col + Np1
             i += 1
     # Add new connections to network
-    net3['throat.conns'] = np.vstack((net3.pop('throat.conns'), conns))
+    net3['edge.conns'] = np.vstack((net3.pop('edge.conns'), conns))
     # Finally, expand any other data arrays on given networks
     keys = set(net1.keys()).union(net2.keys())
     for item in keys:
@@ -126,7 +126,6 @@ def parse_points(shape, points, reflect=False):
     else:
         # Should we check to ensure that points are reflected?
         points = np.array(points)
-
     return points
 
 
@@ -137,24 +136,25 @@ def get_spacing(network):
     Parameters
     ----------
     network : dictionary
-        A network dictionary containing 'pore.coords' and 'throat.conns'
+        A network dictionary containing 'vert.coords' and 'edge.conns'
 
     Returns
     -------
     spacing : ndarray
-        An array containing the spacing between pores in each direction.
+        An array containing the spacing between vertices in each direction
 
     Notes
     -----
-    This function only works on simple cubic networks with no boundary pores.
-    If a unique spacing cannot be found in each direction, and/or the throats
-    are not all oriented perpendicularly, exceptions will be raised.
+    This function only works on simple cubic networks with no boundary
+    vertices. If a unique spacing cannot be found in each direction,
+    and/or the edges are not all oriented perpendicularly, exceptions
+    will be raised.
 
     """
     from openpnm.topotools import dimensionality
     # Find Network spacing
-    P12 = network["throat.conns"]
-    C12 = network["pore.coords"][P12]
+    P12 = network["edge.conns"]
+    C12 = network["vert.coords"][P12]
     mag = np.linalg.norm(np.diff(C12, axis=1), axis=2)
     unit_vec = np.around(np.squeeze(np.diff(C12, axis=1)) / mag, decimals=14)
     spacing = [0, 0, 0]
@@ -178,7 +178,7 @@ def get_spacing(network):
 
 
 def get_shape(network):
-    L = np.ptp(network["pore.coords"], axis=0)
+    L = np.ptp(network["vert.coords"], axis=0)
     mask = L.astype(bool)
     S = get_spacing(network)
     shape = np.array([1, 1, 1], int)
@@ -192,56 +192,56 @@ def add_all_label(network):
     return network
 
 
-def label_surface_pores(network):
+def label_surface_nodes(network):
     r"""
     """
     hits = np.zeros_like(network.Ps, dtype=bool)
     dims = dimensionality(network)
-    mn = np.amin(network["pore.coords"], axis=0)
-    mx = np.amax(network["pore.coords"], axis=0)
+    mn = np.amin(network["vert.coords"], axis=0)
+    mx = np.amax(network["vert.coords"], axis=0)
     for ax in np.where(dims)[0]:
         if dims[ax]:
-            hits += network["pore.coords"][:, ax] <= mn[ax]
-            hits += network["pore.coords"][:, ax] >= mx[ax]
-    network["pore.surface"] = hits
+            hits += network["vert.coords"][:, ax] <= mn[ax]
+            hits += network["vert.coords"][:, ax] >= mx[ax]
+    network["vert.surface"] = hits
     return network
 
 
 def label_faces(network, threshold=0.05):
     r'''
-    Label the pores sitting on the faces of the domain in accordance with
+    Label the vertices sitting on the faces of the domain in accordance with
     the conventions used for cubic etc.
     '''
     dims = dimensionality(network)
-    coords = np.around(network['pore.coords'], decimals=10)
+    coords = np.around(network['vert.coords'], decimals=10)
     min_labels = ['front', 'left', 'bottom']
     max_labels = ['back', 'right', 'top']
     min_coords = np.amin(coords, axis=0)
     max_coords = np.amax(coords, axis=0)
     for ax in np.where(dims)[0]:
-        network['pore.' + min_labels[ax]] = coords[:, ax] <= threshold*min_coords[ax]
-        network['pore.' + max_labels[ax]] = coords[:, ax] >= (1-threshold)*max_coords[ax]
+        network['vert.' + min_labels[ax]] = coords[:, ax] <= threshold*min_coords[ax]
+        network['vert.' + max_labels[ax]] = coords[:, ax] >= (1-threshold)*max_coords[ax]
     return network
 
 
 def crop(network, shape, mode='full'):
-    Pdrop = isoutside(network['pore.coords'], shape=shape, thresh=0)
+    Pdrop = isoutside(network['vert.coords'], shape=shape, thresh=0)
     if mode == 'full':
         network = trim(network=network, pores=np.where(Pdrop)[0])
     elif mode == 'mixed':
         # Find throats connecting internal to external pores
-        Ts = np.sum(Pdrop[network['throat.conns']], axis=1) == 1
+        Ts = np.sum(Pdrop[network['edge.conns']], axis=1) == 1
         # Keep the pores on the ends of these throats
-        Pkeep = np.unique(network['throat.conns'][Ts])
+        Pkeep = np.unique(network['edge.conns'][Ts])
         Ps = np.array(list(set(np.where(Pdrop)[0]).difference(set(Pkeep)))).astype(int)
         network = trim(network=network, pores=Ps)
         # Remove throats between these surviving external pores
-        Pdrop = isoutside(network['pore.coords'], shape=shape)
-        Ts = np.all(Pdrop[network['throat.conns']], axis=1)
+        Pdrop = isoutside(network['vert.coords'], shape=shape)
+        Ts = np.all(Pdrop[network['edge.conns']], axis=1)
         network = trim(network=network, throats=Ts)
         # Lastly label the surviving pores as outside for further processing
-        network['pore.outside'] = np.zeros(network['pore.coords'].shape[0], dtype=bool)
-        network['pore.outside'][Pdrop] = True
+        network['vert.outside'] = np.zeros(network['vert.coords'].shape[0], dtype=bool)
+        network['vert.outside'][Pdrop] = True
     return network
 
 

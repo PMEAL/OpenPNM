@@ -55,7 +55,11 @@ def cubic(shape, spacing=1, connectivity=6):
     pairs = np.sort(pairs, axis=1)
 
     d = {}
-    d["pore.coords"] = points
-    d["throat.conns"] = pairs
-    d["pore.coords"] *= spacing  # Scale network to requested spacing
+    d['vert.coords'] = points * spacing
+    d['edge.conns'] = pairs
     return d
+
+
+if __name__ == "__main__":
+    pn = cubic([3, 4, 5])
+    print(pn)

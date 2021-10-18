@@ -19,7 +19,7 @@ def delaunay(points, shape=[1, 1, 1], ):
     Returns
     -------
     network : dict
-        A dictionary containing 'pore.coords' and 'throat.conns'
+        A dictionary containing 'vert.coords' and 'edge.conns'
     tri : Delaunay tessellation object
         The Delaunay tessellation object produced by ``scipy.spatial.Delaunay``
     """
@@ -28,8 +28,8 @@ def delaunay(points, shape=[1, 1, 1], ):
     tri = sptl.Delaunay(points=points[:, mask])
     coo = tri_to_am(tri)
     d = {}
-    d['pore.coords'] = points
-    d['throat.conns'] = np.vstack((coo.row, coo.col)).T
+    d['vert.coords'] = points
+    d['edge.conns'] = np.vstack((coo.row, coo.col)).T
     return d, tri
 
 
@@ -37,30 +37,30 @@ if __name__ == "__main__":
     # Make a 2D network based on number of points
     dn, tri = delaunay(points=50, shape=[1, 1, 0])
     print(dn.keys())
-    print(dn['pore.coords'].shape)
-    print(dn['throat.conns'].shape)
+    print(dn['vert.coords'].shape)
+    print(dn['edge.conns'].shape)
     # Make a 2D network based on number of points
     dn, tri = delaunay(points=50, shape=[1, 0, 1])
     print(dn.keys())
-    print(dn['pore.coords'].shape)
-    print(dn['throat.conns'].shape)
+    print(dn['vert.coords'].shape)
+    print(dn['edge.conns'].shape)
     # Make a 3D network based on number of points
     dn, tri = delaunay(points=50, shape=[1, 1, 1])
     print(dn.keys())
-    print(dn['pore.coords'].shape)
-    print(dn['throat.conns'].shape)
+    print(dn['vert.coords'].shape)
+    print(dn['edge.conns'].shape)
     # Make a 3D cylinder
     dn, tri = delaunay(points=50, shape=[1, 1])
     print(dn.keys())
-    print(dn['pore.coords'].shape)
-    print(dn['throat.conns'].shape)
+    print(dn['vert.coords'].shape)
+    print(dn['edge.conns'].shape)
     # Make a 2D circle
     dn, tri = delaunay(points=50, shape=[1, 0])
     print(dn.keys())
-    print(dn['pore.coords'].shape)
-    print(dn['throat.conns'].shape)
+    print(dn['vert.coords'].shape)
+    print(dn['edge.conns'].shape)
     # Make a 3D sphere
     dn, tri = delaunay(points=50, shape=[1])
     print(dn.keys())
-    print(dn['pore.coords'].shape)
-    print(dn['throat.conns'].shape)
+    print(dn['vert.coords'].shape)
+    print(dn['edge.conns'].shape)

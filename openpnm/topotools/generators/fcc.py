@@ -21,13 +21,13 @@ def fcc(shape, spacing=1, mode='kdtree'):
     net3 = cubic(shape=shape - [1, 0, 1])
     net4 = cubic(shape=shape - [0, 1, 1])
     # Offset pore coords by 1/2 a unit cell
-    net2['pore.coords'] += np.array([0.5, 0.5, 0])
-    net3['pore.coords'] += np.array([0.5, 0, 0.5])
-    net4['pore.coords'] += np.array([0, 0.5, 0.5])
-    crds = np.concatenate((net1['pore.coords'],
-                           net2['pore.coords'],
-                           net3['pore.coords'],
-                           net4['pore.coords']))
+    net2['vert.coords'] += np.array([0.5, 0.5, 0])
+    net3['vert.coords'] += np.array([0.5, 0, 0.5])
+    net4['vert.coords'] += np.array([0, 0.5, 0.5])
+    crds = np.concatenate((net1['vert.coords'],
+                           net2['vert.coords'],
+                           net3['vert.coords'],
+                           net4['vert.coords']))
     if mode.startswith('tri'):
         tri = sptl.Delaunay(points=crds)
         am = tri_to_am(tri)
@@ -51,18 +51,21 @@ def fcc(shape, spacing=1, mode='kdtree'):
         am = sprs.triu(am, k=1)
         am = am.tocoo()
         conns = np.vstack((am.row, am.col)).T
-    conns = np.vstack((net1['throat.conns'], conns))
+    conns = np.vstack((net1['edge.conns'], conns))
 
     d = {}
-    d['pore.coords'] = crds*spacing
-    d['throat.conns'] = conns
+    d['vert.coords'] = crds*spacing
+    d['edge.conns'] = conns
     return d
 
 
 if __name__ == '__main__':
     import openpnm as op
+    net = fcc([3, 3, 3], 1, mode='tri')
+    net['pore.coords'] = net.pop('vert.coords')
+    net['throat.conns'] = net.pop('edge.conns')
     pn = op.network.GenericNetwork()
-    pn.update(fcc([3, 3, 3], 1, mode='tri'))
+    pn.update(net)
     pn['pore.all'] = np.ones((np.shape(pn.coords)[0]), dtype=bool)
     pn['throat.all'] = np.ones((np.shape(pn.conns)[0]), dtype=bool)
     fig = op.topotools.plot_connections(pn)
