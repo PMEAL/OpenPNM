@@ -69,7 +69,7 @@ class PlotToolsTest:
                                                pore_shape='sphere',
                                                throat_shape='cylinder',
                                                max_dim=500)
-        assert im.shape == (500, 500, 100)
+        assert im.shape[0] == 500
 
 
 if __name__ == '__main__':
