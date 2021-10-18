@@ -221,6 +221,25 @@ def label_faces(network, threshold=0.05):
 
 
 def crop(network, shape, mode='full'):
+    r"""
+    Removes vertices that lie outside the specifed shape
+
+    Parameters
+    ----------
+    network : dict
+        Dictionary containing ``vert.coords`` and ``edge.conns`` arrays
+    shape : array_like
+        The [x, y, z] shape of the domain beyond which trimming should be
+        applied
+    mode : str
+        Controls how vertices to be trimmed is determined. Options are:
+
+            * 'full':
+                Any vertices lying outside the domain are trimmed
+            * 'mixed'
+                Vertices with at least one neighbor lying inside the domain
+                are kept
+    """
     Pdrop = isoutside(network['vert.coords'], shape=shape, thresh=0)
     if mode == 'full':
         network = trim(network=network, pores=np.where(Pdrop)[0])
