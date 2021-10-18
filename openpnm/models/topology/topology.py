@@ -30,9 +30,9 @@ def pore_to_pore_distance(target):
     return values
 
 
-def nearest_neighbor_distance(target):
+def distance_to_nearest_neighbor(target):
     r"""
-    Find the distance between each pore and its closest direct neighbor
+    Find the distance between each pore and its closest topological neighbor
     """
     network = target.project.network
     throats = network.map_throats(throats=target.Ts, origin=target)
@@ -48,9 +48,9 @@ def nearest_neighbor_distance(target):
     return _np.array(values)
 
 
-def furthest_neighbor_distance(target):
+def distance_to_furthest_neighbor(target):
     r"""
-    Find the distance between each pore and its furthest direct neighbor
+    Find the distance between each pore and its furthest topological neighbor
     """
     network = target.project.network
     throats = network.map_throats(throats=target.Ts, origin=target)
@@ -127,7 +127,7 @@ def headless_throats(target):
 
 def duplicate_throats(target):
     r"""
-    Finds repeat occurrences of throat connections
+    Find repeat occurrences of throat connections
     """
     net = target.network
     conns = net.conns
@@ -137,8 +137,70 @@ def duplicate_throats(target):
     values[inds] = False
 
 
+def nearest_pore(target):
+    r"""
+    Find distance to and index of nearest pore even if not topologically
+    connected
+    """
+    import scipy.spatial as sptl
+    net = target.network
+    coords = net.coords
+    tree = sptl.KDTree(coords)
+    ds, ids = tree.query(coords, k=2)
+    values = ds[:, 1]
+    return values
 
 
+def count_coincident_pores(target, thresh=1e-6):
+    r"""
+    Count number of pores that are spatially coincident with other pores
+    """
+    # This needs to be a bit complicated because it cannot be assumed
+    # the coincident pores are topologically connected
+    import scipy.spatial as sptl
+    net = target.network
+    coords = net.coords
+    tree = sptl.KDTree(coords)
+    hits = tree.query_pairs(r=thresh)
+    arr = _np.array(list(hits)).flatten()
+    v, n = _np.unique(arr, return_counts=True)
+    values = _np.zeros(net.Np, dtype=int)
+    values[v] = n
+    return values
+
+
+def find_coincident_pores(target, thresh=1e-6):
+    r"""
+    Find the indices of coincident pores
+
+    Parameters
+    ----------
+    network : dict
+        The OpenPNM network object
+    thresh : float
+        The distance below which two pores are considered spatially coincident
+
+    Returns
+    -------
+    indices : list of lists
+        One row corresponding to each pore, with each row listing the indices
+        of any coincident pores.  An empty list means no pores were found
+        within a distance of ``thresh``.
+
+    """
+
+    # This needs to be a bit complicated because it cannot be assumed
+    # the coincident pores are topologically connected
+    import scipy.spatial as sptl
+    network = target.network
+    coords = network['pore.coords']
+    tree = sptl.KDTree(coords)
+    a = tree.sparse_distance_matrix(tree, max_distance=thresh,
+                                    output_type='coo_matrix')
+    a.setdiag(0)
+    a.eliminate_zeros()
+    a = a.tolil()
+    return a.rows
 
 
 
