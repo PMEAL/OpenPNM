@@ -58,6 +58,6 @@ def furthest_neighbor_distance(target):
 
     data = values
     im = network.create_incidence_matrix()
-    values = _np.ones((network.Np, ))*_np.inf
+    values = _np.zeros((network.Np, ))
     _np.maximum.at(values, im.row, data[im.col])
     return _np.array(values)
