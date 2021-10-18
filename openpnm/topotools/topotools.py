@@ -1446,9 +1446,9 @@ def generate_base_points(num_points, domain_size, density_map=None,
         shape will still be returned, but with too few points in it.
 
     reflect : boolean
-        If True, the the base points are generated as specified, the reflected
+        If ``True``, the the base points are generated as specified, the reflected
         about each face of the domain.  This essentially tricks the
-        tessellation functions into creating smooth flat faces at the
+        tessellation functions into creating smoothfaces at the
         boundaries once these excess pores are trimmed.
 
     Notes
@@ -1486,6 +1486,7 @@ def generate_base_points(num_points, domain_size, density_map=None,
     >>> net = op.network.DelaunayVoronoiDual(points=pts, shape=[1, 1, 1])
 
     """
+
     def _try_points(num_points, prob):
         prob = np.atleast_3d(prob)
         prob = np.array(prob)/np.amax(prob)  # Ensure prob is normalized
@@ -1523,9 +1524,7 @@ def generate_base_points(num_points, domain_size, density_map=None,
             r, theta, phi = reflect_base_points(np.vstack((r, theta, phi)),
                                                 domain_size)
         # Convert to Cartesean coordinates
-        X = r*np.cos(theta)*np.sin(phi)
-        Y = r*np.sin(theta)*np.sin(phi)
-        Z = r*np.cos(phi)
+        X, Y, Z = from_sph(r, theta, phi)
         base_pts = np.vstack([X, Y, Z]).T
 
     elif len(domain_size) == 2:  # Cylindrical or Disk
@@ -1551,9 +1550,7 @@ def generate_base_points(num_points, domain_size, density_map=None,
             r, theta, z = reflect_base_points(np.vstack([r, theta, z]),
                                               domain_size)
         # Convert to Cartesean coordinates
-        X = r*np.cos(theta)
-        Y = r*np.sin(theta)
-        Z = z
+        X, Y, Z = from_cyl(r, theta, z)
         base_pts = np.vstack([X, Y, Z]).T
 
     elif len(domain_size) == 3:  # Cube or square
@@ -1567,6 +1564,34 @@ def generate_base_points(num_points, domain_size, density_map=None,
             base_pts = reflect_base_points(base_pts, domain_size)
 
     return base_pts
+
+
+def to_cyl(X, Y, Z):
+    r = 2*np.sqrt(X**2 + Y**2)
+    theta = 2*np.arctan(Y/X)
+    z = Z
+    return np.vstack((r, theta, z))
+
+
+def from_cyl(r, theta, z):
+    X = r*np.cos(theta)
+    Y = r*np.sin(theta)
+    Z = z
+    return np.vstack((X, Y, Z))
+
+
+def to_sph(X, Y, Z):
+    r = 2*np.sqrt(X**2 + Y**2 + Z**2)
+    theta = 2*np.arctan(Y/X)
+    phi = 2*np.arctan(np.sqrt(X**2 + Y**2)/Z)
+    return np.vstack((r, theta, phi))
+
+
+def from_sph(r, theta, phi):
+    X = r*np.cos(theta)*np.sin(phi)
+    Y = r*np.sin(theta)*np.sin(phi)
+    Z = r*np.cos(phi)
+    return np.vstack([X, Y, Z])
 
 
 def reflect_base_points(base_pts, domain_size):
@@ -1599,6 +1624,12 @@ def reflect_base_points(base_pts, domain_size):
         as the outer corner of rectangle [x, y, z] whose opposite corner lies
         at [0, 0, 0].  If the z dimension is 0, a rectangle of size X-by-Y is
         created.
+
+    Notes
+    -----
+    The base points can be either [N x 3] or [3 x N].  There transposed internally
+    as needed and returned to the original shape.  If N=3 then the transposing is
+    skipped so the user needs to ensure the the form of [3 x N].
 
     '''
     domain_size = np.array(domain_size)
