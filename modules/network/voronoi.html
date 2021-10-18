@@ -610,37 +610,6 @@
                 
   <section id="voronoi">
 <span id="voronoi-api"></span><h1>Voronoi<a class="headerlink" href="#voronoi" title="Permalink to this headline">¶</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="openpnm.network.Voronoi">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">Voronoi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/network/Voronoi.html#Voronoi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.network.Voronoi" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="delaunay_voronoi_dual.html#openpnm.network.DelaunayVoronoiDual" title="openpnm.network.DelaunayVoronoiDual.DelaunayVoronoiDual"><code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.network.DelaunayVoronoiDual.DelaunayVoronoiDual</span></code></a></p>
-<p>Random network formed by Voronoi tessellation of arbitrary base points</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>points</strong> (<em>array_like</em><em>, </em><em>optional</em>) – The base points around which to generate the Voronoi tessellation.</p></li>
-<li><p><strong>num_points</strong> (<em>scalar</em><em>, </em><em>optional</em>) – If <code class="docutils literal notranslate"><span class="pre">points</span></code> is not supplied, then this must be given.  A sent of
-randomly located points will be generated.</p></li>
-<li><p><strong>shape</strong> (<em>array_like</em>) – <p>The size of the domain.  It’s possible to create cubic as well as 2D
-square domains by changing the <code class="docutils literal notranslate"><span class="pre">shape</span></code> as follows:</p>
-<p>[x, y, z] - will produce a normal cubic domain of dimension x, and
-and z</p>
-<p>[x, y, 0] - will produce a 2D square domain of size x by y</p>
-</p></li>
-<li><p><strong>name</strong> (<em>string</em>) – An optional name for the object to help identify it.  If not given,
-one will be generated.</p></li>
-<li><p><strong>project</strong> (<em>OpenPNM Project object</em><em>, </em><em>optional</em>) – Each OpenPNM object must be part of a <em>Project</em>.  If none is supplied
-then one will be created and this Network will be automatically
-assigned to it.  To create a <em>Project</em> use <code class="docutils literal notranslate"><span class="pre">openpnm.Project()</span></code>.</p></li>
-</ul>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<p>By definition these points will each lie in the center of a Voronoi cell,
-so they will not be the pore centers.  The number of pores in the
-returned network thus will differ from the number of points supplied</p>
-</dd></dl>
-
 </section>
 
 

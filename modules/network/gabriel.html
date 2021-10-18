@@ -610,61 +610,6 @@
                 
   <section id="gabriel">
 <span id="gabriel-api"></span><h1>Gabriel<a class="headerlink" href="#gabriel" title="Permalink to this headline">¶</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="openpnm.network.Gabriel">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">Gabriel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/network/Gabriel.html#Gabriel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.network.Gabriel" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="delaunay.html#openpnm.network.Delaunay" title="openpnm.network.Delaunay.Delaunay"><code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.network.Delaunay.Delaunay</span></code></a></p>
-<p>Random network formed by Gabriel tessellation of arbitrary base points</p>
-<p>This operates by performing a Deluanay tessellation, then removing
-connections that do not adhere to the definition of the <a class="reference external" href="https://en.wikipedia.org/wiki/Gabriel_graph">Gabriel graph</a></p>
-<p>This produces a network that has fewer throats than a Delaunay network.
-Since the longer-range throats tend to be removed this might be more
-realistic in some cases.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>points</strong> (<em>array_like</em>) – An array of coordinates indicating the [x, y, z] locations of each
-point to use in the tessellation.  Note that the points must be given
-in rectilinear coordinates regardless of which domain <code class="docutils literal notranslate"><span class="pre">shape</span></code> was
-specified.  To convert between coordinate systems see the
-<code class="docutils literal notranslate"><span class="pre">convert_coords</span></code> function in the <code class="docutils literal notranslate"><span class="pre">openpnm.topotools</span></code> module.</p></li>
-<li><p><strong>num_points</strong> (<em>scalar</em>) – The number of points to place in the domain, which will become the
-pore centers after the tessellation is performed.  This value is
-ignored if <code class="docutils literal notranslate"><span class="pre">points</span></code> are given.</p></li>
-<li><p><strong>shape</strong> (<em>array_like</em>) – <p>The size of the domain.  It’s possible to create cubic, or 2D square
-domains by changing the domain <code class="docutils literal notranslate"><span class="pre">shape</span></code> as follows:</p>
-<p>[x, y, z] - will produce a normal cubic domain of dimension x, and
-and z</p>
-<p>[x, y, 0] - will produce a 2D square domain of size x by y</p>
-</p></li>
-<li><p><strong>name</strong> (<em>string</em>) – An optional name for the object to help identify it.  If not given,
-one will be generated.</p></li>
-<li><p><strong>project</strong> (<em>OpenPNM Project object</em><em>, </em><em>optional</em>) – Each OpenPNM object must be part of a <em>Project</em>.  If none is supplied
-then one will be created and this Network will be automatically
-assigned to it.  To create a <em>Project</em> use <code class="docutils literal notranslate"><span class="pre">openpnm.Project()</span></code>.</p></li>
-</ul>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">scipy</span> <span class="k">as</span> <span class="nn">sp</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">pts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span> <span class="o">*</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>  <span class="c1"># Set z-axis to 0</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">gn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Gabriel</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">points</span><span class="o">=</span><span class="n">pts</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">dn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Delaunay</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">points</span><span class="o">=</span><span class="n">pts</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Now compare them side by side:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">gn</span><span class="p">[</span><span class="s1">&#39;pore.coords&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">op</span><span class="o">.</span><span class="n">topotools</span><span class="o">.</span><span class="n">merge_networks</span><span class="p">(</span><span class="n">dn</span><span class="p">,</span> <span class="n">gn</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">topotools</span><span class="o">.</span><span class="n">plot_connections</span><span class="p">(</span><span class="n">dn</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">topotools</span><span class="o">.</span><span class="n">plot_coordinates</span><span class="p">(</span><span class="n">dn</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
-</pre></div>
-</div>
-<img alt="../../_images/gabriel_network.png" class="align-center" src="../../_images/gabriel_network.png" />
-</dd></dl>
-
 </section>
 
 
