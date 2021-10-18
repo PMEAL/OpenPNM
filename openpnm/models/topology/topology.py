@@ -13,8 +13,7 @@ def coordination_number(target):
     """
     network = target.network
     N = network.num_neighbors(pores=network.Ps, flatten=False)
-    vals = N[network.pores(target.name)]
-    return vals
+    return N
 
 
 def pore_to_pore_distance(target):
@@ -22,8 +21,7 @@ def pore_to_pore_distance(target):
     Find the center to center distance between each pair of pores
     """
     network = target.project.network
-    throats = network.map_throats(throats=target.Ts, origin=target)
-    cn = network['throat.conns'][throats]
+    cn = network['throat.conns']
     C1 = network['pore.coords'][cn[:, 0]]
     C2 = network['pore.coords'][cn[:, 1]]
     values = _norm(C1 - C2, axis=1)
@@ -35,16 +33,13 @@ def distance_to_nearest_neighbor(target):
     Find the distance between each pore and its closest topological neighbor
     """
     network = target.project.network
-    throats = network.map_throats(throats=target.Ts, origin=target)
-    cn = network['throat.conns'][throats]
+    cn = network['throat.conns']
     C1 = network['pore.coords'][cn[:, 0]]
     C2 = network['pore.coords'][cn[:, 1]]
     values = _norm(C1 - C2, axis=1)
-
-    data = values
     im = network.create_incidence_matrix()
     values = _np.ones((network.Np, ))*_np.inf
-    _np.minimum.at(values, im.row, data[im.col])
+    _np.minimum.at(values, im.row, values[im.col])
     return _np.array(values)
 
 
@@ -58,11 +53,9 @@ def distance_to_furthest_neighbor(target):
     C1 = network['pore.coords'][cn[:, 0]]
     C2 = network['pore.coords'][cn[:, 1]]
     values = _norm(C1 - C2, axis=1)
-
-    data = values
     im = network.create_incidence_matrix()
     values = _np.zeros((network.Np, ))
-    _np.maximum.at(values, im.row, data[im.col])
+    _np.maximum.at(values, im.row, values[im.col])
     return _np.array(values)
 
 
