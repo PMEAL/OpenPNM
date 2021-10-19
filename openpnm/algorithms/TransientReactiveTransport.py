@@ -87,6 +87,7 @@ class TransientReactiveTransport(ReactiveTransport):
         """
         logger.info('Running TransientTransport')
         solver = ScipyRK45() if solver is None else solver
+        saveat = np.arange(*tspan, saveat) if np.isscalar(saveat) else saveat
         # Perform pre-solve validations
         self._validate_settings()
         self._validate_data_health()
@@ -96,7 +97,8 @@ class TransientReactiveTransport(ReactiveTransport):
         # Build RHS (dx/dt = RHS), then integrate the system of ODEs
         rhs = self._build_rhs()
         # Integrate RHS using the given solver
-        return solver.solve(rhs, x0, tspan, saveat)
+        self.soln = solver.solve(rhs, x0, tspan, saveat)
+        return self.soln
 
     def _run_special(self, x0): ...
 
