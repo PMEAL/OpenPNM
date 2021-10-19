@@ -10,12 +10,13 @@ public/
 build/
 dist/
 
-*\.ipynb_checkpoints/
+*/.ipynb_checkpoints/
 
 *.vtp
 *.pnm
 *.hdf
 *.xmf
+/*.dat
 !tests/fixtures/*.vtp
 !tests/fixtures/*.pnm
 !tests/fixtures/*.hdf
