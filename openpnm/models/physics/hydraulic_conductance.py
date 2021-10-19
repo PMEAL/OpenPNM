@@ -93,19 +93,10 @@ def hagen_poiseuille(
     be calculated.
 
     """
-    network = target.project.network
-    throats = network.map_throats(throats=target.Ts, origin=target)
-    phase = target.project.find_phase(target)
-    cn = network["throat.conns"][throats]
-    F = network[size_factors]
-    mut = phase[throat_viscosity][throats]
-    mu1, mu2 = phase[pore_viscosity][cn].T
-    # Find g for half of pore 1, throat, and half of pore 2
-    g1 = F[f"{size_factors}.pore1"][throats] / (8 * _np.pi * mu1)
-    g2 = F[f"{size_factors}.pore2"][throats] / (8 * _np.pi * mu2)
-    gt = F[f"{size_factors}.throat"][throats] / (8 * _np.pi * mut)
-    gtotal = 1 / (1 / g1 + 1 / gt + 1 / g2)
-    return gtotal
+    return generic_hydraulic(target=target,
+                             pore_viscosity=pore_viscosity,
+                             throat_viscosity=throat_viscosity,
+                             size_factors=size_factors)
 
 
 def hagen_poiseuille_2d(
