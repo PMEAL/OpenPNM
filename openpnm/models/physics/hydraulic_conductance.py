@@ -8,7 +8,6 @@ __all__ = [
     "hagen_poiseuille",
     "hagen_poiseuille_power_law",
     "valvatne_blunt",
-    "classic_hagen_poiseuille"
 ]
 
 
