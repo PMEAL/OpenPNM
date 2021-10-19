@@ -1076,7 +1076,7 @@ def subdivide(network, pores, shape, labels=[]):
         div = np.array(shape, ndmin=1)
         single_dim = None
     else:
-        single_dim = np.where(np.array(network.shape) == 1)[0]
+        single_dim = np.where(np.array(get_shape(network)) == 1)[0]
         if np.size(single_dim) == 0:
             single_dim = None
         if np.size(shape) == 3:
@@ -1091,7 +1091,7 @@ def subdivide(network, pores, shape, labels=[]):
             div[-np.array(div, ndmin=1, dtype=bool)] = np.array(shape, ndmin=1)
 
     # Creating small network and handling labels
-    networkspacing = network.spacing
+    networkspacing = get_spacing(network)
     new_netspacing = networkspacing/div
     new_net = Cubic(shape=div, spacing=new_netspacing)
     main_labels = ['front', 'back', 'left', 'right', 'top', 'bottom']
@@ -1822,3 +1822,45 @@ def is_fully_connected(network, pores_BC=None):
         temp = csgraph.connected_components(am, directed=False)[1]
         is_connected = np.unique(temp).size == 1
     return is_connected
+
+def get_spacing(network):
+    r"""
+    Determine the spacing along each axis of a simple cubic network
+
+    Parameters
+    ----------
+    network : OpenPNM network
+        The network for which spacing is desired
+
+    Returns
+    -------
+    spacing : ndarray
+        The spacing along each axis in the form of ``[Lx, Ly, Lz]``, where
+        ``L`` is the physical dimension in the implied units (i.e. meters)
+
+    """
+    from openpnm.topotools.generators.tools import get_spacing
+    d = {'vert.coords': network.coords, 'edge.conns': network.conns}
+    spc = get_spacing(d)
+    return spc
+
+def get_shape(network):
+    r"""
+    Determine the shape of each axis of a simple cubic network
+
+    Parameters
+    ----------
+    network : OpenPNM network
+        The network for which shape is desired
+
+    Returns
+    -------
+    shape : ndarray
+        The shape along each axis in the form of ``[Nx, Ny, Nz]`` where
+        ``N`` is the number of pores
+
+    """
+    from openpnm.topotools.generators.tools import get_shape
+    d = {'vert.coords': network.coords, 'edge.conns': network.conns}
+    shp = get_shape(d)
+    return shp

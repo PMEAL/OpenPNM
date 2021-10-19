@@ -98,14 +98,10 @@ class Cubic(GenericNetwork):
 
         arr = np.atleast_3d(np.empty(shape))
 
-        # Store original network shape
-        self.settings['shape'] = np.shape(arr)
-        # Store network spacing
         spacing = np.float64(spacing)
         if spacing.size == 2:
             spacing = np.concatenate((spacing, [1]))
         spacing = np.ones(3, dtype=float) * np.array(spacing, ndmin=1)
-        self.settings['spacing'] = spacing.tolist()
 
         z = np.tile(np.arange(shape[2]), shape[0] * shape[1])
         y = np.tile(np.repeat(np.arange(shape[1]), shape[2]), shape[0])
@@ -200,7 +196,7 @@ class Cubic(GenericNetwork):
             labels = [labels]
         x, y, z = self["pore.coords"].T
         if spacing is None:
-            spacing = self._get_spacing()
+            spacing = topotools.get_spacing(self)
         else:
             spacing = np.array(spacing)
             if spacing.size == 1:
@@ -208,7 +204,7 @@ class Cubic(GenericNetwork):
         Lcx, Lcy, Lcz = spacing
 
         offset = {}
-        shape = self.settings['shape']
+        shape = topotools.get_shape(self)
         offset["front"] = offset["left"] = offset["bottom"] = [0, 0, 0]
         offset["right"] = [Lcx * shape[0], 0, 0]
         offset["back"] = [0, Lcy * shape[1], 0]
@@ -233,99 +229,3 @@ class Cubic(GenericNetwork):
             except KeyError:
                 logger.warning("No pores labelled " + label
                                + " were found, skipping boundary addition")
-
-    def _get_spacing(self):
-        # Find Network spacing
-        P12 = self["throat.conns"]
-        C12 = self["pore.coords"][P12]
-        mag = np.linalg.norm(np.diff(C12, axis=1), axis=2)
-        unit_vec = np.around(np.squeeze(np.diff(C12, axis=1)) / mag, decimals=14)
-        spacing = [0, 0, 0]
-        dims = topotools.dimensionality(self)
-        # Ensure vectors point in n-dims unique directions
-        c = {tuple(row): 1 for row in unit_vec}
-        mag = np.atleast_1d(mag.squeeze()).astype(float)
-        if len(c.keys()) > sum(dims):
-            raise Exception(
-                "Spacing is undefined when throats point in more directions"
-                " than network has dimensions."
-            )
-        for ax in [0, 1, 2]:
-            if dims[ax]:
-                inds = np.where(unit_vec[:, ax] == unit_vec[:, ax].max())[0]
-                temp = np.unique(mag[inds])
-                if not np.allclose(temp, temp[0]):
-                    raise Exception("A unique value of spacing could not be found.")
-                spacing[ax] = temp[0]
-        self.settings['spacing'] = spacing
-        return np.array(spacing)
-
-    spacing = property(fget=_get_spacing)
-
-    def _get_shape(self):
-        L = np.ptp(self["pore.coords"], axis=0)
-        mask = L.astype(bool)
-        S = self.spacing
-        shape = np.array([1, 1, 1], int)
-        shape[mask] = L[mask] / S[mask] + 1
-        self.settings['shape'] = shape.tolist()
-        return shape
-
-    shape = property(fget=_get_shape)
-
-    @property
-    def _shape(self):
-        return self.settings['shape']
-
-    @property
-    def _spacing(self):
-        return np.array(self.settings['spacing'])
-
-    def to_array(self, values):
-        r"""
-        Converts the values to a rectangular array with the same shape as the
-        network
-
-        Parameters
-        ----------
-        values : array_like
-            An Np-long array of values to convert to
-
-        Notes
-        -----
-        This method can break on networks that have had boundaries added.  It
-        will usually work IF the given values came only from 'internal'
-        pores.
-
-        """
-        if np.shape(values)[0] > self.num_pores("internal"):
-            raise Exception("The array shape does not match the network")
-        Ps = np.array(self["pore.index"][self.pores("internal")], dtype=int)
-        arr = np.ones(self.settings['shape']) * np.nan
-        ind = np.unravel_index(Ps, self.settings['shape'])
-        arr[ind[0], ind[1], ind[2]] = values
-        return arr
-
-    def from_array(self, array, propname):
-        r"""
-        Apply data to the network based on a rectangular array filled with
-        values.  Each array location corresponds to a pore in the network.
-
-        Parameters
-        ----------
-        array : array_like
-            The rectangular array containing the values to be added to the
-            network. This array must be the same shape as the original network.
-
-        propname : string
-            The name of the pore property being added.
-
-        """
-        array = np.atleast_3d(array)
-        if np.shape(array) != self._shape:
-            raise Exception("The array shape does not match the network")
-        temp = array.flatten()
-        Ps = np.array(self["pore.index"][self.pores("internal")], dtype=int)
-        propname = "pore." + propname.split(".")[-1]
-        self[propname] = np.nan
-        self[propname][self.pores("internal")] = temp[Ps]
