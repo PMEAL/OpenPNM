@@ -36,10 +36,10 @@ def distance_to_nearest_neighbor(target):
     cn = network['throat.conns']
     C1 = network['pore.coords'][cn[:, 0]]
     C2 = network['pore.coords'][cn[:, 1]]
-    values = _norm(C1 - C2, axis=1)
+    D = _norm(C1 - C2, axis=1)
     im = network.create_incidence_matrix()
     values = _np.ones((network.Np, ))*_np.inf
-    _np.minimum.at(values, im.row, values[im.col])
+    _np.minimum.at(values, im.row, D[im.col])
     return _np.array(values)
 
 
@@ -52,10 +52,10 @@ def distance_to_furthest_neighbor(target):
     cn = network['throat.conns'][throats]
     C1 = network['pore.coords'][cn[:, 0]]
     C2 = network['pore.coords'][cn[:, 1]]
-    values = _norm(C1 - C2, axis=1)
+    D = _norm(C1 - C2, axis=1)
     im = network.create_incidence_matrix()
     values = _np.zeros((network.Np, ))
-    _np.maximum.at(values, im.row, values[im.col])
+    _np.maximum.at(values, im.row, D[im.col])
     return _np.array(values)
 
 
