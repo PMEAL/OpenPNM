@@ -8,6 +8,7 @@ __all__ = [
     "hagen_poiseuille",
     "hagen_poiseuille_power_law",
     "valvatne_blunt",
+    "classic_hagen_poiseuille"
 ]
 
 
@@ -341,3 +342,69 @@ def valvatne_blunt(
     # Resistors in Series
     value = l1 / gp[conns[:, 0]] + lt / gt + l2 / gp[conns[:, 1]]
     return 1 / value
+
+
+def classic_hagen_poiseuille(
+    target,
+    pore_diameter="pore.diameter",
+    throat_diameter="throat.diameter",
+    throat_length="throat.length",
+    pore_viscosity="pore.viscosity",
+    size_factors="throat.hydraulic_size_factors",
+):
+    r"""
+    Legacy method that calculates the hydraulic conductance of conduits
+    assuming pores and throats are cylinders in series.
+    This method is based on the Hagen-Poiseuille model.
+    Parameters
+    ----------
+    target : _GenericPhysics
+        Physics object with which this model is associated.
+    pore_diameter : str
+        Dictionary key of the pore diameter values.
+    throat_diameter : str
+        Dictionary key of the throat diameter values.
+    throat_length : str
+        Dictionary key of the throat length values.
+    pore_viscosity : str
+        Dictionary key of the pore viscosity values.
+    size_factors: str
+        Dictionary key of the conduit hydraulic size factors' values.
+    Notes
+    -----
+    This function calculates the specified property for the *entire* network
+    then extracts the values for the appropriate throats at the end.
+    """
+    network = target.project.network
+    throats = network.map_throats(throats=target.Ts, origin=target)
+    # Get Nt-by-2 list of pores connected to each throat
+    Ps = network["throat.conns"]
+    # Get properties in every pore in the network
+    phase = target.project.find_phase(target)
+    mut = phase.interpolate_data(propname=pore_viscosity)[throats]
+    pdia = network[pore_diameter]
+    # Get pore lengths
+    plen1 = 0.5 * pdia[Ps[:, 0]]
+    plen2 = 0.5 * pdia[Ps[:, 1]]
+    # Remove any non-positive lengths
+    plen1[plen1 <= 1e-12] = 1e-12
+    plen2[plen2 <= 1e-12] = 1e-12
+    # Find g for half of pore 1
+    gp1 = _np.pi * (pdia[Ps[:, 0]]) ** 4 / (128 * plen1 * mut)
+    gp1[_np.isnan(gp1)] = _np.inf
+    gp1[~(gp1 > 0)] = _np.inf  # Set 0 conductance pores (boundaries) to inf
+
+    # Find g for half of pore 2
+    gp2 = _np.pi * (pdia[Ps[:, 1]]) ** 4 / (128 * plen2 * mut)
+    gp2[_np.isnan(gp2)] = _np.inf
+    gp2[~(gp2 > 0)] = _np.inf  # Set 0 conductance pores (boundaries) to inf
+    # Find g for full throat
+    F = network[size_factors]
+    if isinstance(F, dict):
+        gt = mut * F[f"{size_factors}.throat"][throats]
+        # Set 0 conductance pores (boundaries) to inf
+        gt[~(gt > 0)] = _np.inf
+        gtotal = (1 / gt + 1 / gp1 + 1 / gp2) ** (-1)
+    else:
+        gtotal = mut * F[throats]
+    return gtotal

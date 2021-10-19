@@ -91,6 +91,21 @@ class HydraulicConductanceTest:
         desired = 2059.13571716
         assert_allclose(actual, desired=desired)
 
+    def test_classic_hagen_poiseuille(self):
+        mod = op.models.geometry.hydraulic_size_factors.ncylinders_in_series
+        self.geo.add_model(propname='throat.hydraulic_size_factors', model=mod)
+        self.air = op.phases.Air(network=self.net)
+        self.phys = op.physics.GenericPhysics(network=self.net,
+                                              phase=self.air,
+                                              geometry=self.geo)
+        mod = op.models.physics.hydraulic_conductance.classic_hagen_poiseuille
+        self.phys.add_model(propname='throat.conductance',
+                            model=mod)
+        print(self.phys['throat.conductance'][0])
+        assert _np.allclose(a=self.phys['throat.conductance'][0],
+                            b=2.1118499573886901e-07)
+
+
 
 if __name__ == '__main__':
 
