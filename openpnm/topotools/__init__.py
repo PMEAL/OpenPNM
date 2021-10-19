@@ -50,6 +50,7 @@ from .perctools import bond_percolation
 from .perctools import find_clusters
 from .perctools import find_path
 
+from .graphtools import drop_sites
 from .graphtools import find_neighbor_sites
 from .graphtools import find_neighbor_bonds
 from .graphtools import find_connected_sites

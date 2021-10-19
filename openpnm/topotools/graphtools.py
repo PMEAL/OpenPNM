@@ -627,3 +627,41 @@ def conns_to_am(conns, shape=None, force_triu=True, drop_diag=True,
     if np.size(missing) or np.any(am.col.max() < (shape[0] - 1)):
         warnings.warn('Some nodes are not connected to any bonds')
     return am
+
+
+def drop_sites(am, sites):
+    r"""
+    Update adjacency matrix after dropping sites
+
+    Parameters
+    ----------
+    am : scipy.sparse matrix
+        The adjacency matrix of the network in COO format.
+    sites : array_like
+        A list of which sites to drop.  Can either be integer indices or a
+        boolean mask with ``True`` indicating which sites to drop.
+
+    Returns
+    -------
+    am : ndarray
+        An updated adjacency matrix with sites and headless bonds removed,
+        and site indices updated accordingly
+    dropped_bonds : ndarray
+        A boolean array with ``True`` values indicating which bonds
+        were rendered headless. This can be used to drop invalid bonds
+        from other arrays (i.e. array = array[~dropped_bonds]).
+
+    """
+    import scipy.sparse as sprs
+    sites = np.array(sites)
+    if sites.dtype != bool:
+        inds = np.copy(sites)
+        sites = np.zeros(am.shape[0], dtype=bool)
+        sites[inds] = True
+    site_mask = ~sites
+    conns = np.vstack((am.row, am.col)).T
+    site_id = np.cumsum(site_mask) - 1
+    bond_mask = ~np.all(site_mask[conns], axis=1)
+    conns = site_id[conns[~bond_mask]]
+    am = sprs.coo_matrix((am.data[~bond_mask], (conns[:, 0], conns[:, 1])))
+    return am, bond_mask
