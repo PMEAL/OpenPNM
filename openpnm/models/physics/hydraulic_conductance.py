@@ -44,7 +44,7 @@ def generic_hydraulic(target,
     phase = target.project.find_phase(target)
     F = network[size_factors]
     mu1, mu2 = phase[pore_viscosity][conns].T
-    mut = phase[throat_viscosity]
+    mut = phase[throat_viscosity][throats]
 
     if isinstance(F, dict):
         g1 = F[f"{size_factors}.pore1"][throats] / mu1
