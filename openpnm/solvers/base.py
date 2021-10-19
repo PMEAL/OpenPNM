@@ -5,8 +5,7 @@ class BaseSolver:
 
     def __init__(self): ...
 
-    def solve(self):
-        raise NotImplementedError
+    def solve(self): raise NotImplementedError
 
 
 class DirectSolver(BaseSolver): ...
@@ -53,6 +52,3 @@ class IterativeSolver(BaseSolver):
             ``res = norm(A*x - b)``
         """
         return norm(A*x - b)
-
-
-class Integrator: ...
