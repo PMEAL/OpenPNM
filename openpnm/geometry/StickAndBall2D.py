@@ -184,8 +184,7 @@ class StickAndBall2D(GenericGeometry):
 
         self.add_model(propname='pore.diameter',
                        model=mods.misc.product,
-                       prop1='pore.max_size',
-                       prop2='pore.seed')
+                       props=['pore.max_size', 'pore.seed'])
 
         self.add_model(propname='pore.area',
                        model=mods.geometry.pore_cross_sectional_area.circle,

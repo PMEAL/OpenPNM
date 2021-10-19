@@ -13,12 +13,6 @@ class COMSOL(GenericIO):
     - This class exports in 2D only.
 
     """
-    @classmethod
-    def save(cls, *args, **kwargs):
-        r"""
-        This method is being deprecated.  Use ``export_data`` instead.
-        """
-        cls.export_data(*args, **kwargs)
 
     @classmethod
     def export_data(cls, network, phases=[], filename=''):

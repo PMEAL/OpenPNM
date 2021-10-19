@@ -38,12 +38,6 @@ class NetworkX(GenericIO):
     by OpenPNM.
 
     """
-    @classmethod
-    def from_networkx(cls, *args, **kwargs):
-        r"""
-        This method is being deprecated.  Use ``import_data`` instead.
-        """
-        return cls.import_data(*args, **kwargs)
 
     @classmethod
     def import_data(cls, G, project=None):
@@ -153,13 +147,6 @@ class NetworkX(GenericIO):
         return network.project
 
     @classmethod
-    def to_networkx(cls, *args, **kwargs):
-        r"""
-        This method is being deprecated.  Use ``export_data`` instead.
-        """
-        return cls.export_data(*args, **kwargs)
-
-    @classmethod
     def export_data(cls, network):
         r"""
         Write OpenPNM Network to a NetworkX object.
@@ -177,7 +164,7 @@ class NetworkX(GenericIO):
 
         # Ensure network is an OpenPNM Network object.
         if not isinstance(network, GenericNetwork):
-            raise('Provided network is not an OpenPNM Network.')
+            raise Exception('Provided network is not an OpenPNM Network.')
 
         G = nx.Graph()
 

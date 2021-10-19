@@ -11,13 +11,6 @@ class PoreSpy(GenericIO):
     """
 
     @classmethod
-    def load(cls, *args, **kwargs):
-        r"""
-        This method is being deprecated.  Use ``import_data`` instead.
-        """
-        return cls.import_data(*args, **kwargs)
-
-    @classmethod
     def import_data(cls, filename, project=None, settings={}):
         r"""
         Load a network extracted using the PoreSpy package

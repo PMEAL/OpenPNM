@@ -15,7 +15,7 @@ class ParaViewTest():
         geo = op.geometry.StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts)
         water = op.phases.Water(network=pn)
         _ = op.physics.Standard(network=pn, phase=water, geometry=geo)
-        op.io.VTK.save(pn, water, 'test.vtp')
+        op.io.VTK.export_data(pn, water, 'test.vtp')
         op.io.ParaView.export_data(pn, filename='test.vtp')
         os.remove('test.pvsm')
         os.remove('test.vtp')

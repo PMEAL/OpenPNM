@@ -114,8 +114,13 @@ class ModelsDict(PrintableDict):
             # Filter pore/throat props only
             dependencies = set()
             for param in self[model].values():
-                if is_valid_propname(param):
-                    dependencies.add(param)
+                if type(param) == list:
+                    for element in param:
+                        if is_valid_propname(element):
+                            dependencies.add(element)
+                else:
+                    if is_valid_propname(param):
+                        dependencies.add(param)
             # Add depenency from model's parameters
             for d in dependencies:
                 if not deep:
@@ -265,42 +270,6 @@ class ModelsMixin:
     +----------------------+--------------------------------------------------+
     | ``remove_model``     | Removes specified model as well as it's data     |
     +----------------------+--------------------------------------------------+
-
-    Examples
-    --------
-    >>> import openpnm as op
-
-    Create a Demo class using Base and ModelsMixin:
-
-    >>> class Demo(op.core.Base, op.core.ModelsMixin):
-    ...     pass
-    >>> temp = Demo(Np=3, Nt=2)
-
-    The new class has the normal Base methods:
-
-    >>> print(temp.num_pores())
-    3
-
-    But also has those needed for working with models.  For instance, a
-    simple model can be added as follows:
-
-    >>> temp.add_model(propname='pore.test',
-    ...                model=op.models.misc.constant,
-    ...                value=2)
-    >>> print(temp['pore.test'])
-    [2 2 2]
-
-    All the models and their respective parameters are stored in the
-    ``models`` attribute:
-
-    >>> print(temp.models)
-    ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-    #   Property Name                       Parameter                 Value
-    ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-    1   pore.test                           model:                    constant
-                                            value:                    2
-                                            regeneration mode:        normal
-    ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 
     """
 

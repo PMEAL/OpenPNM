@@ -510,8 +510,8 @@ class DictTest:
                          flatten=False, interleave=False,
                          categorize_by=[])
         fname = tmpdir.join('test.dct')
-        Dict.save(dct=D, filename=fname)
-        dct = Dict.load(filename=fname)
+        Dict.export_data(dct=D, filename=fname)
+        dct = Dict.import_data(filename=fname)
         assert len(dct.keys()) == 2
         os.remove(fname)
 

@@ -206,12 +206,6 @@ class Statoil(GenericIO):
                 s = s + '\n'  # Remove trailing tab and a new line
                 f.write(s)
 
-    @classmethod
-    def load(cls, *args, **kwargs):
-        r"""
-        This method is being deprecated.  Use ``import_data`` instead.
-        """
-        return cls.import_data(*args, **kwargs)
 
     @classmethod
     def import_data(cls, path, prefix, network=None):

@@ -73,13 +73,6 @@ pnm_2_salome(cylinder_head, cylinder_tail, cylinder_r,
     '''
 
     @classmethod
-    def save(cls, *args, **kwargs):
-        r"""
-        This method is being deprecated.  Use ``export_data`` instead.
-        """
-        cls.export_data(*args, **kwargs)
-
-    @classmethod
     def export_data(cls, network, phases=[], filename='', explicit=False):
         r"""
         Saves the network data and writes a Salome .py instruction file.

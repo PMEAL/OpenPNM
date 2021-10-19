@@ -213,9 +213,10 @@ class ReactiveTransportTest:
         self.alg.set_value_BC(pores=self.net.pores("front"), values=10.0)
         self.alg.set_value_BC(pores=self.net.pores("back"), values=0.0)
         self.alg.run()
-        c_avg = self.alg["pore.concentration"].reshape(self.net.shape).mean(axis=(0, 2))
-        desired = [10.0, 8.181758, 5.421944, 0.0]
-        assert_allclose(c_avg, desired, rtol=1e-6)
+        shape = op.topotools.get_shape(self.net)
+        c_avg = self.alg["pore.concentration"].reshape(shape).mean(axis=(0, 2))
+        desired = [10.0, 8.18175755, 5.42194391, 0.0]
+        assert_allclose(c_avg, desired)
 
     def test_reset(self):
         self.alg.reset(bcs=True, source_terms=True)

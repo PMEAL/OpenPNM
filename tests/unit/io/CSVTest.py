@@ -61,18 +61,18 @@ class CSVTest:
     def test_save(self, tmpdir):
         fname = tmpdir.join(self.net.project.name)
         len_before = len(tmpdir.listdir())
-        op.io.CSV.save(network=self.net, phases=self.phase_1, filename=fname)
+        op.io.CSV.export_data(network=self.net, phases=self.phase_1, filename=fname)
         assert len(tmpdir.listdir()) == (len_before + 1)
         os.remove(fname.dirpath().join(self.net.project.name + '.csv'))
 
     def test_load_bad_filename(self, tmpdir):
         with pytest.raises(OSError):
-            op.io.CSV.load(filename='')
+            op.io.CSV.import_data(filename='')
 
     def test_load_categorized_by_object(self, tmpdir):
         fname = tmpdir.join(self.net.project.name)
-        op.io.CSV.save(network=self.net, phases=self.phase_1, filename=fname)
-        proj = op.io.CSV.load(filename=fname)
+        op.io.CSV.export_data(network=self.net, phases=self.phase_1, filename=fname)
+        proj = op.io.CSV.import_data(filename=fname)
         os.remove(fname.dirpath().join(self.net.project.name + '.csv'))
         assert len(proj) == 2
         assert proj.network.name == self.net.name

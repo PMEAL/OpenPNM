@@ -40,13 +40,6 @@ class CSV(GenericIO):
     """
 
     @classmethod
-    def save(cls, *args, **kwargs):
-        r"""
-        This method is to be deprecated. Use ``export_data`` instead.
-        """
-        cls.export_data(*args, **kwargs)
-
-    @classmethod
     def export_data(cls, network=None, phases=[], filename='', delim=' | '):
         r"""
         Save all the pore and throat property data on the Network (and
@@ -70,21 +63,13 @@ class CSV(GenericIO):
         """
         project, network, phases = cls._parse_args(network=network,
                                                    phases=phases)
-        df = Pandas.to_dataframe(network=network, phases=phases,
+        df = Pandas.export_data(network=network, phases=phases,
                                  join=True, delim=delim)
         # Write to file
         if filename == '':
             filename = project.name
         fname = cls._parse_filename(filename=filename, ext='csv')
         df.to_csv(fname, index=False)
-
-    @classmethod
-    def load(cls, *args, **kwargs):
-        r"""
-        This method will be deprecated.  Use ``import_data`` instead.
-        """
-        proj = cls.import_data(*args, **kwargs)
-        return proj
 
     @classmethod
     def import_data(cls, filename, project=None, delim=' | '):

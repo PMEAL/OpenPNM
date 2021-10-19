@@ -3,6 +3,7 @@ Pore-scale models for calculating the diffusive conductance of conduits.
 """
 import numpy as _np
 import scipy.constants as _const
+from openpnm.models.physics.utils import generic_transport_conductance
 
 __all__ = [
     "generic_diffusive",
@@ -15,12 +16,10 @@ __all__ = [
 ]
 
 
-def generic_diffusive(
-    target,
-    pore_diffusivity="pore.diffusivity",
-    throat_diffusivity="throat.diffusivity",
-    size_factors="throat.diffusive_size_factors",
-):
+def generic_diffusive(target,
+                      pore_diffusivity="pore.diffusivity",
+                      throat_diffusivity="throat.diffusivity",
+                      size_factors="throat.diffusive_size_factors"):
     r"""
     Calculates the diffusive conductance of conduits in network.
 
@@ -44,23 +43,10 @@ def generic_diffusive(
         geometry attached to the given physics object.
 
     """
-    network = target.project.network
-    throats = target.throats(target=network)
-    conns = network.conns[throats]
-    phase = target.project.find_phase(target)
-    F = network[size_factors]
-    DAB1, DAB2 = phase[pore_diffusivity][conns].T
-    DABt = phase[throat_diffusivity]
-
-    if isinstance(F, dict):
-        g1 = DAB1 * F[f"{size_factors}.pore1"][throats]
-        gt = DABt * F[f"{size_factors}.throat"][throats]
-        g2 = DAB2 * F[f"{size_factors}.pore2"][throats]
-        gd = 1 / (1 / g1 + 1 / gt + 1 / g2)
-    else:
-        gd = DABt * F
-
-    return gd
+    return generic_transport_conductance(target=target,
+                                         pore_conductivity=pore_diffusivity,
+                                         throat_conductivity=throat_diffusivity,
+                                         size_factors=size_factors)
 
 
 def ordinary_diffusion(

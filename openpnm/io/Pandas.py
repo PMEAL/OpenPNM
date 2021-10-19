@@ -24,13 +24,6 @@ class Pandas(GenericIO):
     by OpenPNM, this could be an solution.
 
     """
-    @classmethod
-    def to_dataframe(cls, *args, **kwargs):
-        r"""
-        This method is being deprecated.  Use ``export_data`` instead.
-        """
-        data = cls.export_data(*args, **kwargs)
-        return data
 
     @classmethod
     def export_data(cls, network=None, phases=[], join=False, delim=' | '):

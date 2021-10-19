@@ -13,7 +13,6 @@ effects
 from . import ad_dif_mig_conductance
 from . import ad_dif_conductance
 from . import diffusive_conductance
-from . import dispersive_conductance
 from . import electrical_conductance
 from . import hydraulic_conductance
 from . import ionic_conductance
