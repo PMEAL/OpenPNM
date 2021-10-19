@@ -708,6 +708,38 @@ instance if boundary pores have already added to other faces.</p></li>
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.network.Cubic.from_array">
+<span class="sig-name descname"><span class="pre">from_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">propname</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/network/Cubic.html#Cubic.from_array"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.network.Cubic.from_array" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply data to the network based on a rectangular array filled with
+values.  Each array location corresponds to a pore in the network.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>array</strong> (<em>array_like</em>) – The rectangular array containing the values to be added to the
+network. This array must be the same shape as the original network.</p></li>
+<li><p><strong>propname</strong> (<em>string</em>) – The name of the pore property being added.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.network.Cubic.to_array">
+<span class="sig-name descname"><span class="pre">to_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/network/Cubic.html#Cubic.to_array"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.network.Cubic.to_array" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts the values to a rectangular array with the same shape as the
+network</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>values</strong> (<em>array_like</em>) – An Np-long array of values to convert to</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This method can break on networks that have had boundaries added.  It
+will usually work IF the given values came only from ‘internal’
+pores.</p>
+</dd></dl>
+
 </dd></dl>
 
 </section>
