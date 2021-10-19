@@ -1,7 +1,7 @@
 import numpy as np
 from openpnm.algorithms import ReactiveTransport
 from openpnm.utils import logging, GenericSettings, Docorator
-from openpnm.solvers import ScipyRK45
+from openpnm.integrators import ScipyRK45
 docstr = Docorator()
 logger = logging.getLogger(__name__)
 
