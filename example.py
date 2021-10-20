@@ -2,6 +2,7 @@ import numpy as np
 import openpnm as op
 from openpnm.models.physics import source_terms
 
+# Delete this line
 
 # %% Initialization: create Workspace and project objects.
 ws = op.Workspace()
