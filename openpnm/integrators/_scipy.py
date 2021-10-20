@@ -39,6 +39,7 @@ class TransientSolution(Solution):
         self._interpolant = interp1d(self.t, self, bounds_error=True)
 
     def interpolate(self, t):
+        # Cache interpolant to avoid overhead
         if not hasattr(self, "_interpolant"):
             self._create_interpolant()
         return self._interpolant(t)
