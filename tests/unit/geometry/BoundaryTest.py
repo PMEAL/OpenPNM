@@ -52,6 +52,10 @@ class BoundaryTest:
                                        pores=Ps_int, throats=Ts_int)
         boun = op.geometry.Boundary(network=pn, pores=Ps_boun,
                                     throats=Ts_boun)
+        mod = op.models.geometry.diffusive_size_factors.cones_and_cylinders
+        boun.add_model(propname='throat.diffusive_size_factors', model=mod)
+        mod = op.models.geometry.hydraulic_size_factors.cones_and_cylinders
+        boun.add_model(propname='throat.hydraulic_size_factors', model=mod)
         geo.regenerate_models()
         boun.regenerate_models()
         air = op.phases.Air(network=pn)
