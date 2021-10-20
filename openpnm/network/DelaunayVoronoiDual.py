@@ -53,7 +53,7 @@ class DelaunayVoronoiDual(GenericNetwork):
     Points will be automatically generated if none are given:
 
     >>> import openpnm as op
-    >>> net = op.network.DelaunayVoronoiDual(num_points=50, shape=[1, 1, 0])
+    >>> net = op.network.DelaunayVoronoiDual(points=50, shape=[1, 1, 0])
 
     The resulting network can be quickly visualized using
     ``opnepnm.topotools.plot_connections``.
