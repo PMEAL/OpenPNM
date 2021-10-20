@@ -5,9 +5,9 @@ class FickianDiffusionTest:
 
     def setup_class(self):
         self.net = op.network.Cubic(shape=[9, 9, 9])
-        self.geo = op.geometry.StickAndBall(network=self.net,
-                                            pores=self.net.Ps,
-                                            throats=self.net.Ts)
+        self.geo = op.geometry._StickAndBall(network=self.net,
+                                             pores=self.net.Ps,
+                                             throats=self.net.Ts)
         self.phase = op.phases.Air(network=self.net)
         self.phase['pore.mole_fraction'] = 0
         self.phys = op.physics.GenericPhysics(network=self.net,

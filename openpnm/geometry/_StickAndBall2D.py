@@ -2,7 +2,7 @@ import openpnm.models as mods
 from openpnm.geometry import GenericGeometry
 
 
-class StickAndBall2D(GenericGeometry):
+class _StickAndBall2D(GenericGeometry):
     r"""
     2D Stick and Ball subclass of GenericGeometry.  This subclass is meant as a
     basic default geometry to get started quickly.

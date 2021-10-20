@@ -2,7 +2,7 @@ import openpnm.models as mods
 from openpnm.geometry import GenericGeometry
 
 
-class StickAndBall(GenericGeometry):
+class _StickAndBall(GenericGeometry):
     r"""
     Stick and Ball subclass of GenericGeometry.  This subclass is meant as a
     basic default geometry to get started quickly.
@@ -124,6 +124,10 @@ class StickAndBall(GenericGeometry):
                        throat_diameter='throat.diameter')
 
         self.add_model(propname='throat.conduit_lengths',
-                       model=mods.geometry.throat_length.conduit_lengths,
+                       model=conduit_lengths,
                        throat_endpoints='throat.endpoints',
                        throat_length='throat.length')
+
+
+def conduit_lengths():
+    pass
