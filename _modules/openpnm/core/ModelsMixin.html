@@ -446,42 +446,6 @@
 <span class="sd">    | ``remove_model``     | Removes specified model as well as it&#39;s data     |</span>
 <span class="sd">    +----------------------+--------------------------------------------------+</span>
 
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import openpnm as op</span>
-
-<span class="sd">    Create a Demo class using Base and ModelsMixin:</span>
-
-<span class="sd">    &gt;&gt;&gt; class Demo(op.core.Base, op.core.ModelsMixin):</span>
-<span class="sd">    ...     pass</span>
-<span class="sd">    &gt;&gt;&gt; temp = Demo(Np=3, Nt=2)</span>
-
-<span class="sd">    The new class has the normal Base methods:</span>
-
-<span class="sd">    &gt;&gt;&gt; print(temp.num_pores())</span>
-<span class="sd">    3</span>
-
-<span class="sd">    But also has those needed for working with models.  For instance, a</span>
-<span class="sd">    simple model can be added as follows:</span>
-
-<span class="sd">    &gt;&gt;&gt; temp.add_model(propname=&#39;pore.test&#39;,</span>
-<span class="sd">    ...                model=op.models.misc.constant,</span>
-<span class="sd">    ...                value=2)</span>
-<span class="sd">    &gt;&gt;&gt; print(temp[&#39;pore.test&#39;])</span>
-<span class="sd">    [2 2 2]</span>
-
-<span class="sd">    All the models and their respective parameters are stored in the</span>
-<span class="sd">    ``models`` attribute:</span>
-
-<span class="sd">    &gt;&gt;&gt; print(temp.models)</span>
-<span class="sd">    ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――</span>
-<span class="sd">    #   Property Name                       Parameter                 Value</span>
-<span class="sd">    ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――</span>
-<span class="sd">    1   pore.test                           model:                    constant</span>
-<span class="sd">                                            value:                    2</span>
-<span class="sd">                                            regeneration mode:        normal</span>
-<span class="sd">    ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="ModelsMixin.add_model"><a class="viewcode-back" href="../../../modules/core/modelsmixin.html#openpnm.core.ModelsMixin.add_model">[docs]</a>    <span class="k">def</span> <span class="nf">add_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">propname</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">regen_mode</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>

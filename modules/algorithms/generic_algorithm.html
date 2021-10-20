@@ -613,46 +613,17 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="openpnm.algorithms.GenericAlgorithm">
 <em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">GenericAlgorithm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/GenericAlgorithm.html#GenericAlgorithm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.GenericAlgorithm" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../core/base.html#openpnm.core.Base" title="openpnm.core.Base.Base"><code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.core.Base.Base</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="../core/base.html#openpnm.core.Base" title="openpnm.core.Base.Base"><code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.core.Base.Base</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.core.Base.LegacyMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.core.Base.LabelMixin</span></code></p>
 <p>Generic class to define the foundation of Algorithms.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>network</strong> (<em>(</em><em>OpenPNM Network object</em><em>)</em>) – The network object to which this algorithm will apply.</p></li>
-<li><p><strong>name</strong> (<em>(</em><em>string</em><em>, </em><em>optional</em><em>)</em>) – Name of the algorithm</p></li>
-<li><p><strong>project</strong> (<em>(</em><em>OpenPNM Project object</em><em>, </em><em>optional</em><em>)</em>) – Either a Network or a Project must be supplied</p></li>
+<li><p><strong>network</strong> (<a class="reference internal" href="../network/generic.html#openpnm.network.GenericNetwork" title="openpnm.network.GenericNetwork"><em>GenericNetwork</em></a>) – The network object to which this algorithm will apply.</p></li>
+<li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of the algorithm</p></li>
+<li><p><strong>project</strong> (<a class="reference internal" href="../utils/project.html#openpnm.utils.Project" title="openpnm.utils.Project"><em>Project</em></a><em>, </em><em>optional</em>) – Either a Network or a Project must be supplied</p></li>
 </ul>
 </dd>
 </dl>
-<p class="rubric">Notes</p>
-<p>This class defines the following methods, which all raise a
-<code class="docutils literal notranslate"><span class="pre">NotImplementedError</span></code> and must be defined by the various subclasses</p>
-<table class="table">
-<colgroup>
-<col style="width: 29%" />
-<col style="width: 71%" />
-</colgroup>
-<thead>
-<tr class="row-odd"><th class="head"><p>Methods</p></th>
-<th class="head"><p>Description</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">results</span></code></p></td>
-<td><p>Generates an array or arrays of data produced by
-the algorithm to be returned to the Phase</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">setup</span></code></p></td>
-<td><p>Collects values to be placed in <code class="docutils literal notranslate"><span class="pre">settings</span></code>. The
-main benefit is defining default values and
-providing documentation on each settings</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">reset</span></code></p></td>
-<td><p>Removes generated data, specified values, and
-any other information lingering on an Algorithm</p></td>
-</tr>
-</tbody>
-</table>
 <dl class="py method">
 <dt class="sig sig-object py" id="openpnm.algorithms.GenericAlgorithm.reset">
 <span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/GenericAlgorithm.html#GenericAlgorithm.reset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.GenericAlgorithm.reset" title="Permalink to this definition">¶</a></dt>
