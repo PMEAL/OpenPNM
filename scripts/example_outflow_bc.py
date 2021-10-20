@@ -1,34 +1,28 @@
+r"""
+Details about the continum and numerical model equations can be found on:
+Agnaou, M., Sadeghi, M. A., Tranter, T. G., & Gostick, J. (2020).
+Modeling transport of charged species in pore networks: solution of the
+Nernst-Planck equations coupled with fluid flow and charge conservation
+equations.
+Computers & Geosciences, 104505.
+"""
 import openpnm as op
 from openpnm.phases import mixtures
 import numpy as np
 ws = op.Workspace()
 proj = ws.new_project()
-# ws.settings['loglevel'] = 20
 
 
-"""
-    Details about the continum and numerical model equations can be found on:
-    Agnaou, M., Sadeghi, M. A., Tranter, T. G., & Gostick, J. (2020).
-    Modeling transport of charged species in pore networks: solution of the
-    Nernst-Planck equations coupled with fluid flow and charge conservation
-    equations.
-    Computers & Geosciences, 104505.
-"""
-
-
-# network, geometry, phase
+# Network, geometry, phase
 np.random.seed(0)
 
 net = op.network.Cubic(shape=[23, 15, 1], spacing=1e-6, project=proj)
-prs = (net['pore.back'] * net['pore.right'] + net['pore.back']
-       * net['pore.left'] + net['pore.front'] * net['pore.right']
-       + net['pore.front'] * net['pore.left'])
-prs = net.Ps[prs]
-
-thrts = net['throat.surface']
-thrts = net.Ts[thrts]
-
-op.topotools.trim(network=net, pores=prs, throats=thrts)
+Ps = (net['pore.back']  * net['pore.right']
+    + net['pore.back']  * net['pore.left']
+    + net['pore.front'] * net['pore.right']
+    + net['pore.front'] * net['pore.left'])
+Ts = net['throat.surface']
+op.topotools.trim(network=net, pores=net.Ps[Ps], throats=net.Ts[Ts])
 
 np.random.seed(0)
 op.topotools.reduce_coordination(net, 3)
@@ -36,14 +30,13 @@ op.topotools.reduce_coordination(net, 3)
 np.random.seed(0)
 geo = op.geometry.StickAndBall(network=net, pores=net.Ps, throats=net.Ts)
 
-
 sw = mixtures.SalineWater(network=net)
 # Retrieve handles to each species for use below
 Na = sw.components['Na_' + sw.name]
 Cl = sw.components['Cl_' + sw.name]
 H2O = sw.components['H2O_' + sw.name]
 
-# physics
+# Physics
 phys = op.physics.GenericPhysics(network=net, phase=sw, geometry=geo)
 
 flow = op.models.physics.hydraulic_conductance.hagen_poiseuille
@@ -85,13 +78,13 @@ phys.add_model(propname='throat.ad_dif_mig_conductance.' + Cl.name,
                pore_pressure='pore.pressure', model=ad_dif_mig_Cl,
                ion=Cl.name, s_scheme=scheme)
 
-# settings for algorithms
+# Settings for algorithms
 setts1 = {'solver_family': 'scipy', 'solver_max_iter': 5, 'solver_tol': 1e-08,
           'solver_rtol': 1e-08, 'nlin_max_iter': 10, 'cache_A': False,
           'cache_b': False}
 setts2 = {'g_tol': 1e-4, 'g_max_iter': 100}
 
-# algorithms
+# Algorithms
 sf = op.algorithms.StokesFlow(network=net, phase=sw, settings=setts1)
 sf.set_value_BC(pores=net.pores('back'), values=6)
 sf.set_value_BC(pores=net.pores('front'), values=1)
@@ -121,7 +114,6 @@ eB.set_outflow_BC(pores=net.pores('front'))
 eB.run()
 sw['pore.val2'] = eB['pore.concentration.Na_mix_01']
 
-
 eC = op.algorithms.AdvectionDiffusion(network=net, phase=sw, settings=setts1)
 setts3 = setts1.copy()
 setts3.update(
@@ -136,6 +128,6 @@ eC.set_outflow_BC(pores=net.pores('front'))
 eC.run()
 sw['pore.val3'] = eC['pore.concentration']
 
-# output data to Paraview
+# Output data to Paraview
 # sw['pore.val2'] should be equal to sw['pore.val3']
-# proj.export_data(phases=[sw], filename='OUT', filetype='vtp')
+proj.export_data(phases=[sw], filename='out', filetype='VTK')

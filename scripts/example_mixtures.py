@@ -39,7 +39,7 @@ air.update(sf.results())
 air.regenerate_models()
 
 fd = op.algorithms.FickianDiffusion(network=pn, phase=air)
-fd.setup(quantity='pore.concentration.pure_O2')
+fd.settings["quantity"] = 'pore.concentration.pure_O2'
 fd.set_value_BC(pores=pn.pores('left'), values=1)
 fd.set_value_BC(pores=pn.pores('right'), values=0)
 fd.run()

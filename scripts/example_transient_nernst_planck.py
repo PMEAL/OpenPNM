@@ -20,12 +20,12 @@ export = False
 np.random.seed(0)
 
 net = op.network.Cubic(shape=[8, 8, 1], spacing=9e-4, project=proj)
-prs = (net['pore.back'] * net['pore.right'] + net['pore.back']
-       * net['pore.left'] + net['pore.front'] * net['pore.right']
-       + net['pore.front'] * net['pore.left'])
-thrts = net['throat.surface']
-op.topotools.trim(network=net, pores=net.Ps[prs], throats=net.Ts[thrts])
-
+Ps = (net['pore.back']  * net['pore.right']
+    + net['pore.back']  * net['pore.left']
+    + net['pore.front'] * net['pore.right']
+    + net['pore.front'] * net['pore.left'])
+Ts = net['throat.surface']
+op.topotools.trim(network=net, pores=net.Ps[Ps], throats=net.Ts[Ts])
 
 geo = op.geometry.StickAndBall(network=net, pores=net.Ps, throats=net.Ts)
 pore_d = op.models.misc.constant
@@ -108,7 +108,8 @@ eB.set_value_BC(pores=net.pores('front'), values=90)
 it = op.algorithms.TransientNernstPlanckMultiphysicsSolver(network=net,
                                                            phase=sw,
                                                            settings=setts2)
-it.setup(potential_field=p.name, ions=[eA.name, eB.name])
+it.settings["potential_field"] = p.name
+it.settings["ions"] = [eA.name, eB.name]
 it.run()
 
 sw.update(sf.results())

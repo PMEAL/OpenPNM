@@ -18,14 +18,14 @@ from openpnm.phases import Air, Water, MultiPhase
 from openpnm.geometry import StickAndBall
 from openpnm.physics import Standard
 from openpnm.models.misc import constant
-from openpnm.models.physics.generic_source_term import linear
+from openpnm.models.physics.source_terms import linear
 import matplotlib.pyplot as plt
 import numpy as np
 np.random.seed(10)
-export = False
 
 # Define network, geometry and constituent phases
-net = Cubic(shape=[100, 100, 1])
+shape = np.array([100, 100, 1])
+net = Cubic(shape=shape)
 geom = StickAndBall(network=net, pores=net.Ps, throats=net.Ts)
 air = Air(network=net, name="air")
 water = Water(network=net, name="water")
@@ -81,9 +81,8 @@ fd.run()
 # Post-processing
 mphase.update(fd.results())
 c = mphase["pore.concentration"]
-c2d = np.rot90(c.reshape(net._shape).squeeze())
+c2d = np.rot90(c.reshape(shape).squeeze())
 plt.imshow(c2d)
 plt.colorbar()
 
-if export:
-    op.io.XDMF.save(network=net, phases=mphase, filename="network")
+op.io.XDMF.export_data(network=net, phases=mphase, filename="network")
