@@ -92,8 +92,8 @@ class TransientReactiveTransport(ReactiveTransport):
         self._validate_settings()
         self._validate_data_health()
         # Write x0 to algorithm the obj (needed by _update_iterative_props)
-        x0 = np.ones(self.Np) * x0
-        self._overwrite_ICs_with_BCs()
+        self['pore.ic'] = x0 = np.ones(self.Np, dtype=float) * x0
+        self._merge_inital_and_boundary_values()
         # Build RHS (dx/dt = RHS), then integrate the system of ODEs
         rhs = self._build_rhs()
         # Integrate RHS using the given solver
@@ -103,25 +103,21 @@ class TransientReactiveTransport(ReactiveTransport):
     def _run_special(self, x0): ...
 
     def _build_rhs(self):
-        # TODO: add a cache mechanism
-        self._build_A()
-        self._build_b()
-        self._apply_BCs()
-        self._apply_sources()
-        A = self.A.tocsc()
-        b = self.b
-        V = self.network[self.settings["pore_volume"]]
 
-        def ode_func(t, y, A, b, V):
+        def ode_func(t, y):
+            # TODO: add a cache mechanism
+            self[self.settings["quantity"]] = y
+            TransientReactiveTransport._update_A_and_b(self)
+            A = self.A.tocsc()
+            b = self.b
+            V = self.network[self.settings["pore_volume"]]
             return (-A.dot(y) + b) / V  # much faster than A*y
 
-        return lambda t, y: ode_func(t, y, A, b, V)
+        return ode_func
 
-    def _overwrite_ICs_with_BCs(self):
-        ic_vals = self['pore.ic']
-        # Ensure the given initial conditions have any value BC inserted
+    def _merge_inital_and_boundary_values(self):
+        x0 = self['pore.ic']
         bc_pores = ~np.isnan(self['pore.bc_value'])
-        ic_vals[bc_pores] = self['pore.bc_value'][bc_pores]
-        # Write values to self to to quantity, ic and t=0 array
+        x0[bc_pores] = self['pore.bc_value'][bc_pores]
         quantity = self.settings['quantity']
-        self[quantity] = ic_vals
+        self[quantity] = x0
