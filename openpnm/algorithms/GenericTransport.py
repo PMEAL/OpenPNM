@@ -198,6 +198,10 @@ class GenericTransport(GenericAlgorithm):
         self['pore.bc_rate'] = np.nan
         self['pore.bc_value'] = np.nan
 
+    @property
+    def x(self):
+        return self[self.settings['quantity']]
+
     @docstr.get_full_description(base='GenericTransport.reset')
     @docstr.get_sections(base='GenericTransport.reset', sections=['Parameters'])
     @docstr.dedent
