@@ -3,10 +3,31 @@ import uuid
 import numpy as np
 from collections import namedtuple
 from openpnm.utils import Workspace, logging
-from openpnm.utils.misc import PrintableList, SettingsDict, Docorator
+from openpnm.utils.misc import PrintableList, PrintableDict, SettingsDict, Docorator
 docstr = Docorator()
 logger = logging.getLogger(__name__)
 ws = Workspace()
+
+
+class ParamMixin:
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.params = PrintableDict()
+        self.params._key = "parameter"
+
+    def __getitem__(self, key):
+        if key.startswith('param'):
+            vals = self.params[key.split('.', 1)[1]]
+        else:
+            vals = super().__getitem__(key)
+        return vals
+
+    def __setitem__(self, key, value):
+        if key.startswith('param'):
+            self.params[key.split('.', 1)[1]] = value
+        else:
+            super().__setitem__(key, value)
 
 
 @docstr.get_sections(base='Base', sections=['Parameters'])
@@ -116,6 +137,7 @@ class Base(dict):
         self.settings['name'] = name
         self.update({'pore.all': np.ones(shape=(Np, ), dtype=bool)})
         self.update({'throat.all': np.ones(shape=(Nt, ), dtype=bool)})
+        self.params = PrintableDict()
 
     def __repr__(self):
         return '<%s object at %s>' % (self.__class__.__module__, hex(id(self)))
@@ -144,8 +166,8 @@ class Base(dict):
 
         # Check 3: Enforce correct dict naming
         element = key.split('.')[0]
-        if element not in ['pore', 'throat']:
-            raise Exception('All keys must start with either pore or throat')
+        if element not in ['pore', 'throat', 'param']:
+            raise Exception('All keys must start with either pore, throat, or param')
 
         # Check 2: If adding a new key, make sure it has no conflicts
         if self.project:
@@ -208,6 +230,7 @@ class Base(dict):
 
     def __getitem__(self, key):
         element, prop = key.split('.', 1)
+
         if key in self.keys():
             # Get values if present on self
             vals = super().__getitem__(key)
@@ -230,12 +253,6 @@ class Base(dict):
         elif hasattr(self, 'models') and key in self.models:
             self.regenerate_models(key)
             vals = super().__getitem__(key)
-        # The following is probably a bad idea, but just trying it for fun
-        # elif self.settings['interpolation_mode'] is not None:
-        #     temp = list(set(['pore', 'throat']).difference(set([element])))[0]
-        #     vals = self.interpolate_data(temp + '.' + prop,
-        #                                  mode=self.settings['interpolation_mode'])
-        #     self[element + '.' + prop] = vals
         else:
             raise KeyError(key)
         return vals
