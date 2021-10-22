@@ -18,7 +18,10 @@ class ParamMixin:
 
     def __getitem__(self, key):
         if key.startswith('param'):
-            vals = self.params[key.split('.', 1)[1]]
+            try:
+                vals = self.params[key.split('.', 1)[1]]
+            except KeyError:
+                vals = self.network.params[key.split('.', 1)[1]]
         else:
             vals = super().__getitem__(key)
         return vals
@@ -921,7 +924,7 @@ class Base(dict):
         # Deal with an plurals
         element = [item.rsplit('s', maxsplit=1)[0] for item in element]
         for item in element:
-            if item not in ['pore', 'throat']:
+            if item not in ['pore', 'throat', 'param']:
                 raise Exception('All keys must start with either pore or throat')
         # Remove duplicates if any
         _ = [element.remove(L) for L in element if element.count(L) > 1]
