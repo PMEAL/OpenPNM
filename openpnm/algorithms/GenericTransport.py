@@ -182,19 +182,11 @@ class GenericTransport(GenericAlgorithm):
         instance._pure_b = None
         return instance
 
-    def __init__(self, project=None, network=None, phase=None, settings={},
-                 **kwargs):
-        # Apply default settings
+    def __init__(self, phase, settings={}, **kwargs):
         self.settings._update_settings_and_docs(GenericTransportSettings)
-        # Overwrite any given in init
         self.settings.update(settings)
-        # Assign phase if given during init
-        if phase is not None:
-            self.settings['phase'] = phase.name
-        # If network given, get project, otherwise let parent class create it
-        if network is not None:
-            project = network.project
-        super().__init__(project=project, **kwargs)
+        super().__init__(**kwargs)
+        self.settings['phase'] = phase.name
         self['pore.bc_rate'] = np.nan
         self['pore.bc_value'] = np.nan
 

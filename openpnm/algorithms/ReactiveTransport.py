@@ -93,12 +93,10 @@ class ReactiveTransport(GenericTransport):
 
     """
 
-    def __init__(self, settings={}, phase=None, **kwargs):
+    def __init__(self, settings={}, **kwargs):
         super().__init__(**kwargs)
         self.settings._update_settings_and_docs(ReactiveTransportSettings)
         self.settings.update(settings)
-        if phase is not None:
-            self.settings['phase'] = phase.name
 
     def run(self, x0=None):
         r"""
