@@ -771,20 +771,6 @@ class Base(dict):
             else:
                 temp_arr[inds] = dummy_val[atype[0]]
 
-        # Check if any arrays have units, if so then apply them to result
-        # Importing unyt significantly adds to our import time, we also
-        # currently don't use this package extensively, so we're not going
-        # to support it for now.
-
-        # if any([hasattr(a, 'units') for a in arrs]):
-        #     [a.convert_to_mks() for a in arrs if hasattr(a, 'units')]
-        #     units = [a.units.__str__() for a in arrs if hasattr(a, 'units')]
-        #     if len(units) > 0:
-        #         if len(set(units)) == 1:
-        #             temp_arr *= np.array([1]) * getattr(unyt, units[0])
-        #         else:
-        #             raise Exception('Units on the interleaved array are not equal')
-
         return temp_arr
 
     def interpolate_data(self, propname, mode='mean'):
