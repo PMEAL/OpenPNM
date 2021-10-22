@@ -639,6 +639,29 @@ class Base(dict):
         indices = self._parse_indices(mask)
         return indices
 
+    def to_global(self, pores=None, throats=None):
+        if pores is not None:
+            element = 'pore'
+            locs = pores
+        elif throats is not None:
+            element = 'throat'
+            locs = throats
+        mask = self.network[element + '.' + self.name]
+        inds = np.where(mask)[0]
+        return inds[locs]
+
+    def to_local(self, pores=None, throats=None):
+        if pores is not None:
+            element = 'pore'
+            locs = pores
+        if throats is not None:
+            element = 'throat'
+            locs = throats
+        mask = np.zeros_like(self.network[element + '.all'], dtype=int) - 1
+        inds = np.where(self.network[element + '.' + self.name])[0]
+        mask[inds] = self.Ps
+        return mask[locs]
+
     def interleave_data(self, prop):
         r"""
         Retrieves requested property from associated objects, to produce a full
