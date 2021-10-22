@@ -593,7 +593,7 @@
 <nav id="bd-toc-nav">
     <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#module-openpnm.models.geometry">
+  <a class="reference internal nav-link" href="#overview-of-submodule">
    Overview of Submodule
   </a>
  </li>
@@ -692,7 +692,7 @@
 <ul class="simple">
 <li><p><a class="reference internal" href="#geometry-models" id="id3">Geometry Models</a></p>
 <ul>
-<li><p><a class="reference internal" href="#module-openpnm.models.geometry" id="id4">Overview of Submodule</a></p></li>
+<li><p><a class="reference internal" href="#overview-of-submodule" id="id4">Overview of Submodule</a></p></li>
 <li><p><a class="reference internal" href="#detailed-model-documentation" id="id5">Detailed Model Documentation</a></p>
 <ul>
 <li><p><a class="reference internal" href="#module-openpnm.models.geometry.pore_size" id="id6">Pore size</a></p></li>
@@ -713,10 +713,8 @@
 </li>
 </ul>
 </div>
-<section id="module-openpnm.models.geometry">
-<span id="overview-of-submodule"></span><h2><a class="toc-backref" href="#id4">Overview of Submodule</a><a class="headerlink" href="#module-openpnm.models.geometry" title="Permalink to this headline">¶</a></h2>
-<p>This submodule contains pore-scale models that calculate geometrical
-properties. These models are to be added to a Geometry object.</p>
+<section id="overview-of-submodule">
+<h2><a class="toc-backref" href="#id4">Overview of Submodule</a><a class="headerlink" href="#overview-of-submodule" title="Permalink to this headline">¶</a></h2>
 </section>
 <section id="detailed-model-documentation">
 <h2><a class="toc-backref" href="#id5">Detailed Model Documentation</a><a class="headerlink" href="#detailed-model-documentation" title="Permalink to this headline">¶</a></h2>
@@ -1192,7 +1190,7 @@ not accounting for the actual curvature of the intersection.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>target</strong> (<a class="reference internal" href="../geometry/generic_geometry.html#openpnm.geometry.GenericGeometry" title="openpnm.geometry.GenericGeometry"><em>GenericGeometry</em></a>) – The Geometry object for which these values are being calculated.
+<li><p><strong>target</strong> (<em>GenericGeometry</em>) – The Geometry object for which these values are being calculated.
 This controls the length of the calculated array, and also
 provides access to other necessary thermofluid properties.</p></li>
 <li><p><strong>pore_diameter</strong> (<em>str</em>) – The dictionary key to the pore diameter array.</p></li>
@@ -1218,7 +1216,7 @@ then subtracts the area of the neighboring throats.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>target</strong> (<a class="reference internal" href="../geometry/generic_geometry.html#openpnm.geometry.GenericGeometry" title="openpnm.geometry.GenericGeometry"><em>GenericGeometry</em></a>) – The Geometry object for which these values are being calculated.
+<li><p><strong>target</strong> (<em>GenericGeometry</em>) – The Geometry object for which these values are being calculated.
 This controls the length of the calculated array, and also
 provides access to other necessary thermofluid properties.</p></li>
 <li><p><strong>pore_diameter</strong> (<em>string</em>) – The dictionary key to the pore diameter array.</p></li>
@@ -1246,7 +1244,7 @@ not accounting for the actual curvature of the intersection.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>target</strong> (<a class="reference internal" href="../geometry/generic_geometry.html#openpnm.geometry.GenericGeometry" title="openpnm.geometry.GenericGeometry"><em>GenericGeometry</em></a>) – The Geometry object for which these values are being calculated.
+<li><p><strong>target</strong> (<em>GenericGeometry</em>) – The Geometry object for which these values are being calculated.
 This controls the length of the calculated array, and also
 provides access to other necessary thermofluid properties.</p></li>
 <li><p><strong>pore_diameter</strong> (<em>str</em>) – The dictionary key to the pore diameter array.</p></li>
@@ -1272,7 +1270,7 @@ squares then subtracts the area of the neighboring throats.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>target</strong> (<a class="reference internal" href="../geometry/generic_geometry.html#openpnm.geometry.GenericGeometry" title="openpnm.geometry.GenericGeometry"><em>GenericGeometry</em></a>) – The Geometry object for which these values are being calculated.
+<li><p><strong>target</strong> (<em>GenericGeometry</em>) – The Geometry object for which these values are being calculated.
 This controls the length of the calculated array, and also
 provides access to other necessary thermofluid properties.</p></li>
 <li><p><strong>pore_diameter</strong> (<em>str</em>) – The dictionary key to the pore diameter array.</p></li>
@@ -1578,7 +1576,7 @@ rectangles.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>target</strong> (<a class="reference internal" href="../geometry/generic_geometry.html#openpnm.geometry.GenericGeometry" title="openpnm.geometry.GenericGeometry"><em>GenericGeometry</em></a>) – Geometry object which this model is associated with. This controls the
+<li><p><strong>target</strong> (<em>GenericGeometry</em>) – Geometry object which this model is associated with. This controls the
 length of the calculated array, and also provides access to other
 necessary properties.</p></li>
 <li><p><strong>pore_diameter</strong> (<em>str</em>) – Dictionary key of the pore diameter values.</p></li>
@@ -1602,7 +1600,7 @@ each pore.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>target</strong> (<a class="reference internal" href="../geometry/generic_geometry.html#openpnm.geometry.GenericGeometry" title="openpnm.geometry.GenericGeometry"><em>GenericGeometry</em></a>) – Geometry object which this model is associated with. This controls the
+<li><p><strong>target</strong> (<em>GenericGeometry</em>) – Geometry object which this model is associated with. This controls the
 length of the calculated array, and also provides access to other
 necessary properties.</p></li>
 <li><p><strong>pore_diameter</strong> (<em>str</em>) – Dictionary key of the pore diameter values</p></li>
@@ -1619,7 +1617,7 @@ necessary properties.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>target</strong> (<a class="reference internal" href="../geometry/generic_geometry.html#openpnm.geometry.GenericGeometry" title="openpnm.geometry.GenericGeometry"><em>GenericGeometry</em></a>) – Geometry object which this model is associated with. This controls the
+<li><p><strong>target</strong> (<em>GenericGeometry</em>) – Geometry object which this model is associated with. This controls the
 length of the calculated array, and also provides access to other
 necessary properties.</p></li>
 <li><p><strong>throat_endpoints</strong> (<em>str</em>) – Dictionary key of the throat endpoint values.</p></li>
@@ -1646,7 +1644,7 @@ cylinders.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>target</strong> (<a class="reference internal" href="../geometry/generic_geometry.html#openpnm.geometry.GenericGeometry" title="openpnm.geometry.GenericGeometry"><em>GenericGeometry</em></a>) – Geometry object which this model is associated with. This controls the
+<li><p><strong>target</strong> (<em>GenericGeometry</em>) – Geometry object which this model is associated with. This controls the
 length of the calculated array, and also provides access to other
 necessary properties.</p></li>
 <li><p><strong>pore_diameter</strong> (<em>str</em>) – Dictionary key of the pore diameter values.</p></li>
@@ -1670,7 +1668,7 @@ distance between pores. Also, this model assumes that pores and throat
 centroids are colinear.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>target</strong> (<a class="reference internal" href="../geometry/generic_geometry.html#openpnm.geometry.GenericGeometry" title="openpnm.geometry.GenericGeometry"><em>GenericGeometry</em></a>) – Geometry object which this model is associated with. This controls the
+<dd class="field-odd"><p><strong>target</strong> (<em>GenericGeometry</em>) – Geometry object which this model is associated with. This controls the
 length of the calculated array, and also provides access to other
 necessary properties.</p>
 </dd>
@@ -1691,7 +1689,7 @@ cuboids.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>target</strong> (<a class="reference internal" href="../geometry/generic_geometry.html#openpnm.geometry.GenericGeometry" title="openpnm.geometry.GenericGeometry"><em>GenericGeometry</em></a>) – Geometry object which this model is associated with. This controls the
+<li><p><strong>target</strong> (<em>GenericGeometry</em>) – Geometry object which this model is associated with. This controls the
 length of the calculated array, and also provides access to other
 necessary properties.</p></li>
 <li><p><strong>pore_diameter</strong> (<em>str</em>) – Dictionary key of the pore diameter values.</p></li>
@@ -1714,7 +1712,7 @@ necessary properties.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>target</strong> (<a class="reference internal" href="../geometry/generic_geometry.html#openpnm.geometry.GenericGeometry" title="openpnm.geometry.GenericGeometry"><em>GenericGeometry</em></a>) – Geometry object which this model is associated with. This controls the
+<li><p><strong>target</strong> (<em>GenericGeometry</em>) – Geometry object which this model is associated with. This controls the
 length of the calculated array, and also provides access to other
 necessary properties.</p></li>
 <li><p><strong>throat_endpoints</strong> (<em>str</em>) – Dictionary key of the throat endpoint values.</p></li>
@@ -1743,7 +1741,7 @@ cuboids.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>target</strong> (<a class="reference internal" href="../geometry/generic_geometry.html#openpnm.geometry.GenericGeometry" title="openpnm.geometry.GenericGeometry"><em>GenericGeometry</em></a>) – Geometry object which this model is associated with. This controls the
+<li><p><strong>target</strong> (<em>GenericGeometry</em>) – Geometry object which this model is associated with. This controls the
 length of the calculated array, and also provides access to other
 necessary properties.</p></li>
 <li><p><strong>pore_diameter</strong> (<em>str</em>) – Dictionary key of the pore diameter values.</p></li>
@@ -1767,7 +1765,7 @@ cylinders.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>target</strong> (<a class="reference internal" href="../geometry/generic_geometry.html#openpnm.geometry.GenericGeometry" title="openpnm.geometry.GenericGeometry"><em>GenericGeometry</em></a>) – Geometry object which this model is associated with. This controls the
+<li><p><strong>target</strong> (<em>GenericGeometry</em>) – Geometry object which this model is associated with. This controls the
 length of the calculated array, and also provides access to other
 necessary properties.</p></li>
 <li><p><strong>pore_diameter</strong> (<em>str</em>) – Dictionary key of the pore diameter values.</p></li>
@@ -1791,7 +1789,7 @@ rectangles.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>target</strong> (<a class="reference internal" href="../geometry/generic_geometry.html#openpnm.geometry.GenericGeometry" title="openpnm.geometry.GenericGeometry"><em>GenericGeometry</em></a>) – Geometry object which this model is associated with. This controls the
+<li><p><strong>target</strong> (<em>GenericGeometry</em>) – Geometry object which this model is associated with. This controls the
 length of the calculated array, and also provides access to other
 necessary properties.</p></li>
 <li><p><strong>pore_diameter</strong> (<em>str</em>) – Dictionary key of the pore diameter values.</p></li>
@@ -1815,7 +1813,7 @@ rectangles.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>target</strong> (<a class="reference internal" href="../geometry/generic_geometry.html#openpnm.geometry.GenericGeometry" title="openpnm.geometry.GenericGeometry"><em>GenericGeometry</em></a>) – Geometry object which this model is associated with. This controls the
+<li><p><strong>target</strong> (<em>GenericGeometry</em>) – Geometry object which this model is associated with. This controls the
 length of the calculated array, and also provides access to other
 necessary properties.</p></li>
 <li><p><strong>pore_diameter</strong> (<em>str</em>) – Dictionary key of the pore diameter values.</p></li>
