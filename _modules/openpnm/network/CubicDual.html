@@ -293,9 +293,6 @@
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">net</span><span class="o">.</span><span class="n">labels</span><span class="p">():</span>
             <span class="k">if</span> <span class="s1">&#39;boundary&#39;</span> <span class="ow">in</span> <span class="n">item</span><span class="p">:</span>
                 <span class="n">net</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
-        <span class="c1"># Label non-surface pores and throats as internal</span>
-        <span class="n">net</span><span class="p">[</span><span class="s1">&#39;pore.internal&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.internal&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="c1"># Transfer all dictionary items from &#39;net&#39; to &#39;self&#39;</span>
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">net</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">item</span><span class="p">:</span> <span class="n">net</span><span class="p">[</span><span class="n">item</span><span class="p">]})</span>
