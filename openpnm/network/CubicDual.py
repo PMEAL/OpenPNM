@@ -118,9 +118,6 @@ class CubicDual(GenericNetwork):
         for item in net.labels():
             if 'boundary' in item:
                 net.pop(item)
-        # Label non-surface pores and throats as internal
-        net['pore.internal'] = True
-        net['throat.internal'] = True
         # Transfer all dictionary items from 'net' to 'self'
         for item in net:
             self.update({item: net[item]})

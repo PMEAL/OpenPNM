@@ -197,7 +197,6 @@ class Bravais(GenericNetwork):
         Ps = self.pores(['left', 'right', 'top', 'bottom', 'front', 'back'])
         Ps = self.tomask(pores=Ps)
         self['pore.surface'] = Ps
-        self['pore.internal'] = ~Ps
         self['pore.coords'] *= np.array(spacing)
 
     def add_boundary_pores(self, labels, spacing):
