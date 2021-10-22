@@ -260,7 +260,7 @@
 <span class="sd">    &gt;&gt;&gt; d = {&#39;item1&#39;: 1, &#39;item2&#39;: &#39;1&#39;, &#39;item3&#39;: [1, 1], &#39;item4&#39;: arr([1, 1])}</span>
 <span class="sd">    &gt;&gt;&gt; print(PrintableDict(d))</span>
 <span class="sd">    ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――</span>
-<span class="sd">    key                                 value</span>
+<span class="sd">    Key                                 Value</span>
 <span class="sd">    ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――</span>
 <span class="sd">    item1                               1</span>
 <span class="sd">    item2                               1</span>
@@ -274,13 +274,12 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_value</span> <span class="o">=</span> <span class="s2">&quot;value&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_key</span> <span class="o">=</span> <span class="s2">&quot;key&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_value</span> <span class="o">=</span> <span class="s2">&quot;Value&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_key</span> <span class="o">=</span> <span class="s2">&quot;Key&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">text</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">text</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">header</span> <span class="o">=</span> <span class="s2">&quot;―&quot;</span> <span class="o">*</span> <span class="mi">78</span>
