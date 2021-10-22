@@ -16,7 +16,8 @@ jobs:
     strategy:
       max-parallel: 4
       matrix:
-        python-version: [3.7, 3.8]
+        # python-version: [3.7, 3.8]
+        python-version: [3.8]
         operating-system: [ubuntu-latest]
 
     steps:
@@ -37,14 +38,16 @@ jobs:
       - name: Set up conda
         uses: conda-incubator/setup-miniconda@v2
         with:
-          mamba-version: "*"
+          use-mamba: true
+          miniforge-variant: Mambaforge
+          miniforge-version: latest
           allow-softlinks: true
           use-only-tar-bz2: true
           show-channel-urls: false
           auto-activate-base: true
-          channel-priority: flexible
-          channels: conda-forge,defaults
-          condarc-file: requirements/.condarc
+          channels: conda-forge
+          channel-priority: strict
+          # condarc-file: requirements/.condarc
           python-version: ${{ matrix.python-version }}
 
       - name: Install dependencies (conda)
@@ -63,7 +66,7 @@ jobs:
 
       - name: Upload coverage to Codecov
         if: matrix.python-version == 3.7
-        uses: codecov/codecov-action@v1
+        uses: codecov/codecov-action@v2
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: ./coverage.xml
