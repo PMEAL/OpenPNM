@@ -69,7 +69,7 @@ jobs:
           pip install -e . --no-deps
 
       - name: Running tests
-        run:
+        run: |
           pytest . \
             --cov=. \
             --cov-report=xml \
