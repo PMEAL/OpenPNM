@@ -308,39 +308,37 @@ class Project(list):
         The Project has an ``grid`` attribute that shows the association of
         all objects.  If each Geometry represents a row and each Phase is a
         column, then each row/col intersection represents a Physics. This
-        method finds the PHysics' at each intersection
+        method finds the Physics' at each intersection
 
         """
 
         if geometry is not None and phase is not None:
             physics = self.find_physics(geometry=geometry)
             phases = list(self.phases().values())
-            phys = physics[phases.index(phase)]
-            return phys
-        elif geometry is not None and phase is None:
+            return physics[phases.index(phase)]
+
+        if geometry is not None and phase is None:
             result = []
-            net = self.network
-            geoPs = net['pore.'+geometry.name]
-            geoTs = net['throat.'+geometry.name]
-            for phase in self.phases().values():
-                physics = self.find_physics(phase=phase)
+            geoPs = self.network[f'pore.{geometry.name}']
+            geoTs = self.network[f'throat.{geometry.name}']
+            for _phase in self.phases().values():
+                physics = self.find_physics(phase=_phase)
                 for phys in physics:
-                    Ps = phase.map_pores(pores=phys.Ps, origin=phys)
-                    physPs = phase.tomask(pores=Ps)
-                    Ts = phase.map_throats(throats=phys.Ts, origin=phys)
-                    physTs = phase.tomask(throats=Ts)
+                    Ps = _phase.map_pores(pores=phys.Ps, origin=phys)
+                    physPs = _phase.tomask(pores=Ps)
+                    Ts = _phase.map_throats(throats=phys.Ts, origin=phys)
+                    physTs = _phase.tomask(throats=Ts)
                     if np.all(geoPs == physPs) and np.all(geoTs == physTs):
                         result.append(phys)
             return result
-        elif geometry is None and phase is not None:
+
+        if geometry is None and phase is not None:
             names = set(self.physics().keys())
             keys = set([item.split('.')[-1] for item in phase.keys()])
             hits = names.intersection(keys)
-            phys = [self.physics().get(i, None) for i in hits]
-            return phys
-        else:
-            phys = list(self.physics().values())
-            return phys
+            return [self.physics().get(i, None) for i in hits]
+
+        return list(self.physics().values())
 
     def find_full_domain(self, obj):
         r"""
