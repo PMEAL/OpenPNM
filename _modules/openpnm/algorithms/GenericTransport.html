@@ -948,7 +948,7 @@
                 <span class="sa">r</span><span class="s2">&quot; more details.&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_validate_topology_health</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">Ps</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.bc_rate&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.bc_value&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">Ps</span> <span class="o">=</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.bc_rate&#39;</span><span class="p">])</span> <span class="o">+</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.bc_value&#39;</span><span class="p">])</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">is_fully_connected</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="p">,</span> <span class="n">pores_BC</span><span class="o">=</span><span class="n">Ps</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
                 <span class="s2">&quot;Your network is clustered. Run h = net.check_network_health() followed&quot;</span>
@@ -962,11 +962,11 @@
         <span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
         <span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">unique</span>
 
+        <span class="c1"># Validate network topology health</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_topology_health</span><span class="p">()</span>
         <span class="c1"># Short-circuit subsequent checks if data are healthy</span>
         <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
             <span class="k">return</span> <span class="kc">True</span>
-        <span class="c1"># Validate network topology health</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_topology_health</span><span class="p">()</span>
         <span class="c1"># Validate geometry health</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_validate_geometry_health</span><span class="p">()</span>
 
