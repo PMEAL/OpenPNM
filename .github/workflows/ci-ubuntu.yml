@@ -71,9 +71,9 @@ jobs:
       - name: Running tests
         run:
           pytest \
-            --cov=. \
+            --cov=./ \
             --cov-report=xml \
-            --ignore=scripts \
+            --ignore=scripts/ \
             --ignore=openpnm/utils/petsc.py
 
       - name: Upload coverage to Codecov
