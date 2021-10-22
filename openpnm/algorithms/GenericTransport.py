@@ -92,6 +92,10 @@ class GenericTransport(GenericAlgorithm):
     def x(self):
         return self[self.settings['quantity']]
 
+    @x.setter
+    def x(self, value):
+        self[self.settings['quantity']] = value
+
     @docstr.get_full_description(base='GenericTransport.reset')
     @docstr.get_sections(base='GenericTransport.reset', sections=['Parameters'])
     @docstr.dedent
