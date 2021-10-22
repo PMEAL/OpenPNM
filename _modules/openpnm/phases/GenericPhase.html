@@ -265,7 +265,11 @@
                                <span class="n">prop</span><span class="o">=</span><span class="n">not_el</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">prop</span><span class="p">,</span>
                                <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;mean&#39;</span><span class="p">)</span>
         <span class="n">vals</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__getitem__</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">vals</span></div>
+        <span class="k">return</span> <span class="n">vals</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">phase</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">find_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 </pre></div>
 
               </div>
