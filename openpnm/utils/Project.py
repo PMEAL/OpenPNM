@@ -630,6 +630,9 @@ class Project(list):
         s.append(hr)
         return '\n'.join(s)
 
+    def __repr__(self):
+        return self.__str__()
+
     def check_geometry_health(self):
         r"""
         Perform a check to find pores with overlapping or undefined Geometries
