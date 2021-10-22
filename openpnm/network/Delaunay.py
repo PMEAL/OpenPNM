@@ -10,17 +10,9 @@ class Delaunay(DelaunayVoronoiDual):
 
     Parameters
     ----------
-    num_points : scalar
-        The number of points to place in the domain, which will become the
-        pore centers after the tessellation is performed.  This value is
-        ignored if ``points`` are given.
-
-    points : array_like
-        An array of coordinates indicating the [x, y, z] locations of each
-        point to use in the tessellation.  Note that the points must be given
-        in rectilinear coordinates regardless of which domain ``shape`` was
-        specified.  To convert between coordinate systems see the
-        ``convert_coords`` function in the ``openpnm.topotools`` module.
+    points : array_like or int
+        Can either be an N-by-3 array of point coordinates which will be used,
+        or a scalar value indicating the number of points to generate
 
     shape : array_like
         The size of the domain.  It's possible to create cubic as well as 2D
@@ -95,11 +87,9 @@ class Delaunay(DelaunayVoronoiDual):
 
     """
 
-    def __init__(self, shape=[1, 1, 1], num_points=None, points=None, **kwargs):
+    def __init__(self, shape=[1, 1, 1], points=None, **kwargs):
         # Clean-up input points
-        points = self._parse_points(shape=shape,
-                                    num_points=num_points,
-                                    points=points)
+        points = self._parse_points(shape=shape, points=points)
         super().__init__(shape=shape, points=points, **kwargs)
         # Initialize network object
         topotools.trim(network=self, pores=self.pores(['voronoi']))

@@ -88,6 +88,10 @@ class GenericTransport(GenericAlgorithm):
         self['pore.bc_rate'] = np.nan
         self['pore.bc_value'] = np.nan
 
+    @property
+    def x(self):
+        return self[self.settings['quantity']]
+
     @docstr.get_full_description(base='GenericTransport.reset')
     @docstr.get_sections(base='GenericTransport.reset', sections=['Parameters'])
     @docstr.dedent
@@ -492,7 +496,7 @@ class GenericTransport(GenericAlgorithm):
             raise Exception(msg)
 
     def _validate_topology_health(self):
-        Ps = (self['pore.bc_rate'] > 0) + (self['pore.bc_value'] > 0)
+        Ps = ~np.isnan(self['pore.bc_rate']) + ~np.isnan(self['pore.bc_value'])
         if not is_fully_connected(network=self.network, pores_BC=Ps):
             msg = ("Your network is clustered. Run h = net.check_network_"
                    "health() followed by op.topotools.trim(net, pores=h['"
@@ -506,11 +510,11 @@ class GenericTransport(GenericAlgorithm):
         import networkx as nx
         from pandas import unique
 
+        # Validate network topology health
+        self._validate_topology_health()
         # Short-circuit subsequent checks if data are healthy
         if np.isfinite(self.A.data).all() and np.isfinite(self.b).all():
             return True
-        # Validate network topology health
-        self._validate_topology_health()
         # Validate geometry health
         self._validate_geometry_health()
 

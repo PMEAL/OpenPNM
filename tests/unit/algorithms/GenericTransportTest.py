@@ -331,6 +331,20 @@ class GenericTransportTest:
         with pytest.raises(Exception):
             alg.set_rate_BC(pores=[0, 1, 2, 3], rates=1, total_rate=1)
 
+    def test_network_continuity(self):
+        net = op.network.Cubic([5, 1, 1])
+        op.topotools.trim(network=net, pores=[2])
+        phase = op.phases.GenericPhase(network=net)
+        phase['throat.diffusive_conductance'] = 1.0
+        alg = op.algorithms.FickianDiffusion(network=net, phase=phase)
+        alg.settings['solver_family'] = 'scipy'
+        alg.set_value_BC(pores=0, values=1)
+        with pytest.raises(Exception):
+            alg.run()
+        alg.set_value_BC(pores=3, values=0)
+        alg.run()
+
+
     def teardown_class(self):
         ws = op.Workspace()
         ws.clear()
