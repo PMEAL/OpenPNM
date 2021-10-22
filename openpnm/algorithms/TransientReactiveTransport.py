@@ -77,7 +77,7 @@ class TransientReactiveTransport(ReactiveTransport):
             self.settings['phase'] = phase.name
         self["pore.ic"] = np.nan
 
-    def run(self, x0, tspan, saveat=None, solver=None):
+    def run(self, x0, tspan, saveat=None, integrator=None):
         """
         Parameters
         ----------
@@ -86,7 +86,7 @@ class TransientReactiveTransport(ReactiveTransport):
 
         """
         logger.info('Running TransientTransport')
-        solver = ScipyRK45() if solver is None else solver
+        integrator = ScipyRK45() if integrator is None else integrator
         saveat = np.arange(*tspan, saveat) if np.isscalar(saveat) else saveat
         # Perform pre-solve validations
         self._validate_settings()
@@ -97,7 +97,7 @@ class TransientReactiveTransport(ReactiveTransport):
         # Build RHS (dx/dt = RHS), then integrate the system of ODEs
         rhs = self._build_rhs()
         # Integrate RHS using the given solver
-        self.soln = solver.solve(rhs, x0, tspan, saveat)
+        self.soln = integrator.solve(rhs, x0, tspan, saveat)
         return self.soln
 
     def _run_special(self, x0): ...
