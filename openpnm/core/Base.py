@@ -640,6 +640,19 @@ class Base(dict):
         return indices
 
     def to_global(self, pores=None, throats=None):
+        r"""
+        Convert local indices from a subdomain object to global values
+
+        Parameters
+        ----------
+        pores, throats : array_like
+            List of pore or throat indices to be converted
+
+        Returns
+        -------
+        indices : ndarray
+            An array of location indices
+        """
         if pores is not None:
             element = 'pore'
             locs = pores
@@ -650,14 +663,30 @@ class Base(dict):
         inds = np.where(mask)[0]
         return inds[locs]
 
-    def to_local(self, pores=None, throats=None):
+    def to_local(self, pores=None, throats=None, missing_vals=-1):
+        r"""
+        Convert global indices to local values relative to a subdomain object
+
+        Parameters
+        ----------
+        pores, throats : array_like
+            List of pore or throat indices to be converted
+        missing_values : scalar
+            The value to put into missing locations if global indices are not
+            found.
+
+        Returns
+        -------
+        indices : ndarray
+            An array of location indices
+        """
         if pores is not None:
             element = 'pore'
             locs = pores
         if throats is not None:
             element = 'throat'
             locs = throats
-        mask = np.zeros_like(self.network[element + '.all'], dtype=int) - 1
+        mask = np.ones_like(self.network[element + '.all'], dtype=int)*missing_vals
         inds = np.where(self.network[element + '.' + self.name])[0]
         mask[inds] = self.Ps
         return mask[locs]
