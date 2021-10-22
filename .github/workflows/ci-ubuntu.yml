@@ -27,42 +27,48 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Cache conda
-        uses: actions/cache@v2
-        env:
-          CACHE_NUMBER: 1  # increase value -> force reset cache
-        with:
-          path: ~/conda_pkgs_dir
-          key: ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-${{ hashFiles('**/conda_requirements.txt') }}
+      # - name: Cache conda
+      #   uses: actions/cache@v2
+      #   env:
+      #     CACHE_NUMBER: 1  # increase value -> force reset cache
+      #   with:
+      #     path: ~/conda_pkgs_dir
+      #     key: ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-${{ hashFiles('**/conda_requirements.txt') }}
 
-      - name: Set up conda
-        uses: conda-incubator/setup-miniconda@v2
-        with:
-          use-mamba: true
-          miniforge-variant: Mambaforge
-          miniforge-version: latest
-          allow-softlinks: true
-          use-only-tar-bz2: true
-          show-channel-urls: false
-          auto-activate-base: true
-          channels: conda-forge
-          channel-priority: strict
-          # condarc-file: requirements/.condarc
-          python-version: ${{ matrix.python-version }}
+      # - name: Set up conda
+      #   uses: conda-incubator/setup-miniconda@v2
+      #   with:
+      #     use-mamba: true
+      #     miniforge-variant: Mambaforge
+      #     miniforge-version: latest
+      #     allow-softlinks: true
+      #     use-only-tar-bz2: true
+      #     show-channel-urls: false
+      #     auto-activate-base: true
+      #     channels: conda-forge
+      #     channel-priority: strict
+      #     # condarc-file: requirements/.condarc
+      #     python-version: ${{ matrix.python-version }}
 
-      - name: Install dependencies (conda)
+      # - name: Install dependencies (conda)
+      #   run: |
+      #     cat requirements/conda_requirements.txt >> requirements.txt
+      #     cat requirements/test_requirements.txt >> requirements.txt
+      #     cat requirements/optional_requirements.txt >> requirements.txt
+      #     printf "pyamg\nmpi4py\npetsc\npetsc4py\nopenmpi\n" >> requirements.txt
+      #     mamba install --file requirements.txt
+      #     # Install OpenPNM from the checked-out branch
+      #     pip install -e . --no-deps
+
+      - name: Install dependencies (pip)
         run: |
-          cat requirements/conda_requirements.txt >> requirements.txt
-          cat requirements/test_requirements.txt >> requirements.txt
-          cat requirements/optional_requirements.txt >> requirements.txt
-          printf "pyamg\nmpi4py\npetsc\npetsc4py\nopenmpi\n" >> requirements.txt
-          mamba install --file requirements.txt
+          pip install -r requirements/pip_requirements.txt
           # Install OpenPNM from the checked-out branch
           pip install -e . --no-deps
 
       - name: Running tests
         run:
-          pytest --cov=./ --cov-report=xml --ignore=scripts/
+          pytest --cov=./ --cov-report=xml --ignore=scripts/ --ignore=openpnm/utils/petsc.py
 
       - name: Upload coverage to Codecov
         if: matrix.python-version == 3.7
