@@ -13,7 +13,7 @@ jobs:
     strategy:
       max-parallel: 4
       matrix:
-        python-version: [3.8]
+        python-version: [3.7]
         operating-system: [windows-latest]
 
     steps:
@@ -40,8 +40,7 @@ jobs:
           # pip install -e . --no-deps
           # pip install pypardiso
           # python -c "import pypardiso"
-          pip install mkl==2021.2.0 cython setuptools
-          pip install mkl-service==2.3.0 --no-deps
+          pip install mkl mkl-service
           python -c "import mkl"
 
       # - name: Running tests
