@@ -1410,36 +1410,31 @@ class LabelMixin:
             *'purge'* - Removes the specified label from the object
 
         """
+        if label.split('.')[0] in ['pore', 'throat']:
+            label = label.split('.', 1)[1]
+        if pores is not None:
+            locs = self._parse_indices(pores)
+            element = 'pore'
+        if throats is not None:
+            locs = self._parse_indices(throats)
+            element = 'throat'
+
         if mode == 'purge':
-            if label.split('.')[0] in ['pore', 'throat']:
-                if label in self.labels():
-                    del self[label]
-                else:
-                    logger.warning(label + ' is not a label, skpping')
-            else:
-                self.set_label(label='pore.'+label, mode='purge')
-                self.set_label(label='throat.'+label, mode='purge')
+            try:
+                del self[label]
+            except KeyError:
+                logger.warning(label + ' is not a label, skpping')
+        elif mode == 'add':
+            if element + '.' + label not in self.keys():
+                self[element + '.' + label] = False
+            self[element + '.' + label][locs] = True
+        elif mode == 'overwrite':
+            self[element + '.' + label] = False
+            self[element + '.' + label][locs] = True
+        elif mode== 'remove':
+            self[element + '.' + label][locs] = False
         else:
-            if label.split('.')[0] in ['pore', 'throat']:
-                label = label.split('.', 1)[1]
-            if pores is not None:
-                pores = self._parse_indices(pores)
-                if (mode == 'overwrite') or ('pore.'+label not in self.labels()):
-                    self['pore.' + label] = False
-                if mode in ['remove']:
-                    self['pore.' + label][pores] = False
-                else:
-                    self['pore.' + label][pores] = True
-            if throats is not None:
-                throats = self._parse_indices(throats)
-                if (mode == 'overwrite') or ('throat.'+label not in self.labels()):
-                    self['throat.' + label] = False
-                if mode in ['remove']:
-                    self['throat.' + label][throats] = False
-                else:
-                    self['throat.' + label][throats] = True
-            if pores is None and throats is None:
-                del self
+            raise Exception('Unrecognized mode')
 
     def _get_indices(self, element, labels='all', mode='or'):
         r"""
