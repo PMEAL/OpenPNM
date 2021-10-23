@@ -122,8 +122,10 @@ class GenericPhysics(Subdomain, ModelsMixin):
 
     def set_geometry(self, geometry=None, mode='add'):
         r"""
-        Sets the association between this physics and a geometry (i.e. a
-        set of pores and throats that define a subdomain)
+        Sets the association between this physics and a geometry
+
+        This association is done by setting the pores and throats that define
+        the Subdomain to match.
 
         Parameters
         ----------
@@ -131,37 +133,38 @@ class GenericPhysics(Subdomain, ModelsMixin):
             The geometry defining the pores and throats to which this physics
             should be attached
         mode : str
-            Options are:
+            Controls how the assignment is done. Options are:
 
-            'swap' - Associations will be made with the new geometry, and
-            the pore and throat locations from the current geometry will be
-            transferred to the new one.
+            * 'swap'
+                The pore and throat locations from the current geometry will
+                be transferred to the new one
+            * 'drop'
+                Associations with the current geometry will be removed
+            * 'add'
+                If the physics does not presently have an associated
+                geometry, this will create associations
 
-            'drop' - Associations with the current geometry will be removed.
-
-            'add' - If the physics does not presently have an associated
-            geometry, this will create associations.
+        See Also
+        --------
+        set_locations
 
         """
+        phase = self.project.find_phase(self)
         if mode in ['add', 'swap']:
             if geometry not in self.project:
                 raise Exception(self.name + ' not in same project as given geometry')
-            try:
-                old_geometry = self.project.find_geometry(self)
-                Ps = self.network.pores(old_geometry.name)
-                Ts = self.network.throats(old_geometry.name)
-                self._set_locations(element='pore', indices=Ps, mode='drop')
-                self._set_locations(element='throat', indices=Ts, mode='drop')
-            except Exception as e:
-                logger.debug(e)
+            old_geometry = self.project.find_geometry(self)
+            Ps = self.network.pores(old_geometry.name)
+            Ts = self.network.throats(old_geometry.name)
+            self.set_locations(pores=Ps, throats=Ts, mode='drop')
             Ps = self.network.pores(geometry.name)
             Ts = self.network.throats(geometry.name)
-            self._set_locations(element='pore', indices=Ps, mode='add')
-            self._set_locations(element='throat', indices=Ts, mode='add')
-        if mode in ['remove', 'drop']:
-            phase = self.project.find_phase(self)
-            phase['pore.'+self.name] = False
-            phase['throat.'+self.name] = False
+            self.set_locations(pores=Ps, throats=Ts, mode='add')
+            phase.set_label(label=self.name, pores=Ps, throats=Ts, mode='overwrite')
+        elif mode in ['remove', 'drop']:
+            phase.set_label(label=self.name, pores=Ps, throats=Ts, mode='purge')
             self.update({'pore.all': np.array([], dtype=bool)})
             self.update({'throat.all': np.array([], dtype=bool)})
             self.clear()
+        else:
+            raise Exception("mode " + mode + " not understood")
