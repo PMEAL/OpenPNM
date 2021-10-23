@@ -149,22 +149,23 @@ class GenericPhysics(Subdomain, ModelsMixin):
         set_locations
 
         """
+        self._parse_mode(mode=mode, allowed=['add', 'swap', 'drop', 'remove'])
         phase = self.project.find_phase(self)
-        if mode in ['add', 'swap']:
+        if mode == 'swap':  # Remove associate with existing geometry
             if geometry not in self.project:
                 raise Exception(self.name + ' not in same project as given geometry')
             old_geometry = self.project.find_geometry(self)
             Ps = self.network.pores(old_geometry.name)
             Ts = self.network.throats(old_geometry.name)
             self.set_locations(pores=Ps, throats=Ts, mode='drop')
+            phase.set_label(label=self.name, mode='purge')
+        if mode in ['add', 'swap']:
             Ps = self.network.pores(geometry.name)
             Ts = self.network.throats(geometry.name)
             self.set_locations(pores=Ps, throats=Ts, mode='add')
-            phase.set_label(label=self.name, pores=Ps, throats=Ts, mode='overwrite')
-        elif mode in ['remove', 'drop']:
+            phase.set_label(label=self.name, pores=Ps, throats=Ts, mode='add')
+        if mode in ['remove', 'drop']:
             phase.set_label(label=self.name, pores=Ps, throats=Ts, mode='purge')
             self.update({'pore.all': np.array([], dtype=bool)})
             self.update({'throat.all': np.array([], dtype=bool)})
             self.clear()
-        else:
-            raise Exception("mode " + mode + " not understood")
