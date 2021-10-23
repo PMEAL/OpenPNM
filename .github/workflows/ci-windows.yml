@@ -40,7 +40,7 @@ jobs:
           # pip install -e . --no-deps
           # pip install pypardiso
           # python -c "import pypardiso"
-          pip install mkl mkl-service==2.3.0
+          pip install mkl==2021.2.0 mkl-service==2.3.0
           python -c "import mkl"
 
       # - name: Running tests
