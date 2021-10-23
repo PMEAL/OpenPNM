@@ -56,7 +56,10 @@ class Subdomain(Base, LegacyMixin, LabelMixin):
         except AttributeError:
             return self.network
 
-    def _set_locations(self, element, indices, mode):
+    def _set_locations(self, *args, **kwargs):
+        self.set_locations(*args, **kwargs)
+
+    def set_locations(self, element, indices, mode):
         r"""
         This private method is called by ``set_locations`` and
         ``remove_locations`` as needed.
@@ -86,9 +89,9 @@ class Subdomain(Base, LegacyMixin, LabelMixin):
         # Change size of all arrays on self
         for item in self.keys(element=element, mode='all'):
             self.update({item: boss[item][mask]})
-        # Update label array in network
-        boss[element+'.'+self.name] = mask
+        # Update label array in boss
+        boss[element + '.' + self.name] = mask
         # Remove label from boss if ALL locations are removed
         if mode == 'drop':
-            if ~np.any(boss[element+'.'+self.name]):
-                boss[element+'.'+self.name] = False
+            if ~np.any(boss[element + '.' + self.name]):
+                boss[element + '.' + self.name] = False
