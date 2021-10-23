@@ -62,26 +62,22 @@ class Subdomain(Base, LegacyMixin, LabelMixin):
         ``remove_locations`` as needed.
 
         """
-        boss = self.project.find_full_domain(self)
+        boss = self._domain
         element = self._parse_element(element=element, single=True)
 
         # Make sure label array exists in boss
-        if (element+'.'+self.name) not in boss.keys():
-            boss[element+'.'+self.name] = False
+        if (element + '.' + self.name) not in boss.keys():
+            boss[element + '.' + self.name] = False
 
         # Check to ensure indices aren't already assigned
         if mode == 'add':
-            if self._isa('geometry'):
-                objs = self.project.geometries().keys()
-            else:
-                objs = self.project.physics().keys()
-            for name in objs:
-                if element+'.'+name in boss.keys():
-                    if np.any(boss[element+'.'+name][indices]):
-                        raise Exception('Given indices already assigned to ' + name)
+            for i in boss._subdomains:
+                if element + '.' + i.name in boss.keys():
+                    if np.any(boss[element + '.' + i.name][indices]):
+                        raise Exception(f'Indices already assigned to {i.name}')
 
-        # Find mask of existing locations (network indexing)
-        mask = boss[element+'.'+self.name]
+        # Find mask of existing locations (global indexing)
+        mask = boss[element + '.' + self.name]
         # Update mask with new locations (either add or remove)
         if mode == 'add':
             mask = mask + boss._tomask(indices=indices, element=element)
