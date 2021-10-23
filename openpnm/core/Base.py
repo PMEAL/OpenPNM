@@ -550,6 +550,147 @@ class Base(dict):
         """
         return np.arange(0, self.Nt)
 
+    def _tomask(self, indices, element):
+        r"""
+        This is a generalized version of tomask that accepts a string of
+        'pore' or 'throat' for programmatic access.
+        """
+        element = self._parse_element(element, single=True)
+        indices = self._parse_indices(indices)
+        N = np.shape(self[element + '.all'])[0]
+        ind = np.array(indices, ndmin=1)
+        mask = np.zeros((N, ), dtype=bool)
+        mask[ind] = True
+        return mask
+
+    def to_mask(self, pores=None, throats=None):
+        r"""
+        Convert a list of pore or throat indices into a boolean mask of the
+        correct length
+
+        Parameters
+        ----------
+        pores or throats : array_like
+            List of pore or throat indices.  Only one of these can be specified
+            at a time, and the returned result will be of the corresponding
+            length.
+
+        Returns
+        -------
+        A boolean mask of length Np or Nt with ``True`` in the specified pore
+        or throat locations.
+
+        See Also
+        --------
+        toindices
+
+        Examples
+        --------
+        >>> import openpnm as op
+        >>> pn = op.network.Cubic(shape=[5, 5, 5])
+        >>> mask = pn.to_mask(pores=[0, 10, 20])
+        >>> sum(mask)  # 3 non-zero elements exist in the mask (0, 10 and 20)
+        3
+        >>> len(mask)  # Mask size is equal to the number of pores in network
+        125
+        >>> mask = pn.to_mask(throats=[0, 10, 20])
+        >>> len(mask)  # Mask is now equal to number of throats in network
+        300
+
+        """
+        if (pores is not None) and (throats is None):
+            mask = self._tomask(element='pore', indices=pores)
+        elif (throats is not None) and (pores is None):
+            mask = self._tomask(element='throat', indices=throats)
+        else:
+            raise Exception('Cannot specify both pores and throats')
+        return mask
+
+    def to_indices(self, mask):
+        r"""
+        Convert a boolean mask to a list of pore or throat indices
+
+        Parameters
+        ----------
+        mask : array_like booleans
+            A boolean array with ``True`` at locations where indices are
+            desired. The appropriate indices are returned based an the length
+            of mask, which must be either Np or Nt long.
+
+        Returns
+        -------
+        A list of pore or throat indices corresponding the locations where
+        the received mask was ``True``.
+
+        See Also
+        --------
+        tomask
+
+        Notes
+        -----
+        This behavior could just as easily be accomplished by using the mask
+        in ``pn.pores()[mask]`` or ``pn.throats()[mask]``.  This method is
+        just a convenience function and is a complement to ``tomask``.
+
+        """
+        if np.amax(mask) > 1:
+            raise Exception('Received mask does not appear to be boolean')
+        mask = np.array(mask, dtype=bool)
+        indices = self._parse_indices(mask)
+        return indices
+
+    def to_global(self, pores=None, throats=None):
+        r"""
+        Convert local indices from a subdomain object to global values
+
+        Parameters
+        ----------
+        pores, throats : array_like
+            List of pore or throat indices to be converted
+
+        Returns
+        -------
+        indices : ndarray
+            An array of location indices
+        """
+        if pores is not None:
+            element = 'pore'
+            locs = pores
+        elif throats is not None:
+            element = 'throat'
+            locs = throats
+        mask = self.network[element + '.' + self.name]
+        inds = np.where(mask)[0]
+        return inds[locs]
+
+    def to_local(self, pores=None, throats=None, missing_vals=-1):
+        r"""
+        Convert global indices to local values relative to a subdomain object
+
+        Parameters
+        ----------
+        pores, throats : array_like
+            List of pore or throat indices to be converted
+        missing_values : scalar
+            The value to put into missing locations if global indices are not
+            found.
+
+        Returns
+        -------
+        indices : ndarray
+            An array of location indices
+        """
+        if pores is not None:
+            element = 'pore'
+            locs = pores
+        if throats is not None:
+            element = 'throat'
+            locs = throats
+        mask = np.ones_like(self.network[element + '.all'], dtype=int)*missing_vals
+        inds = np.where(self.network[element + '.' + self.name])[0]
+        mask[inds] = self.Ps
+        return mask[locs]
+
     def interleave_data(self, prop):
         r"""
         Retrieves requested property from associated objects, to produce a full
@@ -681,20 +822,6 @@ class Base(dict):
                 temp_arr[inds] = vals
             else:
                 temp_arr[inds] = dummy_val[atype[0]]
-
-        # Check if any arrays have units, if so then apply them to result
-        # Importing unyt significantly adds to our import time, we also
-        # currently don't use this package extensively, so we're not going
-        # to support it for now.
-
-        # if any([hasattr(a, 'units') for a in arrs]):
-        #     [a.convert_to_mks() for a in arrs if hasattr(a, 'units')]
-        #     units = [a.units.__str__() for a in arrs if hasattr(a, 'units')]
-        #     if len(units) > 0:
-        #         if len(set(units)) == 1:
-        #             temp_arr *= np.array([1]) * getattr(unyt, units[0])
-        #         else:
-        #             raise Exception('Units on the interleaved array are not equal')
 
         return temp_arr
 
@@ -1078,6 +1205,13 @@ class Base(dict):
 
 
 class LegacyMixin:
+
+    def tomask(self, *args, **kwargs):
+        return self.to_mask(*args, **kwargs)
+
+    def toindices(self, *args, **kwargs):
+        return self.to_indices(*args, **kwargs)
+
     def _map(self, ids, element, filtered):
         ids = np.array(ids, dtype=np.int64)
         locations = self._get_indices(element=element)
@@ -1159,95 +1293,6 @@ class LegacyMixin:
         """
         ids = origin['throat._id'][throats]
         return self._map(element='throat', ids=ids, filtered=filtered)
-
-    def _tomask(self, indices, element):
-        r"""
-        This is a generalized version of tomask that accepts a string of
-        'pore' or 'throat' for programmatic access.
-        """
-        element = self._parse_element(element, single=True)
-        indices = self._parse_indices(indices)
-        N = np.shape(self[element + '.all'])[0]
-        ind = np.array(indices, ndmin=1)
-        mask = np.zeros((N, ), dtype=bool)
-        mask[ind] = True
-        return mask
-
-    def tomask(self, pores=None, throats=None):
-        r"""
-        Convert a list of pore or throat indices into a boolean mask of the
-        correct length
-
-        Parameters
-        ----------
-        pores or throats : array_like
-            List of pore or throat indices.  Only one of these can be specified
-            at a time, and the returned result will be of the corresponding
-            length.
-
-        Returns
-        -------
-        A boolean mask of length Np or Nt with True in the specified pore or
-        throat locations.
-
-        See Also
-        --------
-        toindices
-
-        Examples
-        --------
-        >>> import openpnm as op
-        >>> pn = op.network.Cubic(shape=[5, 5, 5])
-        >>> mask = pn.tomask(pores=[0, 10, 20])
-        >>> sum(mask)  # 3 non-zero elements exist in the mask (0, 10 and 20)
-        3
-        >>> len(mask)  # Mask size is equal to the number of pores in network
-        125
-        >>> mask = pn.tomask(throats=[0, 10, 20])
-        >>> len(mask)  # Mask is now equal to number of throats in network
-        300
-
-        """
-        if (pores is not None) and (throats is None):
-            mask = self._tomask(element='pore', indices=pores)
-        elif (throats is not None) and (pores is None):
-            mask = self._tomask(element='throat', indices=throats)
-        else:
-            raise Exception('Cannot specify both pores and throats')
-        return mask
-
-    def toindices(self, mask):
-        r"""
-        Convert a boolean mask to a list of pore or throat indices
-
-        Parameters
-        ----------
-        mask : array_like booleans
-            A boolean array with True at locations where indices are desired.
-            The appropriate indices are returned based an the length of mask,
-            which must be either Np or Nt long.
-
-        Returns
-        -------
-        A list of pore or throat indices corresponding the locations where
-        the received mask was True.
-
-        See Also
-        --------
-        tomask
-
-        Notes
-        -----
-        This behavior could just as easily be accomplished by using the mask
-        in ``pn.pores()[mask]`` or ``pn.throats()[mask]``.  This method is
-        just a convenience function and is a complement to ``tomask``.
-
-        """
-        if np.amax(mask) > 1:
-            raise Exception('Received mask does not appear to be boolean')
-        mask = np.array(mask, dtype=bool)
-        indices = self._parse_indices(mask)
-        return indices
 
     def check_data_health(self):
         r"""
