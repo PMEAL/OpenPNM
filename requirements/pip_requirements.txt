@@ -11,7 +11,7 @@ networkx
 numba
 numpy
 pandas
-pypardiso
+pypardiso>=0.3.3
 scikit-image
 scipy
 sympy
