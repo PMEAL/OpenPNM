@@ -11,10 +11,11 @@ networkx
 numba
 numpy
 pandas
-pypardiso
+pypardiso>=0.3.3
 scikit-image
 scipy
 sympy
 terminaltables
 tqdm
 transforms3d
+mkl<=2021.3.0
