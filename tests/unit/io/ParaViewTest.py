@@ -5,7 +5,7 @@ from pathlib import Path
 import openpnm as op
 
 
-class ParaViewTest():
+class ParaViewTest:
 
     def setup_class(self):
         self.path = os.path.dirname(os.path.abspath(sys.argv[0]))
