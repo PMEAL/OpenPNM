@@ -7,7 +7,6 @@ ipython
 jsonschema
 json-tricks
 matplotlib
-mkl
 networkx
 numba
 numpy
@@ -19,3 +18,4 @@ sympy
 terminaltables
 tqdm
 transforms3d
+wheel
