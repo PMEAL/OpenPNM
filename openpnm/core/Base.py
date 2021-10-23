@@ -1398,43 +1398,49 @@ class LabelMixin:
         mode : string
             Controls how the labels are handled.  Options are:
 
-            *'add'* - Adds the given label to the specified locations while
-            keeping existing labels (default)
-
-            *'overwrite'* - Removes existing label from all locations before
-            adding the label in the specified locations
-
-            *'remove'* - Removes the  given label from the specified locations
-            leaving the remainder intact.
-
-            *'purge'* - Removes the specified label from the object
+            * 'add' (default)
+                Adds the given label to the specified locations while
+                keeping existing labels
+            * 'overwrite'
+                Removes existing label from all locations before
+                adding the label in the specified locations
+            * 'remove'
+                Removes the  given label from the specified locations
+                leaving the remainder intact
+            * 'purge'
+                Removes the specified label from the object
 
         """
+        self._parse_mode(mode=mode,
+                         allowed=['add', 'overwrite', 'remove', 'purge'])
+
         if label.split('.')[0] in ['pore', 'throat']:
             label = label.split('.', 1)[1]
-        if pores is not None:
+
+        if (pores is not None) and (throats is not None):
+            self.set_label(label=label, pores=pores, mode=mode)
+            self.set_label(label=label, throats=throats, mode=mode)
+            return
+        elif pores is not None:
             locs = self._parse_indices(pores)
             element = 'pore'
-        if throats is not None:
+        elif throats is not None:
             locs = self._parse_indices(throats)
             element = 'throat'
+        else:  # If both are None, then the mode must be purge
+            _ = self.pop('pore.' + label, None)
+            _ = self.pop('throat.' + label, None)
 
-        if mode == 'purge':
-            try:
-                del self[label]
-            except KeyError:
-                logger.warning(f'{label} not found on {self.name}')
-        elif mode == 'add':
+        if mode == 'add':
             if element + '.' + label not in self.keys():
                 self[element + '.' + label] = False
             self[element + '.' + label][locs] = True
-        elif mode == 'overwrite':
+        if mode == 'overwrite':
             self[element + '.' + label] = False
             self[element + '.' + label][locs] = True
-        elif mode== 'remove':
+        if mode== 'remove':
             self[element + '.' + label][locs] = False
-        else:
-            raise Exception('Unrecognized mode')
+
 
     def _get_indices(self, element, labels='all', mode='or'):
         r"""
