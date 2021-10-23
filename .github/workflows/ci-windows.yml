@@ -38,8 +38,10 @@ jobs:
           #   -r requirements/test_requirements.txt
           # # Install OpenPNM from the checked-out branch
           # pip install -e . --no-deps
-          pip install pypardiso
-          python -c "import pypardiso"
+          # pip install pypardiso
+          # python -c "import pypardiso"
+          pip install mkl
+          python -c "import mkl"
 
       # - name: Running tests
       #   run:
