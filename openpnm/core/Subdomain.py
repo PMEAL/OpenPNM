@@ -49,6 +49,13 @@ class Subdomain(Base, LegacyMixin, LabelMixin):
                                 + hit + ' is already defined')
         super().__setitem__(key, value)
 
+    @property
+    def _domain(self):
+        try:
+            return self.phase
+        except AttributeError:
+            return self.network
+
     def _set_locations(self, element, indices, mode):
         r"""
         This private method is called by ``set_locations`` and
