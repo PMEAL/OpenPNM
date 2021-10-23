@@ -56,15 +56,71 @@ class Subdomain(Base, LegacyMixin, LabelMixin):
         except AttributeError:
             return self.network
 
-    def _set_locations(self, *args, **kwargs):
-        self.set_locations(*args, **kwargs)
-
-    def set_locations(self, element, indices, mode):
+    def _set_locations(self, element, indices, mode):
         r"""
-        This private method is called by ``set_locations`` and
-        ``remove_locations`` as needed.
+        Element agnostic version of ``set_locations``
+
+        Parameters
+        ----------
+        element : str
+            Whether 'pore' or 'throat' values are being set
+        indices : array_like
+            The global indices of the pores or throats being set
+         mode : str
+            Controls how the locations are set.  Options are:
+
+            * 'switch'
+                Assigned the object to the specified locations and unassigns
+                any other objects from those locations if present
+            * 'add'
+                Assigns the object to the specified locations. An error is
+                riased if the locations are already assigned to another object
+            * 'drop'
+                Removes the object from the specified locations.
 
         """
+        if element.startswith('pore'):
+            self.set_locations(pores=indices, mode=mode)
+        if element.startswith('throat'):
+            self.set_locations(throats=indices, mode=mode)
+
+    def set_locations(self, pores=None, throats=None, mode='switch'):
+        r"""
+        Assign a Subdomain object to specific pores and/or throats
+
+        Parameters
+        ----------
+        pores : array_like
+            The list of pore indices to which this Subdomain should be
+            assigned
+        throats : array_like
+            The list of throat indices to which this Subdomain should be
+            assigned
+        mode : str
+            Controls how the locations are set.  Options are:
+
+            * 'switch' (default)
+                Assigned the object to the specified locations and unassigns
+                any other objects from those locations if present
+            * 'add'
+                Assigns the object to the specified locations. An error is
+                riased if the locations are already assigned to another object
+            * 'drop'
+                Removes the object from the specified locations.
+
+        """
+        if pores is not None:
+            indices = pores
+            element = 'pore'
+        elif throats is not None:
+            indices = pores
+            element = 'throat'
+        else:
+            # If both are sent call method for each then return
+            self.set_locations(pores=pores, mode=mode)
+            self.set_locations(throats=throats, mode=mode)
+            return
+
         boss = self._domain
         element = self._parse_element(element=element, single=True)
 
@@ -77,7 +133,8 @@ class Subdomain(Base, LegacyMixin, LabelMixin):
             for i in boss._subdomains:
                 if element + '.' + i.name in boss.keys():
                     if np.any(boss[element + '.' + i.name][indices]):
-                        raise Exception(f'Indices already assigned to {i.name}')
+                        raise Exception(f'Indices already assigned to {i.name}',
+                                        ', use mode = switch instead')
 
         # Find mask of existing locations (global indexing)
         mask = boss[element + '.' + self.name]
@@ -88,7 +145,7 @@ class Subdomain(Base, LegacyMixin, LabelMixin):
             mask = mask * (~boss._tomask(indices=indices, element=element))
         elif mode == 'switch':
             for i in boss._subdomains:
-                i.set_locations(element=element, indices=indices, mode='drop')
+                i._set_locations(element=element, indices=indices, mode='drop')
             mask = mask + boss._tomask(indices=indices, element=element)
         # Change size of all arrays on
         for item in self.keys(element=element, mode='all'):
