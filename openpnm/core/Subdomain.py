@@ -109,17 +109,17 @@ class Subdomain(Base, LegacyMixin, LabelMixin):
                 Removes the object from the specified locations.
 
         """
-        if pores is not None:
-            indices = pores
-            element = 'pore'
-        elif throats is not None:
-            indices = pores
-            element = 'throat'
-        else:
+        if (pores is not None) and (throats is not None):
             # If both are sent call method for each then return
             self.set_locations(pores=pores, mode=mode)
             self.set_locations(throats=throats, mode=mode)
             return
+        elif pores is not None:
+            indices = pores
+            element = 'pore'
+        elif throats is not None:
+            indices = throats
+            element = 'throat'
 
         boss = self._domain
         element = self._parse_element(element=element, single=True)
