@@ -1,11 +1,9 @@
-name: Ubuntu
+name: Examples
 
 on: [push]
 
 jobs:
   build:
-
-    if: ! contains(github.event.head_commit.message, 'ci examples')
 
     runs-on: ${{ matrix.operating-system }}
     defaults:
@@ -15,7 +13,7 @@ jobs:
     strategy:
       max-parallel: 4
       matrix:
-        python-version: [3.7, 3.8]
+        python-version: [3.8]
         operating-system: [ubuntu-latest]
 
     steps:
@@ -43,16 +41,7 @@ jobs:
 
       - name: Running tests
         run:
-          pytest .
-            --cov=.
-            --cov-report=xml
-            --ignore=scripts
-
-      - name: Upload coverage to Codecov
-        if: matrix.python-version == 3.8
-        uses: codecov/codecov-action@v2
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          file: ./coverage.xml
-          flags: unittests
-          name: codecov-umbrella
+          pytest examples/
+            --nbval-lax
+            --ignore="examples/paper_recreations/Blunt et al. (2013)"
+            --ignore="examples/paper_recreations/Wu et al. (2010)"

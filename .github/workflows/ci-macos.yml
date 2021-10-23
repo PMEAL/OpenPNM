@@ -1,4 +1,4 @@
-name: Ubuntu
+name: macOS
 
 on: [push]
 
@@ -15,8 +15,8 @@ jobs:
     strategy:
       max-parallel: 4
       matrix:
-        python-version: [3.7, 3.8]
-        operating-system: [ubuntu-latest]
+        python-version: [3.8]
+        operating-system: [macos-latest]
 
     steps:
       - uses: actions/checkout@v2
@@ -28,7 +28,7 @@ jobs:
       - name: Cache pip
         uses: actions/cache@v2
         with:
-          path: ~/.cache/pip
+          path: ~/Library/Caches/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('**/pip_requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
@@ -44,15 +44,4 @@ jobs:
       - name: Running tests
         run:
           pytest .
-            --cov=.
-            --cov-report=xml
             --ignore=scripts
-
-      - name: Upload coverage to Codecov
-        if: matrix.python-version == 3.8
-        uses: codecov/codecov-action@v2
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          file: ./coverage.xml
-          flags: unittests
-          name: codecov-umbrella
