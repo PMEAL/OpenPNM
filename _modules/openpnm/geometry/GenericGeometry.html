@@ -254,63 +254,10 @@
             <span class="n">network</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;pore.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="n">network</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;throat.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">add_locations</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pores</span><span class="p">,</span> <span class="n">throats</span><span class="o">=</span><span class="n">throats</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">set_locations</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pores</span><span class="p">,</span> <span class="n">throats</span><span class="o">=</span><span class="n">throats</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;add&#39;</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="n">network</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">purge_object</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">, instantiation cancelled&#39;</span><span class="p">)</span>
-
-<div class="viewcode-block" id="GenericGeometry.add_locations"><a class="viewcode-back" href="../../../modules/geometry/generic_geometry.html#openpnm.geometry.GenericGeometry.add_locations">[docs]</a>    <span class="k">def</span> <span class="nf">add_locations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="p">[],</span> <span class="n">throats</span><span class="o">=</span><span class="p">[]):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Adds associations between this geometry and the given pore and/or</span>
-<span class="sd">        throat locations.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        pores and throats : array_like</span>
-<span class="sd">            The pore and/or throat locations for which the association should</span>
-<span class="sd">            be added.  These indices are for the full domain.</span>
-
-<span class="sd">        Notes</span>
-<span class="sd">        -----</span>
-<span class="sd">        If a physics object is associated with this geometry, then its</span>
-<span class="sd">        pore and/or throat associations are also changed.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">pores</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">_parse_indices</span><span class="p">(</span><span class="n">pores</span><span class="p">)</span>
-        <span class="n">throats</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">_parse_indices</span><span class="p">(</span><span class="n">throats</span><span class="p">)</span>
-        <span class="n">objects</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">find_physics</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-        <span class="n">objects</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">objects</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">pores</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">obj</span><span class="o">.</span><span class="n">_set_locations</span><span class="p">(</span><span class="n">element</span><span class="o">=</span><span class="s1">&#39;pore&#39;</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="n">pores</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;add&#39;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">throats</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">obj</span><span class="o">.</span><span class="n">_set_locations</span><span class="p">(</span><span class="n">element</span><span class="o">=</span><span class="s1">&#39;throat&#39;</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="n">throats</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;add&#39;</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="GenericGeometry.drop_locations"><a class="viewcode-back" href="../../../modules/geometry/generic_geometry.html#openpnm.geometry.GenericGeometry.drop_locations">[docs]</a>    <span class="k">def</span> <span class="nf">drop_locations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="p">[],</span> <span class="n">throats</span><span class="o">=</span><span class="p">[]):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Removes association between this geometry and the given pore and/or</span>
-<span class="sd">        throat locations.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        pores and throats : array_like</span>
-<span class="sd">            The pore and/or throat locations from which the association should</span>
-<span class="sd">            be removed.  These indices refer to the full domain.</span>
-
-<span class="sd">        Notes</span>
-<span class="sd">        -----</span>
-<span class="sd">        If a physics object is associated with this geometry, then its</span>
-<span class="sd">        pore and/or throat associations are also changed.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">pores</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">_parse_indices</span><span class="p">(</span><span class="n">pores</span><span class="p">)</span>
-        <span class="n">throats</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">_parse_indices</span><span class="p">(</span><span class="n">throats</span><span class="p">)</span>
-        <span class="n">objects</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">find_physics</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-        <span class="n">objects</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">objects</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">pores</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">obj</span><span class="o">.</span><span class="n">_set_locations</span><span class="p">(</span><span class="n">element</span><span class="o">=</span><span class="s1">&#39;pore&#39;</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="n">pores</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;drop&#39;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">throats</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">obj</span><span class="o">.</span><span class="n">_set_locations</span><span class="p">(</span><span class="n">element</span><span class="o">=</span><span class="s1">&#39;throat&#39;</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="n">throats</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;drop&#39;</span><span class="p">)</span></div></div>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">, instantiation cancelled&#39;</span><span class="p">)</span></div>
 </pre></div>
 
               </div>
