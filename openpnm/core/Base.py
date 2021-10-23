@@ -1423,7 +1423,7 @@ class LabelMixin:
             try:
                 del self[label]
             except KeyError:
-                logger.warning(label + ' is not a label, skpping')
+                logger.warning(f'{label} not found on {self.name}')
         elif mode == 'add':
             if element + '.' + label not in self.keys():
                 self[element + '.' + label] = False
