@@ -18,3 +18,4 @@ sympy
 terminaltables
 tqdm
 transforms3d
+mkl<=2021.3.0
