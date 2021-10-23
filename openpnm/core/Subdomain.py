@@ -86,7 +86,11 @@ class Subdomain(Base, LegacyMixin, LabelMixin):
             mask = mask + boss._tomask(indices=indices, element=element)
         elif mode == 'drop':
             mask = mask * (~boss._tomask(indices=indices, element=element))
-        # Change size of all arrays on self
+        elif mode == 'switch':
+            for i in boss._subdomains:
+                i.set_locations(element=element, indices=indices, mode='drop')
+            mask = mask + boss._tomask(indices=indices, element=element)
+        # Change size of all arrays on
         for item in self.keys(element=element, mode='all'):
             self.update({item: boss[item][mask]})
         # Update label array in boss
