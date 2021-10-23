@@ -665,6 +665,38 @@ label to identify where this Geometry applies.</p></li>
 </pre></div>
 </div>
 <a class="reference internal image-reference" href="../../_images/generic_geometry_histogram.png"><img alt="../../_images/generic_geometry_histogram.png" class="align-center" src="../../_images/generic_geometry_histogram.png" style="width: 500px;" /></a>
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.geometry.GenericGeometry.add_locations">
+<span class="sig-name descname"><span class="pre">add_locations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throats</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/geometry/GenericGeometry.html#GenericGeometry.add_locations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.geometry.GenericGeometry.add_locations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds associations between this geometry and the given pore and/or
+throat locations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>throats</strong> (<em>pores and</em>) – The pore and/or throat locations for which the association should
+be added.  These indices are for the full domain.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>If a physics object is associated with this geometry, then its
+pore and/or throat associations are also changed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.geometry.GenericGeometry.drop_locations">
+<span class="sig-name descname"><span class="pre">drop_locations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throats</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/geometry/GenericGeometry.html#GenericGeometry.drop_locations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.geometry.GenericGeometry.drop_locations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes association between this geometry and the given pore and/or
+throat locations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>throats</strong> (<em>pores and</em>) – The pore and/or throat locations from which the association should
+be removed.  These indices refer to the full domain.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>If a physics object is associated with this geometry, then its
+pore and/or throat associations are also changed.</p>
+</dd></dl>
+
 </dd></dl>
 
 </section>

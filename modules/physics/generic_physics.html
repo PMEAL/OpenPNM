@@ -633,42 +633,24 @@ generated that includes the class name and an integer index.</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="openpnm.physics.GenericPhysics.set_geometry">
 <span class="sig-name descname"><span class="pre">set_geometry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">geometry</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'add'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/physics/GenericPhysics.html#GenericPhysics.set_geometry"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.physics.GenericPhysics.set_geometry" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sets the association between this physics and a geometry</p>
-<p>This association is done by setting the pores and throats that define
-the Subdomain to match.</p>
+<dd><p>Sets the association between this physics and a geometry (i.e. a
+set of pores and throats that define a subdomain)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>geometry</strong> (<em>OpenPNM Geometry object</em>) – The geometry defining the pores and throats to which this physics
 should be attached</p></li>
-<li><p><strong>mode</strong> (<em>str</em>) – <p>Controls how the assignment is done. Options are:</p>
-<ul>
-<li><dl class="simple">
-<dt>’swap’</dt><dd><p>The pore and throat locations from the current geometry will
-be transferred to the new one</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>’drop’</dt><dd><p>Associations with the current geometry will be removed</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>’add’</dt><dd><p>If the physics does not presently have an associated
-geometry, this will create associations</p>
-</dd>
-</dl>
-</li>
-</ul>
+<li><p><strong>mode</strong> (<em>str</em>) – <p>Options are:</p>
+<p>’swap’ - Associations will be made with the new geometry, and
+the pore and throat locations from the current geometry will be
+transferred to the new one.</p>
+<p>’drop’ - Associations with the current geometry will be removed.</p>
+<p>’add’ - If the physics does not presently have an associated
+geometry, this will create associations.</p>
 </p></li>
 </ul>
 </dd>
 </dl>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_locations</span></code></p>
-</div>
 </dd></dl>
 
 <dl class="py method">
