@@ -44,7 +44,6 @@ jobs:
           pytest .
             --cov=.
             --cov-report=xml
-            --ignore=scripts
 
       - name: Upload coverage to Codecov
         if: matrix.python-version == 3.8
