@@ -32,7 +32,7 @@ class GenericPhysics(Subdomain, ModelsMixin):
     """
 
     def __init__(self, project=None, network=None, phase=None,
-                 geometry=None, settings={}, **kwargs):
+                 geometry=None, pores=None, throats=None, settings={}, **kwargs):
         self.settings.update({'prefix': 'phys'})  # Define some default settings
         self.settings.update(settings)  # Overwrite with user supplied settings
         super().__init__(project=project, network=network, **kwargs)
@@ -42,8 +42,11 @@ class GenericPhysics(Subdomain, ModelsMixin):
             if phase is not None:
                 self.set_phase(phase=phase)
             if geometry is None:
-                logger.warning('No Geometry provided, ' + self.name
-                               + ' will not be associated with any locations')
+                if (pores is None) and (throats is None):
+                    logger.warning('No Geometry provided, ' + self.name
+                                   + ' will not be associated with any locations')
+                else:
+                    self.set_locations(pores=pores, throats=throats, mode='add')
             else:
                 if phase is None:
                     logger.warning('Cannot associate with a geometry unless '

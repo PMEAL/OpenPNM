@@ -50,6 +50,19 @@ class GenericPhysicsTest:
         with pytest.raises(Exception):
             _ = phys.project.find_geometry(phys)
 
+    def test_instantiate_with_pores_and_throats(self):
+        net = op.network.Cubic(shape=[3, 3, 3])
+        _ = op.geometry.GenericGeometry(network=net,
+                                        pores=net.Ps,
+                                        throats=net.Ts)
+        phase = op.phases.GenericPhase(network=net)
+        phys = op.physics.GenericPhysics(network=net,
+                                         phase=phase,
+                                         pores=net.Ps,
+                                         throats=net.Ts)
+        assert phys.Np == 27
+        assert phys.Nt == 54
+
     def test_set_phase_afer_instantiation(self):
         phys = op.physics.GenericPhysics(network=self.net)
         phase = op.phases.GenericPhase(network=self.net)
