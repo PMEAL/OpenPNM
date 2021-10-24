@@ -97,5 +97,9 @@ class GenericPhase(Base, ModelsMixin, LegacyMixin, LabelMixin):
         return self
 
     @property
+    def physics(self):
+        return self.project.find_physics(phase=self)
+
+    @property
     def _subdomains(self):
         return self.project.find_physics(phase=self)

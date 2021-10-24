@@ -42,11 +42,11 @@ class GenericPhysicsTest:
             phys.project.find_geometry(phys)
 
     def test_instantiate_with_only_network(self):
-        phase = op.phases.GenericPhase(network=self.net)
+        _ = op.phases.GenericPhase(network=self.net)
         phys = op.physics.GenericPhysics(network=self.net)
         assert phys.project is not None
         with pytest.raises(Exception):
-            _ = phys.project.find_phase(phys) is phase
+            _ = phys.project.find_phase(phys)
         with pytest.raises(Exception):
             _ = phys.project.find_geometry(phys)
 
@@ -126,21 +126,19 @@ class GenericPhysicsTest:
         with pytest.raises(Exception):
             phys.set_geometry(geometry=geo, mode='add')
 
-    def test_drop_geo_add_phys(self):
+    def test_using_geometry_attr(self):
         net = op.network.Cubic(shape=[3, 3, 3])
         geo = op.geometry.GenericGeometry(network=net, pores=net.Ps,
                                           throats=net.Ts)
         phase = op.phases.GenericPhase(network=net)
         phys = op.physics.GenericPhysics(network=net, phase=phase,
                                          geometry=geo)
-        geo.set_locations(pores=[0], mode='drop')
-        geo2 = op.geometry.GenericGeometry(network=net, pores=[0])
-        phys2 = op.physics.GenericPhysics(network=net, phase=phase,
-                                          geometry=geo2)
-        assert geo.Np == 26
-        assert phys.Np == 26
-        assert geo2.Np == 1
-        assert phys2.Np == 1
+        assert phys.Np == 27
+        del phys.geometry
+        assert phys.Np == 0
+        phys.geometry = geo
+        assert phys.Np == 27
+        assert phys.geometry is geo
 
 
 if __name__ == '__main__':

@@ -76,7 +76,14 @@ class Subdomain(Base, LegacyMixin, LabelMixin):
                 Assigns the object to the specified locations. An error is
                 riased if the locations are already assigned to another object
             * 'drop'
-                Removes the object from the specified locations.
+                Removes the object from the specified locations
+
+        Notes
+        -----
+        This was originally kept for backward compatibility since
+        ``_set_locations`` is called thoughout the code; however it turned
+        out to be necessary to have a generic version that accepted the
+        element.
 
         """
         if element.startswith('pore'):
@@ -100,13 +107,13 @@ class Subdomain(Base, LegacyMixin, LabelMixin):
             Controls how the locations are set.  Options are:
 
             * 'switch' (default)
-                Assigned the object to the specified locations and unassigns
+                Assigns the object to the specified locations and unassigns
                 any other objects from those locations if present
             * 'add'
                 Assigns the object to the specified locations. An error is
                 riased if the locations are already assigned to another object
             * 'drop'
-                Removes the object from the specified locations.
+                Removes the object from the specified locations
 
         """
         if (pores is not None) and (throats is not None):
@@ -122,37 +129,34 @@ class Subdomain(Base, LegacyMixin, LabelMixin):
             element = 'throat'
 
         boss = self._domain
-        element = self._parse_element(element=element, single=True)
 
         # Make sure label array exists in boss
         if (element + '.' + self.name) not in boss.keys():
             boss[element + '.' + self.name] = False
 
-        # Check to ensure indices aren't already assigned
+        # Find mask of existing locations (global indexing)
+        mask = boss[element + '.' + self.name]
+
+        # Update mask with new locations (either add or remove)
         if mode == 'add':
+            # Check to ensure indices aren't already assigned
             for i in boss._subdomains:
                 if element + '.' + i.name in boss.keys():
                     if np.any(boss[element + '.' + i.name][indices]):
                         raise Exception(f'Indices already assigned to {i.name}',
                                         ', use mode = switch instead')
-
-        # Find mask of existing locations (global indexing)
-        mask = boss[element + '.' + self.name]
-        # Update mask with new locations (either add or remove)
-        if mode == 'add':
+            # If no exception was raised, generate a mask
             mask = mask + boss._tomask(indices=indices, element=element)
+            boss[element + '.' + self.name] = mask
         elif mode == 'drop':
             mask = mask * (~boss._tomask(indices=indices, element=element))
+            boss[element + '.' + self.name] = mask
         elif mode == 'switch':
             for i in boss._subdomains:
                 i._set_locations(element=element, indices=indices, mode='drop')
             mask = mask + boss._tomask(indices=indices, element=element)
+            boss[element + '.' + self.name] = mask
+
         # Change size of all arrays on self
         for item in self.keys(element=element, mode='all'):
             self.update({item: boss[item][mask]})
-        # Update label array in boss
-        boss[element + '.' + self.name] = mask
-        # Remove label from boss if ALL locations are removed
-        if mode == 'drop':
-            if ~np.any(boss[element + '.' + self.name]):
-                boss[element + '.' + self.name] = False

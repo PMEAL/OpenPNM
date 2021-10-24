@@ -51,10 +51,21 @@ class GenericPhysics(Subdomain, ModelsMixin):
                 else:
                     self.set_geometry(geometry=geometry)
 
+    def _set_phase(self, phase):
+        if phase is None:
+            self._del_phase()
+        try:
+            self.set_phase(phase=phase, mode='swap')
+        except Exception:
+            self.set_phase(phase=phase, mode='add')
+
     def _get_phase(self):
         return self.project.find_phase(self)
 
-    phase = property(fget=_get_phase)
+    def _del_phase(self):
+        self.set_phase(phase=self.phase, mode='drop')
+
+    phase = property(fget=_get_phase, fset=_set_phase, fdel=_del_phase)
 
     def set_phase(self, phase=None, mode='swap'):
         r"""
@@ -113,7 +124,12 @@ class GenericPhysics(Subdomain, ModelsMixin):
             raise Exception('mode ' + mode + ' not understood')
 
     def _set_geo(self, geo):
-        self.set_geometry(geo, mode='add')
+        if geo is None:
+            self._del_geo()
+        try:
+            self.set_geometry(geo, mode='swap')
+        except Exception:
+            self.set_geometry(geo, mode='add')
 
     def _get_geo(self):
         return self.project.find_geometry(physics=self)
