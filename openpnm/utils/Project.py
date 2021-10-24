@@ -305,7 +305,7 @@ class Project(list):
 
         Notes
         -----
-        The Project has an ``grid`` attribute that shows the association of
+        The Project has a ``grid`` attribute that shows the associations of
         all objects.  If each Geometry represents a row and each Phase is a
         column, then each row/col intersection represents a Physics. This
         method finds the Physics' at each intersection
