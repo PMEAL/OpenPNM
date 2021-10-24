@@ -81,9 +81,9 @@ class Subdomain(Base, LegacyMixin, LabelMixin):
         Notes
         -----
         This was originally kept for backward compatibility since
-        ``_set_locations`` is called thoughout the code; however it turned
-        out to be necessary to have a generic version that accepted the
-        element.
+        ``_set_locations`` is called thoughout the code; however, it turned
+        out to be necessary to have a generic version that accepted
+        ``element``.
 
         """
         if element.startswith('pore'):

@@ -57,6 +57,7 @@ class GenericPhysics(Subdomain, ModelsMixin):
     def _set_phase(self, phase):
         if phase is None:
             self._del_phase()
+            return
         try:
             self.set_phase(phase=phase, mode='swap')
         except Exception:
@@ -129,6 +130,7 @@ class GenericPhysics(Subdomain, ModelsMixin):
     def _set_geo(self, geo):
         if geo is None:
             self._del_geo()
+            return
         try:
             self.set_geometry(geo, mode='swap')
         except Exception:
@@ -172,7 +174,12 @@ class GenericPhysics(Subdomain, ModelsMixin):
 
         """
         self._parse_mode(mode=mode, allowed=['add', 'swap', 'drop', 'remove'])
-        phase = self.project.find_phase(self)
+        try:
+            phase = self.project.find_phase(self)
+        except Exception:
+            raise Exception("Cannot set locations for a physics object" +
+                            " that is not associated with a phase")
+
         if (geometry is not None) and (geometry not in self.project):
             raise Exception(self.name + ' not in same project as given geometry')
         if mode == 'swap':  # Remove associate with existing geometry
