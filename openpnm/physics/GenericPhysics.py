@@ -33,36 +33,28 @@ class GenericPhysics(Subdomain, ModelsMixin):
 
     def __init__(self, project=None, network=None, phase=None,
                  geometry=None, settings={}, **kwargs):
-
-        # Define some default settings
-        self.settings.update({'prefix': 'phys'})
-        # Overwrite with user supplied settings, if any
-        self.settings.update(settings)
-        if phase is None:
-            self.settings['freeze_models'] = True
-
+        self.settings.update({'prefix': 'phys'})  # Define some default settings
+        self.settings.update(settings)  # Overwrite with user supplied settings
         super().__init__(project=project, network=network, **kwargs)
 
         network = self.project.network
         if network:
-            if phase is None:
-                logger.warning('No Phase provided, ' + self.name
-                               + ' will not be associated with a phase')
-            else:
+            if phase is not None:
                 self.set_phase(phase=phase)
             if geometry is None:
                 logger.warning('No Geometry provided, ' + self.name
                                + ' will not be associated with any locations')
             else:
-                if (phase is None):
+                if phase is None:
                     logger.warning('Cannot associate with a geometry unless '
                                    + 'a phase is also given')
                 else:
                     self.set_geometry(geometry=geometry)
 
-    @property
-    def phase(self):
+    def _get_phase(self):
         return self.project.find_phase(self)
+
+    phase = property(fget=_get_phase)
 
     def set_phase(self, phase=None, mode='swap'):
         r"""
@@ -120,6 +112,17 @@ class GenericPhysics(Subdomain, ModelsMixin):
         else:
             raise Exception('mode ' + mode + ' not understood')
 
+    def _set_geo(self, geo):
+        self.set_geometry(geo, mode='add')
+
+    def _get_geo(self):
+        return self.project.find_geometry(physics=self)
+
+    def _del_geo(self):
+        self.set_geometry(mode='drop')
+
+    geometry = property(fset=_set_geo, fget=_get_geo, fdel=_del_geo)
+
     def set_geometry(self, geometry=None, mode='add'):
         r"""
         Sets the association between this physics and a geometry
@@ -151,21 +154,21 @@ class GenericPhysics(Subdomain, ModelsMixin):
         """
         self._parse_mode(mode=mode, allowed=['add', 'swap', 'drop', 'remove'])
         phase = self.project.find_phase(self)
+        if (geometry is not None) and (geometry not in self.project):
+            raise Exception(self.name + ' not in same project as given geometry')
         if mode == 'swap':  # Remove associate with existing geometry
-            if geometry not in self.project:
-                raise Exception(self.name + ' not in same project as given geometry')
             old_geometry = self.project.find_geometry(self)
             Ps = self.network.pores(old_geometry.name)
             Ts = self.network.throats(old_geometry.name)
             self.set_locations(pores=Ps, throats=Ts, mode='drop')
-            phase.set_label(label=self.name, mode='purge')
+            phase.set_label(label=self.name, mode='clear')
         if mode in ['add', 'swap']:
             Ps = self.network.pores(geometry.name)
             Ts = self.network.throats(geometry.name)
             self.set_locations(pores=Ps, throats=Ts, mode='add')
             phase.set_label(label=self.name, pores=Ps, throats=Ts, mode='add')
         if mode in ['remove', 'drop']:
-            phase.set_label(label=self.name, pores=Ps, throats=Ts, mode='purge')
+            phase.set_label(label=self.name, mode='clear')
             self.update({'pore.all': np.array([], dtype=bool)})
             self.update({'throat.all': np.array([], dtype=bool)})
             self.clear()
