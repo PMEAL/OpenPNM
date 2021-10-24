@@ -3,10 +3,15 @@ Pore-scale models for calculating ionic conductance of conduits.
 """
 import numpy as _np
 from openpnm.utils import logging
-from openpnm.models.physics.utils import generic_transport_conductance
+from openpnm.models.physics.utils import _poisson_conductance
 logger = logging.getLogger(__name__)
 
-__all__ = ["generic_ionic_poisson_laplace", "generic_ionic_electroneutrality", "poisson", "electroneutrality"]
+__all__ = [
+    "generic_ionic_poisson_laplace",
+    "generic_ionic_electroneutrality",
+    "poisson",
+    "electroneutrality"
+]
 
 
 def generic_ionic_poisson_laplace(target,
@@ -20,15 +25,13 @@ def generic_ionic_poisson_laplace(target,
 
     Parameters
     ----------
-    target : OpenPNM Object
+    target : GenericPhysics
         The object which this model is associated with. This controls the
         length of the calculated array, and also provides access to other
         necessary properties.
-
-    conduit_lengths : string
+    conduit_lengths : str
         Dictionary key of the conduit length values
-
-    size_factors : string
+    size_factors : str
         Dictionary key of the conduit DIFFUSION size shape factor values
 
     Returns
@@ -44,11 +47,11 @@ def generic_ionic_poisson_laplace(target,
 
     """
     epsilon0 = 8.854187817e-12
-    gic = epsilon0*generic_transport_conductance(target=target,
-                                                 pore_conductivity=pore_conductivity,
-                                                 throat_conductivity=throat_conductivity,
-                                                 size_factors=size_factors)
-    return gic
+    g = _poisson_conductance(target=target,
+                             pore_conductivity=pore_conductivity,
+                             throat_conductivity=throat_conductivity,
+                             size_factors=size_factors)
+    return g*epsilon0
 
 
 def generic_ionic_electroneutrality(target,

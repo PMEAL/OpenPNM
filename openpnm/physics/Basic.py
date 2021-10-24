@@ -50,8 +50,7 @@ class Basic(GenericPhysics):
             else:
                 project = network.project
 
-        super().__init__(project=project, phase=phase, geometry=geometry,
-                         **kwargs)
+        super().__init__(project=project, phase=phase, geometry=geometry, **kwargs)
 
         self.add_model(propname='throat.hydraulic_conductance',
                        model=mods.hydraulic_conductance.generic_hydraulic)
