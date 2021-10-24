@@ -118,7 +118,7 @@ class Base(dict):
         self.update({'throat.all': np.ones(shape=(Nt, ), dtype=bool)})
 
     def __repr__(self):
-        return '<%s object at %s>' % (self.__class__.__module__, hex(id(self)))
+        return f'<{self.__class__.__module__} object at {hex(id(self))}>'
 
     def __eq__(self, other):
         return hex(id(self)) == hex(id(other))
