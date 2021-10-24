@@ -195,6 +195,20 @@ class GenericPhysicsTest:
         assert phys in phase1.physics
         assert phys not in phase2.physics
 
+    def test_set_geometry_mode_move(self):
+        pn = op.network.Cubic([6, 1, 1])
+        g1 = op.geometry.GenericGeometry(network=pn, pores=[0, 1, 2])
+        g2 = op.geometry.GenericGeometry(network=pn, pores=[3, 4, 5])
+        air = op.phases.Air(network=pn)
+        phys1 = op.physics.GenericPhysics(network=pn, phase=air, geometry=g1)
+        phys2 = op.physics.GenericPhysics(network=pn, phase=air)
+        phys2.set_geometry(geometry=g1, mode='move')
+        assert phys1.Np == 0
+        assert phys2.Np == 3
+        phys1.set_geometry(geometry=g2, mode='add')
+        assert phys1.Np == 3
+        assert phys2.Np == 3
+
 
 if __name__ == '__main__':
 

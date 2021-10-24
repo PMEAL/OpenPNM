@@ -59,7 +59,7 @@ class GenericPhysics(Subdomain, ModelsMixin):
             self._del_phase()
             return
         try:
-            self.set_phase(phase=phase, mode='swap')
+            self.set_phase(phase=phase, mode='move')
         except Exception:
             self.set_phase(phase=phase, mode='add')
 
@@ -78,7 +78,7 @@ class GenericPhysics(Subdomain, ModelsMixin):
         Parameters
         ----------
         phase : OpenPNM Phase object
-            If mode is 'add' or 'swap', this must be specified so that
+            If mode is 'add' or 'move', this must be specified so that
             associations can be recorded in the phase dictionary.  If the
             mode is 'drop', this is not needed since the existing association
             can be used to find it.
@@ -108,7 +108,7 @@ class GenericPhysics(Subdomain, ModelsMixin):
         if (phase is not None) and (phase not in self.project):
             raise Exception(self.name + ' not in same project as given phase')
 
-        if mode in ['swap']:
+        if mode in ['move']:
             old_phase = self.project.find_phase(self)
             # Transfer locs from old to new phase
             phase['pore.'+self.name] = old_phase.pop('pore.'+self.name, False)
@@ -197,5 +197,8 @@ class GenericPhysics(Subdomain, ModelsMixin):
             self.update({'pore.all': np.array([], dtype=bool)})
             self.update({'throat.all': np.array([], dtype=bool)})
             self.clear()
-        else:
-            raise Exception('mode ' + mode + ' not understood')
+        elif mode in ['move']:
+            phys = self.project.find_physics(phase=phase, geometry=geometry)
+            phys.set_geometry(mode='drop')
+            self.set_geometry(mode='drop')
+            self.set_geometry(geometry=geometry, mode='add')
