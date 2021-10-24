@@ -40,7 +40,7 @@ class GenericPhysics(Subdomain, ModelsMixin):
         network = self.project.network
         if network:
             if phase is not None:
-                self.set_phase(phase=phase)
+                self.set_phase(phase=phase, mode='add')
             if geometry is None:
                 if (pores is None) and (throats is None):
                     logger.warning('No Geometry provided, ' + self.name
@@ -71,7 +71,7 @@ class GenericPhysics(Subdomain, ModelsMixin):
 
     phase = property(fget=_get_phase, fset=_set_phase, fdel=_del_phase)
 
-    def set_phase(self, phase=None, mode='swap'):
+    def set_phase(self, phase=None, mode='add'):
         r"""
         Sets the association between this physics and a phase.
 
@@ -85,16 +85,19 @@ class GenericPhysics(Subdomain, ModelsMixin):
         mode : str
             Options are:
 
-            'swap' - Associations will be made with the new phase, and
-            the pore and throat locations from the current phase will be
-            transferred to the new one.
+            * 'add' (default)
+                If the physics does not presently have an associated phase,
+                this will create associations, but no pore or throat
+                locations will assigned.  This must be done using the
+                ``set_geometry`` method.
 
-            'drop' - Associations with the existing phase will be removed.
+            * 'swap'
+                Associations will be made with the new phase, and the pore
+                and throat locations from the current phase will be
+                transferred to the new one.
 
-            'add' - If the physics does not presently have an associated
-            phase, this will create associations, but no pore or throat
-            locations will assigned.  This must be done using the
-            ``set_geometry`` method.
+            * 'drop'
+                Associations with the existing phase will be removed.
 
         Notes
         -----
@@ -103,26 +106,31 @@ class GenericPhysics(Subdomain, ModelsMixin):
         must be run.
 
         """
-        if mode in ['add', 'swap']:
-            if phase not in self.project:
-                raise Exception(self.name + ' not in same project as given phase')
+        if (phase is not None) and (phase not in self.project):
+            raise Exception(self.name + ' not in same project as given phase')
+
+        if mode in ['swap']:
+            old_phase = self.project.find_phase(self)
+            # Transfer locs from old to new phase
+            phase['pore.'+self.name] = old_phase.pop('pore.'+self.name, False)
+            phase['throat.'+self.name] = old_phase.pop('throat.'+self.name, False)
+            self.clear()
+        elif mode in ['add']:
+            temp = None
             try:
-                old_phase = self.project.find_phase(self)
-                phase['pore.'+self.name] = old_phase['pore.'+self.name]
-                phase['throat.'+self.name] = old_phase['throat.'+self.name]
-                old_phase.pop('pore.'+self.name, None)
-                old_phase.pop('throat.'+self.name, None)
-                self.clear()
-            except Exception as e:
-                logger.debug(e)
+                temp = self.phase
+            except Exception:
                 phase['pore.'+self.name] = False
                 phase['throat.'+self.name] = False
-        elif mode in ['remove', 'drop']:
+                return
+            if temp is not None:
+                raise Exception(f"{self.name} is already associated with " +
+                f"{self.phase.name}. Use mode='swap' instead.")
+        elif mode in ['drop']:
             self.update({'pore.all': np.array([], dtype=bool)})
             self.update({'throat.all': np.array([], dtype=bool)})
-            phase = self.project.find_phase(self)
-            phase.pop('pore.'+self.name, None)
-            phase.pop('throat.'+self.name, None)
+            self.phase.pop('pore.' + self.name, None)
+            self.phase.pop('throat.' + self.name, None)
             self.clear()
         else:
             raise Exception('mode ' + mode + ' not understood')
@@ -131,10 +139,7 @@ class GenericPhysics(Subdomain, ModelsMixin):
         if geo is None:
             self._del_geo()
             return
-        try:
-            self.set_geometry(geo, mode='swap')
-        except Exception:
-            self.set_geometry(geo, mode='add')
+        self.set_geometry(geo, mode='add')
 
     def _get_geo(self):
         return self.project.find_geometry(physics=self)
@@ -159,14 +164,11 @@ class GenericPhysics(Subdomain, ModelsMixin):
         mode : str
             Controls how the assignment is done. Options are:
 
-            * 'swap'
-                The pore and throat locations from the current geometry will
-                be transferred to the new one
-            * 'drop'
-                Associations with the current geometry will be removed
-            * 'add'
+            * 'add' (default)
                 If the physics does not presently have an associated
                 geometry, this will create associations
+            * 'drop'
+                Associations with the current geometry will be removed
 
         See Also
         --------
@@ -182,19 +184,16 @@ class GenericPhysics(Subdomain, ModelsMixin):
 
         if (geometry is not None) and (geometry not in self.project):
             raise Exception(self.name + ' not in same project as given geometry')
-        if mode == 'swap':  # Remove associate with existing geometry
-            old_geometry = self.project.find_geometry(self)
-            Ps = self.network.pores(old_geometry.name)
-            Ts = self.network.throats(old_geometry.name)
-            self.set_locations(pores=Ps, throats=Ts, mode='drop')
-            phase.set_label(label=self.name, mode='clear')
-        if mode in ['add', 'swap']:
+
+        if mode in ['add']:
             Ps = self.network.pores(geometry.name)
             Ts = self.network.throats(geometry.name)
             self.set_locations(pores=Ps, throats=Ts, mode='add')
             phase.set_label(label=self.name, pores=Ps, throats=Ts, mode='add')
-        if mode in ['remove', 'drop']:
+        elif mode in ['drop']:
             phase.set_label(label=self.name, mode='clear')
             self.update({'pore.all': np.array([], dtype=bool)})
             self.update({'throat.all': np.array([], dtype=bool)})
             self.clear()
+        else:
+            raise Exception('mode ' + mode + ' not understood')

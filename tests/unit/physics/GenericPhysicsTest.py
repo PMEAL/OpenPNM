@@ -69,7 +69,7 @@ class GenericPhysicsTest:
         assert 'pore.' + phys.name not in phase.keys()
         phys.set_phase(phase=phase, mode='add')
         assert 'pore.' + phys.name in phase.keys()
-        phys.set_phase(phase=phase, mode='remove')
+        phys.set_phase(phase=phase, mode='drop')
         assert 'pore.' + phys.name not in phase.keys()
 
     def test_set_geom_after_instantiation(self):
@@ -152,6 +152,48 @@ class GenericPhysicsTest:
         phys.geometry = geo
         assert phys.Np == 27
         assert phys.geometry is geo
+
+    def test_using_phase_attr(self):
+        net = op.network.Cubic(shape=[3, 3, 3])
+        geo = op.geometry.GenericGeometry(network=net, pores=net.Ps,
+                                          throats=net.Ts)
+        phase1 = op.phases.GenericPhase(network=net)
+        phase2 = op.phases.GenericPhase(network=net)
+        phys = op.physics.GenericPhysics(network=net, phase=phase1,
+                                         geometry=geo)
+        assert phys.Np == 27
+        assert phys in phase1.physics
+        assert phys not in phase2.physics
+        phys.phase = phase2
+        assert phys in phase2.physics
+        assert phys not in phase1.physics
+        assert phys.Np == 27
+
+    def test_set_phase_modes(self):
+        net = op.network.Cubic(shape=[3, 3, 3])
+        geo = op.geometry.GenericGeometry(network=net, pores=net.Ps,
+                                          throats=net.Ts)
+        phase1 = op.phases.GenericPhase(network=net)
+        phase2 = op.phases.GenericPhase(network=net)
+        phys = op.physics.GenericPhysics(network=net, phase=phase1,
+                                         geometry=geo)
+        assert phys.Np == 27
+        assert phys.Nt == 54
+        assert phys in phase1.physics
+        assert phys not in phase2.physics
+        with pytest.raises(Exception):
+            phys.set_phase(phase=phase2, mode='add')
+        phys.set_phase(phase=phase2, mode='swap')
+        assert phys in phase2.physics
+        assert phys not in phase1.physics
+        assert phys.Np == 27
+        assert phys.Nt == 54
+        phys.set_phase(mode='drop')
+        phys.set_phase(phase=phase1, mode='add')
+        assert phys.Np == 0
+        assert phys.Nt == 0
+        assert phys in phase1.physics
+        assert phys not in phase2.physics
 
 
 if __name__ == '__main__':

@@ -66,6 +66,26 @@ class SubdomainTest:
         assert geo2.Np == 1
         assert phys2.Np == 1
 
+    def test_phase_and_geom_attr_with_two_domains(self):
+        pn = op.network.Cubic([6, 1, 1])
+        g1 = op.geometry.GenericGeometry(network=pn, pores=[0, 1, 2])
+        g2 = op.geometry.GenericGeometry(network=pn, pores=[3, 4, 5])
+        air = op.phases.Air(network=pn)
+        phys1 = op.physics.GenericPhysics(network=pn)
+        phys2 = op.physics.GenericPhysics(network=pn)
+        with pytest.raises(Exception):
+            phys1.geometry = g1  # Can't assign a geo if no phase assigned
+        phys1.phase = air
+        phys1.geometry = g1
+        assert phys1 in g1.physics
+        phys2.phase = air
+        with pytest.raises(Exception):
+            phys2.geometry = g1  # g1 is already assigned to phys1
+        phys2.geometry = g2
+        assert phys2 in g2.physics
+        assert phys1 in air.physics
+        assert phys2 in air.physics
+
 
 if __name__ == '__main__':
 
