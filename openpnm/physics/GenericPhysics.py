@@ -90,14 +90,12 @@ class GenericPhysics(Subdomain, ModelsMixin):
                 this will create associations, but no pore or throat
                 locations will assigned.  This must be done using the
                 ``set_geometry`` method.
-
-            * 'swap'
+            * 'drop'
+                Associations with the existing phase will be removed.
+            * 'move'
                 Associations will be made with the new phase, and the pore
                 and throat locations from the current phase will be
                 transferred to the new one.
-
-            * 'drop'
-                Associations with the existing phase will be removed.
 
         Notes
         -----
@@ -106,6 +104,7 @@ class GenericPhysics(Subdomain, ModelsMixin):
         must be run.
 
         """
+        self._parse_mode(mode=mode, allowed=['add', 'drop', 'move'])
         if (phase is not None) and (phase not in self.project):
             raise Exception(self.name + ' not in same project as given phase')
 
@@ -125,15 +124,13 @@ class GenericPhysics(Subdomain, ModelsMixin):
                 return
             if temp is not None:
                 raise Exception(f"{self.name} is already associated with " +
-                f"{self.phase.name}. Use mode='swap' instead.")
+                f"{self.phase.name}. Use mode 'move' instead.")
         elif mode in ['drop']:
             self.update({'pore.all': np.array([], dtype=bool)})
             self.update({'throat.all': np.array([], dtype=bool)})
             self.phase.pop('pore.' + self.name, None)
             self.phase.pop('throat.' + self.name, None)
             self.clear()
-        else:
-            raise Exception('mode ' + mode + ' not understood')
 
     def _set_geo(self, geo):
         if geo is None:
@@ -166,16 +163,21 @@ class GenericPhysics(Subdomain, ModelsMixin):
 
             * 'add' (default)
                 If the physics does not presently have an associated
-                geometry, this will create associations
+                geometry, this will create associations, otherwise an
+                Exception is raised
             * 'drop'
                 Associations with the current geometry will be removed
+            * 'move'
+                Associations will be made with the provided geometry, and
+                the pore and throat locations from the current geometry will
+                be transferred to the new one.
 
         See Also
         --------
         set_locations
 
         """
-        self._parse_mode(mode=mode, allowed=['add', 'swap', 'drop', 'remove'])
+        self._parse_mode(mode=mode, allowed=['add', 'move', 'drop'])
         try:
             phase = self.project.find_phase(self)
         except Exception:

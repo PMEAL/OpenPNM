@@ -111,11 +111,12 @@ class Subdomain(Base, LegacyMixin, LabelMixin):
                 any other objects from those locations if present
             * 'add'
                 Assigns the object to the specified locations. An error is
-                riased if the locations are already assigned to another object
+                raised if the locations are already assigned to another object
             * 'drop'
                 Removes the object from the specified locations
 
         """
+        self._parse_mode(mode=mode, allowed=['add', 'drop', 'switch'])
         if (pores is not None) and (throats is not None):
             # If both are sent call method for each then return
             self.set_locations(pores=pores, mode=mode)
