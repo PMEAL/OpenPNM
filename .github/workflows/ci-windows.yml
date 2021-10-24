@@ -8,7 +8,7 @@ jobs:
     runs-on: ${{ matrix.operating-system }}
     defaults:
       run:
-        shell: bash -l {0}
+        shell: bash
 
     strategy:
       max-parallel: 4
