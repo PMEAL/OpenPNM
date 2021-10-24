@@ -1450,14 +1450,18 @@ class LabelMixin:
                 Removes existing label from all locations before
                 adding the label in the specified locations
             * 'remove'
-                Removes the  given label from the specified locations
+                Removes the given label from the specified locations
                 leaving the remainder intact
             * 'purge'
-                Removes the specified label from the object
+                Removes the specified label from the object completely
+            * 'clear'
+                Sets all the labels to ``False`` but does not remove the label
+                array
 
         """
         self._parse_mode(mode=mode,
-                         allowed=['add', 'overwrite', 'remove', 'purge'])
+                         allowed=['add', 'overwrite', 'remove', 'purge',
+                                  'clear'])
 
         if label.split('.')[0] in ['pore', 'throat']:
             label = label.split('.', 1)[1]
@@ -1472,9 +1476,6 @@ class LabelMixin:
         elif throats is not None:
             locs = self._parse_indices(throats)
             element = 'throat'
-        else:  # If both are None, then the mode must be purge
-            _ = self.pop('pore.' + label, None)
-            _ = self.pop('throat.' + label, None)
 
         if mode == 'add':
             if element + '.' + label not in self.keys():
@@ -1485,6 +1486,12 @@ class LabelMixin:
             self[element + '.' + label][locs] = True
         if mode== 'remove':
             self[element + '.' + label][locs] = False
+        if mode == 'clear':
+            self['pore' + '.' + label] = False
+            self['throat' + '.' + label] = False
+        if mode == 'purge':
+            _ = self.pop('pore.' + label, None)
+            _ = self.pop('throat.' + label, None)
 
 
     def _get_indices(self, element, labels='all', mode='or'):
