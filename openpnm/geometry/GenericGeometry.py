@@ -67,11 +67,8 @@ class GenericGeometry(Subdomain, ModelsMixin):
     """
 
     def __init__(self, pores=[], throats=[], settings={}, **kwargs):
-        # Define some default settings
-        self.settings.update({'prefix': 'geo'})
-        # Overwrite with user supplied settings, if any
-        self.settings.update(settings)
-
+        self.settings.update({'prefix': 'geo'})  # Define some default settings
+        self.settings.update(settings)  # Overwrite with user supplied settings
         super().__init__(**kwargs)
 
         network = self.project.network
@@ -82,4 +79,9 @@ class GenericGeometry(Subdomain, ModelsMixin):
                 self.set_locations(pores=pores, throats=throats, mode='add')
             except Exception as e:
                 network.project.purge_object(self)
+                raise e
                 logger.error(f'{e}, instantiation cancelled')
+
+    def _get_phys(self):
+        return self.project.find_physics(geometry=self)
+    physics = property(fget=_get_phys)
