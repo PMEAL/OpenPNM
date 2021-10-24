@@ -31,11 +31,11 @@ class GenericPhysics(Subdomain, ModelsMixin):
 
     """
 
-    def __init__(self, project=None, network=None, phase=None,
-                 geometry=None, pores=None, throats=None, settings={}, **kwargs):
+    def __init__(self, phase=None, geometry=None, pores=None, throats=None,
+                 settings={}, **kwargs):
         self.settings.update({'prefix': 'phys'})  # Define some default settings
         self.settings.update(settings)  # Overwrite with user supplied settings
-        super().__init__(project=project, network=network, **kwargs)
+        super().__init__(**kwargs)
 
         network = self.project.network
         if network:

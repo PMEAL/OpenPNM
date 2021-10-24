@@ -147,16 +147,16 @@ class Subdomain(Base, LegacyMixin, LabelMixin):
                                         ', use mode = switch instead')
             # If no exception was raised, generate a mask
             mask = mask + boss._tomask(indices=indices, element=element)
-            boss[element + '.' + self.name] = mask
         elif mode == 'drop':
             mask = mask * (~boss._tomask(indices=indices, element=element))
-            boss[element + '.' + self.name] = mask
         elif mode == 'switch':
             for i in boss._subdomains:
                 i._set_locations(element=element, indices=indices, mode='drop')
             mask = mask + boss._tomask(indices=indices, element=element)
-            boss[element + '.' + self.name] = mask
 
         # Change size of all arrays on self
         for item in self.keys(element=element, mode='all'):
             self.update({item: boss[item][mask]})
+
+        # Finally assign mask to boss
+        boss[element + '.' + self.name] = np.copy(mask)
