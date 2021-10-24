@@ -133,7 +133,7 @@ class GenericPhysicsTest:
         phase = op.phases.GenericPhase(network=net)
         phys = op.physics.GenericPhysics(network=net, phase=phase,
                                          geometry=geo)
-        geo.drop_locations(pores=[0])
+        geo.set_locations(pores=[0], mode='drop')
         geo2 = op.geometry.GenericGeometry(network=net, pores=[0])
         phys2 = op.physics.GenericPhysics(network=net, phase=phase,
                                           geometry=geo2)

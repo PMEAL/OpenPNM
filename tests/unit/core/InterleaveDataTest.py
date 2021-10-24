@@ -37,13 +37,13 @@ class InterleaveDataTest:
     def test_drop_locations_from_geom_successively_with_single_geometry(self):
         assert self.geo.Np == 27
         assert self.geo.Nt == 54
-        self.geo.drop_locations(pores=[0, 1, 2], throats=[0, 1, 2])
+        self.geo.set_locations(pores=[0, 1, 2], throats=[0, 1, 2], mode='drop')
         assert self.geo.Np == 24
         assert self.geo.Nt == 51
-        self.geo.drop_locations(pores=[3, 4], throats=[3, 4])
+        self.geo.set_locations(pores=[3, 4], throats=[3, 4], mode='drop')
         assert self.geo.Np == 22
         assert self.geo.Nt == 49
-        self.geo.add_locations(pores=[0, 1, 2, 3, 4], throats=[0, 1, 2, 3, 4])
+        self.geo.set_locations(pores=[0, 1, 2, 3, 4], throats=[0, 1, 2, 3, 4], mode='add')
         assert self.geo.Np == 27
         assert self.geo.Nt == 54
 
