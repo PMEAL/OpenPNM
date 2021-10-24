@@ -108,7 +108,8 @@ eB.set_value_BC(pores=net.pores('front'), values=10)
 
 pnp = op.algorithms.NernstPlanckMultiphysicsSolver(network=net, phase=sw,
                                                    settings=setts2)
-pnp.setup(potential_field=p.name, ions=[eA.name, eB.name])
+pnp.settings['potential_field'] = p.name
+pnp.settings['ions'] = [eA.name, eB.name]
 pnp.run()
 
 sw.update(sf.results())
