@@ -34,7 +34,7 @@ np.random.seed(0)
 op.topotools.reduce_coordination(net, 3)
 
 np.random.seed(0)
-geo = op.geometry.StickAndBall(network=net, pores=net.Ps, throats=net.Ts)
+geo = op.geometry.StickAndBall2D(network=net, pores=net.Ps, throats=net.Ts)
 
 
 sw = mixtures.SalineWater(network=net)
@@ -52,7 +52,7 @@ phys.add_model(propname='throat.hydraulic_conductance',
                throat_viscosity='throat.viscosity',
                model=flow, regen_mode='normal')
 
-current = op.models.physics.ionic_conductance.electroneutrality_2d
+current = op.models.physics.ionic_conductance.electroneutrality
 phys.add_model(propname='throat.ionic_conductance', ions=[Na.name, Cl.name],
                model=current, regen_mode='normal')
 
@@ -108,7 +108,8 @@ eB.set_value_BC(pores=net.pores('front'), values=10)
 
 pnp = op.algorithms.NernstPlanckMultiphysicsSolver(network=net, phase=sw,
                                                    settings=setts2)
-pnp.setup(potential_field=p.name, ions=[eA.name, eB.name])
+pnp.settings['potential_field'] = p.name
+pnp.settings['ions'] = [eA.name, eB.name]
 pnp.run()
 
 sw.update(sf.results())
