@@ -63,7 +63,7 @@ class GenericPhysicsTest:
         assert phys.Np == 27
         assert phys.Nt == 54
 
-    def test_set_phase_afer_instantiation(self):
+    def test_set_phase_after_instantiation(self):
         phys = op.physics.GenericPhysics(network=self.net)
         phase = op.phases.GenericPhase(network=self.net)
         assert 'pore.' + phys.name not in phase.keys()
@@ -99,7 +99,7 @@ class GenericPhysicsTest:
         phase2 = op.phases.GenericPhase(network=net)
         phys = op.physics.GenericPhysics(network=net, phase=phase1,
                                          geometry=geo)
-        phys.set_phase(phase=phase2, mode='swap')
+        phys.set_phase(phase=phase2, mode='move')
         assert phys.Np == 27
         assert phys.Nt == 54
 
@@ -183,7 +183,7 @@ class GenericPhysicsTest:
         assert phys not in phase2.physics
         with pytest.raises(Exception):
             phys.set_phase(phase=phase2, mode='add')
-        phys.set_phase(phase=phase2, mode='swap')
+        phys.set_phase(phase=phase2, mode='move')
         assert phys in phase2.physics
         assert phys not in phase1.physics
         assert phys.Np == 27
