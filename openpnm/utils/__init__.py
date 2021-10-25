@@ -4,7 +4,7 @@ r"""
 
 ----
 
-This module contains 2 very important classes (Project and Workspace) as well
+This module contains two very important classes (Project and Workspace) as well
 as a number of helper classes.
 
 """
