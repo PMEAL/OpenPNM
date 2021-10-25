@@ -725,147 +725,6 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Nt</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_tomask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">element</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        This is a generalized version of tomask that accepts a string of</span>
-<span class="sd">        &#39;pore&#39; or &#39;throat&#39; for programmatic access.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">element</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_element</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">single</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_indices</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
-        <span class="n">N</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">element</span> <span class="o">+</span> <span class="s1">&#39;.all&#39;</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="n">ndmin</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-        <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">N</span><span class="p">,</span> <span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
-        <span class="n">mask</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="k">return</span> <span class="n">mask</span>
-
-<div class="viewcode-block" id="Base.to_mask"><a class="viewcode-back" href="../../../modules/core/base.html#openpnm.core.Base.to_mask">[docs]</a>    <span class="k">def</span> <span class="nf">to_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">throats</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Convert a list of pore or throat indices into a boolean mask of the</span>
-<span class="sd">        correct length</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        pores or throats : array_like</span>
-<span class="sd">            List of pore or throat indices.  Only one of these can be specified</span>
-<span class="sd">            at a time, and the returned result will be of the corresponding</span>
-<span class="sd">            length.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        A boolean mask of length Np or Nt with ``True`` in the specified pore</span>
-<span class="sd">        or throat locations.</span>
-
-<span class="sd">        See Also</span>
-<span class="sd">        --------</span>
-<span class="sd">        toindices</span>
-
-<span class="sd">        Examples</span>
-<span class="sd">        --------</span>
-<span class="sd">        &gt;&gt;&gt; import openpnm as op</span>
-<span class="sd">        &gt;&gt;&gt; pn = op.network.Cubic(shape=[5, 5, 5])</span>
-<span class="sd">        &gt;&gt;&gt; mask = pn.to_mask(pores=[0, 10, 20])</span>
-<span class="sd">        &gt;&gt;&gt; sum(mask)  # 3 non-zero elements exist in the mask (0, 10 and 20)</span>
-<span class="sd">        3</span>
-<span class="sd">        &gt;&gt;&gt; len(mask)  # Mask size is equal to the number of pores in network</span>
-<span class="sd">        125</span>
-<span class="sd">        &gt;&gt;&gt; mask = pn.to_mask(throats=[0, 10, 20])</span>
-<span class="sd">        &gt;&gt;&gt; len(mask)  # Mask is now equal to number of throats in network</span>
-<span class="sd">        300</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">pores</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">throats</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
-            <span class="n">mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tomask</span><span class="p">(</span><span class="n">element</span><span class="o">=</span><span class="s1">&#39;pore&#39;</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="n">pores</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="p">(</span><span class="n">throats</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">pores</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
-            <span class="n">mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tomask</span><span class="p">(</span><span class="n">element</span><span class="o">=</span><span class="s1">&#39;throat&#39;</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="n">throats</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Cannot specify both pores and throats&#39;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">mask</span></div>
-
-<div class="viewcode-block" id="Base.to_indices"><a class="viewcode-back" href="../../../modules/core/base.html#openpnm.core.Base.to_indices">[docs]</a>    <span class="k">def</span> <span class="nf">to_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mask</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Convert a boolean mask to a list of pore or throat indices</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        mask : array_like booleans</span>
-<span class="sd">            A boolean array with ``True`` at locations where indices are</span>
-<span class="sd">            desired. The appropriate indices are returned based an the length</span>
-<span class="sd">            of mask, which must be either Np or Nt long.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        A list of pore or throat indices corresponding the locations where</span>
-<span class="sd">        the received mask was ``True``.</span>
-
-<span class="sd">        See Also</span>
-<span class="sd">        --------</span>
-<span class="sd">        tomask</span>
-
-<span class="sd">        Notes</span>
-<span class="sd">        -----</span>
-<span class="sd">        This behavior could just as easily be accomplished by using the mask</span>
-<span class="sd">        in ``pn.pores()[mask]`` or ``pn.throats()[mask]``.  This method is</span>
-<span class="sd">        just a convenience function and is a complement to ``tomask``.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Received mask does not appear to be boolean&#39;</span><span class="p">)</span>
-        <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
-        <span class="n">indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_indices</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">indices</span></div>
-
-<div class="viewcode-block" id="Base.to_global"><a class="viewcode-back" href="../../../modules/core/base.html#openpnm.core.Base.to_global">[docs]</a>    <span class="k">def</span> <span class="nf">to_global</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">throats</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Convert local indices from a subdomain object to global values</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        pores, throats : array_like</span>
-<span class="sd">            List of pore or throat indices to be converted</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        indices : ndarray</span>
-<span class="sd">            An array of location indices</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">pores</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">element</span> <span class="o">=</span> <span class="s1">&#39;pore&#39;</span>
-            <span class="n">locs</span> <span class="o">=</span> <span class="n">pores</span>
-        <span class="k">elif</span> <span class="n">throats</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">element</span> <span class="o">=</span> <span class="s1">&#39;throat&#39;</span>
-            <span class="n">locs</span> <span class="o">=</span> <span class="n">throats</span>
-        <span class="n">mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="p">[</span><span class="n">element</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
-        <span class="n">inds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">mask</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">inds</span><span class="p">[</span><span class="n">locs</span><span class="p">]</span></div>
-
-<div class="viewcode-block" id="Base.to_local"><a class="viewcode-back" href="../../../modules/core/base.html#openpnm.core.Base.to_local">[docs]</a>    <span class="k">def</span> <span class="nf">to_local</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">throats</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">missing_vals</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Convert global indices to local values relative to a subdomain object</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        pores, throats : array_like</span>
-<span class="sd">            List of pore or throat indices to be converted</span>
-<span class="sd">        missing_values : scalar</span>
-<span class="sd">            The value to put into missing locations if global indices are not</span>
-<span class="sd">            found.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        indices : ndarray</span>
-<span class="sd">            An array of location indices</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">pores</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">element</span> <span class="o">=</span> <span class="s1">&#39;pore&#39;</span>
-            <span class="n">locs</span> <span class="o">=</span> <span class="n">pores</span>
-        <span class="k">if</span> <span class="n">throats</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">element</span> <span class="o">=</span> <span class="s1">&#39;throat&#39;</span>
-            <span class="n">locs</span> <span class="o">=</span> <span class="n">throats</span>
-        <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="p">[</span><span class="n">element</span> <span class="o">+</span> <span class="s1">&#39;.all&#39;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span><span class="o">*</span><span class="n">missing_vals</span>
-        <span class="n">inds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="p">[</span><span class="n">element</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">mask</span><span class="p">[</span><span class="n">inds</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Ps</span>
-        <span class="k">return</span> <span class="n">mask</span><span class="p">[</span><span class="n">locs</span><span class="p">]</span></div>
-
 <div class="viewcode-block" id="Base.interleave_data"><a class="viewcode-back" href="../../../modules/core/base.html#openpnm.core.Base.interleave_data">[docs]</a>    <span class="k">def</span> <span class="nf">interleave_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prop</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieves requested property from associated objects, to produce a full</span>
@@ -997,6 +856,20 @@
                 <span class="n">temp_arr</span><span class="p">[</span><span class="n">inds</span><span class="p">]</span> <span class="o">=</span> <span class="n">vals</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">temp_arr</span><span class="p">[</span><span class="n">inds</span><span class="p">]</span> <span class="o">=</span> <span class="n">dummy_val</span><span class="p">[</span><span class="n">atype</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+
+        <span class="c1"># Check if any arrays have units, if so then apply them to result</span>
+        <span class="c1"># Importing unyt significantly adds to our import time, we also</span>
+        <span class="c1"># currently don&#39;t use this package extensively, so we&#39;re not going</span>
+        <span class="c1"># to support it for now.</span>
+
+        <span class="c1"># if any([hasattr(a, &#39;units&#39;) for a in arrs]):</span>
+        <span class="c1">#     [a.convert_to_mks() for a in arrs if hasattr(a, &#39;units&#39;)]</span>
+        <span class="c1">#     units = [a.units.__str__() for a in arrs if hasattr(a, &#39;units&#39;)]</span>
+        <span class="c1">#     if len(units) &gt; 0:</span>
+        <span class="c1">#         if len(set(units)) == 1:</span>
+        <span class="c1">#             temp_arr *= np.array([1]) * getattr(unyt, units[0])</span>
+        <span class="c1">#         else:</span>
+        <span class="c1">#             raise Exception(&#39;Units on the interleaved array are not equal&#39;)</span>
 
         <span class="k">return</span> <span class="n">temp_arr</span></div>
 
@@ -1380,13 +1253,6 @@
 
 
 <span class="k">class</span> <span class="nc">LegacyMixin</span><span class="p">:</span>
-
-    <span class="k">def</span> <span class="nf">tomask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_mask</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">toindices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_indices</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-
     <span class="k">def</span> <span class="nf">_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ids</span><span class="p">,</span> <span class="n">element</span><span class="p">,</span> <span class="n">filtered</span><span class="p">):</span>
         <span class="n">ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ids</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
         <span class="n">locations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_indices</span><span class="p">(</span><span class="n">element</span><span class="o">=</span><span class="n">element</span><span class="p">)</span>
@@ -1468,6 +1334,95 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">ids</span> <span class="o">=</span> <span class="n">origin</span><span class="p">[</span><span class="s1">&#39;throat._id&#39;</span><span class="p">][</span><span class="n">throats</span><span class="p">]</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map</span><span class="p">(</span><span class="n">element</span><span class="o">=</span><span class="s1">&#39;throat&#39;</span><span class="p">,</span> <span class="n">ids</span><span class="o">=</span><span class="n">ids</span><span class="p">,</span> <span class="n">filtered</span><span class="o">=</span><span class="n">filtered</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_tomask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">element</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This is a generalized version of tomask that accepts a string of</span>
+<span class="sd">        &#39;pore&#39; or &#39;throat&#39; for programmatic access.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">element</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_element</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">single</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_indices</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
+        <span class="n">N</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">element</span> <span class="o">+</span> <span class="s1">&#39;.all&#39;</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="n">ndmin</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">N</span><span class="p">,</span> <span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+        <span class="n">mask</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="n">mask</span>
+
+    <span class="k">def</span> <span class="nf">tomask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">throats</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert a list of pore or throat indices into a boolean mask of the</span>
+<span class="sd">        correct length</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        pores or throats : array_like</span>
+<span class="sd">            List of pore or throat indices.  Only one of these can be specified</span>
+<span class="sd">            at a time, and the returned result will be of the corresponding</span>
+<span class="sd">            length.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        A boolean mask of length Np or Nt with True in the specified pore or</span>
+<span class="sd">        throat locations.</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        toindices</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import openpnm as op</span>
+<span class="sd">        &gt;&gt;&gt; pn = op.network.Cubic(shape=[5, 5, 5])</span>
+<span class="sd">        &gt;&gt;&gt; mask = pn.tomask(pores=[0, 10, 20])</span>
+<span class="sd">        &gt;&gt;&gt; sum(mask)  # 3 non-zero elements exist in the mask (0, 10 and 20)</span>
+<span class="sd">        3</span>
+<span class="sd">        &gt;&gt;&gt; len(mask)  # Mask size is equal to the number of pores in network</span>
+<span class="sd">        125</span>
+<span class="sd">        &gt;&gt;&gt; mask = pn.tomask(throats=[0, 10, 20])</span>
+<span class="sd">        &gt;&gt;&gt; len(mask)  # Mask is now equal to number of throats in network</span>
+<span class="sd">        300</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">pores</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">throats</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tomask</span><span class="p">(</span><span class="n">element</span><span class="o">=</span><span class="s1">&#39;pore&#39;</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="n">pores</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="n">throats</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">pores</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tomask</span><span class="p">(</span><span class="n">element</span><span class="o">=</span><span class="s1">&#39;throat&#39;</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="n">throats</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Cannot specify both pores and throats&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">mask</span>
+
+    <span class="k">def</span> <span class="nf">toindices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mask</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert a boolean mask to a list of pore or throat indices</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        mask : array_like booleans</span>
+<span class="sd">            A boolean array with True at locations where indices are desired.</span>
+<span class="sd">            The appropriate indices are returned based an the length of mask,</span>
+<span class="sd">            which must be either Np or Nt long.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        A list of pore or throat indices corresponding the locations where</span>
+<span class="sd">        the received mask was True.</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        tomask</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        This behavior could just as easily be accomplished by using the mask</span>
+<span class="sd">        in ``pn.pores()[mask]`` or ``pn.throats()[mask]``.  This method is</span>
+<span class="sd">        just a convenience function and is a complement to ``tomask``.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Received mask does not appear to be boolean&#39;</span><span class="p">)</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_indices</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">indices</span>
 
     <span class="k">def</span> <span class="nf">check_data_health</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -1618,49 +1573,48 @@
 <span class="sd">        mode : string</span>
 <span class="sd">            Controls how the labels are handled.  Options are:</span>
 
-<span class="sd">            * &#39;add&#39; (default)</span>
-<span class="sd">                Adds the given label to the specified locations while</span>
-<span class="sd">                keeping existing labels</span>
-<span class="sd">            * &#39;overwrite&#39;</span>
-<span class="sd">                Removes existing label from all locations before</span>
-<span class="sd">                adding the label in the specified locations</span>
-<span class="sd">            * &#39;remove&#39;</span>
-<span class="sd">                Removes the  given label from the specified locations</span>
-<span class="sd">                leaving the remainder intact</span>
-<span class="sd">            * &#39;purge&#39;</span>
-<span class="sd">                Removes the specified label from the object</span>
+<span class="sd">            *&#39;add&#39;* - Adds the given label to the specified locations while</span>
+<span class="sd">            keeping existing labels (default)</span>
+
+<span class="sd">            *&#39;overwrite&#39;* - Removes existing label from all locations before</span>
+<span class="sd">            adding the label in the specified locations</span>
+
+<span class="sd">            *&#39;remove&#39;* - Removes the  given label from the specified locations</span>
+<span class="sd">            leaving the remainder intact.</span>
+
+<span class="sd">            *&#39;purge&#39;* - Removes the specified label from the object</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_parse_mode</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>
-                         <span class="n">allowed</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;add&#39;</span><span class="p">,</span> <span class="s1">&#39;overwrite&#39;</span><span class="p">,</span> <span class="s1">&#39;remove&#39;</span><span class="p">,</span> <span class="s1">&#39;purge&#39;</span><span class="p">])</span>
-
-        <span class="k">if</span> <span class="n">label</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;pore&#39;</span><span class="p">,</span> <span class="s1">&#39;throat&#39;</span><span class="p">]:</span>
-            <span class="n">label</span> <span class="o">=</span> <span class="n">label</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
-
-        <span class="k">if</span> <span class="p">(</span><span class="n">pores</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">throats</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="n">pores</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span> <span class="n">throats</span><span class="o">=</span><span class="n">throats</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
-            <span class="k">return</span>
-        <span class="k">elif</span> <span class="n">pores</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">locs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_indices</span><span class="p">(</span><span class="n">pores</span><span class="p">)</span>
-            <span class="n">element</span> <span class="o">=</span> <span class="s1">&#39;pore&#39;</span>
-        <span class="k">elif</span> <span class="n">throats</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">locs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_indices</span><span class="p">(</span><span class="n">throats</span><span class="p">)</span>
-            <span class="n">element</span> <span class="o">=</span> <span class="s1">&#39;throat&#39;</span>
-        <span class="k">else</span><span class="p">:</span>  <span class="c1"># If both are None, then the mode must be purge</span>
-            <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;pore.&#39;</span> <span class="o">+</span> <span class="n">label</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-            <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;throat.&#39;</span> <span class="o">+</span> <span class="n">label</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;add&#39;</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">element</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">label</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-                <span class="bp">self</span><span class="p">[</span><span class="n">element</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
-            <span class="bp">self</span><span class="p">[</span><span class="n">element</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">label</span><span class="p">][</span><span class="n">locs</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;overwrite&#39;</span><span class="p">:</span>
-            <span class="bp">self</span><span class="p">[</span><span class="n">element</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
-            <span class="bp">self</span><span class="p">[</span><span class="n">element</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">label</span><span class="p">][</span><span class="n">locs</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="k">if</span> <span class="n">mode</span><span class="o">==</span> <span class="s1">&#39;remove&#39;</span><span class="p">:</span>
-            <span class="bp">self</span><span class="p">[</span><span class="n">element</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">label</span><span class="p">][</span><span class="n">locs</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
-
+        <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;purge&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">label</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;pore&#39;</span><span class="p">,</span> <span class="s1">&#39;throat&#39;</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">label</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">():</span>
+                    <span class="k">del</span> <span class="bp">self</span><span class="p">[</span><span class="n">label</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">label</span> <span class="o">+</span> <span class="s1">&#39; is not a label, skpping&#39;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;pore.&#39;</span><span class="o">+</span><span class="n">label</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;purge&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;throat.&#39;</span><span class="o">+</span><span class="n">label</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;purge&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">label</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;pore&#39;</span><span class="p">,</span> <span class="s1">&#39;throat&#39;</span><span class="p">]:</span>
+                <span class="n">label</span> <span class="o">=</span> <span class="n">label</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">pores</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">pores</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_indices</span><span class="p">(</span><span class="n">pores</span><span class="p">)</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;overwrite&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="s1">&#39;pore.&#39;</span><span class="o">+</span><span class="n">label</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">()):</span>
+                    <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.&#39;</span> <span class="o">+</span> <span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="k">if</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;remove&#39;</span><span class="p">]:</span>
+                    <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.&#39;</span> <span class="o">+</span> <span class="n">label</span><span class="p">][</span><span class="n">pores</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.&#39;</span> <span class="o">+</span> <span class="n">label</span><span class="p">][</span><span class="n">pores</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">if</span> <span class="n">throats</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">throats</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_indices</span><span class="p">(</span><span class="n">throats</span><span class="p">)</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;overwrite&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="s1">&#39;throat.&#39;</span><span class="o">+</span><span class="n">label</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">()):</span>
+                    <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.&#39;</span> <span class="o">+</span> <span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="k">if</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;remove&#39;</span><span class="p">]:</span>
+                    <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.&#39;</span> <span class="o">+</span> <span class="n">label</span><span class="p">][</span><span class="n">throats</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.&#39;</span> <span class="o">+</span> <span class="n">label</span><span class="p">][</span><span class="n">throats</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">if</span> <span class="n">pores</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">throats</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">del</span> <span class="bp">self</span>
 
     <span class="k">def</span> <span class="nf">_get_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;or&#39;</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
