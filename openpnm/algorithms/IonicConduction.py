@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 docstr = Docorator()
 
 
-@docstr.get_sectionsf('IonicConductionSettings', sections=['Parameters'])
+@docstr.get_sections(base='IonicConductionSettings', sections=['Parameters'])
 @docstr.dedent
 class IonicConductionSettings(GenericSettings):
     r"""
@@ -65,33 +65,6 @@ class IonicConduction(ReactiveTransport):
         super().__init__(**kwargs)
         self.settings._update_settings_and_docs(IonicConductionSettings())
         self.settings.update(settings)
-
-    @docstr.dedent
-    def setup(self, phase=None, quantity='', conductance='',
-              charge_conservation=None, **kwargs):
-        r"""
-        This method takes several arguments that are essential to running the
-        algorithm and adds them to the settings.
-
-        Parameters
-        ----------
-        %(IonicConductionSettings.parameters)s
-
-        Notes
-        -----
-        Any additional arguments are added to the ``settings`` dictionary of
-        the object.
-
-        """
-        if phase:
-            self.settings['phase'] = phase.name
-        if quantity:
-            self.settings['quantity'] = quantity
-        if conductance:
-            self.settings['conductance'] = conductance
-        if charge_conservation:
-            self.settings['charge_conservation'] = charge_conservation
-        super().setup(**kwargs)
 
     def _charge_conservation_eq_source_term(self, e_alg):
         # Source term for Poisson or charge conservation (electroneutrality) eq

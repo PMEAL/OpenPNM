@@ -1,16 +1,15 @@
 import pytest
-import scipy as sp
 import numpy as np
 import openpnm as op
+from time import sleep
 
 
 class UtilsTest:
 
     def setup_class(self):
         self.net = op.network.Cubic(shape=[3, 3, 3])
-        self.geo = op.geometry.StickAndBall(network=self.net,
-                                            pores=self.net.Ps,
-                                            throats=self.net.Ts)
+        self.geo = op.geometry.StickAndBall(
+            network=self.net, pores=self.net.Ps, throats=self.net.Ts)
 
     def teardown_class(self):
         ws = op.Workspace()
@@ -20,9 +19,12 @@ class UtilsTest:
         with pytest.raises(Exception):
             op.utils.toc()
         op.utils.tic()
-        t1 = op.utils.toc()
-        assert t1 is None
-        t2 = op.utils.toc(quiet=True)
+        sleep(0.5)
+        t1 = op.utils.toc(quiet=True)
+        assert t1 >= 0
+        op.utils.tic()
+        sleep(0.5)
+        t2 = op.utils.toc()
         assert t2 >= 0
 
     def test_nested_dict(self):
@@ -32,7 +34,7 @@ class UtilsTest:
         s = d.__str__()
         assert s == '-top\n--middle\n---bottom\n'
         a = d.to_dict()
-        assert type(a) is dict
+        assert isinstance(a, dict)
 
     def test_printable_list(self):
         L = op.utils.PrintableList(['item1', 'item2', 'item2'])
@@ -44,8 +46,8 @@ class UtilsTest:
                                       'item3': np.array([1, 2])})
         s = D.__str__().split('\n')
         assert len(s) == 7
-        r = D.__repr__()
-        assert r == "{'item1': 1, 'item2': 2, 'item3': array([1, 2])}"
+        # r = D.__repr__()
+        # assert r == "{'item1': 1, 'item2': 2, 'item3': array([1, 2])}"
 
     def test_is_symmetric_w_rtol(self):
         A = np.array([[1, 2, 3], [2, 4, 6], [3.000001, 6, 99]])
@@ -56,7 +58,9 @@ class UtilsTest:
 
     def test_is_symmetric_FickianDiffusion_must_be_symmetric(self):
         net = op.network.Cubic(shape=[5, 5, 5])
-        geom = op.geometry.StickAndBall(network=net)
+        geom = op.geometry.StickAndBall(network=net,
+                                        pores=net.Ps,
+                                        throats=net.Ts)
         air = op.phases.Air(network=net)
         _ = op.physics.Standard(network=net, phase=air, geometry=geom)
         fd = op.algorithms.FickianDiffusion(network=net, phase=air)
@@ -66,7 +70,9 @@ class UtilsTest:
 
     def test_is_symmetric_AdvectionDiffusion_must_be_nonsymmetric(self):
         net = op.network.Cubic(shape=[5, 5, 5])
-        geom = op.geometry.StickAndBall(network=net)
+        geom = op.geometry.StickAndBall(network=net,
+                                        pores=net.Ps,
+                                        throats=net.Ts)
         air = op.phases.Air(network=net)
         phys = op.physics.Standard(network=net, phase=air, geometry=geom)
         ad = op.algorithms.AdvectionDiffusion(network=net, phase=air)

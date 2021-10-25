@@ -1,6 +1,5 @@
 import os
 import numpy as np
-import scipy as sp
 import openpnm as op
 from pathlib import Path
 
@@ -18,7 +17,7 @@ class iMorphTest:
     def test_load(self):
         path = Path(os.path.realpath(__file__),
                     '../../../fixtures/iMorph-Sandstone')
-        project = op.io.iMorph.load(path)
+        project = op.io.iMorph.import_data(path)
         assert len(project) == 1
         net = project.network
         assert net.Np == 1518

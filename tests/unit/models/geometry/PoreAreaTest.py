@@ -1,5 +1,5 @@
 import openpnm as op
-import openpnm.models.geometry.pore_area as mods
+import openpnm.models.geometry.pore_cross_sectional_area as mods
 import numpy as np
 from numpy.testing import assert_approx_equal
 

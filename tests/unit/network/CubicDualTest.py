@@ -17,7 +17,6 @@ class CubicDualTest:
         assert net.num_pores('back') == 41
         assert net.num_pores('bottom') == 41
         assert net.num_pores('front') == 41
-        assert net.num_pores('internal') == 285
         assert net.num_pores('left') == 41
         assert net.num_pores('primary') == 125
         assert net.num_pores('right') == 41
@@ -26,7 +25,6 @@ class CubicDualTest:
         assert net.num_pores('top') == 41
         assert net.num_throats('all') == 1436
         assert net.num_throats('interconnect') == 896
-        assert net.num_throats('internal') == 1436
         assert net.num_throats('primary') == 300
         assert net.num_throats('secondary') == 240
         assert net.num_throats('surface') == 576
@@ -53,8 +51,8 @@ class CubicDualTest:
                                    label_2='secondary')
         assert net.Np == 57
         assert net.Nt == 176
-        assert net.num_pores('front') == 9
-        assert net.num_pores('back') == 9
+        assert net.num_pores('left') == 9
+        assert net.num_pores('right') == 9
         assert net.num_pores('top') == 9
         assert net.num_pores('bottom') == 9
         assert net.num_throats('interconnect') == 96
@@ -64,8 +62,8 @@ class CubicDualTest:
                                    label_2='secondary')
         assert net.Np == 57
         assert net.Nt == 176
-        assert net.num_pores('left') == 9
-        assert net.num_pores('right') == 9
+        assert net.num_pores('front') == 9
+        assert net.num_pores('back') == 9
         assert net.num_pores('top') == 9
         assert net.num_pores('bottom') == 9
         assert net.num_throats('interconnect') == 96

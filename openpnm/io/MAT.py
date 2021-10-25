@@ -23,10 +23,11 @@ class MAT(GenericIO):
     3. Boolean data represented as 1's and 0's will be converted to the
     Python boolean True and False.  These will become \'labels\' in
     OpenPNM.
+
     """
 
     @classmethod
-    def save(cls, network, phases=[], filename=''):
+    def export_data(cls, network, phases=[], filename=''):
         r"""
         Write Network to a Mat file for exporting to Matlab.
 
@@ -60,10 +61,10 @@ class MAT(GenericIO):
         spio.savemat(file_name=filename, mdict=new_d)
 
     @classmethod
-    def load(cls, filename, project=None):
+    def import_data(cls, filename, project=None):
         r"""
-        Loads data onto the given network from an appropriately formatted
-        'mat' file (i.e. MatLAB output).
+        Loads data from an appropriately formatted 'mat' file
+        (i.e. MatLAB output).
 
         Parameters
         ----------

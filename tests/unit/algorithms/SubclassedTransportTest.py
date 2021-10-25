@@ -29,7 +29,7 @@ class SubclassedTransportTest:
         assert_allclose(rate_in, 10.125)
         assert_allclose(rate_in, -rate_out)
         assert rate_in > 0
-        assert abs(rate_total) < rate_in * 1e-14
+        assert abs(rate_total) < rate_in * 1e-13
 
     def test_stokes_flow(self):
         alg = op.algorithms.StokesFlow(network=self.net, phase=self.phase)
@@ -45,7 +45,7 @@ class SubclassedTransportTest:
         assert_allclose(rate_in, 1025915.625)
         assert_allclose(rate_in, -rate_out)
         assert rate_in > 0
-        assert abs(rate_total) < rate_in * 1e-14
+        assert abs(rate_total) < rate_in * 1e-13
 
     def test_forurier_conduction(self):
         alg = op.algorithms.FourierConduction(network=self.net,
@@ -62,7 +62,7 @@ class SubclassedTransportTest:
         assert_allclose(rate_in, 2764.125)
         assert_allclose(rate_in, -rate_out)
         assert rate_in > 0
-        assert abs(rate_total) < rate_in * 1e-14
+        assert abs(rate_total) < rate_in * 1e-13
 
     def test_ohmic_conduction(self):
         alg = op.algorithms.OhmicConduction(network=self.net, phase=self.phase)
@@ -78,7 +78,7 @@ class SubclassedTransportTest:
         assert_allclose(rate_in, 10.125)
         assert_allclose(rate_in, -rate_out)
         assert rate_in > 0
-        assert abs(rate_total) < rate_in * 1e-14
+        assert abs(rate_total) < rate_in * 1e-13
 
     def teardown_class(self):
         ws = op.Workspace()

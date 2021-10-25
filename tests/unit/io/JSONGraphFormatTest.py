@@ -4,7 +4,6 @@ import copy
 import json
 import pytest
 import numpy as np
-import scipy as sp
 import openpnm as op
 from pathlib import Path
 
@@ -45,7 +44,7 @@ class JSONGraphFormatTest:
 
         # Ensure an exception was thrown
         with pytest.raises(Exception) as e_info:
-            op.io.JSONGraphFormat.save(net, filename=filename)
+            op.io.JSONGraphFormat.export_data(net, filename=filename)
         expected_error = 'Error - network is missing one of:'
         assert expected_error in str(e_info.value)
 
@@ -53,7 +52,7 @@ class JSONGraphFormatTest:
         path = Path(os.path.realpath(__file__),
                     '../../../fixtures/JSONGraphFormat')
         filename = Path(path.resolve(), 'save_success.json')
-        op.io.JSONGraphFormat.save(self.net, filename=filename)
+        op.io.JSONGraphFormat.export_data(self.net, filename=filename)
 
         # Read newly created file
         with open(filename, 'r') as file:
@@ -150,18 +149,13 @@ class JSONGraphFormatTest:
         path = Path(os.path.realpath(__file__),
                     '../../../fixtures/JSONGraphFormat')
         filename = Path(path.resolve(), 'valid.json')
-        project = op.io.JSONGraphFormat.load(filename)
-        assert len(project) == 1
+        project = op.io.JSONGraphFormat.import_data(filename)
+        assert len(project) == 2
 
         # Ensure overal network properties
         net = project.network
         assert net.Np == 2
         assert net.Nt == 1
-
-        # Ensure existence of pore properties
-        pore_props = {'pore.index', 'pore.coords', 'pore.diameter',
-                      'pore.area', 'pore.volume'}
-        assert pore_props.issubset(net.props())
 
         # Ensure correctness of pore properties
         assert np.array_equal(net['pore.area'], np.array([0, 0]))
@@ -171,23 +165,17 @@ class JSONGraphFormatTest:
         assert np.array_equal(net['pore.coords'][0], np.array([0, 0, 0]))
         assert np.array_equal(net['pore.coords'][1], np.array([1, 1, 1]))
 
-        # Ensure existence of throat properties
-        throat_props = {'throat.length', 'throat.conns', 'throat.diameter',
-                        'throat.area', 'throat.volume', 'throat.perimeter',
-                        'throat.surface_area'}
-        assert throat_props.issubset(net.props())
-
         # Ensure correctness of throat properties
         length = 1.73205080757
         squared_radius = 5.169298742047715
         assert net['throat.length'] == length
-        assert net['throat.area'] == sp.pi * squared_radius
+        assert net['throat.area'] == np.pi * squared_radius
         assert np.array_equal(net['throat.conns'], np.array([[0, 1]]))
         assert net['throat.diameter'] == 2.0 * np.sqrt(squared_radius)
-        assert net['throat.volume'] == sp.pi * squared_radius * length
-        assert net['throat.perimeter'] == 2.0 * sp.pi * np.sqrt(squared_radius)
+        assert net['throat.volume'] == np.pi * squared_radius * length
+        assert net['throat.perimeter'] == 2.0 * np.pi * np.sqrt(squared_radius)
         assert net['throat.surface_area'] == 2.0 * \
-            np.sqrt(squared_radius) * sp.pi * length
+            np.sqrt(squared_radius) * np.pi * length
 
 
 if __name__ == '__main__':
@@ -198,7 +186,7 @@ if __name__ == '__main__':
     t.setup_class()
     for item in t.__dir__():
         if item.startswith('test'):
-            print('running test: '+item)
+            print(f'Running test: {item}')
             try:
                 t.__getattribute__(item)()
             except TypeError:

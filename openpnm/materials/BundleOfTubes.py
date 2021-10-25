@@ -1,4 +1,3 @@
-import scipy as sp
 import numpy as np
 from openpnm.network import Cubic
 from openpnm.utils import logging, Project
@@ -73,7 +72,7 @@ class BundleOfTubes(Project):
             raise Exception('shape not understood, must be int '
                             + ' or list of 2 ints')
 
-        if isinstance(spacing, float) or isinstance(spacing, int):
+        if isinstance(spacing, (float, int)):
             spacing = float(spacing)
             self.settings['spacing'] = spacing
             spacing = np.array([spacing, spacing, length])
@@ -122,7 +121,7 @@ class BundleOfTubes(Project):
         geom.add_model(propname='throat.diameter',
                        model=mods.misc.clip,
                        prop='throat.size_distribution',
-                       xmin=1e-12, xmax=sp.inf)
+                       xmin=1e-12, xmax=np.inf)
 
         if self.settings['adjust_psd'] is None:
             if geom['throat.size_distribution'].max() > spacing[0]:
@@ -154,16 +153,16 @@ class BundleOfTubes(Project):
 
         geom.add_model(propname='pore.diameter',
                        model=mods.geometry.pore_size.from_neighbor_throats,
-                       throat_prop='throat.diameter', mode='max')
+                       prop='throat.diameter', mode='max')
         geom.add_model(propname='pore.diameter',
                        model=mods.misc.constant, value=0.0)
         geom.add_model(propname='throat.length',
                        model=mods.geometry.throat_length.ctc)
         geom.add_model(propname='throat.area',
-                       model=mods.geometry.throat_area.cylinder)
+                       model=mods.geometry.throat_cross_sectional_area.cylinder)
         geom.add_model(propname='pore.area',
                        model=mods.misc.from_neighbor_throats,
-                       throat_prop='throat.area')
+                       prop='throat.area')
         geom.add_model(propname='pore.volume',
                        model=mods.misc.constant, value=0.0)
         geom.add_model(propname='throat.volume',

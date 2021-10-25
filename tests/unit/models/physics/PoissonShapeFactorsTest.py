@@ -1,3 +1,4 @@
+import pytest
 import openpnm as op
 from numpy.testing import assert_allclose
 from numpy import pi
@@ -33,6 +34,16 @@ class PoissonShapeFactorsTest:
         assert_allclose(SF1, desired=0.72819138)
         assert_allclose(SF2, desired=0.86561702)
         assert_allclose(SFt, desired=1.0)
+
+    def test_ball_and_stick_raise_error_pore_size(self):
+        self.setup_class()
+        cn = self.net['throat.conns']
+        L1 = self.geo['throat.conduit_lengths.pore1'][cn[:, 0][2]]
+        self.geo['pore.diameter'][cn[:, 0][2]] = 0.5*L1
+        mod = op.models.physics.poisson_shape_factors.ball_and_stick
+        with pytest.raises(Exception):
+            self.phys.add_model(propname='throat.poisson_shape_factors', model=mod)
+            self.phys.regenerate_models()
 
     def test_ball_and_stick_equal_pore_and_throat_diameter(self):
         self.geo['throat.diameter'] = 0.5

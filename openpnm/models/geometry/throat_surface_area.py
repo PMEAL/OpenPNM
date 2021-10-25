@@ -1,11 +1,6 @@
 r"""
-
-.. autofunction:: openpnm.models.geometry.throat_surface_area.cylinder
-.. autofunction:: openpnm.models.geometry.throat_surface_area.cuboid
-.. autofunction:: openpnm.models.geometry.throat_surface_area.extrusion
-
 """
-import scipy as _sp
+import numpy as _np
 
 
 def cylinder(target, throat_diameter='throat.diameter',
@@ -33,7 +28,7 @@ def cylinder(target, throat_diameter='throat.diameter',
         Array containing throat surface area values.
 
     """
-    return _sp.pi * target[throat_diameter] * target[throat_length]
+    return _np.pi * target[throat_diameter] * target[throat_length]
 
 
 def cuboid(target, throat_diameter='throat.diameter',

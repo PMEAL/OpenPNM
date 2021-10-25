@@ -15,7 +15,7 @@ class PoreSurfaceAreaTest:
                                               phase=self.air,
                                               geometry=self.geo)
         self.geo['pore.diameter'] = 1
-        self.geo['throat.area'] = 0.1
+        self.geo['throat.cross_sectional_area'] = 0.1
 
     def test_sphere(self):
         self.geo.add_model(propname='pore.surface_area',
@@ -57,5 +57,5 @@ if __name__ == '__main__':
     t.setup_class()
     for item in t.__dir__():
         if item.startswith('test'):
-            print('running test: '+item)
+            print(f'Running test: {item}')
             t.__getattribute__(item)()

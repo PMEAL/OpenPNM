@@ -68,20 +68,18 @@ class BoundaryTest:
                                 model=odiff)
         phys_air_boun.regenerate_models()
         phys_air_geo.regenerate_models()
-        checks = phys_air_geo.check_data_health().values()
-        for check in checks:
+        health = phys_air_geo.check_data_health()
+        for check in health.values():
             assert len(check) == 0
         checks = phys_air_boun.check_data_health().values()
         for check in checks:
             assert len(check) == 0
-        FD = op.algorithms.FickianDiffusion(network=pn)
-        FD.setup(phase=air)
+        FD = op.algorithms.FickianDiffusion(network=pn, phase=air)
         FD.set_value_BC(pores=pn.pores('top_boundary'), values=1.0)
         FD.set_value_BC(pores=pn.pores('bottom_boundary'), values=0.0)
         FD.run()
         assert FD.calc_effective_diffusivity() > 0
-        SF = op.algorithms.StokesFlow(network=pn)
-        SF.setup(phase=air)
+        SF = op.algorithms.StokesFlow(network=pn, phase=air)
         SF.set_value_BC(pores=pn.pores('top_boundary'), values=1.0)
         SF.set_value_BC(pores=pn.pores('bottom_boundary'), values=0.0)
         SF.run()

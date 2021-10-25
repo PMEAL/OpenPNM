@@ -1,11 +1,5 @@
 r"""
-
-.. autofunction:: openpnm.models.geometry.throat_volume.cylinder
-.. autofunction:: openpnm.models.geometry.throat_volume.cuboid
-.. autofunction:: openpnm.models.geometry.throat_volume.extrusion
-
 """
-import scipy as _sp
 import numpy as _np
 
 
@@ -38,7 +32,7 @@ def cylinder(target, throat_length='throat.length',
     """
     leng = target[throat_length]
     diam = target[throat_diameter]
-    value = _sp.pi/4*leng*diam**2
+    value = _np.pi/4*leng*diam**2
     return value
 
 
@@ -175,7 +169,7 @@ def lens(target, throat_diameter='throat.diameter',
     q = _np.arcsin(a/Rp[conns])
     b = Rp[conns]*_np.cos(q)
     h = Rp[conns] - b
-    V = 1/6*_sp.pi*h*(3*a**2 + h**2)
+    V = 1/6*_np.pi*h*(3*a**2 + h**2)
     return _np.sum(V, axis=1)
 
 
@@ -222,7 +216,7 @@ def pendular_ring(target, throat_diameter='throat.diameter',
     q = _np.arcsin(a/Rp[conns])
     b = Rp[conns]*_np.cos(q)
     h = Rp[conns] - b
-    Vlens = 1/6*_sp.pi*h*(3*a**2 + h**2)
-    Vcyl = _sp.pi*(a)**2*h
+    Vlens = 1/6*_np.pi*h*(3*a**2 + h**2)
+    Vcyl = _np.pi*(a)**2*h
     V = Vcyl - Vlens
     return _np.sum(V, axis=1)

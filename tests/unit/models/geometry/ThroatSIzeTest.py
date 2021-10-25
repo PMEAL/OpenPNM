@@ -1,5 +1,4 @@
 import numpy as np
-import scipy as sp
 import openpnm as op
 import scipy.stats as spst
 import openpnm.models.geometry as gm
@@ -15,7 +14,7 @@ class ThroatSizeTest:
         self.geo = op.geometry.GenericGeometry(network=self.net,
                                                pores=Ps,
                                                throats=Ts)
-        sp.random.RandomState(seed=0)
+        np.random.RandomState(seed=0)
         self.geo['throat.seed'] = np.random.rand(self.geo.Nt)
         BPs = self.net.pores('*boundary')
         BTs = self.net.throats('*boundary')
@@ -55,7 +54,7 @@ class ThroatSizeTest:
         self.geo['pore.diameter'] = 0.1
         self.geo.add_model(propname='throat.diameter',
                            model=gm.throat_size.from_neighbor_pores,
-                           pore_prop='pore.diameter')
+                           prop='pore.diameter')
         a = np.unique(self.geo['throat.diameter'])
         b = np.array(0.1, ndmin=1)
         assert np.allclose(a, b)

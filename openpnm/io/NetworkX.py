@@ -1,4 +1,3 @@
-import scipy as sp
 import numpy as np
 from openpnm.io import GenericIO
 from openpnm.utils import logging
@@ -39,8 +38,9 @@ class NetworkX(GenericIO):
     by OpenPNM.
 
     """
+
     @classmethod
-    def from_networkx(cls, G, project=None):
+    def import_data(cls, G, project=None):
         r"""
         Add data to an OpenPNM Network from a undirected NetworkX graph object.
 
@@ -69,15 +69,15 @@ class NetworkX(GenericIO):
         # Ensure G is an undirected networkX graph with numerically numbered
         # nodes for which numbering starts at 0 and does not contain any gaps
         if not isinstance(G, nx.Graph):
-            raise ('Provided object is not a NetworkX graph.')
+            raise Exception('Provided object is not a NetworkX graph.')
         if nx.is_directed(G):
-            raise ('Provided graph is directed. Convert to undirected graph.')
+            raise Exception('Provided graph is directed. Convert to undirected graph.')
         if not all(isinstance(n, int) for n in G.nodes()):
-            raise ('Node numbering is not numeric. Convert to int.')
+            raise Exception('Node numbering is not numeric. Convert to int.')
         if min(G.nodes()) != 0:
-            raise ('Node numbering does not start at zero.')
+            raise Exception('Node numbering does not start at zero.')
         if max(G.nodes()) + 1 != len(G.nodes()):
-            raise ('Node numbering contains gaps. Map nodes to remove gaps.')
+            raise Exception('Node numbering contains gaps. Map nodes to remove gaps.')
 
         # Parsing node data
         Np = len(G)
@@ -92,15 +92,15 @@ class NetworkX(GenericIO):
                 # Create arrays for subsequent indexing, if not present already
                 if 'pore.'+item not in net.keys():
                     if dtype == str:  # handle strings of arbitrary length
-                        net['pore.'+item] = sp.ndarray((Np,), dtype='object')
+                        net['pore.'+item] = np.ndarray((Np,), dtype='object')
                     elif dtype is list:
                         dtype = type(val[0])
                         if dtype == str:
                             dtype = 'object'
                         cols = len(val)
-                        net['pore.'+item] = sp.ndarray((Np, cols), dtype=dtype)
+                        net['pore.'+item] = np.ndarray((Np, cols), dtype=dtype)
                     else:
-                        net['pore.'+item] = sp.ndarray((Np,), dtype=dtype)
+                        net['pore.'+item] = np.ndarray((Np,), dtype=dtype)
                 net['pore.'+item][n] = val
 
         # Parsing edge data
@@ -129,16 +129,16 @@ class NetworkX(GenericIO):
                 # Create arrays for subsequent indexing, if not present already
                 if 'throat.'+item not in net.keys():
                     if dtype == str:
-                        net['throat.'+item] = sp.ndarray((Nt,), dtype='object')
+                        net['throat.'+item] = np.ndarray((Nt,), dtype='object')
                     if dtype is list:
                         dtype = type(val[0])
                         if dtype == str:
                             dtype = 'object'
                         cols = len(val)
-                        net['throat.'+item] = sp.ndarray((Nt, cols),
+                        net['throat.'+item] = np.ndarray((Nt, cols),
                                                          dtype=dtype)
                     else:
-                        net['throat.'+item] = sp.ndarray((Nt,), dtype=dtype)
+                        net['throat.'+item] = np.ndarray((Nt,), dtype=dtype)
                 net['throat.'+item][i] = val
             i += 1
 
@@ -147,7 +147,7 @@ class NetworkX(GenericIO):
         return network.project
 
     @classmethod
-    def to_networkx(cls, network):
+    def export_data(cls, network):
         r"""
         Write OpenPNM Network to a NetworkX object.
 
@@ -164,7 +164,7 @@ class NetworkX(GenericIO):
 
         # Ensure network is an OpenPNM Network object.
         if not isinstance(network, GenericNetwork):
-            raise('Provided network is not an OpenPNM Network.')
+            raise Exception('Provided network is not an OpenPNM Network.')
 
         G = nx.Graph()
 

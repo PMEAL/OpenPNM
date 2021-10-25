@@ -1,10 +1,6 @@
 r"""
-
-.. autofunction:: openpnm.models.geometry.throat_perimeter.cylinder
-.. autofunction:: openpnm.models.geometry.throat_perimeter.cuboid
-
 """
-import scipy as _sp
+import numpy as _np
 
 
 def cylinder(target, throat_diameter='throat.diameter'):
@@ -27,7 +23,7 @@ def cylinder(target, throat_diameter='throat.diameter'):
         Array containing throat perimeter values.
 
     """
-    return target[throat_diameter]*_sp.pi
+    return target[throat_diameter]*_np.pi
 
 
 def cuboid(target, throat_diameter='throat.diameter'):

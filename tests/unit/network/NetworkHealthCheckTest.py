@@ -117,9 +117,11 @@ class CheckNetworkHealthTest:
 
     def test_check_network_health_headless_throats(self):
         net = op.network.Cubic(shape=[5, 5, 5])
-        extend(network=net, throat_conns=[[5, 5555]])
+        with pytest.raises(Exception):
+            extend(network=net, throat_conns=[[5, 5555]])
+        net['throat.conns'][0] = [5, 5555]
         a = net.check_network_health()
-        assert a['headless_throats'] == np.array([300])
+        assert a['headless_throats'] == np.array([0])
 
     def test_check_network_health_looped_throats(self):
         net = op.network.Cubic(shape=[5, 5, 5])

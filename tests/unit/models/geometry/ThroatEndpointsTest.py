@@ -346,7 +346,7 @@ class ThroatEndpointsTest:
         for n in N:
             lc = length/n
             net = op.network.Cubic(shape=[n, 1, 1], spacing=lc)
-            net.add_boundary_pores(labels=['front', 'back'])
+            net.add_boundary_pores(labels=['left', 'right'])
 
             Ps = net.pores('*boundary', mode='not')
             Ts = net.throats('*boundary', mode='not')
@@ -378,10 +378,9 @@ class ThroatEndpointsTest:
                                               geometry=boun)
             physb.add_model(propname='throat.diffusive_conductance',
                             model=pm.diffusive_conductance.ordinary_diffusion)
-            FD = op.algorithms.FickianDiffusion(network=net)
-            FD.setup(phase=air)
-            FD.set_value_BC(pores=net.pores('front_boundary'), values=1.0)
-            FD.set_value_BC(pores=net.pores('back_boundary'), values=0.0)
+            FD = op.algorithms.FickianDiffusion(network=net, phase=air)
+            FD.set_value_BC(pores=net.pores('left_boundary'), values=1.0)
+            FD.set_value_BC(pores=net.pores('right_boundary'), values=0.0)
             FD.run()
             D = FD.calc_effective_diffusivity(domain_area=area,
                                               domain_length=length)

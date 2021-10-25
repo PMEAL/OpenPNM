@@ -4,8 +4,8 @@ docstr = Docorator()
 logger = logging.getLogger(__name__)
 
 
-@docstr.get_sectionsf('OhmicConductionSettings',
-                      sections=['Parameters'])
+@docstr.get_sections(base='OhmicConductionSettings',
+                     sections=['Parameters'])
 @docstr.dedent
 class OhmicConductionSettings(GenericSettings):
     r"""
@@ -51,29 +51,6 @@ class OhmicConduction(ReactiveTransport):
         super().__init__(**kwargs)
         self.settings._update_settings_and_docs(OhmicConductionSettings())
         self.settings.update(settings)
-
-    def setup(self, phase=None, quantity='', conductance='', **kwargs):
-        r"""
-        This method takes several arguments that are essential to running the
-        algorithm and adds them to the settings.
-
-        Parameters
-        ----------
-        %(OhmicConductionSettings.parameters)s
-
-        Notes
-        -----
-        Any additional arguments are added to the ``settings`` dictionary of
-        the object.
-
-        """
-        if phase:
-            self.settings['phase'] = phase.name
-        if quantity:
-            self.settings['quantity'] = quantity
-        if conductance:
-            self.settings['conductance'] = conductance
-        super().setup(**kwargs)
 
     def calc_effective_conductivity(self, inlets=None, outlets=None,
                                     domain_area=None, domain_length=None):

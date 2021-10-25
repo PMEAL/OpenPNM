@@ -16,11 +16,9 @@ class OrdinaryPercolation(GenericAlgorithm):
     ----------
     network : OpenPNM Network object
         The Network upon which this simulation should be run
-
     name : string, optional
         An identifying name for the object.  If none is given then one is
         generated.
-
     project : OpenPNM Project object
         Either a Network or a Project must be specified
 
@@ -41,30 +39,6 @@ class OrdinaryPercolation(GenericAlgorithm):
     entire domain is invaded, then a percoaltion curve is obtained.  The
     threshold at which each site and bond was invaded is recorded, so it is
     possible to find invading configurations easily using Boolean logic.
-
-    +----------------------+-------------------------------------------------+
-    | Method               | Description                                     |
-    +======================+=================================================+
-    | reset                | Resets the various data arrays on the object... |
-    +----------------------+-------------------------------------------------+
-    | setup                | Used to specify necessary arguments to the s... |
-    +----------------------+-------------------------------------------------+
-    | set_inlets           | Set the locations from which the invader ent... |
-    +----------------------+-------------------------------------------------+
-    | set_outlets          | Set the locations through which defender exi... |
-    +----------------------+-------------------------------------------------+
-    | set_residual         | Specify locations of any residual invader.  ... |
-    +----------------------+-------------------------------------------------+
-    | run                  | Runs the percolation algorithm to determine ... |
-    +----------------------+-------------------------------------------------+
-    | get_percolation_t... | Finds the threshold value where a percolating...|
-    +----------------------+-------------------------------------------------+
-    | is_percolating       | Returns a True or False value to indicate if... |
-    +----------------------+-------------------------------------------------+
-    | get_intrusion_data   | Obtain the numerical values of the calculate... |
-    +----------------------+-------------------------------------------------+
-    | plot_intrusion_curve | Plot the percolation curve as the invader vo... |
-    +----------------------+-------------------------------------------------+
 
     """
 
@@ -99,81 +73,7 @@ class OrdinaryPercolation(GenericAlgorithm):
         # Apply user settings, if any
         self.settings.update(settings)
         if phase is not None:
-            self.setup(phase=phase)
-
-    def setup(self,
-              phase=None,
-              access_limited=None,
-              mode='',
-              throat_entry_pressure='',
-              pore_entry_pressure='',
-              pore_volume='',
-              throat_volume=''):
-        r"""
-        Used to specify necessary arguments to the simulation.  This method is
-        useful for resetting the algorithm or applying more explicit control.
-
-        Parameters
-        ----------
-        phase : OpenPNM Phase object
-            The Phase object containing the physical properties of the invading
-            fluid.
-
-        access_limited : boolean
-            If ``True`` the invading phase can only enter the network from the
-            invasion sites specified with ``set_inlets``.  Otherwise, invading
-            clusters can appear anywhere in the network.  This second case is
-            the normal *ordinary percolation* in the traditional sense, while
-            the first case is more physically representative of invading
-            fluids.
-
-        mode : string
-            Specifies the type of percolation process to simulate.  Options
-            are:
-
-            **'bond'** - The percolation process is controlled by bond entry
-            thresholds.
-
-            **'site'** - The percolation process is controlled by site entry
-            thresholds.
-
-        pore_entry_pressure : string
-            The dictionary key on the Phase object where the pore entry
-            pressure values are stored.  The default is
-            'pore.capillary_pressure'.  This is only accessed if the ``mode``
-            is set to site percolation.
-
-        throat_entry_pressure : string
-            The dictionary key on the Phase object where the throat entry
-            pressure values are stored.  The default is
-            'throat.capillary_pressure'.  This is only accessed if the ``mode``
-            is set to bond percolation.
-
-        'pore_volume' : string
-            The dictionary key containing the pore volume information.
-
-        'throat_volume' : string
-            The dictionary key containing the pore volume information.
-
-        """
-        if phase:
             self.settings['phase'] = phase.name
-        if throat_entry_pressure:
-            self.settings['throat_entry_pressure'] = throat_entry_pressure
-            phase = self.project.find_phase(self)
-            self['throat.entry_pressure'] = phase[throat_entry_pressure]
-        if pore_entry_pressure:
-            self.settings['pore_entry_pressure'] = pore_entry_pressure
-            phase = self.project.find_phase(self)
-            self['pore.entry_pressure'] = phase[pore_entry_pressure]
-        if mode:
-            self.settings['mode'] = mode
-        if access_limited is not None:
-            self.settings['access_limited'] = access_limited
-        if pore_volume:
-            self.settings['pore_volume'] = pore_volume
-        if throat_volume:
-            self.settings['throat_volume'] = throat_volume
 
     def reset(self):
         r"""
@@ -213,7 +113,7 @@ class OrdinaryPercolation(GenericAlgorithm):
         if overwrite:
             self['pore.inlets'] = False
         self['pore.inlets'][Ps] = True
-        self['pore.invasion_pressure'][Ps] = sp.inf
+        self['pore.invasion_pressure'][Ps] = np.inf
         self['pore.invasion_sequence'][Ps] = -1
 
     def set_outlets(self, pores=[], overwrite=False):
@@ -382,7 +282,7 @@ class OrdinaryPercolation(GenericAlgorithm):
                 stop = np.amax(self['pore.entry_pressure'])*2.0
         else:
             raise Exception('Percolation type has not been set')
-        if type(points) is int:
+        if isinstance(points, int):
             points = np.logspace(start=np.log10(max(1, start)),
                                  stop=np.log10(stop), num=points)
         self._points = points
@@ -410,11 +310,11 @@ class OrdinaryPercolation(GenericAlgorithm):
                                                   inlets=Pin)
 
             # Store current applied pressure in newly invaded pores
-            pinds = (self['pore.invasion_pressure'] == sp.inf) * \
+            pinds = (self['pore.invasion_pressure'] == np.inf) * \
                     (labels.sites >= 0)
             self['pore.invasion_pressure'][pinds] = inv_val
             # Store current applied pressure in newly invaded throats
-            tinds = (self['throat.invasion_pressure'] == sp.inf) * \
+            tinds = (self['throat.invasion_pressure'] == np.inf) * \
                     (labels.bonds >= 0)
             self['throat.invasion_pressure'][tinds] = inv_val
 
@@ -428,7 +328,7 @@ class OrdinaryPercolation(GenericAlgorithm):
 
     def get_intrusion_data(self, Pc=None):
         r"""
-        Obtain the numerical values of the calculated intrusion curve
+        Obtain the numerical values of the calculated intrusion curve.
 
         Returns
         -------
@@ -437,17 +337,15 @@ class OrdinaryPercolation(GenericAlgorithm):
 
         """
         net = self.project.network
-        if Pc is None:
-            points = self._points
-        else:
-            points = np.array(Pc)
+        points = self._points if Pc is None else np.array(Pc)
+
         # Get pore and throat volumes
         Pvol = net[self.settings['pore_volume']]
         Tvol = net[self.settings['throat_volume']]
         Total_vol = np.sum(Pvol) + np.sum(Tvol)
         if np.sum(Pvol[self['pore.inlets']]) > 0.0:
-            logger.warning('Inlets have non-zero volume, percolation curve '
-                           + 'will not start at 0')
+            logger.warning(
+                "Inlets have non-zero volume, percolation curve won't start at 0.")
         # Find cumulative filled volume at each applied capillary pressure
         Vnwp_t = []
         Vnwp_p = []
@@ -460,28 +358,30 @@ class OrdinaryPercolation(GenericAlgorithm):
             Vnwp_p.append(Vp)
             Vnwp_t.append(Vt)
             Vnwp_all.append(Vp + Vt)
+
         # Convert volumes to saturations by normalizing with total pore volume
         Snwp_all = [V/Total_vol for V in Vnwp_all]
         pc_curve = namedtuple('pc_curve', ('Pcap', 'Snwp'))
         data = pc_curve(points, Snwp_all)
+
         return data
 
-    def plot_intrusion_curve(self, fig=None):
+    def plot_intrusion_curve(self, ax=None, num_markers=25):
         r"""
         Plot the percolation curve as the invader volume or number fraction vs
         the applied capillary pressure.
-
         """
         import matplotlib.pyplot as plt
+
         # Begin creating nicely formatted plot
         x, y = self.get_intrusion_data()
-        if fig is None:
-            fig = plt.figure()
-        plt.semilogx(x, y, 'ko-')
-        plt.ylabel('Invading Phase Saturation')
-        plt.xlabel('Capillary Pressure')
-        plt.grid(True)
-        return fig
+        if ax is None:
+            fig, ax = plt.subplots()
+        markevery = max(x.size // num_markers, 1)
+        ax.semilogx(x, y, 'ko-', markevery=markevery)
+        ax.set_ylabel('Invading phase saturation')
+        ax.set_xlabel('Capillary pressure')
+        ax.grid(True)
 
     def results(self, Pc=None):
         r"""

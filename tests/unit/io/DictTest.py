@@ -104,10 +104,10 @@ class DictTest:
         D = Dict.to_dict(network=self.net, phases=[self.phase_1, self.phase_2],
                          flatten=False, interleave=False, categorize_by=[])
 
-        a = set(['network', 'phase', 'physics', 'geometry'])
+        _ = set(['network', 'phase', 'physics', 'geometry'])
         b = set(['net_01', 'phase_01', 'phase_02'])
-        c = set(['labels', 'properties'])
-        d = set(['pore', 'throat'])
+        _ = set(['labels', 'properties'])
+        _ = set(['pore', 'throat'])
 
         # Ensure NOT categorized by object
         assert b == set(D.keys())
@@ -125,10 +125,10 @@ class DictTest:
                          flatten=False, interleave=False,
                          categorize_by=['object'])
 
-        a = set(['network', 'phase', 'physics', 'geometry'])
-        b = set(['net_01', 'phase_01', 'phase_02'])
-        c = set(['labels', 'properties'])
-        d = set(['pore', 'throat'])
+        _ = set(['network', 'phase', 'physics', 'geometry'])
+        _ = set(['net_01', 'phase_01', 'phase_02'])
+        _ = set(['labels', 'properties'])
+        _ = set(['pore', 'throat'])
         e = set(['network', 'phase'])
 
         # Ensure categorized by object
@@ -147,10 +147,10 @@ class DictTest:
                          flatten=False, interleave=False,
                          categorize_by=['data'])
 
-        a = set(['network', 'phase', 'physics', 'geometry'])
+        _ = set(['network', 'phase', 'physics', 'geometry'])
         b = set(['net_01', 'phase_01', 'phase_02'])
         c = set(['labels', 'properties'])
-        d = set(['pore', 'throat'])
+        _ = set(['pore', 'throat'])
 
         # Ensure NOT categorized by object
         assert b == set(D.keys())
@@ -176,9 +176,9 @@ class DictTest:
                          flatten=False, interleave=False,
                          categorize_by=['element'])
 
-        a = set(['network', 'phase', 'physics', 'geometry'])
+        _ = set(['network', 'phase', 'physics', 'geometry'])
         b = set(['net_01', 'phase_01', 'phase_02'])
-        c = set(['labels', 'properties'])
+        _ = set(['labels', 'properties'])
         d = set(['pore', 'throat'])
 
         # Ensure NOT categorized by object
@@ -213,9 +213,9 @@ class DictTest:
                          flatten=False, interleave=False,
                          categorize_by=['element', 'data'])
 
-        a = set(['network', 'phase', 'physics', 'geometry'])
+        _ = set(['network', 'phase', 'physics', 'geometry'])
         b = set(['net_01', 'phase_01', 'phase_02'])
-        c = set(['labels', 'properties'])
+        _ = set(['labels', 'properties'])
         d = set(['pore', 'throat'])
 
         # Ensure NOT categorized by object
@@ -251,9 +251,9 @@ class DictTest:
                          flatten=False, interleave=False,
                          categorize_by=['element', 'data', 'object'])
 
-        a = set(['network', 'phase', 'physics', 'geometry'])
-        b = set(['net_01', 'phase_01', 'phase_02'])
-        c = set(['labels', 'properties'])
+        _ = set(['network', 'phase', 'physics', 'geometry'])
+        _ = set(['net_01', 'phase_01', 'phase_02'])
+        _ = set(['labels', 'properties'])
         d = set(['pore', 'throat'])
         e = set(['network', 'phase'])
 
@@ -281,7 +281,7 @@ class DictTest:
         assert d.issubset(path.keys())
         path = D['phase']['phase_01']['physics']['phys_01']['labels']
         assert d.issubset(path.keys())
-        D['phase']['phase_01']['physics']['phys_02']['properties']
+        path = D['phase']['phase_01']['physics']['phys_02']['properties']
         assert d.issubset(path.keys())
         path = D['phase']['phase_01']['physics']['phys_02']['labels']
         assert d.issubset(path.keys())
@@ -299,9 +299,9 @@ class DictTest:
                          flatten=False, interleave=False,
                          categorize_by=['element', 'object'])
 
-        a = set(['network', 'phase', 'physics', 'geometry'])
-        b = set(['net_01', 'phase_01', 'phase_02'])
-        c = set(['labels', 'properties'])
+        _ = set(['network', 'phase', 'physics', 'geometry'])
+        _ = set(['net_01', 'phase_01', 'phase_02'])
+        _ = set(['labels', 'properties'])
         d = set(['pore', 'throat'])
         e = set(['network', 'phase'])
 
@@ -442,7 +442,7 @@ class DictTest:
         D = Dict.to_dict(network=self.net, phases=[self.phase_1, self.phase_2],
                          flatten=False, interleave=True,
                          categorize_by=['project'])
-        assert 'sim_01' in D.keys()
+        assert 'proj_01' in D.keys()
 
     def test_from_dict_interleaved_categorized_by_object(self):
         D = Dict.to_dict(network=self.net, phases=[self.phase_1],
@@ -510,8 +510,8 @@ class DictTest:
                          flatten=False, interleave=False,
                          categorize_by=[])
         fname = tmpdir.join('test.dct')
-        Dict.save(dct=D, filename=fname)
-        dct = Dict.load(filename=fname)
+        Dict.export_data(dct=D, filename=fname)
+        dct = Dict.import_data(filename=fname)
         assert len(dct.keys()) == 2
         os.remove(fname)
 

@@ -34,7 +34,7 @@ class Air(GenericPhase):
     of the relevant state variables.
 
     This object is initialized at standard conditions of 298 K and 101325 Pa.
-    If these conditions are changed the dependent properties can be
+    If these conditions are changed, the dependent properties can be
     recalculated by calling ``regenerate_models``.
 
     All of these parameters can be adjusted manually by editing the entries in
@@ -100,6 +100,7 @@ class Air(GenericPhase):
     Vol. 25, No. 1, January 2004, pp. 21-69
 
     """
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 

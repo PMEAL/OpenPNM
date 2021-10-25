@@ -1,7 +1,6 @@
 import pytest
 import numpy as np
 import openpnm as op
-import matplotlib.pyplot as plt
 from numpy.testing import assert_allclose
 from openpnm import topotools
 
@@ -148,6 +147,13 @@ class TopotoolsTest:
         assert net.Np == 150
         assert net.Nt == 300
 
+    def test_clone_pores_with_labels(self):
+        net = op.network.Cubic(shape=[5, 5, 5])
+        topotools.clone_pores(network=net, pores=net.pores('left'),
+                              labels=['test1', 'test2'])
+        assert net.num_pores('test1') == 25
+        assert net.num_pores('test2') == 25
+
     def test_merge_networks(self):
         net1 = op.network.Cubic(shape=[3, 3, 3])
         net2 = op.network.Cubic(shape=[3, 3, 3])
@@ -165,7 +171,20 @@ class TopotoolsTest:
         assert 'pore.test1' not in net2
         assert 'pore.test2' not in net2
 
-    def test_subdivide_3D(self):
+    def test_merge_networks_with_active_geometries(self):
+        pn = op.network.Cubic(shape=[3, 3, 3])
+        pn2 = op.network.Cubic(shape=[3, 3, 3])
+        pn2['pore.coords'] += [0, 0, 3]
+        pn2['pore.net_02'] = True
+        pn2['throat.net_02'] = True
+        op.geometry.StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts)
+        geo2 = op.geometry.StickAndBall(network=pn2, pores=pn2.Ps, throats=pn2.Ts)
+        geo2['pore.test_vals'] = 1.5
+        op.topotools.merge_networks(network=pn, donor=pn2)
+        assert isinstance(pn['pore.test_vals'], np.ndarray)
+        assert ('pore.' + geo2.name) in pn.keys()
+
+    def test_subdivide_3d(self):
         net = op.network.Cubic(shape=[3, 3, 3])
         assert net.Np == 27
         assert net.Nt == 54
@@ -175,7 +194,7 @@ class TopotoolsTest:
         assert net.Np == 27 - 1 + 125
         assert net.Nt == 54 - 6 + 300 + 25 * 6
 
-    def test_subdivide_2D(self):
+    def test_subdivide_2d(self):
         net = op.network.Cubic(shape=[1, 3, 3])
         assert net.Np == 9
         assert net.Nt == 12
@@ -224,7 +243,7 @@ class TopotoolsTest:
 
     def test_connect_pores(self):
         testnet = op.network.Cubic(shape=[10, 10, 10])
-        Nt_old= testnet.Nt
+        Nt_old = testnet.Nt
         ps1 = [[0, 1], [23, 65]]
         ps2 = [[55], [982, 555]]
         topotools.connect_pores(testnet, pores1=ps1, pores2=ps2)
@@ -302,7 +321,7 @@ class TopotoolsTest:
         pn['pore.test_float'] = 1.0
         pn['pore.test_int'] = 1
         pn['pore.test_bool'] = True
-        op.topotools.extend(network=pn, pore_coords=[[3, 3, 3], [3, 3, 4]])
+        op.topotools.extend(network=pn, coords=[[3, 3, 3], [3, 3, 4]])
         assert np.any(np.isnan(pn['pore.test_float']))
         assert np.any(np.isnan(pn['pore.test_int']))
         assert pn['pore.test_bool'].sum() < pn['pore.test_bool'].size
@@ -324,38 +343,260 @@ class TopotoolsTest:
         air['pore.test_float'] = 1.0
         air['pore.test_int'] = 1
         air['pore.test_bool'] = True
-        with pytest.raises(Exception):
-            op.topotools.extend(network=pn, pore_coords=[[3, 3, 3], [3, 3, 4]])
+        Np = air.Np
+        Nt = air.Nt
+        op.topotools.extend(network=pn, coords=[[3, 3, 3], [3, 3, 4]])
+        assert air.Np == (Np + 2)
+        op.topotools.extend(network=pn, conns=[[0, 4], [1, 5]])
+        assert air.Nt == (Nt + 2)
 
-    def test_plot_networkx(self):
-        # 2D networks in XY, YZ, XZ planes
-        for i in range(3):
-            shape = np.ones(3, dtype=int)
-            shape[np.arange(3)!=i] = [5, 8]
-            pn = op.network.Cubic(shape=shape)
-            x, y = pn["pore.coords"].T[op.topotools.dimensionality(pn)]
-            fig, ax = plt.subplots()
-            m = op.topotools.plot_networkx(pn, ax=ax)
-            x_plot, y_plot = np.array(m.get_offsets()).T
-            np.testing.assert_allclose(x_plot, x)
-            np.testing.assert_allclose(y_plot, y)
-            plt.close()
-        # 1D networks in XY, YZ, XZ planes
-        for i in range(3):
-            shape = np.ones(3, dtype=int)
-            shape[np.arange(3)==i] = [5]
-            pn = op.network.Cubic(shape=shape)
-            x, = pn["pore.coords"].T[op.topotools.dimensionality(pn)]
-            fig, ax = plt.subplots()
-            m = op.topotools.plot_networkx(pn, ax=ax)
-            x_plot, y_plot = np.array(m.get_offsets()).T
-            np.testing.assert_allclose(x_plot, x)
-            plt.close()
+    def test_stitch_radius_no_connections(self):
+        Nx, Ny, Nz = (10, 10, 1)
+        Lc = 1e-4
+        pn = op.network.Cubic(shape=[Nx, Ny, Nz], spacing=Lc)
+        pn2 = op.network.Cubic(shape=[Nx, Ny, Nz], spacing=Lc)
+        pn2['pore.coords'] += [Lc * Nx, 0, 0]
+        op.topotools.stitch(network=pn, donor=pn2,
+                            P_network=pn.pores('back'), P_donor=pn2.pores('front'),
+                            method='radius', len_max=0,
+                            label_stitches=['test', 'test2'])
+        assert pn.Nt == (pn2.Nt * 2)
 
-    def test_plot_networkx_3d(self):
-        pn = op.network.Cubic(shape=[5, 8, 3])
+    def test_stitch_10_connections(self):
+        Nx, Ny, Nz = (10, 10, 1)
+        Lc = 1e-4
+        pn = op.network.Cubic(shape=[Nx, Ny, Nz], spacing=Lc)
+        pn2 = op.network.Cubic(shape=[Nx, Ny, Nz], spacing=Lc)
+        pn2['pore.coords'] += [Lc * Nx, 0, 0]
+        op.topotools.stitch(network=pn, donor=pn2,
+                            P_network=pn.pores('back'), P_donor=pn2.pores('front'),
+                            label_stitches=['test', 'test2'])
+        assert pn.Nt == (pn2.Nt * 2 + 10)
+
+    def test_stitch_with_multiple_labels(self):
+        Nx, Ny, Nz = (10, 10, 1)
+        Lc = 1e-4
+        pn = op.network.Cubic(shape=[Nx, Ny, Nz], spacing=Lc)
+        pn2 = op.network.Cubic(shape=[Nx, Ny, Nz], spacing=Lc)
+        pn2['pore.coords'] += [Lc * Nx, 0, 0]
+        op.topotools.stitch(network=pn, donor=pn2,
+                            P_network=pn.pores('back'), P_donor=pn2.pores('front'),
+                            label_stitches=['test', 'test2'])
+        assert 'throat.test' in pn.keys()
+        assert 'throat.test2' in pn.keys()
+
+    def test_stitch_repeatedly(self):
+        pn = op.network.Cubic(shape=[10, 10, 1], spacing=1e-4)
+        pn2 = op.network.Cubic(shape=[10, 10, 1], spacing=1e-4)
+        pn2['pore.coords'] += [1e-4 * 10, 0, 0]
+        pn3 = op.network.Cubic(shape=[10, 10, 1], spacing=1e-4)
+        pn3['pore.coords'] += [1e-4 * 20, 0, 0]
+        op.topotools.stitch(network=pn, donor=pn2,
+                            P_network=pn.pores('back'), P_donor=pn2.pores('front'),
+                            method='nearest')
+        op.topotools.stitch(network=pn, donor=pn3,
+                            P_network=pn.pores('back'), P_donor=pn2.pores('front'),
+                            method='nearest')
+        assert pn.Nt == (pn2.Nt * 3 + 20)
+
+    def test_dimensionality(self):
+        # 3D network
+        pn = op.network.Cubic(shape=[3, 4, 5])
+        dims = op.topotools.dimensionality(pn)
+        assert np.allclose(dims, np.array([True, True, True]))
+        # 2D network
+        pn = op.network.Cubic(shape=[3, 1, 5])
+        dims = op.topotools.dimensionality(pn)
+        assert np.allclose(dims, np.array([True, False, True]))
+        # 1D network
+        pn = op.network.Cubic(shape=[1, 1, 5], spacing=1.2345e-30)
+        pn["pore.coords"][0, 0] = pn["pore.coords"][0, :].mean()
+        dims = op.topotools.dimensionality(pn)
+        assert np.allclose(dims, np.array([False, False, True]))
+
+    def test_stitch_pores(self):
+        np.random.seed(0)
+        pts = np.random.rand(100, 3)
+        pn = op.network.Delaunay(points=pts)
+        Ps = (pn.coords[:, 0] > 0.3) * (pn.coords[:, 0] < 0.6)
+        assert pn.Np == 100
+        op.topotools.trim(network=pn, pores=Ps)
+        assert pn.Np == 73
+        pores1 = pn.coords[:, 0] < 0.3
+        pores2 = pn.coords[:, 0] > 0.6
+        assert pn.Nt == 352
+        op.topotools.stitch_pores(network=pn,
+                                  pores1=pores1,
+                                  pores2=pores2, mode='gabriel')
+        assert pn.Nt == 373
+        op.topotools.trim(network=pn, throats=pn.throats('stitched'))
+        assert pn.Nt == 352
+        op.topotools.stitch_pores(network=pn,
+                                  pores1=pores1,
+                                  pores2=pores2, mode='delaunay')
+        assert pn.Nt == 436
+
+    def test_filter_pores_by_z(self):
+        pn = op.network.Cubic(shape=[4, 4, 1])
+        Ps = op.topotools.filter_pores_by_z(network=pn, pores=0, z=1)
+        assert_allclose(Ps, [])
+        Ps = op.topotools.filter_pores_by_z(network=pn, pores=0, z=2)
+        assert_allclose(Ps, [0])
+        Ps = op.topotools.filter_pores_by_z(network=pn, pores=[0, 1], z=1)
+        assert_allclose(Ps, [])
+        Ps = op.topotools.filter_pores_by_z(network=pn, pores=[0, 1], z=2)
+        assert_allclose(Ps, [0])
+        Ps = op.topotools.filter_pores_by_z(network=pn, pores=pn.Ps, z=4)
+        assert_allclose(Ps, [5, 6, 9, 10])
+
+    def test_is_fully_connected(self):
+        pn = op.network.Cubic(shape=[4, 4, 1])
+        op.topotools.trim(network=pn, pores=[1, 5, 9, 13])
+        assert op.topotools.is_fully_connected(pn) is False
+        assert op.topotools.is_fully_connected(pn, pores_BC=[0, 1, 9, 10]) is True
+        assert op.topotools.is_fully_connected(pn, pores_BC=[0, 10]) is True
+        assert op.topotools.is_fully_connected(pn, pores_BC=[1, 10]) is False
+        assert op.topotools.is_fully_connected(pn, pores_BC=[0, 9]) is False
+        assert op.topotools.is_fully_connected(pn, pores_BC=[0]) is False
+        assert op.topotools.is_fully_connected(pn, pores_BC=[]) is False
+
+    def test_is_fully_connected_with_alg(self):
+        pn = op.network.Cubic(shape=[4, 4, 1])
+        Ts = pn.find_neighbor_throats(5)
+        op.topotools.trim(network=pn, throats=Ts)
+        assert op.topotools.is_fully_connected(pn) is False
+        phase = op.phases.GenericPhase(network=pn)
+        phase['throat.diffusive_conductance'] = 1.0
+        alg = op.algorithms.FickianDiffusion(network=pn, phase=phase)
+        alg.set_value_BC(pores=[0, 1, 2, 3], values=1.0)
+        alg.set_value_BC(pores=[12, 13, 14, 15], values=0.5)
         with pytest.raises(Exception):
-            op.topotools.plot_networkx(pn)
+            alg.run()
+        alg.set_value_BC(pores=5, values=1.0)
+        alg.run()
+        assert np.ptp(alg['pore.concentration']) == 0.5
+
+    def test_spacing_could_not_be_found(self):
+        net = op.network.Cubic(shape=[1, 5, 1], spacing=1)
+        net["pore.coords"][4, 1] += 5
+        with pytest.raises(Exception):
+            _ = net.spacing
+
+    def test_spacing_1D(self):
+        net = op.network.Cubic(shape=[2, 1, 1], spacing=1)
+        assert np.all(op.topotools.get_spacing(net) == [1.0, 0.0, 0.0])
+
+    def test_spacing_2D(self):
+        net = op.network.Cubic(shape=[5, 5, 1], spacing=[1, 1])
+        assert np.all(op.topotools.get_spacing(net) == [1.0, 1.0, 0.0])
+
+    def test_spacing_3D(self):
+        net = op.network.Cubic(shape=[5, 5, 5], spacing=[1, 1, 1])
+        assert np.all(op.topotools.get_spacing(net) == [1.0, 1.0, 1.0])
+
+    def test_spacing_2D_uneven(self):
+        net = op.network.Cubic(shape=[5, 5, 1], spacing=[1, 2])
+        assert np.all(op.topotools.get_spacing(net) == [1.0, 2.0, 0.0])
+
+    def test_spacing_3D_uneven(self):
+        net = op.network.Cubic(shape=[3, 4, 5], spacing=[1, 2, 3])
+        assert np.all(op.topotools.get_spacing(net) == [1.0, 2.0, 3.0])
+
+    def test_shape_1D(self):
+        net = op.network.Cubic(shape=[5, 1, 1])
+        assert np.all(op.topotools.get_shape(net) == [5, 1, 1])
+        net = op.network.Cubic(shape=[1, 1, 5])
+        assert np.all(op.topotools.get_shape(net)== [1, 1, 5])
+        net = op.network.Cubic(shape=[1, 5, 1])
+        assert np.all(op.topotools.get_shape(net) == [1, 5, 1])
+        net = op.network.Cubic(shape=5)
+        assert np.all(op.topotools.get_shape(net) == [5, 1, 1])
+        net = op.network.Cubic(shape=[5])
+        assert np.all(op.topotools.get_shape(net) == [5, 1, 1])
+
+    def test_shape_2D(self):
+        net = op.network.Cubic(shape=[5, 5, 1])
+        assert np.all(op.topotools.get_shape(net) == [5, 5, 1])
+        net = op.network.Cubic(shape=[5, 1, 5])
+        assert np.all(op.topotools.get_shape(net) == [5, 1, 5])
+        net = op.network.Cubic(shape=[1, 5, 5])
+        assert np.all(op.topotools.get_shape(net) == [1, 5, 5])
+        net = op.network.Cubic(shape=[5, 2])
+        assert np.all(op.topotools.get_shape(net) == [5, 2, 1])
+
+    def test_shape_3D(self):
+        net = op.network.Cubic(shape=[5, 5, 5])
+        assert np.all(op.topotools.get_shape(net) == [5, 5, 5])
+        net = op.network.Cubic(shape=[3, 4, 5])
+        assert np.all(op.topotools.get_shape(net) == [3, 4, 5])
+        net = op.network.Cubic(shape=[1, 5, 1])
+        assert np.all(op.topotools.get_shape(net) == [1, 5, 1])
+
+    def test_shape_extremely_small_spacing(self):
+        net = op.network.Cubic(shape=[200, 200, 1], spacing=1e-9)
+        assert np.allclose(op.topotools.get_shape(net), [200, 200, 1])
+
+    def test_spacing_3d_rotated(self):
+        net = op.network.Cubic(shape=[5, 5, 5], spacing=[1, 1, 1])
+        theta = 0.1
+        R = np.array([[1, 0, 0],
+                      [0, np.cos(theta), -np.sin(theta)],
+                      [0, np.sin(theta), np.cos(theta)]], dtype=float)
+        net['pore.coords'] = net['pore.coords'] @ R.T
+        assert np.allclose(op.topotools.get_spacing(net), [1, 1, 1])
+
+    def test_spacing_3d_rotated_uneven(self):
+        net = op.network.Cubic(shape=[3, 4, 5], spacing=[1, 2, 3])
+        theta = 0.1
+        R = np.array([[1, 0, 0],
+                      [0, np.cos(theta), -np.sin(theta)],
+                      [0, np.sin(theta), np.cos(theta)]])
+        net['pore.coords'] = np.tensordot(net['pore.coords'], R, axes=(1, 1))
+        assert np.allclose(op.topotools.get_spacing(net), [1, 2, 3])
+
+    def test_spacing_2d_sheared(self):
+        net = op.network.Cubic(shape=[5, 5, 1], spacing=1)
+        S = np.array([[1, 1, 0],
+                      [0, 1, 0],
+                      [0, 0, 1]])
+        net['pore.coords'] = (S@net['pore.coords'].T).T
+        assert np.allclose(op.topotools.get_spacing(net), [1, 2**0.5, 0])
+
+    def test_spacing_2d_sheared_uneven(self):
+        net = op.network.Cubic(shape=[5, 5, 1], spacing=[1, 2])
+        S = np.array([[1, 1, 0],
+                      [0, 1, 0],
+                      [0, 0, 1]])
+        net['pore.coords'] = (S@net['pore.coords'].T).T
+        assert np.allclose(op.topotools.get_spacing(net), [1.0, 2*(2**0.5), 0.0])
+
+    def test_spacing_3d_sheared(self):
+        net = op.network.Cubic(shape=[5, 5, 3], spacing=1)
+        S = np.array([[1, 1, 0],
+                      [0, 1, 0],
+                      [0, 0, 1]])
+        net['pore.coords'] = (S@net['pore.coords'].T).T
+        assert np.allclose(op.topotools.get_spacing(net), [1.0, 2**0.5, 1.0])
+
+    def test_spacing_3d_sheared_uneven(self):
+        net = op.network.Cubic(shape=[3, 4, 5], spacing=[1, 2, 3])
+        S = np.array([[1, 1, 0],
+                      [0, 1, 0],
+                      [0, 0, 1]])
+        net['pore.coords'] = (S@net['pore.coords'].T).T
+        assert np.allclose(op.topotools.get_spacing(net), [1, 2*(2**0.5), 3])
+
+    def test_spacing_on_joggled_network(self):
+        net = op.network.Cubic(shape=[3, 4, 5])
+        net['pore.coords'] += np.random.rand(net.Np, 3)
+        with pytest.raises(Exception):
+            _ = op.topotools.get_spacing(net)
+
+    def test_spacing_on_network_with_boundary_pores(self):
+        net = op.network.Cubic(shape=[3, 4, 5])
+        net.add_boundary_pores()
+        with pytest.raises(Exception):
+            _ = op.topotools.get_spacing(net)
 
 
 if __name__ == '__main__':
@@ -365,5 +606,5 @@ if __name__ == '__main__':
     t.setup_class()
     for item in t.__dir__():
         if item.startswith('test'):
-            print('running test: '+item)
+            print('running test: ' + item)
             t.__getattribute__(item)()

@@ -21,7 +21,7 @@ class Workspace(dict):
 
     This class is a
     `singleton <https://en.wikipedia.org/wiki/Singleton_pattern>`_ so that
-    whenever and where ever a Workspace is instantiated, the same instance is
+    whenever and wherever a Workspace is instantiated, the same instance is
     obtained.  This allows it to maintain a definitive record of all open
     Projects.
 
@@ -32,26 +32,7 @@ class Workspace(dict):
     Notes
     -----
     The Workspace object contains a variety of functions that one might expect
-    from the 'file-menu' in a typical GUI.  The table below provides a list
-    along with a brief description.
-
-    +------------------+-------------------------------------------------+
-    | Method           | Description                                     |
-    +==================+=================================================+
-    | load_workspace   | Loads all saved Projects in a 'pnm' file int... |
-    +------------------+-------------------------------------------------+
-    | save_workspace   | Saves all the current Projects to a 'pnm' file  |
-    +------------------+-------------------------------------------------+
-    | new_project      | Creates a new empty Project object              |
-    +------------------+-------------------------------------------------+
-    | load_project     | Loads a Project from the specified 'pnm' file   |
-    +------------------+-------------------------------------------------+
-    | save_project     | Saves given Project to a 'pnm' file             |
-    +------------------+-------------------------------------------------+
-    | close_project    | Removes the specified Project from the Works... |
-    +------------------+-------------------------------------------------+
-    | copy_project     | Make a copy of an existing Project              |
-    +------------------+-------------------------------------------------+
+    from the 'file-menu' in a typical GUI.
 
     """
 
@@ -60,18 +41,21 @@ class Workspace(dict):
     def __new__(cls, *args, **kwargs):
         if Workspace.__instance__ is None:
             Workspace.__instance__ = dict.__new__(cls)
-            cls.settings = SettingsDict()
-            cls.settings['loglevel'] = 30
         return Workspace.__instance__
 
     def __init__(self):
         super().__init__()
+        self._projects = {}
+        self.settings = SettingsDict()
+        self.settings['loglevel'] = 30
 
     def __setitem__(self, name, project):
         if name is None:
             name = self._gen_name()
         if name in self.keys():
-            raise Exception("A project named " + name + " already exists")
+            # To ensure renaming a Project to its current name is allowed
+            if self.__instance__[name] is not project:
+                raise Exception(f"A project named {name} already exists")
         if project in self.values():
             self.pop(project.name, None)
         if not isinstance(project, openpnm.utils.Project):
@@ -92,70 +76,61 @@ class Workspace(dict):
         for item in project:
             __main__.__dict__[item.name] = item
 
-    def save_workspace(self, filename=''):
+    @property
+    def version(self):
+        return openpnm.__version__
+
+    def save_workspace(self, filename=None):
         r"""
-        Saves all the current Projects to a 'pnm' file
+        Save all projects in the current workspace as a single file
 
         Parameters
         ----------
-        filename : string, optional
-            If no filename is given, a name is genrated using the current
-            time and date. See Notes for more information on valid file names.
-
-        See Also
-        --------
-        save_project
+        filename : str
+            The filename to use when saving.  If not provided, the present
+            date and time are used.
 
         Notes
         -----
-        The filename can be a string such as 'saved_file.pnm'.  The string can
-        include absolute path such as 'C:\networks\saved_file.pnm', or can
-        be a relative path such as '..\..\saved_file.pnm', which will look
-        2 directories above the current working directory.  It can also be a
-        path object object such as that produced by ``pathlib`` or
-        ``os.path`` in the Python standard library.
-
+        The file is actually zip archive containing ``pnm`` files, one for
+        each project in the workspace. This archive can be extracted and each
+        ``pnm`` file can be loaded manually using ``load_project`` or the
+        ``openpnm.io.PNM`` class.
         """
-        from openpnm.io import OpenpnmIO
-        OpenpnmIO.save_workspace(filename)
+        from datetime import datetime
+        if filename is None:
+            dt = datetime.now()
+            filename = dt.strftime("%Y_%m_%d_%H_%M_%S")
+        from zipfile import ZipFile
+        with ZipFile(filename + '.wrk', 'w') as z:
+            for prj in self.values():
+                prj.save_project()
+                z.write(prj.name + '.pnm')
 
-    def load_workspace(self, filename, overwrite=False):
+    def load_workspace(self, filename):
         r"""
-        Loads a saved Workspace from 'pnm' file into the current Workspace.
-        Any Projects present in the current Workspace will be deleted.
+        Load project(s) from a saved workspace into current workspace
 
         Parameters
         ----------
-        filename : string, optional
-            The name of the file to open.  See Notes for more information.
-        overwrite : boolean
-            A flag to indicate if the current Workspace should be
-            overwritten when loading the new one.  The default is ``False``,
-            meaning the loaded file will be added to the existing data.  Note
-            that in this case Project names may clash, in which case the
-            newly loaded Projects are given new names.
-
-        See Also
-        --------
-        load_project
+        filename : str or path object
+            The filename containing the saved workspace
 
         Notes
         -----
-        The filename can be a string such as 'saved_file.pnm'.  The string can
-        include absolute path such as 'C:\networks\saved_file.pnm', or can
-        be a relative path such as '..\..\saved_file.pnm', which will look
-        2 directories above the current working directory.  Can also be a
-        path object object such as that produced by ``pathlib`` or
-        ``os.path`` in the Python standard library.
+        ??
 
         """
-        from openpnm.io import OpenpnmIO
-        self.clear()
-        OpenpnmIO.load_workspace(filename=filename, overwrite=overwrite)
+        from zipfile import ZipFile
+        with ZipFile(filename, 'r') as z:
+            logger.info('Loading projects contained in ' + filename)
+            files = z.filelist
+            for f in files:
+                self.load_project(f.orig_filename)
 
-    def save_project(self, project, filename=''):
+    def save_project(self, project, filename=None):
         r"""
-        Saves given Project to a 'pnm' file
+        Saves given Project to a ``pnm`` file
 
         This will include all of associated objects, including algorithms.
 
@@ -182,8 +157,8 @@ class Workspace(dict):
         ``os.path`` in the Python standard library.
 
         """
-        from openpnm.io import OpenpnmIO
-        OpenpnmIO.save_project(project=project, filename=filename)
+        from openpnm.io import PNM
+        PNM.save_project(project=project, filename=filename)
 
     def load_project(self, filename, overwrite=False):
         r"""
@@ -212,8 +187,9 @@ class Workspace(dict):
         ``os.path`` in the Python standard library.
 
         """
-        from openpnm.io import OpenpnmIO
-        OpenpnmIO.load_project(filename=filename)
+        from openpnm.io import PNM
+        proj = PNM.load_project(filename=filename)
+        return proj
 
     def close_project(self, project):
         r"""
@@ -253,7 +229,7 @@ class Workspace(dict):
         ----------
         name : string (optional)
             The unique name to give to the project.  If none is given, one
-            will be automatically generated (e.g. 'sim_01`)
+            will be automatically generated (e.g. 'proj_01`)
 
         Returns
         -------
@@ -271,9 +247,9 @@ class Workspace(dict):
         """
         n = [0]
         for item in self.keys():
-            if item.startswith('sim_'):
-                n.append(int(item.split('sim_')[1]))
-        name = 'sim_'+str(max(n)+1).zfill(2)
+            if item.startswith('proj_'):
+                n.append(int(item.split('proj_')[1]))
+        name = 'proj_'+str(max(n)+1).zfill(2)
         return name
 
     def _gen_ids(self, size):

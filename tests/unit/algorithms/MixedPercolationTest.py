@@ -1,19 +1,19 @@
-import openpnm as op
 import numpy as np
+import openpnm as op
+import openpnm.models.geometry as gm
 from openpnm.algorithms import MixedInvasionPercolation as mp
 import matplotlib.pyplot as plt
-import openpnm.models.geometry as gm
 
 
 plt.close('all')
-wrk = op.Workspace()
-wrk.loglevel = 50
+ws = op.Workspace()
+ws.loglevel = 50
 
 
 class MixedPercolationTest:
 
     def setup_class(self, Np=5):
-        wrk.clear()
+        ws.clear()
         # Create Topological Network object
         self.net = op.network.Cubic([Np, Np, 1], spacing=1)
         self.geo = op.geometry.GenericGeometry(network=self.net,
@@ -241,10 +241,10 @@ class MixedPercolationTest:
         phys['throat.entry_pressure']=np.arange(0, net.Nt, dtype=float)
         phys['pore.entry_pressure']=0.0
         self.run_mp(False, False, False)
-        fig = plt.figure()
-        self.alg.plot_intrusion_curve(fig)
+        fig, ax = plt.subplots()
+        self.alg.plot_intrusion_curve(ax=ax)
         plt.close()
-        fig = self.alg.plot_intrusion_curve()
+        self.alg.plot_intrusion_curve()
         plt.close()
 
     def test_cluster_merging(self):
@@ -332,8 +332,8 @@ class MixedPercolationTest:
         np.random.seed(1)
         phys['throat.entry_pressure']=0.0
         phys['pore.entry_pressure']=np.random.random(net.Np)*net.Np
-        self.inlets = net.pores('left')
-        self.outlets = net.pores('right')
+        self.inlets = net.pores('front')
+        self.outlets = net.pores('back')
         np.random.seed(1)
         self.phase['pore.occupancy'] = False
         self.phase['throat.occupancy'] = False
@@ -386,7 +386,7 @@ class MixedPercolationTest:
         assert np.any(IP_1['throat.invasion_sequence']==-1)
 
     def test_late_filling(self):
-        self.setup_class(Np=100)
+        self.setup_class(Np=10)
         net = self.net
         phys = self.phys
         np.random.seed(1)
@@ -394,7 +394,7 @@ class MixedPercolationTest:
         phys['pore.entry_pressure'] = 0.0
         phys.add_model(propname='pore.pc_star',
                        model=op.models.misc.from_neighbor_throats,
-                       throat_prop='throat.entry_pressure',
+                       prop='throat.entry_pressure',
                        mode='min')
         phys.add_model(propname='pore.late_filling',
                        model=op.models.physics.multiphase.late_filling,

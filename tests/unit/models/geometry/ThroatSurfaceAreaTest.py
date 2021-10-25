@@ -18,7 +18,7 @@ class ThroatSurfaceAreaTest:
     def test_cylinder(self):
         self.geo.add_model(propname='throat.surface_area',
                            model=tsa.cylinder, regen_mode="normal")
-        assert_allclose(self.geo['throat.surface_area'].mean(), sp.pi)
+        assert_allclose(self.geo['throat.surface_area'].mean(), np.pi)
 
     def test_cuboid(self):
         self.geo.add_model(propname='throat.surface_area',

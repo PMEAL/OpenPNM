@@ -1,6 +1,5 @@
 import py
 import numpy as np
-import scipy as sp
 import openpnm as op
 import scipy.stats as spst
 import openpnm.models.geometry.pore_size as mods

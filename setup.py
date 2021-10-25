@@ -1,5 +1,7 @@
 import os
 import sys
+import codecs
+import os.path
 from distutils.util import convert_path
 try:
     from setuptools import setup
@@ -7,13 +9,23 @@ except ImportError:
     from distutils.core import setup
 
 sys.path.append(os.getcwd())
+ver_path = convert_path('openpnm/__version__.py')
 
-main_ = {}
-ver_path = convert_path('openpnm/__init__.py')
-with open(ver_path) as f:
-    for line in f:
+
+def read(rel_path):
+    here = os.path.abspath(os.path.dirname(__file__))
+    with codecs.open(os.path.join(here, rel_path), 'r') as fp:
+        return fp.read()
+
+
+def get_version(rel_path):
+    for line in read(rel_path).splitlines():
         if line.startswith('__version__'):
-            exec(line, main_)
+            delim = '"' if '"' in line else "'"
+            return line.split(delim)[1]
+    else:
+        raise RuntimeError("Unable to find version string.")
+
 
 # Read the contents of README file
 this_directory = os.path.abspath(os.path.dirname(__file__))
@@ -26,7 +38,7 @@ setup(
     + 'of multiphase transport in porous materials',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    version=main_['__version__'],
+    version=get_version(ver_path),
     zip_safe=False,
     classifiers=[
         'Development Status :: 5 - Production/Stable',
@@ -57,32 +69,37 @@ setup(
         'openpnm.algorithms',
         'openpnm.algorithms.metrics',
         'openpnm.topotools',
+        'openpnm.topotools.generators',
         'openpnm.materials',
     ],
     install_requires=[
-        'numpy>=1.15',
-        'scipy>=1.1',
-        'scikit-image>=0.14',
-        'networkx>=2',
-        'h5py>=2.8',
-        'sympy',
-        'matplotlib',
-        'pandas',
-        'numba',
-        'transforms3d',
+        'chemicals',
+        'docrep>=0.3',
         'flatdict',
         'gitpython',
+        'h5py',
+        'ipython',
         'jsonschema',
-        'unyt',
+        'json-tricks',
+        'matplotlib',
+        'networkx',
+        'numba',
+        'numpy',
+        'pandas',
+        'pypardiso',
+        'scikit-image',
+        'scipy',
+        'sympy',
         'terminaltables',
-        'docrep',
+        'tqdm',
+        'transforms3d',
     ],
     author='OpenPNM Team',
     author_email='jgostick@uwaterloo.ca',
-    download_url='https://github.com/pmeal/OpenPNM/',
+    download_url='https://github.com/PMEAL/OpenPNM/',
     url='http://openpnm.org',
     project_urls={
-        'Documentation': 'https://openpnm.readthedocs.io/en/master/',
+        'Documentation': 'https://pmeal.github.io/OpenPNM',
         'Source': 'https://github.com/PMEAL/OpenPNM',
         'Tracker': 'https://github.com/PMEAL/OpenPNM/issues',
     },

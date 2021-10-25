@@ -1,5 +1,4 @@
 import numpy as np
-import scipy as sp
 import openpnm as op
 
 
@@ -137,7 +136,7 @@ class GenericNetworkTest:
         assert np.all(a == [3, 4])
         a = self.net.num_neighbors(pores=0, flatten=False)
         assert np.all(a == [3])
-        assert isinstance(a, sp.ndarray)
+        assert isinstance(a, np.ndarray)
 
     def test_find_nearby_pores_distance_1(self):
         a = self.net.find_nearby_pores(pores=[0, 1], r=1, flatten=False,

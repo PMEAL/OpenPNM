@@ -1,10 +1,9 @@
 codecov
-coverage
-pep8
-pytest
-pytest-cache
-pytest-cov
-pytest-pep8
-testfixtures
 jupyter
 nbval
+pytest
+pytest-cache
+pytest-codestyle
+pytest-cov
+nbval
+porespy

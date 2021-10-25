@@ -1,4 +1,3 @@
-import scipy as sp
 import numpy as np
 from openpnm.network import GenericNetwork, Cubic
 from openpnm import topotools
@@ -50,6 +49,7 @@ class CubicDual(GenericNetwork):
     Examples
     --------
     >>> import openpnm as op
+    >>> import matplotlib.pyplot as plt
     >>> pn = op.network.CubicDual(shape=[3, 3, 3])
     >>> pn.num_pores('pore.primary')  # Normal cubic network is present
     27
@@ -58,15 +58,16 @@ class CubicDual(GenericNetwork):
 
     And it can be plotted for quick visualization using:
 
-    >>> fig = op.topotools.plot_connections(network=pn,
-    ...                                     throats=pn.throats('primary'),
-    ...                                     color='b')
-    >>> fig = op.topotools.plot_connections(network=pn,
-    ...                                     throats=pn.throats('secondary'),
-    ...                                     color='r')
-    >>> fig = op.topotools.plot_coordinates(network=pn, c='r', s=75, fig=fig)
+    >>> fig, ax = plt.subplots()
+    >>> _ = op.topotools.plot_connections(network=pn,
+    ...                                   throats=pn.throats('primary'),
+    ...                                   color='b', ax=ax)
+    >>> _ = op.topotools.plot_connections(network=pn,
+    ...                                   throats=pn.throats('secondary'),
+    ...                                   color='r', ax=ax)
+    >>> _ = op.topotools.plot_coordinates(network=pn, c='r', s=75, ax=ax)
 
-    .. image:: /../docs/static/images/cubic_dual_network.png
+    .. image:: /../docs/_static/images/cubic_dual_network.png
         :align: center
 
     For larger networks and more control over presentation use `Paraview
@@ -87,7 +88,7 @@ class CubicDual(GenericNetwork):
         single_dim = shape == 1
         shape[single_dim] = 2
         dual = Cubic(shape=shape-1, spacing=1)
-        faces = [['front', 'back'], ['left', 'right'], ['top', 'bottom']]
+        faces = [['left', 'right'], ['front', 'back'], ['top', 'bottom']]
         faces = [faces[i] for i in np.where(~single_dim)[0]]
         faces = np.array(faces).flatten().tolist()
         dual.add_boundary_pores(faces)
@@ -114,12 +115,12 @@ class CubicDual(GenericNetwork):
             Ts = net.find_neighbor_throats(pores=Ps, mode='xnor')
             net['throat.surface'][Ts] = True
             net['throat.'+face] = net.tomask(throats=Ts)
-        [net.pop(item) for item in net.labels() if 'boundary' in item]
-        # Label non-surface pores and throats as internal
-        net['pore.internal'] = True
-        net['throat.internal'] = True
+        for item in net.labels():
+            if 'boundary' in item:
+                net.pop(item)
         # Transfer all dictionary items from 'net' to 'self'
-        [self.update({item: net[item]}) for item in net]
+        for item in net:
+            self.update({item: net[item]})
         ws.close_project(net.project)
         # Finally, scale network to requested spacing
         net['pore.coords'] *= spacing
@@ -150,7 +151,7 @@ class CubicDual(GenericNetwork):
         for item in labels:
             Ps = self.pores(item)
             coords = np.absolute(self['pore.coords'][Ps])
-            axis = np.count_nonzero(sp.diff(coords, axis=0), axis=0) == 0
+            axis = np.count_nonzero(np.diff(coords, axis=0), axis=0) == 0
             offset = np.array(axis, dtype=int)*spacing/2
             if np.amin(coords) == np.amin(coords[:, np.where(axis)[0]]):
                 offset = -1*offset

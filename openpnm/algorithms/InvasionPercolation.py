@@ -55,8 +55,7 @@ class InvasionPercolation(GenericAlgorithm):
 
     Initialize an invasion percolation object and define inlets:
 
-    >>> ip = op.algorithms.InvasionPercolation(network=pn)
-    >>> ip.setup(phase=water)
+    >>> ip = op.algorithms.InvasionPercolation(network=pn, phase=water)
     >>> ip.set_inlets(pores=0)
     >>> ip.run()
 
@@ -101,48 +100,9 @@ class InvasionPercolation(GenericAlgorithm):
         self.settings.update(def_set)
         self.settings.update(settings)
         if phase is not None:
-            self.setup(phase=phase)
-
-    def setup(self, phase, entry_pressure='', pore_volume='', throat_volume=''):
-        r"""
-        Set up the required parameters for the algorithm
-
-        Parameters
-        ----------
-        phase : OpenPNM Phase object
-            The phase to be injected into the Network.  The Phase must have the
-            capillary entry pressure values for the system.
-
-        entry_pressure : string
-            The dictionary key to the capillary entry pressure.  If none is
-            supplied then the current value is retained. The default is
-            'throat.capillary_pressure'.
-
-        pore_volume : string
-            The dictionary key to the pore volume.  If none is supplied then
-            the current value is retained. The default is 'pore.volume'.
-
-        throat_volume : string
-            The dictionary key to the throat volume.  If none is supplied then
-            the current value is retained. The default is 'throat.volume'.
-
-        """
-        self.settings['phase'] = phase.name
-        if pore_volume:
-            self.settings['pore_volume'] = pore_volume
-        if throat_volume:
-            self.settings['throat_volume'] = throat_volume
-        if entry_pressure:
-            self.settings['entry_pressure'] = entry_pressure
-
-        # Setup arrays and info
-        self['throat.entry_pressure'] = phase[self.settings['entry_pressure']]
-        # Indices into t_entry giving a sorted list
-        self['throat.sorted'] = np.argsort(self['throat.entry_pressure'], axis=0)
-        self['throat.order'] = 0
-        self['throat.order'][self['throat.sorted']] = np.arange(0, self.Nt)
-        self['throat.invasion_sequence'] = -1
+            self.settings['phase'] = phase.name
         self['pore.invasion_sequence'] = -1
+        self['throat.invasion_sequence'] = -1
 
     def set_inlets(self, pores=[], overwrite=False):
         r"""
@@ -156,10 +116,6 @@ class InvasionPercolation(GenericAlgorithm):
             self['pore.invasion_sequence'] = -1
         self['pore.invasion_sequence'][pores] = 0
 
-        # Perform initial analysis on input pores
-        Ts = self.project.network.find_neighbor_throats(pores=pores)
-        self.queue = []
-        [hq.heappush(self.queue, T) for T in self['throat.order'][Ts]]
 
     def run(self, n_steps=None):
         r"""
@@ -171,8 +127,24 @@ class InvasionPercolation(GenericAlgorithm):
             The number of throats to invaded during this step
 
         """
+
+        # Setup arrays and info
+        phase = self.project[self.settings['phase']]
+        self['throat.entry_pressure'] = phase[self.settings['entry_pressure']]
+        # Indices into t_entry giving a sorted list
+        self['throat.sorted'] = np.argsort(self['throat.entry_pressure'], axis=0)
+        self['throat.order'] = 0
+        self['throat.order'][self['throat.sorted']] = np.arange(0, self.Nt)
+
+        # Perform initial analysis on input pores
+        pores = self['pore.invasion_sequence'] == 0
+        Ts = self.project.network.find_neighbor_throats(pores=pores)
+        self.queue = []
+        for T in self['throat.order'][Ts]:
+            hq.heappush(self.queue, T)
+
         if n_steps is None:
-            n_steps = sp.inf
+            n_steps = np.inf
 
         if len(self.queue) == 0:
             logger.warn('queue is empty, this network is fully invaded')
@@ -256,20 +228,20 @@ class InvasionPercolation(GenericAlgorithm):
     def apply_trapping(self, outlets):
         """
         Apply trapping based on algorithm described by Y. Masson [1].
-        It is applied as a post-process and runs the percolation algorithm in
-        reverse assessing the occupancy of pore neighbors. Consider the
+        It is applied as a post-process and runs the percolation algorithm
+        in reverse assessing the occupancy of pore neighbors. Consider the
         following scenario when running standard IP without trapping,
-        3 situations can happen after each invasion step:
+        three situations can happen after each invasion step:
 
-            * The number of defending clusters stays the same and clusters can
-            shrink
+            * The number of defending clusters stays the same and clusters
+              can shrink
             * A cluster of size one is suppressed
             * A cluster is split into multiple clusters
 
         In reverse the following opposite situations can happen:
 
-            * The number of defending clusters stays the same and clusters can
-            grow
+            * The number of defending clusters stays the same and clusters
+              can grow
             * A cluster of size one is created
             * Mutliple clusters merge into one cluster
 
@@ -303,6 +275,7 @@ class InvasionPercolation(GenericAlgorithm):
         dictionary. Any positive number is a trapped cluster
 
         Also creates 2 boolean arrays Np and Nt long called '<element>.trapped'
+
         """
         # First see if network is fully invaded
         net = self.project.network
@@ -399,7 +372,7 @@ class InvasionPercolation(GenericAlgorithm):
 
         """
         if 'pore.invasion_pressure' not in self.props():
-            logger.error('Algorithm must be run first')
+            logger.error('Algorithm must be run first.')
             return None
         net = self.project.network
         pvols = net[self.settings['pore_volume']]
@@ -429,27 +402,23 @@ class InvasionPercolation(GenericAlgorithm):
         data = pc_curve(data.Pc, sat)
         return data
 
-    def plot_intrusion_curve(self, fig=None):
+    def plot_intrusion_curve(self, ax=None, num_markers=25):
         r"""
         Plot the percolation curve as the invader volume or number fraction vs
         the capillary capillary pressure.
-
         """
         import matplotlib.pyplot as plt
 
         data = self.get_intrusion_data()
-        if data is not None:
-            if fig is None:
-                fig, ax = plt.subplots()
-            else:
-                ax = fig.gca()
-            ax.semilogx(data.Pcap, data.S_tot,)
-            plt.ylabel('Invading Phase Saturation')
-            plt.xlabel('Capillary Pressure')
-            plt.grid(True)
-            return fig
-        else:
-            return None
+        if data is None:
+            raise Exception("You must run the algorithm first.")
+        if ax is None:
+            fig, ax = plt.subplots()
+        markevery = max(data.Pcap.size // num_markers, 1)
+        ax.semilogx(data.Pcap, data.S_tot, markevery=markevery)
+        plt.ylabel('invading phase saturation')
+        plt.xlabel('capillary pressure')
+        plt.grid(True)
 
     def _run_accelerated(queue, t_sorted, t_order, t_inv, p_inv, p_inv_t,
                          conns, idx, indptr, n_steps):
@@ -469,7 +438,10 @@ class InvasionPercolation(GenericAlgorithm):
 
         """
         from numba import njit
-        from numba.core.errors import NumbaPendingDeprecationWarning
+        try:
+            from numba.core.errors import NumbaPendingDeprecationWarning
+        except ModuleNotFoundError:
+            from numba.errors import NumbaPendingDeprecationWarning
         warnings.simplefilter('ignore', category=NumbaPendingDeprecationWarning)
 
         @njit

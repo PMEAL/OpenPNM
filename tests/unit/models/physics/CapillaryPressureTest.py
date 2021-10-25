@@ -1,4 +1,3 @@
-import scipy as sp
 import numpy as np
 import openpnm as op
 from numpy.testing import assert_approx_equal
@@ -86,7 +85,7 @@ class CapillaryPressureTest:
 
     def test_purcell_bidirectional(self):
         f = op.models.physics.capillary_pressure.purcell_bidirectional
-        self.geo["pore.touch"] = (sp.random.random(self.geo.Np) + 0.5) * 0.1
+        self.geo["pore.touch"] = (np.random.random(self.geo.Np) + 0.5) * 0.1
         self.phys.add_model(
             propname="throat.bidirectional",
             model=f,
@@ -103,7 +102,7 @@ class CapillaryPressureTest:
 
     def test_sinusoidal_bidirectional(self):
         f = op.models.physics.capillary_pressure.sinusoidal_bidirectional
-        self.geo["pore.touch"] = (sp.random.random(self.geo.Np) + 0.5) * 0.1
+        self.geo["pore.touch"] = (np.random.random(self.geo.Np) + 0.5) * 0.1
         self.geo["throat.length"] = 1.0
         self.phys.add_model(
             propname="throat.bidirectional",
@@ -136,7 +135,7 @@ class CapillaryPressureTest:
         )
         scale = 1e-4
         np.random.seed(1)
-        p = (sp.random.random([len(bp), 3]) - 0.5) / 1000
+        p = (np.random.random([len(bp), 3]) - 0.5) / 1000
         bp += p
         fiber_rad = 2e-6
         bp = op.topotools.reflect_base_points(bp, domain_size=[1, 1, 1])

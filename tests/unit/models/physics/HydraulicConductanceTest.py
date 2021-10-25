@@ -1,6 +1,6 @@
 import openpnm as op
 import numpy as _np
-from numpy.testing import assert_approx_equal
+from numpy.testing import assert_allclose
 
 
 class HydraulicConductanceTest:
@@ -30,16 +30,34 @@ class HydraulicConductanceTest:
         mod = op.models.physics.hydraulic_conductance.hagen_poiseuille
         self.phys.add_model(propname='throat.hydraulic_conductance', model=mod)
         actual = self.phys['throat.hydraulic_conductance'].mean()
-        assert_approx_equal(actual, desired=1421.0262776)
+        assert_allclose(actual, desired=1421.0262776)
 
-    def test_hagen_poiseuille_2D(self):
+    def test_generic_hydraulic(self):
+        # Pass size factors as dict
+        self.geo['throat.hydraulic_size_factors'] = {
+            "pore1": 0.123, "throat": 0.981, "pore2": 0.551
+        }
+        mod = op.models.physics.hydraulic_conductance.generic_hydraulic
+        self.phys.add_model(propname='throat.g_hydraulic_conductance', model=mod)
+        self.phys.regenerate_models()
+        actual = self.phys['throat.g_hydraulic_conductance'].mean()
+        assert_allclose(actual, desired=9120.483231751232)
+        # Pass size factors as an array
+        for elem in ["pore1", "throat", "pore2"]:
+            del self.geo[f"throat.hydraulic_size_factors.{elem}"]
+        self.geo['throat.hydraulic_size_factors'] = 0.896
+        self.phys.regenerate_models("throat.g_hydraulic_conductance")
+        actual = self.phys['throat.g_hydraulic_conductance'].mean()
+        assert_allclose(actual, desired=89600.0)
+
+    def test_hagen_poiseuille_2d(self):
         self.geo['throat.conduit_lengths.pore1'] = 0.25
         self.geo['throat.conduit_lengths.throat'] = 0.6
         self.geo['throat.conduit_lengths.pore2'] = 0.15
-        mod = op.models.physics.hydraulic_conductance.hagen_poiseuille_2D
+        mod = op.models.physics.hydraulic_conductance.hagen_poiseuille_2d
         self.phys.add_model(propname='throat.hydraulic_conductance', model=mod)
         actual = self.phys['throat.hydraulic_conductance'].mean()
-        assert_approx_equal(actual, desired=1602.564)
+        assert_allclose(actual, desired=1602.564)
 
     def test_hagen_poiseuille_zero_length_throat(self):
         self.geo['throat.conduit_lengths.pore1'] = 0.25
@@ -49,7 +67,7 @@ class HydraulicConductanceTest:
         self.phys.add_model(propname='throat.hydraulic_conductance',
                             model=mod)
         actual = self.phys['throat.hydraulic_conductance'].mean()
-        assert_approx_equal(actual, desired=9947.1839)
+        assert_allclose(actual, desired=9947.1839)
 
     def test_classic_hagen_poiseuille(self):
         self.geo['pore.diameter'] = 1.0
@@ -72,14 +90,14 @@ class HydraulicConductanceTest:
                                               phase=self.phase,
                                               geometry=self.geo)
         mod = op.models.physics.hydraulic_conductance.valvatne_blunt
-        sf = _np.sqrt(3)/36.0
-        self.geo['pore.shape_factor'] = _np.ones(self.geo.Np)*sf
-        self.geo['throat.shape_factor'] = _np.ones(self.geo.Nt)*sf
+        sf = _np.sqrt(3) / 36.0
+        self.geo['pore.shape_factor'] = _np.ones(self.geo.Np) * sf
+        self.geo['throat.shape_factor'] = _np.ones(self.geo.Nt) * sf
         self.phys.add_model(propname='throat.valvatne_conductance', model=mod)
         actual = self.phys['throat.valvatne_conductance'].mean()
         desired = 1030.9826  # This is the old value
         desired = 7216.8783  # This is what it gets now
-        assert_approx_equal(actual, desired=desired)
+        assert_allclose(actual, desired=desired)
 
 
 if __name__ == '__main__':
@@ -89,5 +107,5 @@ if __name__ == '__main__':
     t.setup_class()
     for item in t.__dir__():
         if item.startswith('test'):
-            print('running test: '+item)
+            print(f'Running test: {item}')
             t.__getattribute__(item)()

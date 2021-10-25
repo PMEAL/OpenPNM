@@ -1,6 +1,6 @@
 import pytest
 import importlib
-import scipy as sp
+import numpy as np
 import openpnm as op
 import numpy.testing as nt
 from openpnm.utils.misc import catch_module_not_found
@@ -17,12 +17,12 @@ class SolversTest:
         self.phys = op.physics.GenericPhysics(network=self.net,
                                               phase=self.phase,
                                               geometry=self.geom)
-        self.phys['throat.conductance'] = sp.linspace(1, 5, num=self.net.Nt)
+        self.phys['throat.conductance'] = np.linspace(1, 5, num=self.net.Nt)
         self.alg = op.algorithms.GenericTransport(network=self.net)
-        self.alg.settings.update(quantity='pore.x',
-                                 conductance='throat.conductance')
-        self.alg.setup(phase=self.phase)
-        self.alg.set_value_BC(pores=self.net.pores('left'), values=1.0)
+        self.alg.settings.update({'quantity': 'pore.x',
+                                  'conductance': 'throat.conductance',
+                                  'phase': self.phase.name})
+        self.alg.set_value_BC(pores=self.net.pores('front'), values=1.0)
         self.alg.set_value_BC(pores=self.net.pores('bottom'), values=0.0)
 
     def test_solver_not_available(self):
@@ -54,24 +54,36 @@ class SolversTest:
         solvers = ['bicg', 'bicgstab', 'cg', 'cgs', 'qmr', 'gcrotmk',
                    'gmres', 'lgmres']
         self.alg.settings.update(solver_family='scipy',
-                                 solver_maxiter=1)
+                                 solver_max_iter=1)
         for solver in solvers:
             self.alg.settings['solver_type'] = solver
             with nt.assert_raises(Exception):
                 self.alg.run()
-        self.alg.settings.update(solver_maxiter=100)
+        self.alg.settings.update(solver_max_iter=5000)
 
     def test_pyamg_exception_if_not_found(self):
         self.alg.settings['solver_family'] = 'pyamg'
-        try:
-            import pyamg
-        except ModuleNotFoundError:
+        if not importlib.util.find_spec("pyamg"):
+            with pytest.raises(Exception):
+                self.alg.run()
+
+    # TODO: Uncomment this test once pyamg/pyamg#273 is fixed
+    # @catch_module_not_found
+    # def test_pyamg(self):
+    #     self.alg.settings['solver_family'] = 'pyamg'
+    #     self.alg.run()
+    #     xmean = self.alg['pore.x'].mean()
+    #     nt.assert_allclose(actual=xmean, desired=0.587595, rtol=1e-5)
+
+    def test_pypardiso_exception_if_not_found(self):
+        self.alg.settings['solver_family'] = 'pypardiso'
+        if not importlib.util.find_spec("pypardiso"):
             with pytest.raises(Exception):
                 self.alg.run()
 
     @catch_module_not_found
-    def test_pyamg(self):
-        self.alg.settings['solver_family'] = 'pyamg'
+    def test_pypardiso(self):
+        self.alg.settings['solver_family'] = 'pypardiso'
         self.alg.run()
         xmean = self.alg['pore.x'].mean()
         nt.assert_allclose(actual=xmean, desired=0.587595, rtol=1e-5)
@@ -79,9 +91,7 @@ class SolversTest:
     def test_petsc_exception_if_not_found(self):
         self.alg.settings['solver_family'] = 'petsc'
         self.alg.settings['solver_type'] = 'cg'
-        try:
-            import petsc4py
-        except ModuleNotFoundError:
+        if not importlib.util.find_spec("petsc4py"):
             with pytest.raises(Exception):
                 self.alg.run()
 
@@ -136,8 +146,8 @@ class SolversTest:
 if __name__ == '__main__':
     t = SolversTest()
     t.setup_class()
+    self = t
     for item in t.__dir__():
         if item.startswith('test'):
             print('running test: '+item)
             t.__getattribute__(item)()
-    self = t

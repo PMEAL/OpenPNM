@@ -28,7 +28,7 @@ class CubicTemplateTest:
              [1, 0, 0, 0, 1],
              [1, 1, 0, 1, 1]]
         )
-        net = op.network.CubicTemplate(template=template, shape=[5, 5])
+        net = op.network.CubicTemplate(template=template)
         # Test "surface" label
         Ps_surf_desired = np.array([0, 1, 2, 3, 4, 5, 8, 9, 11, 12, 13, 14, 15, 16, 17])
         Ps_surf = net.pores("surface")

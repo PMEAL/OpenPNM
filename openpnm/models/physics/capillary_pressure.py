@@ -1,20 +1,19 @@
 r"""
-
-.. autofunction:: openpnm.models.physics.capillary_pressure.washburn
-.. autofunction:: openpnm.models.physics.capillary_pressure.purcell
-.. autofunction:: openpnm.models.physics.capillary_pressure.purcell_bidirectional
-.. autofunction:: openpnm.models.physics.capillary_pressure.ransohoff_snap_off
-.. autofunction:: openpnm.models.physics.capillary_pressure.sinusoidal_bidirectional
-
+Pore-scale models for calculating the capillary pressure in pores/throats.
 """
-
 import logging
-import scipy as _sp
 import numpy as _np
 from openpnm.models import physics as pm
 from transforms3d import _gohlketransforms as tr
-
 logger = logging.getLogger(__name__)
+
+__all__ = [
+    "washburn",
+    "purcell",
+    "ransohoff_snap_off",
+    "purcell_bidirectional",
+    "sinusoidal_bidirectional"
+]
 
 
 def _get_key_props(
@@ -111,7 +110,7 @@ def washburn(
         value = value[phase.throats(target.name)]
     else:
         value = value[phase.pores(target.name)]
-    value[_np.absolute(value) == _sp.inf] = 0
+    value[_np.absolute(value) == _np.inf] = 0
     return value
 
 
@@ -183,7 +182,7 @@ def purcell(
     r = network[diameter] / 2
     R = r_toroid
     alpha = (
-        theta - 180 + _sp.rad2deg(_np.arcsin(_np.sin(_np.radians(theta)) / (1 + r / R)))
+        theta - 180 + _np.rad2deg(_np.arcsin(_np.sin(_np.radians(theta)) / (1 + r / R)))
     )
     value = (-2 * sigma / r) * (
         _np.cos(_np.radians(theta - alpha))

@@ -7,15 +7,14 @@ petsc: A class for solving sparse linear systems using petsc
 import sys
 import numpy as np
 import scipy as sp
+import scipy.sparse
 from openpnm.core import Base
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)
-try:
-    import petsc4py
-    petsc4py.init(sys.argv)
-    from petsc4py import PETSc
-except ModuleNotFoundError:
-    pass
+import petsc4py
+# Next line must be before importing PETSc
+petsc4py.init(sys.argv)
+from petsc4py import PETSc
 
 
 class PETScSparseLinearSolver(Base):
@@ -122,7 +121,8 @@ class PETScSparseLinearSolver(Base):
         atol = self.settings['atol'] if atol is None else atol
         rtol = self.settings['rtol'] if rtol is None else rtol
         max_it = self.settings['maxiter'] if max_it is None else max_it
-        self.ksp.setTolerances(atol=atol, rtol=rtol, max_it=max_it)
+        # BUG: PETSc misses rtol requirement by ~10-20X -> Report to petsc4py
+        self.ksp.setTolerances(atol=None, rtol=rtol/50, max_it=max_it)
 
     def _initialize_A(self):
         r"""

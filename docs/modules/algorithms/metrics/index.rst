@@ -1,7 +1,7 @@
-.. _algorithms_index:
+.. _metrics_index:
 
 ================================================================================
-Algorithms
+Metrics
 ================================================================================
 
 .. contents::  Page Contents
@@ -14,9 +14,12 @@ Overview of Module
 .. automodule:: openpnm.algorithms.metrics
 
 --------------------------------------------------------------------------------
-TransportProperties
+Transport Properties
 --------------------------------------------------------------------------------
 
 .. toctree::
    :maxdepth: 3
 
+   mercury_intrusion.rst
+   formation_factor.rst
+   relative_permeability.rst

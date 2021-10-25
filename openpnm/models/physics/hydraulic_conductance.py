@@ -1,12 +1,62 @@
 r"""
-
-.. autofunction:: openpnm.models.physics.hydraulic_conductance.hagen_poiseuille
-.. autofunction:: openpnm.models.physics.hydraulic_conductance.hagen_poiseuille_2D
-.. autofunction:: openpnm.models.physics.hydraulic_conductance.hagen_poiseuille_power_law
-
+Pore-scale models for calculating hydraulic conductance of conduits.
 """
-import scipy as _sp
 import numpy as _np
+
+__all__ = [
+    "generic_hydraulic",
+    "hagen_poiseuille",
+    "hagen_poiseuille_2d",
+    "hagen_poiseuille_power_law",
+    "valvatne_blunt",
+    "classic_hagen_poiseuille"
+]
+
+
+def generic_hydraulic(target,
+                      pore_viscosity='pore.viscosity',
+                      throat_viscosity='throat.viscosity',
+                      size_factors='throat.hydraulic_size_factors'):
+    r"""
+    Calculates the hydraulic conductance of conduits in network.
+
+    A conduit is defined as ( 1/2 pore - full throat - 1/2 pore ).
+
+    Parameters
+    ----------
+    target : _GenericPhysics
+        Physics object with which this model is associated.
+    pore_viscosity : str
+        Dictionary key of the pore viscosity values.
+    throat_viscosity : str
+        Dictionary key of the throat viscosity values.
+    size_factors: str
+        Dictionary key of the conduit hydraulic size factors' values.
+
+    Returns
+    -------
+    ndarray
+        Array containing hydraulic conductance values for conduits in the
+        geometry attached to the given physics object.
+
+    """
+    network = target.project.network
+    throats = target.throats(target=network)
+    conns = network.conns[throats]
+    phase = target.project.find_phase(target)
+    F = network[size_factors]
+    mu1, mu2 = phase[pore_viscosity][conns].T
+    mut = phase[throat_viscosity]
+
+    if isinstance(F, dict):
+        g1 = F[f"{size_factors}.pore1"][throats] / mu1
+        gt = F[f"{size_factors}.throat"][throats] / mut
+        g2 = F[f"{size_factors}.pore2"][throats] / mu2
+        gh = 1 / (1 / g1 + 1 / gt + 1 / g2)
+    else:
+        gh = F[throats] / mut
+
+    return gh
 
 
 def hagen_poiseuille(
@@ -19,33 +69,26 @@ def hagen_poiseuille(
     conduit_shape_factors="throat.flow_shape_factors"
 ):
     r"""
-    Calculate the hydraulic conductance of conduits in network, where a
-    conduit is ( 1/2 pore - full throat - 1/2 pore ). See the notes section.
+    Calculates the hydraulic conductance of conduits in network.
+
+    A conduit is defined as ( 1/2 pore - full throat - 1/2 pore ).
 
     Parameters
     ----------
-    target : OpenPNM Object
-        The object which this model is associated with. This controls the
-        length of the calculated array, and also provides access to other
-        necessary properties.
-
-    pore_area : string
-        Dictionary key of the pore area values
-
-    throat_area : string
-        Dictionary key of the throat area values
-
-    pore_viscosity : string
-        Dictionary key of the pore viscosity values
-
-    throat_viscosity : string
-        Dictionary key of the throat viscosity values
-
-    conduit_lengths : string
-        Dictionary key of the conduit length values
-
-    conduit_shape_factors : string
-        Dictionary key of the conduit DIFFUSION shape factor values
+    target : _GenericPhysics
+        Physics object with which this model is associated.
+    pore_area : str
+        Dictionary key of the pore area values.
+    throat_area : str
+        Dictionary key of the throat area values.
+    pore_viscosity : str
+        Dictionary key of the pore viscosity values.
+    throat_viscosity : str
+        Dictionary key of the throat viscosity values.
+    conduit_lengths : str
+        Dictionary key of the conduit length values.
+    conduit_shape_factors : str
+        Dictionary key of the conduit hydraulic (flow) shape factor values.
 
     Returns
     -------
@@ -55,18 +98,19 @@ def hagen_poiseuille(
 
     Notes
     -----
-    (1) This function requires that all the necessary phase properties already
+    This function requires that all the necessary phase properties already
     be calculated.
 
-    (2) This function calculates the specified property for the *entire*
-    network then extracts the values for the appropriate throats at the end.
+    This function calculates the specified property for the *entire*
+    network then extracts the values for the appropriate throats at the
+    end.
 
-    (3) This function assumes cylindrical throats with constant cross-section
-    area. Corrections for different shapes and variable cross-section area can
-    be imposed by passing the proper conduit_shape_factors argument.
+    This function assumes cylindrical throats with constant cross-section
+    area. Corrections for different shapes and variable cross-section area
+    can be imposed by passing the proper conduit_shape_factors argument.
 
-    (4) shape_factor depends on the physics of the problem, i.e. diffusion-like
-    processes and fluid flow need different shape factors.
+    ``conduit_shape_factors`` depends on the physics of the problem, i.e.
+    diffusion-like processes and fluid flow need different shape factors.
 
     """
     network = target.project.network
@@ -86,7 +130,7 @@ def hagen_poiseuille(
     # Setting g to inf when Li = 0 (ex. boundary pores)
     # INFO: This is needed since area could also be zero, which confuses NumPy
     m1, m2, mt = [Li != 0 for Li in [L1, L2, Lt]]
-    g1[~m1] = g2[~m2] = gt[~mt] = _sp.inf
+    g1[~m1] = g2[~m2] = gt[~mt] = _np.inf
     # Getting shape factors
     try:
         SF1 = phase[conduit_shape_factors + ".pore1"][throats]
@@ -97,14 +141,14 @@ def hagen_poiseuille(
     Dt = phase[throat_viscosity][throats]
     D1, D2 = phase[pore_viscosity][cn].T
     # Find g for half of pore 1, throat, and half of pore 2
-    g1[m1] = A1[m1] ** 2 / (8 * _sp.pi * D1 * L1)[m1]
-    g2[m2] = A2[m2] ** 2 / (8 * _sp.pi * D2 * L2)[m2]
-    gt[mt] = At[mt] ** 2 / (8 * _sp.pi * Dt * Lt)[mt]
+    g1[m1] = A1[m1] ** 2 / (8 * _np.pi * D1 * L1)[m1]
+    g2[m2] = A2[m2] ** 2 / (8 * _np.pi * D2 * L2)[m2]
+    gt[mt] = At[mt] ** 2 / (8 * _np.pi * Dt * Lt)[mt]
     # Apply shape factors and calculate the final conductance
-    return (1/gt/SFt + 1/g1/SF1 + 1/g2/SF2) ** (-1)
+    return 1 / (1 / gt / SFt + 1 / g1 / SF1 + 1 / g2 / SF2)
 
 
-def hagen_poiseuille_2D(
+def hagen_poiseuille_2d(
     target,
     pore_diameter="pore.diameter",
     throat_diameter="throat.diameter",
@@ -114,33 +158,26 @@ def hagen_poiseuille_2D(
     conduit_shape_factors="throat.flow_shape_factors",
 ):
     r"""
-    Calculate the hydraulic conductance of conduits in a 2D network, where a
-    conduit is ( 1/2 pore - full throat - 1/2 pore ). See the notes section.
+    Calculates the hydraulic conductance of conduits in network.
+
+    A conduit is defined as ( 1/2 pore - full throat - 1/2 pore ).
 
     Parameters
     ----------
-    target : OpenPNM Object
-        The object which this model is associated with. This controls the
-        length of the calculated array, and also provides access to other
-        necessary properties.
-
-    pore_area : string
-        Dictionary key of the pore area values
-
-    throat_area : string
-        Dictionary key of the throat area values
-
-    pore_viscosity : string
-        Dictionary key of the pore viscosity values
-
-    throat_viscosity : string
-        Dictionary key of the throat viscosity values
-
-    conduit_lengths : string
-        Dictionary key of the conduit length values
-
-    conduit_shape_factors : string
-        Dictionary key of the conduit flow shape factor values
+    target : _GenericPhysics
+        Physics object with which this model is associated.
+    pore_area : str
+        Dictionary key of the pore area values.
+    throat_area : str
+        Dictionary key of the throat area values.
+    pore_viscosity : str
+        Dictionary key of the pore viscosity values.
+    throat_viscosity : str
+        Dictionary key of the throat viscosity values.
+    conduit_lengths : str
+        Dictionary key of the conduit lengths' values.
+    conduit_shape_factors : str
+        Dictionary key of the conduit flow shape factors' values.
 
     Returns
     -------
@@ -150,15 +187,19 @@ def hagen_poiseuille_2D(
 
     Notes
     -----
-    (1) This function requires that all the necessary phase properties already
+    This model should only be used for true 2D networks, i.e. with planar
+    symmetry.
+
+    This function requires that all the necessary phase properties already
     be calculated.
 
-    (2) This function calculates the specified property for the *entire*
-    network then extracts the values for the appropriate throats at the end.
+    This function calculates the specified property for the *entire*
+    network then extracts the values for the appropriate throats at the
+    end.
 
-    (3) This function assumes rectangular (2D) throats. Corrections for
-    different shapes and variable cross-section area can be imposed by passing
-    the proper flow_shape_factor argument.
+    This function assumes rectangular (2D) throats. Corrections for
+    different shapes and variable cross-section area can be imposed by
+    passing the proper flow_shape_factor argument.
 
     """
     network = target.project.network
@@ -188,7 +229,7 @@ def hagen_poiseuille_2D(
     g2 = D2 ** 3 / (12 * mu2 * L2)
     gt = Dt ** 3 / (12 * mut * Lt)
 
-    return (1/gt/SFt + 1/g1/SF1 + 1/g2/SF2) ** (-1)
+    return 1 / (1 / gt / SFt + 1 / g1 / SF1 + 1 / g2 / SF2)
 
 
 def hagen_poiseuille_power_law(
@@ -208,55 +249,41 @@ def hagen_poiseuille_power_law(
     pore_pressure="pore.pressure",
 ):
     r"""
-    Calculate the hydraulic conductance of conduits in network (assuming a non
-    Newtonian fluid whose viscosity obeys a power law), where a
-    conduit is ( 1/2 pore - full throat - 1/2 pore ). See the notes section.
+    Calculates the hydraulic conductance of conduits in network, assuming
+    a non Newtonian fluid whose viscosity obeys a power law.
+
+    A conduit is defined as ( 1/2 pore - full throat - 1/2 pore ).
 
     Parameters
     ----------
-    target : OpenPNM Object
-        The object which this model is associated with. This controls the
-        length of the calculated array, and also provides access to other
-        necessary properties.
-
-    pore_area : string
-        Dictionary key of the pore area values
-
-    throat_area : string
-        Dictionary key of the throat area values
-
-    pore_viscosity_min : string
-        Dictionary key of the pore minimum viscosity values
-
-    throat_viscosity_min : string
-        Dictionary key of the throat minimum viscosity values
-
-    pore_viscosity_max : string
-        Dictionary key of the pore maximum viscosity values
-
-    throat_viscosity_max : string
-        Dictionary key of the throat maximum viscosity values
-
-    conduit_lengths : string
-        Dictionary key of the conduit length values
-
-    conduit_shape_factors : string
-        Dictionary key of the conduit DIFFUSION shape factor values
-
-    pore_consistency : string
-        Dictionary key of the pore fluid consistency values
-
-    throat_consistency : string
-        Dictionary key of the throat fluid consistency values
-
-    pore_flow_index : string
-        Dictionary key of the pore fluid flow index values
-
-    throat_flow_index : string
-        Dictionary key of the throat fluid flow index values
-
-    pore_pressure : string
-        Dictionary key of the pore pressure values
+    target : _GenericPhysics
+        Physics object with which this model is associated.
+    pore_area : str
+        Dictionary key of the pore area values.
+    throat_area : str
+        Dictionary key of the throat area values.
+    pore_viscosity_min : str
+        Dictionary key of the pore minimum viscosity values.
+    throat_viscosity_min : str
+        Dictionary key of the throat minimum viscosity values.
+    pore_viscosity_max : str
+        Dictionary key of the pore maximum viscosity values.
+    throat_viscosity_max : str
+        Dictionary key of the throat maximum viscosity values.
+    conduit_lengths : str
+        Dictionary key of the conduit lengths' values.
+    conduit_shape_factors : str
+        Dictionary key of the conduit flow shape factors' values.
+    pore_consistency : str
+        Dictionary key of the pore fluid consistency values.
+    throat_consistency : str
+        Dictionary key of the throat fluid consistency values.
+    pore_flow_index : str
+        Dictionary key of the pore fluid flow index values.
+    throat_flow_index : str
+        Dictionary key of the throat fluid flow index values.
+    pore_pressure : str
+        Dictionary key of the pore pressure values.
 
     Returns
     -------
@@ -266,18 +293,19 @@ def hagen_poiseuille_power_law(
 
     Notes
     -----
-    (1) This function requires that all the necessary phase properties already
+    This function requires that all the necessary phase properties already
     be calculated.
 
-    (2) This function calculates the specified property for the *entire*
-    network then extracts the values for the appropriate throats at the end.
+    This function calculates the specified property for the *entire*
+    network then extracts the values for the appropriate throats at the
+    end.
 
-    (3) This function assumes cylindrical throats with constant cross-section
-    area. Corrections for different shapes and variable cross-section area can
-    be imposed by passing the proper conduit_shape_factors argument.
+    This function assumes cylindrical throats with constant cross-section
+    area. Corrections for different shapes and variable cross-section area
+    can be imposed by passing the proper conduit_shape_factors argument.
 
-    (4) shape_factor depends on the physics of the problem, i.e. diffusion-like
-    processes and fluid flow need different shape factors.
+    ``conduit_shape_factors`` depends on the physics of the problem, i.e.
+    diffusion-like processes and fluid flow need different shape factors.
 
     """
     network = target.project.network
@@ -297,7 +325,7 @@ def hagen_poiseuille_power_law(
     # Setting g to inf when Li = 0 (ex. boundary pores)
     # INFO: This is needed since area could also be zero, which confuses NumPy
     m1, m2, mt = [Li != 0 for Li in [L1, L2, Lt]]
-    g1[~m1] = g2[~m2] = gt[~mt] = _sp.inf
+    g1[~m1] = g2[~m2] = gt[~mt] = _np.inf
     # Getting shape factors
     try:
         SF1 = phase[conduit_shape_factors + ".pore1"][throats]
@@ -305,7 +333,7 @@ def hagen_poiseuille_power_law(
         SF2 = phase[conduit_shape_factors + ".pore2"][throats]
     except KeyError:
         SF1 = SF2 = SFt = 1.0
-    pi = _sp.pi
+    pi = _np.pi
 
     # Check if pressure field exists
     try:
@@ -313,24 +341,11 @@ def hagen_poiseuille_power_law(
     except KeyError:
         phase[pore_pressure] = 0
     P = phase[pore_pressure]
+    mu_mint = phase[throat_viscosity_min][throats]
+    mu_maxt = phase[throat_viscosity_max][throats]
+    Ct = phase[throat_consistency][throats]
+    nt = phase[throat_flow_index][throats]
 
-    # Interpolate pore phase property values to throats
-    try:
-        mu_mint = phase[throat_viscosity_min][throats]
-    except KeyError:
-        mu_mint = phase.interpolate_data(propname=pore_viscosity_min)[throats]
-    try:
-        mu_maxt = phase[throat_viscosity_max][throats]
-    except KeyError:
-        mu_maxt = phase.interpolate_data(propname=pore_viscosity_max)[throats]
-    try:
-        Ct = phase[throat_consistency][throats]
-    except KeyError:
-        Ct = phase.interpolate_data(propname=pore_consistency)[throats]
-    try:
-        nt = phase[throat_flow_index][throats]
-    except KeyError:
-        nt = phase.interpolate_data(propname=pore_flow_index)[throats]
     # Interpolate throat phase property values to pores
     try:
         mu_min1 = phase[pore_viscosity_min][cn[:, 0]]
@@ -362,7 +377,7 @@ def hagen_poiseuille_power_law(
     # Pressure differences dP
     dP1 = _np.absolute(P[cn[:, 0]] - Pt)
     dP2 = _np.absolute(P[cn[:, 1]] - Pt)
-    dPt = _np.absolute(_sp.diff(P[cn], axis=1).squeeze())
+    dPt = _np.absolute(_np.diff(P[cn], axis=1).squeeze())
 
     dP1 = dP1.clip(min=1e-20)
     dP2 = dP2.clip(min=1e-20)
@@ -400,7 +415,7 @@ def hagen_poiseuille_power_law(
     gt[mt] = At[mt] ** 2 / ((8 * pi * Lt) * mut)[mt]
 
     # Apply shape factors and calculate the final conductance
-    return (1/gt/SFt + 1/g1/SF1 + 1/g2/SF2) ** (-1)
+    return 1 / (1 / gt / SFt + 1 / g1 / SF1 + 1 / g2 / SF2)
 
 
 def valvatne_blunt(
@@ -423,41 +438,32 @@ def valvatne_blunt(
 
     Parameters
     ----------
-    target : OpenPNM Object
-        The object which this model is associated with. This controls the
-        length of the calculated array, and also provides access to other
-        necessary properties.
-
-    pore_viscosity : string
-        Dictionary key of the pore viscosity values
-
-    throat_viscosity : string
-        Dictionary key of the throat viscosity values
-
-    pore_shape_factor : string
-        Dictionary key of the pore geometric shape factor values
-
-    throat_shape_factor : string
-        Dictionary key of the throat geometric shape factor values
-
-    pore_area : string
-        Dictionary key of the pore area values. The pore area is calculated
-        using following formula:
+    target : _GenericPhysics
+        Physics object with which this model is associated.
+    pore_viscosity : str
+        Dictionary key of the pore viscosity values.
+    throat_viscosity : str
+        Dictionary key of the throat viscosity values.
+    pore_shape_factor : str
+        Dictionary key of the pore geometric shape factor values.
+    throat_shape_factor : str
+        Dictionary key of the throat geometric shape factor values.
+    pore_area : str
+        Dictionary key of the pore area values. The pore area is
+        calculated using following formula:
             pore_area = (pore_radius ** 2) / (4 * pore_shape_factor)
         Where theoratical value of pore_shape_factor in circular tube is
         calculated using following formula:
             pore_shape_factor = pore_area / perimeter **2 = 1/4π
-
-    throat_area : string
-        Dictionary key of the throat area values. The throat area is calculated
-        using following formula:
+    throat_area : str
+        Dictionary key of the throat area values. The throat area is
+        calculated using following formula:
             throat_area = (throat_radius ** 2) / (4 * throat_shape_factor)
         Where theoratical value of throat_shape_factor in circular tube is
         calculated using following formula:
-            throat_shape_factor = throat_area / perimeter **2 = 1/4π
-
-    conduit_lengths : string
-        Dictionary key of the throat conduit lengths
+            throat_shape_factor = throat_area / perimeter ** 2 = 1/4π
+    conduit_lengths : str
+        Dictionary key of the throat conduit lengths.
 
     Returns
     -------
@@ -467,19 +473,18 @@ def valvatne_blunt(
 
     References
     ----------
-    [1] Valvatne, Per H., and Martin J. Blunt. "Predictive pore‐scale modeling
-    of two‐phase flow in mixed wet media." Water Resources Research 40,
-    no. 7 (2004).
+    [1] Valvatne, Per H., and Martin J. Blunt. "Predictive pore‐scale
+    modeling of two‐phase flow in mixed wet media." Water Resources
+    Research 40, no. 7 (2004).
+
     [2] Patzek, T. W., and D. B. Silin (2001), Shape factor and hydraulic
     conductance in noncircular capillaries I. One-phase creeping flow,
     J. Colloid Interface Sci., 236, 295–304.
+
     """
     network = target.project.network
     mu_p = target[pore_viscosity]
-    try:
-        mu_t = target[throat_viscosity]
-    except KeyError:
-        mu_t = target.interpolate_data(pore_viscosity)
+    mu_t = target[throat_viscosity]
     # Throat Portion
     Gt = network[throat_shape_factor]
     tri = Gt <= _np.sqrt(3) / 36.0
@@ -518,21 +523,31 @@ def valvatne_blunt(
 def classic_hagen_poiseuille(
     target,
     pore_diameter="pore.diameter",
-    pore_viscosity="pore.viscosity",
-    throat_length="throat.length",
     throat_diameter="throat.diameter",
+    throat_length="throat.length",
+    pore_viscosity="pore.viscosity",
     shape_factor="throat.shape_factor",
-    **kwargs
 ):
     r"""
-    Calculates the hydraulic conductivity of throat assuming cylindrical
-    geometry using the Hagen-Poiseuille model
+    Legacy method that calculates the hydraulic conductance of conduits
+    assuming pores and throats are cylinders in series.
+
+    This method is based on the Hagen-Poiseuille model.
 
     Parameters
     ----------
-    network : OpenPNM Network Object
-
-    phase : OpenPNM Phase Object
+    target : _GenericPhysics
+        Physics object with which this model is associated.
+    pore_diameter : str
+        Dictionary key of the pore diameter values.
+    throat_diameter : str
+        Dictionary key of the throat diameter values.
+    throat_length : str
+        Dictionary key of the throat length values.
+    pore_viscosity : str
+        Dictionary key of the pore viscosity values.
+    shape_factor: str
+        Dictionary key of the throat shape factor values.
 
     Notes
     -----
@@ -555,14 +570,14 @@ def classic_hagen_poiseuille(
     plen1[plen1 <= 1e-12] = 1e-12
     plen2[plen2 <= 1e-12] = 1e-12
     # Find g for half of pore 1
-    gp1 = _sp.pi * (pdia[Ps[:, 0]]) ** 4 / (128 * plen1 * mut)
-    gp1[_np.isnan(gp1)] = _sp.inf
-    gp1[~(gp1 > 0)] = _sp.inf  # Set 0 conductance pores (boundaries) to inf
+    gp1 = _np.pi * (pdia[Ps[:, 0]]) ** 4 / (128 * plen1 * mut)
+    gp1[_np.isnan(gp1)] = _np.inf
+    gp1[~(gp1 > 0)] = _np.inf  # Set 0 conductance pores (boundaries) to inf
 
     # Find g for half of pore 2
-    gp2 = _sp.pi * (pdia[Ps[:, 1]]) ** 4 / (128 * plen2 * mut)
-    gp2[_np.isnan(gp2)] = _sp.inf
-    gp2[~(gp2 > 0)] = _sp.inf  # Set 0 conductance pores (boundaries) to inf
+    gp2 = _np.pi * (pdia[Ps[:, 1]]) ** 4 / (128 * plen2 * mut)
+    gp2[_np.isnan(gp2)] = _np.inf
+    gp2[~(gp2 > 0)] = _np.inf  # Set 0 conductance pores (boundaries) to inf
     # Find g for full throat
     tdia = network[throat_diameter]
     tlen = network[throat_length]
@@ -574,7 +589,7 @@ def classic_hagen_poiseuille(
     except KeyError:
         sf = _np.ones(network.num_throats())
     sf[_np.isnan(sf)] = 1.0
-    gt = (1 / sf) * _sp.pi * (tdia) ** 4 / (128 * tlen * mut)
-    gt[~(gt > 0)] = _sp.inf  # Set 0 conductance pores (boundaries) to inf
+    gt = (1 / sf) * _np.pi * (tdia) ** 4 / (128 * tlen * mut)
+    gt[~(gt > 0)] = _np.inf  # Set 0 conductance pores (boundaries) to inf
     value = (1 / gt + 1 / gp1 + 1 / gp2) ** (-1)
     return value

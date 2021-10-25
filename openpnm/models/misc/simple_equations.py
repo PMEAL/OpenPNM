@@ -1,11 +1,5 @@
 r""""
-
-.. autofunction:: openpnm.models.misc.simple_equations.generic_function
-.. autofunction:: openpnm.models.misc.simple_equations.polynomial
-.. autofunction:: openpnm.models.misc.simple_equations.linear
-
 """
-
 import numpy as np
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)

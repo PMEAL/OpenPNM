@@ -1,8 +1,7 @@
-import scipy as sp
 import numpy as np
 import scipy.sparse as sprs
 import scipy.spatial as sptl
-from openpnm.core import Base, ModelsMixin
+from openpnm.core import Base, ModelsMixin, LegacyMixin, LabelMixin
 from openpnm import topotools
 from openpnm.utils import Workspace, logging
 import openpnm.models.topology as tm
@@ -10,7 +9,7 @@ logger = logging.getLogger(__name__)
 ws = Workspace()
 
 
-class GenericNetwork(Base, ModelsMixin):
+class GenericNetwork(Base, ModelsMixin, LegacyMixin, LabelMixin):
     r"""
     This generic class contains the main functionality used by all networks
 
@@ -112,6 +111,13 @@ class GenericNetwork(Base, ModelsMixin):
     future use to save construction time.
 
     """
+    def __new__(cls, *args, **kwargs):
+        instance = super(GenericNetwork, cls).__new__(cls, *args, **kwargs)
+        # Initialize adjacency and incidence matrix dictionaries
+        instance._im = {}
+        instance._am = {}
+        return instance
+
     def __init__(self, conns=None, coords=None, project=None, settings={},
                  **kwargs):
         self.settings.setdefault('prefix', 'net')
@@ -125,9 +131,6 @@ class GenericNetwork(Base, ModelsMixin):
             Nt = np.shape(conns)[0]
             self['throat.all'] = np.ones(Nt, dtype=bool)
             self['throat.conns'] = np.array(conns)
-        # Initialize adjacency and incidence matrix dictionaries
-        self._im = {}
-        self._am = {}
         self.add_model(propname='pore.coordination_number',
                        model=tm.coordination_number,
                        regen_mode='explicit')
@@ -138,8 +141,7 @@ class GenericNetwork(Base, ModelsMixin):
                 logger.error('Wrong size for throat conns!')
             else:
                 if np.any(value[:, 0] > value[:, 1]):
-                    logger.warning('Converting throat.conns to be upper '
-                                   + 'triangular')
+                    logger.debug('Converting throat.conns to be upper triangular')
                     value = np.sort(value, axis=1)
         super().__setitem__(key, value)
 
@@ -148,19 +150,19 @@ class GenericNetwork(Base, ModelsMixin):
         # Deal with special keys first
         if key.split('.')[-1] == self.name:
             element = key.split('.')[0]
-            return self[element+'.all']
+            return self[f"{element}.all"]
         if key.split('.')[-1] == '_id':
             self._gen_ids()
-            return self.get(element+'._id')
+            return self.get(f"{element}._id")
         vals = super().__getitem__(key)
         return vals
 
     def _gen_ids(self):
-        IDs = self.get('pore._id', np.array([], ndmin=1, dtype=sp.int64))
+        IDs = self.get('pore._id', np.array([], ndmin=1, dtype=np.int64))
         if len(IDs) < self.Np:
             temp = ws._gen_ids(size=self.Np - len(IDs))
             self['pore._id'] = np.concatenate((IDs, temp))
-        IDs = self.get('throat._id', np.array([], ndmin=1, dtype=sp.int64))
+        IDs = self.get('throat._id', np.array([], ndmin=1, dtype=np.int64))
         if len(IDs) < self.Nt:
             temp = ws._gen_ids(size=self.Nt - len(IDs))
             self['throat._id'] = np.concatenate((IDs, temp))
@@ -200,11 +202,6 @@ class GenericNetwork(Base, ModelsMixin):
         # Retrieve existing matrix if available
         if fmt in self._am.keys():
             am = self._am[fmt]
-        elif self._am.keys():
-            am = self._am[list(self._am.keys())[0]]
-            tofmt = getattr(am, 'to'+fmt)
-            am = tofmt()
-            self._am[fmt] = am
         else:
             am = self.create_adjacency_matrix(weights=self.Ts, fmt=fmt)
             self._am[fmt] = am
@@ -242,7 +239,7 @@ class GenericNetwork(Base, ModelsMixin):
             im = self._im[fmt]
         elif self._im.keys():
             im = self._im[list(self._im.keys())[0]]
-            tofmt = getattr(im, 'to'+fmt)
+            tofmt = getattr(im, f"to{fmt}")
             im = tofmt()
             self._im[fmt] = im
         else:
@@ -318,24 +315,29 @@ class GenericNetwork(Base, ModelsMixin):
         >>> am = pn.create_adjacency_matrix(weights=weights, fmt='csr')
 
         """
+        allowed_weights = [(self.Nt,), (2 * self.Nt,), (self.Nt, 2)]
         # Check if provided data is valid
         if weights is None:
             weights = np.ones((self.Nt,), dtype=int)
-        elif np.shape(weights)[0] not in [self.Nt, 2*self.Nt, (self.Nt, 2)]:
+        elif np.shape(weights) not in allowed_weights:
             raise Exception('Received weights are of incorrect length')
+        weights = np.array(weights)
 
         # Append row & col to each other, and data to itself
         conn = self['throat.conns']
         row = conn[:, 0]
         col = conn[:, 1]
-        if weights.shape == (2*self.Nt,):
+        if weights.shape == (2 * self.Nt):
+            # The flip is necessary since we want [conns.T, reverse(conns).T].T
             row = np.append(row, conn[:, 1])
             col = np.append(col, conn[:, 0])
         elif weights.shape == (self.Nt, 2):
+            # The flip is necessary since we want [conns.T, reverse(conns).T].T
             row = np.append(row, conn[:, 1])
             col = np.append(col, conn[:, 0])
             weights = weights.flatten(order='F')
         elif not triu:
+            # The flip is necessary since we want [conns.T, reverse(conns).T].T
             row = np.append(row, conn[:, 1])
             col = np.append(col, conn[:, 0])
             weights = np.append(weights, weights)
@@ -519,7 +521,7 @@ class GenericNetwork(Base, ModelsMixin):
         -----
         The returned list can be converted to an ND-array, which will convert
         the ``None`` values to ``nan``.  These can then be found using
-        ``scipy.isnan``.
+        ``numpy.isnan``.
 
         Examples
         --------
@@ -786,13 +788,14 @@ class GenericNetwork(Base, ModelsMixin):
         1
         """
         pores = self._parse_indices(pores)
-        # Count number of neighbors
-        num = self.find_neighbor_pores(pores, flatten=flatten,
-                                       mode=mode, include_input=True)
         if flatten:
+            # Count number of neighbors
+            num = self.find_neighbor_pores(pores, flatten=flatten,
+                                           mode=mode, include_input=True)
             num = np.size(num)
-        else:
-            num = np.array([np.size(i) for i in num], dtype=int)
+        else:   # Could be done much faster if flatten == False
+            am = self.create_adjacency_matrix(fmt="csr")
+            num = am[pores].sum(axis=1).A1
         return num
 
     def find_nearby_pores(self, pores, r, flatten=False, include_input=False):
@@ -848,7 +851,7 @@ class GenericNetwork(Base, ModelsMixin):
         pores = self._parse_indices(pores)
         # Handle an empty array if given
         if np.size(pores) == 0:
-            return np.array([], dtype=sp.int64)
+            return np.array([], dtype=np.int64)
         if r <= 0:
             raise Exception('Provided distances should be greater than 0')
         # Create kdTree objects
@@ -857,27 +860,34 @@ class GenericNetwork(Base, ModelsMixin):
         # Perform search
         Ps_within_r = kd_pores.query_ball_tree(kd, r=r)
         # Remove self from each list
-        for i in range(len(Ps_within_r)):
+        for i, P in enumerate(Ps_within_r):
             Ps_within_r[i].remove(pores[i])
         # Convert to flattened list by default
         temp = np.concatenate((Ps_within_r))
-        Pn = np.unique(temp).astype(sp.int64)
+        Pn = np.unique(temp).astype(np.int64)
         # Remove inputs if necessary
         if include_input is False:
             Pn = Pn[~np.in1d(Pn, pores)]
         # Convert list of lists to a list of nd-arrays
         if flatten is False:
             if len(Pn) == 0:  # Deal with no nearby neighbors
-                Pn = [np.array([], dtype=sp.int64) for i in pores]
+                Pn = [np.array([], dtype=np.int64) for i in pores]
             else:
-                mask = np.zeros(shape=np.amax((Pn.max(), pores.max()))+1,
-                                dtype=bool)
+                mask = np.zeros(shape=np.amax((Pn.max(), pores.max())) + 1, dtype=bool)
                 mask[Pn] = True
                 temp = []
                 for item in Ps_within_r:
-                    temp.append(np.array(item, dtype=sp.int64)[mask[item]])
+                    temp.append(np.array(item, dtype=np.int64)[mask[item]])
                 Pn = temp
         return Pn
+
+    @property
+    def conns(self):
+        return self['throat.conns']
+
+    @property
+    def coords(self):
+        return self['pore.coords']
 
     def check_network_health(self):
         r"""

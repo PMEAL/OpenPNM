@@ -1,5 +1,4 @@
 import numpy as np
-import scipy as sp
 from flatdict import FlatDict
 from collections import namedtuple
 from openpnm.io import Dict, GenericIO
@@ -25,8 +24,9 @@ class Pandas(GenericIO):
     by OpenPNM, this could be an solution.
 
     """
+
     @classmethod
-    def to_dataframe(cls, network=None, phases=[], join=False, delim=' | '):
+    def export_data(cls, network=None, phases=[], join=False, delim=' | '):
         r"""
         Convert the Network (and optionally Phase) data to Pandas DataFrames.
 
@@ -97,9 +97,3 @@ class Pandas(GenericIO):
             data = nt(pore=pdata, throat=tdata)
 
         return data
-
-    @classmethod
-    def from_dataframe(cls):
-        r"""
-        """
-        raise NotImplementedError()

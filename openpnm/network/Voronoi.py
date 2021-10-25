@@ -10,12 +10,9 @@ class Voronoi(DelaunayVoronoiDual):
 
     Parameters
     ----------
-    points : array_like, optional
-        The base points around which to generate the Voronoi tessellation.
-
-    num_points : scalar, optional
-        If ``points`` is not supplied, then this must be given.  A sent of
-        randomly located points will be generated.
+    points : array_like or int
+        Can either be an N-by-3 array of point coordinates which will be used,
+        or a scalar value indicating the number of points to generate
 
     shape : array_like
         The size of the domain.  It's possible to create cubic as well as 2D
@@ -42,14 +39,12 @@ class Voronoi(DelaunayVoronoiDual):
     returned network thus will differ from the number of points supplied
 
     """
-    def __init__(self, shape=None, num_points=None, **kwargs):
+
+    def __init__(self, shape=[1, 1, 1], points=None, **kwargs):
         # Clean-up input points
-        points = kwargs.pop('points', None)
-        points = self._parse_points(shape=shape,
-                                    num_points=num_points,
-                                    points=points)
-        # Initialize network object
+        points = self._parse_points(shape=shape, points=points)
         super().__init__(shape=shape, points=points, **kwargs)
+        # Initialize network object
         topotools.trim(network=self, pores=self.pores('delaunay'))
         pop = ['pore.delaunay', 'throat.delaunay', 'throat.interconnect']
         for item in pop:

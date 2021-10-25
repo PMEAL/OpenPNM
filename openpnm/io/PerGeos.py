@@ -1,6 +1,5 @@
 import numpy
 import numpy as np
-import scipy as sp
 from openpnm.utils import logging
 from openpnm.io import GenericIO
 from openpnm.network import GenericNetwork
@@ -9,10 +8,12 @@ logger = logging.getLogger(__name__)
 
 class PerGeos(GenericIO):
     r"""
+    PerGeos is the format used by the Avizo software. See `here for more
+    details <https://cases.pergeos.com/>`_.
     """
 
     @classmethod
-    def save(cls, network=None, phases=[], filename=''):
+    def export_data(cls, network=None, phases=[], filename=''):
         r"""
         """
         # avoid printing truncated array
@@ -128,7 +129,7 @@ class PerGeos(GenericIO):
             f.write(''.join(s))
 
     @classmethod
-    def load(cls, filename, network=None):
+    def import_data(cls, filename, network=None):
         r"""
         """
         net = {}

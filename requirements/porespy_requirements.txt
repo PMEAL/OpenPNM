@@ -1,0 +1,16 @@
+dask
+edt
+imageio
+loguru
+matplotlib
+numba
+numpy
+numpy-stl
+pandas
+psutil
+pyevtk
+scikit-fmm
+scikit-image
+scipy
+tqdm
+trimesh

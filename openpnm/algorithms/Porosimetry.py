@@ -12,11 +12,9 @@ class Porosimetry(OrdinaryPercolation):
     ----------
     network : OpenPNM Network object
         The Network upon which this simulation should be run
-
     name : string, optional
         An identifying name for the object.  If none is given then one is
         generated.
-
     project : OpenPNM Project object
         Either a Network or a Project must be specified
 
@@ -69,72 +67,7 @@ class Porosimetry(OrdinaryPercolation):
         # Use the reset method to initialize all arrays
         self.reset()
         if phase is not None:
-            self.setup(phase=phase)
-
-    def setup(self,
-              phase=None,
-              quantity='',
-              throat_entry_pressure='',
-              pore_volume='',
-              throat_volume='',
-              late_pore_filling='',
-              late_throat_filling=''):
-        r"""
-        Used to specify necessary arguments to the simulation.  This method is
-        useful for resetting the algorithm or applying more explicit control.
-
-        Parameters
-        ----------
-        phase : OpenPNM Phase object
-            The Phase object containing the physical properties of the invading
-            fluid.
-
-        quantity : string
-            The name of the quantity calculated by this algorithm.  This is
-            used for instance, by the late pore and throat filling models
-            to indicate the prevailing fluid pressure in the invading phase
-            for calculating the extent of filling.  The default is
-            'pressure'.  Note that there is no need to specify 'pore' and/or
-            'throat' with this as the given value will apply to both.
-
-        throat_entry_pressure : string
-            The dictionary key on the Phase object where the throat entry
-            pressure values are stored.  The default is
-            'throat.entry_pressure'.
-
-        pore_volume : string
-            The dictionary key containing the pore volume information. The
-            default is 'pore.volume'.
-
-        throat_volume : string
-            The dictionary key containing the throat volume information.  The
-            default is 'throat.volume'.
-
-        pore_partial_filling : string
-            The name of the model used to determine partial pore filling as
-            a function of applied pressure.
-
-        throat_partial_filling : string
-            The name of the model used to determine partial throat filling as
-            a function of applied pressure.
-
-        """
-        if phase:
             self.settings['phase'] = phase.name
-        if quantity:
-            self.settings['quantity'] = quantity
-        if throat_entry_pressure:
-            self.settings['throat_entry_pressure'] = throat_entry_pressure
-            phase = self.project.find_phase(self)
-            self['throat.entry_pressure'] = phase[throat_entry_pressure]
-        if pore_volume:
-            self.settings['pore_volume'] = pore_volume
-        if throat_volume:
-            self.settings['throat_volume'] = throat_volume
-        if late_pore_filling:
-            self.settings['late_pore_filling'] = late_pore_filling
-        if late_throat_filling:
-            self.settings['late_throat_filling'] = late_throat_filling
 
     def set_partial_filling(self, propname):
         r"""

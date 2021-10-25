@@ -4,16 +4,7 @@ distributions to a pore network.  Most of the models accept pore seeds, and
 then look-up pore-sizes from cumuative distribtions functions.  There is also
 a model for finding the largest possible sphere that can be placed on each
 site.
-
-.. autofunction:: openpnm.models.geometry.pore_size.weibull
-.. autofunction:: openpnm.models.geometry.pore_size.normal
-.. autofunction:: openpnm.models.geometry.pore_size.random
-.. autofunction:: openpnm.models.geometry.pore_size.generic_distribution
-.. autofunction:: openpnm.models.geometry.pore_size.largest_sphere
-.. autofunction:: openpnm.models.geometry.pore_size.equivalent_diameter
-
 """
-
 from openpnm.utils import logging as _logging
 from openpnm.models import misc as _misc
 import numpy as _np
@@ -51,9 +42,9 @@ def generic_distribution(target, func, seeds='pore.seed'):
 generic_distribution.__doc__ = _misc.generic_distribution.__doc__
 
 
-def from_neighbor_throats(target, throat_prop, mode='max'):
+def from_neighbor_throats(target, prop, mode='max'):
     return _misc.from_neighbor_throats(target=target,
-                                       throat_prop=throat_prop,
+                                       prop=prop,
                                        mode=mode)
 
 

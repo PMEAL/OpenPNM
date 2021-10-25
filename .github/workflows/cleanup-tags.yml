@@ -1,0 +1,22 @@
+name: Clean Up Tags
+
+on: push
+
+jobs:
+  deploy:
+    name: Clean up tags
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Clean up tags
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        REPOSITORY=${INPUT_REPOSITORY:-$GITHUB_REPOSITORY}
+        remote_repo="https://${GITHUB_ACTOR}:${{ secrets.GITHUB_TOKEN }}@github.com/${REPOSITORY}.git"
+        git fetch --all --tags --force
+        prefix="v"
+        pattern="^($prefix)(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(?:-((?:0|[1-9][0-9]*|[0-9]*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9][0-9]*|[0-9]*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$"
+        git tag | grep --invert-match -P $pattern | xargs -n 1 -I % git push "${remote_repo}" :refs/tags/%

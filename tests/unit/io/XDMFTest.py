@@ -1,10 +1,7 @@
 import py
 import os
-import pytest
 import numpy as np
-import scipy as sp
 import openpnm as op
-from pathlib import Path
 
 
 class XDMFTest:
@@ -65,7 +62,7 @@ class XDMFTest:
 
     def test_save(self, tmpdir):
         fname = tmpdir.join('test_file')
-        op.io.XDMF.save(network=self.net, phases=self.phase_1, filename=fname)
+        op.io.XDMF.export_data(network=self.net, phases=self.phase_1, filename=fname)
         os.remove(tmpdir.join('test_file.hdf'))
         os.remove(tmpdir.join('test_file.xmf'))
 

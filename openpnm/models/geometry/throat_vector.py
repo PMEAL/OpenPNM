@@ -1,7 +1,4 @@
 r"""
-
-.. autofunction:: openpnm.models.geometry.throat_vector.pore_to_pore
-
 """
 from transforms3d import _gohlketransforms as tr
 

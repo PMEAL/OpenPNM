@@ -53,7 +53,7 @@ class StickAndBall(GenericGeometry):
     Now override the 'pore.diameter' values on the ``geo2`` object:
 
     >>> geo2.remove_model('pore.diameter')  # Remove model and data
-    >>> geo2['pore.diameter'] = np.random.rand(geo2.Np)*0.05
+    >>> geo2['pore.diameter'] = np.random.rand(geo2.Np) * 0.05
 
     Look at the 'pore.diameter' distributions on each object:
 
@@ -62,110 +62,6 @@ class StickAndBall(GenericGeometry):
 
     The resulting figure shows that these two Geometry object each have a
     different pore size distribution, with ``geo2`` being much smaller:
-
-    .. image:: /../docs/static/images/stick_and_ball_histogram.png
-        :align: center
-
-    Notes
-    -----
-    The table below gives a summary of the all the pore-scale models that are
-    included on this class.
-
-    All of these parameters can be adjusted manually by editing the entries in
-    the **ModelsDict** stored in the ``models`` attribute of the object.
-
-    For a full listing of models and their parameters use ``print(obj.models)``
-    where ``obj`` is the handle to the object.
-
-    In addition to these models, this class also has a number of constant
-    values assigned to it which can be found by running
-    ``props(mode='constants')``.
-
-    +----+----------------------+------------------+--------------------------+
-    | #  | Property Name        | Parameter        | Value                    |
-    +====+======================+==================+==========================+
-    | 1  | pore.seed            | model:           | random                   |
-    +----+----------------------+------------------+--------------------------+
-    |    |                      | element          | pore                     |
-    +----+----------------------+------------------+--------------------------+
-    |    |                      | num_range        | [0, 0.1]                 |
-    +----+----------------------+------------------+--------------------------+
-    |    |                      | seed             | None                     |
-    +----+----------------------+------------------+--------------------------+
-    |    |                      | regen_mode       | normal                   |
-    +----+----------------------+------------------+--------------------------+
-    | 2  | pore.max_size        | model:           | largest_sphere           |
-    +----+----------------------+------------------+--------------------------+
-    |    |                      | iters            | 10                       |
-    +----+----------------------+------------------+--------------------------+
-    |    |                      | regen_mode       | normal                   |
-    +----+----------------------+------------------+--------------------------+
-    |    |                      | fixed_diameter   | pore.fixed_diameter      |
-    +----+----------------------+------------------+--------------------------+
-    | 3  | pore.diameter        | model:           | product                  |
-    +----+----------------------+------------------+--------------------------+
-    |    |                      | prop1            | pore.max_size            |
-    +----+----------------------+------------------+--------------------------+
-    |    |                      | prop2            | pore.seed                |
-    +----+----------------------+------------------+--------------------------+
-    |    |                      | regen_mode       | normal                   |
-    +----+----------------------+------------------+--------------------------+
-    | 4  | pore.area            | model:           | sphere                   |
-    +----+----------------------+------------------+--------------------------+
-    |    |                      | pore_diameter    | pore.diameter            |
-    +----+----------------------+------------------+--------------------------+
-    |    |                      | regen_mode       | normal                   |
-    +----+----------------------+------------------+--------------------------+
-    | 5  | pore.volume          | model:           | sphere                   |
-    +----+----------------------+------------------+--------------------------+
-    |    |                      | pore_diameter    | pore.diameter            |
-    +----+----------------------+------------------+--------------------------+
-    |    |                      | regen_mode       | normal                   |
-    +----+----------------------+------------------+--------------------------+
-    | 6  | throat.max_size      | model:           | from_neighbor_pores      |
-    +----+----------------------+------------------+--------------------------+
-    |    |                      | mode             | min                      |
-    +----+----------------------+------------------+--------------------------+
-    |    |                      | pore_prop        | pore.diameter            |
-    +----+----------------------+------------------+--------------------------+
-    |    |                      | regen_mode       | normal                   |
-    +----+----------------------+------------------+--------------------------+
-    | 7  | throat.diameter      | model:           | scaled                   |
-    +----+----------------------+------------------+--------------------------+
-    |    |                      | factor           | 0.5                      |
-    +----+----------------------+------------------+--------------------------+
-    |    |                      | prop             | throat.max_size          |
-    +----+----------------------+------------------+--------------------------+
-    |    |                      | regen_mode       | normal                   |
-    +----+----------------------+------------------+--------------------------+
-    | 8  | throat.length        | model:           | piecewise                |
-    +----+----------------------+------------------+--------------------------+
-    |    |                      | pore_diameter    | pore.diameter            |
-    +----+----------------------+------------------+--------------------------+
-    |    |                      | regen_mode       | normal                   |
-    +----+----------------------+------------------+--------------------------+
-    | 9  | throat.surface_area  | model:           | cylinder                 |
-    +----+----------------------+------------------+--------------------------+
-    |    |                      | throat_diameter  | throat.diameter          |
-    +----+----------------------+------------------+--------------------------+
-    |    |                      | throat_length    | throat.length            |
-    +----+----------------------+------------------+--------------------------+
-    |    |                      | regen_mode       | normal                   |
-    +----+----------------------+------------------+--------------------------+
-    | 10 | throat.volume        | model:           | cylinder                 |
-    +----+----------------------+------------------+--------------------------+
-    |    |                      | throat_diameter  | throat.diameter          |
-    +----+----------------------+------------------+--------------------------+
-    |    |                      | throat_length    | throat.length            |
-    +----+----------------------+------------------+--------------------------+
-    |    |                      | regen_mode       | normal                   |
-    +----+----------------------+------------------+--------------------------+
-    | 11 | throat.area          | model:           | cylinder                 |
-    +----+----------------------+------------------+--------------------------+
-    |    |                      | throat_diameter  | throat.diameter          |
-    +----+----------------------+------------------+--------------------------+
-    |    |                      | regen_mode       | normal                   |
-    +----+----------------------+------------------+--------------------------+
 
     """
 
@@ -184,11 +80,10 @@ class StickAndBall(GenericGeometry):
 
         self.add_model(propname='pore.diameter',
                        model=mods.misc.product,
-                       prop1='pore.max_size',
-                       prop2='pore.seed')
+                       props=['pore.max_size', 'pore.seed'])
 
         self.add_model(propname='pore.area',
-                       model=mods.geometry.pore_area.sphere,
+                       model=mods.geometry.pore_cross_sectional_area.sphere,
                        pore_diameter='pore.diameter')
 
         self.add_model(propname='pore.volume',
@@ -198,7 +93,7 @@ class StickAndBall(GenericGeometry):
         self.add_model(propname='throat.max_size',
                        model=mods.misc.from_neighbor_pores,
                        mode='min',
-                       pore_prop='pore.diameter')
+                       prop='pore.diameter')
 
         self.add_model(propname='throat.diameter',
                        model=mods.misc.scaled,
@@ -225,7 +120,7 @@ class StickAndBall(GenericGeometry):
                        throat_length='throat.length')
 
         self.add_model(propname='throat.area',
-                       model=mods.geometry.throat_area.cylinder,
+                       model=mods.geometry.throat_cross_sectional_area.cylinder,
                        throat_diameter='throat.diameter')
 
         self.add_model(propname='throat.conduit_lengths',

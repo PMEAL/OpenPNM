@@ -1,6 +1,5 @@
 import openpnm as op
 import numpy as np
-from numpy.testing import assert_allclose
 from openpnm import topotools
 
 
@@ -15,7 +14,7 @@ class TransformationsTest:
     def test_rotate_points(self):
         net = op.network.Cubic(shape=[3, 3, 3])
         topotools.rotate_coords(network=net, a=45)
-        a = np.array([[5.00000000e-01,  0.00000000e+00, 7.07106781e-01],
+        a = np.array([[5.00000000e-01, +0.00000000e+00, 7.07106781e-01],
                       [5.00000000e-01, -7.07106781e-01, 1.41421356e+00]])
         assert np.allclose(net['pore.coords'][0:2, :], a)
         net = op.network.Cubic(shape=[3, 3, 3])
@@ -55,5 +54,5 @@ if __name__ == '__main__':
     t.setup_class()
     for item in t.__dir__():
         if item.startswith('test'):
-            print('running test: '+item)
+            print(f'Running test: {item}')
             t.__getattribute__(item)()

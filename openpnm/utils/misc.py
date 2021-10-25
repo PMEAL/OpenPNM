@@ -1,12 +1,34 @@
+import copy
+import json
 import inspect
 import warnings
 import functools
 import numpy as _np
 import scipy as _sp
+import scipy.sparse
 import time as _time
-import copy
 from collections import OrderedDict
 from docrep import DocstringProcessor
+from IPython.core.magics.execution import _format_time
+
+__all__ = [
+    "Docorator",
+    "PrintableDict",
+    "PrintableList",
+    "NestedDict",
+    "SubDict",
+    "SettingsDict",
+    "GenericSettings",
+    "HealthDict",
+    "flat_list",
+    "sanitize_dict",
+    "unique_list",
+    "tic", "toc",
+    "is_symmetric",
+    "nbr_to_str",
+    "conduit_dict_to_array",
+    "conduit_array_to_dict"
+]
 
 
 class Docorator(DocstringProcessor):
@@ -63,7 +85,7 @@ class PrintableDict(OrderedDict):
     >>> d = {'item1': 1, 'item2': '1', 'item3': [1, 1], 'item4': arr([1, 1])}
     >>> print(PrintableDict(d))
     ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-    key                                 value
+    Key                                 Value
     ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
     item1                               1
     item2                               1
@@ -77,21 +99,20 @@ class PrintableDict(OrderedDict):
     """
 
     def __init__(self, *args, **kwargs):
-        self._value = "value"
-        self._key = "key"
+        self._value = "Value"
+        self._key = "Key"
         super().__init__(*args, **kwargs)
 
     def __repr__(self):
-        text = dict(self).__str__()
-        return text
+        return self.__str__()
 
     def __str__(self):
         header = "―" * 78
-        lines = [header]
-        lines.append("{0:<35s} {1}".format(self._key, self._value))
-        lines.append(header)
+        lines = [header, "{0:<35s} {1}".format(self._key, self._value), header]
         for item in list(self.keys()):
-            if type(self[item]) == _sp.ndarray:
+            if item.startswith('_'):
+                continue
+            if isinstance(self[item], _np.ndarray):
                 lines.append("{0:<35s} {1}".format(item, _np.shape(self[item])))
             else:
                 lines.append("{0:<35s} {1}".format(item, self[item]))
@@ -119,11 +140,10 @@ class SettingsDict(PrintableDict):
     __doc__ = ''
 
     def __setitem__(self, key, value):
-        if hasattr(value, "Np"):
-            raise Exception(
-                "Cannot store OpenPNM objects in settings, "
-                + "store object's name instead"
-            )
+        try:
+            json.dumps(value)
+        except TypeError:
+            raise Exception('Only serializable objects can be stored in settings')
         super().__setitem__(key, value)
 
     def __missing__(self, key):
@@ -131,7 +151,7 @@ class SettingsDict(PrintableDict):
         return self[key]
 
     def _update_settings_and_docs(self, dc):
-        if type(dc) is type:  # If dc is class then instantiate it
+        if isinstance(dc, type):  # If dc is class then instantiate it
             dc = dc()
         self.__doc__ = dc.__doc__
         # if dc is a dataclass object.  This step is only necessary to support
@@ -278,14 +298,12 @@ def toc(quiet=False):
     tic
 
     """
-    if "_startTime_for_tictoc" in globals():
-        t = _time.time() - _startTime_for_tictoc
-        if quiet is False:
-            print(f"Elapsed time in seconds: {t:0.2f}")
-        else:
-            return t
-    else:
+    if "_startTime_for_tictoc" not in globals():
         raise Exception("Start time not set, call tic first")
+    t = _time.time() - _startTime_for_tictoc
+    if quiet is False:
+        print(f"Elapsed time: {_format_time(t)}")
+    return t
 
 
 def unique_list(input_list):
@@ -322,8 +340,7 @@ def flat_list(input_list):
     x = input_list
     if isinstance(x, list):
         return [a for i in x for a in flat_list(i)]
-    else:
-        return [x]
+    return [x]
 
 
 def sanitize_dict(input_dict):
@@ -422,7 +439,7 @@ def models_to_table(obj, params=True):
 
 
 def catch_module_not_found(function):
-    """
+    r"""
     A decorator that wraps the passed in function and catches
     ModuleNotFound exception.
     """
@@ -474,62 +491,6 @@ def ignore_warnings(warning=RuntimeWarning):
     return _ignore_warning
 
 
-def conduit_lengths(network, throats=None, mode="pore"):
-    r"""
-    Return the respective lengths of the conduit components defined by the throat
-    conns P1 - T - P2
-
-    Notes
-    -----
-    mode = 'pore' - uses pore coordinates
-    mode = 'centroid' uses pore and throat centroids
-
-    """
-    if throats is None:
-        throats = network.throats()
-    Ps = network["throat.conns"]
-    pdia = network["pore.diameter"]
-    Lt = network["throat.length"]
-
-    if mode == "centroid":
-        try:
-            pcentroids = network["pore.centroid"]
-            tcentroids = network["throat.centroid"]
-            if _np.sum(_np.isnan(pcentroids)) + _np.sum(_np.isnan(tcentroids)) > 0:
-                mode = "pore"
-            else:
-                plen1 = (
-                    _np.sqrt(_np.sum(_sp.square(pcentroids[Ps[:, 0]] - tcentroids), 1))
-                    - Lt / 2
-                )
-                plen2 = (
-                    _np.sqrt(_np.sum(_sp.square(pcentroids[Ps[:, 1]] - tcentroids), 1))
-                    - Lt / 2
-                )
-        except KeyError:
-            mode = "pore"
-    if mode == "pore":
-        # Find half-lengths of each pore
-        pcoords = network["pore.coords"]
-        # Find the pore-to-pore distance, minus the throat length
-        lengths = (
-            _np.sqrt(_np.sum(_sp.square(pcoords[Ps[:, 0]] - pcoords[Ps[:, 1]]), 1)) - Lt
-        )
-        lengths[lengths < 0.0] = 2e-9
-        # Calculate the fraction of that distance from the first pore
-        try:
-            fractions = pdia[Ps[:, 0]] / (pdia[Ps[:, 0]] + pdia[Ps[:, 1]])
-            # Don't allow zero lengths
-            # fractions[fractions == 0.0] = 0.5
-            # fractions[fractions == 1.0] = 0.5
-        except Exception:
-            fractions = 0.5
-        plen1 = lengths * fractions
-        plen2 = lengths * (1 - fractions)
-
-    return _np.vstack((plen1, Lt, plen2)).T[throats]
-
-
 def is_symmetric(a, rtol=1e-10):
     r"""
     Is ``a`` a symmetric matrix?
@@ -549,7 +510,7 @@ def is_symmetric(a, rtol=1e-10):
         ``True`` if ``a`` is a symmetric matrix, ``False`` otherwise.
 
     """
-    if type(a) != _sp.ndarray and not _sp.sparse.issparse(a):
+    if not isinstance(a, _np.ndarray) and not _sp.sparse.issparse(a):
         raise Exception("'a' must be either a sparse matrix or an ndarray.")
     if a.shape[0] != a.shape[1]:
         raise Exception("'a' must be a square matrix.")
@@ -557,7 +518,7 @@ def is_symmetric(a, rtol=1e-10):
     atol = _np.amin(_np.absolute(a.data)) * rtol
     if _sp.sparse.issparse(a):
         issym = False if ((a - a.T) > atol).nnz else True
-    elif type(a) == _sp.ndarray:
+    elif isinstance(a, _np.ndarray):
         issym = False if _np.any((a - a.T) > atol) else True
 
     return issym
@@ -579,7 +540,7 @@ def is_valid_propname(propname):
         Whether or not ``propname`` is a valid name
 
     """
-    if type(propname) is not str:
+    if not isinstance(propname, str):
         return False
     temp = propname.split(".")
     if temp[0] not in ["pore", "throat"]:
@@ -604,9 +565,88 @@ def nbr_to_str(nbr, t_precision):
 
     t_precision : integer
         The time precision (number of decimal places). Default value is 12.
+
     """
     from decimal import Decimal as dc
     n = int(-dc(str(round(nbr, t_precision))).as_tuple().exponent
             * (round(nbr, t_precision) != int(nbr)))
-    nbr_str = (str(int(round(nbr, t_precision)*10**n)) + ('e-'+str(n))*(n != 0))
+    nbr_str = (str(int(round(nbr, t_precision) * 10**n)) + (f'e-{n}') * (n != 0))
     return nbr_str
+
+
+def conduit_dict_to_array(d):
+    r"""
+    Converts a conduit dict to a 3-column wide ndarray.
+
+    A conduit dict contains 3 arrays pertaining to pore1, throat, and
+    pore2. These arrays can be accessed via keys: 'pore1', 'throat',
+    and 'pore2'.
+
+    Parameters
+    ----------
+    d : dict
+        Conduit dictionary with keys 'pore1', 'throat', and 'pore2'.
+
+    Returns
+    -------
+    ndarray
+        Conduit array, i.e. 3-column wide, with columns pertaining to
+        pore1, throat, and pore2, respectively.
+
+    """
+    _validate_conduit_dict(d)
+    return _np.vstack((d["pore1"], d["throat"], d["pore2"])).T
+
+
+def conduit_array_to_dict(arr):
+    r"""
+    Converts a conduit array to a conduit dict.
+
+    A conduit array is 3 columns wide, each pertaining to a conduit
+    property for pore1, throat, and pore2, respectively.
+
+    Parameters
+    ----------
+    arr : ndarray
+        Conduit array.
+
+    Returns
+    -------
+    dict
+        Conduit dictionary with keys 'pore1', 'throat', and 'pore2'.
+
+    """
+    _validate_conduit_array(arr)
+    return {"pore1": arr[:, 0], "throat": arr[:, 1], "pore2": arr[:, 2]}
+
+
+def _validate_conduit_dict(d):
+    r"""
+    Validates whether the given dictionary is a proper conduit dict.
+    """
+    if not isinstance(d, dict):
+        raise Exception("Conduit dictionary must be of type dict.")
+    allowed_keys = set(["pore1", "throat", "pore2"])
+    if allowed_keys != set(d.keys()):
+        raise Exception("Conduit dictionary keys must be 'pore1', 'throat', and 'pore2'")
+    elem_lengths = [len(x) for x in d.values()]
+    if len(_np.unique(elem_lengths)) != 1:
+        raise Exception("Conduit dictionary must have arrays of the same length.")
+
+
+def _validate_conduit_array(arr):
+    r"""
+    Validates whether the given array is a proper conduit array.
+    """
+    arr = _np.array(arr)
+    if arr.shape[1] != 3:
+        raise Exception("Conduit array must be exactly 3 columns wide.")
+
+
+def prettify_logger_message(msg):
+    r"""Prettifies logger messages by breaking them up into multi lines"""
+    from textwrap import wrap
+    linewidth = 75
+    indent = "\n" + " " * 13
+    temp = wrap(msg, width=linewidth)
+    return indent.join(temp)

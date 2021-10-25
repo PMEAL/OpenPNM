@@ -10,17 +10,9 @@ class Delaunay(DelaunayVoronoiDual):
 
     Parameters
     ----------
-    num_points : scalar
-        The number of points to place in the domain, which will become the
-        pore centers after the tessellation is performed.  This value is
-        ignored if ``points`` are given.
-
-    points : array_like
-        An array of coordinates indicating the [x, y, z] locations of each
-        point to use in the tessellation.  Note that the points must be given
-        in rectilinear coordinates regardless of which domain ``shape`` was
-        specified.  To convert between coordinate systems see the
-        ``convert_coords`` function in the ``openpnm.topotools`` module.
+    points : array_like or int
+        Can either be an N-by-3 array of point coordinates which will be used,
+        or a scalar value indicating the number of points to generate
 
     shape : array_like
         The size of the domain.  It's possible to create cubic as well as 2D
@@ -70,7 +62,7 @@ class Delaunay(DelaunayVoronoiDual):
 
     >>> fig = op.topotools.plot_connections(network=gn)
 
-    .. image:: /../docs/static/images/delaunay_network_given_points.png
+    .. image:: /../docs/_static/images/delaunay_network_given_points.png
         :align: center
 
     Upon visualization it can be seen that this network is not very cubic.
@@ -87,22 +79,19 @@ class Delaunay(DelaunayVoronoiDual):
 
     >>> fig = op.topotools.plot_connections(network=gn)
 
-    .. image:: /../docs/static/images/delaunay_network_w_trimmed_points.png
+    .. image:: /../docs/_static/images/delaunay_network_w_trimmed_points.png
         :align: center
 
-    If a domain random base points, but truly flat faces is needed use
+    If a domain with random base points but flat faces is needed use
     ``Voronoi``.
 
     """
 
-    def __init__(self, shape=None, num_points=None, **kwargs):
+    def __init__(self, shape=[1, 1, 1], points=None, **kwargs):
         # Clean-up input points
-        points = kwargs.pop('points', None)
-        points = self._parse_points(shape=shape,
-                                    num_points=num_points,
-                                    points=points)
-        # Initialize network object
+        points = self._parse_points(shape=shape, points=points)
         super().__init__(shape=shape, points=points, **kwargs)
+        # Initialize network object
         topotools.trim(network=self, pores=self.pores(['voronoi']))
         pop = ['pore.voronoi', 'throat.voronoi', 'throat.interconnect',
                'pore.delaunay', 'throat.delaunay']

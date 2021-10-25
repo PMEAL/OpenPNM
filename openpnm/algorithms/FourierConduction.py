@@ -4,8 +4,8 @@ logger = logging.getLogger(__name__)
 docstr = Docorator()
 
 
-@docstr.get_sectionsf('FourierConductionSettings',
-                      sections=['Parameters'])
+@docstr.get_sections(base='FourierConductionSettings',
+                     sections=['Parameters'])
 @docstr.dedent
 class FourierConductionSettings(GenericSettings):
     r"""
@@ -48,29 +48,6 @@ class FourierConduction(ReactiveTransport):
         super().__init__(**kwargs)
         self.settings.update(settings)
         self.settings._update_settings_and_docs(FourierConductionSettings())
-
-    def setup(self, phase=None, quantity='', conductance='', **kwargs):
-        r"""
-        This method takes several arguments that are essential to running the
-        algorithm and adds them to the settings.
-
-        Parameters
-        ----------
-        %(FourierConductionSettings.parameters)s
-
-        Notes
-        -----
-        Any additional arguments are added to the ``settings`` dictionary of
-        the object.
-
-        """
-        if phase:
-            self.settings['phase'] = phase.name
-        if quantity:
-            self.settings['quantity'] = quantity
-        if conductance:
-            self.settings['conductance'] = conductance
-        super().setup(**kwargs)
 
     def calc_effective_conductivity(self, inlets=None, outlets=None,
                                     domain_area=None, domain_length=None):

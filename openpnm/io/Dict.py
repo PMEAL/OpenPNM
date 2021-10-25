@@ -39,8 +39,9 @@ class Dict(GenericIO):
 
         Returns
         -------
-        An OpenPNM Project containing the objects created to store the given
-        data.
+        project : list
+            An OpenPNM Project containing the objects created to store the
+            given data.
 
         Notes
         -----
@@ -82,7 +83,7 @@ class Dict(GenericIO):
                     # Item is categorized by type, so note it
                     objs[path[-3]][path[-2]][path[-1]] = d[item]
                 else:
-                    # item is nested, not categorized; make it a base
+                    # Item is nested, not categorized; make it a base
                     objs['base'][path[-2]][path[-1]] = d[item]
             else:
                 # If not categorized by type, make it a base
@@ -252,7 +253,7 @@ class Dict(GenericIO):
         return d
 
     @classmethod
-    def save(cls, dct, filename):
+    def export_data(cls, dct, filename):
         r"""
         Saves data from the given dictionary into the specified file.
 
@@ -265,6 +266,10 @@ class Dict(GenericIO):
         filename : string or path object
             The filename to store the dictionary.
 
+        Notes
+        -----
+        This method uses the pickle module to save the dictionary.
+
         """
         fname = cls._parse_filename(filename=filename, ext='dct')
         dct = sanitize_dict(dct)
@@ -272,9 +277,9 @@ class Dict(GenericIO):
             pickle.dump(dct, f)
 
     @classmethod
-    def load(cls, filename):
+    def import_data(cls, filename):
         r"""
-        Load data from the specified file into a Python dictionary
+        Load data from the specified pickle file into a Python dictionary
 
         Parameters
         ----------

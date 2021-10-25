@@ -1,9 +1,7 @@
 import os
 import pytest
-import pickle
-import numpy as np
-import scipy as sp
 import openpnm as op
+from numpy.testing import assert_allclose
 
 
 class WorkspaceTest:
@@ -34,7 +32,7 @@ class WorkspaceTest:
     def test_assign_project(self):
         proj = self.ws.new_project()
         with pytest.raises(Exception):
-            self.ws[proj.name] = proj
+            self.ws.new_project(name=proj.name)
         old_name = proj.name
         new_name = self.ws._gen_name()
         self.ws[new_name] = proj
@@ -59,33 +57,16 @@ class WorkspaceTest:
         self.ws.close_project(proj)
         assert 'test_proj' not in self.ws.keys()
         assert proj.workspace == {}
-        self.ws.load_project(filename='test_proj.pnm')
+        proj = self.ws.load_project(filename='test_proj.pnm')
         assert 'test_proj' in self.ws.keys()
+        assert isinstance(proj, op.Project)
+        shape = op.topotools.get_shape(proj.network)
+        assert_allclose(shape, [3, 3, 3])
         self.ws.clear()
-        os.remove('test_proj.pnm')
-
-    def test_save_and_load_project_from_pickled_list(self):
-        proj = self.ws.new_project()
-        pn = op.network.Cubic(shape=[3, 3, 3], project=proj)
-        air = op.phases.Air(network=pn)
-        pickle.dump([pn, air], open('test.pnm', 'wb'))
-        self.ws.clear()
-        self.ws.load_project('test.pnm')
-        self.ws.clear()
-        os.remove('test.pnm')
-
-    def test_save_and_load_project_from_pickled_object(self):
-        a = np.ones((10, ))
-        pickle.dump(a, open('single_object.pnm', 'wb'))
-        self.ws.clear()
-        with pytest.raises(Exception):
-            self.ws.load_project('single_object.pnm')
-        b = {'test': a}
-        pickle.dump(b, open('single_object.pnm', 'wb'))
-        self.ws.clear()
-        with pytest.raises(Exception):
-            self.ws.load_project('single_object.pnm')
-        os.remove('single_object.pnm')
+        try:
+            os.remove('test_proj.pnm')
+        except PermissionError:
+            print('Could not delete test_proj.pnm')
 
     def test_load_project_with_name_conflict(self):
         self.ws.clear()
@@ -94,24 +75,47 @@ class WorkspaceTest:
         op.phases.Air(network=pn)
         self.ws.save_project(proj, filename='test.pnm')
         self.ws.load_project('test.pnm')
-        assert set(self.ws.keys()) == set(['test', 'sim_01'])
+        assert set(self.ws.keys()) == set(['test', 'proj_01'])
         os.remove('test.pnm')
 
-    def test_save_and_load_workspace(self):
-        self.ws.clear()
-        proj1 = self.ws.new_project('test_proj_1')
-        proj2 = self.ws.new_project('test_proj_2')
-        op.network.Cubic(shape=[3, 3, 3], project=proj1, name='net1')
-        op.network.Cubic(shape=[3, 3, 3], project=proj2, name='net2')
-        self.ws.save_workspace(filename='workspace_test')
-        self.ws.clear()
-        assert 'test_proj_1' not in self.ws.keys()
-        assert 'test_proj_2' not in self.ws.keys()
-        self.ws.load_workspace('workspace_test', overwrite=True)
-        assert 'test_proj_1' in self.ws.keys()
-        assert 'test_proj_2' in self.ws.keys()
-        self.ws.clear()
-        os.remove('workspace_test.pnm')
+    # def test_save_and_load_project_from_pickled_list(self):
+    #     proj = self.ws.new_project()
+    #     pn = op.network.Cubic(shape=[3, 3, 3], project=proj)
+    #     air = op.phases.Air(network=pn)
+    #     pickle.dump([pn, air], open('test.pnm', 'wb'))
+    #     self.ws.clear()
+    #     self.ws.load_project('test.pnm')
+    #     self.ws.clear()
+    #     os.remove('test.pnm')
+
+    # def test_save_and_load_project_from_pickled_object(self):
+    #     a = np.ones((10, ))
+    #     pickle.dump(a, open('single_object.pnm', 'wb'))
+    #     self.ws.clear()
+    #     with pytest.raises(Exception):
+    #         self.ws.load_project('single_object.pnm')
+    #     b = {'test': a}
+    #     pickle.dump(b, open('single_object.pnm', 'wb'))
+    #     self.ws.clear()
+    #     with pytest.raises(Exception):
+    #         self.ws.load_project('single_object.pnm')
+    #     os.remove('single_object.pnm')
+
+    # def test_save_and_load_workspace(self):
+    #     self.ws.clear()
+    #     proj1 = self.ws.new_project('test_proj_1')
+    #     proj2 = self.ws.new_project('test_proj_2')
+    #     op.network.Cubic(shape=[3, 3, 3], project=proj1, name='net1')
+    #     op.network.Cubic(shape=[3, 3, 3], project=proj2, name='net2')
+    #     self.ws.save_workspace(filename='workspace_test')
+    #     self.ws.clear()
+    #     assert 'test_proj_1' not in self.ws.keys()
+    #     assert 'test_proj_2' not in self.ws.keys()
+    #     self.ws.load_workspace('workspace_test', overwrite=True)
+    #     assert 'test_proj_1' in self.ws.keys()
+    #     assert 'test_proj_2' in self.ws.keys()
+    #     self.ws.clear()
+    #     os.remove('workspace_test.pnm')
 
 
 if __name__ == '__main__':
@@ -121,5 +125,5 @@ if __name__ == '__main__':
     t.setup_class()
     for item in t.__dir__():
         if item.startswith('test'):
-            print('running test: '+item)
+            print(f"Running test {item}")
             t.__getattribute__(item)()

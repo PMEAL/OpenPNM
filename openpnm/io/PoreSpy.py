@@ -11,7 +11,7 @@ class PoreSpy(GenericIO):
     """
 
     @classmethod
-    def load(cls, filename, project=None, settings={}):
+    def import_data(cls, filename, project=None, settings={}):
         r"""
         Load a network extracted using the PoreSpy package
 
@@ -35,22 +35,6 @@ class PoreSpy(GenericIO):
 
         network = GenericNetwork(project=project)
         network = cls._update_network(network=network, net=net)
-        # The following list of props comes from porespy but are not good
-        for item in ['pore.diameter',
-                     'pore.area',
-                     'throat.conduit_lengths.pore1',
-                     'throat.conduit_lengths.pore2',
-                     'throat.conduit_lengths.throat',
-                     'throat.endpoints.head',
-                     'throat.endpoints.tail',
-                     'throat.diameter',
-                     'throat.length',
-                     'throat.volume']:
-            network.pop(item, None)
-
-        # Deal with a few other PoreSpy specific issues
-        network['pore.region_volume'] = network.pop('pore.volume')
-
         Imported(network=network, settings=settings)
 
         return network.project

@@ -1,38 +1,38 @@
 .. _front_page:
 
-################################################################################
-Welcome to the OpenPNM Documentation
-################################################################################
+.. module:: openpnm
+   :noindex:
 
-*OpenPNM* is an open source project aiming to provide porous media researchers with a ready-made framework for performing a wide range of pore network simulations.
+.. toctree::
+   :hidden:
+   :maxdepth: 1
 
+   userguide/index
+   modules/index
+   examples/examples
 
-.. sidebar:: Highlight
+.. raw:: html
 
-    The image below was extracted using the SNOW algorithm from PoreSpy, then
-    imported into OpenPNM for use, then exported to Paraview for visualization.
+   <p align="center">
+     <img src=".\_static\images\openpnm_logo.png" width="80%"></img>
+   </p>
 
-    .. image:: /../docs/static/images/extracted_berea.png
-        :width: 400px
-        :align: center
+*OpenPNM* is an open source project to provide porous media researchers
+with a ready-made framework for performing a wide range of pore network
+simulations.
 
-+------------------------------------------------------------------------------+
-| Documentation Contents                                                       |
-+==============================================================================+
-|.. toctree::                                                                  |
-|    :maxdepth: 2                                                              |
-|                                                                              |
-|    getting_started/index.rst                                                 |
-+------------------------------------------------------------------------------+
-|.. toctree::                                                                  |
-|    :maxdepth: 2                                                              |
-|                                                                              |
-|    userguide/index.rst                                                       |
-+------------------------------------------------------------------------------+
-|.. toctree::                                                                  |
-|    :maxdepth: 1                                                              |
-|                                                                              |
-|    modules/index.rst                                                         |
-+------------------------------------------------------------------------------+
-|* :ref:`genindex`                                                             |
-+------------------------------------------------------------------------------+
+#########################################
+Pore-network Modeling Framework in Python
+#########################################
+
+*OpenPNM* is an open source project to provide a ready-made framework for
+performing pore network simulations of transport in porous materials.
+
+Citing
+######
+
+If you use OpenPNM in your work, please include the following citation:
+
+.. topic:: Citation
+
+    Gostick J, Aghighi M, Hinebaugh J, Tranter T, Hoeh MA, Day H, Spellacy B, Sharqawy MH, Bazylak A, Burns A, Lehnert W. **OpenPNM: a pore network modeling package**. Computing in Science & Engineering. 2016 May 25;18(4):60-74. `doi:10.1109/MCSE.2016.49 <https://doi.org/10.1109/MCSE.2016.49>`_.

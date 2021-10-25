@@ -1,5 +1,4 @@
 import numpy as _np
-import scipy as _sp
 from .throat_length import ctc as _ctc
 
 
@@ -35,14 +34,14 @@ def cubic_pores(target, pore_diameter='pore.diameter'):
     throats = network.map_throats(throats=target.Ts, origin=target)
     xyz = network['pore.coords']
     cn = network['throat.conns'][throats]
-    L = _ctc(target=target) + 1e-15
+    L = _ctc(target=target)
     D1 = network[pore_diameter][cn[:, 0]]
     D2 = network[pore_diameter][cn[:, 1]]
     unit_vec = (xyz[cn[:, 1]] - xyz[cn[:, 0]]) / L[:, None]
-    EP1 = xyz[cn[:, 0]] + 0.5 * D1[:, _sp.newaxis] * unit_vec
-    EP2 = xyz[cn[:, 1]] - 0.5 * D2[:, _sp.newaxis] * unit_vec
+    EP1 = xyz[cn[:, 0]] + 0.5 * D1[:, _np.newaxis] * unit_vec
+    EP2 = xyz[cn[:, 1]] - 0.5 * D2[:, _np.newaxis] * unit_vec
     # Handle overlapping pores
-    overlap = L - 0.5 * (D1+D2) < 0
+    overlap = L - 0.5 * (D1 + D2) < 0
     mask = (D1 >= D2) & overlap
     EP2[mask] = EP1[mask]
     mask = (D1 < D2) & overlap
@@ -141,8 +140,8 @@ def spherical_pores(target, pore_diameter='pore.diameter',
     # Handle non-colinear pores and throat centroids
     try:
         TC = network[throat_centroid][throats]
-        LP1T = _sp.linalg.norm(TC - xyz[cn[:, 0]], axis=1) + 1e-15
-        LP2T = _sp.linalg.norm(TC - xyz[cn[:, 1]], axis=1) + 1e-15
+        LP1T = _np.linalg.norm(TC - xyz[cn[:, 0]], axis=1) + 1e-15
+        LP2T = _np.linalg.norm(TC - xyz[cn[:, 1]], axis=1) + 1e-15
         unit_vec_P1T = (TC - xyz[cn[:, 0]]) / LP1T[:, None]
         unit_vec_P2T = (TC - xyz[cn[:, 1]]) / LP2T[:, None]
     except KeyError:
@@ -152,10 +151,10 @@ def spherical_pores(target, pore_diameter='pore.diameter',
     EP1 = xyz[cn[:, 0]] + L1[:, None] * unit_vec_P1T
     EP2 = xyz[cn[:, 1]] + L2[:, None] * unit_vec_P2T
     # Handle throats w/ overlapping pores
-    L1 = (4*L**2 + D1**2 - D2**2) / (8*L)
-    L2 = (4*L**2 + D2**2 - D1**2) / (8*L)
-    h = (2*_np.sqrt(D1**2/4 - L1**2)).real
-    overlap = L - 0.5 * (D1+D2) < 0
+    L1 = (4 * L**2 + D1**2 - D2**2) / (8 * L)
+    L2 = (4 * L**2 + D2**2 - D1**2) / (8 * L)
+    h = (2 * _np.sqrt(D1**2 / 4 - L1**2)).real
+    overlap = L - 0.5 * (D1 + D2) < 0
     mask = overlap & (Dt < h)
     EP1[mask] = (xyz[cn[:, 0]] + L1[:, None] * unit_vec_P1T)[mask]
     EP2[mask] = (xyz[cn[:, 1]] + L2[:, None] * unit_vec_P2T)[mask]
@@ -241,6 +240,6 @@ def straight_throat(target, throat_centroid='throat.centroid',
     center = network[throat_centroid][throats]
     vector = network[throat_vector][throats]
     length = network[throat_length][throats]
-    EP1 = center - 0.5 * length[:, _sp.newaxis] * vector
-    EP2 = center + 0.5 * length[:, _sp.newaxis] * vector
+    EP1 = center - 0.5 * length[:, _np.newaxis] * vector
+    EP2 = center + 0.5 * length[:, _np.newaxis] * vector
     return {'head': EP1, 'tail': EP2}

@@ -1,16 +1,20 @@
 .. _user_guide_index:
 
-###############################################################################
+.. module:: openpnm
+   :noindex:
+
+
 **User Guide**
-###############################################################################
+==============
+
+*OpenPNM* is consisted of several key modules. Each module is consisted of
+several classes and each class is consisted of a few methods. Here, you'll
+find a comprehensive documentation of the modules, classes, and finally the
+methods, occasionally with basic embedded examples on how to use them.
 
 .. toctree::
-    :maxdepth: 2
+   :hidden:
+   :maxdepth: 2
 
-    overall_design.rst
-    data_storage.rst
-    topology.rst
-    workspace_and_project.rst
-    models.rst
-    customizing.rst
-    algorithms/index.rst
+   installation
+   quick_start

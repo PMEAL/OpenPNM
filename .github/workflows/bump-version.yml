@@ -1,0 +1,99 @@
+name: Bump Version Number
+
+on:
+  push:
+    branches:
+      - release
+
+jobs:
+  build:
+    name: Bump version
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        persist-credentials: false  # otherwise, the token used is the GITHUB_TOKEN, instead of your personal token
+        fetch-depth: 0              # otherwise, you will failed to push refs to dest repo
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.7
+
+    - name: Set env variables
+      run: |
+        # The next line is very important, otherwise the line after triggers
+        # git to track the permission change, which breaks bump2version API (needs clean git folder)
+        git config core.filemode false
+        chmod +x .github/workflows/utils.sh
+        echo "VERSION_FILE=openpnm/__version__.py" >> $GITHUB_ENV
+        echo "SETUP_CFG_FILE=setup.cfg" >> $GITHUB_ENV
+        echo "${{ github.event.head_commit.message }}"
+
+    - name: Install dependencies
+      run: |
+        pip install bump2version
+
+    - name: Bump version (patch)
+      if: contains(github.event.head_commit.message, '#patch')
+      run: |
+        source .github/workflows/utils.sh
+        bump_version patch $VERSION_FILE
+        echo "TAG_NEW=v$(get_version $VERSION_FILE)" >> $GITHUB_ENV
+
+    - name: Bump version (minor)
+      if: contains(github.event.head_commit.message, '#minor')
+      run: |
+        source .github/workflows/utils.sh
+        bump_version minor $VERSION_FILE
+        echo "TAG_NEW=v$(get_version $VERSION_FILE)" >> $GITHUB_ENV
+
+    - name: Bump version (major)
+      if: contains(github.event.head_commit.message, '#major')
+      run: |
+        source .github/workflows/utils.sh
+        bump_version major $VERSION_FILE
+        echo "TAG_NEW=v$(get_version $VERSION_FILE)" >> $GITHUB_ENV
+
+    - name: Commit files
+      if:
+        contains(github.event.head_commit.message, '#patch') ||
+        contains(github.event.head_commit.message, '#minor') ||
+        contains(github.event.head_commit.message, '#major')
+      run: |
+        REPOSITORY=${INPUT_REPOSITORY:-$GITHUB_REPOSITORY}
+        remote_repo="https://${GITHUB_ACTOR}:${{ secrets.PUSH_ACTION_TOKEN }}@github.com/${REPOSITORY}.git"
+
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+
+        # commit version bump to release
+        git commit -m "Bump version number" -a
+        git push "${remote_repo}" release
+
+    - name: Create Pull Request to merge back release into dev
+      uses: repo-sync/pull-request@v2
+      with:
+        source_branch: "release"                          # If blank, default: triggered branch
+        destination_branch: "dev"                         # If blank, default: master
+        pr_title: "Don't forget to merge release back into dev!"
+        pr_body: "Changes made to the release branch (e.g. hotfixes), plus the version bump."
+        pr_assignee: "jgostick,ma-sadeghi"                # Comma-separated list (no spaces)
+        pr_label: "high priority"                         # Comma-separated list (no spaces)
+        pr_draft: false                                   # Creates pull request as draft
+        pr_allow_empty: true                              # Creates pull request even if there are no changes
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Create new tag
+      run: |
+        REPOSITORY=${INPUT_REPOSITORY:-$GITHUB_REPOSITORY}
+        remote_repo="https://${GITHUB_ACTOR}:${{ secrets.PUSH_ACTION_TOKEN }}@github.com/${REPOSITORY}.git"
+        if [ -z "$TAG_NEW" ]
+        then
+            echo "New tag not created."
+        else
+            git tag $TAG_NEW
+            git push "${remote_repo}" $TAG_NEW
+            echo "Pushed a new tag: $TAG_NEW"
+        fi

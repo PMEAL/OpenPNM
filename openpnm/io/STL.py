@@ -14,8 +14,8 @@ class STL(GenericIO):
     """
 
     @classmethod
-    def save(cls, network, phases=[], filename='', maxsize='auto',
-             fileformat='STL Format', logger_level=0):
+    def export_data(cls, network, phases=[], filename='', maxsize='auto',
+                    fileformat='STL Format', logger_level=0):
         r"""
         Saves (transient/steady-state) data from the given objects into the
         specified file.

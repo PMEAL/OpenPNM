@@ -60,29 +60,20 @@ class PandasTest:
         ws.clear()
 
     def test_to_dataframe_not_joined(self):
-        df = Pandas.to_dataframe(network=self.net, phases=[self.phase_1],
+        df = Pandas.export_data(network=self.net, phases=[self.phase_1],
                                  join=False)
-        assert len(df.pore.keys()) == 22
-        assert len(df.throat.keys()) == 13
+        assert len(df.pore.keys()) == 23
+        assert len(df.throat.keys()) == 14
 
     def test_to_dataframe_joined(self):
-        df = Pandas.to_dataframe(network=self.net, phases=[self.phase_1],
+        df = Pandas.export_data(network=self.net, phases=[self.phase_1],
                                  join=True)
-        assert len(df.keys()) == 35
-
-    def test_save(self):
-        with pytest.raises(NotImplementedError):
-            Pandas.save()
-
-    def test_load(self):
-        with pytest.raises(NotImplementedError):
-            Pandas.load()
+        assert len(df.keys()) == 37
 
 
 if __name__ == '__main__':
-    # All the tests in this file can be run with 'playing' this file
     t = PandasTest()
-    self = t  # For interacting with the tests at the command line
+    self = t
     t.setup_class()
     for item in t.__dir__():
         if item.startswith('test'):

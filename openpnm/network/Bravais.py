@@ -60,11 +60,11 @@ class Bravais(GenericNetwork):
 
     Limitations:
 
-    * Bravais lattice can also have a skew to them, but this is not implemented
-    yet.
+    * Bravais lattice can also have a skew to them, but this is not
+      implemented yet.
     * Support for 2D networks has not been added yet.
-    * Hexagonal Close Packed (hcp) has not been implemented yet, but is on the
-    todo list.
+    * Hexagonal Close Packed (hcp) has not been implemented yet, but is on
+      the todo list.
 
     Examples
     --------
@@ -94,14 +94,15 @@ class Bravais(GenericNetwork):
     >>> op.topotools.merge_networks(sc, [bcc, fcc])
     >>> fig = op.topotools.plot_connections(sc)
 
-    .. image:: /../docs/static/images/bravais_networks.png
+    .. image:: /../docs/_static/images/bravais_networks.png
         :align: center
 
     For larger networks and more control over presentation use `Paraview
     <http://www.paraview.org>`_.
 
     """
-    def __init__(self, shape, mode, spacing=1, **kwargs):
+
+    def __init__(self, shape, mode='sc', spacing=1, **kwargs):
         super().__init__(**kwargs)
         shape = np.array(shape)
         if np.any(shape < 2):
@@ -155,13 +156,13 @@ class Bravais(GenericNetwork):
                 n.update({'throat.all': np.array([], dtype=bool)})
                 n.update({'throat.conns': np.ndarray([0, 2], dtype=bool)})
             # Join networks 2, 3 and 4 into one with all face sites
-            topotools.stitch(net2, net3, net2.Ps, net3.Ps,
-                             len_min=0.70, len_max=0.75)
-            topotools.stitch(net2, net4, net2.Ps, net4.Ps,
-                             len_min=0.70, len_max=0.75)
+            topotools.stitch(net2, net3, net2.Ps, net3.Ps, method='radius',
+                             len_max=0.75)
+            topotools.stitch(net2, net4, net2.Ps, net4.Ps, method='radius',
+                             len_max=0.75)
             # Join face sites network with the corner sites network
-            topotools.stitch(net1, net2, net1.Ps, net2.Ps,
-                             len_min=0.70, len_max=0.75)
+            topotools.stitch(net1, net2, net1.Ps, net2.Ps, method='radius',
+                             len_max=0.75)
             self.update(net1)
             ws.close_project(net1.project)
             # Deal with labels
@@ -196,7 +197,6 @@ class Bravais(GenericNetwork):
         Ps = self.pores(['left', 'right', 'top', 'bottom', 'front', 'back'])
         Ps = self.tomask(pores=Ps)
         self['pore.surface'] = Ps
-        self['pore.internal'] = ~Ps
         self['pore.coords'] *= np.array(spacing)
 
     def add_boundary_pores(self, labels, spacing):

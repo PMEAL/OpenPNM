@@ -6,8 +6,8 @@ logger = logging.getLogger(__name__)
 docstr = Docorator()
 
 
-@docstr.get_sectionsf('StokesFlowSettings',
-                      sections=['Parameters'])
+@docstr.get_sections(base='StokesFlowSettings',
+                     sections=['Parameters'])
 @docstr.dedent
 class StokesFlowSettings(GenericSettings):
     r"""
@@ -50,29 +50,6 @@ class StokesFlow(ReactiveTransport):
         super().__init__(**kwargs)
         self.settings._update_settings_and_docs(StokesFlowSettings())
         self.settings.update(settings)
-
-    def setup(self, phase=None, quantity='', conductance='', **kwargs):
-        r"""
-        This method takes several arguments that are essential to running the
-        algorithm and adds them to the settings.
-
-        Parameters
-        ----------
-        %(StokesFlowSettings.parameters)s
-
-        Notes
-        -----
-        Any additional arguments are added to the ``settings`` dictionary of
-        the object.
-
-        """
-        if phase:
-            self.settings['phase'] = phase.name
-        if quantity:
-            self.settings['quantity'] = quantity
-        if conductance:
-            self.settings['conductance'] = conductance
-        super().setup(**kwargs)
 
     def calc_effective_permeability(self, inlets=None, outlets=None,
                                     domain_area=None, domain_length=None):

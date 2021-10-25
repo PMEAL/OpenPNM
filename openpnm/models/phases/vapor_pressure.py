@@ -1,10 +1,5 @@
 r"""
-
-.. autofunction:: openpnm.models.phases.vapor_pressure.water
-.. autofunction:: openpnm.models.phases.vapor_pressure.antoine
-
 """
-
 import numpy as np
 
 
