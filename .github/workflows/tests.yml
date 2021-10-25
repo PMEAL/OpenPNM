@@ -11,9 +11,9 @@ jobs:
         shell: bash
 
     strategy:
-      max-parallel: 4
+      max-parallel: 9
       matrix:
-        python-version: [3.8]
+        python-version: [3.7, 3.8, 3.9]
         os: [ubuntu-latest, macos-latest, windows-latest]
         include:
         - os: ubuntu-latest
@@ -44,7 +44,7 @@ jobs:
           pip install \
             -r requirements/pip_requirements.txt \
             -r requirements/test_requirements.txt
-          # Install OpenPNM from the checked-out branch
+          # Install openpnm from the checked-out branch
           pip install -e . --no-deps
 
       - name: Running tests
