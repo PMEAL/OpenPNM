@@ -9,14 +9,14 @@ class DiffusiveConductanceTest:
         self.geo = op.geometry.GenericGeometry(network=self.net,
                                                pores=self.net.Ps,
                                                throats=self.net.Ts)
-        self.geo['pore.diameter'] = 1.
+        self.geo['pore.diameter'] = 1.0
         self.geo['throat.diameter'] = 0.5
-        self.geo['pore.area'] = 1.
-        self.geo['throat.area'] = 1.
+        self.geo['pore.area'] = 1.0
+        self.geo['throat.area'] = 1.0
         self.phase = op.phases.GenericPhase(network=self.net)
         self.phase['pore.diffusivity'] = 1.3
         self.phase['pore.molecular_weight'] = 0.029
-        self.phase['pore.temperature'] = 345
+        self.phase['pore.temperature'] = 345.0
         self.phys = op.physics.GenericPhysics(network=self.net,
                                               phase=self.phase,
                                               geometry=self.geo)
@@ -27,16 +27,16 @@ class DiffusiveConductanceTest:
             "pore1": 0.123, "throat": 0.981, "pore2": 0.551
         }
         mod = op.models.physics.diffusive_conductance.generic_diffusive
-        self.phys.add_model(propname='throat.g_diffusive_conductance', model=mod)
+        self.phys.add_model(propname='throat.diffusive_conductance', model=mod)
         self.phys.regenerate_models()
-        actual = self.phys['throat.g_diffusive_conductance'].mean()
+        actual = self.phys['throat.diffusive_conductance'].mean()
         assert_allclose(actual, desired=0.091204832 * 1.3)
         # Pass size factors as an array
         for elem in ["pore1", "throat", "pore2"]:
             del self.geo[f"throat.diffusive_size_factors.{elem}"]
         self.geo['throat.diffusive_size_factors'] = 0.896
-        self.phys.regenerate_models("throat.g_diffusive_conductance")
-        actual = self.phys['throat.g_diffusive_conductance'].mean()
+        self.phys.regenerate_models("throat.diffusive_conductance")
+        actual = self.phys['throat.diffusive_conductance'].mean()
         assert_allclose(actual, desired=0.896 * 1.3)
 
     def test_generic_diffusive_partial_domain(self):
