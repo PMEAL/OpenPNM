@@ -81,9 +81,10 @@ def spatially_correlated(target, weights=None, strel=None):
 
     """
     import scipy.ndimage as spim
+    from openpnm.topotools import get_shape
     network = target.project.network
     # The following will only work on Cubic networks
-    x, y, z = network.settings['shape']
+    x, y, z = get_shape(network)
     im = _np.random.rand(x, y, z)
     if strel is None:  # Then generate a strel
         if sum(weights) == 0:

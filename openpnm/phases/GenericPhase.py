@@ -1,4 +1,4 @@
-from openpnm.core import Base, ModelsMixin
+from openpnm.core import Base, LegacyMixin, ModelsMixin, LabelMixin
 from openpnm.utils import Workspace, logging, Docorator
 from numpy import ones
 import openpnm.models as mods
@@ -9,7 +9,7 @@ ws = Workspace()
 
 @docstr.get_sections(base='GenericPhase', sections=['Parameters'])
 @docstr.dedent
-class GenericPhase(Base, ModelsMixin):
+class GenericPhase(Base, ModelsMixin, LegacyMixin, LabelMixin):
     r"""
     This generic class is meant as a starter for custom Phase objects
 
@@ -59,16 +59,9 @@ class GenericPhase(Base, ModelsMixin):
         # Overwrite with user supplied settings, if any
         self.settings.update(settings)
 
-        # Deal with network or project arguments
-        if network is not None:
-            if project is not None:
-                assert network is project.network
-            else:
-                project = network.project
+        super().__init__(network=network, project=project, **kwargs)
 
-        super().__init__(project=project, **kwargs)
-
-        # If project has a network object, adjust pore and throat sizes
+        # If project has a network object, adjust pore and throat array sizes
         network = self.project.network
         if network:
             self['pore.all'] = ones((network.Np, ), dtype=bool)
@@ -98,3 +91,7 @@ class GenericPhase(Base, ModelsMixin):
                                mode='mean')
         vals = super().__getitem__(key)
         return vals
+
+    @property
+    def phase(self):
+        return self.project.find_phase(self)

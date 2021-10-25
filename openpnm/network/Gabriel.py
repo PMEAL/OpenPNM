@@ -20,17 +20,9 @@ class Gabriel(Delaunay):
 
     Parameters
     ----------
-    points : array_like
-        An array of coordinates indicating the [x, y, z] locations of each
-        point to use in the tessellation.  Note that the points must be given
-        in rectilinear coordinates regardless of which domain ``shape`` was
-        specified.  To convert between coordinate systems see the
-        ``convert_coords`` function in the ``openpnm.topotools`` module.
-
-    num_points : scalar
-        The number of points to place in the domain, which will become the
-        pore centers after the tessellation is performed.  This value is
-        ignored if ``points`` are given.
+    points : array_like or int
+        Can either be an N-by-3 array of point coordinates which will be used,
+        or a scalar value indicating the number of points to generate
 
     shape : array_like
         The size of the domain.  It's possible to create cubic, or 2D square
@@ -72,9 +64,9 @@ class Gabriel(Delaunay):
 
     """
 
-    def __init__(self, shape=[1, 1, 1], num_points=None, points=None, **kwargs):
+    def __init__(self, shape=[1, 1, 1], points=None, **kwargs):
         # Generate Delaunay tessellation from super class, then trim
-        super().__init__(shape=shape, num_points=num_points, points=points, **kwargs)
+        super().__init__(shape=shape, points=points, **kwargs)
         if 'pore.coords' in self.keys():
             points = self['pore.coords']
             conns = self['throat.conns']

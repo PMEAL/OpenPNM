@@ -41,14 +41,7 @@ class GenericPhysics(Subdomain, ModelsMixin):
         if phase is None:
             self.settings['freeze_models'] = True
 
-        # Deal with network or project arguments
-        if network is not None:
-            if project is not None:
-                assert network is project.network
-            else:
-                project = network.project
-
-        super().__init__(project=project, **kwargs)
+        super().__init__(project=project, network=network, **kwargs)
 
         network = self.project.network
         if network:
@@ -66,6 +59,10 @@ class GenericPhysics(Subdomain, ModelsMixin):
                                    + 'a phase is also given')
                 else:
                     self.set_geometry(geometry=geometry)
+
+    @property
+    def phase(self):
+        return self.project.find_phase(self)
 
     def set_phase(self, phase=None, mode='swap'):
         r"""

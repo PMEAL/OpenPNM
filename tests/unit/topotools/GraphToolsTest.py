@@ -540,6 +540,14 @@ class GraphToolsTest:
         b = topotools.find_complement(sites=a, am=am, asmask=True)
         assert len(b) == self.net.Np
 
+    def test_drop_sites(self):
+        am = self.net.create_adjacency_matrix(fmt='coo')
+        assert np.all(am.shape == (6, 6))
+        assert am.col.max() == 5
+        am, Ts = topotools.drop_sites(am, sites=[0])
+        assert np.all(am.shape == (5, 5))
+        assert am.col.max() == 4
+
 
 if __name__ == '__main__':
 

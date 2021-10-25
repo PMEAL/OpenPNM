@@ -18,7 +18,11 @@ from .topotools import extend
 from .topotools import filter_pores_by_z
 from .topotools import find_surface_pores
 from .topotools import find_pore_to_pore_distance
+from .topotools import from_cyl
+from .topotools import from_sph
 from .topotools import generate_base_points
+from .topotools import get_shape
+from .topotools import get_spacing
 from .topotools import iscoplanar
 from .topotools import isoutside
 from .topotools import is_fully_connected
@@ -34,6 +38,8 @@ from .topotools import stitch_pores
 from .topotools import subdivide
 from .topotools import template_cylinder_annulus
 from .topotools import template_sphere_shell
+from .topotools import to_cyl
+from .topotools import to_sph
 from .topotools import trim
 from .topotools import trim_occluded_throats
 
@@ -44,6 +50,7 @@ from .perctools import bond_percolation
 from .perctools import find_clusters
 from .perctools import find_path
 
+from .graphtools import drop_sites
 from .graphtools import find_neighbor_sites
 from .graphtools import find_neighbor_bonds
 from .graphtools import find_connected_sites
@@ -64,3 +71,6 @@ from .plottools import plot_connections
 from .plottools import plot_coordinates
 from .plottools import plot_networkx
 from .plottools import plot_network_jupyter
+from .plottools import generate_voxel_image
+
+from . import generators
