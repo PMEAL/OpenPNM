@@ -42,8 +42,6 @@ class VoronoiTest:
                              'throat.conduit_lengths.pore2',
                              'throat.conduit_lengths.throat',
                              'throat.diameter',
-                             'throat.endpoints.head',
-                             'throat.endpoints.tail',
                              'throat.incenter',
                              'throat.indiameter',
                              'throat.length',

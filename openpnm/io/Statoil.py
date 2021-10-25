@@ -391,12 +391,8 @@ class Statoil(GenericIO):
         geo.add_model(propname='throat.diameter',
                       model=mods.misc.scaled,
                       prop='throat.diameter_temp', factor=0.5)
-        geo.add_model(propname='throat.length',
-                      model=mods.geometry.throat_length.classic)
-        geo.add_model(propname='throat.endpoints',
-                      model=mods.geometry.throat_endpoints.spherical_pores)
         geo.add_model(propname='throat.conduit_lengths',
-                      model=mods.geometry.throat_length.conduit_lengths)
+                      model=mods.geometry.conduit_lengths.spheres_and_cylinders)
         geo.add_model(propname='throat.volume',
                       model=mods.geometry.throat_volume.cylinder)
 
