@@ -235,9 +235,10 @@ class _StickAndBall2D(GenericGeometry):
                        throat_endpoints='throat.endpoints',
                        throat_length='throat.length')
 
+
 def circular_pores(target, pore_diameter='pore.diameter',
-                    throat_diameter='throat.diameter',
-                    throat_centroid='throat.centroid'):
+                   throat_diameter='throat.diameter',
+                   throat_centroid='throat.centroid'):
     r"""
     Calculate the coordinates of throat endpoints, assuming spherical pores.
     This model accounts for the overlapping lens between pores and throats.
@@ -314,6 +315,7 @@ def circular_pores(target, pore_diameter='pore.diameter',
     EP1[mask] = (xyz[cn[:, 0]] + L1[:, None] * unit_vec_P1T)[mask]
     EP2[mask] = (xyz[cn[:, 1]] + L2[:, None] * unit_vec_P2T)[mask]
     return {'head': EP1, 'tail': EP2}
+
 
 def piecewise(
     target,
