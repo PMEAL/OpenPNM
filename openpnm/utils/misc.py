@@ -574,15 +574,6 @@ def nbr_to_str(nbr, t_precision):
     return nbr_str
 
 
-def _validate_conduit_array(arr):
-    r"""
-    Validates whether the given array is a proper conduit array.
-    """
-    arr = _np.array(arr)
-    if arr.shape[1] != 3:
-        raise Exception("Conduit array must be exactly 3 columns wide.")
-
-
 def prettify_logger_message(msg):
     r"""Prettifies logger messages by breaking them up into multi lines"""
     from textwrap import wrap
