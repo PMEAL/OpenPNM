@@ -5,7 +5,7 @@ on: [push]
 jobs:
   build:
 
-    runs-on: ${{ matrix.operating-system }}
+    runs-on: ${{ matrix.os }}
     defaults:
       run:
         shell: bash
@@ -14,7 +14,7 @@ jobs:
       max-parallel: 1
       matrix:
         python-version: [3.8]
-        operating-system: [ubuntu-latest]
+        os: [ubuntu-latest]
 
     steps:
       - uses: actions/checkout@v2
