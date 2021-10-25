@@ -1,4 +1,4 @@
-name: Unit/integration tests
+name: Tests
 
 on: [push]
 
