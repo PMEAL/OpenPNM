@@ -60,6 +60,10 @@ class GenericPhysics(Subdomain, ModelsMixin):
                 else:
                     self.set_geometry(geometry=geometry)
 
+    @property
+    def phase(self):
+        return self.project.find_phase(self)
+
     def set_phase(self, phase=None, mode='swap'):
         r"""
         Sets the association between this physics and a phase.

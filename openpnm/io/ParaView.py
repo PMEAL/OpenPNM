@@ -37,7 +37,7 @@ class ParaView(GenericIO):
                 "conda install -c conda-forge paraview, however this may require"
                 " using a virtualenv since conflicts with other packages are common."
                 " This is why it is not explicitly included as a dependency in"
-                " porespy."
+                " OpenPNM."
             )
             raise ModuleNotFoundError(msg)
         paraview.simple._DisableFirstRenderCameraReset()

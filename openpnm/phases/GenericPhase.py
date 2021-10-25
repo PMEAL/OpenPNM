@@ -91,3 +91,7 @@ class GenericPhase(Base, ModelsMixin, LegacyMixin, LabelMixin):
                                mode='mean')
         vals = super().__getitem__(key)
         return vals
+
+    @property
+    def phase(self):
+        return self.project.find_phase(self)
