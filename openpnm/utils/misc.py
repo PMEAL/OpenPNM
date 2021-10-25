@@ -574,20 +574,6 @@ def nbr_to_str(nbr, t_precision):
     return nbr_str
 
 
-def _validate_conduit_dict(d):
-    r"""
-    Validates whether the given dictionary is a proper conduit dict.
-    """
-    if not isinstance(d, dict):
-        raise Exception("Conduit dictionary must be of type dict.")
-    allowed_keys = set(["pore1", "throat", "pore2"])
-    if allowed_keys != set(d.keys()):
-        raise Exception("Conduit dictionary keys must be 'pore1', 'throat', and 'pore2'")
-    elem_lengths = [len(x) for x in d.values()]
-    if len(_np.unique(elem_lengths)) != 1:
-        raise Exception("Conduit dictionary must have arrays of the same length.")
-
-
 def _validate_conduit_array(arr):
     r"""
     Validates whether the given array is a proper conduit array.
