@@ -1,7 +1,5 @@
-[![](https://github.com/PMEAL/OpenPNM/workflows/Ubuntu/badge.svg)](https://github.com/PMEAL/OpenPNM/actions)
-[![](https://github.com/PMEAL/OpenPNM/workflows/macOS/badge.svg)](https://github.com/PMEAL/OpenPNM/actions)
-[![](https://github.com/PMEAL/OpenPNM/workflows/Windows/badge.svg)](https://github.com/PMEAL/OpenPNM/actions)
-[![](https://github.com/PMEAL/OpenPNM/workflows/Examples/badge.svg)](https://github.com/PMEAL/OpenPNM/actions) <br>
+[![](https://github.com/PMEAL/OpenPNM/actions/workflows/tests.yml/badge.svg)](https://github.com/PMEAL/OpenPNM/actions)
+[![](https://github.com/PMEAL/OpenPNM/actions/workflows/examples.yml/badge.svg)](https://github.com/PMEAL/OpenPNM/actions)
 [![](https://codecov.io/gh/PMEAL/OpenPNM/branch/dev/graph/badge.svg)](https://codecov.io/gh/PMEAL/OpenPNM)
 [![](https://img.shields.io/badge/ReadTheDocs-GO-blue.svg)](https://pmeal.github.io/OpenPNM/)
 [![](https://badge.fury.io/py/openpnm.svg)](https://pypi.python.org/pypi/openpnm)
