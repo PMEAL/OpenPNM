@@ -1,6 +1,7 @@
 import numpy as np
 import openpnm as op
 from numpy.testing import assert_allclose
+from openpnm.utils import remove_prop_deep
 
 
 class DiffusiveConductanceTest:
@@ -20,70 +21,66 @@ class DiffusiveConductanceTest:
         self.phys = op.physics.GenericPhysics(network=self.net,
                                               phase=self.phase,
                                               geometry=self.geo)
-
-    def test_generic_diffusive(self):
-        # Pass size factors as a dict
-        self.geo['throat.diffusive_size_factors'] = {
+        self.size_factors_dict = {
             "pore1": 0.123, "throat": 0.981, "pore2": 0.551
         }
+
+    def test_generic_diffusive_size_factors_as_dict(self):
+        self.geo['throat.diffusive_size_factors'] = self.size_factors_dict
         mod = op.models.physics.diffusive_conductance.generic_diffusive
         self.phys.add_model(propname='throat.diffusive_conductance', model=mod)
         self.phys.regenerate_models()
         actual = self.phys['throat.diffusive_conductance'].mean()
         assert_allclose(actual, desired=0.091204832 * 1.3)
-        # Pass size factors as an array
-        for elem in ["pore1", "throat", "pore2"]:
-            del self.geo[f"throat.diffusive_size_factors.{elem}"]
+        remove_prop_deep(self.geo, "throat.diffusive_size_factors")
+
+    def test_generic_diffusive_size_factors_as_array(self):
         self.geo['throat.diffusive_size_factors'] = 0.896
-        self.phys.regenerate_models("throat.diffusive_conductance")
+        mod = op.models.physics.diffusive_conductance.generic_diffusive
+        self.phys.add_model(propname='throat.diffusive_conductance', model=mod)
+        self.phys.regenerate_models()
         actual = self.phys['throat.diffusive_conductance'].mean()
         assert_allclose(actual, desired=0.896 * 1.3)
+        remove_prop_deep(self.geo, "throat.diffusive_size_factors")
 
     def test_generic_diffusive_partial_domain(self):
         net = op.network.Cubic(shape=[5, 5, 5])
-        geo = op.geometry.GenericGeometry(network=net,
-                                          pores=net.Ps,
-                                          throats=net.Ts[0:5])
+        geo = op.geometry.GenericGeometry(network=net, pores=net.Ps, throats=net.Ts[0:5])
         phase = op.phases.GenericPhase(network=net)
         phase['pore.diffusivity'] = 1.3
         geo['throat.diffusive_size_factors'] = 0.5
         phys = op.physics.GenericPhysics(network=net, phase=phase, geometry=geo)
         mod = op.models.physics.diffusive_conductance.generic_diffusive
-        phys.add_model(propname='throat.g_diffusive_conductance', model=mod)
+        phys.add_model(propname='throat.diffusive_conductance', model=mod)
         phys.regenerate_models()
-        actual = phys['throat.g_diffusive_conductance'].mean()
-        assert actual == 0.65
-        assert len(phys['throat.g_diffusive_conductance']) == 5
+        actual = phys['throat.diffusive_conductance'].mean()
+        assert_allclose(actual, 0.65)
+        assert len(phys['throat.diffusive_conductance']) == 5
 
-    def test_ordinary_diffusion(self):
-        del self.geo["throat.diffusive_size_factors"]
-        # Pass size factors as a dict
-        self.geo['throat.diffusive_size_factors'] = {
-            "pore1": 0.123, "throat": 0.981, "pore2": 0.551
-        }
+    def test_ordinary_diffusion_size_factors_given_as_dict(self):
+        self.geo['throat.diffusive_size_factors'] = self.size_factors_dict
         mod = op.models.physics.diffusive_conductance.ordinary_diffusion
-        self.phys.add_model(propname='throat.g_diffusive_conductance', model=mod)
+        self.phys.add_model(propname='throat.diffusive_conductance', model=mod)
         self.phys.regenerate_models()
-        actual = self.phys['throat.g_diffusive_conductance'].mean()
+        actual = self.phys['throat.diffusive_conductance'].mean()
         assert_allclose(actual, desired=0.091204832 * 1.3)
-        # Pass size factors as an array
-        for elem in ["pore1", "throat", "pore2"]:
-            del self.geo[f"throat.diffusive_size_factors.{elem}"]
+        remove_prop_deep(self.geo, "throat.diffusive_size_factors")
+
+    def test_ordinary_diffusion_size_factors_given_as_array(self):
         self.geo['throat.diffusive_size_factors'] = 0.896
-        self.phys.regenerate_models("throat.g_diffusive_conductance")
-        actual = self.phys['throat.g_diffusive_conductance'].mean()
+        mod = op.models.physics.diffusive_conductance.ordinary_diffusion
+        self.phys.add_model(propname='throat.diffusive_conductance', model=mod)
+        self.phys.regenerate_models()
+        actual = self.phys['throat.diffusive_conductance'].mean()
         assert_allclose(actual, desired=0.896 * 1.3)
+        remove_prop_deep(self.geo, "throat.diffusive_size_factors")
 
     def test_mixed_diffusion(self):
-        del self.geo["throat.diffusive_size_factors"]
-        # Pass size factors as a dict
-        self.geo['throat.diffusive_size_factors'] = {
-            "pore1": 0.123, "throat": 0.981, "pore2": 0.551
-        }
+        self.geo['throat.diffusive_size_factors'] = self.size_factors_dict
         mod = op.models.physics.diffusive_conductance.mixed_diffusion
-        self.phys.add_model(propname='throat.m_diffusive_conductance', model=mod)
+        self.phys.add_model(propname='throat.diffusive_conductance', model=mod)
         self.phys.regenerate_models()
-        actual = self.phys['throat.m_diffusive_conductance'].mean()
+        actual = self.phys['throat.diffusive_conductance'].mean()
         assert_allclose(actual, desired=0.117568, rtol=1e-5)
 
     def test_multiphase_diffusion(self):
