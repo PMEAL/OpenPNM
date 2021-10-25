@@ -1,4 +1,5 @@
 codecov
+jupyter
 nbval
 pytest
 pytest-cache
