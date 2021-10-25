@@ -91,8 +91,6 @@ that change can be cascaded to all dependent properties ('pore.diameter').
 from .GenericGeometry import GenericGeometry
 from ._StickAndBall import _StickAndBall
 from ._StickAndBall2D import _StickAndBall2D
-from .Boundary import Boundary
-from .Boundary2D import Boundary2D
 from .Imported import Imported
 from .SpheresAndCylinders import SpheresAndCylinders
 from .CirclesAndRectangles import CirclesAndRectangles
