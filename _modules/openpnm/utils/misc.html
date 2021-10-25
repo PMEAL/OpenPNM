@@ -200,9 +200,12 @@
     <span class="s2">&quot;unique_list&quot;</span><span class="p">,</span>
     <span class="s2">&quot;tic&quot;</span><span class="p">,</span> <span class="s2">&quot;toc&quot;</span><span class="p">,</span>
     <span class="s2">&quot;is_symmetric&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;is_valid_propname&quot;</span><span class="p">,</span>
     <span class="s2">&quot;nbr_to_str&quot;</span><span class="p">,</span>
     <span class="s2">&quot;conduit_dict_to_array&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;conduit_array_to_dict&quot;</span>
+    <span class="s2">&quot;conduit_array_to_dict&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;prettify_logger_message&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;remove_prop_deep&quot;</span>
 <span class="p">]</span>
 
 
@@ -484,7 +487,6 @@
 <div class="viewcode-block" id="unique_list"><a class="viewcode-back" href="../../../modules/utils/misc.html#openpnm.utils.unique_list">[docs]</a><span class="k">def</span> <span class="nf">unique_list</span><span class="p">(</span><span class="n">input_list</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    For a given list (of points) remove any duplicates</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">output_list</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">input_list</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
@@ -510,7 +512,6 @@
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Given a list of nested lists of arbitrary depth, returns a single level or</span>
 <span class="sd">    &#39;flat&#39; list.</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">x</span> <span class="o">=</span> <span class="n">input_list</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
@@ -523,7 +524,6 @@
 <span class="sd">    Given a nested dictionary, ensures that all nested dicts are normal</span>
 <span class="sd">    Python dicts.  This is necessary for pickling, or just converting</span>
 <span class="sd">    an &#39;auto-vivifying&#39; dict to something that acts normal.</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">plain_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">input_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
@@ -796,9 +796,7 @@
 
 
 <span class="k">def</span> <span class="nf">_validate_conduit_dict</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Validates whether the given dictionary is a proper conduit dict.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Validates whether the given dictionary is a proper conduit dict.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Conduit dictionary must be of type dict.&quot;</span><span class="p">)</span>
     <span class="n">allowed_keys</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="s2">&quot;pore1&quot;</span><span class="p">,</span> <span class="s2">&quot;throat&quot;</span><span class="p">,</span> <span class="s2">&quot;pore2&quot;</span><span class="p">])</span>
@@ -810,9 +808,7 @@
 
 
 <span class="k">def</span> <span class="nf">_validate_conduit_array</span><span class="p">(</span><span class="n">arr</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Validates whether the given array is a proper conduit array.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Validates whether the given array is a proper conduit array.&quot;&quot;&quot;</span>
     <span class="n">arr</span> <span class="o">=</span> <span class="n">_np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Conduit array must be exactly 3 columns wide.&quot;</span><span class="p">)</span>
@@ -825,6 +821,14 @@
     <span class="n">indent</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="mi">13</span>
     <span class="n">temp</span> <span class="o">=</span> <span class="n">wrap</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">linewidth</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">indent</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">temp</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">remove_prop_deep</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">propname</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Hierarchically deletes the given propname and its children&quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_parse_element</span><span class="p">(</span><span class="n">propname</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">propname</span><span class="p">):</span>
+            <span class="k">del</span> <span class="n">obj</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
 </pre></div>
 
               </div>
