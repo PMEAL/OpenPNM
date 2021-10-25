@@ -36,7 +36,7 @@ jobs:
           pip install \
             -r requirements/pip_requirements.txt \
             -r requirements/test_requirements.txt
-          # Install OpenPNM from the checked-out branch
+          # Install openpnm from the checked-out branch
           pip install -e . --no-deps
 
       - name: Running tests
