@@ -8,7 +8,7 @@ class UtilsTest:
 
     def setup_class(self):
         self.net = op.network.Cubic(shape=[3, 3, 3])
-        self.geo = op.geometry.StickAndBall(
+        self.geo = op.geometry._StickAndBall(
             network=self.net, pores=self.net.Ps, throats=self.net.Ts)
 
     def teardown_class(self):
@@ -58,7 +58,7 @@ class UtilsTest:
 
     def test_is_symmetric_FickianDiffusion_must_be_symmetric(self):
         net = op.network.Cubic(shape=[5, 5, 5])
-        geom = op.geometry.StickAndBall(network=net,
+        geom = op.geometry._StickAndBall(network=net,
                                         pores=net.Ps,
                                         throats=net.Ts)
         air = op.phases.Air(network=net)
@@ -70,7 +70,7 @@ class UtilsTest:
 
     def test_is_symmetric_AdvectionDiffusion_must_be_nonsymmetric(self):
         net = op.network.Cubic(shape=[5, 5, 5])
-        geom = op.geometry.StickAndBall(network=net,
+        geom = op.geometry._StickAndBall(network=net,
                                         pores=net.Ps,
                                         throats=net.Ts)
         air = op.phases.Air(network=net)

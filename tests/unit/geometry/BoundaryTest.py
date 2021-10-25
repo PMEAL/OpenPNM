@@ -15,7 +15,7 @@ class BoundaryTest:
         Ts_int = self.net.throats(labels=['internal', 'surface'], mode='union')
         TB_1 = self.net.find_neighbor_throats(pores=Ps_boun[Pb_mask])
         TB_2 = self.net.find_neighbor_throats(pores=Ps_boun[~Pb_mask])
-        self.geo = op.geometry.StickAndBall(network=self.net,
+        self.geo = op.geometry._StickAndBall(network=self.net,
                                             pores=Ps_int,
                                             throats=Ts_int)
         self.boun1 = op.geometry.Boundary(network=self.net,
@@ -48,7 +48,7 @@ class BoundaryTest:
         Ps_boun = pn.pores(labels=['*boundary'])
         Ts_int = pn.throats(labels=['*boundary'], mode='not')
         Ts_boun = pn.throats(labels=['*boundary'])
-        geo = op.geometry.StickAndBall(network=pn,
+        geo = op.geometry._StickAndBall(network=pn,
                                        pores=Ps_int, throats=Ts_int)
         boun = op.geometry.Boundary(network=pn, pores=Ps_boun,
                                     throats=Ts_boun)
