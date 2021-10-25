@@ -8,9 +8,9 @@ class GenericTransportTest:
 
     def setup_class(self):
         self.net = op.network.Cubic(shape=[9, 9, 9])
-        self.geo = op.geometry.StickAndBall(network=self.net,
-                                            pores=self.net.Ps,
-                                            throats=self.net.Ts)
+        self.geo = op.geometry._StickAndBall(network=self.net,
+                                             pores=self.net.Ps,
+                                             throats=self.net.Ts)
         self.phase = op.phases.Air(network=self.net)
         self.phase['pore.mole_fraction'] = 0
         self.phys = op.physics.GenericPhysics(network=self.net,
@@ -199,9 +199,9 @@ class GenericTransportTest:
 
     def test_rate_Nt_by_2_conductance(self):
         net = op.network.Cubic(shape=[1, 6, 1])
-        geom = op.geometry.StickAndBall(network=net,
-                                        pores=net.Ps,
-                                        throats=net.Ts)
+        geom = op.geometry._StickAndBall(network=net,
+                                         pores=net.Ps,
+                                         throats=net.Ts)
         air = op.phases.Air(network=net)
         water = op.phases.Water(network=net)
         m = op.phases.MultiPhase(phases=[air, water], project=net.project)

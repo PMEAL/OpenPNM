@@ -43,7 +43,7 @@ class FormationFactor(GenericMetric):
     --------
     >>> import openpnm as op
     >>> pn = op.network.Cubic(shape=[10, 10, 10], spacing=1e-5)
-    >>> geo = op.geometry.StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts)
+    >>> geo = op.geometry._StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts)
 
     Now find the formation factor of the network:
 

@@ -26,7 +26,7 @@ pre-configured with a selection of pore-scale models.  These classes provide
 a good starting point, but generally the choice of models and parameters used
 will be specific to each problem and must be designed by the user.
 
-The ``StickAndBall`` class, as it's name suggests assumes spherical pores and
+The ``_StickAndBall`` class, as it's name suggests assumes spherical pores and
 cylindrical throats.  Pore sizes are assigned by finding the largest sphere
 that can fit at each site (this will be dictated by the lattice spacing used
 when generating the Network), then scaling that value by a random number
@@ -34,7 +34,7 @@ between 0 and 0.1.  Throat diameters are taken as half the size of the smaller
 of it's two neighbors.  All other properties are calculated using the geometry
 of spheres and throats.
 
-The table belows shows the specific models used on ``StickAndBall``:
+The table belows shows the specific models used on ``_StickAndBall``:
 
 +----+----------------------+------------------+--------------------------+
 | #  | Property Name        | Parameter        | Value                    |
@@ -66,13 +66,13 @@ The table belows shows the specific models used on ``StickAndBall``:
 
 **Customizing a Preconfigured Geometry Instance**
 
-Perhaps the ``StickAndBall`` class is almost suitable but you wish to decrease
+Perhaps the ``_StickAndBall`` class is almost suitable but you wish to decrease
 the pores sizes.  The following example illustrates how to alter the
 ``'pore.size'`` model accordingly:
 
 >>> import openpnm as op
 >>> pn = op.network.Cubic([5, 5, 5])
->>> geo = op.geometry.StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts)
+>>> geo = op.geometry._StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts)
 
 We can reach into the ``models`` attribute and change the parameters of any
 model as follows:

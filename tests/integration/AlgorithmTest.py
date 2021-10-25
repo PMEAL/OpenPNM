@@ -82,7 +82,7 @@ def test_Darcy_alg():
 #    Lc = 0.00004
 #    pn = op.network.Cubic(shape=divs, spacing=Lc)
 #    # Generate Geometry objects for internal and boundary pores
-#    geom = op.geometry.StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts)
+#    geom = op.geometry._StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts)
 #    # Create Phase object and associate with a Physics object
 #    air = op.phases.Air(network=pn)
 #    phys = op.physics.GenericPhysics(network=pn, phase=air, geometry=geom)

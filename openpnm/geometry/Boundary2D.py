@@ -47,7 +47,7 @@ class Boundary2D(GenericGeometry):
     >>> Ps_boun = pn.pores(labels=['*boundary'])
     >>> Ts_int = pn.throats(labels=['*boundary'], mode='not')
     >>> Ts_boun = pn.throats(labels=['*boundary'])
-    >>> geo = openpnm.geometry.StickAndBall(network=pn,
+    >>> geo = openpnm.geometry._StickAndBall(network=pn,
     ...                                     pores=Ps_int, throats=Ts_int)
     >>> boun = openpnm.geometry.Boundary(network=pn, pores=Ps_boun,
     ...                                  throats=Ts_boun)

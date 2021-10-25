@@ -25,7 +25,7 @@ class MercuryIntrusion(Porosimetry):
     --------
     >>> import openpnm as op
     >>> pn = op.network.Cubic(shape=[10, 10, 10], spacing=1e-5)
-    >>> geo = op.geometry.StickAndBall(network=pn)
+    >>> geo = op.geometry._StickAndBall(network=pn)
     >>> mip = op.algorithms.metrics.MercuryIntrusion(network=pn)
     >>> mip.run()
 
