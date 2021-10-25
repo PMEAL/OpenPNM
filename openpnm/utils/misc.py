@@ -85,7 +85,7 @@ class PrintableDict(OrderedDict):
     >>> d = {'item1': 1, 'item2': '1', 'item3': [1, 1], 'item4': arr([1, 1])}
     >>> print(PrintableDict(d))
     ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-    key                                 value
+    Key                                 Value
     ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
     item1                               1
     item2                               1
@@ -99,13 +99,12 @@ class PrintableDict(OrderedDict):
     """
 
     def __init__(self, *args, **kwargs):
-        self._value = "value"
-        self._key = "key"
+        self._value = "Value"
+        self._key = "Key"
         super().__init__(*args, **kwargs)
 
     def __repr__(self):
-        text = dict(self).__str__()
-        return text
+        return self.__str__()
 
     def __str__(self):
         header = "―" * 78
