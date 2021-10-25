@@ -574,28 +574,6 @@ def nbr_to_str(nbr, t_precision):
     return nbr_str
 
 
-def conduit_array_to_dict(arr):
-    r"""
-    Converts a conduit array to a conduit dict.
-
-    A conduit array is 3 columns wide, each pertaining to a conduit
-    property for pore1, throat, and pore2, respectively.
-
-    Parameters
-    ----------
-    arr : ndarray
-        Conduit array.
-
-    Returns
-    -------
-    dict
-        Conduit dictionary with keys 'pore1', 'throat', and 'pore2'.
-
-    """
-    _validate_conduit_array(arr)
-    return {"pore1": arr[:, 0], "throat": arr[:, 1], "pore2": arr[:, 2]}
-
-
 def _validate_conduit_dict(d):
     r"""
     Validates whether the given dictionary is a proper conduit dict.
