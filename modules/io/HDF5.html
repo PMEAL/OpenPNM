@@ -610,56 +610,6 @@
                 
   <section id="hdf5">
 <span id="hdf5-api"></span><h1>HDF5<a class="headerlink" href="#hdf5" title="Permalink to this headline">¶</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="openpnm.io.HDF5">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">HDF5</span></span><a class="reference internal" href="../../_modules/openpnm/io/HDF5.html#HDF5"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.io.HDF5" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.io.GenericIO.GenericIO</span></code></p>
-<p>The HDF5 (Hierarchical Data Format) file is good for high-peformance, long
-term data storage</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="openpnm.io.HDF5.export_data">
-<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">export_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">network</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phases</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">element</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['pore',</span> <span class="pre">'throat']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interleave</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flatten</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">categorize_by</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/io/HDF5.html#HDF5.export_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.io.HDF5.export_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates an HDF5 file containing data from the specified objects,
-and categorized according to the given arguments.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>network</strong> (<em>OpenPNM Network Object</em>) – The network containing the desired data</p></li>
-<li><p><strong>phases</strong> (<em>list of OpenPNM Phase Objects</em><em> (</em><em>optional</em><em>, </em><em>default is none</em><em>)</em>) – A list of phase objects whose data are to be included</p></li>
-<li><p><strong>element</strong> (<em>string</em><em> or </em><em>list of strings</em>) – An indication of whether ‘pore’ and/or ‘throat’ data are desired.
-The default is both.</p></li>
-<li><p><strong>interleave</strong> (boolean (default is <code class="docutils literal notranslate"><span class="pre">True</span></code>)) – When <code class="docutils literal notranslate"><span class="pre">True</span></code> (default) the data from all Geometry objects (and
-Physics objects if <code class="docutils literal notranslate"><span class="pre">phases</span></code> are given) is interleaved into
-a single array and stored as a network property (or Phase
-property for Physics data). When <code class="docutils literal notranslate"><span class="pre">False</span></code>, the data for each
-object are stored under their own dictionary key, the structuring
-of which depends on the value of the <code class="docutils literal notranslate"><span class="pre">flatten</span></code> argument.</p></li>
-<li><p><strong>flatten</strong> (boolean (default is <code class="docutils literal notranslate"><span class="pre">True</span></code>)) – When <code class="docutils literal notranslate"><span class="pre">True</span></code>, all objects are accessible from the top level
-of the dictionary.  When <code class="docutils literal notranslate"><span class="pre">False</span></code> objects are nested under their
-parent object.  If <code class="docutils literal notranslate"><span class="pre">interleave</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code> this argument is
-ignored.</p></li>
-<li><p><strong>categorize_by</strong> (<em>string</em><em> or </em><em>list of strings</em>) – <p>Indicates how the dictionaries should be organized.  The list can
-contain any, all or none of the following strings:</p>
-<p><strong>’objects’</strong> : If specified the dictionary keys will be stored
-under a general level corresponding to their type (e.g.
-‘network/net_01/pore.all’). If  <code class="docutils literal notranslate"><span class="pre">interleave</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code> then
-only the only categories are <em>network</em> and <em>phase</em>, since
-<em>geometry</em> and <em>physics</em> data get stored under their respective
-<em>network</em> and <em>phase</em>.</p>
-<p><strong>’data’</strong> : If specified the data arrays are additionally
-categorized by <code class="docutils literal notranslate"><span class="pre">label</span></code> and <code class="docutils literal notranslate"><span class="pre">property</span></code> to separate <em>boolean</em>
-from <em>numeric</em> data.</p>
-<p><strong>’elements’</strong> : If specified the data arrays are additionally
-categorized by <code class="docutils literal notranslate"><span class="pre">pore</span></code> and <code class="docutils literal notranslate"><span class="pre">throat</span></code>, meaning that the propnames
-are no longer prepended by a ‘pore.’ or ‘throat.’</p>
-</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
 </section>
 
 
