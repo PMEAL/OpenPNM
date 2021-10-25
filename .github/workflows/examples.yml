@@ -5,13 +5,16 @@ on: [push]
 jobs:
   build:
 
-    runs-on: ${{ matrix.operating-system }}
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
 
     strategy:
-      max-parallel: 4
+      max-parallel: 1
       matrix:
         python-version: [3.8]
-        operating-system: [ubuntu-latest]
+        os: [ubuntu-latest]
 
     steps:
       - uses: actions/checkout@v2
@@ -33,7 +36,7 @@ jobs:
           pip install \
             -r requirements/pip_requirements.txt \
             -r requirements/test_requirements.txt
-          # Install OpenPNM from the checked-out branch
+          # Install openpnm from the checked-out branch
           pip install -e . --no-deps
 
       - name: Running tests
