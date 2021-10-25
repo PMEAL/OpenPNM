@@ -610,6 +610,444 @@
                 
   <section id="project">
 <span id="project-api"></span><h1>Project<a class="headerlink" href="#project" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="openpnm.utils.Project">
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">Project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Project.html#Project"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.Project" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></p>
+<p>This class provides a container for all OpenPNM objects in a given
+simulation.</p>
+<p>A simulation is defined as a Network and all of it’s associated objects.
+When instantiating a Network, a Project can be passed as an argument, but
+if not given one is created.  When instantiating any other object either
+a Network or a Project can be supplied.  In the former case, the
+Network’s Project is retrieved and used.  The end result is that all
+objects are stored in a specific Project.</p>
+<p>The Project to which any object belongs can be retrieved with
+<code class="docutils literal notranslate"><span class="pre">obj.project</span></code>.  Conversely, printing a Project displays a list of all
+objects it contains.</p>
+<p>Moreover, all Projects are registered with the Workspace.  Since there can
+be only instance of the Workspace it is possible to view all open Projects
+by printing the Workspace.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="workspace.html#openpnm.utils.Workspace" title="openpnm.utils.Workspace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Workspace</span></code></a></p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.utils.Project.append">
+<span class="sig-name descname"><span class="pre">append</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Project.html#Project.append"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.Project.append" title="Permalink to this definition">¶</a></dt>
+<dd><p>The Project (a list) must be kept as a flat list, so the append
+function, which can normally be used to insert a list into a list, is
+overloaded to basically prevent the normal append operation and simply
+calls <code class="docutils literal notranslate"><span class="pre">extend</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.utils.Project.check_data_health">
+<span class="sig-name descname"><span class="pre">check_data_health</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Project.html#Project.check_data_health"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.Project.check_data_health" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check the health of pore and throat data arrays.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>obj</strong> (<em>OpenPNM object</em>) – A handle of the object to be checked</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>health</strong> – Returns a HealthDict object which a basic dictionary with an added
+<code class="docutils literal notranslate"><span class="pre">health</span></code> attribute that is True is all entries in the dict are
+deemed healthy (empty lists), or False otherwise.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.utils.Project.check_geometry_health">
+<span class="sig-name descname"><span class="pre">check_geometry_health</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Project.html#Project.check_geometry_health"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.Project.check_geometry_health" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform a check to find pores with overlapping or undefined Geometries</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>A HealthDict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.utils.Project.check_network_health">
+<span class="sig-name descname"><span class="pre">check_network_health</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Project.html#Project.check_network_health"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.Project.check_network_health" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method check the network topological health by checking for:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>Isolated pores</p></li>
+<li><p>Islands or isolated clusters of pores</p></li>
+<li><p>Duplicate throats</p></li>
+<li><p>Bidirectional throats (ie. symmetrical adjacency matrix)</p></li>
+<li><p>Headless throats</p></li>
+</ol>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>health</strong> – A dictionary containing the offending pores or throat numbers under
+each named key.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>It also returns a list of which pores and throats should be trimmed
+from the network to restore health.  This list is a suggestion only,
+and is based on keeping the largest cluster and trimming the others.</p>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>Does not yet check for duplicate pores</p></li>
+<li><p>Does not yet suggest which throats to remove</p></li>
+<li><p>This is just a ‘check’ and does not ‘fix’ the problems it finds</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.utils.Project.check_physics_health">
+<span class="sig-name descname"><span class="pre">check_physics_health</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phase</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Project.html#Project.check_physics_health"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.Project.check_physics_health" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform a check to find pores which have overlapping or missing Physics</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>phase</strong> (<em>OpenPNM Phase object</em>) – The Phase whose Physics should be checked</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>A HealthDict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.utils.Project.clear">
+<span class="sig-name descname"><span class="pre">clear</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">objtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Project.html#Project.clear"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.Project.clear" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clears objects from the project entirely or selectively, depdening on
+the received arguments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>objtype</strong> (<em>list of strings</em>) – A list containing the object type(s) to be removed.  If no types
+are specified, then all objects are removed.  To clear only objects
+of a specific type, use <em>‘network’</em>, <em>‘geometry’</em>, <em>‘phase’</em>,
+<em>‘physics’</em>, or <em>‘algorithm’</em>.  It’s also possible to use
+abbreviations, like <em>‘geom’</em>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.utils.Project.copy">
+<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Project.html#Project.copy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.Project.copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a deep copy of the current project</p>
+<p>A deep copy means that new, unique versions of all the objects are
+created but with identical data and properties.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>string</em>) – The name to give to the new project.  If not supplied, a name
+is automatically generated.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>proj</strong> – A new Project object containing copies of all objects</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Because they are new objects, they are given a new uuid
+(<code class="docutils literal notranslate"><span class="pre">obj.settings['_uuid']</span></code>), but the uuid of the original object is
+also stored (<code class="docutils literal notranslate"><span class="pre">obj.settings['_uuid_old']</span></code>) for reference.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.utils.Project.export_data">
+<span class="sig-name descname"><span class="pre">export_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phases</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filetype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Project.html#Project.export_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.Project.export_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Export the pore and throat data from the given object(s) into the
+specified file and format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>phases</strong> (<em>list of OpenPNM Phase Objects</em>) – The data on each supplied phase will be added to file</p></li>
+<li><p><strong>filename</strong> (<em>string</em>) – The file name to use.  If none is supplied then one will be
+automatically generated based on the name of the project
+containing the supplied Network, with the date and time appended.</p></li>
+<li><p><strong>filetype</strong> (<em>string</em>) – <p>Which file format to store the data.  If a valid extension is
+included in the <code class="docutils literal notranslate"><span class="pre">filename</span></code>, this is ignored.  Option are:</p>
+<p><strong>’vtk’</strong> : (default) The Visualization Toolkit format, used by
+various softwares such as Paraview.  This actually produces a ‘vtp’
+file.  NOTE: This can be quite slow since all the data is written
+to a simple text file.  For large data simulations consider
+‘xdmf’.</p>
+<p><strong>’csv’</strong> : The comma-separated values format, which is easily
+openned in any spreadsheet program.  The column names represent
+the property name, including the type and name of the object to
+which they belonged, all separated by the pipe character.</p>
+<p><strong>’xdmf’</strong> : The extensible data markup format, is a very efficient
+format for large data sets.  This actually results in the creation
+of two files, the <em>xmf</em> file and an associated <em>hdf</em> file.  The
+<em>xmf</em> file contains instructions for looking into the <em>hdf</em> file
+where the data is stored. Paraview opens the <em>xmf</em> format natively,
+and is very fast.</p>
+<p><strong>’mat’</strong> : Matlab ‘mat-file’, which can be openned in Matlab.</p>
+</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This is a helper function for the actual functions in the <code class="docutils literal notranslate"><span class="pre">io</span></code>
+module. For more control over the format of the output, and more
+information about the format refer to <code class="docutils literal notranslate"><span class="pre">openpnm.io</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.utils.Project.extend">
+<span class="sig-name descname"><span class="pre">extend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Project.html#Project.extend"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.Project.extend" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is used to add objects to the project.  Arguments can
+be single OpenPNM objects, an OpenPNM project list, or a plain list of
+OpenPNM objects.  Note that if an object has the same name as one
+already existing on the project, the it will be renamed automatically.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.utils.Project.find_full_domain">
+<span class="sig-name descname"><span class="pre">find_full_domain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Project.html#Project.find_full_domain"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.Project.find_full_domain" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the full domain object associated with a given object.
+For geometry the network is found, for physics the phase is found and
+for all other objects which are defined for for the full domain,
+themselves are found.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>obj</strong> (<em>OpenPNM Object</em>) – Can be any object</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>obj</strong></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>An OpenPNM object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.utils.Project.find_geometry">
+<span class="sig-name descname"><span class="pre">find_geometry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">physics</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Project.html#Project.find_geometry"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.Project.find_geometry" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the Geometry associated with a given Physics</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>physics</strong> (<em>OpenPNM Physics Object</em>) – Must be a Physics object</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>geom</strong></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>OpenPNM Geometry object</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>If no Geometry object can be found</strong><strong>, </strong><strong>then an Exception is raised.</strong> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.utils.Project.find_phase">
+<span class="sig-name descname"><span class="pre">find_phase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Project.html#Project.find_phase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.Project.find_phase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the Phase associated with a given object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>obj</strong> (<em>OpenPNM Object</em>) – Can either be a Physics or Algorithm object</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>phase</strong></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>OpenPNM Phase object</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>If no Phase object can be found</strong><strong>, </strong><strong>then an Exception is raised.</strong> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.utils.Project.find_physics">
+<span class="sig-name descname"><span class="pre">find_physics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">geometry</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Project.html#Project.find_physics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.Project.find_physics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the Physics object(s) associated with a given Geometry, Phase,
+or combination.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>geometry</strong> (<em>OpenPNM Geometry Object</em>) – The Geometry object for which the Physics object(s) are sought</p></li>
+<li><p><strong>phase</strong> (<em>OpenPNM Phase Object</em>) – The Phase object for which the Physics object(s) are sought</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>physics</strong> – A list containing the Physics object(s).  If only a <code class="docutils literal notranslate"><span class="pre">geometry</span></code> is
+specified the the Physics for all Phases is returned.  If only a
+<code class="docutils literal notranslate"><span class="pre">phase</span></code> is specified, then the Physics for all Geometries is
+returned.  If both <code class="docutils literal notranslate"><span class="pre">geometry</span></code> and <code class="docutils literal notranslate"><span class="pre">phase</span></code> is specified then
+the list only contains a single Physics.  If no Physics is found,
+the the list will be empty.  See the Notes section for more
+information.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">grid</span></code></p>
+</div>
+<p class="rubric">Notes</p>
+<p>The Project has an <code class="docutils literal notranslate"><span class="pre">grid</span></code> attribute that shows the association of
+all objects.  If each Geometry represents a row and each Phase is a
+column, then each row/col intersection represents a Physics. This
+method finds the Physics’ at each intersection</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.utils.Project.insert">
+<span class="sig-name descname"><span class="pre">insert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Project.html#Project.insert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.Project.insert" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inserts the supplied object at the specified index in the Project list</p>
+<p class="rubric">Notes</p>
+<p>The order of the objects in an OpenPNM Project lists do not matter, so
+it is recommended to just use <code class="docutils literal notranslate"><span class="pre">append</span></code> instead.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#openpnm.utils.Project.append" title="openpnm.utils.Project.append"><code class="xref py py-obj docutils literal notranslate"><span class="pre">append</span></code></a>, <a class="reference internal" href="#openpnm.utils.Project.extend" title="openpnm.utils.Project.extend"><code class="xref py py-obj docutils literal notranslate"><span class="pre">extend</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.utils.Project.inspect_locations">
+<span class="sig-name descname"><span class="pre">inspect_locations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">objs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Project.html#Project.inspect_locations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.Project.inspect_locations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shows the values of all props and/or labels for a given subset of
+pores or throats.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>element</strong> (<em>str</em>) – The type of locations to inspect, either ‘pores’, or ‘throats’</p></li>
+<li><p><strong>indices</strong> (<em>array_like</em>) – The pore or throat indices to inspect</p></li>
+<li><p><strong>objs</strong> (<em>list of OpenPNM Objects</em>) – If given, then only the properties on the recieved object are
+inspected.  If not given, then all objects are inspected (default).</p></li>
+<li><p><strong>mode</strong> (<em>list of strings</em>) – Indicates whether to inspect ‘props’, ‘labels’, or ‘all’.  The
+default is all</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>df</strong> – A data frame object with each location as a column and each row
+as a property and/or label.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Pandas DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.utils.Project.load_object">
+<span class="sig-name descname"><span class="pre">load_object</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Project.html#Project.load_object"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.Project.load_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads a single object from a pickle file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>filename</strong> (<em>string</em><em> or </em><em>path object</em>) – The name of the file containing the saved object.  Can include
+an absolute or relative path as well.  If only a filename is
+given it will be saved in the current working directory.  The
+object type is inferred from</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.utils.Project.pop">
+<span class="sig-name descname"><span class="pre">pop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Project.html#Project.pop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.Project.pop" title="Permalink to this definition">¶</a></dt>
+<dd><p>The object at the given index is removed from the list and returned.</p>
+<p class="rubric">Notes</p>
+<p>This method uses <code class="docutils literal notranslate"><span class="pre">purge_object</span></code> to perform the actual removal of the
+object. It is reommended to just use that directly instead.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#openpnm.utils.Project.purge_object" title="openpnm.utils.Project.purge_object"><code class="xref py py-obj docutils literal notranslate"><span class="pre">purge_object</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.utils.Project.purge_object">
+<span class="sig-name descname"><span class="pre">purge_object</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Project.html#Project.purge_object"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.Project.purge_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove an object from the Project.  This removes all references to
+the object from all other objects (i.e. removes labels)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>obj</strong> (<em>OpenPNM Object</em><em> or </em><em>list of objects</em>) – The object(s) to purge</p></li>
+<li><p><strong>deep</strong> (<em>boolean</em>) – A flag that indicates whether to remove associated objects.
+If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then removing a Geometry or Phase also removes
+the associated Physics objects.  If <code class="docutils literal notranslate"><span class="pre">False</span></code> (default) then
+only the given object is removed, along with its labels in all
+associated objects.  Removing a Physics always keeps associated
+Geometry and Phases since they might also be associated with other
+Physics objects.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>An Exception is raised if the object is a Network.</strong> – </p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>For a clearer picture of this logic, type <code class="docutils literal notranslate"><span class="pre">print(project.grid)</span></code> at
+the console.  A deep purge of a Geometry is like removing a row, while
+a Phase is like removing a column.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.utils.Project.remove">
+<span class="sig-name descname"><span class="pre">remove</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Project.html#Project.remove"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.Project.remove" title="Permalink to this definition">¶</a></dt>
+<dd><p>The given object is removed from the project</p>
+<p>This removes the object, along with all it’s labels in associated
+objects, but does NOT remove the associated objects.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#openpnm.utils.Project.purge_object" title="openpnm.utils.Project.purge_object"><code class="xref py py-obj docutils literal notranslate"><span class="pre">purge_object</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.utils.Project.save_object">
+<span class="sig-name descname"><span class="pre">save_object</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Project.html#Project.save_object"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.Project.save_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Saves the given object or list of objects to a pickle file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>obj</strong> (<em>OpenPNM object</em><em> or </em><em>list of objects</em>) – The objects to be saved.  Depending on the object type, the file
+extension will be one of ‘net’, ‘geo’, ‘phase’, ‘phys’ or ‘alg’.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.utils.Project.save_project">
+<span class="sig-name descname"><span class="pre">save_project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Project.html#Project.save_project"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.Project.save_project" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save the current project to a <code class="docutils literal notranslate"><span class="pre">pnm</span></code> file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>filename</strong> (<em>string</em><em> or </em><em>path object</em>) – The name of the file.  Can include an absolute or relative path
+as well.  If only a filename is given it will be saved in the
+current working directory.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.utils.Project.show_model_dependencies">
+<span class="sig-name descname"><span class="pre">show_model_dependencies</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prop</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/Project.html#Project.show_model_dependencies"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.Project.show_model_dependencies" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </section>
 
 

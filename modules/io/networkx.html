@@ -610,6 +610,77 @@
                 
   <section id="networkx">
 <span id="networkx-api"></span><h1>NetworkX<a class="headerlink" href="#networkx" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="openpnm.io.NetworkX">
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">NetworkX</span></span><a class="reference internal" href="../../_modules/openpnm/io/NetworkX.html#NetworkX"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.io.NetworkX" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.io.GenericIO.GenericIO</span></code></p>
+<p>NetworkX is a common tool for dealing with network structures</p>
+<p>This class actually handles dealing with live NetworkX objects rather than
+saved files. NetworkX has a number of export formats, so converting
+OpenPNM data to a NetworkX object, then using NetworkX to exprt might be
+an option for file formats not supported by OpenPNM yet.</p>
+<p class="rubric">Notes</p>
+<p>1. Each node in a NetworkX object (i.e. <code class="docutils literal notranslate"><span class="pre">G</span></code>) can be assigned properties
+using syntax like <code class="docutils literal notranslate"><span class="pre">G.node[n]['diameter']</span> <span class="pre">=</span> <span class="pre">0.5</span></code> where <code class="docutils literal notranslate"><span class="pre">n</span></code> is the
+node number.  There is no need to precede the property name with any
+indication that it is pore data such as 'pore_'.  OpenPNM will prepend
+'pore.' to each property name.</p>
+<p>2. Since 'pore.coords' is so central to OpenPNM it should be specified
+in the NetworkX object as 'coords', and the [X, Y, Z] coordinates of
+each node should be a 1x3 list.</p>
+<p>3. Edges in a NetworkX object are accessed using the index numbers of the
+two nodes it connects, such as <code class="docutils literal notranslate"><span class="pre">G.adj[2][3]['length']</span> <span class="pre">=</span> <span class="pre">0.1</span></code>
+indicating the edge that connects nodes 2 and 3.  There is no need to
+precede the property name with any indication that it is throat data such
+as 'throat_'.  OpenPNM will prepend 'throat.' to each property name.</p>
+<p>4. The 'throat.conns' property is essential to OpenPNM, but this does NOT
+need to be specified explicitly as a property in NetworkX.  The
+connectivity is embedded into the network representation and is extracted
+by OpenPNM.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.io.NetworkX.export_data">
+<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">export_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">network</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/io/NetworkX.html#NetworkX.export_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.io.NetworkX.export_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write OpenPNM Network to a NetworkX object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>network</strong> (<em>OpenPNM Network Object</em>) – The OpenPNM Network to be converted to a NetworkX object</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>A NetworkX object with all pore/throat properties attached to it</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.io.NetworkX.import_data">
+<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">import_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">G</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/io/NetworkX.html#NetworkX.import_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.io.NetworkX.import_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add data to an OpenPNM Network from a undirected NetworkX graph object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>G</strong> (<em>networkx.classes.graph.Graph Object</em>) – The NetworkX graph. G should be undirected. The numbering of nodes
+should be numeric (int’s), zero-based and should not contain any
+gaps, i.e. <code class="docutils literal notranslate"><span class="pre">G.nodes()</span> <span class="pre">=</span> <span class="pre">[0,1,3,4,5]</span></code> is not allowed and should be
+mapped to <code class="docutils literal notranslate"><span class="pre">G.nodes()</span> <span class="pre">=</span> <span class="pre">[0,1,2,3,4]</span></code>.</p></li>
+<li><p><strong>project</strong> (<em>OpenPNM Project object</em>) – A GenericNetwork is created and added to the specified Project.
+If no Project is supplied then one will be created and returned.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>An OpenPNM Project containing a GenericNetwork with all the data from</em></p></li>
+<li><p><em>the NetworkX object.</em></p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
 
