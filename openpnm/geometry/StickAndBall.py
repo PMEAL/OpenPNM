@@ -1,4 +1,5 @@
 import openpnm.models as mods
+import openpnm.models.geometry as gmods
 from openpnm.geometry import GenericGeometry
 
 
@@ -15,19 +16,15 @@ class StickAndBall(GenericGeometry):
 
     Parameters
     ----------
-    network : OpenPNM Network object
+    network : GenericNetwork
         The network with which this Geometry should be associated
-
-    project : OpenPNM Project object, optional
+    project : Project, optional
         Can be supplied instead of a ``network``
-
     pores : array_like
         The pores in the domain where this Geometry applies
-
     throats : array_like
         The throats in the domain where this Geometry applies
-
-    name : string
+    name : str
         The name of the object, which is also used as the label where this
         geometry is defined.
 
@@ -75,7 +72,7 @@ class StickAndBall(GenericGeometry):
                        seed=None)
 
         self.add_model(propname='pore.max_size',
-                       model=mods.geometry.pore_size.largest_sphere,
+                       model=gmods.pore_size.largest_sphere,
                        iters=10)
 
         self.add_model(propname='pore.diameter',
@@ -83,11 +80,11 @@ class StickAndBall(GenericGeometry):
                        props=['pore.max_size', 'pore.seed'])
 
         self.add_model(propname='pore.area',
-                       model=mods.geometry.pore_cross_sectional_area.sphere,
+                       model=gmods.pore_cross_sectional_area.sphere,
                        pore_diameter='pore.diameter')
 
         self.add_model(propname='pore.volume',
-                       model=mods.geometry.pore_volume.sphere,
+                       model=gmods.pore_volume.sphere,
                        pore_diameter='pore.diameter')
 
         self.add_model(propname='throat.max_size',
@@ -101,34 +98,39 @@ class StickAndBall(GenericGeometry):
                        prop='throat.max_size')
 
         self.add_model(propname='throat.endpoints',
-                       model=mods.geometry.throat_endpoints.spherical_pores,
+                       model=gmods.throat_endpoints.spherical_pores,
                        pore_diameter='pore.diameter',
                        throat_diameter='throat.diameter')
 
         self.add_model(propname='throat.length',
-                       model=mods.geometry.throat_length.piecewise,
+                       model=gmods.throat_length.piecewise,
                        throat_endpoints='throat.endpoints')
 
         self.add_model(propname='throat.surface_area',
-                       model=mods.geometry.throat_surface_area.cylinder,
+                       model=gmods.throat_surface_area.cylinder,
                        throat_diameter='throat.diameter',
                        throat_length='throat.length')
 
         self.add_model(propname='throat.volume',
-                       model=mods.geometry.throat_volume.cylinder,
+                       model=gmods.throat_volume.cylinder,
                        throat_diameter='throat.diameter',
                        throat_length='throat.length')
 
         self.add_model(propname='throat.area',
-                       model=mods.geometry.throat_cross_sectional_area.cylinder,
+                       model=gmods.throat_cross_sectional_area.cylinder,
                        throat_diameter='throat.diameter')
 
         self.add_model(propname='throat.conduit_lengths',
-                       model=mods.geometry.throat_length.conduit_lengths,
+                       model=gmods.throat_length.conduit_lengths,
                        throat_endpoints='throat.endpoints',
                        throat_length='throat.length')
+
         self.add_model(propname='throat.hydraulic_size_factors',
-                       model=mods.geometry.hydraulic_size_factors.cones_and_cylinders)
+                       model=gmods.hydraulic_size_factors.cones_and_cylinders,
+                       pore_diameter="pore.diameter",
+                       throat_diameter="throat.diameter")
+
         self.add_model(propname='throat.diffusive_size_factors',
-                       model=mods.geometry.diffusive_size_factors.cones_and_cylinders)
-        
+                       model=gmods.diffusive_size_factors.cones_and_cylinders,
+                       pore_diameter="pore.diameter",
+                       throat_diameter="throat.diameter")
