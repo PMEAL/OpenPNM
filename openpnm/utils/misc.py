@@ -25,9 +25,12 @@ __all__ = [
     "unique_list",
     "tic", "toc",
     "is_symmetric",
+    "is_valid_propname",
     "nbr_to_str",
     "conduit_dict_to_array",
-    "conduit_array_to_dict"
+    "conduit_array_to_dict",
+    "prettify_logger_message",
+    "remove_prop_deep"
 ]
 
 
@@ -309,7 +312,6 @@ def toc(quiet=False):
 def unique_list(input_list):
     r"""
     For a given list (of points) remove any duplicates
-
     """
     output_list = []
     if len(input_list) > 0:
@@ -335,7 +337,6 @@ def flat_list(input_list):
     r"""
     Given a list of nested lists of arbitrary depth, returns a single level or
     'flat' list.
-
     """
     x = input_list
     if isinstance(x, list):
@@ -348,7 +349,6 @@ def sanitize_dict(input_dict):
     Given a nested dictionary, ensures that all nested dicts are normal
     Python dicts.  This is necessary for pickling, or just converting
     an 'auto-vivifying' dict to something that acts normal.
-
     """
     plain_dict = dict()
     for key in input_dict.keys():
@@ -621,9 +621,7 @@ def conduit_array_to_dict(arr):
 
 
 def _validate_conduit_dict(d):
-    r"""
-    Validates whether the given dictionary is a proper conduit dict.
-    """
+    r"""Validates whether the given dictionary is a proper conduit dict."""
     if not isinstance(d, dict):
         raise Exception("Conduit dictionary must be of type dict.")
     allowed_keys = set(["pore1", "throat", "pore2"])
@@ -635,9 +633,7 @@ def _validate_conduit_dict(d):
 
 
 def _validate_conduit_array(arr):
-    r"""
-    Validates whether the given array is a proper conduit array.
-    """
+    r"""Validates whether the given array is a proper conduit array."""
     arr = _np.array(arr)
     if arr.shape[1] != 3:
         raise Exception("Conduit array must be exactly 3 columns wide.")
@@ -650,3 +646,11 @@ def prettify_logger_message(msg):
     indent = "\n" + " " * 13
     temp = wrap(msg, width=linewidth)
     return indent.join(temp)
+
+
+def remove_prop_deep(obj, propname):
+    r"""Hierarchically deletes the given propname and its children"""
+    for k in list(obj.keys()):
+        obj._parse_element(propname)
+        if k.startswith(propname):
+            del obj[k]
