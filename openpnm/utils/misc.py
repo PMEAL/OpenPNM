@@ -25,9 +25,7 @@ __all__ = [
     "unique_list",
     "tic", "toc",
     "is_symmetric",
-    "nbr_to_str",
-    "conduit_dict_to_array",
-    "conduit_array_to_dict"
+    "nbr_to_str"
 ]
 
 
