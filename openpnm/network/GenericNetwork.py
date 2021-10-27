@@ -157,6 +157,10 @@ class GenericNetwork(ParamMixin, Base, ModelsMixin, LegacyMixin, LabelMixin):
         vals = super().__getitem__(key)
         return vals
 
+    @property
+    def _subdomains(self):
+        return list(self.project.geometries().values())
+
     def _gen_ids(self):
         IDs = self.get('pore._id', np.array([], ndmin=1, dtype=np.int64))
         if len(IDs) < self.Np:

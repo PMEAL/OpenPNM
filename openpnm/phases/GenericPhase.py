@@ -91,3 +91,15 @@ class GenericPhase(ParamMixin, Base, ModelsMixin, LegacyMixin, LabelMixin):
                                mode='mean')
         vals = super().__getitem__(key)
         return vals
+
+    @property
+    def phase(self):
+        return self
+
+    @property
+    def physics(self):
+        return self.project.find_physics(phase=self)
+
+    @property
+    def _subdomains(self):
+        return self.project.find_physics(phase=self)
