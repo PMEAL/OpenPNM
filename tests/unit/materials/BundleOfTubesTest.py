@@ -1,11 +1,10 @@
 import pytest
 import numpy as np
-import scipy as sp
-import matplotlib.pyplot as plt
 from openpnm.materials import BundleOfTubes
 
 
 class BundleOfTubesTest:
+
     def setup_class(self):
         pass
 

@@ -26,5 +26,4 @@ classes that include common pore-scale physical models
 from .GenericPhysics import GenericPhysics
 from .Standard import Standard
 from .Standard2D import Standard2D
-from .Classic import Classic
 from .Basic import Basic

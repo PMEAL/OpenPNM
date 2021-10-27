@@ -7,7 +7,7 @@ from numpy.testing import assert_allclose
 class TransientMultiphysicsNernstPlanckSolverTest:
 
     def setup_class(self):
-        # network
+        # Create network
         np.random.seed(0)
         self.net = op.network.Cubic(shape=[6, 6, 1], spacing=1e-6)
         prs = (
@@ -23,20 +23,20 @@ class TransientMultiphysicsNernstPlanckSolverTest:
         np.random.seed(0)
         op.topotools.reduce_coordination(self.net, 3)
 
-        # geometry
+        # Create geometry
         np.random.seed(0)
         self.geo = op.geometry.StickAndBall(network=self.net,
                                             pores=self.net.Ps,
                                             throats=self.net.Ts)
 
-        # phase
+        # Create phase
         self.sw = mixtures.SalineWater(network=self.net)
         # Retrieve handles to each species for use below
         self.Na = self.sw.components['Na_' + self.sw.name]
         self.Cl = self.sw.components['Cl_' + self.sw.name]
         self.H2O = self.sw.components['H2O_' + self.sw.name]
 
-        # physics
+        # Create physics
         self.phys = op.physics.GenericPhysics(network=self.net,
                                               phase=self.sw,
                                               geometry=self.geo)
@@ -46,7 +46,7 @@ class TransientMultiphysicsNernstPlanckSolverTest:
                             pore_viscosity='pore.viscosity',
                             throat_viscosity='throat.viscosity',
                             model=self.flow, regen_mode='normal')
-        self.current = modphys.ionic_conductance.generic_ionic_electroneutrality
+        self.current = modphys.ionic_conductance.electroneutrality
         self.phys.add_model(propname='throat.ionic_conductance',
                             ions=[self.Na.name, self.Cl.name],
                             model=self.current, regen_mode='normal')
@@ -74,14 +74,14 @@ class TransientMultiphysicsNernstPlanckSolverTest:
                             model=self.ad_dif_mig_Cl, ion=self.Cl.name,
                             s_scheme=scheme)
 
-        # settings for algorithms
+        # Define settings for algorithms
         setts1 = {'solver_max_iter': 5, 'solver_tol': 1e-08,
                   'solver_rtol': 1e-08, 'nlin_max_iter': 10,
                   'cache_A': False, 'cache_b': False}
         setts2 = {'g_tol': 1e-4, 'g_max_iter': 100, 't_output': 1000,
                   't_step': 500, 't_final': 20000, 't_scheme': 'implicit'}
 
-        # algorithms
+        # Set up algorithms
         self.sf = op.algorithms.StokesFlow(network=self.net, phase=self.sw,
                                            settings=setts1)
         self.sf.set_value_BC(pores=self.net.pores('right'), values=11)
@@ -155,7 +155,6 @@ class TransientMultiphysicsNernstPlanckSolverTest:
              0.01357, 0.01174]
         x = np.around(x, decimals=5)
         y = np.around(self.sw['pore.potential'], decimals=5)
-        print(y)
         assert_allclose(actual=y, desired=x)
 
     def test_times(self):
@@ -186,5 +185,5 @@ if __name__ == '__main__':
     self = t
     for item in t.__dir__():
         if item.startswith('test'):
-            print('running test: '+item)
+            print('Running test: '+item)
             t.__getattribute__(item)()
