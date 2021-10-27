@@ -13,24 +13,30 @@ class ParamMixin:
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.params = PrintableDict()
-        self.params._key = "parameter"
+        self._params = PrintableDict()
+        self._params._key = "parameter"
 
     def __getitem__(self, key):
         if key.startswith('param'):
             try:
-                vals = self.params[key.split('.', 1)[1]]
+                vals = self._params[key]
             except KeyError:
-                vals = self.network.params[key.split('.', 1)[1]]
+                vals = self.network._params[key]
         else:
             vals = super().__getitem__(key)
         return vals
 
     def __setitem__(self, key, value):
         if key.startswith('param'):
-            self.params[key.split('.', 1)[1]] = value
+            self._params[key] = value
         else:
             super().__setitem__(key, value)
+
+    def params(self):
+        r"""
+        Return parameter names and values in a dictionary
+        """
+        return self._params
 
 
 @docstr.get_sections(base='Base', sections=['Parameters'])
