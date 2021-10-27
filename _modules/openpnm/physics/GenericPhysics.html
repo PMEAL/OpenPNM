@@ -206,71 +206,63 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">geometry</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">throats</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">settings</span><span class="o">=</span><span class="p">{},</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;prefix&#39;</span><span class="p">:</span> <span class="s1">&#39;phys&#39;</span><span class="p">})</span>  <span class="c1"># Define some default settings</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span>  <span class="c1"># Overwrite with user supplied settings</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">geometry</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">settings</span><span class="o">=</span><span class="p">{},</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+        <span class="c1"># Define some default settings</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;prefix&#39;</span><span class="p">:</span> <span class="s1">&#39;phys&#39;</span><span class="p">})</span>
+        <span class="c1"># Overwrite with user supplied settings, if any</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">phase</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;freeze_models&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">project</span><span class="o">=</span><span class="n">project</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="n">network</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
         <span class="n">network</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">network</span>
         <span class="k">if</span> <span class="n">network</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">phase</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">set_phase</span><span class="p">(</span><span class="n">phase</span><span class="o">=</span><span class="n">phase</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;add&#39;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">geometry</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">if</span> <span class="p">(</span><span class="n">pores</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">throats</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
-                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;No Geometry provided, &#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
-                                   <span class="o">+</span> <span class="s1">&#39; will not be associated with any locations&#39;</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">set_locations</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pores</span><span class="p">,</span> <span class="n">throats</span><span class="o">=</span><span class="n">throats</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;add&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">phase</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;No Phase provided, &#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+                               <span class="o">+</span> <span class="s1">&#39; will not be associated with a phase&#39;</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">phase</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">set_phase</span><span class="p">(</span><span class="n">phase</span><span class="o">=</span><span class="n">phase</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">geometry</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;No Geometry provided, &#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+                               <span class="o">+</span> <span class="s1">&#39; will not be associated with any locations&#39;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">phase</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
                     <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Cannot associate with a geometry unless &#39;</span>
                                    <span class="o">+</span> <span class="s1">&#39;a phase is also given&#39;</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">set_geometry</span><span class="p">(</span><span class="n">geometry</span><span class="o">=</span><span class="n">geometry</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_set_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phase</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">phase</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_del_phase</span><span class="p">()</span>
-            <span class="k">return</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">set_phase</span><span class="p">(</span><span class="n">phase</span><span class="o">=</span><span class="n">phase</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;move&#39;</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">set_phase</span><span class="p">(</span><span class="n">phase</span><span class="o">=</span><span class="n">phase</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;add&#39;</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">_get_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">phase</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">find_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_del_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">set_phase</span><span class="p">(</span><span class="n">phase</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">phase</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;drop&#39;</span><span class="p">)</span>
-
-    <span class="n">phase</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">fget</span><span class="o">=</span><span class="n">_get_phase</span><span class="p">,</span> <span class="n">fset</span><span class="o">=</span><span class="n">_set_phase</span><span class="p">,</span> <span class="n">fdel</span><span class="o">=</span><span class="n">_del_phase</span><span class="p">)</span>
-
-<div class="viewcode-block" id="GenericPhysics.set_phase"><a class="viewcode-back" href="../../../modules/physics/generic_physics.html#openpnm.physics.GenericPhysics.set_phase">[docs]</a>    <span class="k">def</span> <span class="nf">set_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;add&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="GenericPhysics.set_phase"><a class="viewcode-back" href="../../../modules/physics/generic_physics.html#openpnm.physics.GenericPhysics.set_phase">[docs]</a>    <span class="k">def</span> <span class="nf">set_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;swap&#39;</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sets the association between this physics and a phase.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        phase : OpenPNM Phase object</span>
-<span class="sd">            If mode is &#39;add&#39; or &#39;move&#39;, this must be specified so that</span>
+<span class="sd">            If mode is &#39;add&#39; or &#39;swap&#39;, this must be specified so that</span>
 <span class="sd">            associations can be recorded in the phase dictionary.  If the</span>
 <span class="sd">            mode is &#39;drop&#39;, this is not needed since the existing association</span>
 <span class="sd">            can be used to find it.</span>
 <span class="sd">        mode : str</span>
 <span class="sd">            Options are:</span>
 
-<span class="sd">            * &#39;add&#39; (default)</span>
-<span class="sd">                If the physics does not presently have an associated phase,</span>
-<span class="sd">                this will create associations, but no pore or throat</span>
-<span class="sd">                locations will assigned.  This must be done using the</span>
-<span class="sd">                ``set_geometry`` method.</span>
-<span class="sd">            * &#39;drop&#39;</span>
-<span class="sd">                Associations with the existing phase will be removed.</span>
-<span class="sd">            * &#39;move&#39;</span>
-<span class="sd">                Associations will be made with the new phase, and the pore</span>
-<span class="sd">                and throat locations from the current phase will be</span>
-<span class="sd">                transferred to the new one.</span>
+<span class="sd">            &#39;swap&#39; - Associations will be made with the new phase, and</span>
+<span class="sd">            the pore and throat locations from the current phase will be</span>
+<span class="sd">            transferred to the new one.</span>
+
+<span class="sd">            &#39;drop&#39; - Associations with the existing phase will be removed.</span>
+
+<span class="sd">            &#39;add&#39; - If the physics does not presently have an associated</span>
+<span class="sd">            phase, this will create associations, but no pore or throat</span>
+<span class="sd">            locations will assigned.  This must be done using the</span>
+<span class="sd">            ``set_geometry`` method.</span>
 
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
@@ -279,54 +271,34 @@
 <span class="sd">        must be run.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_parse_mode</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span> <span class="n">allowed</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;add&#39;</span><span class="p">,</span> <span class="s1">&#39;drop&#39;</span><span class="p">,</span> <span class="s1">&#39;move&#39;</span><span class="p">])</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">phase</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">phase</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39; not in same project as given phase&#39;</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;move&#39;</span><span class="p">]:</span>
-            <span class="n">old_phase</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">find_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-            <span class="c1"># Transfer locs from old to new phase</span>
-            <span class="n">phase</span><span class="p">[</span><span class="s1">&#39;pore.&#39;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">old_phase</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;pore.&#39;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
-            <span class="n">phase</span><span class="p">[</span><span class="s1">&#39;throat.&#39;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">old_phase</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;throat.&#39;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-        <span class="k">elif</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;add&#39;</span><span class="p">]:</span>
-            <span class="n">temp</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;add&#39;</span><span class="p">,</span> <span class="s1">&#39;swap&#39;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">phase</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39; not in same project as given phase&#39;</span><span class="p">)</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">temp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">phase</span>
-            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="n">old_phase</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">find_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+                <span class="n">phase</span><span class="p">[</span><span class="s1">&#39;pore.&#39;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">old_phase</span><span class="p">[</span><span class="s1">&#39;pore.&#39;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+                <span class="n">phase</span><span class="p">[</span><span class="s1">&#39;throat.&#39;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">old_phase</span><span class="p">[</span><span class="s1">&#39;throat.&#39;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+                <span class="n">old_phase</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;pore.&#39;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="n">old_phase</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;throat.&#39;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
                 <span class="n">phase</span><span class="p">[</span><span class="s1">&#39;pore.&#39;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
                 <span class="n">phase</span><span class="p">[</span><span class="s1">&#39;throat.&#39;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
-                <span class="k">return</span>
-            <span class="k">if</span> <span class="n">temp</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> is already associated with &quot;</span> <span class="o">+</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">phase</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">. Use mode &#39;move&#39; instead.&quot;</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;drop&#39;</span><span class="p">]:</span>
+        <span class="k">elif</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;remove&#39;</span><span class="p">,</span> <span class="s1">&#39;drop&#39;</span><span class="p">]:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;pore.all&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)})</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;throat.all&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)})</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">phase</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;pore.&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">phase</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;throat.&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
-
-    <span class="k">def</span> <span class="nf">_set_geo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">geo</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">geo</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_del_geo</span><span class="p">()</span>
-            <span class="k">return</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">set_geometry</span><span class="p">(</span><span class="n">geo</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;add&#39;</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">_get_geo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">find_geometry</span><span class="p">(</span><span class="n">physics</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">_del_geo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">set_geometry</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s1">&#39;drop&#39;</span><span class="p">)</span>
-
-    <span class="n">geometry</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">fset</span><span class="o">=</span><span class="n">_set_geo</span><span class="p">,</span> <span class="n">fget</span><span class="o">=</span><span class="n">_get_geo</span><span class="p">,</span> <span class="n">fdel</span><span class="o">=</span><span class="n">_del_geo</span><span class="p">)</span>
+            <span class="n">phase</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">find_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="n">phase</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;pore.&#39;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="n">phase</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;throat.&#39;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;mode &#39;</span> <span class="o">+</span> <span class="n">mode</span> <span class="o">+</span> <span class="s1">&#39; not understood&#39;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="GenericPhysics.set_geometry"><a class="viewcode-back" href="../../../modules/physics/generic_physics.html#openpnm.physics.GenericPhysics.set_geometry">[docs]</a>    <span class="k">def</span> <span class="nf">set_geometry</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">geometry</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;add&#39;</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Sets the association between this physics and a geometry</span>
-
-<span class="sd">        This association is done by setting the pores and throats that define</span>
-<span class="sd">        the Subdomain to match.</span>
+<span class="sd">        Sets the association between this physics and a geometry (i.e. a</span>
+<span class="sd">        set of pores and throats that define a subdomain)</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -334,49 +306,40 @@
 <span class="sd">            The geometry defining the pores and throats to which this physics</span>
 <span class="sd">            should be attached</span>
 <span class="sd">        mode : str</span>
-<span class="sd">            Controls how the assignment is done. Options are:</span>
+<span class="sd">            Options are:</span>
 
-<span class="sd">            * &#39;add&#39; (default)</span>
-<span class="sd">                If the physics does not presently have an associated</span>
-<span class="sd">                geometry, this will create associations, otherwise an</span>
-<span class="sd">                Exception is raised</span>
-<span class="sd">            * &#39;drop&#39;</span>
-<span class="sd">                Associations with the current geometry will be removed</span>
-<span class="sd">            * &#39;move&#39;</span>
-<span class="sd">                Associations will be made with the provided geometry, and</span>
-<span class="sd">                the pore and throat locations from the current geometry will</span>
-<span class="sd">                be transferred to the new one.</span>
+<span class="sd">            &#39;swap&#39; - Associations will be made with the new geometry, and</span>
+<span class="sd">            the pore and throat locations from the current geometry will be</span>
+<span class="sd">            transferred to the new one.</span>
 
-<span class="sd">        See Also</span>
-<span class="sd">        --------</span>
-<span class="sd">        set_locations</span>
+<span class="sd">            &#39;drop&#39; - Associations with the current geometry will be removed.</span>
+
+<span class="sd">            &#39;add&#39; - If the physics does not presently have an associated</span>
+<span class="sd">            geometry, this will create associations.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_parse_mode</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span> <span class="n">allowed</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;add&#39;</span><span class="p">,</span> <span class="s1">&#39;move&#39;</span><span class="p">,</span> <span class="s1">&#39;drop&#39;</span><span class="p">])</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">phase</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">find_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Cannot set locations for a physics object&quot;</span> <span class="o">+</span>
-                            <span class="s2">&quot; that is not associated with a phase&quot;</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="p">(</span><span class="n">geometry</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">geometry</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39; not in same project as given geometry&#39;</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;add&#39;</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;add&#39;</span><span class="p">,</span> <span class="s1">&#39;swap&#39;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">geometry</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39; not in same project as given geometry&#39;</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">old_geometry</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">find_geometry</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+                <span class="n">Ps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="n">old_geometry</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+                <span class="n">Ts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">throats</span><span class="p">(</span><span class="n">old_geometry</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_set_locations</span><span class="p">(</span><span class="n">element</span><span class="o">=</span><span class="s1">&#39;pore&#39;</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="n">Ps</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;drop&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_set_locations</span><span class="p">(</span><span class="n">element</span><span class="o">=</span><span class="s1">&#39;throat&#39;</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="n">Ts</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;drop&#39;</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
             <span class="n">Ps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="n">geometry</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
             <span class="n">Ts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">throats</span><span class="p">(</span><span class="n">geometry</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">set_locations</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">Ps</span><span class="p">,</span> <span class="n">throats</span><span class="o">=</span><span class="n">Ts</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;add&#39;</span><span class="p">)</span>
-            <span class="n">phase</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="n">Ps</span><span class="p">,</span> <span class="n">throats</span><span class="o">=</span><span class="n">Ts</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;add&#39;</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;drop&#39;</span><span class="p">]:</span>
-            <span class="n">phase</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;clear&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_set_locations</span><span class="p">(</span><span class="n">element</span><span class="o">=</span><span class="s1">&#39;pore&#39;</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="n">Ps</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;add&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_set_locations</span><span class="p">(</span><span class="n">element</span><span class="o">=</span><span class="s1">&#39;throat&#39;</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="n">Ts</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;add&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;remove&#39;</span><span class="p">,</span> <span class="s1">&#39;drop&#39;</span><span class="p">]:</span>
+            <span class="n">phase</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">find_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="n">phase</span><span class="p">[</span><span class="s1">&#39;pore.&#39;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">phase</span><span class="p">[</span><span class="s1">&#39;throat.&#39;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;pore.all&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)})</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;throat.all&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)})</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-        <span class="k">elif</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;move&#39;</span><span class="p">]:</span>
-            <span class="n">phys</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">find_physics</span><span class="p">(</span><span class="n">phase</span><span class="o">=</span><span class="n">phase</span><span class="p">,</span> <span class="n">geometry</span><span class="o">=</span><span class="n">geometry</span><span class="p">)</span>
-            <span class="n">phys</span><span class="o">.</span><span class="n">set_geometry</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s1">&#39;drop&#39;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">set_geometry</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s1">&#39;drop&#39;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">set_geometry</span><span class="p">(</span><span class="n">geometry</span><span class="o">=</span><span class="n">geometry</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;add&#39;</span><span class="p">)</span></div></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div></div>
 </pre></div>
 
               </div>
