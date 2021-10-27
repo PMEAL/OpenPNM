@@ -5,6 +5,7 @@ from openpnm.utils import remove_prop_deep
 
 
 class DiffusiveConductanceTest:
+
     def setup_class(self):
         self.net = op.network.Cubic(shape=[5, 5, 5])
         self.geo = op.geometry.GenericGeometry(network=self.net,
