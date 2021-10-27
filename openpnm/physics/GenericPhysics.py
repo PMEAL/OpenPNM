@@ -31,63 +31,71 @@ class GenericPhysics(Subdomain, ModelsMixin):
 
     """
 
-    def __init__(self, project=None, network=None, phase=None,
-                 geometry=None, settings={}, **kwargs):
-
-        # Define some default settings
-        self.settings.update({'prefix': 'phys'})
-        # Overwrite with user supplied settings, if any
-        self.settings.update(settings)
-        if phase is None:
-            self.settings['freeze_models'] = True
-
-        super().__init__(project=project, network=network, **kwargs)
+    def __init__(self, phase=None, geometry=None, pores=None, throats=None,
+                 settings={}, **kwargs):
+        self.settings.update({'prefix': 'phys'})  # Define some default settings
+        self.settings.update(settings)  # Overwrite with user supplied settings
+        super().__init__(**kwargs)
 
         network = self.project.network
         if network:
-            if phase is None:
-                logger.warning('No Phase provided, ' + self.name
-                               + ' will not be associated with a phase')
-            else:
-                self.set_phase(phase=phase)
+            if phase is not None:
+                self.set_phase(phase=phase, mode='add')
             if geometry is None:
-                logger.warning('No Geometry provided, ' + self.name
-                               + ' will not be associated with any locations')
+                if (pores is None) and (throats is None):
+                    logger.warning('No Geometry provided, ' + self.name
+                                   + ' will not be associated with any locations')
+                else:
+                    self.set_locations(pores=pores, throats=throats, mode='add')
             else:
-                if (phase is None):
+                if phase is None:
                     logger.warning('Cannot associate with a geometry unless '
                                    + 'a phase is also given')
                 else:
                     self.set_geometry(geometry=geometry)
 
-    @property
-    def phase(self):
+    def _set_phase(self, phase):
+        if phase is None:
+            self._del_phase()
+            return
+        try:
+            self.set_phase(phase=phase, mode='move')
+        except Exception:
+            self.set_phase(phase=phase, mode='add')
+
+    def _get_phase(self):
         return self.project.find_phase(self)
 
-    def set_phase(self, phase=None, mode='swap'):
+    def _del_phase(self):
+        self.set_phase(phase=self.phase, mode='drop')
+
+    phase = property(fget=_get_phase, fset=_set_phase, fdel=_del_phase)
+
+    def set_phase(self, phase=None, mode='add'):
         r"""
         Sets the association between this physics and a phase.
 
         Parameters
         ----------
         phase : OpenPNM Phase object
-            If mode is 'add' or 'swap', this must be specified so that
+            If mode is 'add' or 'move', this must be specified so that
             associations can be recorded in the phase dictionary.  If the
             mode is 'drop', this is not needed since the existing association
             can be used to find it.
         mode : str
             Options are:
 
-            'swap' - Associations will be made with the new phase, and
-            the pore and throat locations from the current phase will be
-            transferred to the new one.
-
-            'drop' - Associations with the existing phase will be removed.
-
-            'add' - If the physics does not presently have an associated
-            phase, this will create associations, but no pore or throat
-            locations will assigned.  This must be done using the
-            ``set_geometry`` method.
+            * 'add' (default)
+                If the physics does not presently have an associated phase,
+                this will create associations, but no pore or throat
+                locations will assigned.  This must be done using the
+                ``set_geometry`` method.
+            * 'drop'
+                Associations with the existing phase will be removed.
+            * 'move'
+                Associations will be made with the new phase, and the pore
+                and throat locations from the current phase will be
+                transferred to the new one.
 
         Notes
         -----
@@ -96,34 +104,54 @@ class GenericPhysics(Subdomain, ModelsMixin):
         must be run.
 
         """
-        if mode in ['add', 'swap']:
-            if phase not in self.project:
-                raise Exception(self.name + ' not in same project as given phase')
+        self._parse_mode(mode=mode, allowed=['add', 'drop', 'move'])
+        if (phase is not None) and (phase not in self.project):
+            raise Exception(self.name + ' not in same project as given phase')
+
+        if mode in ['move']:
+            old_phase = self.project.find_phase(self)
+            # Transfer locs from old to new phase
+            phase['pore.'+self.name] = old_phase.pop('pore.'+self.name, False)
+            phase['throat.'+self.name] = old_phase.pop('throat.'+self.name, False)
+            self.clear()
+        elif mode in ['add']:
+            temp = None
             try:
-                old_phase = self.project.find_phase(self)
-                phase['pore.'+self.name] = old_phase['pore.'+self.name]
-                phase['throat.'+self.name] = old_phase['throat.'+self.name]
-                old_phase.pop('pore.'+self.name, None)
-                old_phase.pop('throat.'+self.name, None)
-                self.clear()
-            except Exception as e:
-                logger.debug(e)
+                temp = self.phase
+            except Exception:
                 phase['pore.'+self.name] = False
                 phase['throat.'+self.name] = False
-        elif mode in ['remove', 'drop']:
+                return
+            if temp is not None:
+                raise Exception(f"{self.name} is already associated with " +
+                f"{self.phase.name}. Use mode 'move' instead.")
+        elif mode in ['drop']:
             self.update({'pore.all': np.array([], dtype=bool)})
             self.update({'throat.all': np.array([], dtype=bool)})
-            phase = self.project.find_phase(self)
-            phase.pop('pore.'+self.name, None)
-            phase.pop('throat.'+self.name, None)
+            self.phase.pop('pore.' + self.name, None)
+            self.phase.pop('throat.' + self.name, None)
             self.clear()
-        else:
-            raise Exception('mode ' + mode + ' not understood')
+
+    def _set_geo(self, geo):
+        if geo is None:
+            self._del_geo()
+            return
+        self.set_geometry(geo, mode='add')
+
+    def _get_geo(self):
+        return self.project.find_geometry(physics=self)
+
+    def _del_geo(self):
+        self.set_geometry(mode='drop')
+
+    geometry = property(fset=_set_geo, fget=_get_geo, fdel=_del_geo)
 
     def set_geometry(self, geometry=None, mode='add'):
         r"""
-        Sets the association between this physics and a geometry (i.e. a
-        set of pores and throats that define a subdomain)
+        Sets the association between this physics and a geometry
+
+        This association is done by setting the pores and throats that define
+        the Subdomain to match.
 
         Parameters
         ----------
@@ -131,37 +159,46 @@ class GenericPhysics(Subdomain, ModelsMixin):
             The geometry defining the pores and throats to which this physics
             should be attached
         mode : str
-            Options are:
+            Controls how the assignment is done. Options are:
 
-            'swap' - Associations will be made with the new geometry, and
-            the pore and throat locations from the current geometry will be
-            transferred to the new one.
+            * 'add' (default)
+                If the physics does not presently have an associated
+                geometry, this will create associations, otherwise an
+                Exception is raised
+            * 'drop'
+                Associations with the current geometry will be removed
+            * 'move'
+                Associations will be made with the provided geometry, and
+                the pore and throat locations from the current geometry will
+                be transferred to the new one.
 
-            'drop' - Associations with the current geometry will be removed.
-
-            'add' - If the physics does not presently have an associated
-            geometry, this will create associations.
+        See Also
+        --------
+        set_locations
 
         """
-        if mode in ['add', 'swap']:
-            if geometry not in self.project:
-                raise Exception(self.name + ' not in same project as given geometry')
-            try:
-                old_geometry = self.project.find_geometry(self)
-                Ps = self.network.pores(old_geometry.name)
-                Ts = self.network.throats(old_geometry.name)
-                self._set_locations(element='pore', indices=Ps, mode='drop')
-                self._set_locations(element='throat', indices=Ts, mode='drop')
-            except Exception as e:
-                logger.debug(e)
+        self._parse_mode(mode=mode, allowed=['add', 'move', 'drop'])
+        try:
+            phase = self.project.find_phase(self)
+        except Exception:
+            raise Exception("Cannot set locations for a physics object" +
+                            " that is not associated with a phase")
+
+        if (geometry is not None) and (geometry not in self.project):
+            raise Exception(self.name + ' not in same project as given geometry')
+
+        if mode in ['add']:
             Ps = self.network.pores(geometry.name)
             Ts = self.network.throats(geometry.name)
-            self._set_locations(element='pore', indices=Ps, mode='add')
-            self._set_locations(element='throat', indices=Ts, mode='add')
-        if mode in ['remove', 'drop']:
-            phase = self.project.find_phase(self)
-            phase['pore.'+self.name] = False
-            phase['throat.'+self.name] = False
+            self.set_locations(pores=Ps, throats=Ts, mode='add')
+            phase.set_label(label=self.name, pores=Ps, throats=Ts, mode='add')
+        elif mode in ['drop']:
+            phase.set_label(label=self.name, mode='clear')
             self.update({'pore.all': np.array([], dtype=bool)})
             self.update({'throat.all': np.array([], dtype=bool)})
             self.clear()
+        elif mode in ['move']:
+            phys = self.project.find_physics(phase=phase, geometry=geometry)
+            phys.set_geometry(mode='drop')
+            self.set_geometry(mode='drop')
+            self.set_geometry(geometry=geometry, mode='add')
