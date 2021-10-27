@@ -94,7 +94,7 @@ sw.update(sf.results())
 p = op.algorithms.IonicConduction(network=net, phase=sw, settings=setts1)
 p.set_value_BC(pores=net.pores('left'), values=0.02)
 p.set_value_BC(pores=net.pores('right'), values=0.01)
-p.settings['charge_conservation'] = 'electroneutrality'
+p.settings['charge_conservation'] = 'poisson'
 
 eA = op.algorithms.NernstPlanck(network=net, phase=sw, ion=Na.name,
                                 settings=setts1)
