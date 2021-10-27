@@ -140,7 +140,6 @@ class Base(dict):
         self.settings['name'] = name
         self.update({'pore.all': np.ones(shape=(Np, ), dtype=bool)})
         self.update({'throat.all': np.ones(shape=(Nt, ), dtype=bool)})
-        self.params = PrintableDict()
 
     def __repr__(self):
         return '<%s object at %s>' % (self.__class__.__module__, hex(id(self)))
@@ -169,8 +168,8 @@ class Base(dict):
 
         # Check 3: Enforce correct dict naming
         element = key.split('.')[0]
-        if element not in ['pore', 'throat', 'param']:
-            raise Exception('All keys must start with either pore, throat, or param')
+        if element not in ['pore', 'throat']:
+            raise Exception('All keys must start with either pore, or throat')
 
         # Check 2: If adding a new key, make sure it has no conflicts
         if self.project:
@@ -924,7 +923,7 @@ class Base(dict):
         # Deal with an plurals
         element = [item.rsplit('s', maxsplit=1)[0] for item in element]
         for item in element:
-            if item not in ['pore', 'throat', 'param']:
+            if item not in ['pore', 'throat']:
                 raise Exception('All keys must start with either pore or throat')
         # Remove duplicates if any
         _ = [element.remove(L) for L in element if element.count(L) > 1]
