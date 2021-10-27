@@ -173,7 +173,7 @@
               <div>
                 
   <h1>Source code for openpnm.phases.GenericPhase</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">openpnm.core</span> <span class="kn">import</span> <span class="n">Base</span><span class="p">,</span> <span class="n">LegacyMixin</span><span class="p">,</span> <span class="n">ModelsMixin</span><span class="p">,</span> <span class="n">LabelMixin</span><span class="p">,</span> <span class="n">ParamMixin</span>
+<span></span><span class="kn">from</span> <span class="nn">openpnm.core</span> <span class="kn">import</span> <span class="n">Base</span><span class="p">,</span> <span class="n">LegacyMixin</span><span class="p">,</span> <span class="n">ModelsMixin</span><span class="p">,</span> <span class="n">LabelMixin</span>
 <span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">Workspace</span><span class="p">,</span> <span class="n">logging</span><span class="p">,</span> <span class="n">Docorator</span>
 <span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">ones</span>
 <span class="kn">import</span> <span class="nn">openpnm.models</span> <span class="k">as</span> <span class="nn">mods</span>
@@ -184,7 +184,7 @@
 
 <div class="viewcode-block" id="GenericPhase"><a class="viewcode-back" href="../../../modules/phases/generic_phase.html#openpnm.phases.GenericPhase">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">get_sections</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="s1">&#39;GenericPhase&#39;</span><span class="p">,</span> <span class="n">sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Parameters&#39;</span><span class="p">])</span>
 <span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
-<span class="k">class</span> <span class="nc">GenericPhase</span><span class="p">(</span><span class="n">ParamMixin</span><span class="p">,</span> <span class="n">Base</span><span class="p">,</span> <span class="n">ModelsMixin</span><span class="p">,</span> <span class="n">LegacyMixin</span><span class="p">,</span> <span class="n">LabelMixin</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">GenericPhase</span><span class="p">(</span><span class="n">Base</span><span class="p">,</span> <span class="n">ModelsMixin</span><span class="p">,</span> <span class="n">LegacyMixin</span><span class="p">,</span> <span class="n">LabelMixin</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This generic class is meant as a starter for custom Phase objects</span>
 
@@ -265,7 +265,11 @@
                                <span class="n">prop</span><span class="o">=</span><span class="n">not_el</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">prop</span><span class="p">,</span>
                                <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;mean&#39;</span><span class="p">)</span>
         <span class="n">vals</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__getitem__</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">vals</span></div>
+        <span class="k">return</span> <span class="n">vals</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">phase</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">find_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 </pre></div>
 
               </div>
