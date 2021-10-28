@@ -55,10 +55,10 @@ This page links to examples in the Github repo at [github.com/PMEAL/OpenPNM/exam
 
 | Link | Description |
 |:-----|:------------|
-| [Basic Stick and Ball](/examples/notebooks/geometry/stick_and_ball.ipynb) | The StickAndBall contains the standard pore-scale models to describe the geometry of a pore network. |
+| [Basic Stick and Ball](/examples/notebooks/geometry/stick_and_ball.ipynb) | The SpheresAndCylinders contains the standard pore-scale models to describe the geometry of a pore network. |
 | [Defining Continuum Regions](/examples/notebooks/geometry/defining_continuum_regions.ipynb) | `in progress` |
 | [Overview of Shape Factors](/examples/notebooks/geometry/overview_of_shape_factors.ipynb) | `in progress` |
-| [Adjusting Pore Size Distributions](/examples/notebooks/geometry/adjusting_pore_size_distributions.ipynb) | The basic StickAndBall class is a good place to start since it has all the necessary pore-scale models, but to customize it for a specific material requires adjusting the pore and throat size distribution.  This example illustrates how to change the pore-size distribution function and how to tweak the distributions parameters to get a suitable result. |
+| [Adjusting Pore Size Distributions](/examples/notebooks/geometry/adjusting_pore_size_distributions.ipynb) | The basic SpheresAndCylinders class is a good place to start since it has all the necessary pore-scale models, but to customize it for a specific material requires adjusting the pore and throat size distribution.  This example illustrates how to change the pore-size distribution function and how to tweak the distributions parameters to get a suitable result. |
 
 ### [Materials](/examples/notebooks/materials)
 

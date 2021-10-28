@@ -8,9 +8,9 @@ class ModelsTest:
 
     def setup_class(self):
         self.net = op.network.Cubic(shape=[3, 3, 3])
-        self.geo = op.geometry.StickAndBall(network=self.net,
-                                            pores=self.net.Ps,
-                                            throats=self.net.Ts)
+        self.geo = op.geometry.SpheresAndCylinders(network=self.net,
+                                                   pores=self.net.Ps,
+                                                   throats=self.net.Ts)
 
     def teardown_class(self):
         ws = op.Workspace()
@@ -18,33 +18,35 @@ class ModelsTest:
 
     def test_models_dict_print(self):
         net = op.network.Cubic(shape=[3, 3, 3])
-        geo = op.geometry.StickAndBall(network=net, pores=net.Ps,
-                                       throats=net.Ts)
+        geo = op.geometry.SpheresAndCylinders(network=net, pores=net.Ps,
+                                              throats=net.Ts)
 
         s = geo.models.__str__().split('\n')
-        assert len(s) == 78
-        assert s.count('―'*85) == 17
+        assert len(s) == 61
+        assert s.count('―'*85) == 14
 
     def test_regenerate_models(self):
         a = len(self.geo.props())
-        assert a == 22
+        assert a == 16
         self.geo.clear(mode='props')
         a = len(self.geo.props())
         assert a == 0
         self.geo.regenerate_models()
         a = len(self.geo.props())
-        assert a == 22
+        assert a == 16
 
     def test_dependency_graph(self):
+        constant = op.models.misc.constant
         phase = op.phases.GenericPhase(network=self.net)
-        phase.add_model(propname="pore.foo", model=op.models.misc.constant, value=1.0)
+        phase.add_model(propname="pore.foo", model=constant, value=1.0)
         phys = op.physics.GenericPhysics(network=self.net,
                                          phase=phase,
                                          geometry=self.geo)
-        phys.add_model(propname="pore.baz", model=op.models.misc.constant, value=0.0)
+        phys.add_model(propname="pore.baz", model=constant, value=0.0)
 
         def mymodel(target, foo="pore.foo", baz="pore.baz"):
             return 0.0
+
         phys.add_model(propname="pore.bar_depends_on_foo_and_baz", model=mymodel)
         dg = phys.models.dependency_graph()
         assert ["pore.baz", "pore.bar_depends_on_foo_and_baz"] in dg.edges()
@@ -129,7 +131,7 @@ class ModelsTest:
 
     def test_regenerate_models_on_phase_with_deep(self):
         pn = op.network.Cubic(shape=[5, 5, 5])
-        geo = op.geometry.StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts)
+        geo = op.geometry.SpheresAndCylinders(network=pn, pores=pn.Ps, throats=pn.Ts)
         phase = op.phases.Water(network=pn)
         phys = op.physics.Standard(network=pn, phase=phase, geometry=geo)
         phase.clear(mode='model_data')
@@ -142,7 +144,7 @@ class ModelsTest:
 
     def test_regenerate_models_on_physics_with_deep(self):
         pn = op.network.Cubic(shape=[5, 5, 5])
-        geo = op.geometry.StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts)
+        geo = op.geometry.SpheresAndCylinders(network=pn, pores=pn.Ps, throats=pn.Ts)
         phase = op.phases.Water(network=pn)
         phys = op.physics.Standard(network=pn, phase=phase, geometry=geo)
         len_phase = 23
@@ -165,7 +167,7 @@ class ModelsTest:
 
     def test_regenerate_models_on_network_with_deep(self):
         pn = op.network.Cubic(shape=[5, 5, 5])
-        geo = op.geometry.StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts)
+        geo = op.geometry.SpheresAndCylinders(network=pn, pores=pn.Ps, throats=pn.Ts)
         a = len(pn.props())
         pn.clear()
         pn.regenerate_models()
@@ -179,15 +181,15 @@ class ModelsTest:
 
     def test_regen_mode_default_value(self):
         pn = op.network.Cubic(shape=[3, 3, 3], spacing=1e-4)
-        geo = op.geometry.StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts,
-                                        settings={'regen_mode': 'deferred'})
+        geo = op.geometry.SpheresAndCylinders(network=pn, pores=pn.Ps, throats=pn.Ts,
+                                              settings={'regen_mode': 'deferred'})
         assert len(geo.props()) == 0
         geo.regenerate_models()
-        assert len(geo.props()) == 22
+        assert len(geo.props()) == 16
 
     def test_automatic_running_on_models_when_missing_data(self):
         pn = op.network.Cubic(shape=[3, 3, 3], spacing=1e-4)
-        geo = op.geometry.StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts,
+        geo = op.geometry.SpheresAndCylinders(network=pn, pores=pn.Ps, throats=pn.Ts,
                                         settings={'regen_mode': 'deferred'})
         assert len(geo) == 2
         _ = geo['pore.seed']

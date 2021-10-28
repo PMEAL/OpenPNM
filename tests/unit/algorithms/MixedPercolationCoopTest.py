@@ -21,10 +21,8 @@ class MixedPercolationCoopTest:
                                                throats=self.net.throats())
         self.geo['pore.diameter'] = 0.5
         self.geo['throat.diameter'] = 0.25
-        self.geo.add_model(propname='throat.endpoints',
-                           model=gm.throat_endpoints.spherical_pores)
         self.geo.add_model(propname='throat.length',
-                           model=gm.throat_length.piecewise)
+                           model=gm.throat_length.spheres_and_cylinders)
         self.geo.add_model(propname='throat.volume',
                            model=gm.throat_volume.cylinder,
                            throat_diameter='throat.diameter',
