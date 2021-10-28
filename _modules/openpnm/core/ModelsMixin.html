@@ -259,7 +259,7 @@
 
 <span class="sd">        &gt;&gt;&gt; import openpnm as op</span>
 <span class="sd">        &gt;&gt;&gt; net = op.network.Cubic(shape=[3, 3, 3])</span>
-<span class="sd">        &gt;&gt;&gt; geo = op.geometry._StickAndBall(network=net,</span>
+<span class="sd">        &gt;&gt;&gt; geo = op.geometry.SpheresAndCylinders(network=net,</span>
 <span class="sd">        ...                                pores=net.Ps,</span>
 <span class="sd">        ...                                throats=net.Ts)</span>
 <span class="sd">        &gt;&gt;&gt; dtree = geo.models.dependency_graph()</span>
