@@ -3,7 +3,6 @@ docrep>=0.3
 flatdict
 gitpython
 h5py
-ipython
 jsonschema
 json-tricks
 matplotlib
@@ -11,11 +10,11 @@ networkx
 numba
 numpy
 pandas
-pypardiso>=0.3.3
+pypardiso>=0.4
 scikit-image
 scipy
 sympy
 terminaltables
 tqdm
 transforms3d
-mkl<=2021.3.0
+mkl

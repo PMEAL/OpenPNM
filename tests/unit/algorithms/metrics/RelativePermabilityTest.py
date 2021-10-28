@@ -112,9 +112,9 @@ class RelativePermeabilityTest:
 
     def setup_2D_model(self, shape):
         self.net = op.network.Cubic(shape=shape, spacing=0.0005)
-        self.geo = op.geometry.StickAndBall(network=self.net,
-                                            pores=self.net.Ps,
-                                            throats=self.net.Ts)
+        self.geo = op.geometry._StickAndBall(network=self.net,
+                                             pores=self.net.Ps,
+                                             throats=self.net.Ts)
         self.non_wet_phase = op.phases.Air(network=self.net)
         self.wet_phase = op.phases.Water(network=self.net)
         mod = op.models.physics.hydraulic_conductance.hagen_poiseuille

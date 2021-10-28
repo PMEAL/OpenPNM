@@ -1,8 +1,0 @@
-ssl_verify: true
-channels:
-  - defaults
-  - conda-forge
-channel_priority: flexible
-auto_update_conda: false
-pip_interop_enabled: true
-anaconda_upload: false

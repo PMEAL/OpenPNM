@@ -8,7 +8,7 @@ class MeniscusTest:
     def setup_class(self):
         np.random.seed(1)
         self.net = op.network.Cubic(shape=[5, 1, 5], spacing=5e-5)
-        self.geo = op.geometry.StickAndBall(
+        self.geo = op.geometry._StickAndBall(
             network=self.net, pores=self.net.pores(), throats=self.net.throats()
         )
         self.phase = op.phases.Water(network=self.net)

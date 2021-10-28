@@ -1,5 +1,9 @@
 import openpnm.models as mods
 from openpnm.geometry import GenericGeometry
+from numpy.linalg import norm as _norm
+from openpnm.models.geometry.throat_length import ctc as _ctc
+import numpy as _np
+
 
 
 class _StickAndBall2D(GenericGeometry):
@@ -45,10 +49,10 @@ class _StickAndBall2D(GenericGeometry):
     >>> pn = op.network.CubicDual(shape=[5, 5, 5])
     >>> Ps = pn.pores('primary')
     >>> Ts = pn.throats('primary')
-    >>> geo1 = op.geometry.StickAndBall2D(network=pn, pores=Ps, throats=Ts)
+    >>> geo1 = op.geometry._StickAndBall2D(network=pn, pores=Ps, throats=Ts)
     >>> Ps = pn.pores('secondary')
     >>> Ts = pn.throats(['secondary', 'interconnect'])
-    >>> geo2 = op.geometry.StickAndBall2D(network=pn, pores=Ps, throats=Ts)
+    >>> geo2 = op.geometry._StickAndBall2D(network=pn, pores=Ps, throats=Ts)
 
     Now override the 'pore.diameter' values on the ``geo2`` object:
 
@@ -205,12 +209,12 @@ class _StickAndBall2D(GenericGeometry):
                        prop='throat.max_size')
 
         self.add_model(propname='throat.endpoints',
-                       model=mods.geometry.throat_endpoints.circular_pores,
+                       model=circular_pores,
                        pore_diameter='pore.diameter',
                        throat_diameter='throat.diameter')
 
         self.add_model(propname='throat.length',
-                       model=mods.geometry.throat_length.piecewise,
+                       model=piecewise,
                        throat_endpoints='throat.endpoints')
 
         self.add_model(propname='throat.surface_area',
@@ -227,6 +231,192 @@ class _StickAndBall2D(GenericGeometry):
                        throat_diameter='throat.diameter')
 
         self.add_model(propname='throat.conduit_lengths',
-                       model=mods.geometry.throat_length.conduit_lengths,
+                       model=conduit_lengths,
                        throat_endpoints='throat.endpoints',
                        throat_length='throat.length')
+
+
+def circular_pores(target, pore_diameter='pore.diameter',
+                   throat_diameter='throat.diameter',
+                   throat_centroid='throat.centroid'):
+    r"""
+    Calculate the coordinates of throat endpoints, assuming spherical pores.
+    This model accounts for the overlapping lens between pores and throats.
+
+    Parameters
+    ----------
+    target : OpenPNM Object
+        The object which this model is associated with. This controls the
+        length of the calculated array, and also provides access to other
+        necessary properties.
+
+    pore_diameter : string
+        Dictionary key of the pore diameter values.
+
+    throat_diameter : string
+        Dictionary key of the throat diameter values.
+
+    throat_centroid : string, optional
+        Dictionary key of the throat centroid values. See the notes.
+
+    Returns
+    -------
+    EP : dictionary
+        Coordinates of throat endpoints stored in Dict form. Can be accessed
+        via the dict keys 'head' and 'tail'.
+
+    Notes
+    -----
+    (1) This model should not be applied to true 2D networks. Use
+    ``circular_pores`` model instead.
+
+    (2) By default, this model assumes that throat centroid and pore
+    coordinates are colinear. If that's not the case, such as in extracted
+    networks, ``throat_centroid`` could be passed as an optional argument, and
+    the model takes care of the rest.
+
+    """
+    network = target.project.network
+    throats = network.map_throats(throats=target.Ts, origin=target)
+    xyz = network['pore.coords']
+    cn = network['throat.conns'][throats]
+    L = _ctc(target=target) + 1e-15
+    Dt = network[throat_diameter][throats]
+    D1 = network[pore_diameter][cn[:, 0]]
+    D2 = network[pore_diameter][cn[:, 1]]
+    L1 = _np.zeros_like(L)
+    L2 = _np.zeros_like(L)
+    # Handle the case where Dt > Dp
+    mask = Dt > D1
+    L1[mask] = 0.5 * D1[mask]
+    L1[~mask] = _np.sqrt(D1[~mask]**2 - Dt[~mask]**2) / 2
+    mask = Dt > D2
+    L2[mask] = 0.5 * D2[mask]
+    L2[~mask] = _np.sqrt(D2[~mask]**2 - Dt[~mask]**2) / 2
+    # Handle non-colinear pores and throat centroids
+    try:
+        TC = network[throat_centroid][throats]
+        LP1T = _np.linalg.norm(TC - xyz[cn[:, 0]], axis=1) + 1e-15
+        LP2T = _np.linalg.norm(TC - xyz[cn[:, 1]], axis=1) + 1e-15
+        unit_vec_P1T = (TC - xyz[cn[:, 0]]) / LP1T[:, None]
+        unit_vec_P2T = (TC - xyz[cn[:, 1]]) / LP2T[:, None]
+    except KeyError:
+        unit_vec_P1T = (xyz[cn[:, 1]] - xyz[cn[:, 0]]) / L[:, None]
+        unit_vec_P2T = -1 * unit_vec_P1T
+    # Find throat endpoints
+    EP1 = xyz[cn[:, 0]] + L1[:, None] * unit_vec_P1T
+    EP2 = xyz[cn[:, 1]] + L2[:, None] * unit_vec_P2T
+    # Handle throats w/ overlapping pores
+    L1 = (4 * L**2 + D1**2 - D2**2) / (8 * L)
+    L2 = (4 * L**2 + D2**2 - D1**2) / (8 * L)
+    h = (2 * _np.sqrt(D1**2 / 4 - L1**2)).real
+    overlap = L - 0.5 * (D1 + D2) < 0
+    mask = overlap & (Dt < h)
+    EP1[mask] = (xyz[cn[:, 0]] + L1[:, None] * unit_vec_P1T)[mask]
+    EP2[mask] = (xyz[cn[:, 1]] + L2[:, None] * unit_vec_P2T)[mask]
+    return {'head': EP1, 'tail': EP2}
+
+
+def piecewise(
+    target,
+    throat_endpoints='throat.endpoints',
+    throat_centroid='throat.centroid'
+):
+    r"""
+    Calculates throat length from end points and optionally a centroid
+
+    Parameters
+    ----------
+    target : GenericGeometry
+        Geometry object which this model is associated with. This controls the
+        length of the calculated array, and also provides access to other
+        necessary properties.
+    throat_endpoints : str
+        Dictionary key of the throat endpoint values.
+    throat_centroid : str
+        Dictionary key of the throat centroid values, optional.
+
+    Returns
+    -------
+    Lt : ndarray
+        Array containing throat lengths for the given geometry.
+
+    Notes
+    -----
+    By default, the model assumes that the centroids of pores and the
+    connecting throat in each conduit are colinear.
+
+    If `throat_centroid` is passed, the model accounts for the extra
+    length. This could be useful for Voronoi or extracted networks.
+
+    """
+    network = target.project.network
+    throats = network.map_throats(throats=target.Ts, origin=target)
+    # Get throat endpoints
+    EP1 = network[throat_endpoints + '.head'][throats]
+    EP2 = network[throat_endpoints + '.tail'][throats]
+    # Calculate throat length
+    Lt = _norm(EP1 - EP2, axis=1)
+    # Handle the case where pores & throat centroids are not colinear
+    try:
+        Ct = network[throat_centroid][throats]
+        Lt = _norm(Ct - EP1, axis=1) + _norm(Ct - EP2, axis=1)
+    except KeyError:
+        pass
+    return Lt
+
+
+def conduit_lengths(
+    target,
+    throat_endpoints='throat.endpoints',
+    throat_length='throat.length',
+    throat_centroid='throat.centroid'
+):
+    r"""
+    Calculates conduit lengths. A conduit is defined as half pore + throat
+    + half pore.
+
+    Parameters
+    ----------
+    target : GenericGeometry
+        Geometry object which this model is associated with. This controls the
+        length of the calculated array, and also provides access to other
+        necessary properties.
+
+    throat_endpoints : str
+        Dictionary key of the throat endpoint values.
+
+    throat_diameter : str
+        Dictionary key of the throat length values.
+
+    throat_length : string (optional)
+        Dictionary key of the throat length values.  If not given then the
+        direct distance bewteen the two throat end points is used.
+
+    Returns
+    -------
+    Dictionary containing conduit lengths, which can be accessed via the dict
+    keys 'pore1', 'pore2', and 'throat'.
+
+    """
+    network = target.project.network
+    throats = network.map_throats(throats=target.Ts, origin=target)
+    cn = network['throat.conns'][throats]
+    # Get pore coordinates
+    C1 = network['pore.coords'][cn[:, 0]]
+    C2 = network['pore.coords'][cn[:, 1]]
+    # Get throat endpoints and length
+    EP1 = network[throat_endpoints + '.head'][throats]
+    EP2 = network[throat_endpoints + '.tail'][throats]
+    try:
+        # Look up throat length if given
+        Lt = network[throat_length][throats]
+    except KeyError:
+        # Calculate throat length otherwise based on piecewise model
+        Lt = piecewise(target, throat_endpoints, throat_centroid)
+    # Calculate conduit lengths for pore 1 and pore 2
+    L1 = _norm(C1 - EP1, axis=1)
+    L2 = _norm(C2 - EP2, axis=1)
+    Lt = _np.maximum(Lt, 1e-15)
+
+    return {'pore1': L1, 'throat': Lt, 'pore2': L2}

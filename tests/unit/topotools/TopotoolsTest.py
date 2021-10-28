@@ -177,8 +177,8 @@ class TopotoolsTest:
         pn2['pore.coords'] += [0, 0, 3]
         pn2['pore.net_02'] = True
         pn2['throat.net_02'] = True
-        op.geometry.StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts)
-        geo2 = op.geometry.StickAndBall(network=pn2, pores=pn2.Ps, throats=pn2.Ts)
+        op.geometry._StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts)
+        geo2 = op.geometry._StickAndBall(network=pn2, pores=pn2.Ps, throats=pn2.Ts)
         geo2['pore.test_vals'] = 1.5
         op.topotools.merge_networks(network=pn, donor=pn2)
         assert isinstance(pn['pore.test_vals'], np.ndarray)
@@ -328,7 +328,7 @@ class TopotoolsTest:
 
     def test_extend_geometry_present(self):
         pn = op.network.Cubic(shape=[2, 2, 1])
-        geo = op.geometry.StickAndBall(network=pn)
+        geo = op.geometry._StickAndBall(network=pn)
         geo['pore.test_float'] = 1.0
         geo['pore.test_int'] = 1
         geo['pore.test_bool'] = True

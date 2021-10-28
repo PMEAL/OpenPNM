@@ -97,7 +97,7 @@ class DiffusiveConductanceTest:
     def test_multiphase_diffusion(self):
         np.random.seed(50)
         net = op.network.Cubic(shape=[1, 6, 1])
-        geom = op.geometry.StickAndBall(network=net,
+        geom = op.geometry._StickAndBall(network=net,
                                         pores=net.Ps, throats=net.Ts)
         air = op.phases.Air(network=net)
         water = op.phases.Water(network=net)

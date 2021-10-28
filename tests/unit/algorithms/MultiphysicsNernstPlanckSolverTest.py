@@ -25,9 +25,9 @@ class MultiphysicsNernstPlanckSolverTest:
 
         # geometry
         np.random.seed(0)
-        self.geo = op.geometry.StickAndBall(network=self.net,
-                                            pores=self.net.Ps,
-                                            throats=self.net.Ts)
+        self.geo = op.geometry._StickAndBall(network=self.net,
+                                             pores=self.net.Ps,
+                                             throats=self.net.Ts)
 
         # phase
         self.sw = mixtures.SalineWater(network=self.net)

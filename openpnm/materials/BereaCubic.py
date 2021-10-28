@@ -55,7 +55,7 @@ class BereaCubic(Project):
         geom.add_model(propname='pore.volume',
                        model=gm.pore_volume.sphere)
         geom.add_model(propname='throat.length',
-                       model=gm.throat_length.piecewise)
+                       model=gm.throat_length.spheres_and_cylinders)
         geom.add_model(propname='throat.diameter',
                        model=gm.throat_size.from_neighbor_pores,
                        prop='pore.diameter', mode='min')
