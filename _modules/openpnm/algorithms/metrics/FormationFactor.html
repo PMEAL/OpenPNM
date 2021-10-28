@@ -218,7 +218,7 @@
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import openpnm as op</span>
 <span class="sd">    &gt;&gt;&gt; pn = op.network.Cubic(shape=[10, 10, 10], spacing=1e-5)</span>
-<span class="sd">    &gt;&gt;&gt; geo = op.geometry.StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts)</span>
+<span class="sd">    &gt;&gt;&gt; geo = op.geometry._StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts)</span>
 
 <span class="sd">    Now find the formation factor of the network:</span>
 

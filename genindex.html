@@ -233,6 +233,8 @@
         <li><a href="modules/network/delaunay_voronoi_dual.html#openpnm.network.DelaunayVoronoiDual.add_boundary_pores">(DelaunayVoronoiDual method)</a>
 </li>
       </ul></li>
+      <li><a href="modules/geometry/generic_geometry.html#openpnm.geometry.GenericGeometry.add_locations">add_locations() (GenericGeometry method)</a>
+</li>
       <li><a href="modules/core/modelsmixin.html#openpnm.core.ModelsMixin.add_model">add_model() (ModelsMixin method)</a>
 </li>
       <li><a href="modules/io/statoil.html#openpnm.io.Statoil.add_reservoir_pore">add_reservoir_pore() (Statoil class method)</a>
@@ -315,8 +317,6 @@
 </li>
       <li><a href="modules/models/geometry.html#openpnm.models.geometry.throat_capillary_shape_factor.compactness">compactness() (in module openpnm.models.geometry.throat_capillary_shape_factor)</a>
 </li>
-      <li><a href="modules/models/geometry.html#openpnm.models.geometry.throat_length.conduit_lengths">conduit_lengths() (in module openpnm.models.geometry.throat_length)</a>
-</li>
       <li><a href="modules/models/geometry.html#openpnm.models.geometry.throat_length.cones_and_cylinders">cones_and_cylinders() (in module openpnm.models.geometry.throat_length)</a>
 </li>
       <li><a href="modules/utils/project.html#openpnm.utils.Project.copy">copy() (Project method)</a>
@@ -390,6 +390,8 @@
       <li><a href="modules/core/modelsdict.html#openpnm.core.ModelsDict.dependency_map">dependency_map() (ModelsDict method)</a>
 </li>
       <li><a href="modules/io/dict.html#openpnm.io.Dict">Dict (class in openpnm.io)</a>
+</li>
+      <li><a href="modules/geometry/generic_geometry.html#openpnm.geometry.GenericGeometry.drop_locations">drop_locations() (GenericGeometry method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -717,11 +719,15 @@
 </li>
         <li><a href="modules/models/physics.html#module-openpnm.models.physics.electrical_conductance">openpnm.models.physics.electrical_conductance</a>
 </li>
+        <li><a href="modules/models/physics.html#module-openpnm.models.physics.flow_shape_factors">openpnm.models.physics.flow_shape_factors</a>
+</li>
         <li><a href="modules/models/physics.html#module-openpnm.models.physics.generic_source_term">openpnm.models.physics.generic_source_term</a>
 </li>
         <li><a href="modules/models/physics.html#module-openpnm.models.physics.hydraulic_conductance">openpnm.models.physics.hydraulic_conductance</a>
 </li>
         <li><a href="modules/models/physics.html#module-openpnm.models.physics.multiphase">openpnm.models.physics.multiphase</a>
+</li>
+        <li><a href="modules/models/physics.html#module-openpnm.models.physics.poisson_shape_factors">openpnm.models.physics.poisson_shape_factors</a>
 </li>
         <li><a href="modules/models/physics.html#module-openpnm.models.physics.thermal_conductance">openpnm.models.physics.thermal_conductance</a>
 </li>
@@ -940,8 +946,6 @@
         <li><a href="modules/models/misc.html#module-openpnm.models.misc.simple_equations">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     openpnm.models.misc.statistical_distributions
 
@@ -949,6 +953,8 @@
         <li><a href="modules/models/misc.html#module-openpnm.models.misc.statistical_distributions">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     openpnm.models.phases
 
@@ -1041,6 +1047,13 @@
 </li>
       </ul></li>
       <li>
+    openpnm.models.physics.flow_shape_factors
+
+      <ul>
+        <li><a href="modules/models/physics.html#module-openpnm.models.physics.flow_shape_factors">module</a>
+</li>
+      </ul></li>
+      <li>
     openpnm.models.physics.generic_source_term
 
       <ul>
@@ -1059,6 +1072,13 @@
 
       <ul>
         <li><a href="modules/models/physics.html#module-openpnm.models.physics.multiphase">module</a>
+</li>
+      </ul></li>
+      <li>
+    openpnm.models.physics.poisson_shape_factors
+
+      <ul>
+        <li><a href="modules/models/physics.html#module-openpnm.models.physics.poisson_shape_factors">module</a>
 </li>
       </ul></li>
       <li>
@@ -1115,8 +1135,6 @@
 </li>
       <li><a href="modules/models/geometry.html#openpnm.models.geometry.throat_volume.pendular_ring">pendular_ring() (in module openpnm.models.geometry.throat_volume)</a>
 </li>
-      <li><a href="modules/models/geometry.html#openpnm.models.geometry.throat_length.piecewise">piecewise() (in module openpnm.models.geometry.throat_length)</a>
-</li>
       <li><a href="modules/algorithms/invasion_percolation.html#openpnm.algorithms.InvasionPercolation.plot_intrusion_curve">plot_intrusion_curve() (InvasionPercolation method)</a>
 
       <ul>
@@ -1129,10 +1147,10 @@
 </li>
       <li><a href="modules/utils/project.html#openpnm.utils.Project.pop">pop() (Project method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/models/geometry.html#openpnm.models.geometry.throat_vector.pore_to_pore">pore_to_pore() (in module openpnm.models.geometry.throat_vector)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/algorithms/porosimetry.html#openpnm.algorithms.Porosimetry">Porosimetry (class in openpnm.algorithms)</a>
 </li>
       <li><a href="modules/utils/misc.html#openpnm.utils.PrintableDict">PrintableDict (class in openpnm.utils)</a>
@@ -1271,8 +1289,6 @@
       </ul></li>
       <li><a href="modules/algorithms/metrics/formation_factor.html#openpnm.algorithms.metrics.FormationFactor.set_length">set_length() (FormationFactor method)</a>
 </li>
-      <li><a href="modules/core/subdomain.html#openpnm.core.Subdomain.set_locations">set_locations() (Subdomain method)</a>
-</li>
       <li><a href="modules/algorithms/advection_diffusion.html#openpnm.algorithms.AdvectionDiffusion.set_outflow_BC">set_outflow_BC() (AdvectionDiffusion method)</a>
 </li>
       <li><a href="modules/algorithms/metrics/formation_factor.html#openpnm.algorithms.metrics.FormationFactor.set_outlets">set_outlets() (FormationFactor method)</a>
@@ -1334,8 +1350,6 @@
       <li><a href="modules/physics/standard.html#openpnm.physics.Standard">Standard (class in openpnm.physics)</a>
 </li>
       <li><a href="modules/io/statoil.html#openpnm.io.Statoil">Statoil (class in openpnm.io)</a>
-</li>
-      <li><a href="modules/geometry/stick_and_ball.html#openpnm.geometry.StickAndBall">StickAndBall (class in openpnm.geometry)</a>
 </li>
       <li><a href="modules/algorithms/stokes_flow.html#openpnm.algorithms.StokesFlow">StokesFlow (class in openpnm.algorithms)</a>
 </li>

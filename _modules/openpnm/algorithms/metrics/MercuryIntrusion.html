@@ -200,7 +200,7 @@
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import openpnm as op</span>
 <span class="sd">    &gt;&gt;&gt; pn = op.network.Cubic(shape=[10, 10, 10], spacing=1e-5)</span>
-<span class="sd">    &gt;&gt;&gt; geo = op.geometry.StickAndBall(network=pn)</span>
+<span class="sd">    &gt;&gt;&gt; geo = op.geometry._StickAndBall(network=pn)</span>
 <span class="sd">    &gt;&gt;&gt; mip = op.algorithms.metrics.MercuryIntrusion(network=pn)</span>
 <span class="sd">    &gt;&gt;&gt; mip.run()</span>
 
