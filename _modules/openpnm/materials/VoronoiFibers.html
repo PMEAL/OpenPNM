@@ -383,9 +383,6 @@
                            <span class="n">pore_diameter</span><span class="o">=</span><span class="s2">&quot;pore.diameter&quot;</span><span class="p">)</span>
             <span class="n">mod</span> <span class="o">=</span> <span class="n">gm</span><span class="o">.</span><span class="n">throat_surface_area</span><span class="o">.</span><span class="n">extrusion</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s2">&quot;throat.surface_area&quot;</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">mod</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s2">&quot;throat.endpoints&quot;</span><span class="p">,</span>
-                           <span class="n">model</span><span class="o">=</span><span class="n">gm</span><span class="o">.</span><span class="n">throat_endpoints</span><span class="o">.</span><span class="n">straight_throat</span><span class="p">,</span>
-                           <span class="n">throat_vector</span><span class="o">=</span><span class="s2">&quot;throat.normal&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">regenerate_models</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_t_normals</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1338,14 +1335,11 @@
                            <span class="n">regen_mode</span><span class="o">=</span><span class="n">rm</span><span class="p">)</span>
             <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;throat.diameter&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Nt</span><span class="p">)</span> <span class="o">*</span> <span class="n">network</span><span class="o">.</span><span class="n">fiber_rad</span> <span class="o">*</span> <span class="mi">2</span>
             <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;throat.indiameter&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;throat.diameter&quot;</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s2">&quot;throat.endpoints&quot;</span><span class="p">,</span>
-                           <span class="n">model</span><span class="o">=</span><span class="n">gm</span><span class="o">.</span><span class="n">throat_endpoints</span><span class="o">.</span><span class="n">spherical_pores</span><span class="p">,</span>
-                           <span class="n">regen_mode</span><span class="o">=</span><span class="n">rm</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s2">&quot;throat.area&quot;</span><span class="p">,</span>
                            <span class="n">model</span><span class="o">=</span><span class="n">gm</span><span class="o">.</span><span class="n">throat_cross_sectional_area</span><span class="o">.</span><span class="n">cylinder</span><span class="p">,</span>
                            <span class="n">regen_mode</span><span class="o">=</span><span class="n">rm</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s2">&quot;throat.length&quot;</span><span class="p">,</span>
-                           <span class="n">model</span><span class="o">=</span><span class="n">gm</span><span class="o">.</span><span class="n">throat_length</span><span class="o">.</span><span class="n">piecewise</span><span class="p">,</span>
+                           <span class="n">model</span><span class="o">=</span><span class="n">gm</span><span class="o">.</span><span class="n">throat_length</span><span class="o">.</span><span class="n">spheres_and_cylinders</span><span class="p">,</span>
                            <span class="n">regen_mode</span><span class="o">=</span><span class="n">rm</span><span class="p">)</span>
             <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;throat.c2c&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;throat.length&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">network</span><span class="o">.</span><span class="n">fiber_rad</span> <span class="o">*</span> <span class="mi">2</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s2">&quot;throat.volume&quot;</span><span class="p">,</span>
@@ -1360,8 +1354,6 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s2">&quot;throat.shape_factor&quot;</span><span class="p">,</span>
                            <span class="n">model</span><span class="o">=</span><span class="n">gm</span><span class="o">.</span><span class="n">throat_capillary_shape_factor</span><span class="o">.</span><span class="n">compactness</span><span class="p">,</span>
                            <span class="n">regen_mode</span><span class="o">=</span><span class="n">rm</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s2">&quot;throat.conduit_lengths&quot;</span><span class="p">,</span>
-                           <span class="n">model</span><span class="o">=</span><span class="n">gm</span><span class="o">.</span><span class="n">throat_length</span><span class="o">.</span><span class="n">conduit_lengths</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_throat_props</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
