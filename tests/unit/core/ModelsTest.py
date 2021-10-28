@@ -22,18 +22,18 @@ class ModelsTest:
                                        throats=net.Ts)
 
         s = geo.models.__str__().split('\n')
-        assert len(s) == 68
-        assert s.count('―'*85) == 15
+        assert len(s) == 78
+        assert s.count('―'*85) == 17
 
     def test_regenerate_models(self):
         a = len(self.geo.props())
-        assert a == 16
+        assert a == 22
         self.geo.clear(mode='props')
         a = len(self.geo.props())
         assert a == 0
         self.geo.regenerate_models()
         a = len(self.geo.props())
-        assert a == 16
+        assert a == 22
 
     def test_dependency_graph(self):
         phase = op.phases.GenericPhase(network=self.net)
@@ -154,7 +154,7 @@ class ModelsTest:
         assert len(phys) == 2
         assert len(phase) == 13
         phys.regenerate_models(propnames=None, deep=False)
-        assert len(phys) == 14
+        assert len(phys) == 8
         # Note that 2 new models were added to the phase during interpolation
         assert len(phase) < len_phase
         phase.clear(mode='model_data')
@@ -183,7 +183,7 @@ class ModelsTest:
                                         settings={'regen_mode': 'deferred'})
         assert len(geo.props()) == 0
         geo.regenerate_models()
-        assert len(geo.props()) == 16
+        assert len(geo.props()) == 22
 
     def test_automatic_running_on_models_when_missing_data(self):
         pn = op.network.Cubic(shape=[3, 3, 3], spacing=1e-4)
