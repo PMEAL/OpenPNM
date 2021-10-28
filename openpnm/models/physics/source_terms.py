@@ -13,12 +13,6 @@ __all__ = [
     "natural_exponential",
     "logarithm",
     "natural_logarithm",
-    "linear_sym",
-    "power_law_sym",
-    "exponential_sym",
-    "natural_exponential_sym",
-    "logarithm_sym",
-    "natural_logarithm_sym",
     "general_symbolic",
     "butler_volmer_conc",
     "butler_volmer_voltage"
@@ -64,6 +58,7 @@ def charge_conservation(target, phase, p_alg, e_alg, assumption):
     "laplace".
 
     """
+    assumption = assumption.lower()
     import scipy.sparse.csgraph as _spgr
 
     F = 96485.3321233100184
@@ -74,12 +69,12 @@ def charge_conservation(target, phase, p_alg, e_alg, assumption):
         for e in e_alg:
             rhs += (v * F * phase['pore.valence.'+e.settings['ion']]
                     * e[e.settings['quantity']])
-    elif assumption == 'poisson_2D':
-        s = network['pore.area']
+    elif assumption == 'poisson_2d':
+        s = network['pore.cross_sectional_area']
         for e in e_alg:
             rhs += (s * F * phase['pore.valence.'+e.settings['ion']]
                     * e[e.settings['quantity']])
-    elif assumption in ['electroneutrality', 'electroneutrality_2D']:
+    elif assumption in ['electroneutrality', 'electroneutrality_2d']:
         for e in e_alg:
             try:
                 c = e[e.settings['quantity']]
@@ -90,13 +85,12 @@ def charge_conservation(target, phase, p_alg, e_alg, assumption):
             am = network.create_adjacency_matrix(weights=g, fmt='coo')
             A = _spgr.laplacian(am)
             rhs += - F * phase['pore.valence.'+e.settings['ion']] * (A * c)
-    elif assumption in ['laplace', 'laplace_2D']:
+    elif assumption in ['laplace', 'laplace_2d']:
         pass  # rhs should remain 0
     else:
-        raise Exception('Unknown keyword for "charge_conservation", can '
-                        + 'only be "poisson", "poisson_2D", "laplace", '
-                        + '"laplace_2D", "electroneutrality" or '
-                        + "electroneutrality_2D")
+        raise Exception('Unknown keyword for charge_conservation, pick from:'
+                        + ' poisson, poisson_2d, laplace, laplace2d,'
+                        + ' electroneutrality or electroneutrality_2d')
     S1 = _np.zeros(shape=(p_alg.Np, ), dtype=float)
     values = {'S1': S1, 'S2': rhs, 'rate': rhs}
     return values

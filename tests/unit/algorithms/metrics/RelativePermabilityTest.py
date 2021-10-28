@@ -112,11 +112,11 @@ class RelativePermeabilityTest:
         nt.assert_allclose(kx, kz, rtol=1e-6)
         nt.assert_allclose(kx, kr, rtol=1e-6)
 
-    def setup_2D_model(self, shape):
+    def setup_model2d(self, shape):
         self.net = op.network.Cubic(shape=shape, spacing=0.0005)
-        self.geo = op.geometry._StickAndBall(network=self.net,
-                                             pores=self.net.Ps,
-                                             throats=self.net.Ts)
+        self.geo = op.geometry.SpheresAndCylinders(network=self.net,
+                                                   pores=self.net.Ps,
+                                                   throats=self.net.Ts)
         self.non_wet_phase = op.phases.Air(network=self.net)
         self.wet_phase = op.phases.Water(network=self.net)
         mod = op.models.physics.hydraulic_conductance.hagen_poiseuille
@@ -139,11 +139,11 @@ class RelativePermeabilityTest:
         ip.run()
         self.non_wet_phase.update(ip.results())
 
-    def test_2D_model_one_phase_curve(self):
+    def test_model2d_one_phase_curve(self):
         for i in range(3):
             shape = [10, 10, 10]
             shape[i] = 1
-            self.setup_2D_model(shape=shape)
+            self.setup_model2d(shape=shape)
             rp = op.algorithms.metrics.RelativePermeability(network=self.net)
             rp.settings.update({'nwp': self.non_wet_phase.name,
                                 'invasion_sequence': 'invasion_sequence'})
@@ -152,11 +152,11 @@ class RelativePermeabilityTest:
             assert results['kr_wp'] is None
             nt.assert_allclose(len(results['sat']), 2)
 
-    def test_2D_model_two_phase_curve(self):
+    def test_model2d_two_phase_curve(self):
         for i in range(3):
             shape = [10, 10, 10]
             shape[i] = 1
-            self.setup_2D_model(shape=shape)
+            self.setup_model2d(shape=shape)
             rp = op.algorithms.metrics.RelativePermeability(network=self.net)
             rp.settings.update({'nwp': self.non_wet_phase.name,
                                 'wp': self.wet_phase.name,

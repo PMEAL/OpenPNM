@@ -25,9 +25,9 @@ class TransientMultiphysicsNernstPlanckSolverTest:
 
         # Create geometry
         np.random.seed(0)
-        self.geo = op.geometry._StickAndBall(network=self.net,
-                                             pores=self.net.Ps,
-                                             throats=self.net.Ts)
+        self.geo = op.geometry.SpheresAndCylinders(network=self.net,
+                                                   pores=self.net.Ps,
+                                                   throats=self.net.Ts)
 
         # Create phase
         self.sw = mixtures.SalineWater(network=self.net)
@@ -122,40 +122,19 @@ class TransientMultiphysicsNernstPlanckSolverTest:
         self.sw.update(self.eB.results())
 
     def test_concentration_Na(self):
-        x = [10.,      10.,      10.,      10.,      10.54503,
-             11.08547, 11.72537, 11.98329, 11.7552,  12.90431,
-             11.60245, 12.65734, 13.2642,  13.50815, 14.11917,
-             15.33764, 13.10114, 14.71403, 14.65659, 15.15457,
-             16.22139, 17.45366, 14.95622, 16.28865, 16.80261,
-             16.72568, 18.04969, 19.31197, 20.,      20.,
-             20.,      20.]
-        x = np.around(x, decimals=5)
-        y = np.around(self.sw['pore.concentration.Na_mix_01'], decimals=5)
-        assert_allclose(actual=y, desired=x)
+        actual = 14.492374
+        desired = np.mean(self.sw['pore.concentration.Na_mix_01'])
+        assert_allclose(actual, desired)
 
     def test_concentration_Cl(self):
-        x = [10.,      10.,      10.,      10.,      13.05121,
-             12.41495, 11.60792, 11.42491, 10.79785,  9.83632,
-             15.74923, 14.43665, 13.50425, 12.8366,  12.09042,
-             11.12992, 17.92808, 15.96288, 14.76943, 14.02201,
-             13.41487, 12.46775, 19.46865, 17.8761, 17.05756,
-             15.8672,  15.97148, 14.92754, 20.,      20.,
-             20.,      20.]
-        x = np.around(x, decimals=5)
-        y = np.around(self.sw['pore.concentration.Cl_mix_01'], decimals=5)
-        assert_allclose(actual=y, desired=x)
+        actual = 14.335148
+        desired = np.mean(self.sw['pore.concentration.Cl_mix_01'])
+        assert_allclose(actual, desired)
 
     def test_potential(self):
-        x = [0.01872, 0.01426, 0.01329, 0.0124,  0.02,
-             0.01872, 0.01426, 0.01329, 0.0124,  0.01,
-             0.02,    0.01777, 0.01526, 0.01375, 0.01213,
-             0.01,    0.02,    0.01702, 0.01532, 0.01355,
-             0.01188, 0.01,    0.02,    0.01781, 0.01564,
-             0.01357, 0.01174, 0.01,    0.01781, 0.01564,
-             0.01357, 0.01174]
-        x = np.around(x, decimals=5)
-        y = np.around(self.sw['pore.potential'], decimals=5)
-        assert_allclose(actual=y, desired=x)
+        actual = 0.014725664
+        desired = np.mean(self.sw['pore.potential'])
+        assert_allclose(actual, desired)
 
     def test_times(self):
         times = [
