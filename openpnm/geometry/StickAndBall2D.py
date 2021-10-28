@@ -231,6 +231,6 @@ class StickAndBall2D(GenericGeometry):
                        throat_endpoints='throat.endpoints',
                        throat_length='throat.length')
         self.add_model(propname='throat.hydraulic_size_factors',
-                       model=mods.geometry.hydraulic_size_factors.cones_and_cylinders)
+                       model=mods.geometry.hydraulic_size_factors.circles_and_rectangles)
         self.add_model(propname='throat.diffusive_size_factors',
-                       model=mods.geometry.diffusive_size_factors.cones_and_cylinders)
+                       model=mods.geometry.diffusive_size_factors.circles_and_rectangles)
