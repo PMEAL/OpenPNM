@@ -17,7 +17,7 @@ just a few lines:
 
    # Generate network, geometry, phase, and physics
    pn = op.network.Cubic(shape=[Nx, Ny, Nz], spacing=Lc)
-   geo = op.geometry.StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts)
+   geo = op.geometry._StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts)
    Hg = op.phases.Mercury(network=pn)
    phys = op.physics.Standard(network=pn, phase=Hg, geometry=geo)
 

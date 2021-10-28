@@ -26,7 +26,7 @@ export = False
 
 # Define network, geometry and constituent phases
 net = Cubic(shape=[100, 100, 1])
-geom = StickAndBall(network=net, pores=net.Ps, throats=net.Ts)
+geom = _StickAndBall(network=net, pores=net.Ps, throats=net.Ts)
 air = Air(network=net, name="air")
 water = Water(network=net, name="water")
 water["pore.diffusivity"] = air["pore.diffusivity"] * 0.05
