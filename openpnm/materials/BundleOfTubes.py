@@ -69,8 +69,7 @@ class BundleOfTubes(Project):
         elif len(shape) == 2:
             shape = np.concatenate((np.array(shape), [2]))
         else:
-            raise Exception('shape not understood, must be int '
-                            + ' or list of 2 ints')
+            raise Exception('Unsupported shape; must be int or list of 2 ints')
 
         if isinstance(spacing, (float, int)):
             spacing = float(spacing)
@@ -172,12 +171,12 @@ class BundleOfTubes(Project):
 
         # Now create a generic phase with physics models on it
         phase = GenericPhase(network=net)
-        m = mods.physics.hydraulic_conductance.classic_hagen_poiseuille
+        m = mods.physics.hydraulic_conductance.hagen_poiseuille
         phase.add_model(propname='throat.hydraulic_conductance',
                         model=m, regen_mode='deferred')
-        m = mods.physics.diffusive_conductance.classic_ordinary_diffusion
+        m = mods.physics.diffusive_conductance.ordinary_diffusion
         phase.add_model(propname='throat.diffusive_conductance',
                         model=m, regen_mode='deferred')
-        m = mods.physics.diffusive_conductance.classic_ordinary_diffusion
+        m = mods.physics.capillary_pressure.washburn
         phase.add_model(propname='throat.entry_pressure',
                         model=m, regen_mode='deferred')

@@ -9,7 +9,7 @@ np.random.seed(9)
 
 # %% Create network, geometry, phase, and physics objects
 pn = op.network.Cubic(shape=[10, 10, 10], spacing=1e-4, project=proj)
-geo = op.geometry._StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts)
+geo = op.geometry.SpheresAndCylinders(network=pn, pores=pn.Ps, throats=pn.Ts)
 air = op.phases.Air(network=pn, name='air')
 water = op.phases.Water(network=pn, name='h2o')
 hg = op.phases.Mercury(network=pn, name='hg')
