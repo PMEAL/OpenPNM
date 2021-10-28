@@ -14,9 +14,8 @@ import numpy as np
 
 ws = op.Workspace()
 proj = ws.new_project()
-export = False
 
-# network, geometry, phase
+# Create network, geometry, phase
 np.random.seed(0)
 
 net = op.network.Cubic(shape=[23, 15, 1], spacing=1e-6, project=proj)
@@ -35,7 +34,6 @@ op.topotools.reduce_coordination(net, 3)
 
 np.random.seed(0)
 geo = op.geometry.StickAndBall(network=net, pores=net.Ps, throats=net.Ts)
-
 
 sw = mixtures.SalineWater(network=net)
 # Retrieve handles to each species for use below
@@ -79,12 +77,12 @@ phys.add_model(propname='throat.ad_dif_mig_conductance.' + Cl.name,
                pore_pressure='pore.pressure', model=ad_dif_mig_Cl,
                ion=Cl.name, s_scheme=scheme)
 
-# settings for algorithms
+# Settings for algorithms
 setts1 = {'solver_max_iter': 5, 'solver_tol': 1e-08, 'solver_rtol': 1e-08,
           'nlin_max_iter': 10, 'cache_A': False, 'cache_b': False}
 setts2 = {'g_tol': 1e-4, 'g_max_iter': 50}
 
-# algorithms
+# Algorithms
 sf = op.algorithms.StokesFlow(network=net, phase=sw, settings=setts1)
 sf.set_value_BC(pores=net.pores('back'), values=11)
 sf.set_value_BC(pores=net.pores('front'), values=10)
@@ -118,5 +116,4 @@ sw.update(eA.results())
 sw.update(eB.results())
 
 # output data to Paraview
-if export:
-    proj.export_data(phases=[sw], filename='out', filetype='xdmf')
+proj.export_data(phases=[sw], filename='out', filetype='xdmf')
