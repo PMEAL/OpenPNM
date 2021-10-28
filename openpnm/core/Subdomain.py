@@ -1,4 +1,4 @@
-from openpnm.core import Base, LegacyMixin, LabelMixin
+from openpnm.core import Base, LegacyMixin, LabelMixin, ParamMixin
 import numpy as np
 
 

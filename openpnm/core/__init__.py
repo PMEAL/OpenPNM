@@ -103,5 +103,5 @@ and run.
 """
 
 from .ModelsMixin import ModelsMixin, ModelsDict
-from .Base import Base, LegacyMixin, LabelMixin
+from .Base import Base, LegacyMixin, LabelMixin, ParamMixin
 from .Subdomain import Subdomain
