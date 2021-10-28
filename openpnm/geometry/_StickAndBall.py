@@ -48,10 +48,10 @@ class _StickAndBall(GenericGeometry):
     >>> pn = op.network.CubicDual(shape=[5, 5, 5])
     >>> Ps = pn.pores('primary')
     >>> Ts = pn.throats('primary')
-    >>> geo1 = op.geometry._StickAndBall(network=pn, pores=Ps, throats=Ts)
+    >>> geo1 = op.geometry.SpheresAndCylinders(network=pn, pores=Ps, throats=Ts)
     >>> Ps = pn.pores('secondary')
     >>> Ts = pn.throats(['secondary', 'interconnect'])
-    >>> geo2 = op.geometry._StickAndBall(network=pn, pores=Ps, throats=Ts)
+    >>> geo2 = op.geometry.SpheresAndCylinders(network=pn, pores=Ps, throats=Ts)
 
     Now override the 'pore.diameter' values on the ``geo2`` object:
 

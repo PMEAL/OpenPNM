@@ -45,7 +45,7 @@ class InvasionPercolation(GenericAlgorithm):
 
     Add a basic geometry:
 
-    >>> geom = op.geometry._StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts)
+    >>> geom = op.geometry.SpheresAndCylinders(network=pn, pores=pn.Ps, throats=pn.Ts)
 
     Create an invading phase, and attach the capillary pressure model:
 
@@ -480,7 +480,7 @@ class InvasionPercolation(GenericAlgorithm):
 if __name__ == '__main__':
     import openpnm as op
     pn = op.network.Cubic(shape=[10, 10, 10], spacing=1e-4)
-    geo = op.geometry._StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts)
+    geo = op.geometry.SpheresAndCylinders(network=pn, pores=pn.Ps, throats=pn.Ts)
     water = op.phases.Water(network=pn, name='h2o')
     phys_water = op.physics.Standard(network=pn, phase=water, geometry=geo)
     ip = InvasionPercolation(network=pn, phase=water)

@@ -131,7 +131,7 @@ class ModelsTest:
 
     def test_regenerate_models_on_phase_with_deep(self):
         pn = op.network.Cubic(shape=[5, 5, 5])
-        geo = op.geometry._StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts)
+        geo = op.geometry.SpheresAndCylinders(network=pn, pores=pn.Ps, throats=pn.Ts)
         phase = op.phases.Water(network=pn)
         phys = op.physics.Standard(network=pn, phase=phase, geometry=geo)
         phase.clear(mode='model_data')
@@ -167,7 +167,7 @@ class ModelsTest:
 
     def test_regenerate_models_on_network_with_deep(self):
         pn = op.network.Cubic(shape=[5, 5, 5])
-        geo = op.geometry._StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts)
+        geo = op.geometry.SpheresAndCylinders(network=pn, pores=pn.Ps, throats=pn.Ts)
         a = len(pn.props())
         pn.clear()
         pn.regenerate_models()
@@ -189,7 +189,7 @@ class ModelsTest:
 
     def test_automatic_running_on_models_when_missing_data(self):
         pn = op.network.Cubic(shape=[3, 3, 3], spacing=1e-4)
-        geo = op.geometry._StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts,
+        geo = op.geometry.SpheresAndCylinders(network=pn, pores=pn.Ps, throats=pn.Ts,
                                         settings={'regen_mode': 'deferred'})
         assert len(geo) == 2
         _ = geo['pore.seed']

@@ -10,7 +10,7 @@ class SolversTest:
 
     def setup_class(self):
         self.net = op.network.Cubic(shape=[10, 10, 10])
-        self.geom = op.geometry._StickAndBall(network=self.net,
+        self.geom = op.geometry.SpheresAndCylinders(network=self.net,
                                               pores=self.net.Ps,
                                               throats=self.net.Ts)
         self.phase = op.phases.GenericPhase(network=self.net)

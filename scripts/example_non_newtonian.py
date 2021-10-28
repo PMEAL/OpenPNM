@@ -9,7 +9,7 @@ proj = ws.new_project()
 
 # Create network and geometry
 net = op.network.Cubic(shape=[20, 3, 3], spacing=1e-4, project=proj)
-geo = op.geometry._StickAndBall(network=net, pores=net.Ps, throats=net.Ts)
+geo = op.geometry.SpheresAndCylinders(network=net, pores=net.Ps, throats=net.Ts)
 
 # Create phase
 phase = op.phases.Water(network=net)

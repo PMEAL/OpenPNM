@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 class IPTest:
     def setup_class(self):
         self.net = op.network.Cubic(shape=[10, 10, 10], spacing=0.0005)
-        self.geo = op.geometry._StickAndBall(
+        self.geo = op.geometry.SpheresAndCylinders(
             network=self.net, pores=self.net.Ps, throats=self.net.Ts)
         self.water = op.phases.Water(network=self.net)
         self.air = op.phases.Air(network=self.net)

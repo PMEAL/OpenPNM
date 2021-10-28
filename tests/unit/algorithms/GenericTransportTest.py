@@ -8,7 +8,7 @@ class GenericTransportTest:
 
     def setup_class(self):
         self.net = op.network.Cubic(shape=[9, 9, 9])
-        self.geo = op.geometry._StickAndBall(network=self.net,
+        self.geo = op.geometry.SpheresAndCylinders(network=self.net,
                                              pores=self.net.Ps,
                                              throats=self.net.Ts)
         self.phase = op.phases.Air(network=self.net)

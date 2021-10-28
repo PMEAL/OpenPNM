@@ -27,7 +27,7 @@ thrts = net['throat.surface']
 op.topotools.trim(network=net, pores=net.Ps[prs], throats=net.Ts[thrts])
 
 
-geo = op.geometry._StickAndBall(network=net, pores=net.Ps, throats=net.Ts)
+geo = op.geometry.SpheresAndCylinders(network=net, pores=net.Ps, throats=net.Ts)
 pore_d = op.models.misc.constant
 throat_d = op.models.misc.constant
 geo.add_model(propname='pore.diameter', model=pore_d, value=1.5e-4)

@@ -257,11 +257,11 @@ class InterleaveDataTest:
         pn = op.network.Cubic(shape=[10, 10, 10], spacing=1e-4, project=proj)
         Ps = pn['pore.coords'][:, 0] < pn['pore.coords'][:, 0].mean()
         Ts = pn.find_neighbor_throats(pores=Ps, mode='xnor')
-        geo1 = op.geometry._StickAndBall(network=pn, pores=Ps, throats=Ts)
+        geo1 = op.geometry.SpheresAndCylinders(network=pn, pores=Ps, throats=Ts)
 
         Ps = pn['pore.coords'][:, 0] >= pn['pore.coords'][:, 0].mean()
         Ts = pn.find_neighbor_throats(pores=Ps, mode='or')
-        geo2 = op.geometry._StickAndBall(network=pn, pores=Ps, throats=Ts)
+        geo2 = op.geometry.SpheresAndCylinders(network=pn, pores=Ps, throats=Ts)
 
         pn['pore.foo'] = 1
         # Can't create a subdict below foo

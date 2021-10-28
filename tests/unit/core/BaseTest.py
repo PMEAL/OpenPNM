@@ -63,7 +63,7 @@ class BaseTest:
 
     def test_clear_model_data_when_model_returns_dictionary(self):
         pn = op.network.Cubic([5, 5, 5])
-        geo = op.geometry._StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts)
+        geo = op.geometry.SpheresAndCylinders(network=pn, pores=pn.Ps, throats=pn.Ts)
         geo.clear(mode='model_data')
 
     def test_pores(self):

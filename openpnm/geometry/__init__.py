@@ -72,7 +72,7 @@ the pores sizes.  The following example illustrates how to alter the
 
 >>> import openpnm as op
 >>> pn = op.network.Cubic([5, 5, 5])
->>> geo = op.geometry._StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts)
+>>> geo = op.geometry.SpheresAndCylinders(network=pn, pores=pn.Ps, throats=pn.Ts)
 
 We can reach into the ``models`` attribute and change the parameters of any
 model as follows:
