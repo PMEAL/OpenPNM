@@ -25,9 +25,9 @@ class MultiphysicsNernstPlanckSolverTest:
 
         # Create geometry
         np.random.seed(0)
-        self.geo = op.geometry.StickAndBall(network=self.net,
-                                            pores=self.net.Ps,
-                                            throats=self.net.Ts)
+        self.geo = op.geometry.SpheresAndCylinders(network=self.net,
+                                             pores=self.net.Ps,
+                                             throats=self.net.Ts)
 
         # Create phase
         self.sw = mixtures.SalineWater(network=self.net)
@@ -118,15 +118,15 @@ class MultiphysicsNernstPlanckSolverTest:
 
     def test_concentration_Na(self):
         y = self.sw['pore.concentration.Na_mix_01'].mean()
-        assert_allclose(actual=y, desired=14.497619, rtol=1e-4)
+        assert_allclose(actual=y, desired=14.492374, rtol=1e-5)
 
     def test_concentration_Cl(self):
         y = self.sw['pore.concentration.Cl_mix_01'].mean()
-        assert_allclose(actual=y, desired=14.331680, rtol=1e-4)
+        assert_allclose(actual=y, desired=14.335148, rtol=1e-5)
 
     def test_potential(self):
         y = self.sw['pore.potential'].mean()
-        assert_allclose(actual=y, desired=0.0147346, rtol=1e-4)
+        assert_allclose(actual=y, desired=0.0147257, rtol=1e-5)
 
     def teardown_class(self):
         ws = op.Workspace()
@@ -141,7 +141,7 @@ class MultiphysicsNernstPlanckSolverTest:
                             e_alg=[self.eA, self.eB],
                             assumption='electroneutrality')
         y = np.linalg.norm(self.phys['pore.charge_conservation.rate'])
-        assert_allclose(actual=y, desired=6.0978397e-11, rtol=1e-4)
+        assert_allclose(actual=y, desired=6.357879e-11, rtol=1e-5)
 
     def test_charge_conservation_poisson(self):
         model = op.models.physics.generic_source_term.charge_conservation
@@ -152,15 +152,15 @@ class MultiphysicsNernstPlanckSolverTest:
                             e_alg=[self.eA, self.eB],
                             assumption='poisson')
         y = np.linalg.norm(self.phys['pore.charge_conservation.rate'])
-        assert_allclose(actual=y, desired=1.158753e-13, rtol=1e-4)
+        assert_allclose(actual=y, desired=1.155203e-13, rtol=1e-5)
         self.phys.add_model(propname='pore.charge_conservation',
                             model=model,
                             phase=self.sw,
                             p_alg=self.p,
                             e_alg=[self.eA, self.eB],
-                            assumption='poisson_2D')
+                            assumption='poisson_2d')
         y = np.linalg.norm(self.phys['pore.charge_conservation.rate'])
-        assert_allclose(actual=y, desired=2.81012e-7, rtol=1e-4)
+        assert_allclose(actual=y, desired=2.802853e-7, rtol=1e-5)
 
 
 if __name__ == '__main__':

@@ -6,7 +6,7 @@ class GenericPhysicsTest:
 
     def setup_class(self):
         self.net = op.network.Cubic(shape=[3, 3, 3])
-        self.geo = op.geometry.StickAndBall(network=self.net,
+        self.geo = op.geometry.SpheresAndCylinders(network=self.net,
                                             pores=self.net.Ps,
                                             throats=self.net.Ts)
 

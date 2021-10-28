@@ -32,7 +32,7 @@ np.random.seed(0)
 op.topotools.reduce_coordination(net, 3)
 
 np.random.seed(0)
-geo = op.geometry.StickAndBall2D(network=net, pores=net.Ps, throats=net.Ts)
+geo = op.geometry.CirclesAndRectangles(network=net, pores=net.Ps, throats=net.Ts)
 
 sw = mixtures.SalineWater(network=net)
 # Retrieve handles to each species for use below

@@ -11,10 +11,10 @@
 #         self.ws = op.Workspace()
 #         self.ws.clear()
 #         self.net = op.network.Cubic(shape=[5, 5, 5])
-#         self.geo1 = op.geometry.StickAndBall(network=self.net,
+#         self.geo1 = op.geometry.SpheresAndCylinders(network=self.net,
 #                                              pores=np.arange(0, 75),
 #                                              throats=np.arange(0, 150))
-#         self.geo2 = op.geometry.StickAndBall(network=self.net,
+#         self.geo2 = op.geometry.SpheresAndCylinders(network=self.net,
 #                                              pores=np.arange(75, self.net.Np),
 #                                              throats=np.arange(150, self.net.Nt))
 #         self.phase = op.phases.Air(network=self.net)
