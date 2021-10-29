@@ -195,6 +195,25 @@
 <span class="sd">    project : (OpenPNM Project object, optional)</span>
 <span class="sd">        Either a Network or a Project must be supplied</span>
 
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This class defines the following methods, which all raise a</span>
+<span class="sd">    ``NotImplementedError`` and must be defined by the various subclasses</span>
+
+<span class="sd">    +---------------------+---------------------------------------------------+</span>
+<span class="sd">    | Methods             | Description                                       |</span>
+<span class="sd">    +=====================+===================================================+</span>
+<span class="sd">    | ``results``         | Generates an array or arrays of data produced by  |</span>
+<span class="sd">    |                     | the algorithm to be returned to the Phase         |</span>
+<span class="sd">    +---------------------+---------------------------------------------------+</span>
+<span class="sd">    | ``setup``           | Collects values to be placed in ``settings``. The |</span>
+<span class="sd">    |                     | main benefit is defining default values and       |</span>
+<span class="sd">    |                     | providing documentation on each settings          |</span>
+<span class="sd">    +---------------------+---------------------------------------------------+</span>
+<span class="sd">    | ``reset``           | Removes generated data, specified values, and     |</span>
+<span class="sd">    |                     | any other information lingering on an Algorithm   |</span>
+<span class="sd">    +---------------------+---------------------------------------------------+</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">project</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">settings</span><span class="o">=</span><span class="p">{},</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>

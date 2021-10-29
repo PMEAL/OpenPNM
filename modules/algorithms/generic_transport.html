@@ -624,6 +624,112 @@
 </ul>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>The following table shows the methods that are accessible to the user
+for setting up the simulation.</p>
+<table class="table">
+<colgroup>
+<col style="width: 29%" />
+<col style="width: 71%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Methods</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">set_value_BC</span></code></p></td>
+<td><p>Applies constant value boundary conditions to the
+specified pores</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">set_rate_BC</span></code></p></td>
+<td><p>Applies constant rate boundary conditions to the
+specified pores</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">remove_BC</span></code></p></td>
+<td><p>Removes all boundary conditions from the
+specified pores</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">rate</span></code></p></td>
+<td><p>Calculates the total rate of transfer through the
+given pores or throats</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">setup</span></code></p></td>
+<td><p>A shortcut for applying values in the <code class="docutils literal notranslate"><span class="pre">settings</span></code>
+attribute.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">results</span></code></p></td>
+<td><p>Returns the results of the calcualtion as a
+<code class="docutils literal notranslate"><span class="pre">dict</span></code> with the data stored under the ‘quantity’
+specified in the <code class="docutils literal notranslate"><span class="pre">settings</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>In addition to the above methods there are also the following attributes:</p>
+<table class="table">
+<colgroup>
+<col style="width: 29%" />
+<col style="width: 71%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Attribute</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">A</span></code></p></td>
+<td><p>Retrieves the coefficient matrix</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">b</span></code></p></td>
+<td><p>Retrieves the RHS matrix</p></td>
+</tr>
+</tbody>
+</table>
+<p>This class contains quite a few hidden methods (preceeded by an
+underscore) that are called internally.  Since these are critical to the
+functioning of this algorithm they are worth outlining even though the
+user does not call them directly:</p>
+<table class="table">
+<colgroup>
+<col style="width: 32%" />
+<col style="width: 68%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Method or Attribute</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">_build_A</span></code></p></td>
+<td><p>Builds the <strong>A</strong> matrix based on the
+‘conductance’ specified in <code class="docutils literal notranslate"><span class="pre">settings</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">_build_b</span></code></p></td>
+<td><p>Builds the <strong>b</strong> matrix</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">_apply_BCs</span></code></p></td>
+<td><p>Applies the given BCs by adjust the <strong>A</strong> and
+<strong>b</strong> matrices</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">_calc_eff_prop</span></code></p></td>
+<td><p>Finds the effective property (e.g. permeability
+coefficient) based on the given BCs</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">_solve</span></code></p></td>
+<td><p>Runs the algorithm using the solver specified
+in the <code class="docutils literal notranslate"><span class="pre">settings</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">_get_domain_area</span></code></p></td>
+<td><p>Attempts to estimate the area of the inlet pores
+if not specified by user</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">_get_domain_length</span></code></p></td>
+<td><p>Attempts to estimate the length between the
+inlet and outlet faces if not specified by the
+user</p></td>
+</tr>
+</tbody>
+</table>
 <dl class="py method">
 <dt class="sig sig-object py" id="openpnm.algorithms.GenericTransport._apply_BCs">
 <span class="sig-name descname"><span class="pre">_apply_BCs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/GenericTransport.html#GenericTransport._apply_BCs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.GenericTransport._apply_BCs" title="Permalink to this definition">¶</a></dt>

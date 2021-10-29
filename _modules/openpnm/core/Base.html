@@ -245,8 +245,62 @@
 <span class="sd">    including Networks, Geometries, Phases, Physics, and Algorithms.  This</span>
 <span class="sd">    class is a subclass of the standard ``dict`` so has the usual methods such</span>
 <span class="sd">    as ``pop`` and ``keys``, and has extra methods for working specifically</span>
-<span class="sd">    with OpenPNM data.</span>
-<span class="sd">    </span>
+<span class="sd">    with OpenPNM data.  These are outlined briefly in the following table:</span>
+
+<span class="sd">    +----------------------+--------------------------------------------------+</span>
+<span class="sd">    | Method or Attribute  | Functionality                                    |</span>
+<span class="sd">    +======================+==================================================+</span>
+<span class="sd">    | ``props``            | List of keys containing numerical arrays         |</span>
+<span class="sd">    +----------------------+--------------------------------------------------+</span>
+<span class="sd">    | ``labels``           | List of key containing boolean arrays            |</span>
+<span class="sd">    +----------------------+--------------------------------------------------+</span>
+<span class="sd">    | ``pores``            | Returns pore / throat indices that have given    |</span>
+<span class="sd">    |                      | labels                                           |</span>
+<span class="sd">    | ``throats``          |                                                  |</span>
+<span class="sd">    +----------------------+--------------------------------------------------+</span>
+<span class="sd">    | ``Ps``, ``Ts``       | Indices for ALL pores and throats on object      |</span>
+<span class="sd">    +----------------------+--------------------------------------------------+</span>
+<span class="sd">    | ``num_pores`` ,      | Counts the number of pores or throats with a     |</span>
+<span class="sd">    |                      | given label                                      |</span>
+<span class="sd">    | ``num_throats``      |                                                  |</span>
+<span class="sd">    +----------------------+--------------------------------------------------+</span>
+<span class="sd">    | ``Np``, ``Nt``       | Total number of pores and throats on the object  |</span>
+<span class="sd">    +----------------------+--------------------------------------------------+</span>
+<span class="sd">    | ``tomask``           | Converts a list of pore or throat indices to a   |</span>
+<span class="sd">    |                      | boolean mask                                     |</span>
+<span class="sd">    +----------------------+--------------------------------------------------+</span>
+<span class="sd">    | ``toindices``        | Converts a boolean mask to pore or throat indices|</span>
+<span class="sd">    +----------------------+--------------------------------------------------+</span>
+<span class="sd">    | ``map_pores`` ,      | Given indices on object B returns corresponding  |</span>
+<span class="sd">    |                      | indices on object A                              |</span>
+<span class="sd">    | ``map_throats``      |                                                  |</span>
+<span class="sd">    +----------------------+--------------------------------------------------+</span>
+<span class="sd">    | ``interleave_data``  | Fetches data from associated objects into a      |</span>
+<span class="sd">    |                      | single array                                     |</span>
+<span class="sd">    +----------------------+--------------------------------------------------+</span>
+<span class="sd">    | ``interpolate_data`` | Given pore or throat data, interpolate the other |</span>
+<span class="sd">    +----------------------+--------------------------------------------------+</span>
+<span class="sd">    | ``filter_by_label``  | Given indices find those with specific labels    |</span>
+<span class="sd">    +----------------------+--------------------------------------------------+</span>
+<span class="sd">    | ``show_hist``        | Method for quickly plotting histograms of data   |</span>
+<span class="sd">    +----------------------+--------------------------------------------------+</span>
+<span class="sd">    | ``check_data_health``| Ensures all data arrays are valid and complete   |</span>
+<span class="sd">    +----------------------+--------------------------------------------------+</span>
+
+
+<span class="sd">    In addition to the above methods, there are a few attributes which provide</span>
+<span class="sd">    access to useful items:</span>
+
+<span class="sd">    +----------------+--------------------------------------------------------+</span>
+<span class="sd">    | Attribute      | Functionality                                          |</span>
+<span class="sd">    +================+========================================================+</span>
+<span class="sd">    | ``name``       | The string name of the object, unique to each Project  |</span>
+<span class="sd">    +----------------+--------------------------------------------------------+</span>
+<span class="sd">    | ``settings``   | A dictionary containing various setting values         |</span>
+<span class="sd">    +----------------+--------------------------------------------------------+</span>
+<span class="sd">    | ``project``    | A handle to the Project containing the object          |</span>
+<span class="sd">    +----------------+--------------------------------------------------------+</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
