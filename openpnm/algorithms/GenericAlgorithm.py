@@ -20,25 +20,6 @@ class GenericAlgorithm(Base, LegacyMixin, LabelMixin):
     project : (OpenPNM Project object, optional)
         Either a Network or a Project must be supplied
 
-    Notes
-    -----
-    This class defines the following methods, which all raise a
-    ``NotImplementedError`` and must be defined by the various subclasses
-
-    +---------------------+---------------------------------------------------+
-    | Methods             | Description                                       |
-    +=====================+===================================================+
-    | ``results``         | Generates an array or arrays of data produced by  |
-    |                     | the algorithm to be returned to the Phase         |
-    +---------------------+---------------------------------------------------+
-    | ``setup``           | Collects values to be placed in ``settings``. The |
-    |                     | main benefit is defining default values and       |
-    |                     | providing documentation on each settings          |
-    +---------------------+---------------------------------------------------+
-    | ``reset``           | Removes generated data, specified values, and     |
-    |                     | any other information lingering on an Algorithm   |
-    +---------------------+---------------------------------------------------+
-
     """
 
     def __init__(self, network=None, project=None, settings={}, **kwargs):
