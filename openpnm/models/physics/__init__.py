@@ -22,5 +22,3 @@ from . import source_terms as generic_source_term
 from . import capillary_pressure
 from . import meniscus
 from . import multiphase
-from . import poisson_shape_factors
-from . import flow_shape_factors

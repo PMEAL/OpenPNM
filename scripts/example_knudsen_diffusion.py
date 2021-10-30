@@ -6,8 +6,8 @@ import openpnm as op
 # Get Deff w/o including Knudsen effect
 shape = np.array([10, 10, 10])
 spacing = 1.0
-net = op.network.Cubic(shape=shape, spacing=spacing)
-geom = op.geometry.StickAndBall(network=net, pores=net.Ps, throats=net.Ts)
+net = op.network.Cubic(shape=[10, 10, 10], spacing=spacing)
+geom = op.geometry.SpheresAndCylinders(network=net, pores=net.Ps, throats=net.Ts)
 air = op.phases.Air(network=net)
 phys = op.physics.Standard(network=net, geometry=geom, phase=air)
 odiff = op.models.physics.diffusive_conductance.ordinary_diffusion
@@ -31,7 +31,7 @@ Deff = []
 for spacing in spacings:
     np.random.seed(10)
     net = op.network.Cubic(shape=[10, 10, 10], spacing=spacing)
-    geom = op.geometry.StickAndBall(network=net, pores=net.Ps, throats=net.Ts)
+    geom = op.geometry.SpheresAndCylinders(network=net, pores=net.Ps, throats=net.Ts)
     air = op.phases.Air(network=net)
     phys = op.physics.Standard(network=net, geometry=geom, phase=air)
     phys.add_model(propname="throat.diffusive_conductance", model=mdiff)

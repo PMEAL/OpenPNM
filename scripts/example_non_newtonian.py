@@ -1,26 +1,25 @@
 import numpy as np
 import openpnm as op
+np.random.seed(7)
 
 
 # Workspace and project
 ws = op.Workspace()
 proj = ws.new_project()
 
-# Network and geometry
-np.random.seed(7)
+# Create network and geometry
 net = op.network.Cubic(shape=[20, 3, 3], spacing=1e-4, project=proj)
-geo = op.geometry.StickAndBall(network=net, pores=net.Ps, throats=net.Ts)
+geo = op.geometry.SpheresAndCylinders(network=net, pores=net.Ps, throats=net.Ts)
 
-# Phase
+# Create phase
 phase = op.phases.Water(network=net)
 phase['pore.consistency'] = 4.2e-2  # Pa.s^n
 phase['pore.flow_index'] = 0.52
 phase['pore.viscosity_min'] = 0.001
 phase['pore.viscosity_max'] = 100
 
-# Physics
+# Create physics
 phys = op.physics.GenericPhysics(network=net, phase=phase, geometry=geo)
-
 mod1 = op.models.physics.hydraulic_conductance.hagen_poiseuille
 phys.add_model(propname='throat.hydraulic_conductance',
                model=mod1, regen_mode='normal')
@@ -53,5 +52,5 @@ Qt_sf = np.abs(gh_sf*np.diff(P_sf[cn], axis=1).squeeze())
 Qt = np.abs(gh*np.diff(P[cn], axis=1).squeeze())
 Q = Qt/Qt_sf
 
-# Output results to XDMF file format
+# Output results to a vtk file
 proj.export_data(phases=[phase], filename='out', filetype='XDMF')

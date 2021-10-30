@@ -208,9 +208,6 @@ class DelaunayGeometry(GenericGeometry):
                            pore_diameter="pore.diameter")
             mod = gm.throat_surface_area.extrusion
             self.add_model(propname="throat.surface_area", model=mod)
-            self.add_model(propname="throat.endpoints",
-                           model=gm.throat_endpoints.straight_throat,
-                           throat_vector="throat.normal")
             self.regenerate_models()
 
     def _t_normals(self):
@@ -1163,14 +1160,11 @@ class VoronoiGeometry(GenericGeometry):
                            regen_mode=rm)
             self["throat.diameter"] = np.ones(self.Nt) * network.fiber_rad * 2
             self["throat.indiameter"] = self["throat.diameter"]
-            self.add_model(propname="throat.endpoints",
-                           model=gm.throat_endpoints.spherical_pores,
-                           regen_mode=rm)
             self.add_model(propname="throat.area",
                            model=gm.throat_cross_sectional_area.cylinder,
                            regen_mode=rm)
             self.add_model(propname="throat.length",
-                           model=gm.throat_length.piecewise,
+                           model=gm.throat_length.spheres_and_cylinders,
                            regen_mode=rm)
             self["throat.c2c"] = self["throat.length"] + network.fiber_rad * 2
             self.add_model(propname="throat.volume",
@@ -1185,8 +1179,6 @@ class VoronoiGeometry(GenericGeometry):
             self.add_model(propname="throat.shape_factor",
                            model=gm.throat_capillary_shape_factor.compactness,
                            regen_mode=rm)
-            self.add_model(propname="throat.conduit_lengths",
-                           model=gm.throat_length.conduit_lengths)
 
     def _throat_props(self):
         r"""

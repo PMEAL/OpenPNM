@@ -1,7 +1,7 @@
 import numpy as np
 import scipy.sparse as sprs
 import scipy.spatial as sptl
-from openpnm.core import Base, ModelsMixin, LegacyMixin, LabelMixin
+from openpnm.core import Base, ModelsMixin, LegacyMixin, LabelMixin, ParamMixin
 from openpnm import topotools
 from openpnm.utils import Workspace, logging
 import openpnm.models.topology as tm
@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 ws = Workspace()
 
 
-class GenericNetwork(Base, ModelsMixin, LegacyMixin, LabelMixin):
+class GenericNetwork(ParamMixin, Base, ModelsMixin, LegacyMixin, LabelMixin):
     r"""
     This generic class contains the main functionality used by all networks
 
@@ -156,6 +156,10 @@ class GenericNetwork(Base, ModelsMixin, LegacyMixin, LabelMixin):
             return self.get(f"{element}._id")
         vals = super().__getitem__(key)
         return vals
+
+    @property
+    def _subdomains(self):
+        return list(self.project.geometries().values())
 
     def _gen_ids(self):
         IDs = self.get('pore._id', np.array([], ndmin=1, dtype=np.int64))

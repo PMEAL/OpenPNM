@@ -14,7 +14,7 @@ np.random.seed(10)
 
 # Define network and geometry
 net = op.network.Cubic(shape=[10, 1, 1])
-geom = op.geometry.StickAndBall(network=net, pores=net.Ps, throats=net.Ts)
+geom = op.geometry.SpheresAndCylinders(network=net, pores=net.Ps, throats=net.Ts)
 
 # Define constituent phases
 air = op.phases.Air(network=net, name="air")
