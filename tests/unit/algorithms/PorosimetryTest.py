@@ -8,9 +8,9 @@ class PorosimetryTest:
 
     def setup_class(self):
         self.net = op.network.Cubic(shape=[15, 15, 15], spacing=0.0005)
-        self.geo = op.geometry.StickAndBall(network=self.net,
-                                            pores=self.net.Ps,
-                                            throats=self.net.Ts)
+        self.geo = op.geometry.SpheresAndCylinders(network=self.net,
+                                             pores=self.net.Ps,
+                                             throats=self.net.Ts)
         self.hg = op.phases.Mercury(network=self.net)
         self.phys = op.physics.GenericPhysics(network=self.net,
                                               phase=self.hg,

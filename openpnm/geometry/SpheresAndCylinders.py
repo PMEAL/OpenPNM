@@ -80,6 +80,10 @@ class SpheresAndCylinders(GenericGeometry):
                        model=mods.misc.product,
                        props=['pore.max_size', 'pore.seed'])
 
+        self.add_model(propname='pore.cross_sectional_area',
+                       model=mods.geometry.pore_cross_sectional_area.sphere,
+                       pore_diameter='pore.diameter')
+
         self.add_model(propname='pore.volume',
                        model=mods.geometry.pore_volume.sphere,
                        pore_diameter='pore.diameter')
