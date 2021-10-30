@@ -10,10 +10,10 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Find changed files
-      - run: |
-        echo '_CHANGED_FILES<<EOF' >> ${GITHUB_ENV}
-        git diff --name-only "${{ github.base_ref }}" | tr -s '\n' ','
-        echo 'EOF' >> ${GITHUB_ENV}
+        run: |
+          echo '_CHANGED_FILES<<EOF' >> ${GITHUB_ENV}
+          git diff --name-only "${{ github.base_ref }}" | tr -s '\n' ','
+          echo 'EOF' >> ${GITHUB_ENV}
 
       - name: wemake-python-styleguide
         uses: wemake-services/wemake-python-styleguide@0.15.3
