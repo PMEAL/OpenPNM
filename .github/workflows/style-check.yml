@@ -12,10 +12,8 @@ jobs:
           fetch-depth: 0              # otherwise, you will failed to push refs to dest repo
 
       - name: Find changed files
-        run: |
-          echo '_CHANGED_FILES<<EOF' >> ${GITHUB_ENV}
-          git diff --name-only "${{ github.base_ref }}" | tr -s '\n' ','
-          echo 'EOF' >> ${GITHUB_ENV}
+        run:
+          echo "_CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }} -- '*.py' | tr -s '\n' ' ' )" >> ${GITHUB_ENV}
 
       - name: wemake-python-styleguide
         uses: wemake-services/wemake-python-styleguide@0.15.3
