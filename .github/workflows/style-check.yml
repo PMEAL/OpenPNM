@@ -9,14 +9,16 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.8
+      - name: Find changed files
+      - run: |
+        echo '_CHANGED_FILES<<EOF' >> ${GITHUB_ENV}
+        git diff --name-only "${{ github.base_ref }}" | tr -s '\n' ','
+        echo 'EOF' >> ${GITHUB_ENV}
 
       - name: wemake-python-styleguide
         uses: wemake-services/wemake-python-styleguide@0.15.3
         with:
           reporter: 'github-pr-review'
+          path: "${{ env._CHANGED_FILES }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
