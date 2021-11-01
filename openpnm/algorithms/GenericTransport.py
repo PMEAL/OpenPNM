@@ -1,5 +1,4 @@
 import numpy as np
-import openpnm as op
 import scipy.sparse.linalg
 import warnings
 from numpy.linalg import norm
@@ -7,21 +6,34 @@ import scipy.sparse.csgraph as spgr
 from scipy.spatial import ConvexHull
 from scipy.spatial import cKDTree
 from openpnm.topotools import iscoplanar, is_fully_connected
-from openpnm.algorithms import GenericAlgorithm
-from openpnm.utils import logging, Docorator, GenericSettings, prettify_logger_message
-# Uncomment this line when we stop supporting Python 3.6
-# from dataclasses import dataclass, field
-# from typing import List
+from openpnm.algorithms import GenericAlgorithm, SettingsGenericAlgorithm
+from openpnm.utils import logging, Docorator, prettify_logger_message
+from openpnm.utils import GenericSettings, SettingsAttr
+from openpnm.utils import is_symmetric
+from traits.api import Str
 
 docstr = Docorator()
 logger = logging.getLogger(__name__)
 
 
-@docstr.get_sections(base='GenericTransportSettings',
-                     sections=['Parameters', 'Other Parameters'])
+@docstr.get_sections(base='SettingsGenericTransport', sections=docstr.all_sections)
 @docstr.dedent
-# Uncomment this line when we stop supporting Python 3.6
-# @dataclass
+class SettingsGenericTransport(SettingsGenericAlgorithm):
+    r"""
+
+    Parameters
+    ----------
+    %(SettingsGenericAlgorithm.parameters)s
+    phase : str
+        The name of the phase witih which this algorithm is associated
+
+    """
+    phase = Str()
+
+
+@docstr.get_sections(base='GenericTransportSettings',
+                      sections=docstr.all_sections)
+@docstr.dedent
 class GenericTransportSettings(GenericSettings):
     r"""
     Defines the settings for GenericTransport algorithms
@@ -195,6 +207,7 @@ class GenericTransport(GenericAlgorithm):
         if network is not None:
             project = network.project
         super().__init__(project=project, **kwargs)
+        self.sets = SettingsAttr(settings=settings, defaults=SettingsGenericTransport())
         self['pore.bc_rate'] = np.nan
         self['pore.bc_value'] = np.nan
 
@@ -592,7 +605,7 @@ class GenericTransport(GenericAlgorithm):
 
         # Check if A is symmetric
         if self.settings['solver_type'] == 'cg':
-            is_sym = op.utils.is_symmetric(self.A)
+            is_sym = is_symmetric(self.A)
             if not is_sym:
                 raise Exception('CG solver only works on symmetric matrices.')
 

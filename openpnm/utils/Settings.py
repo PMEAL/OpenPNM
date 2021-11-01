@@ -1,5 +1,4 @@
-from traits.api import HasTraits, Int, Float, Str, List, Set
-import copy
+from traits.api import HasTraits
 from openpnm.utils import Docorator
 
 docstr = Docorator()
@@ -35,9 +34,15 @@ class SettingsAttr:
     def __doc__(self):
         return self._settings.__doc__
 
+    def update(self, settings):
+        if isinstance(settings, SettingsAttr):
+            for k, v in settings.__dict__.items():
+                setattr(self, k, v)
+        else:
+            for k, v in settings.items():
+                setattr(self, k, v)
 
-@docstr.get_sections(base='Settings',
-                     sections=['Parameters', 'Notes'])
+
 class SettingsData(HasTraits):
     r"""
 

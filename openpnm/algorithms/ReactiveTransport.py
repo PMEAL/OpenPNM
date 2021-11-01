@@ -1,32 +1,29 @@
 import numpy as np
-from openpnm.algorithms import GenericTransport
-# Uncomment this line when we stop supporting Python 3.6
-# from dataclasses import dataclass, field
-# from typing import List
+from openpnm.algorithms import GenericTransport, SettingsGenericTransport
 from openpnm.utils import logging, Docorator, GenericSettings
+from openpnm.utils import SettingsAttr
+from traits.api import List, Str
 docstr = Docorator()
 logger = logging.getLogger(__name__)
 
 
-# class RelaxationSettings(GenericSettings):
-#     r"""
-#     This class is a demonstration of how we can add nested settings classes
-#     to other settings classes to make categories for some settings.  This is
-#     being appended to the ReactiveTransportSettings class under the
-#     'relaxation' attribute, and it works as planned by allowing the nested
-#     dot access to its parameters. More work would be required to get it
-#     functional such as dealing with deeply nested dicts and so on, but it
-#     works in principal.
-#     """
-#     source = 1.0
-#     quantity = 1.0
+@docstr.get_sections(base='SettingsReactiveTransport', sections=docstr.all_sections)
+@docstr.dedent
+class SettingsReactiveTransport(SettingsGenericTransport):
+    r"""
 
+    Parameters
+    ----------
+    %(SettingsGenericTransport.parameters)s
+    sources : list of strings
+        The names of the reaction source terms
+
+    """
+    sources = List(Str())
 
 @docstr.get_sections(base='ReactiveTransportSettings',
-                     sections=['Parameters', 'Other Parameters'])
+                     sections=docstr.all_sections)
 @docstr.dedent
-# Uncomment this line when we stop supporting Python 3.6
-# @dataclass
 class ReactiveTransportSettings(GenericSettings):
     r"""
 
@@ -68,11 +65,8 @@ class ReactiveTransportSettings(GenericSettings):
     """
 
     nlin_max_iter = 5000
-    # relaxation = RelaxationSettings()
     relaxation_source = 1.0
     relaxation_quantity = 1.0
-    # Swap the following 2 lines when we stop supporting Python 3.6
-    # sources: List = field(default_factory=lambda: [])
     sources = []
 
 
@@ -97,6 +91,7 @@ class ReactiveTransport(GenericTransport):
         super().__init__(**kwargs)
         self.settings._update_settings_and_docs(ReactiveTransportSettings)
         self.settings.update(settings)
+        self.sets = SettingsAttr(settings=settings, defaults=SettingsReactiveTransport())
         if phase is not None:
             self.settings['phase'] = phase.name
 
