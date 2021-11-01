@@ -18,3 +18,5 @@ terminaltables
 tqdm
 transforms3d
 mkl
+traits
+attr

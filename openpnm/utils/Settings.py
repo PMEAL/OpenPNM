@@ -1,5 +1,6 @@
 from traits.api import HasTraits
 from openpnm.utils import Docorator
+import attr
 
 docstr = Docorator()
 
@@ -45,3 +46,9 @@ class SettingsAttr:
     @property
     def __doc__(self):
         return self._settings.__doc__
+
+
+@attr.s
+class SettingsAttr2:
+    x = attr.ib(validator=attr.validators.instance_of(int),
+                on_setattr=attr.setters.validate)
