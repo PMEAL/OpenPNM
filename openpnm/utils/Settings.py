@@ -5,9 +5,13 @@ docstr = Docorator()
 
 
 class SettingsData(HasTraits):
-    r"""
 
-    """
+    def _attrs(self):
+        a = dir(self)
+        b = dir(HasTraits())
+        temp = sorted(list(set(a).difference(set(b))))
+        temp = [i for i in temp if not i.startswith('_')]
+        return temp
 
 
 class SettingsAttr:
@@ -42,5 +46,3 @@ class SettingsAttr:
     @property
     def __doc__(self):
         return self._settings.__doc__
-
-

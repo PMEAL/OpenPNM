@@ -16,7 +16,7 @@ class SettingsReactiveTransport(SettingsGenericTransport):
     ----------
     %(SettingsGenericTransport.parameters)s
     sources : list of strings
-        The names of the reaction source terms
+        The names of the source term models
 
     """
     sources = List(Str())
