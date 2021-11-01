@@ -261,7 +261,7 @@
    </li>
    <li class="toctree-l2">
     <a class="reference internal" href="../geometry/stick_and_ball.html">
-     SpheresAndCylinders
+     StickAndBall
     </a>
    </li>
   </ul>
@@ -610,52 +610,6 @@
                 
   <section id="genericphase">
 <span id="generic-phase-api"></span><h1>GenericPhase<a class="headerlink" href="#genericphase" title="Permalink to this headline">¶</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="openpnm.phases.GenericPhase">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">GenericPhase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/phases/GenericPhase.html#GenericPhase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.phases.GenericPhase" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.core.Base.ParamMixin</span></code>, <a class="reference internal" href="../core/base.html#openpnm.core.Base" title="openpnm.core.Base.Base"><code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.core.Base.Base</span></code></a>, <a class="reference internal" href="../core/modelsmixin.html#openpnm.core.ModelsMixin" title="openpnm.core.ModelsMixin.ModelsMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.core.ModelsMixin.ModelsMixin</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.core.Base.LegacyMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.core.Base.LabelMixin</span></code></p>
-<p>This generic class is meant as a starter for custom Phase objects</p>
-<p>This class produces a blank-slate object with no pore-scale models for
-calculating any thermophysical properties.  Users must add models and
-specify parameters for all the properties they require.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>network</strong> (<em>OpenPNM network object</em>) – The network with which this object is associated</p></li>
-<li><p><strong>project</strong> (<em>OpenPNM Project object</em><em>, </em><em>optional</em>) – The Project with which the object should be assigned.  If not supplied
-then a new Project is created</p></li>
-<li><p><strong>name</strong> (<em>string</em><em>, </em><em>optional</em>) – The unique name of the object.  If not given one will be generated.</p></li>
-</ul>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<p>Create a new empty phase:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">phase</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">phases</span><span class="o">.</span><span class="n">GenericPhase</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>And add a model:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">phase</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.molar_density&#39;</span><span class="p">,</span>
-<span class="gp">... </span>                <span class="n">model</span><span class="o">=</span><span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">phases</span><span class="o">.</span><span class="n">molar_density</span><span class="o">.</span><span class="n">ideal_gas</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Now confirm that the model was added and data was calculated.  The
-<code class="docutils literal notranslate"><span class="pre">models</span></code> attribute can be printed:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">phase</span><span class="o">.</span><span class="n">models</span><span class="p">)</span>
-<span class="go">―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――</span>
-<span class="go">#   Property Name                       Parameter                 Value</span>
-<span class="go">―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――</span>
-<span class="go">1   pore.molar_density                  model:                    ideal_gas</span>
-<span class="go">                                        pressure:                 pore.pressure</span>
-<span class="go">                                        temperature:              pore.temperature</span>
-<span class="go">                                        regeneration mode:        normal</span>
-<span class="go">―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――</span>
-</pre></div>
-</div>
-<p>And the Phase itself has a nice printout using <code class="docutils literal notranslate"><span class="pre">print(phase)</span></code>.</p>
-</dd></dl>
-
 </section>
 
 

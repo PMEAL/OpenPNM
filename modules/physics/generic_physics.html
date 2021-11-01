@@ -261,7 +261,7 @@
    </li>
    <li class="toctree-l2">
     <a class="reference internal" href="../geometry/stick_and_ball.html">
-     SpheresAndCylinders
+     StickAndBall
     </a>
    </li>
   </ul>
@@ -610,115 +610,6 @@
                 
   <section id="genericphysics">
 <span id="generic-physics-api"></span><h1>GenericPhysics<a class="headerlink" href="#genericphysics" title="Permalink to this headline">¶</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="openpnm.physics.GenericPhysics">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">GenericPhysics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/physics/GenericPhysics.html#GenericPhysics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.physics.GenericPhysics" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.core.Base.ParamMixin</span></code>, <a class="reference internal" href="../core/subdomain.html#openpnm.core.Subdomain" title="openpnm.core.Subdomain.Subdomain"><code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.core.Subdomain.Subdomain</span></code></a>, <a class="reference internal" href="../core/modelsmixin.html#openpnm.core.ModelsMixin" title="openpnm.core.ModelsMixin.ModelsMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.core.ModelsMixin.ModelsMixin</span></code></a></p>
-<p>This generic class is meant as a starter for custom Physics objects</p>
-<p>It produces a blank object with no pore-scale models attached.  Users can
-add models from the <code class="docutils literal notranslate"><span class="pre">models</span></code> module (or create their own).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>network</strong> (<em>OpenPNM Network object</em>) – The network to which this Physics should be attached</p></li>
-<li><p><strong>phase</strong> (<em>OpenPNM Phase object</em>) – The Phase object to which this Physics applies</p></li>
-<li><p><strong>geometry</strong> (<em>OpenPNM Geometry object</em>) – The Geometry object that defines the pores/throats where this Physics
-should be applied.</p></li>
-<li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – A unique string name to identify the Physics object, typically same as
-instance name but can be anything.  If left blank, and name will be
-generated that includes the class name and an integer index.</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="openpnm.physics.GenericPhysics.set_geometry">
-<span class="sig-name descname"><span class="pre">set_geometry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">geometry</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'add'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/physics/GenericPhysics.html#GenericPhysics.set_geometry"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.physics.GenericPhysics.set_geometry" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sets the association between this physics and a geometry</p>
-<p>This association is done by setting the pores and throats that define
-the Subdomain to match.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>geometry</strong> (<em>OpenPNM Geometry object</em>) – The geometry defining the pores and throats to which this physics
-should be attached</p></li>
-<li><p><strong>mode</strong> (<em>str</em>) – <p>Controls how the assignment is done. Options are:</p>
-<ul>
-<li><dl class="simple">
-<dt>’add’ (default)</dt><dd><p>If the physics does not presently have an associated
-geometry, this will create associations, otherwise an
-Exception is raised</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>’drop’</dt><dd><p>Associations with the current geometry will be removed</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>’move’</dt><dd><p>Associations will be made with the provided geometry, and
-the pore and throat locations from the current geometry will
-be transferred to the new one.</p>
-</dd>
-</dl>
-</li>
-</ul>
-</p></li>
-</ul>
-</dd>
-</dl>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_locations</span></code></p>
-</div>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="openpnm.physics.GenericPhysics.set_phase">
-<span class="sig-name descname"><span class="pre">set_phase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'add'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/physics/GenericPhysics.html#GenericPhysics.set_phase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.physics.GenericPhysics.set_phase" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sets the association between this physics and a phase.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>phase</strong> (<em>OpenPNM Phase object</em>) – If mode is ‘add’ or ‘move’, this must be specified so that
-associations can be recorded in the phase dictionary.  If the
-mode is ‘drop’, this is not needed since the existing association
-can be used to find it.</p></li>
-<li><p><strong>mode</strong> (<em>str</em>) – <p>Options are:</p>
-<ul>
-<li><dl class="simple">
-<dt>’add’ (default)</dt><dd><p>If the physics does not presently have an associated phase,
-this will create associations, but no pore or throat
-locations will assigned.  This must be done using the
-<code class="docutils literal notranslate"><span class="pre">set_geometry</span></code> method.</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>’drop’</dt><dd><p>Associations with the existing phase will be removed.</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>’move’</dt><dd><p>Associations will be made with the new phase, and the pore
-and throat locations from the current phase will be
-transferred to the new one.</p>
-</dd>
-</dl>
-</li>
-</ul>
-</p></li>
-</ul>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<p>In all cases the property data will be deleted since it will not
-be relevant to the new phase, so the <code class="docutils literal notranslate"><span class="pre">regenerate_models</span></code> method
-must be run.</p>
-</dd></dl>
-
-</dd></dl>
-
 </section>
 
 

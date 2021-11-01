@@ -261,7 +261,7 @@
    </li>
    <li class="toctree-l2">
     <a class="reference internal" href="../geometry/stick_and_ball.html">
-     SpheresAndCylinders
+     StickAndBall
     </a>
    </li>
   </ul>
@@ -610,51 +610,6 @@
                 
   <section id="cubictemplate">
 <span id="cubic-template-api"></span><h1>CubicTemplate<a class="headerlink" href="#cubictemplate" title="Permalink to this headline">¶</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="openpnm.network.CubicTemplate">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">CubicTemplate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/network/CubicTemplate.html#CubicTemplate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.network.CubicTemplate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="cubic.html#openpnm.network.Cubic" title="openpnm.network.Cubic.Cubic"><code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.network.Cubic.Cubic</span></code></a></p>
-<p>Simple cubic lattice with arbitrary domain shape specified by a template
-image</p>
-<p>The class creates a standard Cubic network the same shape as the provided
-image, then trims pores from the network that are not in the mask.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>template</strong> (<em>array_like</em>) – The array (image) describing the desired shape of the domain.  All
-locations in the image that are marked as <code class="docutils literal notranslate"><span class="pre">True</span></code> are kept while the
-rest of trimmed to yeild the shape.</p></li>
-<li><p><strong>spacing</strong> (<em>array_like</em><em>, </em><em>optional</em>) – The spacing between pore centers in each direction. If not given, then
-[1, 1, 1] is assumed.</p></li>
-<li><p><strong>name</strong> (<em>string</em>) – An optional name for the object to help identify it.  If not given,
-one will be generated.</p></li>
-<li><p><strong>project</strong> (<em>OpenPNM Project object</em><em>, </em><em>optional</em>) – Each OpenPNM object must be part of a <em>Project</em>.  If none is supplied
-then one will be created and this Network will be automatically
-assigned to it.  To create a <em>Project</em> use <code class="docutils literal notranslate"><span class="pre">openpnm.Project()</span></code>.</p></li>
-</ul>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<p>The other arguments are the same as <code class="docutils literal notranslate"><span class="pre">Cubic</span></code> except that <code class="docutils literal notranslate"><span class="pre">shape</span></code> is
-inferred from the <code class="docutils literal notranslate"><span class="pre">template</span></code> image.</p>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">The</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">template_cylinder_annulus</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">template_sphere_shell</span></code></p>
-</div>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">im</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">topotools</span><span class="o">.</span><span class="n">template_cylinder_annulus</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">CubicTemplate</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="n">im</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>And it can be plotted for quick visualization using:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">fig</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">topotools</span><span class="o">.</span><span class="n">plot_connections</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">)</span>
-</pre></div>
-</div>
-<img alt="../../_images/cubic_template_network.png" class="align-center" src="../../_images/cubic_template_network.png" />
-<p>For larger networks and more control over presentation use <a class="reference external" href="http://www.paraview.org">Paraview</a>.</p>
-</dd></dl>
-
 </section>
 
 

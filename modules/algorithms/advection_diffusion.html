@@ -261,7 +261,7 @@
    </li>
    <li class="toctree-l2">
     <a class="reference internal" href="../geometry/stick_and_ball.html">
-     SpheresAndCylinders
+     StickAndBall
     </a>
    </li>
   </ul>
@@ -610,78 +610,6 @@
                 
   <section id="advectiondiffusion">
 <span id="advection-diffusion-api"></span><h1>AdvectionDiffusion<a class="headerlink" href="#advectiondiffusion" title="Permalink to this headline">¶</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="openpnm.algorithms.AdvectionDiffusion">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">AdvectionDiffusion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/AdvectionDiffusion.html#AdvectionDiffusion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.AdvectionDiffusion" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="reactive_transport.html#openpnm.algorithms.ReactiveTransport" title="openpnm.algorithms.ReactiveTransport.ReactiveTransport"><code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.algorithms.ReactiveTransport.ReactiveTransport</span></code></a></p>
-<p>A subclass of ReactiveTransport to simulate advection-diffusion</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="openpnm.algorithms.AdvectionDiffusion.remove_BC">
-<span class="sig-name descname"><span class="pre">remove_BC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bctype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/AdvectionDiffusion.html#AdvectionDiffusion.remove_BC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.AdvectionDiffusion.remove_BC" title="Permalink to this definition">¶</a></dt>
-<dd><p>Removes boundary conditions from the specified pores.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>pores</strong> (<em>array_like</em><em>, </em><em>optional</em>) – The pores from which boundary conditions are to be removed. If
-no pores are specified, then BCs are removed from all pores.
-No error is thrown if the provided pores do not have any BCs
-assigned.</p></li>
-<li><p><strong>bctype</strong> (<em>str</em><em>, or </em><em>List</em><em>[</em><em>str</em><em>]</em>) – <p>Specifies which type of boundary condition to remove. The
-default value is ‘all’. Options are:</p>
-<table class="table">
-<colgroup>
-<col style="width: 17%" />
-<col style="width: 83%" />
-</colgroup>
-<thead>
-<tr class="row-odd"><th class="head"><p>bctype</p></th>
-<th class="head"><p>meaning</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>’all’</p></td>
-<td><p>Removes all boundary conditions</p></td>
-</tr>
-<tr class="row-odd"><td><p>’value’</p></td>
-<td><p>Removes only value conditions</p></td>
-</tr>
-<tr class="row-even"><td><p>’rate’</p></td>
-<td><p>Removes only rate conditions</p></td>
-</tr>
-</tbody>
-</table>
-</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="openpnm.algorithms.AdvectionDiffusion.set_outflow_BC">
-<span class="sig-name descname"><span class="pre">set_outflow_BC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pores</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'merge'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/AdvectionDiffusion.html#AdvectionDiffusion.set_outflow_BC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.AdvectionDiffusion.set_outflow_BC" title="Permalink to this definition">¶</a></dt>
-<dd><p>Adds outflow boundary condition to the selected pores</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>pores</strong> (<em>array_like</em>) – The pore indices where the condition should be applied</p></li>
-<li><p><strong>mode</strong> (<em>string</em><em>, </em><em>optional</em>) – <p>Controls how the boundary conditions are applied.  Options are:</p>
-<p>’merge’ - (Default) Adds supplied boundary conditions to already
-existing conditions, and also overwrites any existing values.
-If at rate or value BC exists at the given locations, these
-are deleted, and outflow conditions are given priority.
-‘overwrite’ - Deletes all boundary conditions of the given type
-then adds the specified new ones.</p>
-</p></li>
-</ul>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<p>Outflow condition means that the gradient of the solved quantity
-does not change, i.e. is 0.</p>
-</dd></dl>
-
-</dd></dl>
-
 </section>
 
 

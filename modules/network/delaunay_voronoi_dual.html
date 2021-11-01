@@ -261,7 +261,7 @@
    </li>
    <li class="toctree-l2">
     <a class="reference internal" href="../geometry/stick_and_ball.html">
-     SpheresAndCylinders
+     StickAndBall
     </a>
    </li>
   </ul>
@@ -610,103 +610,6 @@
                 
   <section id="delaunayvoronoidual">
 <span id="delaunay-voronoi-dual-api"></span><h1>DelaunayVoronoiDual<a class="headerlink" href="#delaunayvoronoidual" title="Permalink to this headline">¶</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="openpnm.network.DelaunayVoronoiDual">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">DelaunayVoronoiDual</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/network/DelaunayVoronoiDual.html#DelaunayVoronoiDual"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.network.DelaunayVoronoiDual" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="generic.html#openpnm.network.GenericNetwork" title="openpnm.network.GenericNetwork.GenericNetwork"><code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.network.GenericNetwork.GenericNetwork</span></code></a></p>
-<p>Combined and interconnected Voronoi and Delaunay tessellations</p>
-<p>A Delaunay tessellation is performed on a set of base points then the
-corresponding Voronoi diagram is generated.  Finally, each Delaunay node
-is connected to it’s neighboring Voronoi vertices to create interaction
-between the two networks.</p>
-<p>All pores and throats are labelled according to their network (i.e.
-‘pore.delaunay’), so they can be each assigned to a different Geometry.</p>
-<p>The dual-nature of this network is meant for modeling transport in the void
-and solid space simultaneously by treating one network (i.e. Delaunay) as
-voids and the other (i.e. Voronoi) as solid.  Interaction such as heat
-transfer between the solid and void can be accomplished via the
-interconnections between the Delaunay and Voronoi nodes.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>points</strong> (<em>array_like</em><em> or </em><em>int</em>) – Can either be an N-by-3 array of point coordinates which will be used,
-or a scalar value indicating the number of points to generate</p></li>
-<li><p><strong>shape</strong> (<em>array_like</em>) – <p>The size and shape of the domain used for generating and trimming
-excess points. The coordinates are treated as the outer corner of a
-rectangle [x, y, z] whose opposite corner lies at [0, 0, 0].</p>
-<p>By default, a domain size of [1, 1, 1] is used.  To create a 2D network
-set the Z-dimension to 0.</p>
-</p></li>
-<li><p><strong>name</strong> (<em>string</em>) – An optional name for the object to help identify it.  If not given,
-one will be generated.</p></li>
-<li><p><strong>project</strong> (<em>OpenPNM Project object</em><em>, </em><em>optional</em>) – Each OpenPNM object must be part of a <em>Project</em>.  If none is supplied
-then one will be created and this Network will be automatically
-assigned to it.  To create a <em>Project</em> use <code class="docutils literal notranslate"><span class="pre">openpnm.Project()</span></code>.</p></li>
-</ul>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<p>Points will be automatically generated if none are given:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">net</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">DelaunayVoronoiDual</span><span class="p">(</span><span class="n">points</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
-</pre></div>
-</div>
-<p>The resulting network can be quickly visualized using
-<code class="docutils literal notranslate"><span class="pre">opnepnm.topotools.plot_connections</span></code>.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="openpnm.network.DelaunayVoronoiDual.add_boundary_pores">
-<span class="sig-name descname"><span class="pre">add_boundary_pores</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['top',</span> <span class="pre">'bottom',</span> <span class="pre">'front',</span> <span class="pre">'back',</span> <span class="pre">'left',</span> <span class="pre">'right']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/network/DelaunayVoronoiDual.html#DelaunayVoronoiDual.add_boundary_pores"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.network.DelaunayVoronoiDual.add_boundary_pores" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add boundary pores to the specified faces of the network</p>
-<p>Pores are offset from the faces of the domain.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>labels</strong> (<em>string</em><em> or </em><em>list of strings</em>) – The labels indicating the pores defining each face where boundary
-pores are to be added (e.g. ‘left’ or [‘left’, ‘right’])</p></li>
-<li><p><strong>offset</strong> (<em>scalar</em><em> or </em><em>array_like</em>) – The spacing of the network (e.g. [1, 1, 1]).  This must be given
-since it can be quite difficult to infer from the network,
-for instance if boundary pores have already added to other faces.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="openpnm.network.DelaunayVoronoiDual.find_pore_hulls">
-<span class="sig-name descname"><span class="pre">find_pore_hulls</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/network/DelaunayVoronoiDual.html#DelaunayVoronoiDual.find_pore_hulls"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.network.DelaunayVoronoiDual.find_pore_hulls" title="Permalink to this definition">¶</a></dt>
-<dd><p>Finds the indices of the Voronoi nodes that define the convex hull
-around the given Delaunay nodes.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>pores</strong> (<em>array_like</em>) – The pores whose convex hull are sought.  The given pores should be
-from the ‘delaunay’ network.  If no pores are given, then the hull
-is found for all ‘delaunay’ pores.</p>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<p>This metod is not fully optimized as it scans through each pore in a
-for-loop, so could be slow for large networks.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="openpnm.network.DelaunayVoronoiDual.find_throat_facets">
-<span class="sig-name descname"><span class="pre">find_throat_facets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">throats</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/network/DelaunayVoronoiDual.html#DelaunayVoronoiDual.find_throat_facets"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.network.DelaunayVoronoiDual.find_throat_facets" title="Permalink to this definition">¶</a></dt>
-<dd><p>Finds the indicies of the Voronoi nodes that define the facet or
-ridge between the Delaunay nodes connected by the given throat.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>throats</strong> (<em>array_like</em>) – The throats whose facets are sought.  The given throats should be
-from the ‘delaunay’ network. If no throats are specified, all
-‘delaunay’ throats are assumed.</p>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<p>The method is not well optimized as it scans through each given throat
-inside a for-loop, so it could be slow for large networks.</p>
-</dd></dl>
-
-</dd></dl>
-
 </section>
 
 
