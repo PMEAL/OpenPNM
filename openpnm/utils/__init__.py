@@ -29,6 +29,8 @@ from .misc import conduit_array_to_dict
 from .misc import prettify_logger_message
 from .Workspace import Workspace
 from .Project import Project
+from .Settings import SettingsAttr
+from .Settings import SettingsData
 
 
 # You can add info to the logger message by inserting the desired %(item)

@@ -120,7 +120,8 @@ class GenericNetwork(Base, ModelsMixin, LegacyMixin, LabelMixin):
 
     def __init__(self, conns=None, coords=None, project=None, settings={},
                  **kwargs):
-        self.settings.setdefault('prefix', 'net')
+        def_sets = {'prefix': 'net'}
+        self.settings.update(def_sets)
         self.settings.update(settings)
         super().__init__(project=project, **kwargs)
         if coords is not None:

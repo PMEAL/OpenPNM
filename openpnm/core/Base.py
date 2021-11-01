@@ -101,7 +101,6 @@ class Base(dict):
         return instance
 
     def __init__(self, Np=0, Nt=0, name=None, project=None, network=None, settings={}):
-        self.settings.setdefault('prefix', 'base')
         self.settings.update(settings)
         super().__init__()
         if project is None:
