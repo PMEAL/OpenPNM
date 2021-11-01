@@ -59,8 +59,7 @@ class GenericAlgorithm(Base, LegacyMixin, LabelMixin):
     def __init__(self, network=None, project=None, settings={}, **kwargs):
         self.settings.setdefault('prefix', 'alg')
         self.settings.update(settings)
-        temp = SettingsAttr(settings=settings, defaults=SettingsGenericAlgorithm())
-        self.sets = temp
+        self.sets = SettingsAttr(settings=settings, defaults=SettingsGenericAlgorithm())
 
         super().__init__(project=project, network=network, **kwargs)
         project = self.network.project

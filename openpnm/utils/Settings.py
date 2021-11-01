@@ -4,6 +4,12 @@ from openpnm.utils import Docorator
 docstr = Docorator()
 
 
+class SettingsData(HasTraits):
+    r"""
+
+    """
+
+
 class SettingsAttr:
 
     def __init__(self, settings={}, defaults=None):
@@ -34,17 +40,4 @@ class SettingsAttr:
     def __doc__(self):
         return self._settings.__doc__
 
-    def update(self, settings):
-        if isinstance(settings, SettingsAttr):
-            for k, v in settings.__dict__.items():
-                setattr(self, k, v)
-        else:
-            for k, v in settings.items():
-                setattr(self, k, v)
-
-
-class SettingsData(HasTraits):
-    r"""
-
-    """
 

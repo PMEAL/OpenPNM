@@ -2,7 +2,7 @@ import numpy as np
 from openpnm.algorithms import GenericTransport, SettingsGenericTransport
 from openpnm.utils import logging, Docorator, GenericSettings
 from openpnm.utils import SettingsAttr
-from traits.api import List, Str
+from traits.api import List, Str, Int
 docstr = Docorator()
 logger = logging.getLogger(__name__)
 
@@ -20,6 +20,7 @@ class SettingsReactiveTransport(SettingsGenericTransport):
 
     """
     sources = List(Str())
+    test = Int(3)
 
 @docstr.get_sections(base='ReactiveTransportSettings',
                      sections=docstr.all_sections)
