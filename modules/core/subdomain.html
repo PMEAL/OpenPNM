@@ -610,6 +610,56 @@
                 
   <section id="subdomain">
 <span id="subdomain-api"></span><h1>Subdomain<a class="headerlink" href="#subdomain" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="openpnm.core.Subdomain">
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">Subdomain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/core/Subdomain.html#Subdomain"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.core.Subdomain" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="base.html#openpnm.core.Base" title="openpnm.core.Base.Base"><code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.core.Base.Base</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.core.Base.LegacyMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.core.Base.LabelMixin</span></code></p>
+<p>This subclass of the Base class provides the ability assign the object
+to specific locations (pores and throats) in the domain.  This class
+is subclassed by GenericGeometry and GenericPhysics.</p>
+<p class="rubric">Notes</p>
+<p>The Project object has two methods, <code class="docutils literal notranslate"><span class="pre">check_geometry_health</span></code> and
+<code class="docutils literal notranslate"><span class="pre">check_physics_health</span></code> that look to make sure all locations are
+assigned to one and only one Geometry and/or Physics.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.core.Subdomain.set_locations">
+<span class="sig-name descname"><span class="pre">set_locations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throats</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'switch'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/core/Subdomain.html#Subdomain.set_locations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.core.Subdomain.set_locations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Assign a Subdomain object to specific pores and/or throats</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pores</strong> (<em>array_like</em>) – The list of pore indices to which this Subdomain should be
+assigned</p></li>
+<li><p><strong>throats</strong> (<em>array_like</em>) – The list of throat indices to which this Subdomain should be
+assigned</p></li>
+<li><p><strong>mode</strong> (<em>str</em>) – <p>Controls how the locations are set.  Options are:</p>
+<ul>
+<li><dl class="simple">
+<dt>’switch’ (default)</dt><dd><p>Assigns the object to the specified locations and unassigns
+any other objects from those locations if present</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>’add’</dt><dd><p>Assigns the object to the specified locations. An error is
+raised if the locations are already assigned to another object</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>’drop’</dt><dd><p>Removes the object from the specified locations</p>
+</dd>
+</dl>
+</li>
+</ul>
+</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
 

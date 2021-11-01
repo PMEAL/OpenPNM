@@ -1,0 +1,1324 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>openpnm.algorithms.GenericTransport &#8212; OpenPNM  documentation</title>
+    
+  <link href="../../../_static/css/theme.css" rel="stylesheet">
+  <link href="../../../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/blank.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
+    
+  <link rel="preload" as="script" href="../../../_static/js/index.be7d3bbb2ef33a8344ce.js">
+
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/clipboard.min.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/custom.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+
+<a class="navbar-brand" href="https://www.openpnm.org">
+  <img src="../../../_static/openpnm_logo.png" class="logo" alt="logo">
+</a>
+
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class=" collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../userguide/index.html">
+  <strong>
+   User Guide
+  </strong>
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../modules/index.html">
+  <strong>
+   Module Reference
+  </strong>
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../examples/examples.html">
+  Examples
+ </a>
+</li>
+
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/PMEAL/OpenPNM" rel="noopener" target="_blank" title="GitHub">
+            <span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://openpnm.substack.com/" rel="noopener" target="_blank" title="Substack">
+            <span><i class="fas fa-envelope-square"></i></span>
+            <label class="sr-only">Substack</label>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://twitter.com/OpenPnm" rel="noopener" target="_blank" title="Twitter">
+            <span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label>
+          </a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    
+  </div>
+</nav>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <h1>Source code for openpnm.algorithms.GenericTransport</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">scipy.sparse.linalg</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">from</span> <span class="nn">numpy.linalg</span> <span class="kn">import</span> <span class="n">norm</span>
+<span class="kn">import</span> <span class="nn">scipy.sparse.csgraph</span> <span class="k">as</span> <span class="nn">spgr</span>
+<span class="kn">from</span> <span class="nn">scipy.spatial</span> <span class="kn">import</span> <span class="n">ConvexHull</span>
+<span class="kn">from</span> <span class="nn">scipy.spatial</span> <span class="kn">import</span> <span class="n">cKDTree</span>
+<span class="kn">from</span> <span class="nn">openpnm.topotools</span> <span class="kn">import</span> <span class="n">iscoplanar</span><span class="p">,</span> <span class="n">is_fully_connected</span>
+<span class="kn">from</span> <span class="nn">openpnm.algorithms</span> <span class="kn">import</span> <span class="n">GenericAlgorithm</span><span class="p">,</span> <span class="n">SettingsGenericAlgorithm</span>
+<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">logging</span><span class="p">,</span> <span class="n">Docorator</span><span class="p">,</span> <span class="n">prettify_logger_message</span>
+<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">GenericSettings</span><span class="p">,</span> <span class="n">SettingsAttr</span>
+<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">is_symmetric</span>
+<span class="kn">from</span> <span class="nn">traits.api</span> <span class="kn">import</span> <span class="n">Str</span>
+
+<span class="n">docstr</span> <span class="o">=</span> <span class="n">Docorator</span><span class="p">()</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<span class="nd">@docstr</span><span class="o">.</span><span class="n">get_sections</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="s1">&#39;SettingsGenericTransport&#39;</span><span class="p">,</span> <span class="n">sections</span><span class="o">=</span><span class="n">docstr</span><span class="o">.</span><span class="n">all_sections</span><span class="p">)</span>
+<span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+<span class="k">class</span> <span class="nc">SettingsGenericTransport</span><span class="p">(</span><span class="n">SettingsGenericAlgorithm</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    %(SettingsGenericAlgorithm.parameters)s</span>
+<span class="sd">    phase : str</span>
+<span class="sd">        The name of the phase witih which this algorithm is associated</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">phase</span> <span class="o">=</span> <span class="n">Str</span><span class="p">()</span>
+
+
+<span class="nd">@docstr</span><span class="o">.</span><span class="n">get_sections</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="s1">&#39;GenericTransportSettings&#39;</span><span class="p">,</span>
+                      <span class="n">sections</span><span class="o">=</span><span class="n">docstr</span><span class="o">.</span><span class="n">all_sections</span><span class="p">)</span>
+<span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+<span class="k">class</span> <span class="nc">GenericTransportSettings</span><span class="p">(</span><span class="n">GenericSettings</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Defines the settings for GenericTransport algorithms</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    phase : str</span>
+<span class="sd">        The name of the phase on which the algorithm acts</span>
+<span class="sd">    quantity : str</span>
+<span class="sd">        The name of the physical quantity to be calculated</span>
+<span class="sd">    conductance : str</span>
+<span class="sd">        The name of the pore-scale transport conductance values. These are</span>
+<span class="sd">        typically calculated by a model attached to a *Physics* object</span>
+<span class="sd">        associated with the given *Phase*.</span>
+
+<span class="sd">    Other Parameters</span>
+<span class="sd">    ----------------</span>
+<span class="sd">    solver_family : str (default = &#39;scipy&#39;)</span>
+<span class="sd">        The solver package to use.  OpenPNM currently supports ``scipy``,</span>
+<span class="sd">        ``pyamg`` and ``petsc`` (if you have it installed).</span>
+<span class="sd">    solver_type : str</span>
+<span class="sd">        The specific solver to use.  For instance, if ``solver_family`` is</span>
+<span class="sd">        ``scipy`` then you can specify any of the iterative solvers such as</span>
+<span class="sd">        ``cg`` or ``gmres``. [More info here]</span>
+<span class="sd">        (https://docs.scipy.org/doc/scipy/reference/sparse.linalg.html),</span>
+<span class="sd">    solver_preconditioner : str (default = ``jacobi``)</span>
+<span class="sd">        Used by the PETSc solver to specify which preconditioner to use.</span>
+<span class="sd">    solver_tol : float (default = 1e-8)</span>
+<span class="sd">        Used to control the accuracy to which the iterative solver aims to</span>
+<span class="sd">        achieve before stopping. Can roughly be interpreted as the number of</span>
+<span class="sd">        significant digits you want in your solution, i.e. 1e-8 -&gt; 8</span>
+<span class="sd">    solver_atol : float</span>
+<span class="sd">        Absolute tolerance as a stopping criterion when using iterative</span>
+<span class="sd">        solvers, defined as:</span>
+<span class="sd">            atol = norm(Ax-b) @ x_final</span>
+<span class="sd">        Don&#39;t specify this parameter unless you know what you&#39;re doing. The</span>
+<span class="sd">        algorithm automatically calculates it based on ``solver_tol``.</span>
+<span class="sd">    solver_rtol : float</span>
+<span class="sd">        Relative tolerance as a stopping criterion when using iterative</span>
+<span class="sd">        solvers, defined as the ratio of the residual computed using the</span>
+<span class="sd">        accepted solution to that using the initial guess, i.e.:</span>
+<span class="sd">            rtol = norm(Ax-b) @ x_final / norm(Ax-b) @ x0</span>
+<span class="sd">        Don&#39;t specify this parameter unless you know what you&#39;re doing. The</span>
+<span class="sd">        algorithm automatically calculates it based on ``solver_tol``.</span>
+<span class="sd">    solver_max_iter : int (default = 5000)</span>
+<span class="sd">        Maximum number of iterations allowed when using iterative solvers.</span>
+<span class="sd">    variable_props : list</span>
+<span class="sd">        List of pore/throat properties whose values might change during the</span>
+<span class="sd">        algorithm and thus, need to be iterated for the solution to converge,</span>
+<span class="sd">        e.g. &quot;pore.diffusivity&quot; if diffusivity is concentration-dependent.</span>
+<span class="sd">    cache_A : bool</span>
+<span class="sd">        If ``True``, A matrix is cached and reused rather than getting rebuilt.</span>
+<span class="sd">    cache_b : bool</span>
+<span class="sd">        If ``True``, b vector is cached and reused rather than getting rebuilt.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">phase</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">conductance</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">quantity</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">solver_family</span> <span class="o">=</span> <span class="s1">&#39;pypardiso&#39;</span>
+    <span class="n">solver_type</span> <span class="o">=</span> <span class="s1">&#39;spsolve&#39;</span>
+    <span class="n">solver_preconditioner</span> <span class="o">=</span> <span class="s1">&#39;jacobi&#39;</span>
+    <span class="n">solver_tol</span> <span class="o">=</span> <span class="mf">1e-8</span>
+    <span class="n">solver_atol</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">solver_rtol</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">solver_max_iter</span> <span class="o">=</span> <span class="mi">5000</span>
+    <span class="n">cache_A</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">cache_b</span> <span class="o">=</span> <span class="kc">True</span>
+
+
+<div class="viewcode-block" id="GenericTransport"><a class="viewcode-back" href="../../../modules/algorithms/generic_transport.html#openpnm.algorithms.GenericTransport">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">get_sections</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="s1">&#39;GenericTransport&#39;</span><span class="p">,</span> <span class="n">sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Parameters&#39;</span><span class="p">])</span>
+<span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+<span class="k">class</span> <span class="nc">GenericTransport</span><span class="p">(</span><span class="n">GenericAlgorithm</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class implements steady-state linear transport calculations</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    %(GenericAlgorithm.parameters)s</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+
+<span class="sd">    The following table shows the methods that are accessible to the user</span>
+<span class="sd">    for setting up the simulation.</span>
+
+<span class="sd">    +---------------------+---------------------------------------------------+</span>
+<span class="sd">    | Methods             | Description                                       |</span>
+<span class="sd">    +=====================+===================================================+</span>
+<span class="sd">    | ``set_value_BC``    | Applies constant value boundary conditions to the |</span>
+<span class="sd">    |                     | specified pores                                   |</span>
+<span class="sd">    +---------------------+---------------------------------------------------+</span>
+<span class="sd">    | ``set_rate_BC``     | Applies constant rate boundary conditions to the  |</span>
+<span class="sd">    |                     | specified pores                                   |</span>
+<span class="sd">    +---------------------+---------------------------------------------------+</span>
+<span class="sd">    | ``remove_BC``       | Removes all boundary conditions from the          |</span>
+<span class="sd">    |                     | specified pores                                   |</span>
+<span class="sd">    +---------------------+---------------------------------------------------+</span>
+<span class="sd">    | ``rate``            | Calculates the total rate of transfer through the |</span>
+<span class="sd">    |                     | given pores or throats                            |</span>
+<span class="sd">    +---------------------+---------------------------------------------------+</span>
+<span class="sd">    | ``setup``           | A shortcut for applying values in the ``settings``|</span>
+<span class="sd">    |                     | attribute.                                        |</span>
+<span class="sd">    +---------------------+---------------------------------------------------+</span>
+<span class="sd">    | ``results``         | Returns the results of the calcualtion as a       |</span>
+<span class="sd">    |                     | ``dict`` with the data stored under the &#39;quantity&#39;|</span>
+<span class="sd">    |                     | specified in the ``settings``                     |</span>
+<span class="sd">    +---------------------+---------------------------------------------------+</span>
+
+<span class="sd">    In addition to the above methods there are also the following attributes:</span>
+
+<span class="sd">    +---------------------+---------------------------------------------------+</span>
+<span class="sd">    | Attribute           | Description                                       |</span>
+<span class="sd">    +=====================+===================================================+</span>
+<span class="sd">    | ``A``               | Retrieves the coefficient matrix                  |</span>
+<span class="sd">    +---------------------+---------------------------------------------------+</span>
+<span class="sd">    | ``b``               | Retrieves the RHS matrix                          |</span>
+<span class="sd">    +---------------------+---------------------------------------------------+</span>
+
+<span class="sd">    This class contains quite a few hidden methods (preceeded by an</span>
+<span class="sd">    underscore) that are called internally.  Since these are critical to the</span>
+<span class="sd">    functioning of this algorithm they are worth outlining even though the</span>
+<span class="sd">    user does not call them directly:</span>
+
+<span class="sd">    +-----------------------+-------------------------------------------------+</span>
+<span class="sd">    | Method or Attribute   | Description                                     |</span>
+<span class="sd">    +=======================+=================================================+</span>
+<span class="sd">    | ``_build_A``          | Builds the **A** matrix based on the            |</span>
+<span class="sd">    |                       | &#39;conductance&#39; specified in ``settings``         |</span>
+<span class="sd">    +-----------------------+-------------------------------------------------+</span>
+<span class="sd">    | ``_build_b``          | Builds the **b** matrix                         |</span>
+<span class="sd">    +-----------------------+-------------------------------------------------+</span>
+<span class="sd">    | ``_apply_BCs``        | Applies the given BCs by adjust the **A** and   |</span>
+<span class="sd">    |                       | **b** matrices                                  |</span>
+<span class="sd">    +-----------------------+-------------------------------------------------+</span>
+<span class="sd">    | ``_calc_eff_prop``    | Finds the effective property (e.g. permeability |</span>
+<span class="sd">    |                       | coefficient) based on the given BCs             |</span>
+<span class="sd">    +-----------------------+-------------------------------------------------+</span>
+<span class="sd">    | ``_solve``            | Runs the algorithm using the solver specified   |</span>
+<span class="sd">    |                       | in the ``settings``                             |</span>
+<span class="sd">    +-----------------------+-------------------------------------------------+</span>
+<span class="sd">    | ``_get_domain_area``  | Attempts to estimate the area of the inlet pores|</span>
+<span class="sd">    |                       | if not specified by user                        |</span>
+<span class="sd">    +-----------------------+-------------------------------------------------+</span>
+<span class="sd">    | ``_get_domain_length``| Attempts to estimate the length between the     |</span>
+<span class="sd">    |                       | inlet and outlet faces if not specified by the  |</span>
+<span class="sd">    |                       | user                                            |</span>
+<span class="sd">    +-----------------------+-------------------------------------------------+</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">instance</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">GenericTransport</span><span class="p">,</span> <span class="bp">cls</span><span class="p">)</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="c1"># Create some instance attributes</span>
+        <span class="n">instance</span><span class="o">.</span><span class="n">_A</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">instance</span><span class="o">.</span><span class="n">_b</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">instance</span><span class="o">.</span><span class="n">_pure_A</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">instance</span><span class="o">.</span><span class="n">_pure_b</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">instance</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">settings</span><span class="o">=</span><span class="p">{},</span>
+                 <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1"># Apply default settings</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">_update_settings_and_docs</span><span class="p">(</span><span class="n">GenericTransportSettings</span><span class="p">)</span>
+        <span class="c1"># Overwrite any given in init</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span>
+        <span class="c1"># Assign phase if given during init</span>
+        <span class="k">if</span> <span class="n">phase</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;phase&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">phase</span><span class="o">.</span><span class="n">name</span>
+        <span class="c1"># If network given, get project, otherwise let parent class create it</span>
+        <span class="k">if</span> <span class="n">network</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">project</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">project</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">project</span><span class="o">=</span><span class="n">project</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sets</span> <span class="o">=</span> <span class="n">SettingsAttr</span><span class="p">(</span><span class="n">settings</span><span class="o">=</span><span class="n">settings</span><span class="p">,</span> <span class="n">defaults</span><span class="o">=</span><span class="n">SettingsGenericTransport</span><span class="p">())</span>
+        <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.bc_rate&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+        <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.bc_value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">x</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;quantity&#39;</span><span class="p">]]</span>
+
+    <span class="nd">@docstr</span><span class="o">.</span><span class="n">get_full_description</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="s1">&#39;GenericTransport.reset&#39;</span><span class="p">)</span>
+    <span class="nd">@docstr</span><span class="o">.</span><span class="n">get_sections</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="s1">&#39;GenericTransport.reset&#39;</span><span class="p">,</span> <span class="n">sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Parameters&#39;</span><span class="p">])</span>
+    <span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bcs</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">results</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Resets the algorithm to enable re-use.</span>
+
+<span class="sd">        This allows the reuse of an algorithm inside a for-loop for parametric</span>
+<span class="sd">        studies.  The default behavior means that only ``alg.reset()`` and</span>
+<span class="sd">        ``alg.run()`` must be called inside a loop.  To reset the algorithm</span>
+<span class="sd">        more completely requires overriding the default arguments.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        results : boolean</span>
+<span class="sd">            If ``True`` (default) all previously calculated values pertaining</span>
+<span class="sd">            to results of the algorithm are removed.</span>
+<span class="sd">        bcs : boolean (default = ``False``)</span>
+<span class="sd">            If ``True`` all previous boundary conditions are removed.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pure_b</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_b</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pure_A</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_A</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">bcs</span><span class="p">:</span>
+            <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.bc_value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+            <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.bc_rate&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+        <span class="k">if</span> <span class="n">results</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;quantity&#39;</span><span class="p">],</span> <span class="kc">None</span><span class="p">)</span>
+
+<div class="viewcode-block" id="GenericTransport.set_value_BC"><a class="viewcode-back" href="../../../modules/algorithms/generic_transport.html#openpnm.algorithms.GenericTransport.set_value_BC">[docs]</a>    <span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+    <span class="k">def</span> <span class="nf">set_value_BC</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;merge&#39;</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Apply constant value boundary conditons to the specified locations.</span>
+
+<span class="sd">        These are sometimes referred to as Dirichlet conditions.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        pores : array_like</span>
+<span class="sd">            The pore indices where the condition should be applied</span>
+<span class="sd">        values : scalar or array_like</span>
+<span class="sd">            The value to apply in each pore.  If a scalar is supplied</span>
+<span class="sd">            it is assigne to all locations, and if a vector is applied is</span>
+<span class="sd">            must be the same size as the indices given in ``pores``.</span>
+<span class="sd">        mode : string, optional</span>
+<span class="sd">            Controls how the boundary conditions are applied.  Options are:</span>
+
+<span class="sd">            &#39;merge&#39; - (Default) Adds supplied boundary conditions to already</span>
+<span class="sd">            existing conditions, and also overwrites any existing values.</span>
+<span class="sd">            If BCs of the complementary type already exist in the given</span>
+<span class="sd">            locations, those values are kept.</span>
+<span class="sd">            &#39;overwrite&#39; - Deletes all boundary conditions of the given type</span>
+<span class="sd">            then adds the specified new ones (unless locations already have</span>
+<span class="sd">            BCs of the other type).</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        The definition of ``quantity`` is specified in the algorithm&#39;s</span>
+<span class="sd">        ``settings``, e.g. ``alg.settings[&#39;quantity&#39;] = &#39;pore.pressure&#39;``.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pores</span><span class="p">,</span> <span class="n">bctype</span><span class="o">=</span><span class="s1">&#39;value&#39;</span><span class="p">,</span> <span class="n">bcvalues</span><span class="o">=</span><span class="n">values</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GenericTransport.set_rate_BC"><a class="viewcode-back" href="../../../modules/algorithms/generic_transport.html#openpnm.algorithms.GenericTransport.set_rate_BC">[docs]</a>    <span class="k">def</span> <span class="nf">set_rate_BC</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="p">,</span> <span class="n">rates</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">total_rate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;merge&#39;</span><span class="p">,</span>
+                    <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Apply constant rate boundary conditons to the specified locations.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        pores : array_like</span>
+<span class="sd">            The pore indices where the condition should be applied</span>
+<span class="sd">        rates : scalar or array_like, optional</span>
+<span class="sd">            The rates to apply in each pore.  If a scalar is supplied that</span>
+<span class="sd">            rate is assigned to all locations, and if a vector is supplied</span>
+<span class="sd">            it must be the same size as the indices given in ``pores``.</span>
+<span class="sd">        total_rate : float, optional</span>
+<span class="sd">            The total rate supplied to all pores.  The rate supplied by this</span>
+<span class="sd">            argument is divided evenly among all pores. A scalar must be</span>
+<span class="sd">            supplied! Total_rate cannot be specified if rate is specified.</span>
+<span class="sd">        mode : str, optional</span>
+<span class="sd">            Controls how the boundary conditions are applied.  Options are:</span>
+
+<span class="sd">            &#39;merge&#39; - (Default) Adds supplied boundary conditions to already</span>
+<span class="sd">            existing conditions, and also overwrites any existing values.</span>
+<span class="sd">            If BCs of the complementary type already exist in the given</span>
+<span class="sd">            locations, these values are kept.</span>
+<span class="sd">            &#39;overwrite&#39; - Deletes all boundary conditions of the given type</span>
+<span class="sd">            then adds the specified new ones (unless locations already have</span>
+<span class="sd">            BCs of the other type).</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        The definition of ``quantity`` is specified in the algorithm&#39;s</span>
+<span class="sd">        ``settings``, e.g. ``alg.settings[&#39;quantity&#39;] = &#39;pore.pressure&#39;``.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># support &#39;values&#39; keyword</span>
+        <span class="k">if</span> <span class="s1">&#39;values&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">rates</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;values&quot;</span><span class="p">)</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;&#39;values&#39; has been deprecated, use &#39;rates&#39; instead.&quot;</span><span class="p">,</span>
+                          <span class="ne">DeprecationWarning</span><span class="p">)</span>
+        <span class="c1"># handle total_rate feature</span>
+        <span class="k">if</span> <span class="n">total_rate</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">total_rate</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;total_rate argument accepts scalar only!&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">rates</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Cannot specify both arguments: rate and &#39;</span>
+                                <span class="o">+</span> <span class="s1">&#39;total_rate&#39;</span><span class="p">)</span>
+            <span class="n">pores</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_indices</span><span class="p">(</span><span class="n">pores</span><span class="p">)</span>
+            <span class="n">rates</span> <span class="o">=</span> <span class="n">total_rate</span><span class="o">/</span><span class="n">pores</span><span class="o">.</span><span class="n">size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pores</span><span class="p">,</span> <span class="n">bctype</span><span class="o">=</span><span class="s1">&#39;rate&#39;</span><span class="p">,</span> <span class="n">bcvalues</span><span class="o">=</span><span class="n">rates</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span></div>
+
+    <span class="nd">@docstr</span><span class="o">.</span><span class="n">get_sections</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="s1">&#39;GenericTransport._set_BC&#39;</span><span class="p">,</span>
+                         <span class="n">sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Parameters&#39;</span><span class="p">,</span> <span class="s1">&#39;Notes&#39;</span><span class="p">])</span>
+    <span class="k">def</span> <span class="nf">_set_BC</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="p">,</span> <span class="n">bctype</span><span class="p">,</span> <span class="n">bcvalues</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;merge&#39;</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This private method is called by public facing BC methods, to apply</span>
+<span class="sd">        boundary conditions to specified pores</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        pores : array_like</span>
+<span class="sd">            The pores where the boundary conditions should be applied</span>
+<span class="sd">        bctype : string</span>
+<span class="sd">            Specifies the type or the name of boundary condition to apply. The</span>
+<span class="sd">            types can be one one of the following:</span>
+
+<span class="sd">            &#39;value&#39; - Specify the value of the quantity in each location</span>
+<span class="sd">            &#39;rate&#39; - Specify the flow rate into each location</span>
+
+<span class="sd">        bcvalues : int or array_like</span>
+<span class="sd">            The boundary value to apply, such as concentration or rate.  If</span>
+<span class="sd">            a single value is given, it&#39;s assumed to apply to all locations</span>
+<span class="sd">            unless the &#39;total_rate&#39; bc_type is supplied whereby a single value</span>
+<span class="sd">            corresponds to a total rate to be divded evenly among all pores.</span>
+<span class="sd">            Otherwise, different values can be applied to all pores in the form</span>
+<span class="sd">            of an array of the same length as ``pores``.</span>
+<span class="sd">        mode : string, optional</span>
+<span class="sd">            Controls how the boundary conditions are applied.  Options are:</span>
+
+<span class="sd">            &#39;merge&#39; - (Default) Adds supplied boundary conditions to already</span>
+<span class="sd">            existing conditions, and also overwrites any existing values.</span>
+<span class="sd">            If BCs of the complementary type already exist in the given</span>
+<span class="sd">            locations, these values are kept.</span>
+<span class="sd">            &#39;overwrite&#39; - Deletes all boundary conditions of the given type</span>
+<span class="sd">            then adds the specified new ones (unless locations already have</span>
+<span class="sd">            BCs of the other type).</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        It is not possible to have multiple boundary conditions for a</span>
+<span class="sd">        specified location in one algorithm. Use ``remove_BCs`` to</span>
+<span class="sd">        clear existing BCs before applying new ones or ``mode=&#39;overwrite&#39;``</span>
+<span class="sd">        which removes all existing BC&#39;s before applying the new ones.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Hijack the parse_mode function to verify bctype argument</span>
+        <span class="n">bctype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_mode</span><span class="p">(</span><span class="n">bctype</span><span class="p">,</span> <span class="n">allowed</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">,</span> <span class="s1">&#39;rate&#39;</span><span class="p">],</span>
+                                  <span class="n">single</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">othertype</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">([</span><span class="s1">&#39;value&#39;</span><span class="p">,</span> <span class="s1">&#39;rate&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="nb">set</span><span class="p">([</span><span class="n">bctype</span><span class="p">])))[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">mode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_mode</span><span class="p">(</span><span class="n">mode</span><span class="p">,</span> <span class="n">allowed</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;merge&#39;</span><span class="p">,</span> <span class="s1">&#39;overwrite&#39;</span><span class="p">],</span>
+                                <span class="n">single</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">pores</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_indices</span><span class="p">(</span><span class="n">pores</span><span class="p">)</span>
+
+        <span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">bcvalues</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">values</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">values</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">pores</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;The number of boundary values must match the &#39;</span>
+                            <span class="o">+</span> <span class="s1">&#39;number of locations&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Create boundary array if needed (though these are created on init)</span>
+        <span class="k">if</span> <span class="s1">&#39;pore.bc_&#39;</span> <span class="o">+</span> <span class="n">bctype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.bc_&#39;</span> <span class="o">+</span> <span class="n">bctype</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+
+        <span class="c1"># Catch pores with existing BCs</span>
+        <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;merge&#39;</span><span class="p">:</span>  <span class="c1"># remove offenders, and warn user</span>
+            <span class="n">existing_bcs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s2">&quot;pore.bc_&quot;</span> <span class="o">+</span> <span class="n">othertype</span><span class="p">])</span>
+            <span class="n">inds</span> <span class="o">=</span> <span class="n">pores</span><span class="p">[</span><span class="n">existing_bcs</span><span class="p">[</span><span class="n">pores</span><span class="p">]]</span>
+        <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;overwrite&#39;</span><span class="p">:</span>  <span class="c1"># Remove existing BCs and write new ones</span>
+            <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.bc_&#39;</span> <span class="o">+</span> <span class="n">bctype</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+            <span class="n">existing_bcs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s2">&quot;pore.bc_&quot;</span> <span class="o">+</span> <span class="n">othertype</span><span class="p">])</span>
+            <span class="n">inds</span> <span class="o">=</span> <span class="n">pores</span><span class="p">[</span><span class="n">existing_bcs</span><span class="p">[</span><span class="n">pores</span><span class="p">]]</span>
+        <span class="c1"># Now drop any pore indices which have BCs that should be kept</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">inds</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Boundary conditions are already specified in the following given&#39;</span>
+                   <span class="sa">f</span><span class="s1">&#39; pores, so these will be skipped: </span><span class="si">{</span><span class="n">inds</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">prettify_logger_message</span><span class="p">(</span><span class="n">msg</span><span class="p">))</span>
+            <span class="n">pores</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">setdiff1d</span><span class="p">(</span><span class="n">pores</span><span class="p">,</span> <span class="n">inds</span><span class="p">)</span>
+
+        <span class="c1"># Store boundary values</span>
+        <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.bc_&#39;</span> <span class="o">+</span> <span class="n">bctype</span><span class="p">][</span><span class="n">pores</span><span class="p">]</span> <span class="o">=</span> <span class="n">values</span>
+
+    <span class="k">def</span> <span class="nf">remove_BC</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bctype</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Removes boundary conditions from the specified pores</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        pores : array_like, optional</span>
+<span class="sd">            The pores from which boundary conditions are to be removed.  If no</span>
+<span class="sd">            pores are specified, then BCs are removed from all pores. No error</span>
+<span class="sd">            is thrown if the provided pores do not have any BCs assigned.</span>
+<span class="sd">        bctype : string, or list of strings</span>
+<span class="sd">            Specifies which type of boundary condition to remove. Options are:</span>
+
+<span class="sd">            -*&#39;all&#39;*: (default) Removes all boundary conditions</span>
+<span class="sd">            -*&#39;value&#39;*: Removes only value conditions</span>
+<span class="sd">            -*&#39;rate&#39;*: Removes only rate conditions</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bctype</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">bctype</span> <span class="o">=</span> <span class="p">[</span><span class="n">bctype</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s1">&#39;all&#39;</span> <span class="ow">in</span> <span class="n">bctype</span><span class="p">:</span>
+            <span class="n">bctype</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">,</span> <span class="s1">&#39;rate&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">pores</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">pores</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Ps</span>
+        <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;pore.bc_value&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="ow">and</span> <span class="p">(</span><span class="s1">&#39;value&#39;</span> <span class="ow">in</span> <span class="n">bctype</span><span class="p">):</span>
+            <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.bc_value&#39;</span><span class="p">][</span><span class="n">pores</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+        <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;pore.bc_rate&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="ow">and</span> <span class="p">(</span><span class="s1">&#39;rate&#39;</span> <span class="ow">in</span> <span class="n">bctype</span><span class="p">):</span>
+            <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.bc_rate&#39;</span><span class="p">][</span><span class="n">pores</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+
+<div class="viewcode-block" id="GenericTransport._build_A"><a class="viewcode-back" href="../../../modules/algorithms/generic_transport.html#openpnm.algorithms.GenericTransport._build_A">[docs]</a>    <span class="k">def</span> <span class="nf">_build_A</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Builds the coefficient matrix based on conductances between pores.</span>
+<span class="sd">        The conductance to use is specified in the algorithm&#39;s ``settings``</span>
+<span class="sd">        under ``conductance``.  In subclasses (e.g. ``FickianDiffusion``)</span>
+<span class="sd">        this is set by default, though it can be overwritten.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">gvals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;conductance&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">gvals</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;conductance has not been defined on this algorithm&#39;</span><span class="p">)</span>
+        <span class="c1"># Decide if caching of A and b is allowed</span>
+        <span class="c1"># FIXME: this needs to be properly addressed (see issue #1548)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">gvals</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_iterative_props</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;cache_A&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;cache_b&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">})</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;cache_A&#39;</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pure_A</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pure_A</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">network</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">network</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">phase</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">phases</span><span class="p">()[</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;phase&#39;</span><span class="p">]]</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Phase has not been defined for algorithm&#39;</span><span class="p">)</span>
+            <span class="n">g</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">gvals</span><span class="p">]</span>
+            <span class="n">am</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">create_adjacency_matrix</span><span class="p">(</span><span class="n">weights</span><span class="o">=</span><span class="n">g</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;coo&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pure_A</span> <span class="o">=</span> <span class="n">spgr</span><span class="o">.</span><span class="n">laplacian</span><span class="p">(</span><span class="n">am</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">A</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pure_A</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="GenericTransport._build_b"><a class="viewcode-back" href="../../../modules/algorithms/generic_transport.html#openpnm.algorithms.GenericTransport._build_b">[docs]</a>    <span class="k">def</span> <span class="nf">_build_b</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Builds the RHS matrix, without applying any boundary conditions or</span>
+<span class="sd">        source terms. This method is trivial an basically creates a column</span>
+<span class="sd">        vector of 0&#39;s.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cache_b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;cache_b&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">cache_b</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pure_b</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pure_b</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">Np</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>  <span class="c1"># Create vector of 0s</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pure_b</span> <span class="o">=</span> <span class="n">b</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pure_b</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="nf">_get_A</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_A</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_build_A</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_A</span>
+
+    <span class="k">def</span> <span class="nf">_set_A</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">A</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_A</span> <span class="o">=</span> <span class="n">A</span>
+
+    <span class="n">A</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">fget</span><span class="o">=</span><span class="n">_get_A</span><span class="p">,</span> <span class="n">fset</span><span class="o">=</span><span class="n">_set_A</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_b</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_b</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_build_b</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_b</span>
+
+    <span class="k">def</span> <span class="nf">_set_b</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_b</span> <span class="o">=</span> <span class="n">b</span>
+
+    <span class="n">b</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">fget</span><span class="o">=</span><span class="n">_get_b</span><span class="p">,</span> <span class="n">fset</span><span class="o">=</span><span class="n">_set_b</span><span class="p">)</span>
+
+<div class="viewcode-block" id="GenericTransport._apply_BCs"><a class="viewcode-back" href="../../../modules/algorithms/generic_transport.html#openpnm.algorithms.GenericTransport._apply_BCs">[docs]</a>    <span class="k">def</span> <span class="nf">_apply_BCs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Applies all the boundary conditions that have been specified, by</span>
+<span class="sd">        adding values to the *A* and *b* matrices.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s1">&#39;pore.bc_rate&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="c1"># Update b</span>
+            <span class="n">ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.bc_rate&#39;</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.bc_rate&#39;</span><span class="p">][</span><span class="n">ind</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s1">&#39;pore.bc_value&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">diagonal</span><span class="p">()</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+            <span class="c1"># Update b (impose bc values)</span>
+            <span class="n">ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.bc_value&#39;</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.bc_value&#39;</span><span class="p">][</span><span class="n">ind</span><span class="p">]</span> <span class="o">*</span> <span class="n">f</span>
+            <span class="c1"># Update b (substract quantities from b to keep A symmetric)</span>
+            <span class="n">x_BC</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">)</span>
+            <span class="n">x_BC</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.bc_value&#39;</span><span class="p">][</span><span class="n">ind</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">[</span><span class="o">~</span><span class="n">ind</span><span class="p">]</span> <span class="o">-=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">A</span> <span class="o">*</span> <span class="n">x_BC</span><span class="p">)[</span><span class="o">~</span><span class="n">ind</span><span class="p">]</span>
+            <span class="c1"># Update A</span>
+            <span class="n">P_bc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">toindices</span><span class="p">(</span><span class="n">ind</span><span class="p">)</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">row</span><span class="p">,</span> <span class="n">P_bc</span><span class="p">)</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">col</span><span class="p">,</span> <span class="n">P_bc</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># Remove entries from A for all BC rows/cols</span>
+            <span class="n">datadiag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">diagonal</span><span class="p">()</span>  <span class="c1"># Add diagonal entries back into A</span>
+            <span class="n">datadiag</span><span class="p">[</span><span class="n">P_bc</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">P_bc</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span> <span class="o">*</span> <span class="n">f</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">setdiag</span><span class="p">(</span><span class="n">datadiag</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">eliminate_zeros</span><span class="p">()</span>  <span class="c1"># Remove 0 entries</span></div>
+
+    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x0</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Builds the A and b matrices, and calls the solver specified in the</span>
+<span class="sd">        ``settings`` attribute.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        x0 : ND-array</span>
+<span class="sd">            Initial guess of unknown variable</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Nothing is returned...the solution is stored on the objecxt under</span>
+<span class="sd">        ``pore.quantity`` where *quantity* is specified in the ``settings``</span>
+<span class="sd">        attribute.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;―&#39;</span> <span class="o">*</span> <span class="mi">80</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Running GenericTransport&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_settings</span><span class="p">()</span>
+        <span class="c1"># Check if A and b are well-defined</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_data_health</span><span class="p">()</span>
+        <span class="n">x0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">)</span> <span class="k">if</span> <span class="n">x0</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">x0</span>
+        <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;pore.initial_guess&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">x0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_run_generic</span><span class="p">(</span><span class="n">x0</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_run_generic</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x0</span><span class="p">):</span>
+        <span class="c1"># (Re)build A,b in case phase/physics are updated and alg.run()</span>
+        <span class="c1"># is to be called a second time</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_build_A</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_build_b</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_apply_BCs</span><span class="p">()</span>
+        <span class="n">x_new</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_solve</span><span class="p">(</span><span class="n">x0</span><span class="o">=</span><span class="n">x0</span><span class="p">)</span>
+        <span class="n">quantity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;quantity&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">quantity</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;&quot;quantity&quot; has not been defined on this algorithm&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">[</span><span class="n">quantity</span><span class="p">]</span> <span class="o">=</span> <span class="n">x_new</span>
+
+<div class="viewcode-block" id="GenericTransport._solve"><a class="viewcode-back" href="../../../modules/algorithms/generic_transport.html#openpnm.algorithms.GenericTransport._solve">[docs]</a>    <span class="k">def</span> <span class="nf">_solve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">A</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">x0</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sends the A and b matrices to the specified solver, and solves for *x*</span>
+<span class="sd">        given the boundary conditions, and source terms based on the present</span>
+<span class="sd">        value of *x*.  This method does NOT iterate to solve for non-linear</span>
+<span class="sd">        source terms or march time steps.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        A : sparse matrix</span>
+<span class="sd">            The coefficient matrix in sparse format. If not specified, then</span>
+<span class="sd">            it uses  the ``A`` matrix attached to the object.</span>
+<span class="sd">        b : ND-array</span>
+<span class="sd">            The RHS matrix in any format.  If not specified, then it uses</span>
+<span class="sd">            the ``b`` matrix attached to the object.</span>
+<span class="sd">        x0 : ND-array</span>
+<span class="sd">            The initial guess for the solution of Ax = b</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        The solver used here is specified in the ``settings`` attribute of the</span>
+<span class="sd">        algorithm.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">x0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">)</span> <span class="k">if</span> <span class="n">x0</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">x0</span>
+
+        <span class="c1"># Fetch A and b from self if not given, and throw error if not found</span>
+        <span class="n">A</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">A</span> <span class="k">if</span> <span class="n">A</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">A</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span> <span class="k">if</span> <span class="n">b</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">b</span>
+        <span class="k">if</span> <span class="n">A</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">b</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;The A matrix or the b vector not yet built.&#39;</span><span class="p">)</span>
+        <span class="n">A</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">tocsr</span><span class="p">()</span>
+
+        <span class="c1"># Check if A and b are STILL well-defined</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_data_health</span><span class="p">()</span>
+
+        <span class="c1"># Check if A is symmetric</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;solver_type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;cg&#39;</span><span class="p">:</span>
+            <span class="n">is_sym</span> <span class="o">=</span> <span class="n">is_symmetric</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">A</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">is_sym</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;CG solver only works on symmetric matrices.&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Fetch additional parameters for iterative solvers</span>
+        <span class="n">max_it</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;solver_max_iter&quot;</span><span class="p">]</span>
+        <span class="n">atol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_atol</span><span class="p">()</span>
+        <span class="n">rtol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_rtol</span><span class="p">(</span><span class="n">x0</span><span class="o">=</span><span class="n">x0</span><span class="p">)</span>
+
+        <span class="c1"># Fetch solver object based on settings dict.</span>
+        <span class="n">solver</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_solver</span><span class="p">()</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">solver</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="n">atol</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="n">rtol</span><span class="p">,</span> <span class="n">max_it</span><span class="o">=</span><span class="n">max_it</span><span class="p">,</span> <span class="n">x0</span><span class="o">=</span><span class="n">x0</span><span class="p">)</span>
+
+        <span class="c1"># Check solution convergence</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_converged</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Solver did not converge.&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">x</span></div>
+
+    <span class="k">def</span> <span class="nf">_get_solver</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Fetch solver object based on solver settings stored in settings dict.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        The returned object can be called via ``obj.solve(A, b, x0[optional])``</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># SciPy</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;solver_family&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;scipy&#39;</span><span class="p">:</span>
+            <span class="k">def</span> <span class="nf">solver</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">max_it</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">x0</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+                <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                Wrapper method for scipy sparse linear solvers.</span>
+<span class="sd">                &quot;&quot;&quot;</span>
+                <span class="n">ls</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">scipy</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">linalg</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;solver_type&#39;</span><span class="p">])</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;solver_type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;spsolve&quot;</span><span class="p">:</span>
+                    <span class="n">x</span> <span class="o">=</span> <span class="n">ls</span><span class="p">(</span><span class="n">A</span><span class="o">=</span><span class="n">A</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="n">b</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">tol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;solver_tol&quot;</span><span class="p">]</span>
+                    <span class="n">x</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ls</span><span class="p">(</span><span class="n">A</span><span class="o">=</span><span class="n">A</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="n">b</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="n">atol</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">,</span> <span class="n">maxiter</span><span class="o">=</span><span class="n">max_it</span><span class="p">,</span> <span class="n">x0</span><span class="o">=</span><span class="n">x0</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">x</span>
+        <span class="c1"># PETSc</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;solver_family&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;petsc&#39;</span><span class="p">:</span>
+            <span class="k">def</span> <span class="nf">solver</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">max_it</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">x0</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+                <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                Wrapper method for PETSc sparse linear solvers.</span>
+<span class="sd">                &quot;&quot;&quot;</span>
+                <span class="kn">from</span> <span class="nn">openpnm.utils.petsc</span> <span class="kn">import</span> <span class="n">PETScSparseLinearSolver</span> <span class="k">as</span> <span class="n">SLS</span>
+                <span class="n">temp</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;solver_type&quot;</span><span class="p">],</span>
+                        <span class="s2">&quot;preconditioner&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;solver_preconditioner&quot;</span><span class="p">]}</span>
+                <span class="n">ls</span> <span class="o">=</span> <span class="n">SLS</span><span class="p">(</span><span class="n">A</span><span class="o">=</span><span class="n">A</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="n">b</span><span class="p">,</span> <span class="n">settings</span><span class="o">=</span><span class="n">temp</span><span class="p">)</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="n">ls</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">x0</span><span class="o">=</span><span class="n">x0</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="n">atol</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="n">rtol</span><span class="p">,</span> <span class="n">max_it</span><span class="o">=</span><span class="n">max_it</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">x</span>
+        <span class="c1"># PyAMG</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;solver_family&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;pyamg&#39;</span><span class="p">:</span>
+            <span class="k">def</span> <span class="nf">solver</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">max_it</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">x0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+                <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                Wrapper method for PyAMG sparse linear solvers.</span>
+<span class="sd">                &quot;&quot;&quot;</span>
+                <span class="kn">import</span> <span class="nn">pyamg</span>
+                <span class="n">ml</span> <span class="o">=</span> <span class="n">pyamg</span><span class="o">.</span><span class="n">smoothed_aggregation_solver</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="n">ml</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">b</span><span class="o">=</span><span class="n">b</span><span class="p">,</span> <span class="n">x0</span><span class="o">=</span><span class="n">x0</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="n">rtol</span><span class="p">,</span> <span class="n">maxiter</span><span class="o">=</span><span class="n">max_it</span><span class="p">,</span> <span class="n">accel</span><span class="o">=</span><span class="s2">&quot;bicgstab&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">x</span>
+        <span class="c1"># PyPardiso</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;solver_family&#39;</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;pypardiso&#39;</span><span class="p">,</span> <span class="s1">&#39;pardiso&#39;</span><span class="p">]:</span>
+            <span class="k">def</span> <span class="nf">solver</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+                <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                Wrapper method for PyPardiso sparse linear solver.</span>
+<span class="sd">                &quot;&quot;&quot;</span>
+                <span class="kn">import</span> <span class="nn">pypardiso</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="n">pypardiso</span><span class="o">.</span><span class="n">spsolve</span><span class="p">(</span><span class="n">A</span><span class="o">=</span><span class="n">A</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="n">b</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">x</span>
+        <span class="c1"># CuPy</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;solver_family&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;cupy&#39;</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="kn">import</span> <span class="nn">cupy</span>
+                <span class="kn">import</span> <span class="nn">cupyx.scipy.sparse.linalg</span>
+                <span class="n">cupyx</span><span class="o">.</span><span class="n">scipy</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">lschol</span> <span class="o">=</span> <span class="n">cupyx</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">lschol</span>
+            <span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;CuPy missing. Install via: conda install -c conda-forge cupy&quot;</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+            <span class="k">def</span> <span class="nf">solver</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">max_it</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">x0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+                <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                Wrapper method for CuPy sparse linear solvers.</span>
+<span class="sd">                &quot;&quot;&quot;</span>
+                <span class="n">x0</span> <span class="o">=</span> <span class="n">x0</span> <span class="k">if</span> <span class="n">x0</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">cupy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x0</span><span class="p">)</span>
+                <span class="n">b</span> <span class="o">=</span> <span class="n">cupy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+                <span class="n">A</span> <span class="o">=</span> <span class="n">cupy</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+                <span class="n">direct</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;spsolve&quot;</span><span class="p">,</span> <span class="s2">&quot;lsqr&quot;</span><span class="p">,</span> <span class="s2">&quot;lschol&quot;</span><span class="p">]</span>
+                <span class="n">iterative</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;cg&quot;</span><span class="p">,</span> <span class="s2">&quot;gmres&quot;</span><span class="p">]</span>
+                <span class="n">solver_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;solver_type&quot;</span><span class="p">]</span>
+                <span class="n">args</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="n">A</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="n">b</span><span class="p">}</span>
+                <span class="k">if</span> <span class="n">solver_type</span> <span class="ow">in</span> <span class="n">direct</span> <span class="o">+</span> <span class="n">iterative</span><span class="p">:</span>
+                    <span class="n">ls</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">cupyx</span><span class="o">.</span><span class="n">scipy</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">linalg</span><span class="p">,</span> <span class="n">solver_type</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">solver_type</span> <span class="ow">in</span> <span class="n">iterative</span><span class="p">:</span>
+                        <span class="n">args</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;tol&quot;</span><span class="p">:</span> <span class="n">rtol</span><span class="p">,</span> <span class="s2">&quot;maxiter&quot;</span><span class="p">:</span> <span class="n">max_it</span><span class="p">,</span> <span class="s2">&quot;x0&quot;</span><span class="p">:</span> <span class="n">x0</span><span class="p">})</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported solver type: </span><span class="si">{</span><span class="n">solver_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">out</span> <span class="o">=</span> <span class="n">ls</span><span class="p">(</span><span class="o">**</span><span class="n">args</span><span class="p">)</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="n">out</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="k">else</span> <span class="n">out</span>
+                <span class="k">return</span> <span class="n">cupy</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;solver_family&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> not available.&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">solver</span>
+
+    <span class="k">def</span> <span class="nf">_get_atol</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Fetches absolute tolerance for the solver if not ``None``, otherwise</span>
+<span class="sd">        calculates it in a way that meets the given ``tol`` requirements.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        ``atol`` is defined such to satisfy the following stopping criterion:</span>
+<span class="sd">            ``norm(A*x-b)`` &lt;= ``atol``</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">atol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;solver_atol&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">atol</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">tol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;solver_tol&quot;</span><span class="p">]</span>
+            <span class="n">atol</span> <span class="o">=</span> <span class="n">norm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">)</span> <span class="o">*</span> <span class="n">tol</span>
+        <span class="k">return</span> <span class="n">atol</span>
+
+    <span class="k">def</span> <span class="nf">_get_rtol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x0</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Fetches relative tolerance for the solver if not ``None``, otherwise</span>
+<span class="sd">        calculates it in a way that meets the given ``tol`` requirements.</span>
+
+<span class="sd">        ``rtol`` is defined based on the following formula:</span>
+<span class="sd">            ``rtol = residual(@x_final) / residual(@x0)``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">rtol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;solver_rtol&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">rtol</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">res0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_residual</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">x0</span><span class="p">)</span>
+            <span class="n">atol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_atol</span><span class="p">()</span>
+            <span class="n">rtol</span> <span class="o">=</span> <span class="n">atol</span> <span class="o">/</span> <span class="n">res0</span>
+        <span class="k">return</span> <span class="n">rtol</span>
+
+    <span class="k">def</span> <span class="nf">_get_residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate solution residual based on the given ``x`` based on the</span>
+<span class="sd">        following formula:</span>
+<span class="sd">            ``res = norm(A*x - b)``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">quantity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;quantity&#39;</span><span class="p">]</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">quantity</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">norm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">A</span> <span class="o">*</span> <span class="n">x</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_is_converged</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if solution has converged based on the following criterion:</span>
+<span class="sd">            res &lt;= max(norm(b) * tol, atol)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_residual</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">)</span>
+        <span class="c1"># Verify that residual is finite (i.e. not inf/nan)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">res</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Solution diverged: </span><span class="si">{</span><span class="n">res</span><span class="si">:</span><span class="s1">.4e</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Solution diverged, undefined residual: </span><span class="si">{</span><span class="n">res</span><span class="si">:</span><span class="s2">.4e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="c1"># Check convergence</span>
+        <span class="n">tol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;solver_tol&quot;</span><span class="p">]</span>
+        <span class="n">res_tol</span> <span class="o">=</span> <span class="n">norm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">)</span> <span class="o">*</span> <span class="n">tol</span>
+        <span class="n">flag_converged</span> <span class="o">=</span> <span class="kc">True</span> <span class="k">if</span> <span class="n">res</span> <span class="o">&lt;=</span> <span class="n">res_tol</span> <span class="k">else</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="n">flag_converged</span>
+
+    <span class="k">def</span> <span class="nf">_validate_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;quantity&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;&quot;quantity&quot; has not been defined on this algorithm&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;conductance&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;&quot;conductance&quot; has not been defined on this algorithm&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_validate_geometry_health</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">check_geometry_health</span><span class="p">()</span>
+        <span class="n">issues</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">h</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">issues</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">issues</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+                <span class="sa">r</span><span class="s2">&quot;Found the following critical issues with your geometry(ies):&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">issues</span><span class="p">)</span><span class="si">}</span><span class="s2">. Run network.project.check_geometry_health() for&quot;</span>
+                <span class="sa">r</span><span class="s2">&quot; more details.&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_validate_topology_health</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">Ps</span> <span class="o">=</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.bc_rate&#39;</span><span class="p">])</span> <span class="o">+</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.bc_value&#39;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_fully_connected</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="p">,</span> <span class="n">pores_BC</span><span class="o">=</span><span class="n">Ps</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+                <span class="s2">&quot;Your network is clustered. Run h = net.check_network_health() followed&quot;</span>
+                <span class="s2">&quot; by op.topotools.trim(net, pores=h[&#39;trim_pores&#39;]) to make your network&quot;</span>
+                <span class="s2">&quot; fully connected.&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_validate_data_health</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check whether A and b are well-defined, i.e. doesn&#39;t contain nans.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+        <span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">unique</span>
+
+        <span class="c1"># Validate network topology health</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_topology_health</span><span class="p">()</span>
+        <span class="c1"># Short-circuit subsequent checks if data are healthy</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="c1"># Validate geometry health</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_geometry_health</span><span class="p">()</span>
+
+        <span class="c1"># Fetch phase/geometries/physics</span>
+        <span class="n">prj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">project</span>
+        <span class="n">phase</span> <span class="o">=</span> <span class="n">prj</span><span class="o">.</span><span class="n">find_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">geometries</span> <span class="o">=</span> <span class="n">prj</span><span class="o">.</span><span class="n">geometries</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+        <span class="n">physics</span> <span class="o">=</span> <span class="n">prj</span><span class="o">.</span><span class="n">physics</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+
+        <span class="c1"># Locate the root of NaNs</span>
+        <span class="n">unaccounted_nans</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">geom</span><span class="p">,</span> <span class="n">phys</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">geometries</span><span class="p">,</span> <span class="n">physics</span><span class="p">):</span>
+            <span class="n">objs</span> <span class="o">=</span> <span class="p">[</span><span class="n">phase</span><span class="p">,</span> <span class="n">geom</span><span class="p">,</span> <span class="n">phys</span><span class="p">]</span>
+            <span class="c1"># Generate global dependency graph</span>
+            <span class="n">dg</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">compose_all</span><span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">dependency_graph</span><span class="p">(</span><span class="n">deep</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">objs</span><span class="p">])</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># maps prop -&gt; obj.name</span>
+            <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">objs</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">check_data_health</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="s2">&quot;Has NaNs&quot;</span> <span class="ow">in</span> <span class="n">v</span><span class="p">:</span>
+                        <span class="c1"># FIXME: The next line doesn&#39;t cover multi-level props</span>
+                        <span class="n">base_prop</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">k</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[:</span><span class="mi">2</span><span class="p">])</span>
+                        <span class="k">if</span> <span class="n">base_prop</span> <span class="ow">in</span> <span class="n">dg</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+                            <span class="n">d</span><span class="p">[</span><span class="n">base_prop</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">name</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">unaccounted_nans</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">base_prop</span><span class="p">)</span>
+            <span class="c1"># Generate dependency subgraph for props with NaNs</span>
+            <span class="n">dg_nans</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">subgraph</span><span class="p">(</span><span class="n">dg</span><span class="p">,</span> <span class="n">d</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+            <span class="c1"># Find prop(s)/object(s) from which NaNs have propagated</span>
+            <span class="n">root_props</span> <span class="o">=</span> <span class="p">[</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">nx</span><span class="o">.</span><span class="n">ancestors</span><span class="p">(</span><span class="n">dg_nans</span><span class="p">,</span> <span class="n">n</span><span class="p">)]</span>
+            <span class="n">root_objs</span> <span class="o">=</span> <span class="n">unique</span><span class="p">([</span><span class="n">d</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">nx</span><span class="o">.</span><span class="n">topological_sort</span><span class="p">(</span><span class="n">dg_nans</span><span class="p">)])</span>
+            <span class="c1"># Throw error with helpful info on how to resolve the issue</span>
+            <span class="k">if</span> <span class="n">root_props</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+                    <span class="sa">r</span><span class="s2">&quot;Found NaNs in A matrix, possibly caused by NaNs in&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root_props</span><span class="p">)</span><span class="si">}</span><span class="s2">. The issue might get resolved if you call&quot;</span>
+                    <span class="sa">r</span><span class="s2">&quot; regenerate_models on the following object(s):&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root_objs</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Raise Exception for unaccounted properties</span>
+        <span class="k">if</span> <span class="n">unaccounted_nans</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+                <span class="sa">r</span><span class="s2">&quot;Found NaNs in A matrix, possibly caused by NaNs in&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">unaccounted_nans</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Raise Exception otherwise if root cannot be found</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+            <span class="s2">&quot;Found NaNs in A matrix but couldn&#39;t locate the root object(s) that might&quot;</span>
+            <span class="s2">&quot; have caused it. It&#39;s likely that disabling caching of A matrix via&quot;</span>
+            <span class="s2">&quot; alg.settings[&#39;cache_A&#39;] = False after instantiating the algorithm object&quot;</span>
+            <span class="s2">&quot; fixes the problem.&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="GenericTransport.results"><a class="viewcode-back" href="../../../modules/algorithms/generic_transport.html#openpnm.algorithms.GenericTransport.results">[docs]</a>    <span class="k">def</span> <span class="nf">results</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Fetches the calculated quantity from the algorithm and returns it as</span>
+<span class="sd">        an array.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">quantity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;quantity&#39;</span><span class="p">]</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="n">quantity</span><span class="p">:</span> <span class="bp">self</span><span class="p">[</span><span class="n">quantity</span><span class="p">]}</span>
+        <span class="k">return</span> <span class="n">d</span></div>
+
+<div class="viewcode-block" id="GenericTransport.rate"><a class="viewcode-back" href="../../../modules/algorithms/generic_transport.html#openpnm.algorithms.GenericTransport.rate">[docs]</a>    <span class="k">def</span> <span class="nf">rate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="p">[],</span> <span class="n">throats</span><span class="o">=</span><span class="p">[],</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;group&#39;</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculates the net rate of material moving into a given set of pores or</span>
+<span class="sd">        throats</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        pores : array_like</span>
+<span class="sd">            The pores for which the rate should be calculated</span>
+<span class="sd">        throats : array_like</span>
+<span class="sd">            The throats through which the rate should be calculated</span>
+<span class="sd">        mode : string, optional</span>
+<span class="sd">            Controls how to return the rate. Options are:</span>
+<span class="sd">            - *&#39;group&#39;*: (default) Returns the cumulative rate of material</span>
+<span class="sd">            moving into the given set of pores</span>
+<span class="sd">            - *&#39;single&#39;* : Calculates the rate for each pore individually</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        If ``pores`` are specified, then the returned values indicate the</span>
+<span class="sd">        net rate of material exiting the pore or pores.  Thus a positive</span>
+<span class="sd">        rate indicates material is leaving the pores, and negative values</span>
+<span class="sd">        mean material is entering.</span>
+
+<span class="sd">        If ``throats`` are specified the rate is calculated in the direction of</span>
+<span class="sd">        the gradient, thus is always positive.</span>
+
+<span class="sd">        If ``mode`` is &#39;single&#39; then the cumulative rate through the given</span>
+<span class="sd">        pores (or throats) are returned as a vector, if ``mode`` is &#39;group&#39;</span>
+<span class="sd">        then the individual rates are summed and returned as a scalar.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">pores</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_indices</span><span class="p">(</span><span class="n">pores</span><span class="p">)</span>
+        <span class="n">throats</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_indices</span><span class="p">(</span><span class="n">throats</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">throats</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">pores</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Must specify either pores or throats, not both&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">throats</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="n">pores</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Must specify either pores or throats&#39;</span><span class="p">)</span>
+
+        <span class="n">network</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">network</span>
+        <span class="n">phase</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">phases</span><span class="p">()[</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;phase&#39;</span><span class="p">]]</span>
+        <span class="n">g</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;conductance&#39;</span><span class="p">]]</span>
+        <span class="n">quantity</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;quantity&#39;</span><span class="p">]]</span>
+
+        <span class="n">P12</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">]</span>
+        <span class="n">X12</span> <span class="o">=</span> <span class="n">quantity</span><span class="p">[</span><span class="n">P12</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">g</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">Nt</span><span class="p">:</span>
+            <span class="n">g</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>    <span class="c1"># Make conductance a Nt by 2 matrix</span>
+        <span class="c1"># The next line is critical for rates to be correct</span>
+        <span class="n">g</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">flip</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">Qt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">g</span><span class="o">*</span><span class="n">X12</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">throats</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+            <span class="n">R</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">absolute</span><span class="p">(</span><span class="n">Qt</span><span class="p">[</span><span class="n">throats</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;group&#39;</span><span class="p">:</span>
+                <span class="n">R</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">R</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">pores</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+            <span class="n">Qp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">Np</span><span class="p">,</span> <span class="p">))</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">add</span><span class="o">.</span><span class="n">at</span><span class="p">(</span><span class="n">Qp</span><span class="p">,</span> <span class="n">P12</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="o">-</span><span class="n">Qt</span><span class="p">)</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">add</span><span class="o">.</span><span class="n">at</span><span class="p">(</span><span class="n">Qp</span><span class="p">,</span> <span class="n">P12</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">Qt</span><span class="p">)</span>
+            <span class="n">R</span> <span class="o">=</span> <span class="n">Qp</span><span class="p">[</span><span class="n">pores</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;group&#39;</span><span class="p">:</span>
+                <span class="n">R</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">R</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">ndmin</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">set_solver</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">solver_family</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">solver_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">preconditioner</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">tol</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">atol</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">rtol</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">max_iter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the solver to be used to solve the algorithm.</span>
+
+<span class="sd">        The values of those fields that are not provided will be retrieved from</span>
+<span class="sd">        algorithm settings dict.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        solver_family : string, optional</span>
+<span class="sd">            Solver family, could be &quot;scipy&quot;, &quot;petsc&quot;, and &quot;pyamg&quot;.</span>
+<span class="sd">        solver_type : string, optional</span>
+<span class="sd">            Solver type, could be &quot;spsolve&quot;, &quot;cg&quot;, &quot;gmres&quot;, etc.</span>
+<span class="sd">        preconditioner : string, optional</span>
+<span class="sd">            Preconditioner for iterative solvers. The default is &quot;jacobi&quot;.</span>
+<span class="sd">        tol : float, optional</span>
+<span class="sd">            Tolerance for iterative solvers, loosely related to number of</span>
+<span class="sd">            significant digits in data.</span>
+<span class="sd">        atol : float, optional</span>
+<span class="sd">            Absolute tolerance for iterative solvers, such that</span>
+<span class="sd">            norm(Ax-b) &lt;= atol holds.</span>
+<span class="sd">        rtol : float, optional</span>
+<span class="sd">            Relative tolerance for iterative solvers, loosely related to how</span>
+<span class="sd">            many orders of magnitude reduction in residual is desired, compared</span>
+<span class="sd">            to its value at initial guess.</span>
+<span class="sd">        max_iter : int, optional</span>
+<span class="sd">            Maximum number of iterations</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">settings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span>
+        <span class="c1"># Preserve pre-set values, if any</span>
+        <span class="k">if</span> <span class="n">solver_family</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">solver_family</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;solver_family&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">solver_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">solver_type</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;solver_type&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">preconditioner</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">preconditioner</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;solver_preconditioner&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">tol</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">tol</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;solver_tol&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">atol</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">atol</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;solver_atol&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">rtol</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">rtol</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;solver_rtol&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">max_iter</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">max_iter</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;solver_max_iter&quot;</span><span class="p">]</span>
+        <span class="c1"># Update settings on algorithm object</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;solver_family&quot;</span><span class="p">:</span> <span class="n">solver_family</span><span class="p">,</span>
+                <span class="s2">&quot;solver_type&quot;</span><span class="p">:</span> <span class="n">solver_type</span><span class="p">,</span>
+                <span class="s2">&quot;solver_preconditioner&quot;</span><span class="p">:</span> <span class="n">preconditioner</span><span class="p">,</span>
+                <span class="s2">&quot;solver_tol&quot;</span><span class="p">:</span> <span class="n">tol</span><span class="p">,</span>
+                <span class="s2">&quot;solver_atol&quot;</span><span class="p">:</span> <span class="n">atol</span><span class="p">,</span>
+                <span class="s2">&quot;solver_rtol&quot;</span><span class="p">:</span> <span class="n">rtol</span><span class="p">,</span>
+                <span class="s2">&quot;solver_max_iter&quot;</span><span class="p">:</span> <span class="n">max_iter</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="GenericTransport._calc_eff_prop"><a class="viewcode-back" href="../../../modules/algorithms/generic_transport.html#openpnm.algorithms.GenericTransport._calc_eff_prop">[docs]</a>    <span class="k">def</span> <span class="nf">_calc_eff_prop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inlets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">outlets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                       <span class="n">domain_area</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">domain_length</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate the effective transport through the network</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        inlets : array_like</span>
+<span class="sd">            The pores where the inlet boundary conditions were applied.  If</span>
+<span class="sd">            not given an attempt is made to infer them from the algorithm.</span>
+<span class="sd">        outlets : array_like</span>
+<span class="sd">            The pores where the outlet boundary conditions were applied.  If</span>
+<span class="sd">            not given an attempt is made to infer them from the algorithm.</span>
+<span class="sd">        domain_area : scalar</span>
+<span class="sd">            The area of the inlet and/or outlet face (which shold match)</span>
+<span class="sd">        domain_length : scalar</span>
+<span class="sd">            The length of the domain between the inlet and outlet faces</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        The effective transport property through the network</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;quantity&#39;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;The algorithm has not been run yet. Cannot &#39;</span>
+                            <span class="o">+</span> <span class="s1">&#39;calculate effective property.&#39;</span><span class="p">)</span>
+
+        <span class="n">Ps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.bc_value&#39;</span><span class="p">])</span>
+        <span class="n">BCs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.bc_value&#39;</span><span class="p">][</span><span class="n">Ps</span><span class="p">])</span>
+        <span class="n">Dx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">BCs</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">inlets</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">inlets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_inlets</span><span class="p">()</span>
+        <span class="n">flow</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rate</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">inlets</span><span class="p">)</span>
+        <span class="c1"># Fetch area and length of domain</span>
+        <span class="k">if</span> <span class="n">domain_area</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">domain_area</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_domain_area</span><span class="p">(</span><span class="n">inlets</span><span class="o">=</span><span class="n">inlets</span><span class="p">,</span>
+                                                <span class="n">outlets</span><span class="o">=</span><span class="n">outlets</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">domain_length</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">domain_length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_domain_length</span><span class="p">(</span><span class="n">inlets</span><span class="o">=</span><span class="n">inlets</span><span class="p">,</span>
+                                                    <span class="n">outlets</span><span class="o">=</span><span class="n">outlets</span><span class="p">)</span>
+        <span class="n">D</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">flow</span><span class="p">)</span><span class="o">*</span><span class="n">domain_length</span><span class="o">/</span><span class="n">domain_area</span><span class="o">/</span><span class="n">Dx</span>
+        <span class="k">return</span> <span class="n">D</span></div>
+
+    <span class="k">def</span> <span class="nf">_get_inlets</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Determine boundary conditions by analyzing algorithm object</span>
+        <span class="n">Ps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.bc_value&#39;</span><span class="p">])</span>
+        <span class="n">BCs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.bc_value&#39;</span><span class="p">][</span><span class="n">Ps</span><span class="p">])</span>
+        <span class="n">inlets</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.bc_value&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span><span class="n">BCs</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">inlets</span>
+
+    <span class="k">def</span> <span class="nf">_get_outlets</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Determine boundary conditions by analyzing algorithm object</span>
+        <span class="n">Ps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.bc_value&#39;</span><span class="p">])</span>
+        <span class="n">BCs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.bc_value&#39;</span><span class="p">][</span><span class="n">Ps</span><span class="p">])</span>
+        <span class="n">outlets</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.bc_value&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">amin</span><span class="p">(</span><span class="n">BCs</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">outlets</span>
+
+    <span class="k">def</span> <span class="nf">_get_domain_area</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inlets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">outlets</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Attempting to estimate inlet area...will be low&#39;</span><span class="p">)</span>
+        <span class="n">network</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">network</span>
+        <span class="c1"># Abort if network is not 3D</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ptp</span><span class="p">(</span><span class="n">network</span><span class="p">[</span><span class="s1">&#39;pore.coords&#39;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;The network is not 3D, specify area manually&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">inlets</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">inlets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_inlets</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">outlets</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">outlets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_outlets</span><span class="p">()</span>
+        <span class="n">inlets</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="s1">&#39;pore.coords&#39;</span><span class="p">][</span><span class="n">inlets</span><span class="p">]</span>
+        <span class="n">outlets</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="s1">&#39;pore.coords&#39;</span><span class="p">][</span><span class="n">outlets</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">iscoplanar</span><span class="p">(</span><span class="n">inlets</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Detected inlet pores are not coplanar&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">iscoplanar</span><span class="p">(</span><span class="n">outlets</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Detected outlet pores are not coplanar&#39;</span><span class="p">)</span>
+        <span class="n">Nin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ptp</span><span class="p">(</span><span class="n">inlets</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">Nin</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Detected inlets are not oriented along a &#39;</span>
+                           <span class="o">+</span> <span class="s1">&#39;principle axis&#39;</span><span class="p">)</span>
+        <span class="n">Nout</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ptp</span><span class="p">(</span><span class="n">outlets</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">Nout</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Detected outlets are not oriented along a &#39;</span>
+                           <span class="o">+</span> <span class="s1">&#39;principle axis&#39;</span><span class="p">)</span>
+        <span class="n">hull_in</span> <span class="o">=</span> <span class="n">ConvexHull</span><span class="p">(</span><span class="n">points</span><span class="o">=</span><span class="n">inlets</span><span class="p">[:,</span> <span class="n">Nin</span><span class="p">])</span>
+        <span class="n">hull_out</span> <span class="o">=</span> <span class="n">ConvexHull</span><span class="p">(</span><span class="n">points</span><span class="o">=</span><span class="n">outlets</span><span class="p">[:,</span> <span class="n">Nout</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">hull_in</span><span class="o">.</span><span class="n">volume</span> <span class="o">!=</span> <span class="n">hull_out</span><span class="o">.</span><span class="n">volume</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Inlet and outlet faces are different area&#39;</span><span class="p">)</span>
+        <span class="n">area</span> <span class="o">=</span> <span class="n">hull_in</span><span class="o">.</span><span class="n">volume</span>  <span class="c1"># In 2D volume=area, area=perimeter</span>
+        <span class="k">return</span> <span class="n">area</span>
+
+    <span class="k">def</span> <span class="nf">_get_domain_length</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inlets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">outlets</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Attempting to estimate domain length...&#39;</span>
+                       <span class="o">+</span> <span class="s1">&#39;could be low if boundary pores were not added&#39;</span><span class="p">)</span>
+        <span class="n">network</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">network</span>
+        <span class="k">if</span> <span class="n">inlets</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">inlets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_inlets</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">outlets</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">outlets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_outlets</span><span class="p">()</span>
+        <span class="n">inlets</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="s1">&#39;pore.coords&#39;</span><span class="p">][</span><span class="n">inlets</span><span class="p">]</span>
+        <span class="n">outlets</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="s1">&#39;pore.coords&#39;</span><span class="p">][</span><span class="n">outlets</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">iscoplanar</span><span class="p">(</span><span class="n">inlets</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Detected inlet pores are not coplanar&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">iscoplanar</span><span class="p">(</span><span class="n">outlets</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Detected inlet pores are not coplanar&#39;</span><span class="p">)</span>
+        <span class="n">tree</span> <span class="o">=</span> <span class="n">cKDTree</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">inlets</span><span class="p">)</span>
+        <span class="n">Ls</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">outlets</span><span class="p">)[</span><span class="mi">0</span><span class="p">]))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">Ls</span><span class="p">,</span> <span class="n">Ls</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;A unique value of length could not be found&#39;</span><span class="p">)</span>
+        <span class="n">length</span> <span class="o">=</span> <span class="n">Ls</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">length</span></div>
+</pre></div>
+
+              </div>
+              
+              
+          </main>
+          
+
+      </div>
+    </div>
+  
+  <script src="../../../_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
+<footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2021 OpenPNM Team.<br>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br>
+</p>
+    </div>
+    
+  </div>
+</footer>
+  </body>
+</html>
