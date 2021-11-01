@@ -13,7 +13,10 @@ class SettingsData(HasTraits):
 class SettingsAttr:
 
     def __init__(self, settings={}, defaults=None):
-        super().__setattr__('_settings', defaults)
+        if defaults is not None:
+            super().__setattr__('_settings', defaults)
+        else:
+            super().__setattr__('_settings', SettingsData())
         for k, v in settings.items():
             setattr(self, k, v)
 
