@@ -7,10 +7,9 @@ docstr = Docorator()
 class SettingsData(HasTraits):
 
     def _attrs(self):
-        a = dir(self)
-        b = dir(HasTraits())
-        temp = sorted(list(set(a).difference(set(b))))
+        temp = list(self.__base_traits__.keys())
         temp = [i for i in temp if not i.startswith('_')]
+        temp = [i for i in temp if not i.startswith('trait')]
         return temp
 
 
