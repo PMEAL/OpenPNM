@@ -42,13 +42,10 @@ class SettingsAttr:
         allows for combining multiple objects into one using the ``_update``
         method.
         """
-        if hasattr(settings, 'traits'):
-            # If HasTraits object, assign it to _settings
-            super().__setattr__('_settings', settings)
-        else:
-            # Otherwise add an empty HasTraits object then fill it
-            super().__setattr__('_settings', HasTraits())
-            self._update(settings)
+        # Add blank HasTraits object to self._settings
+        super().__setattr__('_settings', HasTraits())
+        self._settings.__doc__ = settings.__doc__
+        self._update(settings)
 
     def __setattr__(self, attr, val):
         setattr(self._settings, attr, val)
@@ -61,6 +58,7 @@ class SettingsAttr:
 
     def __setitem__(self, key, value):
         setattr(self._settings, key, value)
+
     def __dir__(self):
         return self._settings.visible_traits()
 
