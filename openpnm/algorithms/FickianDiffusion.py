@@ -70,7 +70,7 @@ class FickianDiffusion(ReactiveTransport):
     """
 
     def __init__(self, settings={}, **kwargs):
-        super().__init__(**kwargs)
+        super().__init__(settings=settings, **kwargs)
         self.settings._update_settings_and_docs(FickianDiffusionSettings())
         self.settings.update(settings)
 

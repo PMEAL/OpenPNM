@@ -32,7 +32,7 @@ class SettingsGenericTransport(SettingsGenericAlgorithm):
 
 
 @docstr.get_sections(base='GenericTransportSettings',
-                      sections=docstr.all_sections)
+                     sections=docstr.all_sections)
 @docstr.dedent
 class GenericTransportSettings(GenericSettings):
     r"""
@@ -207,7 +207,8 @@ class GenericTransport(GenericAlgorithm):
         if network is not None:
             project = network.project
         super().__init__(project=project, **kwargs)
-        self.sets = SettingsAttr(settings=settings, defaults=SettingsGenericTransport())
+        self.sets = SettingsAttr(SettingsGenericTransport())
+        self.sets._update(settings)
         self['pore.bc_rate'] = np.nan
         self['pore.bc_value'] = np.nan
 
