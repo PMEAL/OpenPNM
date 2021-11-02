@@ -67,6 +67,11 @@ class SettingsAttr:
     def __getattr__(self, attr):
         return getattr(self._settings, attr)
 
+    def __getitem__(self, key):
+        return getattr(self._settings, key)
+
+    def __setitem__(self, key, value):
+        setattr(self._settings, key, value)
     def __dir__(self):
         return self._settings.visible_traits()
 
@@ -93,7 +98,7 @@ class SettingsAttr:
         init.
 
         """
-        if hasattr(settings, 'items'):
+        if hasattr(settings, 'items'): # Dictionary
             for k, v in settings.items():
                 self._settings.add_trait(k, Trait(v, v.__class__))
         elif hasattr(settings, 'visible_traits'):
