@@ -11,10 +11,13 @@ import scipy.sparse
 from openpnm.core import Base
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)
-import petsc4py
-# Next line must be before importing PETSc
-petsc4py.init(sys.argv)
-from petsc4py import PETSc
+try:
+    import petsc4py
+    # Next line must be before importing PETSc
+    petsc4py.init(sys.argv)
+    from petsc4py import PETSc
+except ModuleNotFoundError:
+    pass
 
 
 class PETScSparseLinearSolver(Base):
