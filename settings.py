@@ -59,24 +59,24 @@ class SettingsTest:
 
         Notes
         -----
-        In the case of ``dict`` or ``dataclass``-like objects, the
-        data-types for the attributes are inferred from the values
-        recieved. In the case of a proper ``SettingsData`` object,
-        the ``__doc__`` attribute of the received object is adopted
-        by the wrapper class.
+        In the case of ``dict`` or ``dataclass``-like objects, the data-types
+        for the attributes are inferred from the values recieved. In the case
+        of a ``SettingsData`` or ``dataclass``-like object, the ``__doc__``
+        attribute of the received object is adopted by the wrapper class.
 
         """
-        if hasattr(settings, 'visible_traits'):
-            for k in settings.visible_traits():
-                self._settings.add_trait(k, getattr(settings, k))
-                self._settings.__doc__ = settings.__doc__
-        elif hasattr(settings, 'items'):
+        if hasattr(settings, 'items'):
             for k, v in settings.items():
                 self._settings.add_trait(k, Trait(v, v.__class__))
+        elif hasattr(settings, 'visible_traits'):
+            for k in settings.visible_traits():
+                self._settings.add_trait(k, getattr(settings, k))
+            self._settings.__doc__ = settings.__doc__
         else:
             attrs = [i for i in dir(settings) if not i.startswith('_')]
             for k in attrs:
                 self._settings.add_trait(k, getattr(settings, k))
+            self._settings.__doc__ = settings.__doc__
 
     def __str__(self):
         d = PrintableDict()
