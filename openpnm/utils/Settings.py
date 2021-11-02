@@ -109,3 +109,47 @@ class SettingsAttr:
     @property
     def __doc__(self):
         return self._settings.__doc__
+
+
+if __name__ == "__main__":
+
+    from traits.api import Int, TraitError
+
+
+    class S1(SettingsData):
+        r"""
+        This is a docstring
+        """
+        a = Int(1)
+        b = Int(2)
+
+    sets1 = SettingsAttr(S1())
+
+    class S2:
+        a = 2
+        b = 3
+
+    sets2 = SettingsAttr(S2())
+
+    class S3(S2):
+        b = 3
+        c = 4
+
+    sets3 = SettingsAttr(S3())
+    sets3.b = 44
+
+    assert sets2.b != sets3.b
+
+    try:
+        sets3.b = 'nope'
+    except TraitError as e:
+        print(e)
+
+
+
+
+
+
+
+
+
