@@ -10,7 +10,8 @@ public/
 build/
 dist/
 
-*/.ipynb_checkpoints/
+# ** means any number of levels, * means only one
+**/.ipynb_checkpoints/*.ipynb
 
 *.vtp
 *.pnm
