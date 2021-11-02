@@ -1,19 +1,8 @@
 from traits.api import HasTraits, Trait
-from openpnm.utils import Docorator, PrintableDict
-docstr = Docorator()
+from openpnm.utils import PrintableDict
 
 
 class SettingsData(HasTraits):
-
-    def __dir__(self):
-        return self._attrs()
-
-    def _attrs(self):
-        temp = list(self.__base_traits__.keys())
-        temp.extend(list(self.__dict__.keys()))
-        temp = [i for i in temp if not i.startswith('_')]
-        temp = [i for i in temp if not i.startswith('trait')]
-        return temp
 
     def __str__(self):
         d = PrintableDict()
