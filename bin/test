@@ -18,9 +18,10 @@ if 'cov' in sys.argv:
 if 'nbval' in sys.argv:
     args.append('--nbval')
 
-if 'ignore-examples' in sys.argv:
+if 'min' in sys.argv:
     args.extend(['--ignore=examples/'])
     args.extend(['--ignore=scripts/'])
 
 exit_code = pytest.main(args)
 exit(exit_code)
+
