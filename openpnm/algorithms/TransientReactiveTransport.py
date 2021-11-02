@@ -48,7 +48,6 @@ class TransientReactiveTransportSettings(GenericSettings):
     """
 
     phase = None
-    saveat = None
     pore_volume = 'pore.volume'
 
 
@@ -65,7 +64,7 @@ class TransientReactiveTransport(ReactiveTransport):
 
     Notes
     -----
-    - Either a Network or a Project must be specified.
+    Either a Network or a Project must be specified.
 
     """
 
@@ -79,15 +78,37 @@ class TransientReactiveTransport(ReactiveTransport):
 
     def run(self, x0, tspan, saveat=None, integrator=None):
         """
+        Runs the transient algorithm and returns the solution.
+
         Parameters
         ----------
         x0 : ndarray or float
             Array (or scalar) containing initial condition values.
+        tspan : array_like
+            Tuple (or array) containing the integration time span.
+        saveat : array_like or float, optional
+            If an array is passed, it signifies the time points at which
+            the solution is to be stored, and if a scalar is passed, it
+            refers to the interval at which the solution is to be stored.
+        integrator : Integrator, optional
+            Integrator object which will be used to to the time stepping.
+            Can be instantiated using openpnm.integrators module.
+
+        Returns
+        -------
+        TransientSolution
+            The solution object, which is basically a numpy array with
+            the added functionality that it can be called to return the
+            solution at intermediate times (i.e., those not stored in the
+            solution object).
 
         """
         logger.info('Running TransientTransport')
+        if np.isscalar(saveat):
+            saveat = np.arange(*tspan, saveat)
+        if (saveat is not None) and (tspan[1] not in saveat):
+            saveat = np.hstack((saveat, [tspan[1]]))
         integrator = ScipyRK45() if integrator is None else integrator
-        saveat = np.arange(*tspan, saveat) if np.isscalar(saveat) else saveat
         # Perform pre-solve validations
         self._validate_settings()
         self._validate_data_health()

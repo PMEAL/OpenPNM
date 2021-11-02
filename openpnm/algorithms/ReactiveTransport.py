@@ -126,7 +126,7 @@ class ReactiveTransport(GenericTransport):
             ===========  =====================================================
             mode         meaning
             ===========  =====================================================
-            'merge'      Adds supplied source term to already existing
+            'add'        Adds supplied source term to already existing
                          ones.
             'overwrite'  Deletes all existing source terms of the given
                          ``propname`` then adds the specified new ones.
