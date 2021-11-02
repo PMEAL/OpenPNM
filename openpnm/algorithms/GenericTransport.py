@@ -16,8 +16,8 @@ docstr = Docorator()
 logger = logging.getLogger(__name__)
 
 
-@docstr.get_sections(base='SettingsGenericTransport', sections=docstr.all_sections)
-@docstr.dedent
+# @docstr.get_sections(base='SettingsGenericTransport', sections=docstr.all_sections)
+# @docstr.dedent
 class SettingsGenericTransport(SettingsGenericAlgorithm):
     r"""
 

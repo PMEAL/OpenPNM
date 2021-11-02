@@ -7,8 +7,8 @@ docstr = Docorator()
 logger = logging.getLogger(__name__)
 
 
-@docstr.get_sections(base='SettingsReactiveTransport', sections=docstr.all_sections)
-@docstr.dedent
+# @docstr.get_sections(base='SettingsReactiveTransport', sections=docstr.all_sections)
+# @docstr.dedent
 class SettingsReactiveTransport(SettingsGenericTransport):
     r"""
 
