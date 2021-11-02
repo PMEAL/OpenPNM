@@ -27,14 +27,12 @@ class ReactiveTransportTest:
         self.alg.settings.update({
             'conductance': "throat.cond",
             'quantity': "pore.test",
-            'nlin_max_iter': 123,
-            'relaxation_source': 1.23,
+            'newton_maxiter': 123,
             'relaxation_quantity': 3.21
         })
         assert self.alg.settings["conductance"] == "throat.cond"
         assert self.alg.settings["quantity"] == "pore.test"
-        assert self.alg.settings["nlin_max_iter"] == 123
-        assert self.alg.settings["relaxation_source"] == 1.23
+        assert self.alg.settings["newton_maxiter"] == 123
         assert self.alg.settings["relaxation_quantity"] == 3.21
         self.alg.settings = temp
 
@@ -135,9 +133,7 @@ class ReactiveTransportTest:
                             propname='pore.reaction',
                             mode='overwrite')
         assert self.alg['pore.reaction'].sum() == 3
-        self.alg.set_source(pores=[2, 3, 4],
-                            propname='pore.reaction',
-                            mode='merge')
+        self.alg.set_source(pores=[2, 3, 4], propname='pore.reaction', mode='add')
         assert self.alg['pore.reaction'].sum() == 5
 
     def test_remove_source(self):
@@ -168,7 +164,7 @@ class ReactiveTransportTest:
         self.alg.reset(bcs=True, source_terms=True)
         self.alg.settings.update({'conductance': 'throat.diffusive_conductance',
                                   'quantity': 'pore.concentration',
-                                  'nlin_max_iter': 25})
+                                  'newton_maxiter': 50})
         self.alg.set_source(pores=self.net.pores('bottom'), propname='pore.reaction')
         self.alg.set_value_BC(pores=self.net.pores('top'), values=1.0)
         self.alg.settings.update({
@@ -182,7 +178,7 @@ class ReactiveTransportTest:
         self.alg.reset(bcs=True, source_terms=True)
         self.alg.settings.update({'conductance': 'throat.diffusive_conductance',
                                   'quantity': 'pore.concentration',
-                                  'nlin_max_iter': 2})
+                                  'newton_maxiter': 2})
         self.alg.set_source(pores=self.net.pores('bottom'), propname='pore.reaction')
         self.alg.set_value_BC(pores=self.net.pores('top'), values=1.0)
         self.alg.settings.update({
@@ -216,7 +212,7 @@ class ReactiveTransportTest:
         shape = op.topotools.get_shape(self.net)
         c_avg = self.alg["pore.concentration"].reshape(shape).mean(axis=(0, 2))
         desired = [10.0, 8.18175755, 5.42194391, 0.0]
-        assert_allclose(c_avg, desired)
+        assert_allclose(c_avg, desired, rtol=1e-5)
 
     def test_reset(self):
         self.alg.reset(bcs=True, source_terms=True)
