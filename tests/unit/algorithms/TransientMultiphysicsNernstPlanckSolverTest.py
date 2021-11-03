@@ -2,8 +2,10 @@ import numpy as np
 import openpnm as op
 from openpnm.phases import mixtures
 from numpy.testing import assert_allclose
+import pytest
 
 
+@pytest.mark.skip(reason="Needs to be refactored using Integrators")
 class TransientMultiphysicsNernstPlanckSolverTest:
 
     def setup_class(self):
