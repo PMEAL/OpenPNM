@@ -187,7 +187,7 @@ class ReactiveTransport(GenericTransport):
         geometries = self.project.geometries().values()
         # Update 'quantity' on phase with the most recent value
         quantity = self.settings['quantity']
-        phase[quantity] = self[quantity]
+        phase[quantity] = self.x
         # Regenerate all associated objects
         phase.regenerate_models(propnames=iterative_props)
         for geom in geometries:
@@ -245,22 +245,22 @@ class ReactiveTransport(GenericTransport):
 
         """
         w = self.settings['relaxation_quantity']
-        quantity = self.settings['quantity']
         maxiter = self.settings['newton_maxiter']
         f_rtol = self.settings['f_rtol']
         x_rtol = self.settings['f_xtol']
-        xold = self[quantity]
+        xold = self.x
+        dx = self.x - xold
         condition = TerminationCondition(f_rtol=f_rtol, x_rtol=x_rtol)
 
         for i in range(maxiter):
-            dx = self[quantity] - xold
             res = self._get_residual()
             self.is_converged = condition.check(f=res, x=xold, dx=dx)
             if self.is_converged:
                 logger.info(f'Solution converged, residual norm: {norm(res):.4e}')
                 return
             super()._run_special(solver=solver, x0=xold, w=w)
-            xold = self[quantity]
+            dx = self.x - xold
+            xold = self.x
             logger.info(f'Iteration #{i:<4d} | Residual norm: {norm(res):.4e}')
         logger.critical(f"{self.name} didn't converge after {maxiter} iterations")
 
@@ -303,8 +303,7 @@ class ReactiveTransport(GenericTransport):
 
         """
         if x is None:
-            quantity = self.settings['quantity']
-            x = self[quantity]
+            x = self.x
         return self.A * x - self.b
 
     @docstr.dedent

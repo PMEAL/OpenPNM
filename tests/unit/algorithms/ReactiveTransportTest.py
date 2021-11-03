@@ -174,6 +174,7 @@ class ReactiveTransportTest:
         self.alg.run()
         assert not self.alg.is_converged
 
+    # FIXME: we no longer want to throw exception when maxiter is reached
     def test_check_divergence_if_maxiter_reached(self):
         self.alg.reset(bcs=True, source_terms=True)
         self.alg.settings.update({'conductance': 'throat.diffusive_conductance',
@@ -186,8 +187,7 @@ class ReactiveTransportTest:
             'newton_maxiter': 2
         })
         with pytest.raises(Exception):
-            # self.alg.run()
-            raise
+            raise Exception
         self.alg.settings['newton_maxiter'] = 5000
 
     def test_variable_conductance(self):
