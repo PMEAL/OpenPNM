@@ -4,6 +4,7 @@ import openpnm as op
 from numpy.testing import assert_allclose
 
 
+@pytest.mark.skip(reason="Needs to be refactored using Integrators")
 class NernstPlanckTest:
 
     def setup_class(self):
