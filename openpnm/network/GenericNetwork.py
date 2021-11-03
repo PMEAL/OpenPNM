@@ -541,7 +541,7 @@ class GenericNetwork(ParamMixin, Base, ModelsMixin, LegacyMixin, LabelMixin):
         return Ts
 
     def find_neighbor_pores(self, pores, mode='union', flatten=True,
-                            include_input=False):
+                            include_input=False,asmask=False):
         r"""
         Returns a list of pores that are direct neighbors to the given pore(s)
 
@@ -583,6 +583,10 @@ class GenericNetwork(ParamMixin, Base, ModelsMixin, LegacyMixin, LabelMixin):
             **'and'** : Only neighbors shared by all input pores.  This is also
             known as 'intersection' in set theory and (somtimes) as 'all' in
             boolean logic.  Both keywords are accepted and treated as 'and'.
+            
+            
+        asmask : boolean
+            If true, converts indicies to a boolean mask. Useful for labelling.
 
         Returns
         -------
