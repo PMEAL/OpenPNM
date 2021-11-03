@@ -6,13 +6,14 @@ class SettingsData(HasTraits):
 
     def __str__(self):
         d = PrintableDict()
-        d._value = 'Settings'
+        d._key = 'Settings'
+        d._value = 'Values'
         for item in self.visible_traits():
             d[item] = getattr(self, item)
         return d.__str__()
 
-    def __repr__(self):
-        return self.__str__()
+    # def __repr__(self):
+    #     return self.__str__()
 
 
 class SettingsAttr:
@@ -96,7 +97,7 @@ class SettingsAttr:
         """
         if hasattr(settings, 'items'): # Dictionary
             for k, v in settings.items():
-                self._settings.add_trait(k, Trait(v, v.__class__))
+                setattr(self, k, v)
         elif hasattr(settings, 'visible_traits'):
             for k in settings.visible_traits():
                 v = getattr(settings, k)
@@ -105,7 +106,7 @@ class SettingsAttr:
             attrs = [i for i in dir(settings) if not i.startswith('_')]
             for k in attrs:
                 v = getattr(settings, k)
-                self._settings.add_trait(k, Trait(v, v.__class__))
+                setattr(self, k, v)
 
     def __str__(self):
         return self._settings.__str__()
@@ -116,6 +117,10 @@ class SettingsAttr:
     @property
     def __doc__(self):
         return self._settings.__doc__
+
+    @property
+    def _attrs(self):
+        return self.__dir__()
 
 
 if __name__ == "__main__":
@@ -194,3 +199,46 @@ if __name__ == "__main__":
         print(e)
     sets5.c.append(1)
     print(sets5)
+
+    # %% Update from dict
+    class S6(SettingsData):
+        r"""
+        This is a docstring
+        """
+        a = Int(1)
+        b = Int(2)
+
+    sets6 = SettingsAttr(S6())
+    assert sets6.a == 1
+    sets6._update({'a': 22, 'c': 5.5})
+    assert sets6.a == 22
+    print(sets6)
+
+    # %% Update from dataclass
+    class S7(SettingsData):
+        r"""
+        This is a docstring
+        """
+        a = Int(1)
+        b = Int(2)
+
+    sets7 = SettingsAttr(S7())
+    assert sets7.a == 1
+    class Data:
+        a = 22
+        c = 5.5
+    sets7._update(Data())
+    print(sets7)
+    assert sets7.a == 22
+
+
+
+
+
+
+
+
+
+
+
+
