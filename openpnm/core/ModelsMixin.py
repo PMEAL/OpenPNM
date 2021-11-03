@@ -393,18 +393,12 @@ class ModelsMixin:
         try:
             kwargs = self.models[prop].copy()
         except KeyError:
-            logger.info(prop+' not found, will retry if deep is True')
+            logger.info(f'{prop} not found, will retry if deep is True')
             return
         # Pop model and regen_mode from temporary dict
         model = kwargs.pop('model')
         regen_mode = kwargs.pop('regen_mode', None)
-        # Only regenerate model if regen_mode is correct
-        if self.settings['freeze_models']:
-            # Don't run ANY models if freeze_models is set to True
-            msg = (f"{prop} was not run since freeze_models is set to"
-                   " True in object settings.")
-            logger.warning(prettify_logger_message(msg))
-        elif regen_mode == 'constant':
+        if regen_mode == 'constant':
             # Only regenerate if data not already in dictionary
             if prop not in self.keys():
                 self[prop] = model(target=self, **kwargs)

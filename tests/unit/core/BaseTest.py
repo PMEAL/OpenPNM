@@ -958,15 +958,6 @@ class BaseTest:
         pn.set_label(label='tester', mode='purge')
         # Should only issue warning
 
-    def test_model_run_when_data_missing(self):
-        pn = op.network.Cubic(shape=[3, 3, 3])
-        phase = op.phases.Air(network=pn, settings={'freeze_models': True})
-        with pytest.raises(KeyError):
-            a = phase['pore.viscosity']
-        phase.settings['freeze_models'] = False
-        a = phase['pore.viscosity']
-        assert isinstance(a, np.ndarray)
-
     def test_renaming_to_current_name_is_allowed(self):
         obj = op.core.Base(name="temp")
         obj.name = "temp"
