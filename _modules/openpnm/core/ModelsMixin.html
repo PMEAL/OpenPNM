@@ -568,12 +568,18 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">models</span><span class="p">[</span><span class="n">prop</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">prop</span><span class="si">}</span><span class="s1"> not found, will retry if deep is True&#39;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">prop</span><span class="o">+</span><span class="s1">&#39; not found, will retry if deep is True&#39;</span><span class="p">)</span>
             <span class="k">return</span>
         <span class="c1"># Pop model and regen_mode from temporary dict</span>
         <span class="n">model</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;model&#39;</span><span class="p">)</span>
         <span class="n">regen_mode</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;regen_mode&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">regen_mode</span> <span class="o">==</span> <span class="s1">&#39;constant&#39;</span><span class="p">:</span>
+        <span class="c1"># Only regenerate model if regen_mode is correct</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;freeze_models&#39;</span><span class="p">]:</span>
+            <span class="c1"># Don&#39;t run ANY models if freeze_models is set to True</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prop</span><span class="si">}</span><span class="s2"> was not run since freeze_models is set to&quot;</span>
+                   <span class="s2">&quot; True in object settings.&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">prettify_logger_message</span><span class="p">(</span><span class="n">msg</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="n">regen_mode</span> <span class="o">==</span> <span class="s1">&#39;constant&#39;</span><span class="p">:</span>
             <span class="c1"># Only regenerate if data not already in dictionary</span>
             <span class="k">if</span> <span class="n">prop</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
                 <span class="bp">self</span><span class="p">[</span><span class="n">prop</span><span class="p">]</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
