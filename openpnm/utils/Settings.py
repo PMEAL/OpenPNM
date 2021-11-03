@@ -135,7 +135,7 @@ if __name__ == "__main__":
     print(sets1)
     assert "This is a docstring" in sets1.__doc__
 
-    # %% Dataclass-style
+    # %% Dataclass-style and testing inferred type is enforced
     class S2:
         r"""
         This is a docstring
@@ -147,7 +147,7 @@ if __name__ == "__main__":
     print(sets2)
     assert "This is a docstring" in sets2.__doc__
 
-    # %% Inheritance
+    # %% Inheritance and testing immutability
 
     class S3(S2):
         r"""
@@ -168,7 +168,7 @@ if __name__ == "__main__":
     except TraitError as e:
         print(e)
 
-    # %% Adding new attr
+    # %% Adding new attr and testing type is enforced
     class S4:
         r"""
         This is a docstring
@@ -184,7 +184,13 @@ if __name__ == "__main__":
     except TraitError as e:
         print(e)
 
+    # %% From dict
+    d = {'a': 3, 'b': 4.5, 'c': []}
 
-
-
-
+    sets5 = SettingsAttr(d)
+    try:
+        sets5.c = "string"
+    except TraitError as e:
+        print(e)
+    sets5.c.append(1)
+    print(sets5)
