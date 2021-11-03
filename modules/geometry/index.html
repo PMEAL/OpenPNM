@@ -261,7 +261,7 @@
    </li>
    <li class="toctree-l2">
     <a class="reference internal" href="stick_and_ball.html">
-     StickAndBall
+     SpheresAndCylinders
     </a>
    </li>
   </ul>
@@ -655,14 +655,14 @@ with unique models (e.g. to give a bi-modal pore size distribution).</p>
 pre-configured with a selection of pore-scale models.  These classes provide
 a good starting point, but generally the choice of models and parameters used
 will be specific to each problem and must be designed by the user.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">StickAndBall</span></code> class, as it’s name suggests assumes spherical pores and
+<p>The <code class="docutils literal notranslate"><span class="pre">_StickAndBall</span></code> class, as it’s name suggests assumes spherical pores and
 cylindrical throats.  Pore sizes are assigned by finding the largest sphere
 that can fit at each site (this will be dictated by the lattice spacing used
 when generating the Network), then scaling that value by a random number
 between 0 and 0.1.  Throat diameters are taken as half the size of the smaller
 of it’s two neighbors.  All other properties are calculated using the geometry
 of spheres and throats.</p>
-<p>The table belows shows the specific models used on <code class="docutils literal notranslate"><span class="pre">StickAndBall</span></code>:</p>
+<p>The table belows shows the specific models used on <code class="docutils literal notranslate"><span class="pre">_StickAndBall</span></code>:</p>
 <table class="table">
 <colgroup>
 <col style="width: 6%" />
@@ -737,12 +737,12 @@ of spheres and throats.</p>
 </table>
 <hr class="docutils" />
 <p><strong>Customizing a Preconfigured Geometry Instance</strong></p>
-<p>Perhaps the <code class="docutils literal notranslate"><span class="pre">StickAndBall</span></code> class is almost suitable but you wish to decrease
+<p>Perhaps the <code class="docutils literal notranslate"><span class="pre">_StickAndBall</span></code> class is almost suitable but you wish to decrease
 the pores sizes.  The following example illustrates how to alter the
 <code class="docutils literal notranslate"><span class="pre">'pore.size'</span></code> model accordingly:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">([</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">geo</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">StickAndBall</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">Ps</span><span class="p">,</span> <span class="n">throats</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">Ts</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">geo</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">SpheresAndCylinders</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">Ps</span><span class="p">,</span> <span class="n">throats</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">Ts</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>We can reach into the <code class="docutils literal notranslate"><span class="pre">models</span></code> attribute and change the parameters of any
@@ -763,7 +763,7 @@ that change can be cascaded to all dependent properties (‘pore.diameter’).</
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="generic_geometry.html">GenericGeometry</a></li>
-<li class="toctree-l1"><a class="reference internal" href="stick_and_ball.html">StickAndBall</a></li>
+<li class="toctree-l1"><a class="reference internal" href="stick_and_ball.html">SpheresAndCylinders</a></li>
 </ul>
 </div>
 </section>

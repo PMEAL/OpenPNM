@@ -261,7 +261,7 @@
    </li>
    <li class="toctree-l2">
     <a class="reference internal" href="../geometry/stick_and_ball.html">
-     StickAndBall
+     SpheresAndCylinders
     </a>
    </li>
   </ul>
@@ -614,67 +614,41 @@
 <dt class="sig sig-object py" id="openpnm.algorithms.TransientReactiveTransport">
 <em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">TransientReactiveTransport</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/TransientReactiveTransport.html#TransientReactiveTransport"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.TransientReactiveTransport" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="reactive_transport.html#openpnm.algorithms.ReactiveTransport" title="openpnm.algorithms.ReactiveTransport.ReactiveTransport"><code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.algorithms.ReactiveTransport.ReactiveTransport</span></code></a></p>
-<p>A subclass of ReactiveTransport for transient/steady-state simulations</p>
+<p>A subclass of ReactiveTransport for transient simulations.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>network</strong> (<em>OpenPNM Network object</em>) – The Network with which this algorithm is associated.</p></li>
-<li><p><strong>project</strong> (<em>OpenPNM Project object</em>) – Either a Network or a Project must be specified.</p></li>
+<li><p><strong>network</strong> (<a class="reference internal" href="../network/generic.html#openpnm.network.GenericNetwork" title="openpnm.network.GenericNetwork"><em>GenericNetwork</em></a>) – The Network with which this algorithm is associated.</p></li>
+<li><p><strong>project</strong> (<a class="reference internal" href="../utils/project.html#openpnm.utils.Project" title="openpnm.utils.Project"><em>Project</em></a>) – The Project with which this algorithm is associated.</p></li>
 </ul>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>This subclass performs steady and transient simulations of transport
-phenomena with reactions when source terms are added. It supports 3 time
-discretization schemes; ‘steady’ to perform a steady-state simulation, and
-‘implicit’ (fast, 1st order accurate) and ‘cranknicolson’ (slow, 2nd order
-accurate) both for transient simulations.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="openpnm.algorithms.TransientReactiveTransport.results">
-<span class="sig-name descname"><span class="pre">results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">times</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/TransientReactiveTransport.html#TransientReactiveTransport.results"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.TransientReactiveTransport.results" title="Permalink to this definition">¶</a></dt>
-<dd><p>Fetches the calculated quantity from the algorithm and returns it as
-an array.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>times</strong> (<em>scalar</em><em>, </em><em>ND-array</em><em>, </em><em>list of scalars</em><em>, </em><em>None</em><em>, or </em><em>string</em>) – Time steps to be returned. The default value is None which results
-in returning all time steps. If times is a scalar, only the
-corresponding time step is returned. If times is an ND-array or a
-list of scalars, time steps in the provided array or list are
-returned. If times is ‘final’ or ‘actual’, the current value of the
-quantity is returned.</p></li>
-<li><p><strong>t_precision</strong> (<em>integer</em>) – The time precision (number of decimal places). Default value is 12.</p></li>
-</ul>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<p>The keyword steps is interpreted in the same way as times.</p>
-</dd></dl>
-
+<p>Either a Network or a Project must be specified.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="openpnm.algorithms.TransientReactiveTransport.run">
-<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/TransientReactiveTransport.html#TransientReactiveTransport.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.TransientReactiveTransport.run" title="Permalink to this definition">¶</a></dt>
-<dd><p>Builds ‘A’ matrix of the steady system of equations to be used at each
-time step to build transient ‘A’ and ‘b’. Imposes the initial
-conditions and stores the initial field. Initialize transient ‘A’, ‘b’,
-and source term (if present) and finally calls the transient solver.</p>
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tspan</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">saveat</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">integrator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/TransientReactiveTransport.html#TransientReactiveTransport.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.TransientReactiveTransport.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Runs the transient algorithm and returns the solution.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>t</strong> (<em>scalar</em>) – The time to start the simulation from. If no time is specified, the
-simulation starts from ‘t_initial’ defined in the settings.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x0</strong> (<em>ndarray</em><em> or </em><em>float</em>) – Array (or scalar) containing initial condition values.</p></li>
+<li><p><strong>tspan</strong> (<em>array_like</em>) – Tuple (or array) containing the integration time span.</p></li>
+<li><p><strong>saveat</strong> (<em>array_like</em><em> or </em><em>float</em><em>, </em><em>optional</em>) – If an array is passed, it signifies the time points at which
+the solution is to be stored, and if a scalar is passed, it
+refers to the interval at which the solution is to be stored.</p></li>
+<li><p><strong>integrator</strong> (<em>Integrator</em><em>, </em><em>optional</em>) – Integrator object which will be used to to the time stepping.
+Can be instantiated using openpnm.integrators module.</p></li>
+</ul>
 </dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="openpnm.algorithms.TransientReactiveTransport.set_IC">
-<span class="sig-name descname"><span class="pre">set_IC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/TransientReactiveTransport.html#TransientReactiveTransport.set_IC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.TransientReactiveTransport.set_IC" title="Permalink to this definition">¶</a></dt>
-<dd><p>A method to set simulation initial conditions</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>values</strong> (<em>ND-array</em><em> or </em><em>scalar</em>) – Set the initial conditions using an ‘Np’ long array. ‘Np’ being
-the number of pores. If a scalar is given, the same value is
-imposed to all pores.</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The solution object, which is basically a numpy array with
+the added functionality that it can be called to return the
+solution at intermediate times (i.e., those not stored in the
+solution object).</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>TransientSolution</p>
 </dd>
 </dl>
 </dd></dl>

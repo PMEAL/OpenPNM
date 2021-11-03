@@ -174,73 +174,38 @@
                 
   <h1>Source code for openpnm.algorithms.GenericAlgorithm</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">openpnm.core</span> <span class="kn">import</span> <span class="n">Base</span><span class="p">,</span> <span class="n">LegacyMixin</span><span class="p">,</span> <span class="n">LabelMixin</span>
-<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">logging</span><span class="p">,</span> <span class="n">Docorator</span><span class="p">,</span> <span class="n">SettingsData</span><span class="p">,</span> <span class="n">SettingsAttr</span>
-<span class="kn">from</span> <span class="nn">traits.api</span> <span class="kn">import</span> <span class="n">Str</span>
+<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">logging</span><span class="p">,</span> <span class="n">Docorator</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 <span class="n">docstr</span> <span class="o">=</span> <span class="n">Docorator</span><span class="p">()</span>
 
 
-<span class="c1"># @docstr.get_sections(base=&#39;SettingsGenericAlgorithm&#39;, sections=docstr.all_sections)</span>
-<span class="k">class</span> <span class="nc">SettingsGenericAlgorithm</span><span class="p">(</span><span class="n">SettingsData</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    prefix : str</span>
-<span class="sd">        The prefix to use when generating a name for the algorithm.  The</span>
-<span class="sd">        default is ``alg``, so the names will be ``alg_01``, ``alg_02``, etc</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">prefix</span> <span class="o">=</span> <span class="n">Str</span><span class="p">(</span><span class="s1">&#39;alg&#39;</span><span class="p">)</span>
-
-
-<div class="viewcode-block" id="GenericAlgorithm"><a class="viewcode-back" href="../../../modules/algorithms/generic_algorithm.html#openpnm.algorithms.GenericAlgorithm">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">get_sections</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="s1">&#39;GenericAlgorithm&#39;</span><span class="p">,</span> <span class="n">sections</span><span class="o">=</span><span class="n">docstr</span><span class="o">.</span><span class="n">all_sections</span><span class="p">)</span>
+<div class="viewcode-block" id="GenericAlgorithm"><a class="viewcode-back" href="../../../modules/algorithms/generic_algorithm.html#openpnm.algorithms.GenericAlgorithm">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">get_sections</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="s1">&#39;GenericAlgorithm&#39;</span><span class="p">,</span> <span class="n">sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Parameters&#39;</span><span class="p">])</span>
 <span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
 <span class="k">class</span> <span class="nc">GenericAlgorithm</span><span class="p">(</span><span class="n">Base</span><span class="p">,</span> <span class="n">LegacyMixin</span><span class="p">,</span> <span class="n">LabelMixin</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Generic class to define the foundation of Algorithms</span>
+<span class="sd">    Generic class to define the foundation of Algorithms.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    network : (OpenPNM Network object)</span>
+<span class="sd">    network : GenericNetwork</span>
 <span class="sd">        The network object to which this algorithm will apply.</span>
-<span class="sd">    name : (string, optional)</span>
+<span class="sd">    name : str, optional</span>
 <span class="sd">        Name of the algorithm</span>
-<span class="sd">    project : (OpenPNM Project object, optional)</span>
+<span class="sd">    project : Project, optional</span>
 <span class="sd">        Either a Network or a Project must be supplied</span>
-
-<span class="sd">    Notes</span>
-<span class="sd">    -----</span>
-<span class="sd">    This class defines the following methods, which all raise a</span>
-<span class="sd">    ``NotImplementedError`` and must be defined by the various subclasses</span>
-
-<span class="sd">    +---------------------+---------------------------------------------------+</span>
-<span class="sd">    | Methods             | Description                                       |</span>
-<span class="sd">    +=====================+===================================================+</span>
-<span class="sd">    | ``results``         | Generates an array or arrays of data produced by  |</span>
-<span class="sd">    |                     | the algorithm to be returned to the Phase         |</span>
-<span class="sd">    +---------------------+---------------------------------------------------+</span>
-<span class="sd">    | ``setup``           | Collects values to be placed in ``settings``. The |</span>
-<span class="sd">    |                     | main benefit is defining default values and       |</span>
-<span class="sd">    |                     | providing documentation on each settings          |</span>
-<span class="sd">    +---------------------+---------------------------------------------------+</span>
-<span class="sd">    | ``reset``           | Removes generated data, specified values, and     |</span>
-<span class="sd">    |                     | any other information lingering on an Algorithm   |</span>
-<span class="sd">    +---------------------+---------------------------------------------------+</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">project</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">settings</span><span class="o">=</span><span class="p">{},</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;prefix&#39;</span><span class="p">,</span> <span class="s1">&#39;alg&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sets</span> <span class="o">=</span> <span class="n">SettingsAttr</span><span class="p">(</span><span class="n">SettingsGenericAlgorithm</span><span class="p">())</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sets</span><span class="o">.</span><span class="n">_update</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span>
+
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">project</span><span class="o">=</span><span class="n">project</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="n">network</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="n">project</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">project</span>
         <span class="k">if</span> <span class="n">project</span><span class="p">:</span>
-            <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.all&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">project</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Np</span><span class="p">,</span> <span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
-            <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.all&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">project</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Nt</span><span class="p">,</span> <span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+            <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.all&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">project</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Np</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+            <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.all&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">project</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Nt</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
 
 <div class="viewcode-block" id="GenericAlgorithm.results"><a class="viewcode-back" href="../../../modules/algorithms/generic_algorithm.html#openpnm.algorithms.GenericAlgorithm.results">[docs]</a>    <span class="k">def</span> <span class="nf">results</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
