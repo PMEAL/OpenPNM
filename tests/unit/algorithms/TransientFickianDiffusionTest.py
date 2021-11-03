@@ -1,4 +1,5 @@
 import numpy as np
+from numpy.testing import assert_allclose
 import openpnm as op
 
 
@@ -10,37 +11,31 @@ class TransientFickianDiffusionTest:
         self.geo = op.geometry.GenericGeometry(network=self.net,
                                                pores=self.net.Ps,
                                                throats=self.net.Ts)
-
+        self.geo['pore.volume'] = 1e-14
         self.phase = op.phases.GenericPhase(network=self.net)
+        self.phase['pore.molar_density'] = 55500
         self.phys = op.physics.GenericPhysics(network=self.net,
                                               phase=self.phase,
                                               geometry=self.geo)
         self.phys['throat.diffusive_conductance'] = 1e-15
-        self.phys['throat.hydraulic_conductance'] = 1e-15
-        self.geo['pore.volume'] = 1e-27
-        self.phase['pore.molar_density'] = 55500
+        self.alg = op.algorithms.TransientFickianDiffusion(network=self.net,
+                                                           phase=self.phase)
+        self.alg.settings.update({'quantity': 'pore.concentration',
+                                  'conductance': 'throat.diffusive_conductance'})
+        self.alg.set_value_BC(pores=self.net.pores('right'), values=1)
+        self.alg.set_value_BC(pores=self.net.pores('left'), values=0)
 
-    def test_transient_fickian_diffusion(self):
-        alg = op.algorithms.TransientFickianDiffusion(network=self.net,
-                                                      phase=self.phase)
-        alg.settings.update({'quantity': 'pore.concentration',
-                             'conductance': 'throat.diffusive_conductance',
-                             't_initial': 0,
-                             't_final': 1000,
-                             't_step':1,
-                             't_output': 100,
-                             't_tolerance': 1e-08,
-                             't_scheme': 'implicit'})
-        alg.set_IC(0)
-        alg.set_value_BC(pores=self.net.pores('right'), values=1)
-        alg.set_value_BC(pores=self.net.pores('left'), values=0)
-        alg.run()
-        x = [0., 0., 0.,
-             0.33333, 0.33333, 0.33333,
-             0.66667, 0.66667, 0.66667,
-             1., 1., 1.]
-        y = np.around(alg[alg.settings['quantity']], decimals=5)
-        assert np.all(x == y)
+    def test_transient_fickian_diffusion_intermediate_time(self):
+        self.alg.run(x0=0, tspan=(0, 10))
+        desired = 0.40803
+        actual = self.alg.x.mean()
+        assert_allclose(actual, desired, rtol=1e-5)
+
+    def test_transient_fickian_diffusion_steady_state(self):
+        self.alg.run(x0=0, tspan=(0, 200))  # pick a relatively large tend
+        desired = (1 + 0) / 2               # steady value = avearge of BCs
+        actual = self.alg.x.mean()
+        assert_allclose(actual, desired, rtol=1e-5)
 
     def teardown_class(self):
         ws = op.Workspace()
@@ -53,6 +48,6 @@ if __name__ == '__main__':
     t.setup_class()
     for item in t.__dir__():
         if item.startswith('test'):
-            print('running test: '+item)
+            print(f'Running test: {item}')
             t.__getattribute__(item)()
     self = t

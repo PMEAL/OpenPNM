@@ -1,6 +1,6 @@
 import numpy as np
 from openpnm.network import Cubic
-from openpnm.utils import logging, Project
+from openpnm.utils import logging, Project, prettify_logger_message
 from openpnm.geometry import GenericGeometry
 from openpnm.phases import GenericPhase
 from openpnm.topotools import trim
@@ -69,8 +69,7 @@ class BundleOfTubes(Project):
         elif len(shape) == 2:
             shape = np.concatenate((np.array(shape), [2]))
         else:
-            raise Exception('shape not understood, must be int '
-                            + ' or list of 2 ints')
+            raise Exception('Unsupported shape; must be int or list of 2 ints')
 
         if isinstance(spacing, (float, int)):
             spacing = float(spacing)
@@ -116,8 +115,9 @@ class BundleOfTubes(Project):
                            func=psd)
 
         if np.any(geom['throat.size_distribution'] < 0):
-            logger.warning('Given size distribution produced negative '
-                           + 'throat diameters...these will be set to 0')
+            msg = ('Given size distribution produced negative throat'
+                   ' diameters...these will be set to 0.')
+            logger.warning(prettify_logger_message(msg))
         geom.add_model(propname='throat.diameter',
                        model=mods.misc.clip,
                        prop='throat.size_distribution',
@@ -125,8 +125,9 @@ class BundleOfTubes(Project):
 
         if self.settings['adjust_psd'] is None:
             if geom['throat.size_distribution'].max() > spacing[0]:
-                logger.warning('Given size distribution produced throats '
-                               + 'larger than the spacing.')
+                msg = ('Given size distribution produced throats larger than'
+                       ' the spacing.')
+                logger.warning(prettify_logger_message(msg))
 
         elif self.settings['adjust_psd'] == 'clip':
             geom.add_model(propname='throat.diameter',
@@ -134,9 +135,10 @@ class BundleOfTubes(Project):
                            prop='throat.size_distribution',
                            xmin=1e-12, xmax=spacing[0])
             if geom['throat.size_distribution'].max() > spacing[0]:
-                logger.warning('Given size distribution produced throats '
-                               + 'larger than the spacing...tube diameters '
-                               + 'will be clipped between 0 and given spacing')
+                msg = ('Given size distribution produced throats larger than'
+                       ' the spacing...tube diameters will be clipped between'
+                       ' 0 and given spacing.')
+                logger.warning(prettify_logger_message(msg))
 
         elif self.settings['adjust_psd'] == 'normalize':
             tmin = max(1e-12, geom['throat.size_distribution'].min())
@@ -145,9 +147,10 @@ class BundleOfTubes(Project):
                            prop='throat.size_distribution',
                            xmin=tmin, xmax=spacing[0])
             if geom['throat.size_distribution'].max() > spacing[0]:
-                logger.warning('Given size distribution produced throats '
-                               + 'larger than the spacing...tube diameters '
-                               + 'will be normalized to fit given spacing')
+                msg = ('Given size distribution produced throats larger than'
+                       ' the spacing...tube diameters will be normalized to'
+                       ' fit given spacing.')
+                logger.warning(prettify_logger_message(msg))
         else:
             logger.warning('Settings not understood, ignoring')
 
@@ -172,12 +175,12 @@ class BundleOfTubes(Project):
 
         # Now create a generic phase with physics models on it
         phase = GenericPhase(network=net)
-        m = mods.physics.hydraulic_conductance.classic_hagen_poiseuille
+        m = mods.physics.hydraulic_conductance.hagen_poiseuille
         phase.add_model(propname='throat.hydraulic_conductance',
                         model=m, regen_mode='deferred')
-        m = mods.physics.diffusive_conductance.classic_ordinary_diffusion
+        m = mods.physics.diffusive_conductance.ordinary_diffusion
         phase.add_model(propname='throat.diffusive_conductance',
                         model=m, regen_mode='deferred')
-        m = mods.physics.diffusive_conductance.classic_ordinary_diffusion
+        m = mods.physics.capillary_pressure.washburn
         phase.add_model(propname='throat.entry_pressure',
                         model=m, regen_mode='deferred')

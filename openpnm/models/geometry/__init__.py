@@ -8,7 +8,6 @@ from . import pore_seed
 from . import pore_volume
 from . import pore_surface_area
 from . import pore_cross_sectional_area
-from . import throat_endpoints
 from . import throat_cross_sectional_area
 from . import throat_seed
 from . import throat_size

@@ -1,9 +1,9 @@
 .. _stick_and_ball_api:
 
 --------------------------------------------------------------------------------
-StickAndBall
+SpheresAndCylinders
 --------------------------------------------------------------------------------
 
-.. autoclass:: openpnm.geometry.StickAndBall
+.. autoclass:: openpnm.geometry.SpheresAndCylinders
    :members:
    :show-inheritance:

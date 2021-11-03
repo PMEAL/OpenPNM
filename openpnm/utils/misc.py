@@ -25,6 +25,12 @@ __all__ = [
     "unique_list",
     "tic", "toc",
     "is_symmetric",
+    "is_valid_propname",
+    "nbr_to_str",
+    "conduit_dict_to_array",
+    "conduit_array_to_dict",
+    "prettify_logger_message",
+    "remove_prop_deep"
     "nbr_to_str"
 ]
 
@@ -307,7 +313,6 @@ def toc(quiet=False):
 def unique_list(input_list):
     r"""
     For a given list (of points) remove any duplicates
-
     """
     output_list = []
     if len(input_list) > 0:
@@ -333,7 +338,6 @@ def flat_list(input_list):
     r"""
     Given a list of nested lists of arbitrary depth, returns a single level or
     'flat' list.
-
     """
     x = input_list
     if isinstance(x, list):
@@ -346,7 +350,6 @@ def sanitize_dict(input_dict):
     Given a nested dictionary, ensures that all nested dicts are normal
     Python dicts.  This is necessary for pickling, or just converting
     an 'auto-vivifying' dict to something that acts normal.
-
     """
     plain_dict = dict()
     for key in input_dict.keys():
@@ -572,10 +575,85 @@ def nbr_to_str(nbr, t_precision):
     return nbr_str
 
 
+def conduit_dict_to_array(d):
+    r"""
+    Converts a conduit dict to a 3-column wide ndarray.
+
+    A conduit dict contains 3 arrays pertaining to pore1, throat, and
+    pore2. These arrays can be accessed via keys: 'pore1', 'throat',
+    and 'pore2'.
+
+    Parameters
+    ----------
+    d : dict
+        Conduit dictionary with keys 'pore1', 'throat', and 'pore2'.
+
+    Returns
+    -------
+    ndarray
+        Conduit array, i.e. 3-column wide, with columns pertaining to
+        pore1, throat, and pore2, respectively.
+
+    """
+    _validate_conduit_dict(d)
+    return _np.vstack((d["pore1"], d["throat"], d["pore2"])).T
+
+
+def conduit_array_to_dict(arr):
+    r"""
+    Converts a conduit array to a conduit dict.
+
+    A conduit array is 3 columns wide, each pertaining to a conduit
+    property for pore1, throat, and pore2, respectively.
+
+    Parameters
+    ----------
+    arr : ndarray
+        Conduit array.
+
+    Returns
+    -------
+    dict
+        Conduit dictionary with keys 'pore1', 'throat', and 'pore2'.
+
+    """
+    _validate_conduit_array(arr)
+    return {"pore1": arr[:, 0], "throat": arr[:, 1], "pore2": arr[:, 2]}
+
+
+def _validate_conduit_dict(d):
+    r"""Validates whether the given dictionary is a proper conduit dict."""
+    if not isinstance(d, dict):
+        raise Exception("Conduit dictionary must be of type dict.")
+    allowed_keys = set(["pore1", "throat", "pore2"])
+    if allowed_keys != set(d.keys()):
+        raise Exception("Conduit dictionary keys must be 'pore1', 'throat', and 'pore2'")
+    elem_lengths = [len(x) for x in d.values()]
+    if len(_np.unique(elem_lengths)) != 1:
+        raise Exception("Conduit dictionary must have arrays of the same length.")
+
+
+def _validate_conduit_array(arr):
+    r"""Validates whether the given array is a proper conduit array."""
+    arr = _np.array(arr)
+    if arr.shape[1] != 3:
+        raise Exception("Conduit array must be exactly 3 columns wide.")
+
+
 def prettify_logger_message(msg):
-    r"""Prettifies logger messages by breaking them up into multi lines"""
+    r"""
+    Prettifies logger messages by breaking them up into multi lines
+    """
     from textwrap import wrap
-    linewidth = 75
+    linewidth = 75 - 13
     indent = "\n" + " " * 13
     temp = wrap(msg, width=linewidth)
     return indent.join(temp)
+
+
+def remove_prop_deep(obj, propname):
+    r"""Hierarchically deletes the given propname and its children"""
+    for k in list(obj.keys()):
+        obj._parse_element(propname)
+        if k.startswith(propname):
+            del obj[k]
