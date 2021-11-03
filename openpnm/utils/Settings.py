@@ -7,7 +7,7 @@ class SettingsData(HasTraits):
     def __str__(self):
         d = PrintableDict()
         d._value = 'Settings'
-        for item in self._attrs():
+        for item in self.visible_traits():
             d[item] = getattr(self, item)
         return d.__str__()
 
@@ -43,12 +43,19 @@ class SettingsAttr:
         method.
         """
         # Add blank HasTraits object to self._settings
-        super().__setattr__('_settings', HasTraits())
+        if isinstance(settings, SettingsData):
+            super().__setattr__('_settings', settings)
+        else:
+            super().__setattr__('_settings', SettingsData())
+            self._update(settings)
         self._settings.__doc__ = settings.__doc__
-        self._update(settings)
 
     def __setattr__(self, attr, val):
-        setattr(self._settings, attr, val)
+        if attr in self._settings.visible_traits():
+            setattr(self._settings, attr, val)
+        else:
+            val = Trait(val, val.__class__)
+            self._settings.add_trait(attr, val)
 
     def __getattr__(self, attr):
         return getattr(self._settings, attr)
@@ -60,7 +67,9 @@ class SettingsAttr:
         setattr(self._settings, key, value)
 
     def __dir__(self):
-        return self._settings.visible_traits()
+        temp = self._settings.visible_traits()
+        temp = [i for i in temp if not i.startswith('_')]
+        return temp
 
     def _update(self, settings):
         r"""
@@ -90,7 +99,8 @@ class SettingsAttr:
                 self._settings.add_trait(k, Trait(v, v.__class__))
         elif hasattr(settings, 'visible_traits'):
             for k in settings.visible_traits():
-                self._settings.add_trait(k, getattr(settings, k))
+                v = getattr(settings, k)
+                self._settings.add_trait(k, Trait(v, v.__class__))
         else:
             attrs = [i for i in dir(settings) if not i.startswith('_')]
             for k in attrs:
@@ -98,10 +108,7 @@ class SettingsAttr:
                 self._settings.add_trait(k, Trait(v, v.__class__))
 
     def __str__(self):
-        d = PrintableDict()
-        for item in self.__dir__():
-            d[item] = getattr(self, item)
-        return d.__str__()
+        return self._settings.__str__()
 
     def __repr__(self):
         return self.__str__()
@@ -113,41 +120,69 @@ class SettingsAttr:
 
 if __name__ == "__main__":
 
-    from traits.api import Int, TraitError
+    from traits.api import Int, List, Str, Float, TraitError, ListStr
 
-
+    # %% Standard initialization
     class S1(SettingsData):
         r"""
         This is a docstring
         """
         a = Int(1)
         b = Int(2)
+        d = List(Str())
 
     sets1 = SettingsAttr(S1())
+    print(sets1)
+    assert "This is a docstring" in sets1.__doc__
 
+    # %% Dataclass-style
     class S2:
+        r"""
+        This is a docstring
+        """
         a = 2
         b = 3
 
     sets2 = SettingsAttr(S2())
+    print(sets2)
+    assert "This is a docstring" in sets2.__doc__
+
+    # %% Inheritance
 
     class S3(S2):
+        r"""
+        Different docstring
+        """
         b = 3
         c = 4
 
     sets3 = SettingsAttr(S3())
     sets3.b = 44
-
+    print(sets3)
+    assert dir(sets3) == ['a', 'b', 'c']
     assert sets2.b != sets3.b
+    assert "Different docstring" in sets3.__doc__
 
     try:
         sets3.b = 'nope'
     except TraitError as e:
         print(e)
 
+    # %% Adding new attr
+    class S4:
+        r"""
+        This is a docstring
+        """
+        a = 2
+        b = 3.5
 
-
-
+    sets4 = SettingsAttr(S4())
+    sets4.c = Float(1.5)
+    print(sets4)
+    try:
+        sets4.c = "string"
+    except TraitError as e:
+        print(e)
 
 
 
