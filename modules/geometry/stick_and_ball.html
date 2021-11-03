@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>SpheresAndCylinders &#8212; OpenPNM  documentation</title>
+    <title>StickAndBall &#8212; OpenPNM  documentation</title>
     
   <link href="../../_static/css/theme.css" rel="stylesheet">
   <link href="../../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
@@ -261,7 +261,7 @@
    </li>
    <li class="toctree-l2 current active">
     <a class="current reference internal" href="#">
-     SpheresAndCylinders
+     StickAndBall
     </a>
    </li>
   </ul>
@@ -608,47 +608,46 @@
               
               <div>
                 
-  <section id="spheresandcylinders">
-<span id="stick-and-ball-api"></span><h1>SpheresAndCylinders<a class="headerlink" href="#spheresandcylinders" title="Permalink to this headline">¶</a></h1>
+  <section id="stickandball">
+<span id="stick-and-ball-api"></span><h1>StickAndBall<a class="headerlink" href="#stickandball" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="openpnm.geometry.SpheresAndCylinders">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">SpheresAndCylinders</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/geometry/SpheresAndCylinders.html#SpheresAndCylinders"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.geometry.SpheresAndCylinders" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="openpnm.geometry.StickAndBall">
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">StickAndBall</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/geometry/StickAndBall.html#StickAndBall"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.geometry.StickAndBall" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="generic_geometry.html#openpnm.geometry.GenericGeometry" title="openpnm.geometry.GenericGeometry.GenericGeometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.geometry.GenericGeometry.GenericGeometry</span></code></a></p>
-<p>Spheres and Cylinders subclass of GenericGeometry. This subclass is
-meant as a basic default geometry to get started quickly.</p>
-<p>Pore diameters are randomly assigned between 0 and the largest sphere
-that does not overlap with it’s nearest neighbor.</p>
+<p>Stick and Ball subclass of GenericGeometry.  This subclass is meant as a
+basic default geometry to get started quickly.</p>
+<p>Pore diameters are randomly assigned between 0 and the largest sphere that
+does not overlap with it’s nearest neighbor.</p>
 <p>Throat diameters are half the diameter of the smaller of it’s two
 neighboring pores.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>network</strong> (<a class="reference internal" href="../network/generic.html#openpnm.network.GenericNetwork" title="openpnm.network.GenericNetwork"><em>GenericNetwork</em></a>) – The network with which this Geometry should be associated</p></li>
-<li><p><strong>project</strong> (<a class="reference internal" href="../utils/project.html#openpnm.utils.Project" title="openpnm.utils.Project"><em>Project</em></a><em>, </em><em>optional</em>) – Can be supplied instead of a <code class="docutils literal notranslate"><span class="pre">network</span></code></p></li>
+<li><p><strong>network</strong> (<em>OpenPNM Network object</em>) – The network with which this Geometry should be associated</p></li>
+<li><p><strong>project</strong> (<em>OpenPNM Project object</em><em>, </em><em>optional</em>) – Can be supplied instead of a <code class="docutils literal notranslate"><span class="pre">network</span></code></p></li>
 <li><p><strong>pores</strong> (<em>array_like</em>) – The pores in the domain where this Geometry applies</p></li>
 <li><p><strong>throats</strong> (<em>array_like</em>) – The throats in the domain where this Geometry applies</p></li>
-<li><p><strong>name</strong> (<em>str</em>) – The name of the object, which is also used as the label where this
+<li><p><strong>name</strong> (<em>string</em>) – The name of the object, which is also used as the label where this
 geometry is defined.</p></li>
 </ul>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<p>Geometry objects (along with Physics objects) can be applied to a
-subset of pores and/or throats.  This allows for different geometrical
-property models to be applied in different regions. This is illustrated
-in the following code:</p>
+<p>Geometry objects (along with Physics objects) can be applied to a subset
+of pores and/or throats.  This allows for different geometrical property
+models to be applied in different regions.  This is illustrated in the
+following code:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">scipy</span> <span class="k">as</span> <span class="nn">sp</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">openpnm.geometry</span> <span class="kn">import</span> <span class="n">SpheresAndCylinders</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">CubicDual</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Ps</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;primary&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Ts</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">throats</span><span class="p">(</span><span class="s1">&#39;primary&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">geo1</span> <span class="o">=</span> <span class="n">SpheresAndCylinders</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="n">Ps</span><span class="p">,</span> <span class="n">throats</span><span class="o">=</span><span class="n">Ts</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">geo1</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">StickAndBall</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="n">Ps</span><span class="p">,</span> <span class="n">throats</span><span class="o">=</span><span class="n">Ts</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Ps</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;secondary&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Ts</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">throats</span><span class="p">([</span><span class="s1">&#39;secondary&#39;</span><span class="p">,</span> <span class="s1">&#39;interconnect&#39;</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">geo2</span> <span class="o">=</span> <span class="n">SpheresAndCylinders</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="n">Ps</span><span class="p">,</span> <span class="n">throats</span><span class="o">=</span><span class="n">Ts</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">geo2</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">StickAndBall</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="n">Ps</span><span class="p">,</span> <span class="n">throats</span><span class="o">=</span><span class="n">Ts</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Now override the ‘pore.diameter’ values on the <code class="docutils literal notranslate"><span class="pre">geo2</span></code> object:</p>
