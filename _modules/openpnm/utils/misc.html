@@ -201,11 +201,8 @@
     <span class="s2">&quot;tic&quot;</span><span class="p">,</span> <span class="s2">&quot;toc&quot;</span><span class="p">,</span>
     <span class="s2">&quot;is_symmetric&quot;</span><span class="p">,</span>
     <span class="s2">&quot;is_valid_propname&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;nbr_to_str&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;conduit_dict_to_array&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;conduit_array_to_dict&quot;</span><span class="p">,</span>
     <span class="s2">&quot;prettify_logger_message&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;remove_prop_deep&quot;</span>
+    <span class="s2">&quot;remove_prop_deep&quot;</span><span class="p">,</span>
 <span class="p">]</span>
 
 
@@ -726,92 +723,6 @@
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">field</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
     <span class="k">return</span> <span class="kc">True</span>
-
-
-<span class="k">def</span> <span class="nf">nbr_to_str</span><span class="p">(</span><span class="n">nbr</span><span class="p">,</span> <span class="n">t_precision</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Converts a scalar into a string in scientific (exponential) notation</span>
-<span class="sd">    without the decimal point.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    nbr : scalar</span>
-<span class="sd">        The number to be converted into a scalar.</span>
-
-<span class="sd">    t_precision : integer</span>
-<span class="sd">        The time precision (number of decimal places). Default value is 12.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span> <span class="nn">decimal</span> <span class="kn">import</span> <span class="n">Decimal</span> <span class="k">as</span> <span class="n">dc</span>
-    <span class="n">n</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="o">-</span><span class="n">dc</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">nbr</span><span class="p">,</span> <span class="n">t_precision</span><span class="p">)))</span><span class="o">.</span><span class="n">as_tuple</span><span class="p">()</span><span class="o">.</span><span class="n">exponent</span>
-            <span class="o">*</span> <span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">nbr</span><span class="p">,</span> <span class="n">t_precision</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">int</span><span class="p">(</span><span class="n">nbr</span><span class="p">)))</span>
-    <span class="n">nbr_str</span> <span class="o">=</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">nbr</span><span class="p">,</span> <span class="n">t_precision</span><span class="p">)</span> <span class="o">*</span> <span class="mi">10</span><span class="o">**</span><span class="n">n</span><span class="p">))</span> <span class="o">+</span> <span class="p">(</span><span class="sa">f</span><span class="s1">&#39;e-</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">n</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">nbr_str</span>
-
-
-<span class="k">def</span> <span class="nf">conduit_dict_to_array</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Converts a conduit dict to a 3-column wide ndarray.</span>
-
-<span class="sd">    A conduit dict contains 3 arrays pertaining to pore1, throat, and</span>
-<span class="sd">    pore2. These arrays can be accessed via keys: &#39;pore1&#39;, &#39;throat&#39;,</span>
-<span class="sd">    and &#39;pore2&#39;.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    d : dict</span>
-<span class="sd">        Conduit dictionary with keys &#39;pore1&#39;, &#39;throat&#39;, and &#39;pore2&#39;.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    ndarray</span>
-<span class="sd">        Conduit array, i.e. 3-column wide, with columns pertaining to</span>
-<span class="sd">        pore1, throat, and pore2, respectively.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">_validate_conduit_dict</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">_np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;pore1&quot;</span><span class="p">],</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;throat&quot;</span><span class="p">],</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;pore2&quot;</span><span class="p">]))</span><span class="o">.</span><span class="n">T</span>
-
-
-<span class="k">def</span> <span class="nf">conduit_array_to_dict</span><span class="p">(</span><span class="n">arr</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Converts a conduit array to a conduit dict.</span>
-
-<span class="sd">    A conduit array is 3 columns wide, each pertaining to a conduit</span>
-<span class="sd">    property for pore1, throat, and pore2, respectively.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    arr : ndarray</span>
-<span class="sd">        Conduit array.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    dict</span>
-<span class="sd">        Conduit dictionary with keys &#39;pore1&#39;, &#39;throat&#39;, and &#39;pore2&#39;.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">_validate_conduit_array</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;pore1&quot;</span><span class="p">:</span> <span class="n">arr</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;throat&quot;</span><span class="p">:</span> <span class="n">arr</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;pore2&quot;</span><span class="p">:</span> <span class="n">arr</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]}</span>
-
-
-<span class="k">def</span> <span class="nf">_validate_conduit_dict</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Validates whether the given dictionary is a proper conduit dict.&quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Conduit dictionary must be of type dict.&quot;</span><span class="p">)</span>
-    <span class="n">allowed_keys</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="s2">&quot;pore1&quot;</span><span class="p">,</span> <span class="s2">&quot;throat&quot;</span><span class="p">,</span> <span class="s2">&quot;pore2&quot;</span><span class="p">])</span>
-    <span class="k">if</span> <span class="n">allowed_keys</span> <span class="o">!=</span> <span class="nb">set</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
-        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Conduit dictionary keys must be &#39;pore1&#39;, &#39;throat&#39;, and &#39;pore2&#39;&quot;</span><span class="p">)</span>
-    <span class="n">elem_lengths</span> <span class="o">=</span> <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">_np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">elem_lengths</span><span class="p">))</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Conduit dictionary must have arrays of the same length.&quot;</span><span class="p">)</span>
-
-
-<span class="k">def</span> <span class="nf">_validate_conduit_array</span><span class="p">(</span><span class="n">arr</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Validates whether the given array is a proper conduit array.&quot;&quot;&quot;</span>
-    <span class="n">arr</span> <span class="o">=</span> <span class="n">_np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Conduit array must be exactly 3 columns wide.&quot;</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">prettify_logger_message</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span>
