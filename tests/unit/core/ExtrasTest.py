@@ -1,15 +1,11 @@
-import openpnm as op
-import scipy as sp
-import pytest
 import importlib
-from types import ModuleType
+import openpnm as op
 from openpnm import Workspace
+from types import ModuleType
 ws = Workspace()
 
-class ExtrasTest:
 
-    def setup_class(self):
-        ws = op.Workspace()
+class ExtrasTest:
 
     def teardown_class(self):
         ws = op.Workspace()
@@ -29,7 +25,7 @@ class ExtrasTest:
         assert len(obj.project) == 1
 
     def test_initialize_StickAndBall_without_args(self):
-        obj = op.geometry.StickAndBall(settings={'freeze_models': True})
+        obj = op.geometry.SpheresAndCylinders(settings={'freeze_models': True})
         assert set(obj.keys()) == set(['pore.all', 'throat.all'])
         assert len(obj.models.keys()) > 0
         assert obj.Np == 0
@@ -62,7 +58,7 @@ class ExtrasTest:
         assert len(obj.models) > 0
 
     def test_init_geometris_without_args(self):
-        obj = op.geometry.StickAndBall(settings={'freeze_models': True})
+        obj = op.geometry.SpheresAndCylinders(settings={'freeze_models': True})
         assert len(obj.models) > 0
 
     def test_init_phases_without_args(self):
@@ -133,7 +129,6 @@ class ExtrasTest:
                 clss(project=net.project)
                 net = op.network.Cubic(shape=[2, 2, 2])
                 clss(network=net)
-
 
 
 if __name__ == '__main__':

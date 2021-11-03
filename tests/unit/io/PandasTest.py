@@ -62,13 +62,13 @@ class PandasTest:
     def test_to_dataframe_not_joined(self):
         df = Pandas.export_data(network=self.net, phases=[self.phase_1],
                                  join=False)
-        assert len(df.pore.keys()) == 23
-        assert len(df.throat.keys()) == 14
+        assert len(df.pore.keys()) == 22
+        assert len(df.throat.keys()) == 13
 
     def test_to_dataframe_joined(self):
         df = Pandas.export_data(network=self.net, phases=[self.phase_1],
                                  join=True)
-        assert len(df.keys()) == 37
+        assert len(df.keys()) == 35
 
 
 if __name__ == '__main__':

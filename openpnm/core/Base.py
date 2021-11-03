@@ -3,10 +3,47 @@ import uuid
 import numpy as np
 from collections import namedtuple
 from openpnm.utils import Workspace, logging
-from openpnm.utils.misc import PrintableList, SettingsDict, Docorator
+from openpnm.utils.misc import PrintableList, PrintableDict, SettingsDict, Docorator
 docstr = Docorator()
 logger = logging.getLogger(__name__)
 ws = Workspace()
+
+
+class ParamMixin:
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._params = PrintableDict()
+        self._params._key = "Parameters"
+        self._params._value = "Values"
+
+    def __getitem__(self, key):
+        if key.startswith('param'):
+            try:
+                vals = self._params[key]
+            except KeyError:
+                vals = self.network._params[key]
+        else:
+            vals = super().__getitem__(key)
+        return vals
+
+    def __setitem__(self, key, value):
+        if key.startswith('param'):
+            self._params[key] = value
+        else:
+            super().__setitem__(key, value)
+
+    def __str__(self):
+        s = super().__str__()
+        s = s.rpartition('\n')[0]
+        s = s + '\n' + self._params.__str__()
+        return s
+
+    def params(self):
+        r"""
+        Return parameter names and values in a dictionary
+        """
+        return self._params
 
 
 @docstr.get_sections(base='Base', sections=['Parameters'])
@@ -118,7 +155,7 @@ class Base(dict):
         self.update({'throat.all': np.ones(shape=(Nt, ), dtype=bool)})
 
     def __repr__(self):
-        return '<%s object at %s>' % (self.__class__.__module__, hex(id(self)))
+        return f'<{self.__class__.__module__} object at {hex(id(self))}>'
 
     def __eq__(self, other):
         return hex(id(self)) == hex(id(other))
@@ -145,7 +182,7 @@ class Base(dict):
         # Check 3: Enforce correct dict naming
         element = key.split('.')[0]
         if element not in ['pore', 'throat']:
-            raise Exception('All keys must start with either pore or throat')
+            raise Exception('All keys must start with either pore, or throat')
 
         # Check 2: If adding a new key, make sure it has no conflicts
         if self.project:
@@ -208,6 +245,7 @@ class Base(dict):
 
     def __getitem__(self, key):
         element, prop = key.split('.', 1)
+
         if key in self.keys():
             # Get values if present on self
             vals = super().__getitem__(key)
@@ -230,12 +268,6 @@ class Base(dict):
         elif hasattr(self, 'models') and key in self.models:
             self.regenerate_models(key)
             vals = super().__getitem__(key)
-        # The following is probably a bad idea, but just trying it for fun
-        # elif self.settings['interpolation_mode'] is not None:
-        #     temp = list(set(['pore', 'throat']).difference(set([element])))[0]
-        #     vals = self.interpolate_data(temp + '.' + prop,
-        #                                  mode=self.settings['interpolation_mode'])
-        #     self[element + '.' + prop] = vals
         else:
             raise KeyError(key)
         return vals
@@ -1450,14 +1482,18 @@ class LabelMixin:
                 Removes existing label from all locations before
                 adding the label in the specified locations
             * 'remove'
-                Removes the  given label from the specified locations
+                Removes the given label from the specified locations
                 leaving the remainder intact
             * 'purge'
-                Removes the specified label from the object
+                Removes the specified label from the object completely
+            * 'clear'
+                Sets all the labels to ``False`` but does not remove the label
+                array
 
         """
         self._parse_mode(mode=mode,
-                         allowed=['add', 'overwrite', 'remove', 'purge'])
+                         allowed=['add', 'overwrite', 'remove', 'purge',
+                                  'clear'])
 
         if label.split('.')[0] in ['pore', 'throat']:
             label = label.split('.', 1)[1]
@@ -1472,9 +1508,6 @@ class LabelMixin:
         elif throats is not None:
             locs = self._parse_indices(throats)
             element = 'throat'
-        else:  # If both are None, then the mode must be purge
-            _ = self.pop('pore.' + label, None)
-            _ = self.pop('throat.' + label, None)
 
         if mode == 'add':
             if element + '.' + label not in self.keys():
@@ -1485,6 +1518,12 @@ class LabelMixin:
             self[element + '.' + label][locs] = True
         if mode== 'remove':
             self[element + '.' + label][locs] = False
+        if mode == 'clear':
+            self['pore' + '.' + label] = False
+            self['throat' + '.' + label] = False
+        if mode == 'purge':
+            _ = self.pop('pore.' + label, None)
+            _ = self.pop('throat.' + label, None)
 
 
     def _get_indices(self, element, labels='all', mode='or'):
