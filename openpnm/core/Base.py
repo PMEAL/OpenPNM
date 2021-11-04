@@ -3,10 +3,16 @@ import uuid
 import numpy as np
 from collections import namedtuple
 from openpnm.utils import Workspace, logging
-from openpnm.utils.misc import PrintableList, PrintableDict, SettingsDict, Docorator
+from openpnm.utils import SettingsData, SettingsAttr
+from openpnm.utils.misc import PrintableList, PrintableDict, Docorator
+from traits.api import Str
 docstr = Docorator()
 logger = logging.getLogger(__name__)
 ws = Workspace()
+
+
+class SettingsData:
+    prefix = Str('base')
 
 
 class ParamMixin:
