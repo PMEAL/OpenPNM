@@ -4,7 +4,7 @@ import warnings
 import scipy.sparse.csgraph as spgr
 from scipy.spatial import ConvexHull
 from scipy.spatial import cKDTree
-from openpnm.topotools import iscoplanar, is_fully_connected
+from openpnm.topotools import iscoplanar, is_fully_connected, dimensionality
 from openpnm.algorithms import GenericAlgorithm, SettingsGenericAlgorithm
 from openpnm.utils import logging, Docorator, prettify_logger_message
 from openpnm.utils import GenericSettings, SettingsAttr
@@ -730,7 +730,7 @@ class GenericTransport(GenericAlgorithm):
         Determines the cross sectional area relative to the inlets/outlets.
         """
         logger.warning('Attempting to estimate inlet area...will be low')
-        if op.topotools.dimensionality(self.network).sum() != 3:
+        if dimensionality(self.network).sum() != 3:
             raise Exception('The network is not 3D, specify area manually')
         inlets = self._get_inlets() if inlets is None else inlets
         outlets = self._get_outlets() if outlets is None else outlets
