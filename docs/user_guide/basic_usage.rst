@@ -1,11 +1,15 @@
-.. _quick_start:
+.. _basic_usage:
 
-Getting Started
----------------
+###########
+Basic Usage
+###########
 
 It is relatively easy to get going with a quick simulation in OpenPNM.
 In fact the following code block produces a mercury intrusion simulation in
-just a few lines:
+just a few lines.
+
+Problem setup
+-------------
 
 .. code-block:: python
 
@@ -26,11 +30,17 @@ just a few lines:
    mip.set_inlets(pores=pn.pores(['left', 'right', 'top', 'bottom']))
    mip.run()
 
+Basic visualization
+-------------------
+
 The results can be visualized with ``mip.plot_intrusion_curve()`` giving
 something like this:
 
 .. image:: https://user-images.githubusercontent.com/14086031/77930201-96363b80-7278-11ea-95fd-4a55fb1d6148.png
    :width: 800px
+
+Calculating permeability
+------------------------
 
 As another example, the permeability coefficient can be found as follows:
 
@@ -58,6 +68,10 @@ can be found by inserting known values into Darcy's law as follows:
    L = Nx*Lc
    mu = water['pore.viscosity'].mean()
    K = Q*mu*L/(A*(Pin-Pout))
+
+Adjusting pore size distribution
+--------------------------------
+
 
 It's also worth explaining how to adjust the pore size distribution of the
 network, so that the capillary curve and permeability coefficient can be
