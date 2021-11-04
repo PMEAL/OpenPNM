@@ -43,7 +43,8 @@ extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.mathjax',
               'sphinx_copybutton',
               'nbsphinx',
-              'nbsphinx_link']
+              'nbsphinx_link',
+              'sphinx_panels']
 
 html_theme_options = {
     "logo_link": "https://www.openpnm.org",
@@ -60,7 +61,7 @@ html_theme_options = {
         },
         {
             "name": "Twitter",
-            "url": "https://twitter.com/OpenPnm",
+            "url": "https://twitter.com/OpenPNM",
             "icon": "fab fa-twitter-square",
         },
     ],
@@ -76,7 +77,7 @@ html_theme_options = {
     "show_prev_next": False,
     "icon_links_label": "Quick Links",
     "use_edit_page_button": False,
-    "search_bar_position": "navbar",
+    "search_bar_position": "sidebar",
     "navbar_align": "left",
 }
 
@@ -86,9 +87,17 @@ html_sidebars = {
     "examples/*": []
 }
 
+# So that 'sphinx-copybutton' only copies the actual code, not the prompt
+copybutton_prompt_text = r">>> |\.\.\. |\$ |In \[\d*\]: | {2,5}\.\.\.: | {5,8}: "
+copybutton_prompt_is_regexp = True
+
 html_js_files = ['js/custom.js']
 
+html_css_files = ['css/custom.css']
+
 nbsphinx_prompt_width = "0"
+
+panels_add_bootstrap_css = False  # to fix narrow width
 
 exclude_patterns = ['_build', '_templates']
 
