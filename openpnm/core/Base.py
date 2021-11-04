@@ -11,8 +11,19 @@ logger = logging.getLogger(__name__)
 ws = Workspace()
 
 
-class SettingsData:
+@docstr.get_sections(base='BaseSettings', sections=['Parameters'])
+class BaseSettings(SettingsData):
+    r"""
+    The default settings to use on instance of Base
+
+    Parameters
+    ----------
+    prefix : str
+        The dafault prefix to use when generating a name
+    """
     prefix = Str('base')
+    name = Str('')
+    uuid = Str('')
 
 
 class ParamMixin:
@@ -138,13 +149,12 @@ class Base(dict):
         instance = super(Base, cls).__new__(cls, *args, **kwargs)
         # It is necessary to set the SettingsDict here since some classes
         # use it before calling super.__init__()
-        instance.settings = SettingsDict()
-        instance.settings['name'] = None
-        instance.settings['_uuid'] = str(uuid.uuid4())
+        instance.settings = SettingsAttr(BaseSettings())
+        instance.settings.uuid = str(uuid.uuid4())
         return instance
 
     def __init__(self, Np=0, Nt=0, name=None, project=None, network=None, settings={}):
-        self.settings.update(settings)
+        self.settings._update(settings)
         super().__init__()
         if project is None:
             if network is None:
