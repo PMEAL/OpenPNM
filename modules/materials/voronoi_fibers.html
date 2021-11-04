@@ -261,7 +261,7 @@
    </li>
    <li class="toctree-l2">
     <a class="reference internal" href="../geometry/stick_and_ball.html">
-     StickAndBall
+     SpheresAndCylinders
     </a>
    </li>
   </ul>
@@ -610,66 +610,6 @@
                 
   <section id="voronoifibers">
 <span id="voronoi-fibers-api"></span><h1>VoronoiFibers<a class="headerlink" href="#voronoifibers" title="Permalink to this headline">¶</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="openpnm.materials.VoronoiFibers">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">VoronoiFibers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fiber_rad</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[1,</span> <span class="pre">1,</span> <span class="pre">1]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linear_scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/materials/VoronoiFibers.html#VoronoiFibers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.materials.VoronoiFibers" title="Permalink to this definition">¶</a></dt>
-<dd><p>Resembles a fibrous paper or mat with straight intersecting fibers.</p>
-<p>Two geometries are created: DelaunayGeometry defines the pore space
-with pores connected by a Delaunay tesselation and VoronoiGeometry defines
-the fiber space with fibers forming the edges of the Voronoi diagram.
-The two geometries are complimentary and can be accessed individually
-via the project associated with this network object.</p>
-<p>This class is a subclass of the DelaunayVoronoiDual network, and many of
-the parameters behave in the exact same way. However, currently a
-rectangular shape is the only one supported. Additionally, an image is
-created for calculating size data and two parameters relate to this:
-fiber_rad and resolution as detailed below.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>points</strong> (<em>array_like</em><em> or </em><em>int</em>) – Can either be an N-by-3 array of point coordinates which will be used,
-or a scalar value indicating the number of points to generate</p></li>
-<li><p><strong>shape</strong> (<em>array_like</em>) – <p>The size and shape of the domain using for generating and trimming
-excess points. It’s treated as the outer corner of rectangle [x, y, z]
-whose opposite corner lies at [0, 0, 0].</p>
-<p>By default, a domain size of [1, 1, 1] is used.</p>
-</p></li>
-<li><p><strong>fiber_rad</strong> (<em>float</em>) – fiber radius to apply to Voronoi edges when calculating pore and throat
-sizes</p></li>
-<li><p><strong>resolution</strong> (<em>boolean</em>) – Determines the size of each voxel in the image. Care should be made to
-appropriately set the resolution based on the fiber_radius and the
-shape of the domain so as to remain within memory constraints.</p></li>
-<li><p><strong>linear_scale</strong> (<em>array_like</em><em> (</em><em>len 3</em><em>)</em>) – This is applied to the domain size before placing the points and then
-reversed afterwards and has the effect of introducing anisotropy into
-an otherwise uniformly distributed point distribution. By default no
-scaling is applied. Applying [1, 1, 2] will stretch the domain by a
-factor of 2 in the z-direction and this will have the affect of
-aligning fibers in the x and y directions once scaling is reversed.</p></li>
-</ul>
-</dd>
-</dl>
-<p class="rubric">References</p>
-<p>This approach to modeling fibrous materials was first presented by
-Thompson [1] for simulating fluid imbibition in sorbent paper products.
-Gostick [2], and Tranter et al.[3, 4] have subsequently used it to model
-electrodes in fuel cells.</p>
-<p>[1] K. E. Thompson, AlChE J., 48, 1369 (2002)
-[2] J. T. Gostick, Journal of the Electrochemical Society 2013, 160, F731.
-[3] T. G. Tranter et al. Fuel Cells, 2016, 16, 4, 504-515
-[4] T. G. Tranter et al. Transport in Porous Media, 2018, 121, 3, 597-620</p>
-<p class="rubric">Examples</p>
-<p>Points will be automatically generated if none are given:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ws</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">Workspace</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ws</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">prj</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">materials</span><span class="o">.</span><span class="n">VoronoiFibers</span><span class="p">(</span><span class="n">points</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
-<span class="gp">... </span>                                 <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mf">1e-4</span><span class="p">,</span> <span class="mf">1e-4</span><span class="p">,</span> <span class="mf">1e-4</span><span class="p">],</span>
-<span class="gp">... </span>                                 <span class="n">fiber_rad</span><span class="o">=</span><span class="mf">5e-6</span><span class="p">,</span>
-<span class="gp">... </span>                                 <span class="n">resolution</span><span class="o">=</span><span class="mf">2e-6</span><span class="p">)</span>
-</pre></div>
-</div>
-</dd></dl>
-
 </section>
 
 

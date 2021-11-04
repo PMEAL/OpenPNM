@@ -261,7 +261,7 @@
    </li>
    <li class="toctree-l2">
     <a class="reference internal" href="../geometry/stick_and_ball.html">
-     StickAndBall
+     SpheresAndCylinders
     </a>
    </li>
   </ul>
@@ -610,42 +610,6 @@
                 
   <section id="stokesflow">
 <span id="stokes-flow-api"></span><h1>StokesFlow<a class="headerlink" href="#stokesflow" title="Permalink to this headline">¶</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="openpnm.algorithms.StokesFlow">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">StokesFlow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/StokesFlow.html#StokesFlow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.StokesFlow" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="reactive_transport.html#openpnm.algorithms.ReactiveTransport" title="openpnm.algorithms.ReactiveTransport.ReactiveTransport"><code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.algorithms.ReactiveTransport.ReactiveTransport</span></code></a></p>
-<p>A subclass of GenericLinearTransport to simulate viscous flow.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="openpnm.algorithms.StokesFlow.calc_effective_permeability">
-<span class="sig-name descname"><span class="pre">calc_effective_permeability</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inlets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outlets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain_area</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/StokesFlow.html#StokesFlow.calc_effective_permeability"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.StokesFlow.calc_effective_permeability" title="Permalink to this definition">¶</a></dt>
-<dd><p>This calculates the effective permeability in this linear transport
-algorithm.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>inlets</strong> (<em>array_like</em>) – The pores where the inlet pressure boundary conditions were
-applied.  If not given an attempt is made to infer them from the
-algorithm.</p></li>
-<li><p><strong>outlets</strong> (<em>array_like</em>) – The pores where the outlet pressure boundary conditions were
-applied.  If not given an attempt is made to infer them from the
-algorithm.</p></li>
-<li><p><strong>domain_area</strong> (<em>scalar</em><em>, </em><em>optional</em>) – The area of the inlet (and outlet) boundary faces.  If not given
-then an attempt is made to estimate it, but it is usually
-underestimated.</p></li>
-<li><p><strong>domain_length</strong> (<em>scalar</em><em>, </em><em>optional</em>) – The length of the domain between the inlet and outlet boundary
-faces.  If not given then an attempt is made to estimate it, but it
-is usually underestimated.</p></li>
-</ul>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<p>The area and length of the domain are found using the bounding box
-around the inlet and outlet pores which do not necessarily lie on the
-edge of the domain, resulting in underestimation of sizes.</p>
-</dd></dl>
-
-</dd></dl>
-
 </section>
 
 

@@ -261,7 +261,7 @@
    </li>
    <li class="toctree-l2">
     <a class="reference internal" href="../geometry/stick_and_ball.html">
-     StickAndBall
+     SpheresAndCylinders
     </a>
    </li>
   </ul>
@@ -610,52 +610,6 @@
                 
   <section id="pandas">
 <span id="pandas-api"></span><h1>Pandas<a class="headerlink" href="#pandas" title="Permalink to this headline">¶</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="openpnm.io.Pandas">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">Pandas</span></span><a class="reference internal" href="../../_modules/openpnm/io/Pandas.html#Pandas"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.io.Pandas" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.io.GenericIO.GenericIO</span></code></p>
-<p>Combines all data arrays into a Pandas DataFrame object</p>
-<p>The structure of a DataFrame is a very close match to OpenPNMs data
-storage.  Each key becomes a column header in the Dataframe, and each
-pore or throat entry becomes a row.</p>
-<p>Limitations of the DataFrame are the inability to have multidimensional
-data in a single column.  The methods on a DataFrame are also oriented
-towards time-series data.</p>
-<p>Nonetheless, Pandas offers many useful features such as performing
-statistical analysis on property.  DataFrames also offer <em>many</em> options for
-exporting to other file formats, so if a format is not yet supported
-by OpenPNM, this could be an solution.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="openpnm.io.Pandas.export_data">
-<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">export_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">network</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phases</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">join</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'</span> <span class="pre">|</span> <span class="pre">'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/io/Pandas.html#Pandas.export_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.io.Pandas.export_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convert the Network (and optionally Phase) data to Pandas DataFrames.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>network</strong> (<em>OpenPNM Network Object</em>) – The network containing the data to be stored</p></li>
-<li><p><strong>phases</strong> (<em>list of OpenPNM Phase Objects</em>) – The data on each supplied phase will be added to DataFrame</p></li>
-<li><p><strong>join</strong> (<em>boolean</em>) – If <code class="docutils literal notranslate"><span class="pre">False</span></code> (default), two DataFrames are returned with <em>pore</em>
-data in one, and <em>throat</em> data in the other.  If <code class="docutils literal notranslate"><span class="pre">True</span></code> the pore
-and throat data are combined into a single DataFrame.  This can be
-problematic as it will put NaNs into all the <em>pore</em> columns which
-are shorter than the <em>throat</em> columns.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><ul class="simple">
-<li><p>Pandas <code class="docutils literal notranslate"><span class="pre">DataFrame</span></code> object containing property and label data in each</p></li>
-<li><p>column.  If <code class="docutils literal notranslate"><span class="pre">join</span></code> was False (default) the two DataFrames are</p></li>
-<li><p><em>returned i a named tuple, or else a single DataFrame with pore and</em></p></li>
-<li><p><em>throat data in the same file, despite the column length being</em></p></li>
-<li><p><em>different.</em></p></li>
-</ul>
-</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
 </section>
 
 
