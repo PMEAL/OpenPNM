@@ -37,12 +37,10 @@ from .Porosimetry import Porosimetry
 from .IonicConduction import IonicConduction
 from .TransientIonicConduction import TransientIonicConduction
 
-from .NernstPlanck import NernstPlanck
-from .TransientNernstPlanck import TransientNernstPlanck
+# from .NernstPlanck import *
+# from .TransientNernstPlanck import *
 
-from .NernstPlanckMultiphysicsSolver import NernstPlanckMultiphysicsSolver
-from .TransientNernstPlanckMultiphysicsSolver import (
-    TransientNernstPlanckMultiphysicsSolver
-)
+# from .NernstPlanckMultiphysicsSolver import *
+# from .TransientNernstPlanckMultiphysicsSolver *
 
 from . import metrics

@@ -43,5 +43,4 @@ jobs:
         run:
           pytest examples/
             --nbval-lax
-            --ignore="examples/paper_recreations/Blunt et al. (2013)"
-            --ignore="examples/paper_recreations/Wu et al. (2010)"
+

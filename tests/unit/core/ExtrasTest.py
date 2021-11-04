@@ -1,15 +1,11 @@
-import openpnm as op
-import scipy as sp
-import pytest
 import importlib
-from types import ModuleType
+import openpnm as op
 from openpnm import Workspace
+from types import ModuleType
 ws = Workspace()
 
-class ExtrasTest:
 
-    def setup_class(self):
-        ws = op.Workspace()
+class ExtrasTest:
 
     def teardown_class(self):
         ws = op.Workspace()
@@ -29,7 +25,7 @@ class ExtrasTest:
         assert len(obj.project) == 1
 
     def test_initialize_StickAndBall_without_args(self):
-        obj = op.geometry.StickAndBall(settings={'freeze_models': True})
+        obj = op.geometry.SpheresAndCylinders(settings={'freeze_models': True})
         assert set(obj.keys()) == set(['pore.all', 'throat.all'])
         assert len(obj.models.keys()) > 0
         assert obj.Np == 0
@@ -62,7 +58,7 @@ class ExtrasTest:
         assert len(obj.models) > 0
 
     def test_init_geometris_without_args(self):
-        obj = op.geometry.StickAndBall(settings={'freeze_models': True})
+        obj = op.geometry.SpheresAndCylinders(settings={'freeze_models': True})
         assert len(obj.models) > 0
 
     def test_init_phases_without_args(self):
@@ -120,10 +116,6 @@ class ExtrasTest:
         ws.settings['loglevel'] = 50
         classes = [c for c in dir(op.algorithms) if not c.startswith('__')]
         mod = importlib.import_module('openpnm.algorithms')
-        # The following 3 should be fixed to accept no phase arguments
-        classes.pop(classes.index('NernstPlanck'))
-        classes.pop(classes.index('NernstPlanckMultiphysicsSolver'))
-        classes.pop(classes.index('TransientNernstPlanckMultiphysicsSolver'))
         # metrics should be ignored
         classes.pop(classes.index('metrics'))
         for c in classes:
@@ -135,12 +127,10 @@ class ExtrasTest:
                 clss(network=net)
 
 
-
 if __name__ == '__main__':
 
     t = ExtrasTest()
     self = t
-    t.setup_class()
     for item in t.__dir__():
         if item.startswith('test'):
             print('running test: '+item)

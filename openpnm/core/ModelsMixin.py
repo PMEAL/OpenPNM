@@ -84,7 +84,7 @@ class ModelsDict(PrintableDict):
 
         >>> import openpnm as op
         >>> net = op.network.Cubic(shape=[3, 3, 3])
-        >>> geo = op.geometry.StickAndBall(network=net,
+        >>> geo = op.geometry.SpheresAndCylinders(network=net,
         ...                                pores=net.Ps,
         ...                                throats=net.Ts)
         >>> dtree = geo.models.dependency_graph()

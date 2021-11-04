@@ -1,10 +1,10 @@
-from openpnm.core import Subdomain, ModelsMixin
+from openpnm.core import Subdomain, ModelsMixin, ParamMixin
 from openpnm.utils import Workspace, logging
 logger = logging.getLogger(__name__)
 ws = Workspace()
 
 
-class GenericGeometry(Subdomain, ModelsMixin):
+class GenericGeometry(ParamMixin, Subdomain, ModelsMixin):
     r"""
     This generic class is meant as a starter for custom Geometry objects
 

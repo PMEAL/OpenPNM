@@ -8,9 +8,9 @@ class GenericTransportTest:
 
     def setup_class(self):
         self.net = op.network.Cubic(shape=[9, 9, 9])
-        self.geo = op.geometry.StickAndBall(network=self.net,
-                                            pores=self.net.Ps,
-                                            throats=self.net.Ts)
+        self.geo = op.geometry.SpheresAndCylinders(network=self.net,
+                                             pores=self.net.Ps,
+                                             throats=self.net.Ts)
         self.phase = op.phases.Air(network=self.net)
         self.phase['pore.mole_fraction'] = 0
         self.phys = op.physics.GenericPhysics(network=self.net,
@@ -35,36 +35,6 @@ class GenericTransportTest:
                              "conductance": "throat.conductance"})
         with pytest.raises(Exception):
             alg.run()
-
-    def test_set_solver(self):
-        alg = op.algorithms.GenericTransport(network=self.net,
-                                             phase=self.phase)
-        # Store old values
-        family = alg.settings["solver_family"]
-        stype = alg.settings["solver_type"]
-        tol = alg.settings["solver_tol"]
-        atol = alg.settings["solver_atol"]
-        rtol = alg.settings["solver_rtol"]
-        max_iter = alg.settings["solver_max_iter"]
-        # Set solver settings, but don't provide any arguments
-        alg.set_solver()
-        # Make sure nothing was changed
-        assert alg.settings["solver_family"] == family
-        assert alg.settings["solver_type"] == stype
-        assert alg.settings["solver_tol"] == tol
-        assert alg.settings["solver_atol"] == atol
-        assert alg.settings["solver_rtol"] == rtol
-        assert alg.settings["solver_max_iter"] == max_iter
-        # Set solver settings, this time change everything
-        alg.set_solver(solver_family="petsc", solver_type="gmres", max_iter=13,
-                       preconditioner="ilu", tol=1e-3, atol=1e-12, rtol=1e-2)
-        # Make changes went through
-        assert alg.settings["solver_family"] == "petsc"
-        assert alg.settings["solver_type"] == "gmres"
-        assert alg.settings["solver_tol"] == 1e-3
-        assert alg.settings["solver_atol"] == 1e-12
-        assert alg.settings["solver_rtol"] == 1e-2
-        assert alg.settings["solver_max_iter"] == 13
 
     def test_remove_boundary_conditions(self):
         alg = op.algorithms.GenericTransport(network=self.net,
@@ -199,9 +169,7 @@ class GenericTransportTest:
 
     def test_rate_Nt_by_2_conductance(self):
         net = op.network.Cubic(shape=[1, 6, 1])
-        geom = op.geometry.StickAndBall(network=net,
-                                        pores=net.Ps,
-                                        throats=net.Ts)
+        geom = op.geometry.SpheresAndCylinders(network=net, pores=net.Ps, throats=net.Ts)
         air = op.phases.Air(network=net)
         water = op.phases.Water(network=net)
         m = op.phases.MultiPhase(phases=[air, water], project=net.project)
@@ -209,9 +177,7 @@ class GenericTransportTest:
         m.set_occupancy(phase=water, pores=[3, 4, 5])
         const = op.models.misc.constant
         K_water_air = 0.5
-        m.set_binary_partition_coef(
-            phases=[water, air], model=const, value=K_water_air
-        )
+        m.set_binary_partition_coef(phases=[water, air], model=const, value=K_water_air)
         m._set_automatic_throat_occupancy()
         _ = op.physics.Standard(network=net, phase=m, geometry=geom)
         alg = op.algorithms.GenericTransport(network=net, phase=m)
@@ -337,7 +303,6 @@ class GenericTransportTest:
         phase = op.phases.GenericPhase(network=net)
         phase['throat.diffusive_conductance'] = 1.0
         alg = op.algorithms.FickianDiffusion(network=net, phase=phase)
-        alg.settings['solver_family'] = 'scipy'
         alg.set_value_BC(pores=0, values=1)
         with pytest.raises(Exception):
             alg.run()
@@ -357,5 +322,5 @@ if __name__ == '__main__':
     self = t
     for item in t.__dir__():
         if item.startswith('test'):
-            print('running test: '+item)
+            print(f'Running test: {item}')
             t.__getattribute__(item)()

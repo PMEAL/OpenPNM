@@ -1,20 +1,22 @@
-import pytest
 import numpy as np
-import openpnm as op
 import numpy.testing as nt
+import openpnm as op
+from scipy.interpolate import interp1d
 
 
-class TransientImplicitReactiveTransportTest:
+class TransientReactiveTransportTest:
 
     def setup_class(self):
         np.random.seed(0)
         self.net = op.network.Cubic(shape=[3, 3, 1], spacing=1e-6)
-        self.geo = op.geometry.GenericGeometry(
-            network=self.net, pores=self.net.Ps, throats=self.net.Ts)
+        self.geo = op.geometry.GenericGeometry(network=self.net,
+                                               pores=self.net.Ps,
+                                               throats=self.net.Ts)
         self.geo['pore.volume'] = 1e-12
         self.phase = op.phases.GenericPhase(network=self.net)
-        self.phys = op.physics.GenericPhysics(
-            network=self.net, phase=self.phase, geometry=self.geo)
+        self.phys = op.physics.GenericPhysics(network=self.net,
+                                              phase=self.phase,
+                                              geometry=self.geo)
         self.phys['pore.A'] = -1e-13
         self.phys['pore.k'] = 2
         self.phys['throat.diffusive_conductance'] = 1e-12
@@ -27,103 +29,67 @@ class TransientImplicitReactiveTransportTest:
                             regen_mode='deferred')
         self.settings = {'conductance': 'throat.diffusive_conductance',
                          'quantity': 'pore.concentration'}
-        self.alg = op.algorithms.TransientReactiveTransport(
-            network=self.net, phase=self.phase, settings=self.settings)
+        self.alg = op.algorithms.TransientReactiveTransport(network=self.net,
+                                                            phase=self.phase,
+                                                            settings=self.settings)
         self.alg.settings.update({'quantity': 'pore.concentration',
-                                  'conductance': 'throat.diffusive_conductance',
-                                  't_initial': 0,
-                                  't_final': 1,
-                                  't_step': 0.1,
-                                  't_tolerance': 1e-7,
-                                  't_precision': 10,
-                                  'rxn_tolerance': 1e-6})
+                                  'conductance': 'throat.diffusive_conductance'})
         self.alg.set_value_BC(pores=self.net.pores('front'), values=2)
-        self.alg.set_source(propname='pore.reaction',
-                            pores=self.net.pores('back'))
-        self.alg.set_IC(0)
+        self.alg.set_source(propname='pore.reaction', pores=self.net.pores('back'))
 
-    def test_transient_implicit_reactive_transport(self):
-        self.alg.settings['t_scheme'] = 'implicit'
-        self.alg.run()
-        x = [2, 0.95029957, 0.41910096,
-             2, 0.95029957, 0.41910096,
-             2, 0.95029957, 0.41910096]
-        y = self.alg["pore.concentration"]
-        nt.assert_allclose(y, x, rtol=1e-5)
+    def test_transient_reactive_transport(self):
+        self.alg.run(x0=0, tspan=(0, 1))
+        desired = 1.13133
+        actual = self.alg.x.mean()
+        nt.assert_allclose(actual, desired, rtol=1e-5)
 
-    def test_transient_cranknicolson_reactive_transport(self):
-        self.alg.settings['t_scheme'] = 'cranknicolson'
-        self.alg.run()
-        x = [2., 0.97167537, 0.4209642,
-             2., 0.97167537, 0.4209642,
-             2., 0.97167537, 0.4209642]
-        y = self.alg["pore.concentration"]
-        nt.assert_allclose(y, x, rtol=1e-5)
-
-    def test_transient_reactive_transport_output_times(self):
-        self.alg.settings['t_output'] = [0, 0.5, 0.7, 1]
-        self.alg.run()
-        times = ["pore.concentration@0",
-                 "pore.concentration@5e-1",
-                 "pore.concentration@7e-1",
-                 "pore.concentration@1"]
-        assert set(times).issubset(self.alg.keys())
-
-    def test_transient_reactive_transport_results(self):
-        times_total = ["pore.concentration@0",
-                       "pore.concentration@5e-1",
-                       "pore.concentration@7e-1",
-                       "pore.concentration@1"]
-        results_total = set(self.alg.results(steps=None).keys())
-        results_total.discard("pore.concentration")
-        assert set(times_total) == results_total
-        times_partial = ["pore.concentration@5e-1",
-                         "pore.concentration@1"]
-        results_partial = set(self.alg.results(times=[0.5, 1]).keys())
-        results_partial.discard("pore.concentration")
-        assert set(times_partial) == results_partial
-
-    def test_transient_steady_mode_reactive_transport(self):
-        self.alg.settings['t_scheme'] = "steady"
-        self.alg.run()
-        x = [2, 1.76556357, 1.53112766,
-             2, 1.76556357, 1.53112766,
-             2, 1.76556357, 1.53112766]
-        y = self.alg["pore.concentration"]
-        nt.assert_allclose(y, x, rtol=1e-5)
-        self.alg.run()
+    def test_transient_solution(self):
+        out = self.alg.run(x0=0, tspan=(0, 1), saveat=0.1)
+        # Test datatype
+        assert isinstance(out, op.integrators.TransientSolution)
+        # Ensure solution object is attached to the algorithm
+        assert isinstance(self.alg.soln, op.integrators.TransientSolution)
+        # Test shape
+        nt.assert_array_equal(self.alg.soln.shape, (self.alg.Np, 11))
+        # Test stored time points
+        nt.assert_array_equal(self.alg.soln.t, np.arange(0, 1.1, 0.1))
+        # Ensure solution is callable (i.e., interpolates intermediate times)
+        assert hasattr(out, "__call__")
+        # Test solution interpolation
+        f = interp1d(out.t, out)
+        nt.assert_allclose(f(0.05), out(0.05))
+        # Ensure no extrapolation
+        with nt.assert_raises(Exception):
+            out(1.01)
 
     def test_consecutive_runs_preserves_solution(self):
-        self.alg.settings['t_scheme'] ='implicit'
-        self.alg.run()
-        x = [2, 0.95029957, 0.41910096,
-             2, 0.95029957, 0.41910096,
-             2, 0.95029957, 0.41910096]
-        y = self.alg["pore.concentration"]
-        nt.assert_allclose(y, x, rtol=1e-5)
-        self.alg.run()
-        y = self.alg["pore.concentration"]
-        nt.assert_allclose(y, x, rtol=1e-5)
+        # Integrate from 0 to 0.3 in two steps
+        self.alg.run(x0=0, tspan=(0, 0.1))
+        out1 = self.alg.run(x0=self.alg.x, tspan=(0.1, 0.3))
+        # Integrate from 0 to 0.3 in one go
+        out2 = self.alg.run(x0=0, tspan=(0, 0.3))
+        # Ensure the results match
+        nt.assert_allclose(out1(0.3), out2(0.3), rtol=1e-5)
+
 
     def test_adding_bc_over_sources(self):
-        with pytest.raises(Exception):
+        with nt.assert_raises(Exception):
             self.alg.set_value_BC(pores=self.net.pores("right"), values=0.3)
 
     def test_adding_sources_over_bc(self):
-        with pytest.raises(Exception):
+        with nt.assert_raises(Exception):
             self.alg.set_source(propname='pore.reaction',
                                 pores=self.net.pores('left'))
 
     def test_ensure_settings_are_valid(self):
         alg = op.algorithms.TransientReactiveTransport(network=self.net, phase=self.phase)
-        with pytest.raises(Exception, match=r".*quantity.*"):
-            alg.run()
+        with nt.assert_raises_regex(Exception, r".*quantity.*"):
+            alg.run(x0=0, tspan=(0, 1))
         alg.settings['quantity'] = 'pore.concentration'
-        with pytest.raises(Exception, match=r".*conductance.*"):
-            alg.run()
-        alg.settings['conductance'] = 'throat.conductance'
-        with pytest.raises(Exception):
-            alg.run()
+        with nt.assert_raises_regex(Exception, r".*conductance.*"):
+            alg.run(x0=0, tspan=(0, 1))
+        alg.settings['conductance'] = 'throat.diffusive_conductance'
+        alg.run(x0=0, tspan=(0, 1))
 
     def teardown_class(self):
         ws = op.Workspace()
@@ -132,7 +98,7 @@ class TransientImplicitReactiveTransportTest:
 
 if __name__ == '__main__':
 
-    t = TransientImplicitReactiveTransportTest()
+    t = TransientReactiveTransportTest()
     t.setup_class()
     self = t
     for item in t.__dir__():

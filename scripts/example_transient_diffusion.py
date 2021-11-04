@@ -5,14 +5,13 @@ import numpy as np
 # Workspace and project
 ws = op.Workspace()
 proj = ws.new_project()
-export = False
 
 # Network
 np.random.seed(7)
 net = op.network.Cubic(shape=[51, 19, 1], spacing=1e-4, project=proj)
 
 # Geometry
-geo = op.geometry.StickAndBall(network=net, pores=net.Ps, throats=net.Ts)
+geo = op.geometry.SpheresAndCylinders(network=net, pores=net.Ps, throats=net.Ts)
 
 # Phase
 phase = op.phases.Water(network=net)
@@ -30,11 +29,9 @@ phys.add_model(propname='throat.diffusive_conductance',
 fd = op.algorithms.TransientFickianDiffusion(network=net, phase=phase)
 fd.set_value_BC(pores=net.pores('front'), values=0.5)
 fd.set_value_BC(pores=net.pores('back'), values=0.1)
-fd.setup(t_final=100, t_output=10, t_step=0.5)
-fd.run()
+fd.run(x0=0, tspan=(0, 100), saveat=10)
 phase.update(fd.results())
 
 # Output results to a vtk file
 phase.update(fd.results())
-if export:
-    proj.export_data(phases=[phase], filename='out', filetype='xdmf')
+proj.export_data(phases=[phase], filename='out', filetype='xdmf')

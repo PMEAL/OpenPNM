@@ -4,7 +4,7 @@ ws = op.Workspace()
 proj = ws.new_project()
 
 pn = op.network.Cubic(shape=[10, 10, 10], spacing=1e-4, project=proj)
-geo = op.geometry.StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts)
+geo = op.geometry.SpheresAndCylinders(network=pn, pores=pn.Ps, throats=pn.Ts)
 
 o2 = mixtures.GasByName(network=pn, species='oxygen', name='o2')
 n2 = mixtures.GasByName(network=pn, species='nitrogen', name='n2')
