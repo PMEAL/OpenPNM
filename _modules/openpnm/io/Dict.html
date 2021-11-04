@@ -1,0 +1,504 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>openpnm.io.Dict &#8212; OpenPNM  documentation</title>
+    
+  <link href="../../../_static/css/theme.css" rel="stylesheet">
+  <link href="../../../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/blank.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
+    
+  <link rel="preload" as="script" href="../../../_static/js/index.be7d3bbb2ef33a8344ce.js">
+
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/clipboard.min.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/custom.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+
+<a class="navbar-brand" href="https://www.openpnm.org">
+  <img src="../../../_static/openpnm_logo.png" class="logo" alt="logo">
+</a>
+
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class=" collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../userguide/index.html">
+  <strong>
+   User Guide
+  </strong>
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../modules/index.html">
+  <strong>
+   Module Reference
+  </strong>
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../examples/examples.html">
+  Examples
+ </a>
+</li>
+
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/PMEAL/OpenPNM" rel="noopener" target="_blank" title="GitHub">
+            <span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://openpnm.substack.com/" rel="noopener" target="_blank" title="Substack">
+            <span><i class="fas fa-envelope-square"></i></span>
+            <label class="sr-only">Substack</label>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://twitter.com/OpenPnm" rel="noopener" target="_blank" title="Twitter">
+            <span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label>
+          </a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    
+  </div>
+</nav>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <h1>Source code for openpnm.io.Dict</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">pickle</span>
+<span class="kn">from</span> <span class="nn">flatdict</span> <span class="kn">import</span> <span class="n">FlatDict</span>
+<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">NestedDict</span><span class="p">,</span> <span class="n">sanitize_dict</span><span class="p">,</span> <span class="n">Workspace</span>
+<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">logging</span>
+<span class="kn">from</span> <span class="nn">openpnm.io</span> <span class="kn">import</span> <span class="n">GenericIO</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">ws</span> <span class="o">=</span> <span class="n">Workspace</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="Dict"><a class="viewcode-back" href="../../../modules/io/dict.html#openpnm.io.Dict">[docs]</a><span class="k">class</span> <span class="nc">Dict</span><span class="p">(</span><span class="n">GenericIO</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generates hierarchical ``dicts`` with a high degree of control over the</span>
+<span class="sd">    structure.</span>
+
+<span class="sd">    This is the most important class in the ``io`` module, since many other</span>
+<span class="sd">    classes use this to manipulate and format the data structures.</span>
+
+<span class="sd">    Also, it is possible to use Python&#39;s ``pickle`` module to save ``dicts``</span>
+<span class="sd">    to file.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Dict.from_dict"><a class="viewcode-back" href="../../../modules/io/dict.html#openpnm.io.Dict.from_dict">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">dct</span><span class="p">,</span> <span class="n">project</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">delim</span><span class="o">=</span><span class="s1">&#39; | &#39;</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method converts a correctly formatted dictionary into OpenPNM</span>
+<span class="sd">        objects, and returns a handle to the *project* containing them.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dct : dictionary</span>
+<span class="sd">            The Python dictionary containing the data.  The nesting and</span>
+<span class="sd">            labeling of the dictionary is used to create the appropriate</span>
+<span class="sd">            OpenPNM objects.</span>
+
+<span class="sd">        project : OpenPNM Project Object</span>
+<span class="sd">            The project with which the created objects should be associated.</span>
+<span class="sd">            If not supplied, one will be created.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        project : list</span>
+<span class="sd">            An OpenPNM Project containing the objects created to store the</span>
+<span class="sd">            given data.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        The requirement of a *correctly formed* dictionary is rather strict,</span>
+<span class="sd">        and essentially means a dictionary produced by the ``to_dict`` method</span>
+<span class="sd">        of this class.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">project</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">project</span> <span class="o">=</span> <span class="n">ws</span><span class="o">.</span><span class="n">new_project</span><span class="p">()</span>
+
+        <span class="c1"># Uncategorize pore/throat and labels/properties, if present</span>
+        <span class="n">fd</span> <span class="o">=</span> <span class="n">FlatDict</span><span class="p">(</span><span class="n">dct</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="n">delim</span><span class="p">)</span>
+        <span class="c1"># If . is the delimiter, replace with | otherwise things break</span>
+        <span class="k">if</span> <span class="n">delim</span> <span class="o">==</span> <span class="s1">&#39;.&#39;</span><span class="p">:</span>
+            <span class="n">delim</span> <span class="o">=</span> <span class="s1">&#39; | &#39;</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">fd</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+                <span class="n">new_key</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="n">delim</span><span class="p">)</span>
+                <span class="n">fd</span><span class="p">[</span><span class="n">new_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">FlatDict</span><span class="p">(</span><span class="n">delimiter</span><span class="o">=</span><span class="n">delim</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">fd</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+            <span class="n">new_key</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;pore&#39;</span> <span class="o">+</span> <span class="n">delim</span><span class="p">,</span> <span class="s1">&#39;pore.&#39;</span><span class="p">)</span>
+            <span class="n">new_key</span> <span class="o">=</span> <span class="n">new_key</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;throat&#39;</span> <span class="o">+</span> <span class="n">delim</span><span class="p">,</span> <span class="s1">&#39;throat.&#39;</span><span class="p">)</span>
+            <span class="n">new_key</span> <span class="o">=</span> <span class="n">new_key</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;labels&#39;</span> <span class="o">+</span> <span class="n">delim</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+            <span class="n">new_key</span> <span class="o">=</span> <span class="n">new_key</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;properties&#39;</span> <span class="o">+</span> <span class="n">delim</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+            <span class="n">d</span><span class="p">[</span><span class="n">new_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+
+        <span class="c1"># Plase data into correctly categorized dicts, for later handling</span>
+        <span class="n">objs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;network&#39;</span><span class="p">:</span> <span class="n">NestedDict</span><span class="p">(),</span>
+                <span class="s1">&#39;geometry&#39;</span><span class="p">:</span> <span class="n">NestedDict</span><span class="p">(),</span>
+                <span class="s1">&#39;physics&#39;</span><span class="p">:</span> <span class="n">NestedDict</span><span class="p">(),</span>
+                <span class="s1">&#39;phase&#39;</span><span class="p">:</span> <span class="n">NestedDict</span><span class="p">(),</span>
+                <span class="s1">&#39;algorithm&#39;</span><span class="p">:</span> <span class="n">NestedDict</span><span class="p">(),</span>
+                <span class="s1">&#39;base&#39;</span><span class="p">:</span> <span class="n">NestedDict</span><span class="p">()}</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">delim</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">path</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span> <span class="ow">in</span> <span class="n">objs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="c1"># Item is categorized by type, so note it</span>
+                    <span class="n">objs</span><span class="p">[</span><span class="n">path</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">]][</span><span class="n">path</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]][</span><span class="n">path</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="n">item</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># Item is nested, not categorized; make it a base</span>
+                    <span class="n">objs</span><span class="p">[</span><span class="s1">&#39;base&#39;</span><span class="p">][</span><span class="n">path</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]][</span><span class="n">path</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="n">item</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># If not categorized by type, make it a base</span>
+                <span class="n">objs</span><span class="p">[</span><span class="s1">&#39;base&#39;</span><span class="p">][</span><span class="n">path</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]][</span><span class="n">path</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="n">item</span><span class="p">]</span>
+
+        <span class="c1"># Convert to OpenPNM Objects, attempting to infer type</span>
+        <span class="k">for</span> <span class="n">objtype</span> <span class="ow">in</span> <span class="n">objs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">objs</span><span class="p">[</span><span class="n">objtype</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="c1"># Create empty object, using dummy name to avoid error</span>
+                <span class="n">obj</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">_new_object</span><span class="p">(</span><span class="n">objtype</span><span class="o">=</span><span class="n">objtype</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+                <span class="c1"># Overwrite name</span>
+                <span class="n">obj</span><span class="o">.</span><span class="n">_set_name</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                <span class="c1"># Update new object with data from dict</span>
+                <span class="n">obj</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">objs</span><span class="p">[</span><span class="n">objtype</span><span class="p">][</span><span class="n">name</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">project</span></div>
+
+<div class="viewcode-block" id="Dict.to_dict"><a class="viewcode-back" href="../../../modules/io/dict.html#openpnm.io.Dict.to_dict">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">phases</span><span class="o">=</span><span class="p">[],</span> <span class="n">element</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;pore&#39;</span><span class="p">,</span> <span class="s1">&#39;throat&#39;</span><span class="p">],</span>
+                <span class="n">interleave</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">flatten</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">categorize_by</span><span class="o">=</span><span class="p">[]):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a single dictionary object containing data from the given</span>
+<span class="sd">        OpenPNM objects, with the keys organized differently depending on</span>
+<span class="sd">        optional arguments.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        network : OpenPNM Network Object (optional)</span>
+<span class="sd">            The network containing the desired data</span>
+
+<span class="sd">        phases : list of OpenPNM Phase Objects (optional, default is none)</span>
+<span class="sd">            A list of phase objects whose data are to be included</span>
+
+<span class="sd">        element : string or list of strings</span>
+<span class="sd">            An indication of whether &#39;pore&#39; and/or &#39;throat&#39; data are desired.</span>
+<span class="sd">            The default is both.</span>
+
+<span class="sd">        interleave : boolean (default is ``True``)</span>
+<span class="sd">            When ``True`` (default) the data from all Geometry objects (and</span>
+<span class="sd">            Physics objects if ``phases`` are given) is interleaved into</span>
+<span class="sd">            a single array and stored as a network property (or Phase</span>
+<span class="sd">            property for Physics data). When ``False``, the data for each</span>
+<span class="sd">            object are stored under their own dictionary key, the structuring</span>
+<span class="sd">            of which depends on the value of the ``flatten`` argument.</span>
+
+<span class="sd">        flatten : boolean (default is ``True``)</span>
+<span class="sd">            When ``True``, all objects are accessible from the top level</span>
+<span class="sd">            of the dictionary.  When ``False`` objects are nested under their</span>
+<span class="sd">            parent object.  If ``interleave`` is ``True`` this argument is</span>
+<span class="sd">            ignored.</span>
+
+<span class="sd">        categorize_by : string or list of strings</span>
+<span class="sd">            Indicates how the dictionaries should be organized.  The list can</span>
+<span class="sd">            contain any, all or none of the following strings:</span>
+
+<span class="sd">            **&#39;object&#39;** : If specified the dictionary keys will be stored</span>
+<span class="sd">            under a general level corresponding to their type (e.g.</span>
+<span class="sd">            &#39;network/net_01/pore.all&#39;). If  ``interleave`` is ``True`` then</span>
+<span class="sd">            only the only categories are *network* and *phase*, since</span>
+<span class="sd">            *geometry* and *physics* data get stored under their respective</span>
+<span class="sd">            *network* and *phase*.</span>
+
+<span class="sd">            **&#39;data&#39;** : If specified the data arrays are additionally</span>
+<span class="sd">            categorized by ``label`` and ``property`` to separate *boolean*</span>
+<span class="sd">            from *numeric* data.</span>
+
+<span class="sd">            **&#39;element&#39;** : If specified the data arrays are</span>
+<span class="sd">            additionally categorized by ``pore`` and ``throat``, meaning</span>
+<span class="sd">            that the propnames are no longer prepended by a &#39;pore.&#39; or</span>
+<span class="sd">            &#39;throat.&#39;</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        A dictionary with the data stored in a hierarchical data structure, the</span>
+<span class="sd">        actual format of which depends on the arguments to the function.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        There is a handy package called *flatdict* that can be used to</span>
+<span class="sd">        access this dictionary using a single key such that:</span>
+
+<span class="sd">        ``d[level_1][level_2] == d[level_1/level_2]``</span>
+
+<span class="sd">        Importantly, converting to a *flatdict* allows it be converted to an</span>
+<span class="sd">        *HDF5* file directly, since the hierarchy is dictated by the placement</span>
+<span class="sd">        of &#39;/&#39; characters.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">project</span><span class="p">,</span> <span class="n">network</span><span class="p">,</span> <span class="n">phases</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_parse_args</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">network</span><span class="p">,</span>
+                                                   <span class="n">phases</span><span class="o">=</span><span class="n">phases</span><span class="p">)</span>
+        <span class="n">delim</span> <span class="o">=</span> <span class="s1">&#39; | &#39;</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">NestedDict</span><span class="p">(</span><span class="n">delimiter</span><span class="o">=</span><span class="n">delim</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">build_path</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+            <span class="n">propname</span> <span class="o">=</span> <span class="n">delim</span> <span class="o">+</span> <span class="n">key</span>
+            <span class="n">prefix</span> <span class="o">=</span> <span class="s1">&#39;root&#39;</span>
+            <span class="n">datatype</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+            <span class="n">arr</span> <span class="o">=</span> <span class="n">obj</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+            <span class="k">if</span> <span class="s1">&#39;object&#39;</span> <span class="ow">in</span> <span class="n">categorize_by</span><span class="p">:</span>
+                <span class="n">prefix</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">_isa</span><span class="p">()</span>
+            <span class="k">if</span> <span class="s1">&#39;element&#39;</span> <span class="ow">in</span> <span class="n">categorize_by</span><span class="p">:</span>
+                <span class="n">propname</span> <span class="o">=</span> <span class="n">delim</span> <span class="o">+</span> <span class="n">key</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="n">delim</span><span class="p">)</span>
+            <span class="k">if</span> <span class="s1">&#39;data&#39;</span> <span class="ow">in</span> <span class="n">categorize_by</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">arr</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">bool</span><span class="p">:</span>
+                    <span class="n">datatype</span> <span class="o">=</span> <span class="n">delim</span> <span class="o">+</span> <span class="s1">&#39;labels&#39;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">datatype</span> <span class="o">=</span> <span class="n">delim</span> <span class="o">+</span> <span class="s1">&#39;properties&#39;</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="n">prefix</span> <span class="o">+</span> <span class="n">delim</span> <span class="o">+</span> <span class="n">obj</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="n">datatype</span> <span class="o">+</span> <span class="n">propname</span>
+            <span class="k">return</span> <span class="n">path</span>
+
+        <span class="k">for</span> <span class="n">net</span> <span class="ow">in</span> <span class="n">network</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">net</span><span class="o">.</span><span class="n">keys</span><span class="p">(</span><span class="n">element</span><span class="o">=</span><span class="n">element</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">):</span>
+                <span class="n">path</span> <span class="o">=</span> <span class="n">build_path</span><span class="p">(</span><span class="n">obj</span><span class="o">=</span><span class="n">net</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">)</span>
+                <span class="n">d</span><span class="p">[</span><span class="n">path</span><span class="p">]</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+            <span class="k">for</span> <span class="n">geo</span> <span class="ow">in</span> <span class="n">project</span><span class="o">.</span><span class="n">geometries</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">geo</span><span class="o">.</span><span class="n">keys</span><span class="p">(</span><span class="n">element</span><span class="o">=</span><span class="n">element</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">interleave</span><span class="p">:</span>
+                        <span class="n">path</span> <span class="o">=</span> <span class="n">build_path</span><span class="p">(</span><span class="n">obj</span><span class="o">=</span><span class="n">net</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">)</span>
+                        <span class="n">d</span><span class="p">[</span><span class="n">path</span><span class="p">]</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">path</span> <span class="o">=</span> <span class="n">build_path</span><span class="p">(</span><span class="n">obj</span><span class="o">=</span><span class="n">geo</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">flatten</span><span class="p">:</span>
+                            <span class="n">d</span><span class="p">[</span><span class="n">path</span><span class="p">]</span> <span class="o">=</span> <span class="n">geo</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+                        <span class="k">elif</span> <span class="s1">&#39;object&#39;</span> <span class="ow">in</span> <span class="n">categorize_by</span><span class="p">:</span>
+                            <span class="n">path</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">delim</span><span class="p">)</span>
+                            <span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;network&#39;</span><span class="p">)</span>
+                            <span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">net</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+                            <span class="n">path</span> <span class="o">=</span> <span class="n">delim</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">path</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">delim</span><span class="p">)</span>
+                            <span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">net</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+                            <span class="n">path</span> <span class="o">=</span> <span class="n">delim</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+                        <span class="n">d</span><span class="p">[</span><span class="n">path</span><span class="p">]</span> <span class="o">=</span> <span class="n">geo</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">phase</span> <span class="ow">in</span> <span class="n">phases</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">phase</span><span class="o">.</span><span class="n">keys</span><span class="p">(</span><span class="n">element</span><span class="o">=</span><span class="n">element</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">):</span>
+                <span class="n">path</span> <span class="o">=</span> <span class="n">build_path</span><span class="p">(</span><span class="n">obj</span><span class="o">=</span><span class="n">phase</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">)</span>
+                <span class="n">d</span><span class="p">[</span><span class="n">path</span><span class="p">]</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+            <span class="k">for</span> <span class="n">phys</span> <span class="ow">in</span> <span class="n">project</span><span class="o">.</span><span class="n">find_physics</span><span class="p">(</span><span class="n">phase</span><span class="o">=</span><span class="n">phase</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">phys</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">phys</span><span class="o">.</span><span class="n">keys</span><span class="p">(</span><span class="n">element</span><span class="o">=</span><span class="n">element</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="n">interleave</span><span class="p">:</span>
+                            <span class="n">path</span> <span class="o">=</span> <span class="n">build_path</span><span class="p">(</span><span class="n">obj</span><span class="o">=</span><span class="n">phase</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">)</span>
+                            <span class="n">d</span><span class="p">[</span><span class="n">path</span><span class="p">]</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">path</span> <span class="o">=</span> <span class="n">build_path</span><span class="p">(</span><span class="n">obj</span><span class="o">=</span><span class="n">phys</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">)</span>
+                            <span class="k">if</span> <span class="n">flatten</span><span class="p">:</span>
+                                <span class="n">d</span><span class="p">[</span><span class="n">path</span><span class="p">]</span> <span class="o">=</span> <span class="n">phys</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+                            <span class="k">elif</span> <span class="s1">&#39;object&#39;</span> <span class="ow">in</span> <span class="n">categorize_by</span><span class="p">:</span>
+                                <span class="n">path</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">delim</span><span class="p">)</span>
+                                <span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;phase&#39;</span><span class="p">)</span>
+                                <span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">phase</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+                                <span class="n">path</span> <span class="o">=</span> <span class="n">delim</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="n">path</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">delim</span><span class="p">)</span>
+                                <span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">phase</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+                                <span class="n">path</span> <span class="o">=</span> <span class="n">delim</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+                            <span class="n">d</span><span class="p">[</span><span class="n">path</span><span class="p">]</span> <span class="o">=</span> <span class="n">phys</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="s1">&#39;root&#39;</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;root&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s1">&#39;project&#39;</span> <span class="ow">in</span> <span class="n">categorize_by</span><span class="p">:</span>
+            <span class="n">new_d</span> <span class="o">=</span> <span class="n">NestedDict</span><span class="p">()</span>
+            <span class="n">new_d</span><span class="p">[</span><span class="n">project</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="n">new_d</span>
+        <span class="k">return</span> <span class="n">d</span></div>
+
+<div class="viewcode-block" id="Dict.export_data"><a class="viewcode-back" href="../../../modules/io/dict.html#openpnm.io.Dict.export_data">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">export_data</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">dct</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Saves data from the given dictionary into the specified file.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dct : dictionary</span>
+<span class="sd">            A dictionary to save to file, presumably obtained from the</span>
+<span class="sd">            ``to_dict`` method of this class.</span>
+
+<span class="sd">        filename : string or path object</span>
+<span class="sd">            The filename to store the dictionary.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        This method uses the pickle module to save the dictionary.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">fname</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_parse_filename</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">filename</span><span class="p">,</span> <span class="n">ext</span><span class="o">=</span><span class="s1">&#39;dct&#39;</span><span class="p">)</span>
+        <span class="n">dct</span> <span class="o">=</span> <span class="n">sanitize_dict</span><span class="p">(</span><span class="n">dct</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">dct</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Dict.import_data"><a class="viewcode-back" href="../../../modules/io/dict.html#openpnm.io.Dict.import_data">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">import_data</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load data from the specified pickle file into a Python dictionary</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        filename : string</span>
+<span class="sd">            The path to the file to be opened</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        This returns a Python dictionary which can be converted into OpenPNM</span>
+<span class="sd">        objects using the ``from_dict`` method of this class.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">fname</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_parse_filename</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">dct</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">dct</span></div></div>
+</pre></div>
+
+              </div>
+              
+              
+          </main>
+          
+
+      </div>
+    </div>
+  
+  <script src="../../../_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
+<footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2021 OpenPNM Team.<br>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br>
+</p>
+    </div>
+    
+  </div>
+</footer>
+  </body>
+</html>
