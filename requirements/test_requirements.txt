@@ -6,6 +6,6 @@ pytest-cache
 pytest-codestyle
 pytest-cov
 nbval
-skfmm<=2021.9.23
+scikit-fmm<=2021.9.23
 porespy
 
