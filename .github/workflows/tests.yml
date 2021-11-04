@@ -41,6 +41,7 @@ jobs:
 
       - name: Install dependencies (pip)
         run: |
+          conda install porespy
           pip install \
             -r requirements/pip_requirements.txt \
             -r requirements/test_requirements.txt
