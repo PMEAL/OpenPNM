@@ -261,7 +261,7 @@
    </li>
    <li class="toctree-l2">
     <a class="reference internal" href="../geometry/stick_and_ball.html">
-     SpheresAndCylinders
+     StickAndBall
     </a>
    </li>
   </ul>
@@ -1612,6 +1612,33 @@ necessary properties.</p></li>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="openpnm.models.geometry.throat_length.conduit_lengths">
+<span class="sig-name descname"><span class="pre">conduit_lengths</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_endpoints</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.endpoints'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.length'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_centroid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.centroid'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_length.html#conduit_lengths"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_length.conduit_lengths" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates conduit lengths. A conduit is defined as half pore + throat
++ half pore.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target</strong> (<a class="reference internal" href="../geometry/generic_geometry.html#openpnm.geometry.GenericGeometry" title="openpnm.geometry.GenericGeometry"><em>GenericGeometry</em></a>) – Geometry object which this model is associated with. This controls the
+length of the calculated array, and also provides access to other
+necessary properties.</p></li>
+<li><p><strong>throat_endpoints</strong> (<em>str</em>) – Dictionary key of the throat endpoint values.</p></li>
+<li><p><strong>throat_diameter</strong> (<em>str</em>) – Dictionary key of the throat length values.</p></li>
+<li><p><strong>throat_length</strong> (<em>string</em><em> (</em><em>optional</em><em>)</em>) – Dictionary key of the throat length values.  If not given then the
+direct distance bewteen the two throat end points is used.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>Dictionary containing conduit lengths, which can be accessed via the dict</em></p></li>
+<li><p><em>keys ‘pore1’, ‘pore2’, and ‘throat’.</em></p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="openpnm.models.geometry.throat_length.cones_and_cylinders">
 <span class="sig-name descname"><span class="pre">cones_and_cylinders</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.diameter'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.diameter'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_length.html#cones_and_cylinders"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_length.cones_and_cylinders" title="Permalink to this definition">¶</a></dt>
 <dd><p>Finds throat length assuming pores are cones and throats are
@@ -1678,6 +1705,34 @@ necessary properties.</p></li>
 <dd class="field-odd"><p>ndarray</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="openpnm.models.geometry.throat_length.piecewise">
+<span class="sig-name descname"><span class="pre">piecewise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_endpoints</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.endpoints'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_centroid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.centroid'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/throat_length.html#piecewise"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.throat_length.piecewise" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates throat length from end points and optionally a centroid</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target</strong> (<a class="reference internal" href="../geometry/generic_geometry.html#openpnm.geometry.GenericGeometry" title="openpnm.geometry.GenericGeometry"><em>GenericGeometry</em></a>) – Geometry object which this model is associated with. This controls the
+length of the calculated array, and also provides access to other
+necessary properties.</p></li>
+<li><p><strong>throat_endpoints</strong> (<em>str</em>) – Dictionary key of the throat endpoint values.</p></li>
+<li><p><strong>throat_centroid</strong> (<em>str</em>) – Dictionary key of the throat centroid values, optional.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Lt</strong> – Array containing throat lengths for the given geometry.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>By default, the model assumes that the centroids of pores and the
+connecting throat in each conduit are colinear.</p>
+<p>If <cite>throat_centroid</cite> is passed, the model accounts for the extra
+length. This could be useful for Voronoi or extracted networks.</p>
 </dd></dl>
 
 <dl class="py function">
