@@ -1,20 +1,33 @@
 import numpy as np
 from numpy.linalg import norm
 from scipy.optimize.nonlin import TerminationCondition
-# Uncomment this line when we stop supporting Python 3.6
-# from dataclasses import dataclass, field
-# from typing import List
-from openpnm.algorithms import GenericTransport
+from openpnm.algorithms import GenericTransport, SettingsGenericTransport
 from openpnm.utils import logging, Docorator, GenericSettings
+from openpnm.utils import SettingsAttr
+from traits.api import List, Str, Int
 docstr = Docorator()
 logger = logging.getLogger(__name__)
 
 
+# @docstr.get_sections(base='SettingsReactiveTransport', sections=docstr.all_sections)
+# @docstr.dedent
+class SettingsReactiveTransport(SettingsGenericTransport):
+    r"""
+
+    Parameters
+    ----------
+    %(SettingsGenericTransport.parameters)s
+    sources : list of strings
+        The names of the source term models
+
+    """
+    sources = List(Str())
+    test = Int(3)
+
+
 @docstr.get_sections(base='ReactiveTransportSettings',
-                     sections=['Parameters', 'Other Parameters'])
+                     sections=docstr.all_sections)
 @docstr.dedent
-# Uncomment this line when we stop supporting Python 3.6
-# @dataclass
 class ReactiveTransportSettings(GenericSettings):
     r"""
 
@@ -54,8 +67,9 @@ class ReactiveTransportSettings(GenericSettings):
 
     """
 
-    # Swap the following 2 lines when we stop supporting Python 3.6
-    # sources: List = field(default_factory=lambda: [])
+    nlin_max_iter = 5000
+    relaxation_source = 1.0
+    relaxation_quantity = 1.0
     sources = []
     relaxation_quantity = 1.0
     newton_maxiter = 5000
@@ -85,6 +99,8 @@ class ReactiveTransport(GenericTransport):
         super().__init__(**kwargs)
         self.settings._update_settings_and_docs(ReactiveTransportSettings)
         self.settings.update(settings)
+        self.sets = SettingsAttr(SettingsReactiveTransport())
+        self.sets._update(settings)
         if phase is not None:
             self.settings['phase'] = phase.name
 

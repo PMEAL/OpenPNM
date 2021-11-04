@@ -1,26 +1,39 @@
 import numpy as np
-import openpnm as op
+import scipy.sparse.linalg
 import warnings
 import scipy.sparse.csgraph as spgr
 from scipy.spatial import ConvexHull
 from scipy.spatial import cKDTree
-from openpnm.topotools import iscoplanar, is_fully_connected
-from openpnm.algorithms import GenericAlgorithm
-from openpnm.utils import logging, Docorator, GenericSettings, prettify_logger_message
+from openpnm.topotools import iscoplanar, is_fully_connected, dimensionality
+from openpnm.algorithms import GenericAlgorithm, SettingsGenericAlgorithm
+from openpnm.utils import logging, Docorator, prettify_logger_message
+from openpnm.utils import GenericSettings, SettingsAttr
+from openpnm.utils import is_symmetric
 from openpnm.solvers import PardisoSpsolve
-# Uncomment this line when we stop supporting Python 3.6
-# from dataclasses import dataclass, field
-# from typing import List
+from traits.api import Str
 
 docstr = Docorator()
 logger = logging.getLogger(__name__)
 
 
+# @docstr.get_sections(base='SettingsGenericTransport', sections=docstr.all_sections)
+# @docstr.dedent
+class SettingsGenericTransport(SettingsGenericAlgorithm):
+    r"""
+
+    Parameters
+    ----------
+    %(SettingsGenericAlgorithm.parameters)s
+    phase : str
+        The name of the phase witih which this algorithm is associated
+
+    """
+    phase = Str()
+
+
 @docstr.get_sections(base='GenericTransportSettings',
-                     sections=['Parameters', 'Other Parameters'])
+                     sections=docstr.all_sections)
 @docstr.dedent
-# Uncomment this line when we stop supporting Python 3.6
-# @dataclass
 class GenericTransportSettings(GenericSettings):
     r"""
     Defines the settings for GenericTransport algorithms
@@ -85,6 +98,8 @@ class GenericTransport(GenericAlgorithm):
         if network is not None:
             project = network.project
         super().__init__(project=project, **kwargs)
+        self.sets = SettingsAttr(SettingsGenericTransport())
+        self.sets._update(settings)
         self['pore.bc_rate'] = np.nan
         self['pore.bc_value'] = np.nan
 
@@ -715,7 +730,7 @@ class GenericTransport(GenericAlgorithm):
         Determines the cross sectional area relative to the inlets/outlets.
         """
         logger.warning('Attempting to estimate inlet area...will be low')
-        if op.topotools.dimensionality(self.network).sum() != 3:
+        if dimensionality(self.network).sum() != 3:
             raise Exception('The network is not 3D, specify area manually')
         inlets = self._get_inlets() if inlets is None else inlets
         outlets = self._get_outlets() if outlets is None else outlets

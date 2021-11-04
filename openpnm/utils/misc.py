@@ -38,6 +38,12 @@ class Docorator(DocstringProcessor):
     def __new__(cls, *args, **kwargs):
         if Docorator.__instance__ is None:
             Docorator.__instance__ = DocstringProcessor()
+            Docorator.__instance__.all_sections = ['Parameters',
+                                                   'Returns',
+                                                   'Notes',
+                                                   'Examples',
+                                                   'See Also',
+                                                   'Other Parameters',]
         return Docorator.__instance__
 
 

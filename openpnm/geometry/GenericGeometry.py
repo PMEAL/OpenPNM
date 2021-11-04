@@ -67,7 +67,8 @@ class GenericGeometry(ParamMixin, Subdomain, ModelsMixin):
     """
 
     def __init__(self, pores=[], throats=[], settings={}, **kwargs):
-        self.settings.update({'prefix': 'geo'})  # Define some default settings
+        def_sets = {'prefix': 'geo'} # Define some default settings
+        self.settings.update(def_sets)
         self.settings.update(settings)  # Overwrite with user supplied settings
         super().__init__(**kwargs)
 
