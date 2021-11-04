@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 docstr = Docorator()
 
 
-# @docstr.get_sections(base='SettingsGenericAlgorithm', sections=docstr.all_sections)
+@docstr.get_sections(base='SettingsGenericAlgorithm', sections=docstr.all_sections)
 class SettingsGenericAlgorithm(SettingsData):
     r"""
 

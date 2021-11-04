@@ -9,6 +9,22 @@ docstr = Docorator()
 logger = logging.getLogger(__name__)
 
 
+@docstr.get_sections(base='SettingsReactiveTransport', sections=docstr.all_sections)
+@docstr.dedent
+class SettingsReactiveTransport(SettingsGenericTransport):
+    r"""
+
+    Parameters
+    ----------
+    %(SettingsGenericTransport.parameters)s
+    sources : list of strings
+        The names of the source term models
+
+    """
+    sources = List(Str())
+    test = Int(3)
+
+
 @docstr.get_sections(base='ReactiveTransportSettings',
                      sections=docstr.all_sections)
 @docstr.dedent
