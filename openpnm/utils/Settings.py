@@ -72,6 +72,9 @@ class SettingsAttr:
         temp = [i for i in temp if not i.startswith('_')]
         return temp
 
+    def __contains__(self, attr):
+        return attr in self._settings.visible_traits()
+
     def _update(self, settings, docs=False):
         r"""
         Merges new key-value collections onto the existing object.
