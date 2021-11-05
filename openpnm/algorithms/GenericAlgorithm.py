@@ -6,21 +6,21 @@ logger = logging.getLogger(__name__)
 docstr = Docorator()
 
 
-# @docstr.get_sections(base='SettingsGenericAlgorithm', sections=docstr.all_sections)
-class SettingsGenericAlgorithm(SettingsData):
+@docstr.get_sections(base='GenericAlgorithmSettings', sections=docstr.all_sections)
+@docstr.dedent
+class GenericAlgorithmSettings(SettingsData):
     r"""
 
     Parameters
     ----------
     prefix : str
-        The prefix to use when generating a name for the algorithm.  The
-        default is ``alg``, so the names will be ``alg_01``, ``alg_02``, etc
+        The prefix to use when generating a name for the algorithm.
 
     """
     prefix = Str('alg')
 
 
-@docstr.get_sections(base='GenericAlgorithm', sections=docstr.all_sections)
+@docstr.get_sections(base='GenericAlgorithm', sections=['Parameters'])
 @docstr.dedent
 class GenericAlgorithm(Base, LegacyMixin, LabelMixin):
     r"""
@@ -38,10 +38,8 @@ class GenericAlgorithm(Base, LegacyMixin, LabelMixin):
     """
 
     def __init__(self, network=None, project=None, settings={}, **kwargs):
-        self.settings.setdefault('prefix', 'alg')
-        self.settings.update(settings)
-        self.sets = SettingsAttr(SettingsGenericAlgorithm())
-        self.sets._update(settings)
+        self.settings._update(GenericAlgorithmSettings(), docs=True)
+        self.settings._update(settings)
         super().__init__(project=project, network=network, **kwargs)
         project = self.network.project
         if project:

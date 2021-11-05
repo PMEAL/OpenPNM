@@ -237,7 +237,7 @@ class Project(list):
         if obj._isa('phase'):
             return obj
         # If phase happens to be in settings (i.e. algorithm), look it up
-        if 'phase' in obj.settings.keys():
+        if 'phase' in obj.settings:
             return self.phases()[obj.settings['phase']]
         # Otherwise find it using bottom-up approach (i.e. look in phase keys)
         for item in self.phases().values():
@@ -265,7 +265,7 @@ class Project(list):
 
         """
         # If geometry happens to be in settings, look it up directly
-        if 'geometry' in physics.settings.keys():
+        if 'geometry' in physics.settings:
             geom = self.geometries()[physics.settings['geometry']]
             return geom
         # Otherwise, use the bottom-up approach

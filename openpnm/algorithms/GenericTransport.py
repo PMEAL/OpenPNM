@@ -5,43 +5,27 @@ import scipy.sparse.csgraph as spgr
 from scipy.spatial import ConvexHull
 from scipy.spatial import cKDTree
 from openpnm.topotools import iscoplanar, is_fully_connected, dimensionality
-from openpnm.algorithms import GenericAlgorithm, SettingsGenericAlgorithm
-from openpnm.utils import logging, Docorator, prettify_logger_message
-from openpnm.utils import GenericSettings, SettingsAttr
+from openpnm.algorithms import GenericAlgorithm
+from openpnm.utils import logging, prettify_logger_message
+from openpnm.utils import SettingsData, Docorator
 from openpnm.utils import is_symmetric
 from openpnm.solvers import PardisoSpsolve
-from traits.api import Str
+from traits.api import Str, Bool
 
 docstr = Docorator()
 logger = logging.getLogger(__name__)
 
 
-# @docstr.get_sections(base='SettingsGenericTransport', sections=docstr.all_sections)
-# @docstr.dedent
-class SettingsGenericTransport(SettingsGenericAlgorithm):
-    r"""
-
-    Parameters
-    ----------
-    %(SettingsGenericAlgorithm.parameters)s
-    phase : str
-        The name of the phase witih which this algorithm is associated
-
-    """
-    phase = Str()
-
-
-@docstr.get_sections(base='GenericTransportSettings',
-                     sections=docstr.all_sections)
+@docstr.get_sections(base='GenericTransportSettings', sections=['Parameters',
+                                                                'Other Parameters'])
 @docstr.dedent
-class GenericTransportSettings(GenericSettings):
+class GenericTransportSettings(SettingsData):
     r"""
     Defines the settings for GenericTransport algorithms
 
     Parameters
     ----------
-    phase : str
-        The name of the phase on which the algorithm acts
+    %(GenericAlgorithmSettings.parameters)s
     quantity : str
         The name of the physical quantity to be calculated
     conductance : str
@@ -56,13 +40,14 @@ class GenericTransportSettings(GenericSettings):
     cache_b : bool
         If ``True``, b vector is cached and rather than getting rebuilt.
 
-    """
 
-    phase = None
-    conductance = None
-    quantity = None
-    cache_A = True
-    cache_b = True
+    """
+    prefix = Str('trans')
+    phase = Str()
+    quantity = Str()
+    conductance = Str()
+    cache_A = Bool(True)
+    cache_b = Bool(True)
 
 
 @docstr.get_sections(base='GenericTransport', sections=['Parameters'])
@@ -87,10 +72,8 @@ class GenericTransport(GenericAlgorithm):
 
     def __init__(self, project=None, network=None, phase=None, settings={},
                  **kwargs):
-        # Apply default settings
-        self.settings._update_settings_and_docs(GenericTransportSettings)
-        # Overwrite any given in init
-        self.settings.update(settings)
+        self.settings._update(GenericTransportSettings(), docs=True)
+        self.settings._update(settings)
         # Assign phase if given during init
         if phase is not None:
             self.settings['phase'] = phase.name
@@ -98,8 +81,6 @@ class GenericTransport(GenericAlgorithm):
         if network is not None:
             project = network.project
         super().__init__(project=project, **kwargs)
-        self.sets = SettingsAttr(SettingsGenericTransport())
-        self.sets._update(settings)
         self['pore.bc_rate'] = np.nan
         self['pore.bc_value'] = np.nan
 

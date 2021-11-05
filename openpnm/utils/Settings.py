@@ -61,6 +61,9 @@ class SettingsAttr:
     def __getattr__(self, attr):
         return getattr(self._settings, attr)
 
+    def __delattr__(self, attr):
+        self._settings.__delattr__(attr)
+
     def __getitem__(self, key):
         return getattr(self._settings, key)
 

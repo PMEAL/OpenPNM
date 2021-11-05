@@ -1,46 +1,23 @@
 import numpy as np
 from numpy.linalg import norm
 from scipy.optimize.nonlin import TerminationCondition
-from openpnm.algorithms import GenericTransport, SettingsGenericTransport
-from openpnm.utils import logging, Docorator, GenericSettings
-from openpnm.utils import SettingsAttr
-from traits.api import List, Str, Int
+from openpnm.algorithms import GenericTransport
+from openpnm.utils import logging
+from openpnm.utils import SettingsData, Docorator
+from traits.api import List, Str, Int, Float
 docstr = Docorator()
 logger = logging.getLogger(__name__)
 
 
-# @docstr.get_sections(base='SettingsReactiveTransport', sections=docstr.all_sections)
-# @docstr.dedent
-class SettingsReactiveTransport(SettingsGenericTransport):
-    r"""
-
-    Parameters
-    ----------
-    %(SettingsGenericTransport.parameters)s
-    sources : list of strings
-        The names of the source term models
-
-    """
-    sources = List(Str())
-    test = Int(3)
-
-
 @docstr.get_sections(base='ReactiveTransportSettings',
-                     sections=docstr.all_sections)
+                     sections=['Parameters', 'Other Parameters'])
 @docstr.dedent
-class ReactiveTransportSettings(GenericSettings):
+class ReactiveTransportSettings(SettingsData):
     r"""
 
     Parameters
     ----------
     %(GenericTransportSettings.parameters)s
-
-    quantity : str
-        The name of the physical quantity to be calculated
-    conductance : str
-        The name of the pore-scale transport conductance values. These are
-        typically calculated by a model attached to a *Physics* object
-        associated with the given *Phase*.
 
     Other Parameters
     ----------------
@@ -66,15 +43,14 @@ class ReactiveTransportSettings(GenericSettings):
     %(GenericTransportSettings.other_parameters)s
 
     """
-
-    nlin_max_iter = 5000
-    relaxation_source = 1.0
-    relaxation_quantity = 1.0
-    sources = []
-    relaxation_quantity = 1.0
-    newton_maxiter = 5000
-    f_rtol = 1e-6
-    x_rtol = 1e-6
+    prefix = Str('react_trans')
+    nlin_max_iter = Int(5000)
+    relaxation_source = Float(1.0)
+    relaxation_quantity = Float(1.0)
+    sources = List(Str())
+    newton_maxiter = Int(5000)
+    f_rtol = Float(1e-6)
+    x_rtol = Float(1e-6)
 
 
 
@@ -97,10 +73,8 @@ class ReactiveTransport(GenericTransport):
 
     def __init__(self, phase=None, settings={}, **kwargs):
         super().__init__(**kwargs)
-        self.settings._update_settings_and_docs(ReactiveTransportSettings)
-        self.settings.update(settings)
-        self.sets = SettingsAttr(SettingsReactiveTransport())
-        self.sets._update(settings)
+        self.settings._update(ReactiveTransportSettings(), docs=True)
+        self.settings._update(settings)
         if phase is not None:
             self.settings['phase'] = phase.name
 
