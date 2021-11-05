@@ -3,10 +3,25 @@ import scipy.sparse as sprs
 import scipy.spatial as sptl
 from openpnm.core import Base, ModelsMixin, LegacyMixin, LabelMixin, ParamMixin
 from openpnm import topotools
+from openpnm.utils import SettingsAttr, SettingsData, Docorator
 from openpnm.utils import Workspace, logging
+from traits.api import Str
 import openpnm.models.topology as tm
 logger = logging.getLogger(__name__)
 ws = Workspace()
+docstr = Docorator()
+
+
+@docstr.get_sections(base='NetworkSettings', sections=['Parameters'])
+@docstr.dedent
+class NetworkSettings(SettingsData):
+    r"""
+
+    Parameters
+    ----------
+    %(BaseSettings.parameters)s
+    """
+    prefix = Str('net')
 
 
 class GenericNetwork(ParamMixin, Base, ModelsMixin, LegacyMixin, LabelMixin):
@@ -120,9 +135,8 @@ class GenericNetwork(ParamMixin, Base, ModelsMixin, LegacyMixin, LabelMixin):
 
     def __init__(self, conns=None, coords=None, project=None, settings={},
                  **kwargs):
-        def_sets = {'prefix': 'net'}
-        self.settings.update(def_sets)
-        self.settings.update(settings)
+        self.settings._update(NetworkSettings(), docs=True)
+        self.settings._update(settings)
         super().__init__(project=project, **kwargs)
         if coords is not None:
             Np = np.shape(coords)[0]

@@ -20,6 +20,10 @@ class BaseSettings(SettingsData):
     ----------
     prefix : str
         The dafault prefix to use when generating a name
+    name : str
+        The name for the object, which will be generated if not given
+    uuid : str
+        A universally unique identifier for the object to keep things straight
     """
     prefix = Str('base')
     name = Str('')

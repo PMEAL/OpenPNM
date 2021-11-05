@@ -309,7 +309,7 @@ class ModelsMixin:
             raise Exception(propname+' can\'t be both dependency and propname')
         # Look for default regen_mode in settings if present, else use 'normal'
         if regen_mode == '':
-            if 'regen_mode' in self.settings.keys():
+            if 'regen_mode' in self.settings._settings.visible_traits():
                 regen_mode = self.settings['regen_mode']
             else:
                 regen_mode = 'normal'
@@ -399,12 +399,7 @@ class ModelsMixin:
         model = kwargs.pop('model')
         regen_mode = kwargs.pop('regen_mode', None)
         # Only regenerate model if regen_mode is correct
-        if self.settings['freeze_models']:
-            # Don't run ANY models if freeze_models is set to True
-            msg = (f"{prop} was not run since freeze_models is set to"
-                   " True in object settings.")
-            logger.warning(prettify_logger_message(msg))
-        elif regen_mode == 'constant':
+        if regen_mode == 'constant':
             # Only regenerate if data not already in dictionary
             if prop not in self.keys():
                 self[prop] = model(target=self, **kwargs)

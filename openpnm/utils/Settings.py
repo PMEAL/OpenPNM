@@ -72,7 +72,7 @@ class SettingsAttr:
         temp = [i for i in temp if not i.startswith('_')]
         return temp
 
-    def _update(self, settings):
+    def _update(self, settings, docs=False):
         r"""
         Merges new key-value collections onto the existing object.
 
@@ -107,6 +107,8 @@ class SettingsAttr:
             for k in attrs:
                 v = getattr(settings, k)
                 setattr(self, k, v)
+        if docs:
+            self._settings.__doc__ = settings.__doc__
 
     def __str__(self):
         return self._settings.__str__()
