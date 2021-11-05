@@ -3,7 +3,6 @@
 .. module:: openpnm
    :noindex:
 
-
 ################
 Module Reference
 ################
@@ -17,15 +16,15 @@ methods, occasionally with basic embedded examples on how to use them.
    :hidden:
    :maxdepth: 1
 
-   core/index.rst
-   network/index.rst
-   geometry/index.rst
-   phases/index.rst
-   physics/index.rst
-   materials/index.rst
-   algorithms/index.rst
-   algorithms/metrics/index.rst
-   topotools/index.rst
-   models/index.rst
-   io/index.rst
-   utils/index.rst
+   Core <core>
+   Network <network>
+   Geometry <geometry>
+   Phase <phases>
+   Physics <physics>
+   Materials <materials>
+   Algorithms <algorithms>
+   Metrics <metrics>
+   TopoTools <topotools>
+   Models <models>
+   IO <io>
+   Utils <utils>
