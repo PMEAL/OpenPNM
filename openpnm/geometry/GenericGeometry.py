@@ -11,6 +11,9 @@ docstr = Docorator()
 @docstr.dedent
 class GeometrySettings(SettingsData):
     r"""
+
+    Parameters
+    ----------
     %(BaseSettings.parameters)s
     """
     prefix = Str('geo')
