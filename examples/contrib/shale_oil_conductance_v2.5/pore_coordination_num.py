@@ -27,6 +27,7 @@ def pore_coordination_num(pn):
     bins = np.max(coordination) + 1
     bin_range = (coordination.min()-0.5, coordination.max()+0.5)
 
-    plt.hist(coordination, bins=bins, align='mid', range=bin_range)
+    plt.hist(coordination, bins=bins, align='mid', range=bin_range,
+             edgecolor='black')
     plt.show()
     return (coordination)  # type change to int number
