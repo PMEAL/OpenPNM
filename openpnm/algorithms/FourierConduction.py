@@ -1,5 +1,5 @@
 from openpnm.algorithms import ReactiveTransport
-from openpnm.utils import logging, Docorator, GenericSettings
+from openpnm.utils import logging, Docorator
 logger = logging.getLogger(__name__)
 docstr = Docorator()
 
@@ -7,7 +7,7 @@ docstr = Docorator()
 @docstr.get_sections(base='FourierConductionSettings',
                      sections=['Parameters'])
 @docstr.dedent
-class FourierConductionSettings(GenericSettings):
+class FourierConductionSettings:
     r"""
 
     Parameters
@@ -46,8 +46,8 @@ class FourierConduction(ReactiveTransport):
 
     def __init__(self, settings={}, **kwargs):
         super().__init__(**kwargs)
-        self.settings.update(settings)
-        self.settings._update_settings_and_docs(FourierConductionSettings())
+        self.settings._update(FourierConductionSettings, docs=True)
+        self.settings._update(settings)
 
     def calc_effective_conductivity(self, inlets=None, outlets=None,
                                     domain_area=None, domain_length=None):

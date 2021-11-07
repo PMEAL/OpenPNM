@@ -1,6 +1,5 @@
 from openpnm.core import Base, LegacyMixin, LabelMixin
-from openpnm.utils import logging, Docorator, SettingsData, SettingsAttr
-from traits.api import Str
+from openpnm.utils import logging, Docorator
 import numpy as np
 logger = logging.getLogger(__name__)
 docstr = Docorator()
@@ -8,7 +7,7 @@ docstr = Docorator()
 
 @docstr.get_sections(base='GenericAlgorithmSettings', sections=docstr.all_sections)
 @docstr.dedent
-class GenericAlgorithmSettings(SettingsData):
+class GenericAlgorithmSettings:
     r"""
 
     Parameters
@@ -38,8 +37,8 @@ class GenericAlgorithm(Base, LegacyMixin, LabelMixin):
     """
 
     def __init__(self, network=None, project=None, settings={}, **kwargs):
-        self.settings._update(GenericAlgorithmSettings(), docs=True)
-        self.settings._update(settings)
+        self.settings._update(GenericAlgorithmSettings, docs=True)
+        self.settings._update(settings)  # Add user supplied settings
         super().__init__(project=project, network=network, **kwargs)
         project = self.network.project
         if project:

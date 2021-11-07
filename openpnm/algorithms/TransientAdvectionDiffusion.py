@@ -1,11 +1,11 @@
 from openpnm.algorithms import TransientReactiveTransport, AdvectionDiffusion
-from openpnm.utils import logging, Docorator, GenericSettings
+from openpnm.utils import logging, Docorator
 docstr = Docorator()
 logger = logging.getLogger(__name__)
 
 
 @docstr.dedent
-class TransientAdvectionDiffusionSettings(GenericSettings):
+class TransientAdvectionDiffusionSettings:
     r"""
     Parameters
     ----------
@@ -45,7 +45,7 @@ class TransientAdvectionDiffusion(TransientReactiveTransport,
 
     def __init__(self, settings={}, phase=None, **kwargs):
         super().__init__(**kwargs)
-        self.settings._update_settings_and_docs(TransientAdvectionDiffusionSettings())
-        self.settings.update(settings)
+        self.settings._update(TransientAdvectionDiffusionSettings, docs=True)
+        self.settings._update(settings)
         if phase is not None:
             self.settings['phase'] = phase.name

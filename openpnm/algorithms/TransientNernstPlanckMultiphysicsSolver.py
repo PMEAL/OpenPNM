@@ -1,6 +1,6 @@
 import numpy as np
 from openpnm.algorithms import NernstPlanckMultiphysicsSolver
-from openpnm.utils import logging, Docorator, GenericSettings, nbr_to_str
+from openpnm.utils import logging, Docorator, nbr_to_str
 docstr = Docorator()
 logger = logging.getLogger(__name__)
 
@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 @docstr.get_sections(base='TransientNernstPlanckMultiphysicsSolverSettings',
                      sections=['Parameters'])
 @docstr.dedent
-class TransientNernstPlanckMultiphysicsSolverSettings(GenericSettings):
+class TransientNernstPlanckMultiphysicsSolverSettings:
     r"""
     The Parameters section below describes the settings pertaining to the
     running of all transient classes which this algorithm orchestrates.
@@ -48,9 +48,9 @@ class TransientNernstPlanckMultiphysicsSolver(NernstPlanckMultiphysicsSolver):
     """
     def __init__(self, settings={}, **kwargs):
         super().__init__(**kwargs)
-        c = TransientNernstPlanckMultiphysicsSolverSettings()
-        self.settings._update_settings_and_docs(c)
-        self.settings.update(settings)
+        self.settings._update(TransientNernstPlanckMultiphysicsSolverSettings,
+                              docs=True)
+        self.settings._update(settings)  # Add user defined settings
 
     def run(self, t=None):
         r"""

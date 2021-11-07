@@ -10,7 +10,7 @@ docstr = Docorator()
 
 @docstr.get_sections(base='PhysicsSettings', sections=['Parameters'])
 @docstr.dedent
-class PhysicsSettings(SettingsData):
+class PhysicsSettings:
     r"""
     Parameters
     ----------
@@ -47,7 +47,7 @@ class GenericPhysics(ParamMixin, Subdomain, ModelsMixin):
 
     def __init__(self, phase=None, geometry=None, pores=None, throats=None,
                  settings={}, **kwargs):
-        self.settings._update(PhysicsSettings(), docs=True)
+        self.settings._update(PhysicsSettings, docs=True)
         self.settings._update(settings)
         super().__init__(**kwargs)
 

@@ -1,7 +1,6 @@
 from openpnm.core import Base, LegacyMixin, ModelsMixin, LabelMixin, ParamMixin
 from openpnm.utils import Workspace, logging
-from openpnm.utils import Docorator, SettingsData
-from traits.api import Str
+from openpnm.utils import Docorator
 from numpy import ones
 import openpnm.models as mods
 docstr = Docorator()
@@ -11,7 +10,7 @@ ws = Workspace()
 
 @docstr.get_sections(base='PhaseSettings', sections=['Parameters'])
 @docstr.dedent
-class PhaseSettings(SettingsData):
+class PhaseSettings:
     r"""
     Parameters
     ----------
@@ -67,10 +66,8 @@ class GenericPhase(ParamMixin, Base, ModelsMixin, LegacyMixin, LabelMixin):
     """
 
     def __init__(self, settings={}, **kwargs):
-        # Overwrite with user supplied settings, if any
-        self.settings._update(PhaseSettings(), docs=True)
-        self.settings._update(settings)
-
+        self.settings._update(PhaseSettings, docs=True)
+        self.settings._update(settings)  # Add user supplied settings
         super().__init__(**kwargs)
 
         # If project has a network object, adjust pore and throat array sizes

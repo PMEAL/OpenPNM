@@ -3,25 +3,24 @@ import uuid
 import numpy as np
 from collections import namedtuple
 from openpnm.utils import Workspace, logging
-from openpnm.utils import SettingsData, SettingsAttr
+from openpnm.utils import SettingsAttr
 from openpnm.utils.misc import PrintableList, PrintableDict, Docorator
-from traits.api import Str
 docstr = Docorator()
 logger = logging.getLogger(__name__)
 ws = Workspace()
 
 
 @docstr.get_sections(base='BaseSettings', sections=['Parameters'])
-class BaseSettings(SettingsData):
+class BaseSettings:
     r"""
     The default settings to use on instance of Base
 
     Parameters
     ----------
     prefix : str
-        The dafault prefix to use when generating a name
+        The default prefix to use when generating a name
     name : str
-        The name for the object, which will be generated if not given
+        The name of the object, which will be generated if not given
     uuid : str
         A universally unique identifier for the object to keep things straight
     """
@@ -153,12 +152,13 @@ class Base(dict):
         instance = super(Base, cls).__new__(cls, *args, **kwargs)
         # It is necessary to set the SettingsDict here since some classes
         # use it before calling super.__init__()
-        instance.settings = SettingsAttr(BaseSettings())
+        instance.settings = SettingsAttr()
+        instance.settings._update(BaseSettings, docs=True)
         instance.settings.uuid = str(uuid.uuid4())
         return instance
 
     def __init__(self, Np=0, Nt=0, name=None, project=None, network=None, settings={}):
-        self.settings._update(settings)
+        self.settings._update(settings)  # Add user supplied settings
         super().__init__()
         if project is None:
             if network is None:

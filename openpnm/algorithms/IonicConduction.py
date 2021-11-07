@@ -1,14 +1,14 @@
 import numpy as np
 from openpnm.algorithms import ReactiveTransport
 from openpnm.models.physics import generic_source_term as gst
-from openpnm.utils import logging, Docorator, GenericSettings
+from openpnm.utils import logging, Docorator
 logger = logging.getLogger(__name__)
 docstr = Docorator()
 
 
 @docstr.get_sections(base='IonicConductionSettings', sections=['Parameters'])
 @docstr.dedent
-class IonicConductionSettings(GenericSettings):
+class IonicConductionSettings:
     r"""
 
     Parameters
@@ -63,8 +63,8 @@ class IonicConduction(ReactiveTransport):
 
     def __init__(self, settings={}, **kwargs):
         super().__init__(**kwargs)
-        self.settings._update_settings_and_docs(IonicConductionSettings())
-        self.settings.update(settings)
+        self.settings._update(IonicConductionSettings, docs=True)
+        self.settings._update(settings)  # Add user supplied settings
 
     def _charge_conservation_eq_source_term(self, e_alg):
         # Source term for Poisson or charge conservation (electroneutrality) eq

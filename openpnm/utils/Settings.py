@@ -49,7 +49,7 @@ class TypedList(list):
 
 class SettingsAttr:
 
-    def __init__(self, settings=[]):
+    def __init__(self, settings={}):
         super().__setattr__('__doc__', settings.__doc__)
         self._update(settings)
 
@@ -111,7 +111,7 @@ class SettingsAttr:
         return self.__str__()
 
 
-class SettingsData:
+class SettingsData(HasTraits):
 
     def __str__(self):
         d = PrintableDict()

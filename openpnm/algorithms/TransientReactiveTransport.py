@@ -1,6 +1,6 @@
 import numpy as np
 from openpnm.algorithms import ReactiveTransport
-from openpnm.utils import logging, GenericSettings, Docorator
+from openpnm.utils import logging, Docorator
 from openpnm.integrators import ScipyRK45
 docstr = Docorator()
 logger = logging.getLogger(__name__)
@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 @docstr.get_sections(base='TransientReactiveTransportSettings',
                      sections=['Parameters', 'Other Parameters'])
 @docstr.dedent
-class TransientReactiveTransportSettings(GenericSettings):
+class TransientReactiveTransportSettings:
     r"""
 
     Parameters
@@ -70,8 +70,8 @@ class TransientReactiveTransport(ReactiveTransport):
 
     def __init__(self, settings={}, phase=None, **kwargs):
         super().__init__(**kwargs)
-        self.settings._update_settings_and_docs(TransientReactiveTransportSettings)
-        self.settings.update(settings)
+        self.settings._update(TransientReactiveTransportSettings, docs=True)
+        self.settings._update(settings)  # Add user supplied settings
         if phase is not None:
             self.settings['phase'] = phase.name
         self["pore.ic"] = np.nan

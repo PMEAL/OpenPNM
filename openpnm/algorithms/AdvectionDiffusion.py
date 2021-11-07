@@ -1,6 +1,6 @@
 import numpy as np
 from openpnm.algorithms import ReactiveTransport
-from openpnm.utils import logging, Docorator, GenericSettings
+from openpnm.utils import logging, Docorator
 docstr = Docorator()
 logger = logging.getLogger(__name__)
 
@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 @docstr.get_sections(base='AdvectionDiffusionSettings',
                      sections=['Parameters', 'Other Parameters'])
 @docstr.dedent
-class AdvectionDiffusionSettings(GenericSettings):
+class AdvectionDiffusionSettings:
     r"""
     Parameters
     ----------
@@ -60,8 +60,8 @@ class AdvectionDiffusion(ReactiveTransport):
 
     def __init__(self, settings={}, **kwargs):
         super().__init__(**kwargs)
-        self.settings._update_settings_and_docs(AdvectionDiffusionSettings())
-        self.settings.update(settings)
+        self.settings._update(AdvectionDiffusionSettings, docs=True)
+        self.settings._update(settings)  # Add user defined settings
 
     def set_outflow_BC(self, pores, mode='merge'):
         r"""
@@ -155,3 +155,24 @@ class AdvectionDiffusion(ReactiveTransport):
                                 + 'specified', pores[np.where(hits)])
         # Then call parent class function if above check passes
         super()._set_BC(pores=pores, bctype=bctype, bcvalues=bcvalues, mode=mode)
+
+
+if __name__ == "__main__":
+
+    import openpnm as op
+    pn = op.network.Cubic(shape=[10, 10, 1])
+    geo = op.geometry.SpheresAndCylinders(network=pn, pores=pn.Ps, throats=pn.Ts)
+    air = op.phases.Air(network=pn)
+    phys = op.physics.Standard(network=pn, phase=air, geometry=geo)
+    flow = op.algorithms.StokesFlow(network=pn, phase=air)
+    flow.set_value_BC(pores=pn.pores('left'), values=1)
+    flow.set_value_BC(pores=pn.pores('right'), values=0)
+    flow.run()
+    ad = op.algorithms.AdvectionDiffusion(network=pn, phase=air)
+    ad.set_value_BC(pores=pn.pores('front'), values=1)
+    ad.set_value_BC(pores=pn.pores('back'), values=0)
+    ad.run()
+    # import matplotlib.pyplot as plt
+    # fig, ax = plt.subplots(1, 1)
+    # ax.imshow(ad['pore.concentration'].reshape([10, 10]))
+

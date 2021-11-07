@@ -1,13 +1,13 @@
 import numpy as np
 from openpnm.algorithms import ReactiveTransport
-from openpnm.utils import logging, Docorator, GenericSettings
+from openpnm.utils import logging, Docorator
 docstr = Docorator()
 logger = logging.getLogger(__name__)
 
 
 @docstr.get_sections(base='NernstPlanckSettings', sections=['Parameters'])
 @docstr.dedent
-class NernstPlanckSettings(GenericSettings):
+class NernstPlanckSettings:
     r"""
     Parameters
     ----------
@@ -66,8 +66,8 @@ class NernstPlanck(ReactiveTransport):
     def __init__(self, ion=None, settings={}, **kwargs):
         super().__init__(**kwargs)
         # self.name = electrolyte  # This interfers with component name
-        self.settings._update_settings_and_docs(NernstPlanckSettings())
-        self.settings.update(settings)
+        self.settings._update(NernstPlanckSettings, docs=True)
+        self.settings._update(settings)  # Add user supplied settings
         # Parse the given ion and append name to quantity and conductance
         if ion:
             if not isinstance(ion, str):  # Convert ion object to str

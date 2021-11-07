@@ -1,6 +1,5 @@
 from openpnm.core import Subdomain, ModelsMixin, ParamMixin
-from openpnm.utils import SettingsData, Docorator
-from traits.api import Str
+from openpnm.utils import Docorator
 from openpnm.utils import Workspace, logging
 logger = logging.getLogger(__name__)
 ws = Workspace()
@@ -9,7 +8,7 @@ docstr = Docorator()
 
 @docstr.get_sections(base='GeometrySettings', sections=['Parameters'])
 @docstr.dedent
-class GeometrySettings(SettingsData):
+class GeometrySettings:
     r"""
 
     Parameters
@@ -82,8 +81,8 @@ class GenericGeometry(ParamMixin, Subdomain, ModelsMixin):
     """
 
     def __init__(self, pores=[], throats=[], settings={}, **kwargs):
-        self.settings._update(GeometrySettings(), docs=True)
-        self.settings._update(settings)  # Overwrite with user supplied settings
+        self.settings._update(GeometrySettings, docs=True)
+        self.settings._update(settings)  # Add user supplied settings
         super().__init__(**kwargs)
 
         network = self.project.network

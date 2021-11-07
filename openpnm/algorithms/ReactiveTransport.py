@@ -3,7 +3,7 @@ from numpy.linalg import norm
 from scipy.optimize.nonlin import TerminationCondition
 from openpnm.algorithms import GenericTransport
 from openpnm.utils import logging
-from openpnm.utils import SettingsData, TypedList, Docorator
+from openpnm.utils import TypedList, Docorator
 from traits.api import List, Str, Int, Float
 docstr = Docorator()
 logger = logging.getLogger(__name__)
@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 @docstr.get_sections(base='ReactiveTransportSettings',
                      sections=['Parameters', 'Other Parameters'])
 @docstr.dedent
-class ReactiveTransportSettings(SettingsData):
+class ReactiveTransportSettings:
     r"""
 
     Parameters
@@ -73,8 +73,8 @@ class ReactiveTransport(GenericTransport):
 
     def __init__(self, phase=None, settings={}, **kwargs):
         super().__init__(**kwargs)
-        self.settings._update(ReactiveTransportSettings(), docs=True)
-        self.settings._update(settings)
+        self.settings._update(ReactiveTransportSettings, docs=True)
+        self.settings._update(settings)  # Add user supplied settings
         if phase is not None:
             self.settings['phase'] = phase.name
 
