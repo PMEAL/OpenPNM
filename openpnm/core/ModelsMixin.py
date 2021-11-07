@@ -309,7 +309,7 @@ class ModelsMixin:
             raise Exception(propname+' can\'t be both dependency and propname')
         # Look for default regen_mode in settings if present, else use 'normal'
         if regen_mode == '':
-            if 'regen_mode' in self.settings._settings.visible_traits():
+            if 'regen_mode' in self.settings._attrs:
                 regen_mode = self.settings['regen_mode']
             else:
                 regen_mode = 'normal'

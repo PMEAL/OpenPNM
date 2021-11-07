@@ -236,9 +236,6 @@ class Project(list):
         # If received phase, just return self
         if obj._isa('phase'):
             return obj
-        # If phase happens to be in settings (i.e. algorithm), look it up
-        if 'phase' in obj.settings:
-            return self.phases()[obj.settings['phase']]
         # Otherwise find it using bottom-up approach (i.e. look in phase keys)
         for item in self.phases().values():
             if ('pore.' + obj.name in item) or ('throat.' + obj.name in item):
@@ -264,10 +261,6 @@ class Project(list):
         If no Geometry object can be found, then an Exception is raised.
 
         """
-        # If geometry happens to be in settings, look it up directly
-        if 'geometry' in physics.settings:
-            geom = self.geometries()[physics.settings['geometry']]
-            return geom
         # Otherwise, use the bottom-up approach
         for geo in self.geometries().values():
             if physics in self.find_physics(geometry=geo):

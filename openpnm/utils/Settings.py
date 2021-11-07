@@ -32,8 +32,7 @@ class SettingsAttr:
             with ``docrep`` so the inherited docstring on the ``SettingsData``
             object will be shown by this wrapper. Optionally ``settings`` can
             be a ``dict`` or any ``dataclasss``-type object with data stored
-            as attributes. In both cases the data-types for the attributes
-            are inferred from the values received, but the docs are ignored.
+            as attributes.
 
         Notes
         -----

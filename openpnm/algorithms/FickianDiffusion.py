@@ -71,8 +71,8 @@ class FickianDiffusion(ReactiveTransport):
 
     def __init__(self, settings={}, **kwargs):
         super().__init__(settings=settings, **kwargs)
-        self.settings._update_settings_and_docs(FickianDiffusionSettings())
-        self.settings.update(settings)
+        self.settings._update(FickianDiffusionSettings(), docs=True)
+        self.settings._update(settings)
 
     def calc_effective_diffusivity(self, inlets=None, outlets=None,
                                    domain_area=None, domain_length=None):

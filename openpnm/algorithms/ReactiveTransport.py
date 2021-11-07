@@ -172,7 +172,7 @@ class ReactiveTransport(GenericTransport):
         if not iterative_props:
             return
         # Fetch objects associated with the algorithm
-        phase = self.project.find_phase(self)
+        phase = self.project[self.settings.phase]
         physics = self.project.find_physics(phase=phase)
         geometries = self.project.geometries().values()
         # Update 'quantity' on phase with the most recent value
@@ -196,7 +196,7 @@ class ReactiveTransport(GenericTransport):
         current value of 'quantity'.
 
         """
-        phase = self.project.find_phase(self)
+        phase = self.project[self.settings.phase]
         for item in self.settings['sources']:
             # Fetch linearized values of the source term
             Ps = self.pores(item)
@@ -237,7 +237,7 @@ class ReactiveTransport(GenericTransport):
         w = self.settings['relaxation_quantity']
         maxiter = self.settings['newton_maxiter']
         f_rtol = self.settings['f_rtol']
-        x_rtol = self.settings['f_xtol']
+        x_rtol = self.settings['x_rtol']
         xold = self.x
         dx = self.x - xold
         condition = TerminationCondition(f_rtol=f_rtol, x_rtol=x_rtol)
@@ -268,7 +268,7 @@ class ReactiveTransport(GenericTransport):
         running the algorithm.
         """
         import networkx as nx
-        phase = self.project.find_phase(self)
+        phase = self.project[self.settings.phase]
         physics = self.project.find_physics(phase=phase)
         geometries = self.project.geometries().values()
         # Generate global dependency graph

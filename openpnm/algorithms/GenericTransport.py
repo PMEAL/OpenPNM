@@ -361,7 +361,7 @@ class GenericTransport(GenericAlgorithm):
         if not self.settings['cache_A']:
             self._pure_A = None
         if self._pure_A is None:
-            phase = self.project.find_phase(self)
+            phase = self.project[self.settings.phase]
             g = phase[gvals]
             am = self.network.create_adjacency_matrix(weights=g, fmt='coo')
             self._pure_A = spgr.laplacian(am).astype(float)
