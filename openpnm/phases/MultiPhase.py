@@ -5,6 +5,12 @@ from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 
 
+class MultiPhaseSettings:
+    phases = [],
+    throat_occupancy = 'manual'
+    partition_coef_prefix = 'throat.partition_coef'
+
+
 class MultiPhase(GenericPhase):
     r"""
     Creates Phase object that represents a multiphase system consisting of
@@ -56,14 +62,8 @@ class MultiPhase(GenericPhase):
 
     def __init__(self, phases=[], settings={}, **kwargs):
         super().__init__(**kwargs)
-        self.settings.update(
-            {
-                'phases': [],
-                'throat_occupancy': 'manual',
-                'partition_coef_prefix': 'throat.partition_coef'
-            }
-        )
-        self.settings.update(settings)
+        self.settings.update(MultiPhaseSettings)
+        self.settings._update(settings)  # Add user supplied settings
 
         self['pore.occupancy.all'] = np.zeros(self.Np, dtype=float)
         self['throat.occupancy.all'] = np.zeros(self.Nt, dtype=float)

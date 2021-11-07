@@ -49,8 +49,8 @@ class OhmicConduction(ReactiveTransport):
 
     def __init__(self, settings={}, **kwargs):
         super().__init__(**kwargs)
-        self.settings._update_settings_and_docs(OhmicConductionSettings())
-        self.settings.update(settings)
+        self.settings._update_settings_and_docs(OhmicConductionSettings(), docs=True)
+        self.settings._update(settings)
 
     def calc_effective_conductivity(self, inlets=None, outlets=None,
                                     domain_area=None, domain_length=None):

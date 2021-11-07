@@ -354,7 +354,7 @@ class GenericTransport(GenericAlgorithm):
         # FIXME: this needs to be properly addressed (see issue #1548)
         try:
             if gvals in self._get_iterative_props():
-                self.settings.update({"cache_A": False, "cache_b": False})
+                self.settings._update({"cache_A": False, "cache_b": False})
         except AttributeError:
             pass
         if not self.settings['cache_A']:

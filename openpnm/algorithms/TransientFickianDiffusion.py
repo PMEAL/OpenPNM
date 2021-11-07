@@ -12,4 +12,4 @@ class TransientFickianDiffusion(TransientReactiveTransport, FickianDiffusion):
 
     def __init__(self, settings={}, **kwargs):
         super().__init__(**kwargs)
-        self.settings.update(settings)  # Add user supplied settings
+        self.settings._update(settings)  # Add user supplied settings

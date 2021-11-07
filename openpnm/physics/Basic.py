@@ -39,9 +39,9 @@ class Basic(GenericPhysics):
                  geometry=None, settings={}, **kwargs):
 
         # Define some default settings
-        self.settings.update({'prefix': 'phys'})
+        self.settings._update({'prefix': 'phys'})
         # Overwrite with user supplied settings, if any
-        self.settings.update(settings)
+        self.settings._update(settings)
 
         # Deal with network or project arguments
         if network is not None:

@@ -49,10 +49,9 @@ class NernstPlanckMultiphysicsSolver(GenericAlgorithm):
 
     def __init__(self, phase=None, settings={},  **kwargs):
         super().__init__(**kwargs)
-        c = NernstPlanckMultiphysicsSolverSettings()
-        self.settings._update_settings_and_docs(c)
+        self.settings._update(NernstPlanckMultiphysicsSolverSettings, doc=True)
+        self.settings._update(settings)  # Add user supplied settings
         settings['phase'] = phase.name
-        self.settings.update(settings)
 
     def run(self, t=None):
         r"""
@@ -68,7 +67,7 @@ class NernstPlanckMultiphysicsSolver(GenericAlgorithm):
         algs.insert(0, p_alg)
         # Define initial conditions (if not defined by the user)
         for alg in algs:
-            alg.settings.update({'cache_A': False, 'cache_b': False})
+            alg.settings._update({'cache_A': False, 'cache_b': False})
             try:
                 alg[alg.settings['quantity']]
             except KeyError:

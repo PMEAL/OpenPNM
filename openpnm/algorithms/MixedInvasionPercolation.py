@@ -14,6 +14,15 @@ from openpnm.topotools import find_clusters, site_percolation
 logger = logging.getLogger(__name__)
 
 
+class MixedIPSettings:
+    pore_entry_pressure = "pore.entry_pressure"
+    throat_entry_pressure = "throat.entry_pressure"
+    snap_off = ""
+    invade_isolated_Ts = False
+    late_pore_filling = ""
+    late_throat_filling = ""
+
+
 class MixedInvasionPercolation(GenericAlgorithm):
     r"""
     An implemetation of invasion percolation which can invade bonds,
@@ -33,30 +42,9 @@ class MixedInvasionPercolation(GenericAlgorithm):
     """
 
     def __init__(self, settings={}, **kwargs):
-        def_set = {
-            "pore_entry_pressure": "pore.entry_pressure",
-            "throat_entry_pressure": "throat.entry_pressure",
-            "snap_off": "",
-            "invade_isolated_Ts": False,
-            "late_pore_filling": "",
-            "late_throat_filling": "",
-            "gui": {
-                "setup": {
-                    "pore_entry_pressure": "",
-                    "throat_entry_pressure": "",
-                    "snap_off": "",
-                    "invade_isolated_Ts": "",
-                },
-                "set_inlets": {"pores": None, "clusters": None},
-                "set_outlets": {"pores": None, "overwrite": False},
-                "apply_flow": {"flowrate": None},
-                "apply_trapping": {"partial": False},
-                "set_residual": {"pores": None, "overwrite": False},
-            },
-        }
         super().__init__(**kwargs)
-        self.settings.update(def_set)
-        self.settings.update(settings)
+        self.settings._update(MixedIPSettings, docs=True)
+        self.settings._update(settings)  # Add user defined settings
 
     def setup(
         self,

@@ -4,7 +4,7 @@ from openpnm.utils import logging, GenericSettings
 logger = logging.getLogger(__name__)
 
 
-class ImportedSettings(GenericSettings):
+class ImportedSettings:
     r"""
 
     Parameters
@@ -73,8 +73,8 @@ class Imported(GenericGeometry):
     """
 
     def __init__(self, settings={}, **kwargs):
-        self.settings._update_settings_and_docs(ImportedSettings())
-        self.settings.update(settings)
+        self.settings._update(ImportedSettings
+        self.settings._update(settings)
         if 'network' in kwargs.keys():
             network = kwargs.pop('network')
         elif 'project' in kwargs.keys():

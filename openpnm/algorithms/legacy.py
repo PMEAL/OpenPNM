@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 @docstr.get_sections(base='TransientReactiveTransportSettings',
                      sections=['Parameters', 'Other Parameters'])
 @docstr.dedent
-class TransientReactiveTransportSettings(GenericSettings):
+class TransientReactiveTransportSettings:
     r"""
 
     Parameters
@@ -112,8 +112,8 @@ class TransientReactiveTransport(ReactiveTransport):
 
     def __init__(self, settings={}, phase=None, **kwargs):
         super().__init__(**kwargs)
-        self.settings._update_settings_and_docs(TransientReactiveTransportSettings)
-        self.settings.update(settings)
+        self.settings._update(TransientReactiveTransportSettings, docs=True)
+        self.settings._update(settings)
         # Initialize the steady sys of eqs A matrix
         self._A_steady = None
         if phase is not None:

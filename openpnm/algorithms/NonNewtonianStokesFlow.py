@@ -3,6 +3,12 @@ from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 
 
+class NonNewtonianStokesFlowSettings:
+    phase = ''
+    quantity = 'pore.pressure'
+    conductance = 'throat.nonNewtonian_hydraulic_conductance'
+
+
 class NonNewtonianStokesFlow(ReactiveTransport):
     r"""
     A subclass of GenericLinearTransport to simulate viscous flow.  The 2
@@ -13,22 +19,8 @@ class NonNewtonianStokesFlow(ReactiveTransport):
     """
 
     def __init__(self, settings={}, phase=None, **kwargs):
-        def_set = {'phase': None,
-                   'quantity': 'pore.pressure',
-                   'conductance': 'throat.nonNewtonian_hydraulic_conductance',
-                   'gui': {'setup':        {'phase': None,
-                                            'quantity': '',
-                                            'conductance': ''},
-                           'set_rate_BC':  {'pores': None,
-                                            'values': None},
-                           'set_value_BC': {'pores': None,
-                                            'values': None},
-                           'set_source':   {'pores': None,
-                                            'propname': ''}
-                           }
-                   }
         super().__init__(**kwargs)
-        self.settings.update(def_set)
-        self.settings.update(settings)
+        self.settings._update(NonNewtonianStokesFlowSettings, docs=True)
+        self.settings._update(settings)  # Add user supplied settings
         if phase is not None:
             self.settings['phase'] = phase.name

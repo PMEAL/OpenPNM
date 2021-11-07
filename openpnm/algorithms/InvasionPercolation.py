@@ -9,6 +9,13 @@ from openpnm.algorithms import GenericAlgorithm
 logger = logging.getLogger(__name__)
 
 
+class IPSettings:
+    phase = ''
+    pore_volume = 'pore.volume'
+    throat_volume = 'throat.volume'
+    entry_pressure = 'throat.entry_pressure'
+
+
 class InvasionPercolation(GenericAlgorithm):
     r"""
     A classic/basic invasion percolation algorithm optimized for speed.
@@ -83,22 +90,10 @@ class InvasionPercolation(GenericAlgorithm):
 
     """
     def __init__(self, settings={}, phase=None, **kwargs):
-        def_set = {'phase': None,
-                   'pore_volume': 'pore.volume',
-                   'throat_volume': 'throat.volume',
-                   'entry_pressure': 'throat.entry_pressure',
-                   'gui': {'setup':          {'phase': None,
-                                              'entry_pressure': '',
-                                              'pore_volume': '',
-                                              'throat_volume': ''},
-                           'set_inlets':     {'pores': None,
-                                              'overwrite': False},
-                           'apply_trapping': {'outlets': None}
-                           }
-                   }
+
         super().__init__(**kwargs)
-        self.settings.update(def_set)
-        self.settings.update(settings)
+        self.settings._update(IPSettings)
+        self.settings._update(settings)
         if phase is not None:
             self.settings['phase'] = phase.name
         self['pore.invasion_sequence'] = -1

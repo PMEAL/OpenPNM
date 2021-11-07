@@ -10,6 +10,21 @@ logger = logging.getLogger(__name__)
 ws = Workspace()
 
 
+class FormationFactorSettings:
+    inlets = {'x': 'left',
+              'y': 'front',
+              'z': 'top'}
+    outlets = {'x': 'right',
+               'y': 'back',
+               'z': 'bottom'}
+    areas = {'x': None,
+             'y': None,
+             'z': None}
+    lengths = {'x': None,
+               'y': None,
+               'z': None}
+
+
 class FormationFactor(GenericMetric):
     r"""
     This class works by applying 'value' boundary conditions across the
@@ -61,19 +76,7 @@ class FormationFactor(GenericMetric):
     """
 
     def __init__(self, network=None, project=None, settings={}, **kwargs):
-        self.settings.update({'inlets': {'x': 'left',
-                                         'y': 'front',
-                                         'z': 'top'},
-                              'outlets': {'x': 'right',
-                                          'y': 'back',
-                                          'z': 'bottom'},
-                              'areas': {'x': None,
-                                        'y': None,
-                                        'z': None},
-                              'lengths': {'x': None,
-                                          'y': None,
-                                          'z': None}})
-
+        self.settings._update(FormationFactorSettings)
         self.results = PrintableDict()
         self.results._value = "Formation Factor"
         self.results._key = "Direction"

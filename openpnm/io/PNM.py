@@ -122,7 +122,7 @@ def create_obj(root, name, proj):
             a = jsont.loads(c)
         obj.update({arr: a})
     # Add settings to obj
-    obj.settings.update(json.loads(root[name].attrs['settings']))
+    obj.settings._update(json.loads(root[name].attrs['settings']))
     # Add models to obj
     if hasattr(obj, 'models'):
         obj.models.update(json.loads(root[name].attrs['models']))

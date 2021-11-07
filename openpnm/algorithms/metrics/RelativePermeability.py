@@ -6,17 +6,16 @@ from openpnm.algorithms import GenericAlgorithm, StokesFlow
 logger = logging.getLogger(__name__)
 
 
-default_settings = {
-    'wp': None,
-    'nwp': None,
-    'conduit_hydraulic_conductance': 'throat.conduit_hydraulic_conductance',
-    'hydraulic_conductance': 'throat.hydraulic_conductance',
-    'pore.invasion_sequence': 'pore.invasion_sequence',
-    'throat.invasion_sequence': 'throat.invasion_sequence',
-    'flow_inlet': None,
-    'flow_outlet': None,
-    'Snwp_num': None,
-}
+class RelativePermeabilitySettings:
+    wp = None
+    nwp = None
+    conduit_hydraulic_conductance = 'throat.conduit_hydraulic_conductance'
+    hydraulic_conductance = 'throat.hydraulic_conductance'
+    pore_invasion_sequence = 'pore.invasion_sequence'
+    throat_invasion_sequence = 'throat.invasion_sequence'
+    flow_inlet = None
+    flow_outlet = None
+    Snwp_num = None
 
 
 class RelativePermeability(GenericAlgorithm):
@@ -47,8 +46,8 @@ class RelativePermeability(GenericAlgorithm):
 
     def __init__(self, settings={}, **kwargs):
         super().__init__(**kwargs)
-        self.settings.update(default_settings)
-        self.settings.update(settings)
+        self.settings._update(RelativePermeabilitySettings)
+        self.settings._update(settings)  # Add user supplied settings
         self.Kr_values = {'sat': dict(),
                           'relperm_wp': dict(),
                           'relperm_nwp': dict(),

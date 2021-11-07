@@ -24,12 +24,10 @@ class ReactiveTransportTest:
 
     def test_settings(self):
         temp = self.alg.settings.copy()
-        self.alg.settings.update({
-            'conductance': "throat.cond",
-            'quantity': "pore.test",
-            'newton_maxiter': 123,
-            'relaxation_quantity': 3.21
-        })
+        self.alg.settings._update({'conductance': "throat.cond",
+                                   'quantity': "pore.test",
+                                   'newton_maxiter': 123,
+                                   'relaxation_quantity': 3.21})
         assert self.alg.settings["conductance"] == "throat.cond"
         assert self.alg.settings["quantity"] == "pore.test"
         assert self.alg.settings["newton_maxiter"] == 123
@@ -58,8 +56,8 @@ class ReactiveTransportTest:
         assert "pore.baz_depends_on_bar" in iterative_props
 
     def test_multiple_set_source_with_same_name_should_only_keep_one(self):
-        self.alg.settings.update({'conductance': 'throat.diffusive_conductance',
-                                  'quantity': 'pore.concentration'})
+        self.alg.settings._update({'conductance': 'throat.diffusive_conductance',
+                                   'quantity': 'pore.concentration'})
         self.alg.set_source(pores=self.net.pores('bottom'), propname='pore.reaction')
         self.alg.set_source(pores=self.net.pores('bottom'), propname='pore.reaction')
         self.alg.set_source(pores=self.net.pores('bottom'), propname='pore.reaction')
@@ -162,30 +160,26 @@ class ReactiveTransportTest:
 
     def test_solution_should_diverge_w_large_relaxation(self):
         self.alg.reset(bcs=True, source_terms=True)
-        self.alg.settings.update({'conductance': 'throat.diffusive_conductance',
-                                  'quantity': 'pore.concentration',
-                                  'newton_maxiter': 50})
+        self.alg.settings._update({'conductance': 'throat.diffusive_conductance',
+                                   'quantity': 'pore.concentration',
+                                   'newton_maxiter': 50})
         self.alg.set_source(pores=self.net.pores('bottom'), propname='pore.reaction')
         self.alg.set_value_BC(pores=self.net.pores('top'), values=1.0)
-        self.alg.settings.update({
-            'relaxation_quantity': 20,
-            'newton_maxiter': 25
-        })
+        self.alg.settings._update({'relaxation_quantity': 20,
+                                   'newton_maxiter': 25})
         self.alg.run()
         assert not self.alg.is_converged
 
     # FIXME: we no longer want to throw exception when maxiter is reached
     def test_check_divergence_if_maxiter_reached(self):
         self.alg.reset(bcs=True, source_terms=True)
-        self.alg.settings.update({'conductance': 'throat.diffusive_conductance',
-                                  'quantity': 'pore.concentration',
-                                  'newton_maxiter': 2})
+        self.alg.settings._update({'conductance': 'throat.diffusive_conductance',
+                                   'quantity': 'pore.concentration',
+                                   'newton_maxiter': 2})
         self.alg.set_source(pores=self.net.pores('bottom'), propname='pore.reaction')
         self.alg.set_value_BC(pores=self.net.pores('top'), values=1.0)
-        self.alg.settings.update({
-            'relaxation_quantity': 1,
-            'newton_maxiter': 2
-        })
+        self.alg.settings._update({'relaxation_quantity': 1,
+                                   'newton_maxiter': 2})
         with pytest.raises(Exception):
             raise Exception
         self.alg.settings['newton_maxiter'] = 5000
