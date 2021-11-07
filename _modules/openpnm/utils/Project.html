@@ -411,9 +411,6 @@
         <span class="c1"># If received phase, just return self</span>
         <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">_isa</span><span class="p">(</span><span class="s1">&#39;phase&#39;</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">obj</span>
-        <span class="c1"># If phase happens to be in settings (i.e. algorithm), look it up</span>
-        <span class="k">if</span> <span class="s1">&#39;phase&#39;</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">phases</span><span class="p">()[</span><span class="n">obj</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;phase&#39;</span><span class="p">]]</span>
         <span class="c1"># Otherwise find it using bottom-up approach (i.e. look in phase keys)</span>
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">phases</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;pore.&#39;</span> <span class="o">+</span> <span class="n">obj</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">item</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="s1">&#39;throat.&#39;</span> <span class="o">+</span> <span class="n">obj</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">item</span><span class="p">):</span>
@@ -439,10 +436,6 @@
 <span class="sd">        If no Geometry object can be found, then an Exception is raised.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># If geometry happens to be in settings, look it up directly</span>
-        <span class="k">if</span> <span class="s1">&#39;geometry&#39;</span> <span class="ow">in</span> <span class="n">physics</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="n">geom</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">geometries</span><span class="p">()[</span><span class="n">physics</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;geometry&#39;</span><span class="p">]]</span>
-            <span class="k">return</span> <span class="n">geom</span>
         <span class="c1"># Otherwise, use the bottom-up approach</span>
         <span class="k">for</span> <span class="n">geo</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">geometries</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">physics</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_physics</span><span class="p">(</span><span class="n">geometry</span><span class="o">=</span><span class="n">geo</span><span class="p">):</span>
