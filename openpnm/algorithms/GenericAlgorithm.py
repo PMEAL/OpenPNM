@@ -17,7 +17,7 @@ class GenericAlgorithmSettings(SettingsData):
         The prefix to use when generating a name for the algorithm.
 
     """
-    prefix = Str('alg')
+    prefix = 'alg'
 
 
 @docstr.get_sections(base='GenericAlgorithm', sections=['Parameters'])

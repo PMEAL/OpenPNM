@@ -21,7 +21,7 @@ class NetworkSettings(SettingsData):
     ----------
     %(BaseSettings.parameters)s
     """
-    prefix = Str('net')
+    prefix = 'net'
 
 
 class GenericNetwork(ParamMixin, Base, ModelsMixin, LegacyMixin, LabelMixin):

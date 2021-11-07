@@ -17,7 +17,7 @@ class PhaseSettings(SettingsData):
     ----------
     %(BaseSettings.parameters)s
     """
-    prefix = Str('phase')
+    prefix = 'phase'
 
 
 @docstr.get_sections(base='GenericPhase', sections=['Parameters'])

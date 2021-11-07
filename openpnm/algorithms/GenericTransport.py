@@ -40,14 +40,13 @@ class GenericTransportSettings(SettingsData):
     cache_b : bool
         If ``True``, b vector is cached and rather than getting rebuilt.
 
-
     """
-    prefix = Str('trans')
-    phase = Str()
-    quantity = Str()
-    conductance = Str()
-    cache_A = Bool(True)
-    cache_b = Bool(True)
+    prefix = 'trans'
+    phase = ''
+    quantity = ''
+    conductance = ''
+    cache_A = True
+    cache_b = True
 
 
 @docstr.get_sections(base='GenericTransport', sections=['Parameters'])

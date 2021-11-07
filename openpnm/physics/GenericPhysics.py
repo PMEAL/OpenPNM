@@ -16,7 +16,7 @@ class PhysicsSettings(SettingsData):
     ----------
     %(BaseSettings.parameters)s
     """
-    prefix = Str('phys')
+    prefix = 'phys'
 
 
 class GenericPhysics(ParamMixin, Subdomain, ModelsMixin):

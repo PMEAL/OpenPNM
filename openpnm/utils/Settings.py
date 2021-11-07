@@ -1,8 +1,117 @@
 from traits.api import HasTraits, Trait
 from openpnm.utils import PrintableDict
+from copy import deepcopy
 
 
-class SettingsData(HasTraits):
+class TypedList(list):
+
+    def __init__(self, iterable=[], types=[]):
+        self._types = types
+        if iterable:
+            super().__init__(iterable)
+            self._set_types()
+
+    def _get_types(self):
+        if self._types == []:
+            self._types = list(set([type(i) for i in self]))
+        return self._types
+
+    def _set_types(self):
+        if self._types == []:
+            self._types = list(set([type(i) for i in self]))
+        else:
+            raise Exception("Types have already been defined")
+
+    types = property(fget=_get_types, fset=_set_types)
+
+    def __setitem__(self, ind, value):
+        self._check_type(value)
+        super().__setitem__(ind, value)
+
+    def append(self, value):
+        self._check_type(value)
+        super().append(value)
+
+    def extend(self, iterable):
+        for value in iterable:
+            self._check_type(value)
+        super().extend(iterable)
+
+    def insert(self, index, value):
+        self._check_type(value)
+        super().insert(index, value)
+
+    def _check_type(self, value):
+        if (type(value) not in self.types) and (len(self.types) > 0):
+            raise Exception("This list cannot accept values of type " +
+                            f"{type(value)}")
+
+
+class SettingsAttr:
+
+    def __init__(self, settings=[]):
+        super().__setattr__('__doc__', settings.__doc__)
+        self._update(settings)
+
+    def __setattr__(self, attr, value):
+        if hasattr(value, '__contains__'):
+            value = deepcopy(value)
+        if hasattr(self, attr):
+            if type(value) == type(getattr(self, attr)):
+                super().__setattr__(attr, value)
+            else:
+                old = type(getattr(self, attr))
+                new = type(value)
+                raise Exception(f"Attribute \'{attr}\' can only accept " +
+                                f"values of type {old}, but the recieved " +
+                                f"value was of type {new}")
+        else:
+            super().__setattr__(attr, value)
+
+    def _update(self, settings, docs=False, override=False):
+        if hasattr(settings, 'items'): # Dictionary
+            for k, v in settings.items():
+                if override:
+                    super().__setattr__(k, v)
+                else:
+                    setattr(self, k, v)
+        else:  # Dataclass
+            attrs = [i for i in dir(settings) if not i.startswith('_')]
+            for k in attrs:
+                v = getattr(settings, k)
+                if override:
+                    super().__setattr__(k, v)
+                else:
+                    setattr(self, k, v)
+        if docs:
+            super().__setattr__('__doc__', settings.__doc__)
+
+    @property
+    def _attrs(self):
+        a = dir(self)
+        b = dir(list())
+        attrs = list(set(a).difference(set(b)))
+        attrs = [i for i in attrs if not i.startswith('_')]
+        return attrs
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+    def __setitem__(self, key, value):
+        setattr(self, key, value)
+
+    def __str__(self):
+        d = PrintableDict()
+        d._key = 'Settings'
+        d._value = 'Values'
+        d.update(self.__dict__)
+        return d.__str__()
+
+    def __repr__(self):
+        return self.__str__()
+
+
+class SettingsData:
 
     def __str__(self):
         d = PrintableDict()
@@ -16,7 +125,7 @@ class SettingsData(HasTraits):
     #     return self.__str__()
 
 
-class SettingsAttr:
+class SettingsAttr2:
     r"""
     """
 

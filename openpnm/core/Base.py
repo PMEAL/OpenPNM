@@ -25,9 +25,9 @@ class BaseSettings(SettingsData):
     uuid : str
         A universally unique identifier for the object to keep things straight
     """
-    prefix = Str('base')
-    name = Str('')
-    uuid = Str('')
+    prefix = 'base'
+    name = ''
+    uuid = ''
 
 
 class ParamMixin:

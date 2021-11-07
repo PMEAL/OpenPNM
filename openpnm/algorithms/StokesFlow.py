@@ -7,8 +7,8 @@ docstr = Docorator()
 
 
 class StokesFlowSettings(SettingsData):
-    quantity = Str('pore.pressure')
-    conductance = Str('throat.hydraulic_conductance')
+    quantity = 'pore.pressure'
+    conductance = 'throat.hydraulic_conductance'
 
 
 class StokesFlow(ReactiveTransport):

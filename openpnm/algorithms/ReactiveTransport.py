@@ -3,7 +3,7 @@ from numpy.linalg import norm
 from scipy.optimize.nonlin import TerminationCondition
 from openpnm.algorithms import GenericTransport
 from openpnm.utils import logging
-from openpnm.utils import SettingsData, Docorator
+from openpnm.utils import SettingsData, TypedList, Docorator
 from traits.api import List, Str, Int, Float
 docstr = Docorator()
 logger = logging.getLogger(__name__)
@@ -43,14 +43,14 @@ class ReactiveTransportSettings(SettingsData):
     %(GenericTransportSettings.other_parameters)s
 
     """
-    prefix = Str('react_trans')
-    nlin_max_iter = Int(5000)
-    relaxation_source = Float(1.0)
-    relaxation_quantity = Float(1.0)
-    sources = List(Str())
-    newton_maxiter = Int(5000)
-    f_rtol = Float(1e-6)
-    x_rtol = Float(1e-6)
+    prefix = 'react_trans'
+    nlin_max_iter = 5000
+    relaxation_source = 1.0
+    relaxation_quantity = 1.0
+    sources = TypedList(types=[str])
+    newton_maxiter = 5000
+    f_rtol = 1e-6
+    x_rtol = 1e-6
 
 
 

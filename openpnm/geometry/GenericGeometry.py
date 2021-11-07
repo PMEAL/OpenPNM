@@ -16,7 +16,7 @@ class GeometrySettings(SettingsData):
     ----------
     %(BaseSettings.parameters)s
     """
-    prefix = Str('geo')
+    prefix = 'geo'
 
 
 class GenericGeometry(ParamMixin, Subdomain, ModelsMixin):
