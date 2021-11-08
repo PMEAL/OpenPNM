@@ -73,7 +73,7 @@ class Imported(GenericGeometry):
     """
 
     def __init__(self, settings={}, **kwargs):
-        self.settings._update(ImportedSettings
+        self.settings._update(ImportedSettings)
         self.settings._update(settings)
         if 'network' in kwargs.keys():
             network = kwargs.pop('network')

@@ -46,8 +46,6 @@ class TransientReactiveTransportSettings:
     %(GenericTransportSettings.other_parameters)s
 
     """
-
-    phase = None
     pore_volume = 'pore.volume'
 
 

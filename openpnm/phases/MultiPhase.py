@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 
 
 class MultiPhaseSettings:
-    phases = [],
+    phases = []
     throat_occupancy = 'manual'
     partition_coef_prefix = 'throat.partition_coef'
 
@@ -62,7 +62,7 @@ class MultiPhase(GenericPhase):
 
     def __init__(self, phases=[], settings={}, **kwargs):
         super().__init__(**kwargs)
-        self.settings.update(MultiPhaseSettings)
+        self.settings._update(MultiPhaseSettings)
         self.settings._update(settings)  # Add user supplied settings
 
         self['pore.occupancy.all'] = np.zeros(self.Np, dtype=float)

@@ -57,7 +57,11 @@ class SettingsAttr:
         if hasattr(value, '__contains__'):
             value = deepcopy(value)
         if hasattr(self, attr):
-            if type(value) == type(getattr(self, attr)):
+            a = value.__class__.__mro__
+            b = getattr(self, attr).__class__.__mro__
+            c = object().__class__.__mro__
+            check = list(set(a).intersection(set(b)).difference(set(c)))
+            if len(check) > 0:
                 super().__setattr__(attr, value)
             else:
                 old = type(getattr(self, attr))

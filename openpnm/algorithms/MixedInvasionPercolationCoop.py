@@ -18,7 +18,7 @@ from transforms3d._gohlketransforms import angle_between_vectors
 logger = logging.getLogger(__name__)
 
 
-class MixedIPCoop:
+class MixedIPCoopSettings:
     pore_entry_pressure = "pore.entry_pressure"
     throat_entry_pressure = "throat.entry_pressure"
     snap_off = ""
@@ -105,7 +105,7 @@ class MixedInvasionPercolationCoop(MixedInvasionPercolation):
             self.settings["phase"] = phase.name
         if throat_entry_pressure:
             self.settings["throat_entry_pressure"] = throat_entry_pressure
-            phase = self.project.find_phase(self)
+            phase = self.project[self.settings.phase]
         self["throat.entry_pressure"] = phase[self.settings["throat_entry_pressure"]]
         if len(np.shape(self["throat.entry_pressure"])) > 1:
             self._bidirectional = True
@@ -113,7 +113,7 @@ class MixedInvasionPercolationCoop(MixedInvasionPercolation):
             self._bidirectional = False
         if pore_entry_pressure:
             self.settings["pore_entry_pressure"] = pore_entry_pressure
-            phase = self.project.find_phase(self)
+            phase = self.project[self.settings.phase]
         self["pore.entry_pressure"] = phase[self.settings["pore_entry_pressure"]]
         if snap_off:
             self.settings["snap_off"] = snap_off
@@ -128,7 +128,7 @@ class MixedInvasionPercolationCoop(MixedInvasionPercolation):
         self.reset()
 
     def _max_pressure(self):
-        phase = self.project.find_phase(self)
+        phase = self.project[self.settings.phase]
         if self.settings["throat_entry_pressure"]:
             max_tPc = np.max(phase[self.settings["throat_entry_pressure"]])
         else:
@@ -323,7 +323,7 @@ class MixedInvasionPercolationCoop(MixedInvasionPercolation):
         """
         start = time.time()
         net = self.project.network
-        phase = self.project.find_phase(self)
+        phase = self.project[self.settings.phase]
         all_phys = self.project.find_physics(phase=phase)
         if inv_points is None:
             inv_points = np.arange(0, 1.01, 0.01) * self._max_pressure()
@@ -416,7 +416,7 @@ class MixedInvasionPercolationCoop(MixedInvasionPercolation):
             The invasion pressures at which to assess coopertive pore filling.
         """
         net = self.project.network
-        phase = self.project.find_phase(self)
+        phase = self.project[self.settings.phase]
         all_phys = self.project.find_physics(phase=phase)
         if inv_points is None:
             inv_points = np.arange(0, 1.01, 0.01) * self._max_pressure()

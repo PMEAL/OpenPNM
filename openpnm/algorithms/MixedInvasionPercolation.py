@@ -97,7 +97,7 @@ class MixedInvasionPercolation(GenericAlgorithm):
             self.settings["phase"] = phase.name
         if throat_entry_pressure:
             self.settings["throat_entry_pressure"] = throat_entry_pressure
-            phase = self.project.find_phase(self)
+            phase = self.project[self.settings.phase]
         self["throat.entry_pressure"] = phase[self.settings["throat_entry_pressure"]]
         if len(np.shape(self["throat.entry_pressure"])) > 1:
             self._bidirectional = True
@@ -105,7 +105,7 @@ class MixedInvasionPercolation(GenericAlgorithm):
             self._bidirectional = False
         if pore_entry_pressure:
             self.settings["pore_entry_pressure"] = pore_entry_pressure
-            phase = self.project.find_phase(self)
+            phase = self.project[self.settings.phase]
         self["pore.entry_pressure"] = phase[self.settings["pore_entry_pressure"]]
         if snap_off:
             self.settings["snap_off"] = snap_off
@@ -427,7 +427,7 @@ class MixedInvasionPercolation(GenericAlgorithm):
                 "throat.invasion_sequence": self["throat.invasion_sequence"],
             }
         else:
-            phase = self.project.find_phase(self)
+            phase = self.project[self.settings.phase]
             net = self.project.network
             inv_p = self["pore.invasion_pressure"].copy()
             inv_t = self["throat.invasion_pressure"].copy()
@@ -503,7 +503,7 @@ class MixedInvasionPercolation(GenericAlgorithm):
         ee = np.cumsum(T_vol[bb] / flowrate)
         t = np.zeros((self.Nt,))
         t[bb] = ee  # Convert back to original order
-        phase = self.project.find_phase(self)
+        phase = self.project[self.settings.phase]
         phase["throat.invasion_time"] = t
 
     def get_intrusion_data(self, inv_points=None):
@@ -730,7 +730,7 @@ class MixedInvasionPercolation(GenericAlgorithm):
             logger.info("Number of trapped throats: " + str(num_tTs))
             self["throat.invasion_sequence"][self["throat.trapped"]] = -1
             # Assumes invasion has run to the end
-            phase = self.project.find_phase(self)
+            phase = self.project[self.settings.phase]
             phase["pore.occupancy"] = ~self["pore.trapped"]
             phase["throat.occupancy"] = ~self["throat.trapped"]
         else:
@@ -742,7 +742,7 @@ class MixedInvasionPercolation(GenericAlgorithm):
         This is probably wrong!!!! Each one needs to start a new cluster.
         """
         net = self.project.network
-        phase = self.project.find_phase(self)
+        phase = self.project[self.settings.phase]
         snap_off = self.settings["snap_off"]
         if queue is None:
             queue = self.queue[0]
