@@ -183,17 +183,6 @@
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
-<span class="k">class</span> <span class="nc">OrdinaryPercolationSettings</span><span class="p">:</span>
-    <span class="n">phase</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
-    <span class="n">access_limited</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;bond&#39;</span>
-    <span class="n">pore_entry_threshold</span> <span class="o">=</span> <span class="s1">&#39;pore.entry_pressure&#39;</span>
-    <span class="n">throat_entry_threshold</span> <span class="o">=</span> <span class="s1">&#39;throat.entry_pressure&#39;</span>
-    <span class="n">pore_volume</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
-    <span class="n">throat_volume</span> <span class="o">=</span><span class="s1">&#39;&#39;</span>
-    <span class="n">trapping</span><span class="o">=</span><span class="kc">False</span>
-
-
 <div class="viewcode-block" id="OrdinaryPercolation"><a class="viewcode-back" href="../../../modules/algorithms/ordinary_percolation.html#openpnm.algorithms.OrdinaryPercolation">[docs]</a><span class="k">class</span> <span class="nc">OrdinaryPercolation</span><span class="p">(</span><span class="n">GenericAlgorithm</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Ordinary percolation simulation with or without access limitations.</span>
@@ -229,11 +218,35 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="o">=</span><span class="p">{},</span> <span class="n">phase</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">def_set</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;phase&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                   <span class="s1">&#39;access_limited&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                   <span class="s1">&#39;mode&#39;</span><span class="p">:</span> <span class="s1">&#39;bond&#39;</span><span class="p">,</span>
+                   <span class="s1">&#39;pore_entry_threshold&#39;</span><span class="p">:</span> <span class="s1">&#39;pore.entry_pressure&#39;</span><span class="p">,</span>
+                   <span class="s1">&#39;throat_entry_threshold&#39;</span><span class="p">:</span> <span class="s1">&#39;throat.entry_pressure&#39;</span><span class="p">,</span>
+                   <span class="s1">&#39;pore_volume&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                   <span class="s1">&#39;throat_volume&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                   <span class="s1">&#39;gui&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;setup&#39;</span><span class="p">:</span>        <span class="p">{</span><span class="s1">&#39;phase&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                                            <span class="s1">&#39;access_limited&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                                            <span class="s1">&#39;mode&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                                            <span class="s1">&#39;throat_entry_pressure&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                                            <span class="s1">&#39;pore_entry_pressure&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                                            <span class="s1">&#39;pore_volume&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                                            <span class="s1">&#39;throat_volume&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">},</span>
+                           <span class="s1">&#39;set_inlets&#39;</span><span class="p">:</span>   <span class="p">{</span><span class="s1">&#39;pores&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                                            <span class="s1">&#39;overwrite&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">},</span>
+                           <span class="s1">&#39;set_outlets&#39;</span><span class="p">:</span>  <span class="p">{</span><span class="s1">&#39;pores&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                                            <span class="s1">&#39;overwrite&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">},</span>
+                           <span class="s1">&#39;set_residual&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;pores&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                                            <span class="s1">&#39;throats&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                                            <span class="s1">&#39;overwrite&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}</span>
+                           <span class="p">}</span>
+                   <span class="p">}</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">_update</span><span class="p">(</span><span class="n">OrdinaryPercolationSettings</span><span class="p">,</span> <span class="n">docs</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">_update</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span>  <span class="c1"># Apply user settings, if any</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">def_set</span><span class="p">)</span>
         <span class="c1"># Use the reset method to initialize all arrays</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="c1"># Apply user settings, if any</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">phase</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;phase&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">phase</span><span class="o">.</span><span class="n">name</span>
 
@@ -425,7 +438,7 @@
 <span class="sd">        to the inlet face, and set their volumes to zero.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">phase</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">phase</span><span class="p">]</span>
+        <span class="n">phase</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">find_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="c1"># Parse inputs and generate list of invasion points if necessary</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;mode&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;bond&#39;</span><span class="p">:</span>
             <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.entry_pressure&#39;</span><span class="p">]</span> <span class="o">=</span> \
