@@ -182,9 +182,6 @@
 <span class="kn">from</span> <span class="nn">openpnm.network</span> <span class="kn">import</span> <span class="n">GenericNetwork</span>
 
 
-<span class="k">class</span> <span class="nc">DelaunayVoronoiDualSettings</span><span class="p">:</span> <span class="o">...</span>
-
-
 <div class="viewcode-block" id="DelaunayVoronoiDual"><a class="viewcode-back" href="../../../modules/network/delaunay_voronoi_dual.html#openpnm.network.DelaunayVoronoiDual">[docs]</a><span class="k">class</span> <span class="nc">DelaunayVoronoiDual</span><span class="p">(</span><span class="n">GenericNetwork</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Combined and interconnected Voronoi and Delaunay tessellations</span>
@@ -238,11 +235,8 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">points</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">trim</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">settings</span><span class="o">=</span><span class="p">{},</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">points</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">_update</span><span class="p">(</span><span class="n">DelaunayVoronoiDualSettings</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">_update</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span>
-
         <span class="n">points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_points</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span> <span class="n">points</span><span class="o">=</span><span class="n">points</span><span class="p">)</span>
 
         <span class="c1"># Deal with points that are only 2D...they break tessellations</span>
@@ -315,7 +309,9 @@
         <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.interconnect&#39;</span><span class="p">][</span><span class="n">Ts</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
 
         <span class="c1"># Trim all pores that lie outside of the specified domain</span>
-        <span class="k">if</span> <span class="n">trim</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;trim&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_trim_external_pores</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_label_faces</span><span class="p">()</span>
 

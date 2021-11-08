@@ -173,8 +173,7 @@
               <div>
                 
   <h1>Source code for openpnm.algorithms.OhmicConduction</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
-<span class="kn">from</span> <span class="nn">openpnm.algorithms</span> <span class="kn">import</span> <span class="n">ReactiveTransport</span>
+<span></span><span class="kn">from</span> <span class="nn">openpnm.algorithms</span> <span class="kn">import</span> <span class="n">ReactiveTransport</span>
 <span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">logging</span><span class="p">,</span> <span class="n">Docorator</span><span class="p">,</span> <span class="n">GenericSettings</span>
 <span class="n">docstr</span> <span class="o">=</span> <span class="n">Docorator</span><span class="p">()</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -224,46 +223,9 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="o">=</span><span class="p">{},</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">_update</span><span class="p">(</span><span class="n">OhmicConductionSettings</span><span class="p">,</span> <span class="n">docs</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">_update</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">settings</span><span class="o">=</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-
-<div class="viewcode-block" id="OhmicConduction.calc_effective_conductivity"><a class="viewcode-back" href="../../../modules/algorithms/ohmic_conduction.html#openpnm.algorithms.OhmicConduction.calc_effective_conductivity">[docs]</a>    <span class="k">def</span> <span class="nf">calc_effective_conductivity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inlets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">outlets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                                    <span class="n">domain_area</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">domain_length</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        This calculates the effective electrical conductivity.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        inlets : array_like</span>
-<span class="sd">            The pores where the inlet voltage boundary conditions were</span>
-<span class="sd">            applied.  If not given an attempt is made to infer them from the</span>
-<span class="sd">            algorithm.</span>
-
-<span class="sd">        outlets : array_like</span>
-<span class="sd">            The pores where the outlet voltage boundary conditions were</span>
-<span class="sd">            applied.  If not given an attempt is made to infer them from the</span>
-<span class="sd">            algorithm.</span>
-
-<span class="sd">        domain_area : scalar, optional</span>
-<span class="sd">            The area of the inlet (and outlet) boundary faces.  If not given</span>
-<span class="sd">            then an attempt is made to estimate it, but it is usually</span>
-<span class="sd">            underestimated.</span>
-
-<span class="sd">        domain_length : scalar, optional</span>
-<span class="sd">            The length of the domain between the inlet and outlet boundary</span>
-<span class="sd">            faces.  If not given then an attempt is made to estimate it, but it</span>
-<span class="sd">            is usually underestimated.</span>
-
-<span class="sd">        Notes</span>
-<span class="sd">        -----</span>
-<span class="sd">        The area and length of the domain are found using the bounding box</span>
-<span class="sd">        around the inlet and outlet pores which do not necessarily lie on the</span>
-<span class="sd">        edge of the domain, resulting in underestimation of sizes.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calc_eff_prop</span><span class="p">(</span><span class="n">inlets</span><span class="o">=</span><span class="n">inlets</span><span class="p">,</span> <span class="n">outlets</span><span class="o">=</span><span class="n">outlets</span><span class="p">,</span>
-                                   <span class="n">domain_area</span><span class="o">=</span><span class="n">domain_area</span><span class="p">,</span>
-                                   <span class="n">domain_length</span><span class="o">=</span><span class="n">domain_length</span><span class="p">)</span></div></div>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">_update_settings_and_docs</span><span class="p">(</span><span class="n">OhmicConductionSettings</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span></div>
 </pre></div>
 
               </div>

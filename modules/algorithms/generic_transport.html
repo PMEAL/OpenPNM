@@ -652,31 +652,6 @@ vector of 0’s.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="openpnm.algorithms.GenericTransport._calc_eff_prop">
-<span class="sig-name descname"><span class="pre">_calc_eff_prop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inlets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outlets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain_area</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/GenericTransport.html#GenericTransport._calc_eff_prop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.GenericTransport._calc_eff_prop" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculates the effective transport through the network.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>inlets</strong> (<em>array_like</em>) – The pores where the inlet boundary conditions were applied. If
-not given an attempt is made to infer them from the algorithm.</p></li>
-<li><p><strong>outlets</strong> (<em>array_like</em>) – The pores where the outlet boundary conditions were applied.
-If not given an attempt is made to infer them from the
-algorithm.</p></li>
-<li><p><strong>domain_area</strong> (<em>float</em>) – The area of the inlet and/or outlet face (which shold match)</p></li>
-<li><p><strong>domain_length</strong> (<em>float</em>) – The length of the domain between the inlet and outlet faces</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p></p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>The effective transport property through the network</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="openpnm.algorithms.GenericTransport._get_domain_area">
 <span class="sig-name descname"><span class="pre">_get_domain_area</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inlets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outlets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/GenericTransport.html#GenericTransport._get_domain_area"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.GenericTransport._get_domain_area" title="Permalink to this definition">¶</a></dt>
 <dd><p>Determines the cross sectional area relative to the inlets/outlets.</p>
