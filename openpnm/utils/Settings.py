@@ -43,7 +43,7 @@ class TypedList(list):
 
     def _check_type(self, value):
         if (type(value) not in self.types) and (len(self.types) > 0):
-            raise Exception("This list cannot accept values of type " +
+            raise TypeError("This list cannot accept values of type " +
                             f"{type(value)}")
 
 
@@ -57,8 +57,7 @@ class SettingsAttr:
         # if value is None:  # Allow any attr to be overwritten with None
         #     super().__setattr__(attr, value)
         #     return
-        if hasattr(value, '__contains__'):
-            value = deepcopy(value)
+        value = deepcopy(value)
         if hasattr(self, attr):
             # If the the attr is already present, check its type
             if getattr(self, attr) is not None:
@@ -72,7 +71,7 @@ class SettingsAttr:
                 else:  # Otherwise raise an error
                     old = type(getattr(self, attr))
                     new = type(value)
-                    raise Exception(f"Attribute \'{attr}\' can only accept " +
+                    raise TypeError(f"Attribute \'{attr}\' can only accept " +
                                     f"values of type {old}, but the recieved" +
                                     f" value was of type {new}")
             else:

@@ -2,6 +2,7 @@ from openpnm.algorithms import ReactiveTransport
 from openpnm.utils import logging, Docorator, GenericSettings
 docstr = Docorator()
 logger = logging.getLogger(__name__)
+from copy import deepcopy
 
 
 @docstr.get_sections(base='FickianDiffusionSettings',
@@ -34,6 +35,7 @@ class FickianDiffusionSettings(GenericSettings):
     %(GenericTransportSettings.other_parameters)s
 
     """
+    prefix = 'fick'
     quantity = 'pore.concentration'
     conductance = 'throat.diffusive_conductance'
 
@@ -70,9 +72,9 @@ class FickianDiffusion(ReactiveTransport):
     """
 
     def __init__(self, settings={}, **kwargs):
-        super().__init__(settings=settings, **kwargs)
         self.settings._update(FickianDiffusionSettings, docs=True)
         self.settings._update(settings)
+        super().__init__(settings=deepcopy(self.settings), **kwargs)
 
     def calc_effective_diffusivity(self, inlets=None, outlets=None,
                                    domain_area=None, domain_length=None):
@@ -111,3 +113,14 @@ class FickianDiffusion(ReactiveTransport):
         return self._calc_eff_prop(inlets=inlets, outlets=outlets,
                                    domain_area=domain_area,
                                    domain_length=domain_length)
+
+
+if __name__ == "__main__":
+    import openpnm as op
+    pn = op.network.Cubic([3, 3, 3])
+    geo = op.geometry.SpheresAndCylinders(network=pn, pores=pn.Ps, throats=pn.Ts)
+    air = op.phases.Air(network=pn)
+    phys = op.physics.Basic(network=pn, phase=air, geometry=geo)
+    s = {'bob': 3}
+    fd = op.algorithms.FickianDiffusion(network=pn, phase=air, settings=s)
+    print(fd.settings)

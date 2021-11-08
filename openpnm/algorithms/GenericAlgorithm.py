@@ -1,6 +1,7 @@
+import numpy as np
 from openpnm.core import Base, LegacyMixin, LabelMixin
 from openpnm.utils import logging, Docorator
-import numpy as np
+from copy import deepcopy
 logger = logging.getLogger(__name__)
 docstr = Docorator()
 
@@ -36,14 +37,13 @@ class GenericAlgorithm(Base, LegacyMixin, LabelMixin):
 
     """
 
-    def __init__(self, network=None, project=None, settings={}, **kwargs):
+    def __init__(self, settings={}, **kwargs):
         self.settings._update(GenericAlgorithmSettings, docs=True)
         self.settings._update(settings)  # Add user supplied settings
-        super().__init__(project=project, network=network, **kwargs)
-        project = self.network.project
-        if project:
-            self['pore.all'] = np.ones(project.network.Np, dtype=bool)
-            self['throat.all'] = np.ones(project.network.Nt, dtype=bool)
+        super().__init__(settings=deepcopy(self.settings), **kwargs)
+        if self.project:
+            self['pore.all'] = np.ones(self.project.network.Np, dtype=bool)
+            self['throat.all'] = np.ones(self.project.network.Nt, dtype=bool)
 
     def results(self):
         r"""

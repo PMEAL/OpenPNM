@@ -2,6 +2,7 @@ import numpy as np
 import scipy.sparse.linalg
 import warnings
 import scipy.sparse.csgraph as spgr
+from copy import deepcopy
 from scipy.spatial import ConvexHull
 from scipy.spatial import cKDTree
 from openpnm.topotools import iscoplanar, is_fully_connected, dimensionality
@@ -10,7 +11,7 @@ from openpnm.utils import logging, prettify_logger_message
 from openpnm.utils import Docorator
 from openpnm.utils import is_symmetric
 from openpnm.solvers import PardisoSpsolve
-from traits.api import Str, Bool
+from copy import deepcopy
 
 docstr = Docorator()
 logger = logging.getLogger(__name__)
@@ -41,7 +42,7 @@ class GenericTransportSettings:
         If ``True``, b vector is cached and rather than getting rebuilt.
 
     """
-    prefix = 'trans'
+    prefix = 'transport'
     phase = ''
     quantity = ''
     conductance = ''
@@ -69,17 +70,14 @@ class GenericTransport(GenericAlgorithm):
         instance._pure_b = None
         return instance
 
-    def __init__(self, project=None, network=None, phase=None, settings={},
+    def __init__(self, phase=None, settings={},
                  **kwargs):
         self.settings._update(GenericTransportSettings, docs=True)
         self.settings._update(settings)  # Add user supplied settings
+        super().__init__(settings=deepcopy(self.settings), **kwargs)
         # Assign phase if given during init
         if phase is not None:
             self.settings['phase'] = phase.name
-        # If network given, get project, otherwise let parent class create it
-        if network is not None:
-            project = network.project
-        super().__init__(project=project, **kwargs)
         self['pore.bc_rate'] = np.nan
         self['pore.bc_value'] = np.nan
 

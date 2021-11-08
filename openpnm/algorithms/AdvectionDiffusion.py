@@ -59,9 +59,9 @@ class AdvectionDiffusion(ReactiveTransport):
     """
 
     def __init__(self, settings={}, **kwargs):
-        super().__init__(**kwargs)
         self.settings._update(AdvectionDiffusionSettings, docs=True)
         self.settings._update(settings)  # Add user defined settings
+        super().__init__(settings=self.settings, **kwargs)
 
     def set_outflow_BC(self, pores, mode='merge'):
         r"""
@@ -168,7 +168,8 @@ if __name__ == "__main__":
     flow.set_value_BC(pores=pn.pores('left'), values=1)
     flow.set_value_BC(pores=pn.pores('right'), values=0)
     flow.run()
-    ad = op.algorithms.AdvectionDiffusion(network=pn, phase=air)
+    settings = {'prefix': 'bob'}
+    ad = op.algorithms.AdvectionDiffusion(network=pn, phase=air, settings=settings)
     ad.set_value_BC(pores=pn.pores('front'), values=1)
     ad.set_value_BC(pores=pn.pores('back'), values=0)
     ad.run()

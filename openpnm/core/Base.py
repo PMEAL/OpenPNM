@@ -158,8 +158,8 @@ class Base(dict):
         return instance
 
     def __init__(self, Np=0, Nt=0, name=None, project=None, network=None, settings={}):
-        self.settings._update(settings)  # Add user supplied settings
         super().__init__()
+        self.settings._update(settings)  # Add user supplied settings
         if project is None:
             if network is None:
                 project = ws.new_project()
