@@ -30,8 +30,6 @@ perm.set_value_BC(pores=pn.pores('right'), values=0)
 perm.set_value_BC(pores=pn.pores('left'), values=101325)
 perm.run()
 water.update(perm.results())
-Keff = perm.calc_effective_permeability()[0]
-print(f"Effective permeability: {Keff:.2e}")
 
 # %% Perform reaction-diffusion simulation
 # Add reaction to phys_air
@@ -52,13 +50,11 @@ rxn.set_value_BC(pores=pn.pores('top'), values=1)
 rxn.run()
 air.update(rxn.results())
 
-# %% Perform pure diffusion simulation to get effective diffusivity
+# %% Perform pure diffusion simulation
 fd = op.algorithms.FickianDiffusion(network=pn, phase=air)
 fd.set_value_BC(pores=pn.pores('left'), values=1)
 fd.set_value_BC(pores=pn.pores('right'), values=0)
 fd.run()
-Deff = fd.calc_effective_diffusivity()[0]
-print(f"Effective diffusivity: {Deff:.2e}")
 
 # %% Output network and the phases to a VTP file for visualization in Paraview
 proj.export_data(phases=[hg, air, water], filename='output.vtp')

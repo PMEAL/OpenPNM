@@ -667,46 +667,6 @@ class GenericTransport(GenericAlgorithm):
 
         return np.array(R, ndmin=1)
 
-    def _calc_eff_prop(self, inlets=None, outlets=None,
-                       domain_area=None, domain_length=None):
-        r"""
-        Calculates the effective transport through the network.
-
-        Parameters
-        ----------
-        inlets : array_like
-            The pores where the inlet boundary conditions were applied. If
-            not given an attempt is made to infer them from the algorithm.
-        outlets : array_like
-            The pores where the outlet boundary conditions were applied.
-            If not given an attempt is made to infer them from the
-            algorithm.
-        domain_area : float
-            The area of the inlet and/or outlet face (which shold match)
-        domain_length : float
-            The length of the domain between the inlet and outlet faces
-
-        Returns
-        -------
-        The effective transport property through the network
-
-        """
-        if self.settings['quantity'] not in self.keys():
-            raise Exception('You need to run the algorithm first.')
-        Ps = np.isfinite(self['pore.bc_value'])
-        BCs = np.unique(self['pore.bc_value'][Ps])
-        if BCs.size != 2:
-            raise Exception('More/less than 2 unique value BCs were found.')
-        Dx = np.ptp(BCs)
-        inlets = self._get_inlets() if inlets is None else inlets
-        flow = self.rate(pores=inlets)
-        if domain_area is None:
-            domain_area = self._get_domain_area(inlets=inlets, outlets=outlets)
-        if domain_length is None:
-            domain_length = self._get_domain_length(inlets=inlets, outlets=outlets)
-        D = np.sum(flow) * domain_length / domain_area / Dx
-        return np.atleast_1d(D)
-
     def _get_inlets(self):
         r"""
         Determines inlet BCs by analyzing the algorithm object.
