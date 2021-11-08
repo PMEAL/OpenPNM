@@ -180,43 +180,27 @@
 <span class="kn">from</span> <span class="nn">scipy.spatial</span> <span class="kn">import</span> <span class="n">ConvexHull</span>
 <span class="kn">from</span> <span class="nn">scipy.spatial</span> <span class="kn">import</span> <span class="n">cKDTree</span>
 <span class="kn">from</span> <span class="nn">openpnm.topotools</span> <span class="kn">import</span> <span class="n">iscoplanar</span><span class="p">,</span> <span class="n">is_fully_connected</span><span class="p">,</span> <span class="n">dimensionality</span>
-<span class="kn">from</span> <span class="nn">openpnm.algorithms</span> <span class="kn">import</span> <span class="n">GenericAlgorithm</span><span class="p">,</span> <span class="n">SettingsGenericAlgorithm</span>
-<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">logging</span><span class="p">,</span> <span class="n">Docorator</span><span class="p">,</span> <span class="n">prettify_logger_message</span>
-<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">GenericSettings</span><span class="p">,</span> <span class="n">SettingsAttr</span>
+<span class="kn">from</span> <span class="nn">openpnm.algorithms</span> <span class="kn">import</span> <span class="n">GenericAlgorithm</span>
+<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">logging</span><span class="p">,</span> <span class="n">prettify_logger_message</span>
+<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">Docorator</span>
 <span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">is_symmetric</span>
 <span class="kn">from</span> <span class="nn">openpnm.solvers</span> <span class="kn">import</span> <span class="n">PardisoSpsolve</span>
-<span class="kn">from</span> <span class="nn">traits.api</span> <span class="kn">import</span> <span class="n">Str</span>
+<span class="kn">from</span> <span class="nn">traits.api</span> <span class="kn">import</span> <span class="n">Str</span><span class="p">,</span> <span class="n">Bool</span>
 
 <span class="n">docstr</span> <span class="o">=</span> <span class="n">Docorator</span><span class="p">()</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
-<span class="c1"># @docstr.get_sections(base=&#39;SettingsGenericTransport&#39;, sections=docstr.all_sections)</span>
-<span class="c1"># @docstr.dedent</span>
-<span class="k">class</span> <span class="nc">SettingsGenericTransport</span><span class="p">(</span><span class="n">SettingsGenericAlgorithm</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    %(SettingsGenericAlgorithm.parameters)s</span>
-<span class="sd">    phase : str</span>
-<span class="sd">        The name of the phase witih which this algorithm is associated</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">phase</span> <span class="o">=</span> <span class="n">Str</span><span class="p">()</span>
-
-
-<span class="nd">@docstr</span><span class="o">.</span><span class="n">get_sections</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="s1">&#39;GenericTransportSettings&#39;</span><span class="p">,</span>
-                     <span class="n">sections</span><span class="o">=</span><span class="n">docstr</span><span class="o">.</span><span class="n">all_sections</span><span class="p">)</span>
+<span class="nd">@docstr</span><span class="o">.</span><span class="n">get_sections</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="s1">&#39;GenericTransportSettings&#39;</span><span class="p">,</span> <span class="n">sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Parameters&#39;</span><span class="p">,</span>
+                                                                <span class="s1">&#39;Other Parameters&#39;</span><span class="p">])</span>
 <span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
-<span class="k">class</span> <span class="nc">GenericTransportSettings</span><span class="p">(</span><span class="n">GenericSettings</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">GenericTransportSettings</span><span class="p">:</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Defines the settings for GenericTransport algorithms</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    phase : str</span>
-<span class="sd">        The name of the phase on which the algorithm acts</span>
+<span class="sd">    %(GenericAlgorithmSettings.parameters)s</span>
 <span class="sd">    quantity : str</span>
 <span class="sd">        The name of the physical quantity to be calculated</span>
 <span class="sd">    conductance : str</span>
@@ -232,10 +216,10 @@
 <span class="sd">        If ``True``, b vector is cached and rather than getting rebuilt.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">phase</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">conductance</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">quantity</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">prefix</span> <span class="o">=</span> <span class="s1">&#39;trans&#39;</span>
+    <span class="n">phase</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+    <span class="n">quantity</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+    <span class="n">conductance</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
     <span class="n">cache_A</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">cache_b</span> <span class="o">=</span> <span class="kc">True</span>
 
@@ -262,10 +246,8 @@
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">settings</span><span class="o">=</span><span class="p">{},</span>
                  <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="c1"># Apply default settings</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">_update_settings_and_docs</span><span class="p">(</span><span class="n">GenericTransportSettings</span><span class="p">)</span>
-        <span class="c1"># Overwrite any given in init</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">_update</span><span class="p">(</span><span class="n">GenericTransportSettings</span><span class="p">,</span> <span class="n">docs</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">_update</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span>  <span class="c1"># Add user supplied settings</span>
         <span class="c1"># Assign phase if given during init</span>
         <span class="k">if</span> <span class="n">phase</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;phase&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">phase</span><span class="o">.</span><span class="n">name</span>
@@ -273,8 +255,6 @@
         <span class="k">if</span> <span class="n">network</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">project</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">project</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">project</span><span class="o">=</span><span class="n">project</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sets</span> <span class="o">=</span> <span class="n">SettingsAttr</span><span class="p">(</span><span class="n">SettingsGenericTransport</span><span class="p">())</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sets</span><span class="o">.</span><span class="n">_update</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span>
         <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.bc_rate&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
         <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.bc_value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
 
@@ -549,13 +529,13 @@
         <span class="c1"># FIXME: this needs to be properly addressed (see issue #1548)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">gvals</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_iterative_props</span><span class="p">():</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;cache_A&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;cache_b&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">})</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">_update</span><span class="p">({</span><span class="s2">&quot;cache_A&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;cache_b&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">})</span>
         <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
             <span class="k">pass</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;cache_A&#39;</span><span class="p">]:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_pure_A</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pure_A</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">phase</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">find_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="n">phase</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">phase</span><span class="p">]</span>
             <span class="n">g</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">gvals</span><span class="p">]</span>
             <span class="n">am</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">create_adjacency_matrix</span><span class="p">(</span><span class="n">weights</span><span class="o">=</span><span class="n">g</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;coo&#39;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_pure_A</span> <span class="o">=</span> <span class="n">spgr</span><span class="o">.</span><span class="n">laplacian</span><span class="p">(</span><span class="n">am</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>

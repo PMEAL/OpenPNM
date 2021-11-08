@@ -181,17 +181,16 @@
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
-<span class="n">default_settings</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;wp&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="s1">&#39;nwp&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="s1">&#39;conduit_hydraulic_conductance&#39;</span><span class="p">:</span> <span class="s1">&#39;throat.conduit_hydraulic_conductance&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;hydraulic_conductance&#39;</span><span class="p">:</span> <span class="s1">&#39;throat.hydraulic_conductance&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;pore.invasion_sequence&#39;</span><span class="p">:</span> <span class="s1">&#39;pore.invasion_sequence&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;throat.invasion_sequence&#39;</span><span class="p">:</span> <span class="s1">&#39;throat.invasion_sequence&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;flow_inlet&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="s1">&#39;flow_outlet&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="s1">&#39;Snwp_num&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-<span class="p">}</span>
+<span class="k">class</span> <span class="nc">RelativePermeabilitySettings</span><span class="p">:</span>
+    <span class="n">wp</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">nwp</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">conduit_hydraulic_conductance</span> <span class="o">=</span> <span class="s1">&#39;throat.conduit_hydraulic_conductance&#39;</span>
+    <span class="n">hydraulic_conductance</span> <span class="o">=</span> <span class="s1">&#39;throat.hydraulic_conductance&#39;</span>
+    <span class="n">pore_invasion_sequence</span> <span class="o">=</span> <span class="s1">&#39;pore.invasion_sequence&#39;</span>
+    <span class="n">throat_invasion_sequence</span> <span class="o">=</span> <span class="s1">&#39;throat.invasion_sequence&#39;</span>
+    <span class="n">flow_inlet</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">flow_outlet</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">Snwp_num</span> <span class="o">=</span> <span class="kc">None</span>
 
 
 <div class="viewcode-block" id="RelativePermeability"><a class="viewcode-back" href="../../../../modules/algorithms/metrics/relative_permeability.html#openpnm.algorithms.metrics.RelativePermeability">[docs]</a><span class="k">class</span> <span class="nc">RelativePermeability</span><span class="p">(</span><span class="n">GenericAlgorithm</span><span class="p">):</span>
@@ -222,8 +221,8 @@
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="o">=</span><span class="p">{},</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">default_settings</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">_update</span><span class="p">(</span><span class="n">RelativePermeabilitySettings</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">_update</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span>  <span class="c1"># Add user supplied settings</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">Kr_values</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;sat&#39;</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(),</span>
                           <span class="s1">&#39;relperm_wp&#39;</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(),</span>
                           <span class="s1">&#39;relperm_nwp&#39;</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(),</span>
