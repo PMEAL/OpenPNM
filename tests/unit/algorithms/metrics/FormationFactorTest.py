@@ -12,13 +12,13 @@ class FormationFactorTest:
                                                    throats=self.net.Ts)
 
     def test_run(self):
-        FF = op.algorithms.metrics.FormationFactor(network=self.net)
+        FF = op.metrics.FormationFactor(network=self.net)
         assert len(FF.results) == 0
         FF.run()
         assert len(FF.results) == 3
 
     def test_given_area(self):
-        FF = op.algorithms.metrics.FormationFactor(network=self.net)
+        FF = op.metrics.FormationFactor(network=self.net)
         FF.run()
         val_1 = FF.results['x']
         FF.set_area(direction='x', area=(15*0.0005)**2)
@@ -27,7 +27,7 @@ class FormationFactorTest:
         assert val_1 != val_2
 
     def test_given_length(self):
-        FF = op.algorithms.metrics.FormationFactor(network=self.net)
+        FF = op.metrics.FormationFactor(network=self.net)
         FF.run()
         val_1 = FF.results['y']
         FF.set_length(direction='y', length=15*0.0005)
@@ -36,7 +36,7 @@ class FormationFactorTest:
         assert val_1 != val_2
 
     def test_setting_inlets(self):
-        FF = op.algorithms.metrics.FormationFactor(network=self.net)
+        FF = op.metrics.FormationFactor(network=self.net)
         Ps = self.net.pores('left')
         self.net.set_label(pores=Ps, label='blah')
         FF.set_inlets(direction='x', label='blah')
