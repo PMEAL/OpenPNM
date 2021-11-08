@@ -21,7 +21,7 @@ class MixedIPSettings:
     invade_isolated_Ts = False
     late_pore_filling = ""
     late_throat_filling = ""
-    cooperative_pore_filling = False
+    cooperative_pore_filling = ''
     trapping = False
 
 

@@ -7,15 +7,15 @@ logger = logging.getLogger(__name__)
 
 
 class RelativePermeabilitySettings:
-    wp = None
-    nwp = None
+    wp = ''
+    nwp = ''
     conduit_hydraulic_conductance = 'throat.conduit_hydraulic_conductance'
     hydraulic_conductance = 'throat.hydraulic_conductance'
     pore_invasion_sequence = 'pore.invasion_sequence'
     throat_invasion_sequence = 'throat.invasion_sequence'
-    flow_inlet = None
-    flow_outlet = None
-    Snwp_num = None
+    flow_inlet = ''
+    flow_outlet = ''
+    Snwp_num = ''
 
 
 class RelativePermeability(GenericAlgorithm):
@@ -96,7 +96,7 @@ class RelativePermeability(GenericAlgorithm):
         """
         prop = self.settings['conduit_hydraulic_conductance']
         prop_q = self.settings['hydraulic_conductance']
-        if self.settings['wp'] is not None:
+        if self.settings['wp']:
             wp = self.project[self.settings['wp']]
             modelwp = models.physics.multiphase.conduit_conductance
             wp.add_model(model=modelwp, propname=prop,
@@ -187,7 +187,7 @@ class RelativePermeability(GenericAlgorithm):
         """
         network = self.project.network
         self._regenerate_models()
-        if self.settings['wp'] is not None:
+        if self.settings['wp']:
             wp = self.project[self.settings['wp']]
             St_mp_wp = StokesFlow(network=network, phase=wp)
             St_mp_wp.settings['conductance'] = 'throat.conduit_hydraulic_conductance'
@@ -235,7 +235,7 @@ class RelativePermeability(GenericAlgorithm):
         nwp = self.project[self.settings['nwp']]
         nwp['pore.occupancy'] = pore_mask
         nwp['throat.occupancy'] = throat_mask
-        if self.settings['wp'] is not None:
+        if self.settings['wp']:
             wp = self.project[self.settings['wp']]
             wp['throat.occupancy'] = 1-throat_mask
             wp['pore.occupancy'] = 1-pore_mask
@@ -279,7 +279,7 @@ class RelativePermeability(GenericAlgorithm):
         for dim in K_dir:
             flow_pores = [net.pores(self.settings['flow_inlets'][dim]),
                           net.pores(self.settings['flow_outlets'][dim])]
-            if self.settings['wp'] is not None:
+            if self.settings['wp']:
                 phase = self.project[self.settings['wp']]
                 K_abs = self._abs_perm_calc(phase, flow_pores)
                 self.Kr_values['perm_abs_wp'].update({dim: K_abs})
@@ -290,7 +290,7 @@ class RelativePermeability(GenericAlgorithm):
             K_abs = self._abs_perm_calc(phase, flow_pores)
             self.Kr_values['perm_abs_nwp'].update({dim: K_abs})
         for dirs in self.settings['flow_inlets']:
-            if self.settings['wp'] is not None:
+            if self.settings['wp']:
                 relperm_wp = []
             else:
                 relperm_wp = None
@@ -309,10 +309,10 @@ class RelativePermeability(GenericAlgorithm):
                 sat = self._sat_occ_update(j)
                 Snwparr.append(sat)
                 [Kewp, Kenwp] = self._eff_perm_calc(flow_pores)
-                if self.settings['wp'] is not None:
+                if self.settings['wp']:
                     relperm_wp.append(Kewp/self.Kr_values['perm_abs_wp'][dirs])
                 relperm_nwp.append(Kenwp/self.Kr_values['perm_abs_nwp'][dirs])
-            if self.settings['wp'] is not None:
+            if self.settings['wp']:
                 self.Kr_values['relperm_wp'].update({dirs: relperm_wp})
             self.Kr_values['relperm_nwp'].update({dirs: relperm_nwp})
             self.Kr_values['sat'].update({dirs: Snwparr})
@@ -330,7 +330,7 @@ class RelativePermeability(GenericAlgorithm):
             ax = fig.get_axes()[0]
 
         for inp in self.settings['flow_inlets']:
-            if self.settings['wp'] is not None:
+            if self.settings['wp']:
                 ax.plot(self.Kr_values['sat'][inp],
                         self.Kr_values['relperm_wp'][inp],
                         'o-', label='Kr_wp'+inp)
@@ -355,7 +355,7 @@ class RelativePermeability(GenericAlgorithm):
         in flow direction(s) and Saturation points.
         """
         self.Kr_values['results']['sat'] = self.Kr_values['sat']
-        if self.settings['wp'] is not None:
+        if self.settings['wp']:
             self.Kr_values['results']['kr_wp'] = self.Kr_values['relperm_wp']
         else:
             self.Kr_values['results']['kr_wp'] = None
