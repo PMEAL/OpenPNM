@@ -1,3 +1,4 @@
+from copy import deepcopy
 from openpnm.algorithms import OrdinaryPercolation
 from openpnm.utils import logging
 import numpy as np
@@ -49,9 +50,9 @@ class Porosimetry(OrdinaryPercolation):
     """
 
     def __init__(self, settings={}, phase=None, **kwargs):
-        super().__init__(**kwargs)
         self.settings._update(PorosimetrySettings, docs=True)
         self.settings._update(settings)  # Add any user supplied settings
+        super().__init__(settings=deepcopy(self.settings), **kwargs)
         # Use the reset method to initialize all arrays
         self.reset()
         if phase is not None:

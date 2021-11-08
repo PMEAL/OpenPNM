@@ -11,6 +11,7 @@ import logging
 import heapq as hq
 import scipy as sp
 import numpy as np
+from copy import deepcopy
 from scipy.sparse import coo_matrix, dok_matrix
 from openpnm.algorithms import MixedInvasionPercolation
 from transforms3d._gohlketransforms import angle_between_vectors
@@ -46,9 +47,9 @@ class MixedInvasionPercolationCoop(MixedInvasionPercolation):
     """
 
     def __init__(self, settings={}, **kwargs):
-        super().__init__(**kwargs)
         self.settings._update(MixedIPCoopSettings, docs=True)
         self.settings._update(settings)
+        super().__init__(settings=deepcopy(self.settings), **kwargs)
 
     def setup(
         self,

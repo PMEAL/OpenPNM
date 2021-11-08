@@ -1,4 +1,5 @@
 import numpy as np
+from copy import deepcopy
 from openpnm.algorithms import ReactiveTransport
 from openpnm.utils import logging, Docorator
 from openpnm.integrators import ScipyRK45
@@ -67,9 +68,9 @@ class TransientReactiveTransport(ReactiveTransport):
     """
 
     def __init__(self, settings={}, phase=None, **kwargs):
-        super().__init__(**kwargs)
         self.settings._update(TransientReactiveTransportSettings, docs=True)
         self.settings._update(settings)  # Add user supplied settings
+        super().__init__(settings=deepcopy(self.settings), **kwargs)
         if phase is not None:
             self.settings['phase'] = phase.name
         self["pore.ic"] = np.nan

@@ -1,3 +1,4 @@
+from copy import deepcopy
 from openpnm.algorithms import ReactiveTransport
 from openpnm.utils import logging, Docorator, GenericSettings
 docstr = Docorator()
@@ -48,9 +49,9 @@ class OhmicConduction(ReactiveTransport):
     """
 
     def __init__(self, settings={}, **kwargs):
-        super().__init__(**kwargs)
         self.settings._update(OhmicConductionSettings, docs=True)
         self.settings._update(settings)
+        super().__init__(settings=deepcopy(self.settings), **kwargs)
 
     def calc_effective_conductivity(self, inlets=None, outlets=None,
                                     domain_area=None, domain_length=None):

@@ -1,4 +1,5 @@
 import numpy as np
+from copy import deepcopy
 from collections import namedtuple
 from openpnm.algorithms import GenericAlgorithm
 from openpnm.topotools import site_percolation, bond_percolation
@@ -54,9 +55,9 @@ class OrdinaryPercolation(GenericAlgorithm):
     """
 
     def __init__(self, settings={}, phase=None, **kwargs):
-        super().__init__(**kwargs)
         self.settings._update(OrdinaryPercolationSettings, docs=True)
         self.settings._update(settings)  # Apply user settings, if any
+        super().__init__(settings=deepcopy(self.settings), **kwargs)
         # Use the reset method to initialize all arrays
         self.reset()
         if phase is not None:

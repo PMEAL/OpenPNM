@@ -1,3 +1,4 @@
+from copy import deepcopy
 from openpnm.algorithms import TransientReactiveTransport, AdvectionDiffusion
 from openpnm.utils import logging, Docorator
 docstr = Docorator()
@@ -44,8 +45,8 @@ class TransientAdvectionDiffusion(TransientReactiveTransport,
     """
 
     def __init__(self, settings={}, phase=None, **kwargs):
-        super().__init__(**kwargs)
         self.settings._update(TransientAdvectionDiffusionSettings, docs=True)
         self.settings._update(settings)
+        super().__init__(settings=deepcopy(self.settings), **kwargs)
         if phase is not None:
             self.settings['phase'] = phase.name
