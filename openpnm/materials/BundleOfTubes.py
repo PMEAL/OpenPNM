@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 
 class BundleOfTubesSettings:
-    adjust_psd= 'clip'
+    adjust_psd = 'clip'
 
 
 class BundleOfTubes(Project):

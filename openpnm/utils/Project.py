@@ -3,7 +3,7 @@ import uuid
 import openpnm
 import numpy as np
 from copy import deepcopy
-from openpnm.utils import SettingsDict, HealthDict, Workspace, logging
+from openpnm.utils import HealthDict, Workspace, logging
 from .Grid import Tableist
 logger = logging.getLogger(__name__)
 ws = Workspace()
@@ -36,11 +36,12 @@ class Project(list):
     """
 
     def __init__(self, *args, **kwargs):
+        from openpnm.utils import SettingsAttr
         name = kwargs.pop('name', None)
         super().__init__(*args, **kwargs)
-        self.settings = SettingsDict()
+        self.settings = SettingsAttr()
         ws[name] = self  # Register self with workspace
-        self.settings['_uuid'] = str(uuid.uuid4())
+        self.settings['uuid'] = str(uuid.uuid4())
 
     def extend(self, obj):
         r"""
