@@ -16,6 +16,7 @@ class OrdinaryPercolationSettings:
     throat_entry_threshold = 'throat.entry_pressure'
     pore_volume = ''
     throat_volume =''
+    trapping=False
 
 
 class OrdinaryPercolation(GenericAlgorithm):
@@ -54,7 +55,7 @@ class OrdinaryPercolation(GenericAlgorithm):
 
     def __init__(self, settings={}, phase=None, **kwargs):
         super().__init__(**kwargs)
-        self.settings.update(OrdinaryPercolationSettings, docs=True)
+        self.settings._update(OrdinaryPercolationSettings, docs=True)
         self.settings._update(settings)  # Apply user settings, if any
         # Use the reset method to initialize all arrays
         self.reset()
@@ -249,7 +250,7 @@ class OrdinaryPercolation(GenericAlgorithm):
         to the inlet face, and set their volumes to zero.
 
         """
-        phase = self.project.find_phase(self)
+        phase = self.project[self.settings.phase]
         # Parse inputs and generate list of invasion points if necessary
         if self.settings['mode'] == 'bond':
             self['throat.entry_pressure'] = \

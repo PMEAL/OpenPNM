@@ -16,6 +16,8 @@ class PorosimetrySettings:
     throat_volume = 'throat.volume'
     late_pore_filling = ''
     late_throat_filling = ''
+    pore_partial_filling = ''
+    throat_partial_filling = ''
 
 
 class Porosimetry(OrdinaryPercolation):
@@ -97,7 +99,7 @@ class Porosimetry(OrdinaryPercolation):
                        'throat.invasion_pressure': t_inv}
         else:
             p_inv, t_inv = super().results(Pc).values()
-            phase = self.project.find_phase(self)
+            phase = self.project[self.settings.phase]
             quantity = self.settings['quantity'].split('.')[-1]
             lpf = np.array([1])
             if self.settings['pore_partial_filling']:
