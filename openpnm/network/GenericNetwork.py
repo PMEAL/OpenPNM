@@ -586,8 +586,10 @@ class GenericNetwork(ParamMixin, Base, ModelsMixin, LegacyMixin, LabelMixin):
             
             
         asmask : boolean
-            If true, converts indicies to a boolean mask. Useful for labelling.
-
+            If ``False`` (default) the returned result is a list of the neighboring
+            pores as idicies. If ``True`` the returned result is a boolean mask.
+            (Useful for labelling)
+            
         Returns
         -------
         If ``flatten`` is ``True``, returns a 1D array of pore indices filtered
@@ -638,7 +640,11 @@ class GenericNetwork(ParamMixin, Base, ModelsMixin, LegacyMixin, LabelMixin):
                                                   am=self._am['lil'],
                                                   flatten=flatten,
                                                   include_input=include_input)
-        return neighbors
+        if asmask==False:
+            return neighbors
+        else:
+            neighbors=self._tomask(element='pore',indices=neighbors)
+            return neighbors
 
     def find_neighbor_throats(self, pores, mode='union', flatten=True):
         r"""
