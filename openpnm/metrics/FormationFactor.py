@@ -3,7 +3,7 @@ from openpnm.utils import logging, Project, Workspace, PrintableDict
 from openpnm.phases import GenericPhase
 from openpnm.physics import GenericPhysics
 from openpnm.algorithms import FickianDiffusion
-from openpnm.algorithms.metrics import GenericMetric
+from openpnm.metrics import GenericMetric
 from openpnm import models
 from openpnm import topotools
 logger = logging.getLogger(__name__)
@@ -47,7 +47,7 @@ class FormationFactor(GenericMetric):
 
     Now find the formation factor of the network:
 
-    >>> F = op.algorithms.metrics.FormationFactor(network=pn)
+    >>> F = op.metrics.FormationFactor(network=pn)
     >>> F.run()
     >>> print(F.results)
     ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――

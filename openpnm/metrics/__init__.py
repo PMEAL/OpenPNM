@@ -1,6 +1,6 @@
 r"""
 
-**openpnm.algorithms.metrics**
+**openpnm.metrics**
 
 ----
 

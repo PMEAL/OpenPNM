@@ -26,7 +26,7 @@ class MercuryIntrusion(Porosimetry):
     >>> import openpnm as op
     >>> pn = op.network.Cubic(shape=[10, 10, 10], spacing=1e-5)
     >>> geo = op.geometry.SpheresAndCylinders(network=pn)
-    >>> mip = op.algorithms.metrics.MercuryIntrusion(network=pn)
+    >>> mip = op.metrics.MercuryIntrusion(network=pn)
     >>> mip.run()
 
     You can then plot the results using ```mip.plot_intrusion_curve()```.

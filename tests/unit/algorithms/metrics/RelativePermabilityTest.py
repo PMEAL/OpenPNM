@@ -41,7 +41,7 @@ class RelativePermeabilityTest:
         self.non_wet_phase.update(ip.results())
 
     def test_one_phase_definition(self):
-        rp = op.algorithms.metrics.RelativePermeability(network=self.net)
+        rp = op.metrics.RelativePermeability(network=self.net)
         rp.settings.update({'nwp': self.non_wet_phase.name,
                             'invasion_sequence': 'invasion_sequence'})
         rp.run(Snwp_num=10)
@@ -51,7 +51,7 @@ class RelativePermeabilityTest:
     def test_overwriting_boundary_faces(self):
         inlets = {'x': 'back', 'y': 'back', 'z': 'back'}
         outlets = {'x': 'front', 'y': 'front', 'z': 'front'}
-        rp = op.algorithms.metrics.RelativePermeability(network=self.net)
+        rp = op.metrics.RelativePermeability(network=self.net)
         rp.settings.update({'nwp': self.non_wet_phase.name,
                             'wp': self.wet_phase.name,
                             'invasion_sequence': 'invasion_sequence'
@@ -69,7 +69,7 @@ class RelativePermeabilityTest:
         nt.assert_allclose(kx, kr, rtol=1e-6)
 
     def test_lacking_boundary_faces(self):
-        rp = op.algorithms.metrics.RelativePermeability(network=self.net)
+        rp = op.metrics.RelativePermeability(network=self.net)
         inlets = {'x': 'top'}
         outlets = {'x': 'bottom'}
         rp.settings.update({'nwp': self.non_wet_phase.name,
@@ -95,7 +95,7 @@ class RelativePermeabilityTest:
         self.net.set_label(pores=pores_out, label='pore_out')
         inlets = {'x': 'pore_in'}
         outlets = {'x': 'pore_out'}
-        rp = op.algorithms.metrics.RelativePermeability(network=self.net)
+        rp = op.metrics.RelativePermeability(network=self.net)
         rp.settings.update({'nwp': self.non_wet_phase.name,
                             'wp': self.wet_phase.name,
                             'invasion_sequence': 'invasion_sequence'
@@ -144,7 +144,7 @@ class RelativePermeabilityTest:
             shape = [10, 10, 10]
             shape[i] = 1
             self.setup_model2d(shape=shape)
-            rp = op.algorithms.metrics.RelativePermeability(network=self.net)
+            rp = op.metrics.RelativePermeability(network=self.net)
             rp.settings.update({'nwp': self.non_wet_phase.name,
                                 'invasion_sequence': 'invasion_sequence'})
             rp.run(Snwp_num=10)
@@ -157,7 +157,7 @@ class RelativePermeabilityTest:
             shape = [10, 10, 10]
             shape[i] = 1
             self.setup_model2d(shape=shape)
-            rp = op.algorithms.metrics.RelativePermeability(network=self.net)
+            rp = op.metrics.RelativePermeability(network=self.net)
             rp.settings.update({'nwp': self.non_wet_phase.name,
                                 'wp': self.wet_phase.name,
                                 'invasion_sequence': 'invasion_sequence'})
