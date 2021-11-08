@@ -176,12 +176,27 @@
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">scipy.sparse</span> <span class="k">as</span> <span class="nn">sprs</span>
 <span class="kn">import</span> <span class="nn">scipy.spatial</span> <span class="k">as</span> <span class="nn">sptl</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
 <span class="kn">from</span> <span class="nn">openpnm.core</span> <span class="kn">import</span> <span class="n">Base</span><span class="p">,</span> <span class="n">ModelsMixin</span><span class="p">,</span> <span class="n">LegacyMixin</span><span class="p">,</span> <span class="n">LabelMixin</span><span class="p">,</span> <span class="n">ParamMixin</span>
 <span class="kn">from</span> <span class="nn">openpnm</span> <span class="kn">import</span> <span class="n">topotools</span>
+<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">Docorator</span>
 <span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">Workspace</span><span class="p">,</span> <span class="n">logging</span>
 <span class="kn">import</span> <span class="nn">openpnm.models.topology</span> <span class="k">as</span> <span class="nn">tm</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 <span class="n">ws</span> <span class="o">=</span> <span class="n">Workspace</span><span class="p">()</span>
+<span class="n">docstr</span> <span class="o">=</span> <span class="n">Docorator</span><span class="p">()</span>
+
+
+<span class="nd">@docstr</span><span class="o">.</span><span class="n">get_sections</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="s1">&#39;NetworkSettings&#39;</span><span class="p">,</span> <span class="n">sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Parameters&#39;</span><span class="p">])</span>
+<span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+<span class="k">class</span> <span class="nc">NetworkSettings</span><span class="p">:</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    %(BaseSettings.parameters)s</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">prefix</span> <span class="o">=</span> <span class="s1">&#39;net&#39;</span>
 
 
 <div class="viewcode-block" id="GenericNetwork"><a class="viewcode-back" href="../../../modules/network/generic.html#openpnm.network.GenericNetwork">[docs]</a><span class="k">class</span> <span class="nc">GenericNetwork</span><span class="p">(</span><span class="n">ParamMixin</span><span class="p">,</span> <span class="n">Base</span><span class="p">,</span> <span class="n">ModelsMixin</span><span class="p">,</span> <span class="n">LegacyMixin</span><span class="p">,</span> <span class="n">LabelMixin</span><span class="p">):</span>
@@ -293,11 +308,11 @@
         <span class="n">instance</span><span class="o">.</span><span class="n">_am</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">return</span> <span class="n">instance</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conns</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">coords</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">project</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">settings</span><span class="o">=</span><span class="p">{},</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conns</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">coords</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">settings</span><span class="o">=</span><span class="p">{},</span>
                  <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;prefix&#39;</span><span class="p">,</span> <span class="s1">&#39;net&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">project</span><span class="o">=</span><span class="n">project</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">_update</span><span class="p">(</span><span class="n">NetworkSettings</span><span class="p">,</span> <span class="n">docs</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">_update</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span>  <span class="c1"># Add user supplied settings</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">settings</span><span class="o">=</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">coords</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">Np</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">coords</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
             <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.all&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">Np</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
@@ -716,7 +731,7 @@
         <span class="k">return</span> <span class="n">Ts</span></div>
 
 <div class="viewcode-block" id="GenericNetwork.find_neighbor_pores"><a class="viewcode-back" href="../../../modules/network/generic.html#openpnm.network.GenericNetwork.find_neighbor_pores">[docs]</a>    <span class="k">def</span> <span class="nf">find_neighbor_pores</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;union&#39;</span><span class="p">,</span> <span class="n">flatten</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                            <span class="n">include_input</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">asmask</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+                            <span class="n">include_input</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a list of pores that are direct neighbors to the given pore(s)</span>
 
@@ -758,13 +773,7 @@
 <span class="sd">            **&#39;and&#39;** : Only neighbors shared by all input pores.  This is also</span>
 <span class="sd">            known as &#39;intersection&#39; in set theory and (somtimes) as &#39;all&#39; in</span>
 <span class="sd">            boolean logic.  Both keywords are accepted and treated as &#39;and&#39;.</span>
-<span class="sd">            </span>
-<span class="sd">            </span>
-<span class="sd">        asmask : boolean</span>
-<span class="sd">            If ``False`` (default) the returned result is a list of the neighboring</span>
-<span class="sd">            pores as idicies. If ``True`` the returned result is a boolean mask.</span>
-<span class="sd">            (Useful for labelling)</span>
-<span class="sd">            </span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        If ``flatten`` is ``True``, returns a 1D array of pore indices filtered</span>
@@ -815,11 +824,7 @@
                                                   <span class="n">am</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_am</span><span class="p">[</span><span class="s1">&#39;lil&#39;</span><span class="p">],</span>
                                                   <span class="n">flatten</span><span class="o">=</span><span class="n">flatten</span><span class="p">,</span>
                                                   <span class="n">include_input</span><span class="o">=</span><span class="n">include_input</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">asmask</span><span class="o">==</span><span class="kc">False</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">neighbors</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">neighbors</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_tomask</span><span class="p">(</span><span class="n">element</span><span class="o">=</span><span class="s1">&#39;pore&#39;</span><span class="p">,</span><span class="n">indices</span><span class="o">=</span><span class="n">neighbors</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">neighbors</span></div>
+        <span class="k">return</span> <span class="n">neighbors</span></div>
 
 <div class="viewcode-block" id="GenericNetwork.find_neighbor_throats"><a class="viewcode-back" href="../../../modules/network/generic.html#openpnm.network.GenericNetwork.find_neighbor_throats">[docs]</a>    <span class="k">def</span> <span class="nf">find_neighbor_throats</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;union&#39;</span><span class="p">,</span> <span class="n">flatten</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>

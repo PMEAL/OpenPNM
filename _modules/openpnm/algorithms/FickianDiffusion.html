@@ -177,6 +177,7 @@
 <span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">logging</span><span class="p">,</span> <span class="n">Docorator</span><span class="p">,</span> <span class="n">GenericSettings</span>
 <span class="n">docstr</span> <span class="o">=</span> <span class="n">Docorator</span><span class="p">()</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
 
 
 <span class="nd">@docstr</span><span class="o">.</span><span class="n">get_sections</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="s1">&#39;FickianDiffusionSettings&#39;</span><span class="p">,</span>
@@ -209,6 +210,7 @@
 <span class="sd">    %(GenericTransportSettings.other_parameters)s</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">prefix</span> <span class="o">=</span> <span class="s1">&#39;fick&#39;</span>
     <span class="n">quantity</span> <span class="o">=</span> <span class="s1">&#39;pore.concentration&#39;</span>
     <span class="n">conductance</span> <span class="o">=</span> <span class="s1">&#39;throat.diffusive_conductance&#39;</span>
 
@@ -245,9 +247,9 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="o">=</span><span class="p">{},</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">_update_settings_and_docs</span><span class="p">(</span><span class="n">FickianDiffusionSettings</span><span class="p">())</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">_update</span><span class="p">(</span><span class="n">FickianDiffusionSettings</span><span class="p">,</span> <span class="n">docs</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">_update</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">settings</span><span class="o">=</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 <div class="viewcode-block" id="FickianDiffusion.calc_effective_diffusivity"><a class="viewcode-back" href="../../../modules/algorithms/fickian_diffusion.html#openpnm.algorithms.FickianDiffusion.calc_effective_diffusivity">[docs]</a>    <span class="k">def</span> <span class="nf">calc_effective_diffusivity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inlets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">outlets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                                    <span class="n">domain_area</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">domain_length</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -286,6 +288,17 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calc_eff_prop</span><span class="p">(</span><span class="n">inlets</span><span class="o">=</span><span class="n">inlets</span><span class="p">,</span> <span class="n">outlets</span><span class="o">=</span><span class="n">outlets</span><span class="p">,</span>
                                    <span class="n">domain_area</span><span class="o">=</span><span class="n">domain_area</span><span class="p">,</span>
                                    <span class="n">domain_length</span><span class="o">=</span><span class="n">domain_length</span><span class="p">)</span></div></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+    <span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+    <span class="n">geo</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">SpheresAndCylinders</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">Ps</span><span class="p">,</span> <span class="n">throats</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">Ts</span><span class="p">)</span>
+    <span class="n">air</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">phases</span><span class="o">.</span><span class="n">Air</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">)</span>
+    <span class="n">phys</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">physics</span><span class="o">.</span><span class="n">Basic</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="n">air</span><span class="p">,</span> <span class="n">geometry</span><span class="o">=</span><span class="n">geo</span><span class="p">)</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;bob&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">}</span>
+    <span class="n">fd</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">FickianDiffusion</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="n">air</span><span class="p">,</span> <span class="n">settings</span><span class="o">=</span><span class="n">s</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">fd</span><span class="o">.</span><span class="n">settings</span><span class="p">)</span>
 </pre></div>
 
               </div>
