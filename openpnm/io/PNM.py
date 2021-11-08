@@ -53,7 +53,7 @@ class PNM(GenericIO):
                         d = np.void(c)
                         item.create_dataset(name=arr, data=d)
                 # Store settings dict as metadata
-                item.attrs['settings'] = json.dumps(obj.settings)
+                # item.attrs['settings'] = json.dumps(obj.settings)
                 # Store models dict as metadata
                 if hasattr(obj, 'models'):
                     obj_models = {}
@@ -122,7 +122,7 @@ def create_obj(root, name, proj):
             a = jsont.loads(c)
         obj.update({arr: a})
     # Add settings to obj
-    obj.settings._update(json.loads(root[name].attrs['settings']))
+    # obj.settings._update(json.loads(root[name].attrs['settings']))
     # Add models to obj
     if hasattr(obj, 'models'):
         obj.models.update(json.loads(root[name].attrs['models']))
