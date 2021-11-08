@@ -29,13 +29,13 @@ air = op.phases.Air(network=net)
 phys = op.physics.GenericPhysics(network=net, phase=air, geometry=geo)
 
 # make diffusivity afunction of temperature - ALREADY IS!!
-'''
+air['pore.temperature'] = 300
 air.add_model(propname='pore.diffusivity',
               model=op.models.misc.linear, 
-              m=7.573435311355311e-08,
-              b=0,
+              m=1.860793056e-06,
+              b=-0.0005375624384,
               prop='pore.temperature')
-'''
+
 phys.add_model(propname='throat.diffusive_conductance', 
                model=op.models.physics.diffusive_conductance.generic_diffusive)
 
@@ -87,9 +87,10 @@ tspan = [0, 1000]
 tout = np.linspace(tspan[0], tspan[1])
 sol = tfc.run(x0=T0, tspan=tspan, integrator=rk45, saveat=tout)
 '''
+print(air['pore.diffusivity'])
 # manually solve multiphysics system
 t_initial = 10
-t_final = 110
+t_final = 210
 t_step = 10
 t_prev = 0
 for i in range(t_initial, t_final, t_step):
