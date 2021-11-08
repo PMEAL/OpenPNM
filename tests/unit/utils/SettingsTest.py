@@ -90,10 +90,24 @@ class SettingsTest:
             a = 22
             c = 5.5
 
-        sets7 = SettingsAttr(S7())
+        sets7 = SettingsAttr(S7)
         assert sets7.a == 1
         sets7._update(Data())
         assert sets7.a == 22
+
+    def test_initial_None(self):
+        class S8:
+            r"""
+            This is a docstring
+            """
+            a = 1
+            b = None
+
+        sets8 = SettingsAttr(S8)
+        sets8.b = 2.2
+        assert sets8.b == 2.2
+        with pytest.raises(Exception):
+            sets8.b = 'str'
 
 
 if __name__ == '__main__':

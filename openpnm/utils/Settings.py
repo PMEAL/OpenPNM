@@ -54,22 +54,32 @@ class SettingsAttr:
         self._update(settings)
 
     def __setattr__(self, attr, value):
+        # if value is None:  # Allow any attr to be overwritten with None
+        #     super().__setattr__(attr, value)
+        #     return
         if hasattr(value, '__contains__'):
             value = deepcopy(value)
         if hasattr(self, attr):
-            a = value.__class__.__mro__
-            b = getattr(self, attr).__class__.__mro__
-            c = object().__class__.__mro__
-            check = list(set(a).intersection(set(b)).difference(set(c)))
-            if len(check) > 0:
-                super().__setattr__(attr, value)
+            # If the the attr is already present, check its type
+            if getattr(self, attr) is not None:
+                # Ensure the written type is an instance of the existing one
+                a = value.__class__.__mro__
+                b = getattr(self, attr).__class__.__mro__
+                c = object().__class__.__mro__
+                check = list(set(a).intersection(set(b)).difference(set(c)))
+                if len(check) > 0:  # If they share comment parent class
+                    super().__setattr__(attr, value)
+                else:  # Otherwise raise an error
+                    old = type(getattr(self, attr))
+                    new = type(value)
+                    raise Exception(f"Attribute \'{attr}\' can only accept " +
+                                    f"values of type {old}, but the recieved" +
+                                    f" value was of type {new}")
             else:
-                old = type(getattr(self, attr))
-                new = type(value)
-                raise Exception(f"Attribute \'{attr}\' can only accept " +
-                                f"values of type {old}, but the recieved " +
-                                f"value was of type {new}")
+                # If the current attr is None, let anything be written
+                super().__setattr__(attr, value)
         else:
+            # If there is no current attr, let anything be written
             super().__setattr__(attr, value)
 
     def _update(self, settings, docs=False, override=False):
