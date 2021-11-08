@@ -1,6 +1,7 @@
 import numpy as np
 import scipy.sparse as sprs
 import scipy.spatial as sptl
+from copy import deepcopy
 from openpnm.core import Base, ModelsMixin, LegacyMixin, LabelMixin, ParamMixin
 from openpnm import topotools
 from openpnm.utils import Docorator
@@ -132,11 +133,11 @@ class GenericNetwork(ParamMixin, Base, ModelsMixin, LegacyMixin, LabelMixin):
         instance._am = {}
         return instance
 
-    def __init__(self, conns=None, coords=None, project=None, settings={},
+    def __init__(self, conns=None, coords=None, settings={},
                  **kwargs):
         self.settings._update(NetworkSettings, docs=True)
         self.settings._update(settings)  # Add user supplied settings
-        super().__init__(project=project, **kwargs)
+        super().__init__(settings=deepcopy(self.settings), **kwargs)
         if coords is not None:
             Np = np.shape(coords)[0]
             self['pore.all'] = np.ones(Np, dtype=bool)

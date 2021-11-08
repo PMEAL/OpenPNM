@@ -1,8 +1,8 @@
 import numpy as np
+from copy import deepcopy
 from openpnm.core import Subdomain, ModelsMixin, ParamMixin
 from openpnm.utils import Workspace, logging
-from openpnm.utils import SettingsData, Docorator
-from traits.api import Str
+from openpnm.utils import Docorator
 logger = logging.getLogger(__name__)
 ws = Workspace()
 docstr = Docorator()
@@ -49,7 +49,7 @@ class GenericPhysics(ParamMixin, Subdomain, ModelsMixin):
                  settings={}, **kwargs):
         self.settings._update(PhysicsSettings, docs=True)
         self.settings._update(settings)
-        super().__init__(**kwargs)
+        super().__init__(settings=deepcopy(settings), **kwargs)
 
         network = self.project.network
         if network:
