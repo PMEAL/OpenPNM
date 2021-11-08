@@ -4,6 +4,9 @@ from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 
 
+class VoronoiSettings: ...
+
+
 class Voronoi(DelaunayVoronoiDual):
     r"""
     Random network formed by Voronoi tessellation of arbitrary base points
@@ -40,7 +43,9 @@ class Voronoi(DelaunayVoronoiDual):
 
     """
 
-    def __init__(self, shape=[1, 1, 1], points=None, **kwargs):
+    def __init__(self, shape=[1, 1, 1], points=None, settings={}, **kwargs):
+        self.settings._update(VoronoiSettings)
+        self.settings._update(settings)
         # Clean-up input points
         points = self._parse_points(shape=shape, points=points)
         super().__init__(shape=shape, points=points, **kwargs)

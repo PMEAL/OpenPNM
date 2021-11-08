@@ -7,6 +7,9 @@ logger = logging.getLogger(__name__)
 from openpnm.network import GenericNetwork
 
 
+class DelaunayVoronoiDualSettings: ...
+
+
 class DelaunayVoronoiDual(GenericNetwork):
     r"""
     Combined and interconnected Voronoi and Delaunay tessellations
@@ -60,8 +63,11 @@ class DelaunayVoronoiDual(GenericNetwork):
 
     """
 
-    def __init__(self, shape=[1, 1, 1], points=None, **kwargs):
+    def __init__(self, shape=[1, 1, 1], points=None, trim=True, settings={}, **kwargs):
         super().__init__(**kwargs)
+        self.settings._update(DelaunayVoronoiDualSettings)
+        self.settings._update(settings)
+
         points = self._parse_points(shape=shape, points=points)
 
         # Deal with points that are only 2D...they break tessellations
@@ -134,9 +140,7 @@ class DelaunayVoronoiDual(GenericNetwork):
         self['throat.interconnect'][Ts] = True
 
         # Trim all pores that lie outside of the specified domain
-        if self.settings['trim'] == False:
-            pass
-        else:
+        if trim:
             self._trim_external_pores(shape=shape)
             self._label_faces()
 

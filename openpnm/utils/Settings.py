@@ -96,6 +96,7 @@ class SettingsAttr:
         b = dir(list())
         attrs = list(set(a).difference(set(b)))
         attrs = [i for i in attrs if not i.startswith('_')]
+        attrs = sorted(attrs)
         return attrs
 
     def __getitem__(self, key):

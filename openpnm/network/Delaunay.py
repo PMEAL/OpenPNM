@@ -4,6 +4,9 @@ from openpnm.network import DelaunayVoronoiDual
 logger = logging.getLogger(__name__)
 
 
+class DelaunaySettings: ...
+
+
 class Delaunay(DelaunayVoronoiDual):
     r"""
     Random network formed by Delaunay tessellation of arbitrary base points
@@ -87,7 +90,9 @@ class Delaunay(DelaunayVoronoiDual):
 
     """
 
-    def __init__(self, shape=[1, 1, 1], points=None, **kwargs):
+    def __init__(self, shape=[1, 1, 1], points=None, settings={}, **kwargs):
+        self.settings._update(DelaunaySettings)
+        self.settings._update(settings)
         # Clean-up input points
         points = self._parse_points(shape=shape, points=points)
         super().__init__(shape=shape, points=points, **kwargs)
