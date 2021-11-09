@@ -1,9 +1,3 @@
-"""
-===============================================================================
-Cubic: Generate lattice-like networks
-===============================================================================
-
-"""
 import numpy as np
 from openpnm.network import GenericNetwork
 from openpnm import topotools
@@ -25,11 +19,9 @@ class Cubic(GenericNetwork):
     shape : array_like
         The [Nx, Ny, Nz] size of the network in terms of the number of pores in
         each direction
-
     spacing : array_like, optional
         The spacing between pore centers in each direction. If not given, then
         [1, 1, 1] is assumed.
-
     connectivity : int, optional
         The number of connections to neighboring pores.  Connections are made
         symmetrically to any combination of face, edge, or corners neighbors.
@@ -44,11 +36,9 @@ class Cubic(GenericNetwork):
         For a more random distribution of connectivity, use a high
         ``connectivity`` (i.e. 26) and then delete a fraction of the throats
         using ``openpnm.topotools.reduce_coordination``.
-
     name : string
         An optional name for the object to help identify it.  If not given,
         one will be generated.
-
     project : OpenPNM Project object, optional
         Each OpenPNM object must be part of a *Project*.  If none is supplied
         then one will be created and this Network will be automatically
@@ -61,7 +51,6 @@ class Cubic(GenericNetwork):
         if the topology is manipulated at all (i.e. by adding boundary pores)
         since there is not unique or consistent value.  In such cases an
         exception is thrown.
-
     shape : array
         The shape of the network.  Like ``spacing`` this values is meaningless
         if the topology is manipulated, so an Exception is thrown.
@@ -76,15 +65,19 @@ class Cubic(GenericNetwork):
 
     And it can be plotted for quick visualization using:
 
-    >>> fig, ax = plt.subplots()
-    >>> _ = op.topotools.plot_connections(network=pn, ax=ax)
-    >>> _ = op.topotools.plot_coordinates(network=pn, c='r', s=75, ax=ax)
+    .. plot::
 
-    .. image:: /../docs/_static/images/cubic_network.png
-        :align: center
+       import openpnm as op
+       import matplotlib.pyplot as plt
+       pn = op.network.Cubic(shape=[5, 5, 5], spacing=[1, 1, 1])
+       fig, ax = plt.subplots(figsize=(5, 5))
+       op.topotools.plot_connections(network=pn, ax=ax)
+       op.topotools.plot_coordinates(network=pn, c='r', s=75, ax=ax)
+       plt.show()
 
     For larger networks and more control over presentation use `Paraview
     <http://www.paraview.org>`_.
+
     """
 
     def __init__(self, shape, spacing=[1, 1, 1], connectivity=6,
@@ -185,7 +178,6 @@ class Cubic(GenericNetwork):
         labels : string or list of strings
             The labels indicating the pores defining each face where boundary
             pores are to be added (e.g. 'left' or ['left', 'right'])
-
         spacing : scalar or array_like
             The spacing of the network (e.g. [1, 1, 1]).  This should be given
             since it can be quite difficult to infer from the network, for
