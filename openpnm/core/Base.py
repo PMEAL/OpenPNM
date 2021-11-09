@@ -53,12 +53,11 @@ class Base(dict):
 
     Parameters
     ----------
-    project : OpenPNM Project object, optional
-        The Project with which the object should be assigned.  If not supplied
+    project : Project, optional
+        The Project with which the object should be assigned. If not supplied
         then a new Project is created
-    name : string, optional
-        The unique name of the object.  If not given one will be generated.
-
+    name : str, optional
+        The unique name of the object. If not given one will be generated.
     Np : int, default is 0
         The total number of pores to be assigned to the object
     Nt : int, default is 0
@@ -66,11 +65,11 @@ class Base(dict):
 
     Notes
     -----
-    This Base class is used as the template for all other OpenPNM objects,
-    including Networks, Geometries, Phases, Physics, and Algorithms.  This
+    This ``Base`` class is used as the template for all other OpenPNM objects,
+    including Networks, Geometries, Phases, Physics, and Algorithms. This
     class is a subclass of the standard ``dict`` so has the usual methods such
     as ``pop`` and ``keys``, and has extra methods for working specifically
-    with OpenPNM data.  These are outlined briefly in the following table:
+    with OpenPNM data. These are outlined briefly in the following table:
 
     +----------------------+--------------------------------------------------+
     | Method or Attribute  | Functionality                                    |
@@ -111,7 +110,6 @@ class Base(dict):
     +----------------------+--------------------------------------------------+
     | ``check_data_health``| Ensures all data arrays are valid and complete   |
     +----------------------+--------------------------------------------------+
-
 
     In addition to the above methods, there are a few attributes which provide
     access to useful items:
@@ -167,7 +165,6 @@ class Base(dict):
         the integrity of the network.  Specifically, this means only Np or Nt
         long arrays can be written, and they must be called 'pore.***' or
         'throat.***'.  Also, any scalars are cast into full length vectors.
-
         """
         if value is None:
             return
@@ -320,30 +317,26 @@ class Base(dict):
 
         Parameters
         ----------
-        element : string or list of strings
+        element : str or List[str]
             Can be either 'pore' or 'throat', which specifies whether 'pore'
             and/or 'throat' arrays should be cleared.  The default is both.
-
-        mode : string or list of strings
+        mode : str or List[str]
             This controls what is cleared from the object.  Options are:
-
-            **'props'** : Removes all numerical property values from the object
-            dictionary
-
-            **'model_data'** : Removes only numerical data that were produced
-            by an associated model
-
-            **'labels'** : Removes all labels from the object dictionary,
-            except those relating to the pore and throat locations of
-            associated objects
-
-            **'all'** : Removes both 'props' and 'labels'
+                **'props'** : Removes all numerical property values from
+                the object dictionary
+                **'model_data'** : Removes only numerical data that were
+                produced by an associated model
+                **'labels'** : Removes all labels from the object
+                dictionary, except those relating to the pore and throat
+                locations of associated objects
+                **'all'** : Removes both 'props' and 'labels'
 
         Notes
         -----
-        If you wish to selectively remove some properties but not others, use
-        something like ``del object['pore.blah']`` at the Python prompt. This
-        can also be done in a for-loop to remove a list of items.
+        If you wish to selectively remove some properties but not others,
+        use something like ``del object['pore.blah']`` at the Python
+        prompt. This can also be done in a for-loop to remove a list of
+        items.
 
         Examples
         --------
@@ -397,27 +390,24 @@ class Base(dict):
 
         Parameters
         ----------
-        element : string
+        element : str
             Can be either 'pore' or 'throat', which limits the returned list of
             keys to only 'pore' or 'throat' keys.  If neither is given, then
             both are assumed.
 
-        mode : string (optional)
+        mode : str, optional
             Controls which keys are returned.  Options are:
+                **'labels'** : Limits the returned list of keys to only 'labels'
+                (boolean arrays)
 
-            **'labels'** : Limits the returned list of keys to only 'labels'
-            (boolean arrays)
+                **'props'** : Limits he return list of keys to only 'props'
+                (numerical arrays).
 
-            **'props'** : Limits he return list of keys to only 'props'
-            (numerical arrays).
-
-            **'all'** : Returns both 'labels' and 'props'.  This is equivalent
-            to sending a list of both 'labels' and 'props'.
-
+                **'all'** : Returns both 'labels' and 'props'.  This is equivalent
+                to sending a list of both 'labels' and 'props'.
             If no mode is specified then the normal KeysView object is
             returned.
-
-        deep : Boolean
+        deep : bool
             If set to ``True`` then the keys on all associated subdomain
             objects are returned as well.
 
@@ -476,22 +466,19 @@ class Base(dict):
 
         Parameters
         ----------
-        element : string, optional
+        element : str, optional
             Can be either 'pore' or 'throat' to specify what properties are
             returned.  If no element is given, both are returned
-
-        mode : string, optional
+        mode : str, optional
             Controls what type of properties are returned.  Options are:
+                **'all'** : Returns all properties on the object (default)
 
-            **'all'** : Returns all properties on the object (default)
+                **'models'** : Returns only properties that are associated with a
+                model
 
-            **'models'** : Returns only properties that are associated with a
-            model
-
-            **'constants'** : returns data values that were *not* generated by
-            a model, but manaully created.
-
-        deep : Boolean
+                **'constants'** : returns data values that were *not* generated by
+                a model, but manaully created.
+        deep : bool
             If set to ``True`` then the props on all associated subdomain
             objects are returned as well.
 
@@ -556,30 +543,22 @@ class Base(dict):
 
     @property
     def Np(self):
-        r"""
-        A shortcut to query the total number of pores on the object'
-        """
+        r"""A shortcut to query the total number of pores on the object'"""
         return np.shape(self.get('pore.all'))[0]
 
     @property
     def Nt(self):
-        r"""
-        A shortcut to query the total number of throats on the object'
-        """
+        r"""A shortcut to query the total number of throats on the object'"""
         return np.shape(self.get('throat.all'))[0]
 
     @property
     def Ps(self):
-        r"""
-        A shortcut to get a list of all pores on the object
-        """
+        r"""A shortcut to get a list of all pores on the object"""
         return np.arange(0, self.Np)
 
     @property
     def Ts(self):
-        r"""
-        A shortcut to get a list of all throats on the object
-        """
+        r"""A shortcut to get a list of all throats on the object"""
         return np.arange(0, self.Nt)
 
     def _tomask(self, indices, element):
@@ -598,12 +577,12 @@ class Base(dict):
     def to_mask(self, pores=None, throats=None):
         r"""
         Convert a list of pore or throat indices into a boolean mask of the
-        correct length
+        correct length.
 
         Parameters
         ----------
         pores or throats : array_like
-            List of pore or throat indices.  Only one of these can be specified
+            List of pore or throat indices. Only one of these can be specified
             at a time, and the returned result will be of the corresponding
             length.
 
@@ -640,11 +619,11 @@ class Base(dict):
 
     def to_indices(self, mask):
         r"""
-        Convert a boolean mask to a list of pore or throat indices
+        Converts a boolean mask to a list of pore or throat indices.
 
         Parameters
         ----------
-        mask : array_like booleans
+        mask : array_like of booleans
             A boolean array with ``True`` at locations where indices are
             desired. The appropriate indices are returned based an the length
             of mask, which must be either Np or Nt long.
@@ -673,17 +652,20 @@ class Base(dict):
 
     def to_global(self, pores=None, throats=None):
         r"""
-        Convert local indices from a subdomain object to global values
+        Converts local indices from a subdomain object to global values.
 
         Parameters
         ----------
-        pores, throats : array_like
-            List of pore or throat indices to be converted
+        pores : array_like
+            List of pore indices to be converted
+        throats : array_like
+            List of throat indices to be converted
 
         Returns
         -------
         indices : ndarray
             An array of location indices
+
         """
         if pores is not None:
             element = 'pore'
@@ -697,20 +679,23 @@ class Base(dict):
 
     def to_local(self, pores=None, throats=None, missing_vals=-1):
         r"""
-        Convert global indices to local values relative to a subdomain object
+        Converts global indices to local values relative to a subdomain object
 
         Parameters
         ----------
-        pores, throats : array_like
-            List of pore or throat indices to be converted
+        pores : array_like
+            List of pore indices to be converted
+        throats : array_like
+            List of throat indices to be converted
         missing_values : scalar
-            The value to put into missing locations if global indices are not
-            found.
+            The value to put into missing locations if global indices are
+            not found.
 
         Returns
         -------
         indices : ndarray
             An array of location indices
+
         """
         if pores is not None:
             element = 'pore'
@@ -730,12 +715,13 @@ class Base(dict):
 
         Parameters
         ----------
-        prop : string
+        prop : str
             The property name to be retrieved
 
         Returns
         -------
-        A full length (Np or Nt) array of requested property values.
+        ndarray
+            A full length (Np or Nt) array of requested property values.
 
         Notes
         -----
@@ -768,6 +754,7 @@ class Base(dict):
         >>> pn['pore.label'] = False
         >>> print(g1['pore.label'])  # 'pore.label' is defined on pn, not g1
         [False False False False]
+
         """
         # Fetch sources list depending on type of self
         proj = self.project
@@ -864,15 +851,15 @@ class Base(dict):
 
         Parameters
         ----------
-        propname: string
+        propname: str
             The dictionary key to the values to be interpolated.
-        mode : string
+        mode : str
             The method used for interpolation.  Options are 'mean' (default),
             'min', and 'max'.
 
         Returns
         -------
-        vals : ND-array
+        vals : ndarray
             An array containing interpolated pore (or throat) data
 
         Examples
@@ -899,14 +886,13 @@ class Base(dict):
 
         Parameters
         ----------
-        prop : string
+        prop : str
             The dictionary key to the property of interest
-        mode : string
+        mode : str
             How interpolation should be peformed for missing values. If values
             are present for both pores and throats, then this argument is
             ignored.  The ``interpolate`` data method is used.  Options are:
-
-                * 'mean' (default)
+                * 'mean' (default):
                     Finds the mean value of the neighboring pores (or throats)
                 * 'min'
                     Finds the minimuem of the neighboring pores (or throats)
@@ -936,19 +922,17 @@ class Base(dict):
                   props=['pore.diameter', 'throat.diameter', 'throat.length'],
                   bins=20, fontsize=14, **kwargs):
         r"""
-        Show a quick plot of key property distributions.
+        Shows a quick plot of key property distributions.
 
         Parameters
         ----------
-        props : string or list of strings
+        props : str or List[str]
             The pore and/or throat properties to be plotted as histograms.  By
             default this function will show 'pore.diameter', 'throat.diameter',
             and 'throat.length'.
-
         bins : int or array_like
             The number of bins to use when generating the histogram.  If an
             array is given they are used as the bin spacing instead.
-
         fontsize : int
             Sets the font size temporarily.  The default size of matplotlib is
             10, which is too small for many screens.  This function has a
@@ -960,6 +944,7 @@ class Base(dict):
         -----
         Other keyword arguments are passed to the ``matplotlib.pyplot.hist``
         function.
+
         """
         import matplotlib.pyplot as plt
 
@@ -1002,7 +987,7 @@ class Base(dict):
 
         Parameters
         ----------
-        indices : multiple options
+        indices : int or array_like
             This argument can accept numerous different data types including
             boolean masks, integers and arrays.
 
@@ -1014,6 +999,7 @@ class Base(dict):
         -----
         This method should only be called by the method that is actually using
         the locations, to avoid calling it multiple times.
+
         """
         if indices is None:
             indices = np.array([], ndmin=1, dtype=int)
@@ -1037,11 +1023,10 @@ class Base(dict):
 
         Parameters
         ----------
-        element : string or list of strings
+        element : str or List[str]
             The element argument to check.  If is None is recieved, then a list
             containing both \'pore\' and \'throat\' is returned.
-
-        single : boolean (default is False)
+        single : bool (default is False)
             When set to True only a single element is allowed and it will also
             return a string containing the element.
 
@@ -1050,6 +1035,7 @@ class Base(dict):
         When ``single`` is ``False`` (default) a list containing the element(s)
         is returned.  When ``single`` is ``True`` a bare string containing the
         element is returned.
+
         """
         if element is None:
             element = ['pore', 'throat']
@@ -1081,7 +1067,7 @@ class Base(dict):
 
         Parameters
         ----------
-        labels : string or list of strings
+        labels : str or List[str]
             The label or list of labels to be parsed. Note that the \* can be
             used as a wildcard.
 
@@ -1089,6 +1075,7 @@ class Base(dict):
         -------
         A list of label strings, with all wildcard matches included if
         applicable.
+
         """
         if labels is None:
             raise Exception('Labels cannot be None')
@@ -1125,15 +1112,13 @@ class Base(dict):
 
         Parameters
         ----------
-        mode : string or list of strings
+        mode : str or List[str]
             The mode(s) to be parsed
-
-        allowed : list of strings
+        allowed : List[str]
             A list containing the allowed modes.  This list is defined by the
             calling method.  If any of the received modes are not in the
             allowed list an exception is raised.
-
-        single : boolean (default is False)
+        single : bool (default is False)
             Indicates if only a single mode is allowed.  If this argument is
             True than a string is returned rather than a list of strings, which
             makes it easier to work with in the caller method.
@@ -1143,6 +1128,7 @@ class Base(dict):
         A list containing the received modes as strings, checked to ensure they
         are all within the allowed set (if provoided).  Also, if the ``single``
         argument was True, then a string is returned.
+
         """
         if isinstance(mode, str):
             mode = [mode]
@@ -1160,8 +1146,6 @@ class Base(dict):
         return mode
 
     def _parse_prop(self, propname, element):
-        r"""
-        """
         element = self._parse_element(element, single=True)
         return element + '.' + propname.split('.')[-1]
 
@@ -1267,11 +1251,9 @@ class LegacyMixin:
         ----------
         pores : array_like
             The indices of the pores on the object specifiedin ``origin``
-
-        origin : OpenPNM Base object
+        origin : Base
             The object corresponding to the indices given in ``pores``
-
-        filtered : boolean (default is ``True``)
+        filtered : bool (default is ``True``)
             If ``True`` then a ND-array of indices is returned with missing
             indices removed, otherwise a named-tuple containing both the
             ``indices`` and a boolean ``mask`` with ``False`` indicating
@@ -1301,11 +1283,9 @@ class LegacyMixin:
         ----------
         throats : array_like
             The indices of the throats on the object specified in ``origin``
-
-        origin : OpenPNM Base object
+        origin : Base
             The object corresponding to the indices given in ``throats``
-
-        filtered : boolean (default is ``True``)
+        filtered : bool (default is ``True``)
             If ``True`` then a ND-array of indices is returned with missing
             indices removed, otherwise a named-tuple containing both the
             ``indices`` and a boolean ``mask`` with ``False`` indicating
@@ -1328,11 +1308,11 @@ class LegacyMixin:
 
     def check_data_health(self):
         r"""
-        Check the health of pore and throat data arrays.
+        Checks the health of pore and throat data arrays.
 
         Returns
         -------
-        health: HealthDict object
+        health: HealthDict
             A  basic dictionary with an added ``health`` attribute that is
             ``True`` if all entries in the dict are deemed healthy
             (empty lists), or ``False`` otherwise.
@@ -1344,6 +1324,7 @@ class LegacyMixin:
         >>> h = pn.check_data_health()
         >>> h.health
         True
+
         """
         health = self.project.check_data_health(obj=self)
         return health
@@ -1390,41 +1371,43 @@ class LabelMixin:
 
         Parameters
         ----------
-        element : string
+        element : str
             Controls whether pore or throat labels are returned.  If empty then
             both are returned (default).
-
-        pores (or throats) : array_like
-            The pores (or throats) whose labels are sought.  If left empty a
-            list containing all pore and throat labels is returned.
-
-        mode : string, optional
-            Controls how the query should be performed.  Only applicable
+        pores : array_like
+            The pores whose labels are sought.  If left empty a list
+            containing all pore and throat labels is returned.
+        throats : array_like
+            The throats whose labels are sought.  If left empty a list
+            containing all pore and throat labels is returned.
+        mode : str, optional
+            Controls how the query should be performed. Only applicable
             when ``pores`` or ``throats`` are specified:
+                **'or', 'union', 'any'**: (default)
+                Returns the labels that are assigned to *any* of the given locations.
 
-            **'or', 'union', 'any'**: (default) Returns the labels that are
-            assigned to *any* of the given locations.
+                **'and', 'intersection', 'all'**:
+                Labels that are present on *all* the given locations.
 
-            **'and', 'intersection', 'all'**: Labels that are present on *all*
-            the given locations.
+                **'xor', 'exclusive_or'** :
+                Labels that are present on *only one* of the given locations.
 
-            **'xor', 'exclusive_or'** : Labels that are present on *only one*
-            of the given locations.
+                **'nor', 'none', 'not'**:
+                Labels that are *not* present on any of the given locations.
 
-            **'nor', 'none', 'not'**: Labels that are *not* present on any of
-            the given locations.
+                **'nand'**:
+                Labels that are present on *all but one* of the given locations
 
-            **'nand'**: Labels that are present on *all but one* of the given
-            locations
-
-            **'xnor'**: Labels that are present on *more than one* of the given
-            locations.  'nxor' is also accepted.
+                **'xnor'**:
+                Labels that are present on *more than one* of the given
+                locations. 'nxor' is also accepted.
 
         Returns
         -------
-        A list containing the labels on the object.  If ``pores`` or
-        ``throats`` are given, the results are filtered according to the
-        specified ``mode``.
+        list
+            A list containing the labels on the object.  If ``pores`` or
+            ``throats`` are given, the results are filtered according to
+            the specified ``mode``.
 
         See Also
         --------
@@ -1443,6 +1426,7 @@ class LabelMixin:
         >>> pn = op.network.Cubic(shape=[5, 5, 5])
         >>> pn.labels(pores=[11, 12])
         ['pore.all', 'pore.internal', 'pore.left', 'pore.surface']
+
         """
         # Short-circuit query when no pores or throats are given
         if (np.size(pores) == 0) and (np.size(throats) == 0):
@@ -1464,7 +1448,7 @@ class LabelMixin:
 
         Parameters
         ----------
-        label : string
+        label : str
                 The label to apply to the specified locations
         pores : array_like
             A list of pore indices or a boolean mask of where given label
@@ -1472,20 +1456,23 @@ class LabelMixin:
         throats : array_like
             A list of throat indices or a boolean mask of where given label
             should be added or removed (see ``mode``)
-        mode : string
-            Controls how the labels are handled.  Options are:
-
+        mode : str
+            Controls how the labels are handled. Options are:
             * 'add' (default)
                 Adds the given label to the specified locations while
                 keeping existing labels
+
             * 'overwrite'
                 Removes existing label from all locations before
                 adding the label in the specified locations
+
             * 'remove'
                 Removes the given label from the specified locations
                 leaving the remainder intact
+
             * 'purge'
                 Removes the specified label from the object completely
+
             * 'clear'
                 Sets all the labels to ``False`` but does not remove the label
                 array
@@ -1586,44 +1573,41 @@ class LabelMixin:
 
         Parameters
         ----------
-        labels : string or list of strings
+        labels : str or List[str]
             The label(s) whose pores locations are requested.  This argument
             also accepts '*' for wildcard searches.
-
-        mode : string
+        mode : str
             Specifies how the query should be performed.  The options are:
+                **'or', 'union', 'any'** : (default) Pores with *one or more* of
+                the given labels are returned.
 
-            **'or', 'union', 'any'** : (default) Pores with *one or more* of
-            the given labels are returned.
+                **'and', 'intersection', 'all'** : Pores with *all* of the given
+                labels are returned.
 
-            **'and', 'intersection', 'all'** : Pores with *all* of the given
-            labels are returned.
+                **'xor', 'exclusive_or'** : Pores with *only one* of the given
+                labels are returned.
 
-            **'xor', 'exclusive_or'** : Pores with *only one* of the given
-            labels are returned.
+                **'nor', 'none', 'not'** : Pores with *none* of the given labels
+                are returned.
 
-            **'nor', 'none', 'not'** : Pores with *none* of the given labels
-            are returned.
+                **'nand'** : Pores with *not all* of the given labels are
+                returned.
 
-            **'nand'** : Pores with *not all* of the given labels are
-            returned.
-
-            **'xnor'** : Pores with *more than one* of the given labels are
-            returned.
-
-        asmask : boolean
+                **'xnor'** : Pores with *more than one* of the given labels are
+                returned.
+        asmask : bool
             If ``True`` then a boolean array of length Np is returned with
             ``True`` values indicating the pores that satisfy the query.
-
-        target : OpenPNM Base object
+        target : Base
             If given, the returned indices will be indexed relative to the
             ``target`` object.  This can be used to determine how indices on
             one object map onto another object.
 
         Returns
         -------
-        A Numpy array containing pore indices filtered by the logic specified
-        in ``mode``.
+        ndarray
+            A numpy array containing pore indices filtered by the logic
+            specified in ``mode``.
 
         See Also
         --------
@@ -1667,45 +1651,42 @@ class LabelMixin:
 
         Parameters
         ----------
-        labels : string or list of strings
+        labels : str or List[str]
             The throat label(s) whose locations are requested.  If omitted,
             'all' throat inidices are returned.  This argument also accepts
             '*' for wildcard searches.
-
-        mode : string
+        mode : str
             Specifies how the query should be performed.  The options are:
+                **'or', 'union', 'any'** : (default) Throats with *one or more* of
+                the given labels are returned.
 
-            **'or', 'union', 'any'** : (default) Throats with *one or more* of
-            the given labels are returned.
+                **'and', 'intersection', 'all'** : Throats with *all* of the given
+                labels are returned.
 
-            **'and', 'intersection', 'all'** : Throats with *all* of the given
-            labels are returned.
+                **'xor', 'exclusive_or'** : Throats with *only one* of the given
+                labels are returned.
 
-            **'xor', 'exclusive_or'** : Throats with *only one* of the given
-            labels are returned.
+                **'nor', 'none', 'not'** : Throats with *none* of the given labels
+                are returned.
 
-            **'nor', 'none', 'not'** : Throats with *none* of the given labels
-            are returned.
+                **'nand'** : Throats with *not all* of the given labels are
+                returned.
 
-            **'nand'** : Throats with *not all* of the given labels are
-            returned.
-
-            **'xnor'** : Throats with *more than one* of the given labels are
-            returned.
-
-        asmask : boolean
+                **'xnor'** : Throats with *more than one* of the given labels are
+                returned.
+        asmask : bool
             If ``True`` then a boolean array of length Nt is returned with
             ``True`` values indicating the throats that satisfy the query.
-
-        target : OpenPNM Base object
+        target : Base
             If given, the returned indices will be indexed relative to the
             ``target`` object.  This can be used to determine how indices on
             one object map onto another object.
 
         Returns
         -------
-        A Numpy array containing throat indices filtered by the logic specified
-        in ``mode``.
+        ndarray
+            A numpy array containing throat indices filtered by the logic
+            specified in ``mode``.
 
         See Also
         --------
@@ -1738,39 +1719,38 @@ class LabelMixin:
 
         Parameters
         ----------
-        pores, or throats : array_like
-            List of pores or throats to be filtered
-
-        labels : list of strings
+        pores : array_like
+            List of pores to be filtered
+        throats : array_like
+            List of throats to be filtered
+        labels : List[str]
             The labels to apply as a filter
-
-        mode : string
-
+        mode : str
             Controls how the filter is applied.  Options include:
+                **'or', 'union', 'any'**: (default) Returns a list of the given
+                locations where *any* of the given labels exist.
 
-            **'or', 'union', 'any'**: (default) Returns a list of the given
-            locations where *any* of the given labels exist.
+                **'and', 'intersection', 'all'**: Only locations where *all* the
+                given labels are found.
 
-            **'and', 'intersection', 'all'**: Only locations where *all* the
-            given labels are found.
+                **'xor', 'exclusive_or'**: Only locations where exactly *one* of
+                the given labels are found.
 
-            **'xor', 'exclusive_or'**: Only locations where exactly *one* of
-            the given labels are found.
+                **'nor', 'none', 'not'**: Only locations where *none* of the given
+                labels are found.
 
-            **'nor', 'none', 'not'**: Only locations where *none* of the given
-            labels are found.
+                **'nand'** : Only locations with *some but not all* of the given
+                labels are returned.
 
-            **'nand'** : Only locations with *some but not all* of the given
-            labels are returned.
-
-            **'xnor'** : Only locations with *more than one* of the given
-            labels are returned.
+                **'xnor'** : Only locations with *more than one* of the given
+                labels are returned.
 
         Returns
         -------
-        A list of pores (or throats) that have been filtered according the
-        given criteria.  The returned list is a subset of the received list of
-        pores (or throats).
+        ndarray
+            A list of pores (or throats) that have been filtered
+            according the given criteria.  The returned list is a subset
+            of the received list of pores (or throats).
 
         See Also
         --------
@@ -1787,6 +1767,7 @@ class LabelMixin:
         >>> pn.filter_by_label(pores=Ps, labels=['top', 'back'],
         ...                    mode='and')
         array([ 24,  49,  74,  99, 124])
+
         """
         # Convert inputs to locations and element
         if (np.size(throats) > 0) and (np.size(pores) > 0):
@@ -1812,33 +1793,28 @@ class LabelMixin:
 
         Parameters
         ----------
-        labels : list of strings, optional
+        labels : List[str], optional
             The pore labels that should be included in the count.
             If not supplied, all pores are counted.
-
-        labels : list of strings
-            Label of pores to be returned
-
-        mode : string, optional
+        mode : str, optional
             Specifies how the count should be performed.  The options are:
+                **'or', 'union', 'any'** : (default) Pores with *one or more* of
+                the given labels are counted.
 
-            **'or', 'union', 'any'** : (default) Pores with *one or more* of
-            the given labels are counted.
+                **'and', 'intersection', 'all'** : Pores with *all* of the given
+                labels are counted.
 
-            **'and', 'intersection', 'all'** : Pores with *all* of the given
-            labels are counted.
+                **'xor', 'exclusive_or'** : Pores with *only one* of the given
+                labels are counted.
 
-            **'xor', 'exclusive_or'** : Pores with *only one* of the given
-            labels are counted.
+                **'nor', 'none', 'not'** : Pores with *none* of the given labels
+                are counted.
 
-            **'nor', 'none', 'not'** : Pores with *none* of the given labels
-            are counted.
+                **'nand'** : Pores with *some but not all* of the given labels are
+                counted.
 
-            **'nand'** : Pores with *some but not all* of the given labels are
-            counted.
-
-            **'xnor'** : Pores with *more than one* of the given labels are
-            counted.
+                **'xnor'** : Pores with *more than one* of the given labels are
+                counted.
 
         Returns
         -------
@@ -1881,30 +1857,28 @@ class LabelMixin:
 
         Parameters
         ----------
-        labels : list of strings, optional
+        labels : List[str], optional
             The throat labels that should be included in the count.
             If not supplied, all throats are counted.
-
-        mode : string, optional
+        mode : str, optional
             Specifies how the count should be performed.  The options are:
+                **'or', 'union', 'any'** : (default) Throats with *one or more* of
+                the given labels are counted.
 
-            **'or', 'union', 'any'** : (default) Throats with *one or more* of
-            the given labels are counted.
+                **'and', 'intersection', 'all'** : Throats with *all* of the given
+                labels are counted.
 
-            **'and', 'intersection', 'all'** : Throats with *all* of the given
-            labels are counted.
+                **'xor', 'exclusive_or'** : Throats with *only one* of the given
+                labels are counted.
 
-            **'xor', 'exclusive_or'** : Throats with *only one* of the given
-            labels are counted.
+                **'nor', 'none', 'not'** : Throats with *none* of the given labels
+                are counted.
 
-            **'nor', 'none', 'not'** : Throats with *none* of the given labels
-            are counted.
+                **'nand'** : Throats with *some but not all* of the given labels
+                are counted.
 
-            **'nand'** : Throats with *some but not all* of the given labels
-            are counted.
-
-            **'xnor'** : Throats with *more than one* of the given labels are
-            counted.
+                **'xnor'** : Throats with *more than one* of the given labels are
+                counted.
 
         Returns
         -------
@@ -1935,7 +1909,7 @@ class LabelMixin:
 
         Parameters
         ----------
-        element : string, optional
+        element : str, optional
             Can be either 'pore' , 'pores', 'throat' or 'throats', which
             specifies which count to return.
 
@@ -1964,6 +1938,7 @@ class LabelMixin:
         125
         >>> pn._count('throat')
         300
+
         """
         element = self._parse_element(element=element, single=True)
         temp = np.size(super(Base, self).__getitem__(element+'.all'))
