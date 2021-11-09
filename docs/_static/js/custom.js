@@ -20,6 +20,9 @@ window.onload = function () {
     if (examples_clicked.length == 1) {
         $(" nav.bd-links ").children().hide()
     }
+
+    var selected = $("a.current")
+    selected.html("&#8594; " + selected.text())
 };
 
 // window.onload = function() {
