@@ -55,7 +55,8 @@ class GenericNetwork(ParamMixin, Base, ModelsMixin, LegacyMixin, LabelMixin):
     2     : throat.conns
     ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 
-    The GenericNetwork class has several methods for querying the topology.
+    The GenericNetwork class has several methods for querying the
+    topology.
 
     >>> Ps = pn.find_neighbor_pores(pores=1)
     >>> print(Ps)
@@ -133,21 +134,17 @@ class GenericNetwork(ParamMixin, Base, ModelsMixin, LegacyMixin, LabelMixin):
 
     def get_adjacency_matrix(self, fmt='coo'):
         r"""
-        Returns an adjacency matrix in the specified sparse format, with throat
-        IDs indicating the non-zero values.
+        Adjacency matrix in the specified sparse format, with throat IDs
+        indicating the non-zero values.
 
         Parameters
         ----------
-        fmt : string, optional
-            The sparse storage format to return.  Options are:
-
-            **'coo'** : (default) This is the native format of OpenPNM data
-
-            **'lil'** : Enables row-wise slice of the matrix
-
-            **'csr'** : Favored by most linear algebra routines
-
-            **'dok'** : Enables subscript access of locations
+        fmt : str, default is 'coo'
+            The sparse storage format to return. Options are:
+                **'coo'** : This is the native format of OpenPNM's data
+                **'lil'** : Enables row-wise slice of the matrix
+                **'csr'** : Favored by most linear algebra routines
+                **'dok'** : Enables subscript access of locations
 
         Notes
         -----
@@ -156,11 +153,11 @@ class GenericNetwork(ParamMixin, Base, ModelsMixin, LegacyMixin, LabelMixin):
         this method will create and return the matrix, as well as store it
         for future use.
 
-        To obtain a matrix with weights other than throat IDs at each non-zero
-        location use ``create_adjacency_matrix``.
+        To obtain a matrix with weights other than throat IDs at each
+        non-zero location use ``create_adjacency_matrix``.
 
-        To obtain the non-directed graph, with only upper-triangular entries,
-        use ``sp.sparse.triu(am, k=1)``.
+        To obtain the non-directed graph, with only upper-triangular
+        entries, use ``sp.sparse.triu(am, k=1)``.
 
         """
         # Retrieve existing matrix if available
@@ -173,31 +170,28 @@ class GenericNetwork(ParamMixin, Base, ModelsMixin, LegacyMixin, LabelMixin):
 
     def get_incidence_matrix(self, fmt='coo'):
         r"""
-        Returns an incidence matrix in the specified sparse format, with pore
-        IDs indicating the non-zero values.
+        Incidence matrix in the specified sparse format, with pore IDs
+        indicating the non-zero values.
 
         Parameters
         ----------
-        fmt : string, optional
-            The sparse storage format to return.  Options are:
-
-            **'coo'** : (default) This is the native format of OpenPNM data
-
-            **'lil'** : Enables row-wise slice of the matrix
-
-            **'csr'** : Favored by most linear algebra routines
-
-            **'dok'** : Enables subscript access of locations
+        fmt : str, default is 'coo'
+            The sparse storage format to return. Options are:
+                **'coo'** : This is the native format of OpenPNM's data
+                **'lil'** : Enables row-wise slice of the matrix
+                **'csr'** : Favored by most linear algebra routines
+                **'dok'** : Enables subscript access of locations
 
         Notes
         -----
         This method will only create the requested matrix in the specified
-        format if one is not already saved on the object.  If not present,
+        format if one is not already saved on the object. If not present,
         this method will create and return the matrix, as well as store it
         for future use.
 
-        To obtain a matrix with weights other than pore IDs at each non-zero
-        location use ``create_incidence_matrix``.
+        To obtain a matrix with weights other than pore IDs at each
+        non-zero location use ``create_incidence_matrix``.
+
         """
         if fmt in self._im.keys():
             im = self._im[fmt]
@@ -226,34 +220,27 @@ class GenericNetwork(ParamMixin, Base, ModelsMixin, LegacyMixin, LabelMixin):
             An array containing the throat values to enter into the matrix
             (in graph theory these are known as the 'weights').
 
-            If the array is Nt-long, it implies that the matrix is symmetric,
-            so the upper and lower triangular regions are mirror images.  If
-            it is 2*Nt-long then it is assumed that the first Nt elements are
-            for the upper triangle, and the last Nt element are for the lower
-            triangular.
+            If the array is Nt-long, it implies that the matrix is
+            symmetric, so the upper and lower triangular regions are
+            mirror images. If it is 2*Nt-long then it is assumed that the
+            first Nt elements are for the upper triangle, and the last Nt
+            element are for the lower triangular.
 
-            If omitted, ones are used to create a standard adjacency matrix
-            representing connectivity only.
-
-        fmt : string, optional
-            The sparse storage format to return.  Options are:
-
-            **'coo'** : (default) This is the native format of OpenPNM data
-
-            **'lil'** : Enables row-wise slice of the matrix
-
-            **'csr'** : Favored by most linear algebra routines
-
-            **'dok'** : Enables subscript access of locations
-
-        triu : boolean (default is ``False``)
-            If ``True``, the returned sparse matrix only contains the upper-
-            triangular elements.  This argument is ignored if the ``weights``
-            array is 2*Nt-long.
-
-        drop_zeros : boolean (default is ``False``)
-            If ``True``, applies the ``eliminate_zeros`` method of the sparse
-            array to remove all zero locations.
+            If omitted, ones are used to create a standard adjacency
+            matrix representing connectivity only.
+        fmt : str, optional
+            The sparse storage format to return. Options are:
+                **'coo'** : This is the native format of OpenPNM's data
+                **'lil'** : Enables row-wise slice of the matrix
+                **'csr'** : Favored by most linear algebra routines
+                **'dok'** : Enables subscript access of locations
+        triu : bool, default is ``False``
+            If ``True``, the returned sparse matrix only contains the
+            upper-triangular elements. This argument is ignored if the
+            ``weights`` array is 2*Nt-long.
+        drop_zeros : bool, default is ``False``
+            If ``True``, applies the ``eliminate_zeros`` method of the
+            sparse array to remove all zero locations.
 
         Returns
         -------
@@ -262,14 +249,15 @@ class GenericNetwork(ParamMixin, Base, ModelsMixin, LegacyMixin, LabelMixin):
         Notes
         -----
         The adjacency matrix is used by OpenPNM for finding the pores
-        connected to a give pore or set of pores.  Specifically, an adjacency
-        matrix has Np rows and Np columns.  Each row represents a pore,
-        containing non-zero values at the locations corresponding to the
-        indices of the pores connected to that pore.  The ``weights`` argument
-        indicates what value to place at each location, with the default
-        being 1's to simply indicate connections. Another useful option is
-        throat indices, such that the data values on each row indicate which
-        throats are connected to the pore.
+        connected to a give pore or set of pores. Specifically, an
+        adjacency matrix has Np rows and Np columns. Each row represents
+        a pore, containing non-zero values at the locations corresponding
+        to the indices of the pores connected to that pore. The
+        ``weights`` argument indicates what value to place at each
+        location, with the default being 1's to simply indicate
+        connections. Another useful option is throat indices, such that
+        the data values on each row indicate which throats are connected
+        to the pore.
 
         Examples
         --------
@@ -332,42 +320,38 @@ class GenericNetwork(ParamMixin, Base, ModelsMixin, LegacyMixin, LabelMixin):
         Parameters
         ----------
         weights : array_like, optional
-            An array containing the throat values to enter into the matrix (In
-            graph theory these are known as the 'weights').  If omitted, ones
-            are used to create a standard incidence matrix representing
-            connectivity only.
-
-        fmt : string, optional
-            The sparse storage format to return.  Options are:
-
-            **'coo'** : (default) This is the native format of OpenPNMs data
-
-            **'lil'** : Enables row-wise slice of the matrix
-
-            **'csr'** : Favored by most linear algebra routines
-
-            **'dok'** : Enables subscript access of locations
-
-        drop_zeros : boolean (default is ``False``)
+            An array containing the throat values to enter into the matrix
+            (in graph theory these are known as the 'weights'). If
+            omitted, ones are used to create a standard incidence matrix
+            representing connectivity only.
+        fmt : str, default is 'coo'
+            The sparse storage format to return. Options are:
+                **'coo'** : This is the native format of OpenPNM's data
+                **'lil'** : Enables row-wise slice of the matrix
+                **'csr'** : Favored by most linear algebra routines
+                **'dok'** : Enables subscript access of locations
+        drop_zeros : bool, default is ``False``
             If ``True``, applies the ``eliminate_zeros`` method of the sparse
             array to remove all zero locations.
 
         Returns
         -------
-        An incidence matrix in the specified sparse format
+        sparse_array
+            An incidence matrix in the specified sparse format
 
         Notes
         -----
-        The incidence matrix is a cousin to the adjacency matrix, and used by
-        OpenPNM for finding the throats connected to a give pore or set of
-        pores.  Specifically, an incidence matrix has Np rows and Nt columns,
-        and each row represents a pore, containing non-zero values at the
-        locations corresponding to the indices of the throats connected to that
-        pore.  The ``weights`` argument indicates what value to place at each
-        location, with the default being 1's to simply indicate connections.
-        Another useful option is throat indices, such that the data values
-        on each row indicate which throats are connected to the pore, though
-        this is redundant as it is identical to the locations of non-zeros.
+        The incidence matrix is a cousin to the adjacency matrix, and used
+        by OpenPNM for finding the throats connected to a give pore or set
+        of pores. Specifically, an incidence matrix has Np rows and Nt
+        columns, and each row represents a pore, containing non-zero
+        values at the locations corresponding to the indices of the
+        throats connected to that pore. The ``weights`` argument indicates
+        what value to place at each location, with the default being 1's
+        to simply indicate connections. Another useful option is throat
+        indices, such that the data values on each row indicate which
+        throats are connected to the pore, though this is redundant as it
+        is identical to the locations of non-zeros.
 
         Examples
         --------
@@ -375,6 +359,7 @@ class GenericNetwork(ParamMixin, Base, ModelsMixin, LegacyMixin, LabelMixin):
         >>> pn = op.network.Cubic(shape=[5, 5, 5])
         >>> weights = np.random.rand(pn.num_throats(), ) < 0.5
         >>> im = pn.create_incidence_matrix(weights=weights, fmt='csr')
+
         """
         # Check if provided data is valid
         if weights is None:
@@ -414,32 +399,29 @@ class GenericNetwork(ParamMixin, Base, ModelsMixin, LegacyMixin, LabelMixin):
         ----------
         throats : array_like
             List of throats numbers
-
-        flatten : boolean, optional
+        flatten : bool, optional
             If ``True`` (default) a 1D array of unique pore numbers is
-            returned. If ``False`` each location in the the returned array
-            contains a sub-arras of neighboring pores for each input throat,
-            in the order they were sent.
-
-        mode : string
-            Specifies logic to filter the resulting list.  Options are:
-
-            **'or'** : (default) All neighbors of the input throats.  This is
-            also known as the 'union' in set theory or 'any' in boolean logic.
-            Both keywords are accepted and treated as 'or'.
-
-            **'xor'** : Only neighbors of one and only one input throat.  This
-            is useful for finding the sites that are not shared by any of the
-            input throats.
-
-            **'xnor'** : Neighbors that are shared by two or more input
-            throats. This is equivalent to finding all neighbors with 'or',
-            minus those found with 'xor', and is useful for finding neighbors
-            that the inputs have in common.
-
-            **'and'** : Only neighbors shared by all input throats.  This is
-            also known as 'intersection' in set theory and (somtimes) as 'all'
-            in boolean logic.  Both keywords are accepted and treated as 'and'.
+            returned. If ``False`` each location in the the returned
+            array contains a sub-arras of neighboring pores for each input
+            throat, in the order they were sent.
+        mode : str
+            Specifies logic to filter the resulting list. Options are:
+                **'or'** : (default) All neighbors of the input pores.
+                This is also known as the 'union' in set theory or 'any'
+                in boolean logic. Both keywords are accepted and treated
+                as 'or'.
+                **'xor'** : Only neighbors of one and only one input pore.
+                This is useful for counting the pores that are not shared
+                by any of the input pores. This is known as 'exclusive_or'
+                in set theory, and is an accepted input.
+                **'xnor'** : Neighbors that are shared by two or more
+                input pores. This is equivalent to counting all neighbors
+                with 'or', minus those found with 'xor', and is useful for
+                finding neighbors that the inputs have in common.
+                **'and'** : Only neighbors shared by all input pores. This
+                is also known as 'intersection' in set theory and
+                (somtimes) as 'all' in boolean logic. Both keywords are
+                accepted and treated as 'and'.
 
         Returns
         -------
@@ -467,25 +449,29 @@ class GenericNetwork(ParamMixin, Base, ModelsMixin, LegacyMixin, LabelMixin):
 
     def find_connecting_throat(self, P1, P2):
         r"""
-        Return the throat index connecting pairs of pores
+        Return the throat index connecting pairs of pores.
 
         Parameters
         ----------
-        P1 , P2 : array_like
-            The indices of the pores whose throats are sought.  These can be
-            vectors of indices, but must be the same length
+        P1 : array_like
+            The indices of the pores whose throats are sought. These can
+            be vectors of indices, but must be the same length
+        P2 : array_like
+            The indices of the pores whose throats are sought. These can
+            be vectors of indices, but must be the same length
 
         Returns
         -------
-        Returns a list the same length as P1 (and P2) with the each element
-        containing the throat index that connects the corresponding pores,
-        or `None`` if pores are not connected.
+        list
+            Returns a list the same length as P1 (and P2) with the each
+            element containing the throat index that connects the
+            corresponding pores, or `None`` if pores are not connected.
 
         Notes
         -----
-        The returned list can be converted to an ND-array, which will convert
-        the ``None`` values to ``nan``.  These can then be found using
-        ``numpy.isnan``.
+        The returned list can be converted to an ND-array, which will
+        convert the ``None`` values to ``nan``. These can then be found
+        using ``numpy.isnan``.
 
         Examples
         --------
@@ -494,6 +480,7 @@ class GenericNetwork(ParamMixin, Base, ModelsMixin, LegacyMixin, LabelMixin):
         >>> Ts = pn.find_connecting_throat([0, 1, 2], [2, 2, 2])
         >>> print(Ts)
         [None, 1, None]
+
         """
         am = self.create_adjacency_matrix(weights=self.Ts, fmt='coo')
         sites = np.vstack((P1, P2)).T
@@ -509,55 +496,50 @@ class GenericNetwork(ParamMixin, Base, ModelsMixin, LegacyMixin, LabelMixin):
         ----------
         pores : array_like
             Indices of the pores whose neighbors are sought
-
-        flatten : boolean
-            If ``True`` (default) the returned result is a compressed array of
-            all neighbors.  If ``False``, a list of lists with each sub-list
-            containing the neighbors for each input site.  Note that an
-            *unflattened* list might be slow to generate since it is a Python
-            ``list`` rather than a Numpy ``array``.
-
+        flatten : bool
+            If ``True`` (default) the returned result is a compressed
+            array of all neighbors.  If ``False``, a list of lists with
+            each sub-list containing the neighbors for each input site.
+            Note that an *unflattened* list might be slow to generate
+            since it is a Python ``list`` rather than a Numpy ``array``.
         include_input : bool
-            If ``False`` (default) then the input pores are not included in
-            the returned list(s). Note that since pores are not neighbors of
-            themselves, the neighbors of pore N will not include N, even if
-            this flag is ``True``.
-
-        mode : string
-            Specifies logic to filter the resulting list.  Options are:
-
-            **'or'** : (default) All neighbors of the input pores.  This is
-            also known as the 'union' in set theory or 'any' in boolean logic.
-            Both keywords are accepted and treated as 'or'.
-
-            **'xor'** : Only neighbors of one and only one input pore.  This
-            is useful for finding the pores that are not shared by any of the
-            input pores.  This is known as 'exclusive_or' in set theory, and
-            is an accepted input.
-
-            **'xnor'** : Neighbors that are shared by two or more input pores.
-            This is equivalent to finding all neighbors with 'or', minus those
-            found with 'xor', and is useful for finding neighbors that the
-            inputs have in common.
-
-            **'and'** : Only neighbors shared by all input pores.  This is also
-            known as 'intersection' in set theory and (somtimes) as 'all' in
-            boolean logic.  Both keywords are accepted and treated as 'and'.
+            If ``False`` (default) then the input pores are not included
+            in the returned list(s). Note that since pores are not
+            neighbors of themselves, the neighbors of pore N will not
+            include N, even if this flag is ``True``.
+        mode : str
+            Specifies logic to filter the resulting list. Options are:
+                **'or'** : (default) All neighbors of the input pores.
+                This is also known as the 'union' in set theory or 'any'
+                in boolean logic. Both keywords are accepted and treated
+                as 'or'.
+                **'xor'** : Only neighbors of one and only one input pore.
+                This is useful for counting the pores that are not shared
+                by any of the input pores. This is known as 'exclusive_or'
+                in set theory, and is an accepted input.
+                **'xnor'** : Neighbors that are shared by two or more
+                input pores. This is equivalent to counting all neighbors
+                with 'or', minus those found with 'xor', and is useful for
+                finding neighbors that the inputs have in common.
+                **'and'** : Only neighbors shared by all input pores. This
+                is also known as 'intersection' in set theory and
+                (somtimes) as 'all' in boolean logic. Both keywords are
+                accepted and treated as 'and'.
 
         Returns
         -------
-        If ``flatten`` is ``True``, returns a 1D array of pore indices filtered
-        according to the specified mode.  If ``flatten`` is ``False``, returns
-        a list of lists, where each list contains the neighbors of the
-        corresponding input pores.
+        If ``flatten`` is ``True``, returns a 1D array of pore indices
+        filtered according to the specified mode.  If ``flatten`` is
+        ``False``, returns a list of lists, where each list contains the
+        neighbors of the corresponding input pores.
 
         Notes
         -----
-        The ``logic`` options are applied to neighboring pores only, thus it
-        is not possible to obtain pores that are part of the global set but
-        not neighbors. This is because (a) the list of global pores might be
-        very large, and (b) it is not possible to return a list of neighbors
-        for each input pores if global pores are considered.
+        The ``logic`` options are applied to neighboring pores only, thus
+        it is not possible to obtain pores that are part of the global set
+        but not neighbors. This is because (a) the list of global pores
+        might be very large, and (b) it is not possible to return a list
+        of neighbors for each input pores if global pores are considered.
 
         Examples
         --------
@@ -584,6 +566,7 @@ class GenericNetwork(ParamMixin, Base, ModelsMixin, LegacyMixin, LabelMixin):
         >>> Ps = pn.find_neighbor_pores(pores=[0, 2], mode='xor')
         >>> print(Ps)
         [ 3  5  7 25 27]
+
         """
         pores = self._parse_indices(pores)
         if np.size(pores) == 0:
@@ -604,47 +587,44 @@ class GenericNetwork(ParamMixin, Base, ModelsMixin, LegacyMixin, LabelMixin):
         ----------
         pores : array_like
             Indices of pores whose neighbors are sought
-
-        flatten : boolean, optional
+        flatten : bool, optional
             If ``True`` (default) a 1D array of unique throat indices is
             returned. If ``False`` the returned array contains arrays of
             neighboring throat indices for each input pore, in the order
             they were sent.
-
-        mode : string
-            Specifies logic to filter the resulting list.  Options are:
-
-            **'or'** : (default) All neighbors of the input pores.  This is
-            also known as the 'union' in set theory or 'any' in boolean logic.
-            Both keywords are accepted and treated as 'or'.
-
-            **'xor'** : Only neighbors of one and only one input pore.  This
-            is useful for finding the thraots that are not shared by any of the
-            input pores.
-
-            **'xnor'** : Neighbors that are shared by two or more input pores.
-            This is equivalent to finding all neighbors with 'or', minus those
-            found with 'xor', and is useful for finding neighbors that the
-            inputs have in common.
-
-            **'and'** : Only neighbors shared by all input pores.  This is also
-            known as 'intersection' in set theory and (somtimes) as 'all' in
-            boolean logic.  Both keywords are accepted and treated as 'and'.
+        mode : str
+            Specifies logic to filter the resulting list. Options are:
+                **'or'** : (default) All neighbors of the input pores.
+                This is also known as the 'union' in set theory or 'any'
+                in boolean logic. Both keywords are accepted and treated
+                as 'or'.
+                **'xor'** : Only neighbors of one and only one input pore.
+                This is useful for counting the pores that are not shared
+                by any of the input pores. This is known as 'exclusive_or'
+                in set theory, and is an accepted input.
+                **'xnor'** : Neighbors that are shared by two or more
+                input pores. This is equivalent to counting all neighbors
+                with 'or', minus those found with 'xor', and is useful for
+                finding neighbors that the inputs have in common.
+                **'and'** : Only neighbors shared by all input pores. This
+                is also known as 'intersection' in set theory and
+                (somtimes) as 'all' in boolean logic. Both keywords are
+                accepted and treated as 'and'.
 
         Returns
         -------
         If ``flatten`` is ``True``, returns a 1D array of throat indices
-        filtered according to the specified mode.  If ``flatten`` is ``False``,
-        returns a list of lists, where each list contains the neighbors of the
-        corresponding input pores.
+        filtered according to the specified mode.  If ``flatten`` is
+        ``False``, returns a list of lists, where each list contains the
+        neighbors of the corresponding input pores.
 
         Notes
         -----
-        The ``logic`` options are applied to neighboring bonds only, thus it
-        is not possible to obtain bonds that are part of the global set but
-        not neighbors. This is because (a) the list of global bonds might be
-        very large, and (b) it is not possible to return a list of neighbors
-        for each input site if global sites are considered.
+        The ``logic`` options are applied to neighboring bonds only, thus
+        it is not possible to obtain bonds that are part of the global set
+        but not neighbors. This is because (a) the list of global bonds
+        might be very large, and (b) it is not possible to return a list
+        of neighbors for each input site if global sites are considered.
 
         Examples
         --------
@@ -693,32 +673,28 @@ class GenericNetwork(ParamMixin, Base, ModelsMixin, LegacyMixin, LabelMixin):
         ----------
         pores : array_like
             Pores whose neighbors are to be counted
-
-        flatten : boolean (optional)
-            If ``False`` (default) the number of pores neighboring each input
-            pore as an array the same length as ``pores``.  If ``True`` the
-            sum total number of is counted.
-
-        mode : string
-            The logic to apply to the returned count of pores.
-
-            **'or'** : (default) All neighbors of the input pores.  This is
-            also known as the 'union' in set theory or 'any' in boolean logic.
-            Both keywords are accepted and treated as 'or'.
-
-            **'xor'** : Only neighbors of one and only one input pore.  This
-            is useful for counting the pores that are not shared by any of the
-            input pores.  This is known as 'exclusive_or' in set theory, and
-            is an accepted input.
-
-            **'xnor'** : Neighbors that are shared by two or more input pores.
-            This is equivalent to counting all neighbors with 'or', minus those
-            found with 'xor', and is useful for finding neighbors that the
-            inputs have in common.
-
-            **'and'** : Only neighbors shared by all input pores.  This is also
-            known as 'intersection' in set theory and (somtimes) as 'all' in
-            boolean logic.  Both keywords are accepted and treated as 'and'.
+        flatten : bool, optional
+            If ``False`` (default) the number of pores neighboring each
+            input pore as an array the same length as ``pores``. If
+            ``True`` the sum total number of is counted.
+        mode : str
+            The logic to apply to the returned count of pores:
+                **'or'** : (default) All neighbors of the input pores.
+                This is also known as the 'union' in set theory or 'any'
+                in boolean logic. Both keywords are accepted and treated
+                as 'or'.
+                **'xor'** : Only neighbors of one and only one input pore.
+                This is useful for counting the pores that are not shared
+                by any of the input pores. This is known as 'exclusive_or'
+                in set theory, and is an accepted input.
+                **'xnor'** : Neighbors that are shared by two or more
+                input pores. This is equivalent to counting all neighbors
+                with 'or', minus those found with 'xor', and is useful for
+                finding neighbors that the inputs have in common.
+                **'and'** : Only neighbors shared by all input pores. This
+                is also known as 'intersection' in set theory and
+                (somtimes) as 'all' in boolean logic. Both keywords are
+                accepted and treated as 'and'.
 
         Returns
         -------
@@ -750,6 +726,7 @@ class GenericNetwork(ParamMixin, Base, ModelsMixin, LegacyMixin, LabelMixin):
         >>> Np = pn.num_neighbors(pores=[0, 2], mode='and', flatten=True)
         >>> print(Np)
         1
+
         """
         pores = self._parse_indices(pores)
         if flatten:
@@ -771,18 +748,15 @@ class GenericNetwork(ParamMixin, Base, ModelsMixin, LegacyMixin, LabelMixin):
         ----------
         pores : array_like
             The list of pores for whom nearby neighbors are to be found
-
         r : scalar
             The maximum radius within which the search should be performed
-
         include_input : bool
-            Controls whether the input pores should be included in the list of
-            pores nearby the *other pores* in the input list.  So if
-            ``pores=[1, 2]`` and 1 and 2 are within ``r`` of each other,
-            then 1 will be included in the returned for pores near 2, and
-            vice-versa *if* this argument is ``True``.  The default is
-            ``False``.
-
+            Controls whether the input pores should be included in the
+            list of pores nearby the *other pores* in the input list.
+            So if ``pores=[1, 2]`` and 1 and 2 are within ``r`` of each
+            other, then 1 will be included in the returned for pores
+            near 2, and vice-versa *if* this argument is ``True``.
+            The default is ``False``.
         flatten : bool
             If ``True`` returns a single list of all pores that match the
             criteria, otherwise returns an array containing a sub-array for
@@ -791,10 +765,10 @@ class GenericNetwork(ParamMixin, Base, ModelsMixin, LegacyMixin, LabelMixin):
 
         Returns
         -------
-            A list of pores which are within the given spatial distance.  If a
-            list of N pores is supplied, then a an N-long list of such lists is
-            returned.  The returned lists each contain the pore for which the
-            neighbors were sought.
+            A list of pores which are within the given spatial distance.
+            If a list of N pores is supplied, then a an N-long list of
+            such lists is returned.  The returned lists each contain the
+            pore for which the neighbors were sought.
 
         Examples
         --------
@@ -811,6 +785,7 @@ class GenericNetwork(ParamMixin, Base, ModelsMixin, LegacyMixin, LabelMixin):
         >>> Ps = pn.find_nearby_pores(pores=[0, 1], r=1, flatten=True)
         >>> print(Ps)
         [ 2  3  4  9 10]
+
         """
         pores = self._parse_indices(pores)
         # Handle an empty array if given
@@ -847,38 +822,36 @@ class GenericNetwork(ParamMixin, Base, ModelsMixin, LegacyMixin, LabelMixin):
 
     @property
     def conns(self):
+        r"""Returns the connectivity matrix of the network."""
         return self['throat.conns']
 
     @property
     def coords(self):
+        r"""Returns the list of pore coordinates of the network."""
         return self['pore.coords']
 
     def check_network_health(self):
         r"""
-        This method check the network topological health by checking for:
+        This method check the network topological health.
 
-            (1) Isolated pores
-            (2) Islands or isolated clusters of pores
-            (3) Duplicate throats
-            (4) Bidirectional throats (ie. symmetrical adjacency matrix)
-            (5) Headless throats
+        Specifically, it checks for:
+            1. Isolated pores
+            2. Islands or isolated clusters of pores
+            3. Duplicate throats
+            4. Bidirectional throats (ie. symmetrical adjacency matrix)
+            5. Headless throats
 
         Returns
         -------
-        A dictionary containing the offending pores or throat numbers under
-        each named key.
-
-        It also returns a list of which pores and throats should be trimmed
-        from the network to restore health.  This list is a suggestion only,
-        and is based on keeping the largest cluster and trimming the others.
+        dict
+            A dictionary containing the offending pores or throat numbers
+            under each named key.
 
         Notes
         -----
         - Does not yet check for duplicate pores
         - Does not yet suggest which throats to remove
         - This is just a 'check' and does not 'fix' the problems it finds
+
         """
-
-        health = self.project.check_network_health()
-
-        return health
+        return self.project.check_network_health()
