@@ -49,7 +49,6 @@ rxn.set_source(propname='pore.2nd_order_rxn', pores=Ps)
 rxn.set_value_BC(pores=pn.pores('top'), values=1)
 rxn.run()
 air.update(rxn.results())
-
 # %% Perform pure diffusion simulation
 fd = op.algorithms.FickianDiffusion(network=pn, phase=air)
 fd.set_value_BC(pores=pn.pores('left'), values=1)
