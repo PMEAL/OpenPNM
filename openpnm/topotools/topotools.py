@@ -1,3 +1,4 @@
+from auto_all import start_all, end_all
 import numpy as np
 import scipy as sp
 import scipy.ndimage as spim
@@ -7,6 +8,8 @@ from openpnm.utils import logging, Workspace
 logger = logging.getLogger(__name__)
 ws = Workspace()
 
+
+start_all()
 
 def isoutside(coords, shape):
     r"""
@@ -403,13 +406,11 @@ def label_faces(network, tol=0.0, label='surface'):
     ----------
     network : OpenPNM Network object
         The network to apply the labels
-
     tol : scalar
         The tolerance for defining what counts as a surface pore, which is
         specifically meant for random networks.  All pores with ``tol`` of
         the maximum or minimum along each axis are counts as pores.  The
         default is 0.
-
     label : string
         An identifying label to isolate the pores on the faces of the network.
         The default is 'surface'.  Surface pores can be found using
@@ -450,19 +451,16 @@ def find_surface_pores(network, markers=None, label='surface'):
     ----------
     network: OpenPNM Network Object
         The network for which the surface pores are to be found
-
     markers: array_like
         3 x N array of the marker coordinates to use in the triangulation.  The
         labeling is performed in one step, so all points are added, and then
         any pores connected to at least one marker is given the provided label.
         By default, this function will automatically generate 6 points outside
         each axis of the network domain.
-
         Users may wish to specify a single external marker point and provide an
         appropriate label in order to identify specific faces.  For instance,
         the marker may be *above* the domain, and the label might be
         'top_surface'.
-
     label : string
         The label to apply to the pores.  The default is 'surface'.
 
@@ -572,13 +570,10 @@ def clone_pores(network, pores, labels=['clone'], mode='parents'):
     ----------
     network : OpenPNM Network Object
         The Network object to which the new pores are to be added
-
     pores : array_like
         List of pores to clone
-
     labels : string, or list of strings
         The labels to apply to the clones, default is 'clone'
-
     mode : string
         Controls the connections between parents and clones.  Options are:
 
@@ -586,6 +581,7 @@ def clone_pores(network, pores, labels=['clone'], mode='parents'):
         - 'siblings': Clones are only connected to each other in the same
                       manner as parents were connected
         - 'isolated': No connections between parents or siblings
+
     """
     if isinstance(labels, str):
         labels = [labels]
@@ -636,7 +632,6 @@ def merge_networks(network, donor=[]):
     ----------
     network : OpenPNM Network Object
         The network to which all the other networks should be added.
-
     donor : OpenPNM Network Object or list of Objects
         The network object(s) to add to the given network
 
@@ -726,31 +721,24 @@ def stitch(network, donor, P_network, P_donor, method='nearest',
     ----------
     network : OpenPNM Network Object
         The Network to which to donor Network will be attached
-
     donor : OpenPNM Network Object
         The Network to stitch on to the current Network
-
     P_network : array_like
         The pores on the current Network
-
     P_donor : array_like
         The pores on the donor Network
-
     label_suffix : str or None
         Some text to append to each label in the donor Network before
         inserting them into the recipient.  The default is to append no
         text, but a common option would be to append the donor Network's
         name. To insert none of the donor labels, use ``None``.
-
     label_stitches : str or list of strings
         The label to apply to the newly created 'stitch' throats.  The
         defaul is 'stitched'.  If performing multiple stitches in a row it
         might be helpful to the throats created during each step uniquely
         for later identification.
-
     len_max : float
         Set a length limit on length of new throats
-
     method : string (default = 'nearest')
         The method to use when making pore to pore connections. Options are:
 
@@ -831,8 +819,8 @@ def stitch_pores(network, pores1, pores2, mode='gabriel'):
     r"""
     Stitches together pores in a network with disconnected clusters
 
-    Parameter
-    ---------
+    Parameters
+    ----------
     network : OpenPNM Network
         The network to operate upon
     pores1 and pores2: array_like
@@ -880,14 +868,11 @@ def connect_pores(network, pores1, pores2, labels=[], add_conns=True):
 
     pores1 : array_like
         The first group of pores on the network
-
     pores2 : array_like
         The second group of pores on the network
-
     labels : list of strings
         The labels to apply to the new throats.  This argument is only needed
         if ``add_conns`` is True.
-
     add_conns : bool
         Indicates whether the connections should be added to the supplied
         network (default is True).  Otherwise, the connections are returned
@@ -966,10 +951,8 @@ def find_pore_to_pore_distance(network, pores1=None, pores2=None):
     ----------
     network : OpenPNM Network Object
         The network object containing the pore coordinates
-
     pores1 : array_like
         The pore indices of the first set
-
     pores2 : array_Like
         The pore indices of the second set.  It's OK if these indices are
         partially or completely duplicating ``pores``.
@@ -1029,10 +1012,8 @@ def subdivide(network, pores, shape, labels=[]):
     Parameters
     ----------
     network : OpenPNM Network Object
-
     pores : array_like
         The first group of pores to be replaced
-
     shape : array_like
         The shape of cubic networks in the target locations
 
@@ -1196,10 +1177,8 @@ def merge_pores(network, pores, labels=['merged']):
     Parameters
     ----------
     network : OpenPNM Network Object
-
     pores : array_like
         The list of pores which are to be combined into a new single pore
-
     labels : string or list of strings
         The labels to apply to the new pore and new throat connections
 
@@ -1302,10 +1281,8 @@ def _template_sphere_disc(dim, outer_radius, inner_radius):
     ----------
     dim : int
         Network dimension
-
     outer_radius : int
         Number of the nodes in the outer radius of the network
-
     inner_radius : int
         Number of the nodes in the inner radius of the network
 
@@ -1348,11 +1325,9 @@ def template_sphere_shell(outer_radius, inner_radius=0, dim=3):
     ----------
     outer_radius : int
         Number of nodes in the outer radius of the sphere.
-
     inner_radius : int
         Number of nodes in the inner radius of the shell.  a value of 0 will
         result in a solid sphere.
-
     dim : scalar
         Controls the number of dimensions of the result.  3 returns a sphere,
         while 2 returns a disk.
@@ -1380,10 +1355,8 @@ def template_cylinder_annulus(height, outer_radius, inner_radius=0):
     ----------
     height : int
         The height of the cylinder
-
     outer_radius : int
         Number of nodes in the outer radius of the cylinder
-
     inner_radius : int
         Number of the nodes in the inner radius of the annulus.  A value of 0
         will result in a solid cylinder.
@@ -1415,7 +1388,6 @@ def generate_base_points(num_points, domain_size, density_map=None,
         The number of base points that lie within the domain.  Note that the
         actual number of points returned will be larger, with the extra points
         lying outside the domain.
-
     domain_size : list or array
         Controls the size and shape of the domain, as follows:
 
@@ -1431,7 +1403,6 @@ def generate_base_points(num_points, domain_size, density_map=None,
         as the outer corner of rectangle [x, y, z] whose opposite corner lies
         at [0, 0, 0].  If the z dimension is 0, a rectangle of size X-by-Y is
         created.
-
     density_map : array, optional
         A an array that contains fractional values (0 < i < 1) indicating the
         liklihood that a point in that region should be kept.  The size of this
@@ -1444,7 +1415,6 @@ def generate_base_points(num_points, domain_size, density_map=None,
         When specifying a custom probabiliy map is it recommended to also set
         values outside the given domain to zero.  If not, then the correct
         shape will still be returned, but with too few points in it.
-
     reflect : boolean
         If ``True``, the the base points are generated as specified, the reflected
         about each face of the domain.  This essentially tricks the
@@ -1524,7 +1494,7 @@ def generate_base_points(num_points, domain_size, density_map=None,
             r, theta, phi = reflect_base_points(np.vstack((r, theta, phi)),
                                                 domain_size)
         # Convert to Cartesean coordinates
-        X, Y, Z = from_sph(r, theta, phi)
+        X, Y, Z = from_spherical(r, theta, phi)
         base_pts = np.vstack([X, Y, Z]).T
 
     elif len(domain_size) == 2:  # Cylindrical or Disk
@@ -1550,7 +1520,7 @@ def generate_base_points(num_points, domain_size, density_map=None,
             r, theta, z = reflect_base_points(np.vstack([r, theta, z]),
                                               domain_size)
         # Convert to Cartesean coordinates
-        X, Y, Z = from_cyl(r, theta, z)
+        X, Y, Z = from_cylindrical(r, theta, z)
         base_pts = np.vstack([X, Y, Z]).T
 
     elif len(domain_size) == 3:  # Cube or square
@@ -1566,28 +1536,28 @@ def generate_base_points(num_points, domain_size, density_map=None,
     return base_pts
 
 
-def to_cyl(X, Y, Z):
+def to_cylindrical(X, Y, Z):
     r = 2*np.sqrt(X**2 + Y**2)
     theta = 2*np.arctan(Y/X)
     z = Z
     return np.vstack((r, theta, z))
 
 
-def from_cyl(r, theta, z):
+def from_cylindrical(r, theta, z):
     X = r*np.cos(theta)
     Y = r*np.sin(theta)
     Z = z
     return np.vstack((X, Y, Z))
 
 
-def to_sph(X, Y, Z):
+def to_spherical(X, Y, Z):
     r = 2*np.sqrt(X**2 + Y**2 + Z**2)
     theta = 2*np.arctan(Y/X)
     phi = 2*np.arctan(np.sqrt(X**2 + Y**2)/Z)
     return np.vstack((r, theta, phi))
 
 
-def from_sph(r, theta, phi):
+def from_spherical(r, theta, phi):
     X = r*np.cos(theta)*np.sin(phi)
     Y = r*np.sin(theta)*np.sin(phi)
     Z = r*np.cos(phi)
@@ -1608,7 +1578,6 @@ def reflect_base_points(base_pts, domain_size):
         **spherical** : [r, theta, phi]
         **cylindrical** or **circular** : [r, theta, z]
         **rectangular** or **square** : [x, y, z]
-
     domain_size : list or array
         Controls the size and shape of the domain, as follows:
 
@@ -1679,18 +1648,15 @@ def add_boundary_pores(network, pores, offset=None, move_to=None,
     pores : array_like
         List of pores to offset.  If no pores are specified, then it
         assumes that all surface pores are to be cloned.
-
     offset : 3 x 1 array
         The distance in vector form which the cloned boundary pores should
         be offset.  Either this, or ``move_to`` must be specified.
-
     move_to : 3 x 1 array
         The location to move the boundary pores to.  A value of ``None``
         indicates that no translation should be applied in that axis.  For
         instance, ``[None, None, 0]`` indicates that the boundary pores should
         moved along the z-axis to the specified location.  Either this or
         ``offset`` must be specified.
-
     apply_label : string
         This label is applied to the boundary pores.  Default is
         'boundary'.
@@ -1752,6 +1718,7 @@ def iscoplanar(coords):
     results : bool
         A boolean value of whether given points are coplanar (``True``) or
         not (``False``)
+
     '''
     coords = np.array(coords, ndmin=1)
     if np.shape(coords)[0] < 3:
@@ -1864,3 +1831,5 @@ def get_shape(network):
     d = {'vert.coords': network.coords, 'edge.conns': network.conns}
     shp = get_shape(d)
     return shp
+
+end_all()
