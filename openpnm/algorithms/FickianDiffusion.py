@@ -1,14 +1,13 @@
 from openpnm.algorithms import ReactiveTransport
-from openpnm.utils import logging, Docorator, Settings
+from openpnm.utils import logging, Docorator, SettingsAttr
 docstr = Docorator()
 logger = logging.getLogger(__name__)
-sets = Settings()
 
 
 @docstr.get_sections(base='FickianDiffusionSettings',
                      sections=['Parameters'])
 @docstr.dedent
-class FickianDiffusionSettings(sets['ReactiveTransportSettings']):
+class FickianDiffusionSettings():
     r"""
 
     Parameters
@@ -72,13 +71,8 @@ class FickianDiffusion(ReactiveTransport):
     """
 
     def __init__(self, settings={}, **kwargs):
-        self.settings._update(FickianDiffusionSettings)
-        self.settings._update(settings)
-        super().__init__(settings=self.settings._deepcopy(), **kwargs)
-        self.settings._getdocs(FickianDiffusionSettings)
-        # self.settings = sets.set_settings()
-        # self.settings._update(settings)
-        # super().__init__(**kwargs)
+        self.settings = SettingsAttr(FickianDiffusionSettings, settings)
+        super().__init__(settings=self.settings, **kwargs)
 
     def calc_effective_diffusivity(self, inlets=None, outlets=None,
                                    domain_area=None, domain_length=None):

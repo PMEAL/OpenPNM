@@ -1,6 +1,6 @@
 from copy import deepcopy
 from openpnm.core import Subdomain, ModelsMixin, ParamMixin
-from openpnm.utils import Docorator
+from openpnm.utils import Docorator, SettingsAttr
 from openpnm.utils import Workspace, logging
 logger = logging.getLogger(__name__)
 ws = Workspace()
@@ -82,9 +82,9 @@ class GenericGeometry(ParamMixin, Subdomain, ModelsMixin):
     """
 
     def __init__(self, pores=[], throats=[], settings={}, **kwargs):
-        self.settings._update(GeometrySettings, docs=True)
-        self.settings._update(settings)  # Add user supplied settings
+        self.settings = SettingsAttr(GeometrySettings, settings)
         super().__init__(settings=deepcopy(self.settings), **kwargs)
+        self.settings._getdocs(GeometrySettings)
 
         network = self.project.network
         if network:

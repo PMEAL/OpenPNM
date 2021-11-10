@@ -17,6 +17,7 @@ from .Settings import SettingsAttr
 from .Settings import SettingsData
 from .Settings import TypedList
 from .Settings import Settings
+from .Settings import SettingsMixin
 
 
 # You can add info to the logger message by inserting the desired %(item)

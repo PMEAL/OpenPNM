@@ -37,12 +37,6 @@ class Basic(GenericPhysics):
 
     def __init__(self, project=None, network=None, phase=None,
                  geometry=None, settings={}, **kwargs):
-
-        # Define some default settings
-        self.settings._update({'prefix': 'phys'})
-        # Overwrite with user supplied settings, if any
-        self.settings._update(settings)
-
         # Deal with network or project arguments
         if network is not None:
             if project is not None:

@@ -4,7 +4,7 @@ import scipy.spatial as sptl
 from copy import deepcopy
 from openpnm.core import Base, ModelsMixin, LegacyMixin, LabelMixin, ParamMixin
 from openpnm import topotools
-from openpnm.utils import Docorator
+from openpnm.utils import Docorator, SettingsAttr
 from openpnm.utils import Workspace, logging
 import openpnm.models.topology as tm
 logger = logging.getLogger(__name__)
@@ -135,13 +135,15 @@ class GenericNetwork(ParamMixin, Base, ModelsMixin, LegacyMixin, LabelMixin):
 
     def __init__(self, conns=None, coords=None, settings={},
                  **kwargs):
-        self.settings._update(NetworkSettings, docs=True)
-        self.settings._update(settings)  # Add user supplied settings
+        self.settings = SettingsAttr(NetworkSettings, settings)
         super().__init__(settings=deepcopy(self.settings), **kwargs)
+        self.settings._getdocs(NetworkSettings)
+
         if coords is not None:
             Np = np.shape(coords)[0]
             self['pore.all'] = np.ones(Np, dtype=bool)
             self['pore.coords'] = np.array(coords)
+
         if conns is not None:
             Nt = np.shape(conns)[0]
             self['throat.all'] = np.ones(Nt, dtype=bool)

@@ -49,15 +49,13 @@ class TypedList(list):
 
 class SettingsAttr:
 
-    def __init__(self, settings={}):
-        super().__setattr__('__doc__', settings.__doc__)
-        self._update(settings)
+    def __init__(self, *args):
+        for i, item in enumerate(args):
+            if i == 0:
+                super().__setattr__('__doc__', item.__doc__)
+            self._update(item)
 
     def __setattr__(self, attr, value):
-        # if value is None:  # Allow any attr to be overwritten with None
-        #     super().__setattr__(attr, value)
-        #     return
-        value = deepcopy(value)
         if hasattr(self, attr):
             # If the the attr is already present, check its type
             if getattr(self, attr) is not None:
@@ -150,6 +148,28 @@ class Settings(dict):
         for k, v in self.items():
             s._update(v, docs=True)
         return s
+
+
+class SettingsMixin:
+
+    def __new__(cls, *args, **kwargs):
+        instance = super(SettingsMixin, cls).__new__(cls, *args, **kwargs)
+        instance._settings = None
+        instance._settings_docs = None
+        return instance
+
+    def _set_settings(self, settings):
+        self._settings = deepcopy(settings)
+        if self._settings_docs is None:
+            self._settings_docs = settings.__doc__
+
+    def _get_settings(self):
+        sets = self._settings
+        if sets is not None:
+            sets.__doc__ = self._settings_docs
+        return sets
+
+    settings = property(fget=_get_settings, fset=_set_settings)
 
 
 class SettingsData(HasTraits):

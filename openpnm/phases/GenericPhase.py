@@ -1,7 +1,7 @@
 from copy import deepcopy
 from openpnm.core import Base, LegacyMixin, ModelsMixin, LabelMixin, ParamMixin
 from openpnm.utils import Workspace, logging
-from openpnm.utils import Docorator
+from openpnm.utils import Docorator, SettingsAttr
 from numpy import ones
 import openpnm.models as mods
 docstr = Docorator()
@@ -67,9 +67,9 @@ class GenericPhase(ParamMixin, Base, ModelsMixin, LegacyMixin, LabelMixin):
     """
 
     def __init__(self, settings={}, **kwargs):
-        self.settings._update(PhaseSettings, docs=True)
-        self.settings._update(settings)  # Add user supplied settings
-        super().__init__(settings=deepcopy(self.settings), **kwargs)
+        self.settings = SettingsAttr(PhaseSettings, settings)
+        super().__init__(settings=self.settings._deepcopy(), **kwargs)
+        self.settings._getdocs(PhaseSettings)
 
         # If project has a network object, adjust pore and throat array sizes
         network = self.project.network

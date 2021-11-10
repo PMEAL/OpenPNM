@@ -3,7 +3,7 @@ import uuid
 import numpy as np
 from collections import namedtuple
 from openpnm.utils import Workspace, logging
-from openpnm.utils import SettingsAttr
+from openpnm.utils import SettingsAttr, SettingsMixin, ParamMixin
 from openpnm.utils.misc import PrintableList, PrintableDict, Docorator
 docstr = Docorator()
 logger = logging.getLogger(__name__)
@@ -29,45 +29,8 @@ class BaseSettings:
     uuid = ''
 
 
-class ParamMixin:
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._params = PrintableDict()
-        self._params._key = "Parameters"
-        self._params._value = "Values"
-
-    def __getitem__(self, key):
-        if key.startswith('param'):
-            try:
-                vals = self._params[key]
-            except KeyError:
-                vals = self.network._params[key]
-        else:
-            vals = super().__getitem__(key)
-        return vals
-
-    def __setitem__(self, key, value):
-        if key.startswith('param'):
-            self._params[key] = value
-        else:
-            super().__setitem__(key, value)
-
-    def __str__(self):
-        s = super().__str__()
-        s = s.rpartition('\n')[0]
-        s = s + '\n' + self._params.__str__()
-        return s
-
-    def params(self):
-        r"""
-        Return parameter names and values in a dictionary
-        """
-        return self._params
-
-
 @docstr.get_sections(base='Base', sections=['Parameters'])
-class Base(dict):
+class Base(SettingsMixin, dict):
     r"""
     Contains methods for working with the data in the OpenPNM dict objects
 
@@ -148,18 +111,10 @@ class Base(dict):
 
     """
 
-    def __new__(cls, *args, **kwargs):
-        instance = super(Base, cls).__new__(cls, *args, **kwargs)
-        # It is necessary to set the SettingsDict here since some classes
-        # use it before calling super.__init__()
-        instance.settings = SettingsAttr()
-        instance.settings._update(BaseSettings, docs=True)
-        instance.settings.uuid = str(uuid.uuid4())
-        return instance
-
     def __init__(self, Np=0, Nt=0, name=None, project=None, network=None, settings={}):
         super().__init__()
-        self.settings._update(settings)  # Add user supplied settings
+        self.settings = SettingsAttr(BaseSettings, settings)
+
         if project is None:
             if network is None:
                 project = ws.new_project()
@@ -170,6 +125,7 @@ class Base(dict):
         project._validate_name(name)
         project.extend(self)
         self.settings['name'] = name
+        self.settings.uuid = str(uuid.uuid4())
         self.update({'pore.all': np.ones(shape=(Np, ), dtype=bool)})
         self.update({'throat.all': np.ones(shape=(Nt, ), dtype=bool)})
 
@@ -318,6 +274,19 @@ class Base(dict):
                 return proj
 
     project = property(fget=_get_project)
+
+    # def _set_settings(self, settings):
+    #     self._settings = settings
+    #     if self._settings_docs is None:
+    #         self._settings_docs = settings.__doc__
+
+    # def _get_settings(self):
+    #     sets = self._settings
+    #     if sets is not None:
+    #         sets.__doc__ = self._settings_docs
+    #     return sets
+
+    # settings = property(fget=_get_settings, fset=_set_settings)
 
     @property
     def network(self):

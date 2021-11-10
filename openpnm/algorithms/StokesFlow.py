@@ -1,13 +1,13 @@
 import numpy as np
 from copy import deepcopy
 from openpnm.algorithms import ReactiveTransport
-from openpnm.utils import logging, Docorator
-from traits.api import Str
+from openpnm.utils import logging, Docorator, SettingsAttr
 logger = logging.getLogger(__name__)
 docstr = Docorator()
 
 
 class StokesFlowSettings:
+    prefix = 'stokes'
     quantity = 'pore.pressure'
     conductance = 'throat.hydraulic_conductance'
 
@@ -19,8 +19,7 @@ class StokesFlow(ReactiveTransport):
     """
 
     def __init__(self, settings={}, **kwargs):
-        self.settings._update(StokesFlowSettings, docs=False)
-        self.settings._update(settings)
+        self.settings = SettingsAttr(StokesFlowSettings, settings)
         super().__init__(settings=deepcopy(self.settings), **kwargs)
 
     def calc_effective_permeability(self, inlets=None, outlets=None,
