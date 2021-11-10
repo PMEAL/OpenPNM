@@ -1032,7 +1032,7 @@ are nearby to each given input pore.  The default is False.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="openpnm.network.GenericNetwork.find_neighbor_pores">
-<span class="sig-name descname"><span class="pre">find_neighbor_pores</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pores</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'union'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flatten</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_input</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/network/GenericNetwork.html#GenericNetwork.find_neighbor_pores"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.network.GenericNetwork.find_neighbor_pores" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">find_neighbor_pores</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pores</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'union'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flatten</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_input</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">asmask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/network/GenericNetwork.html#GenericNetwork.find_neighbor_pores"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.network.GenericNetwork.find_neighbor_pores" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a list of pores that are direct neighbors to the given pore(s)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1063,6 +1063,9 @@ inputs have in common.</p>
 known as ‘intersection’ in set theory and (somtimes) as ‘all’ in
 boolean logic.  Both keywords are accepted and treated as ‘and’.</p>
 </p></li>
+<li><p><strong>asmask</strong> (<em>boolean</em>) – If <code class="docutils literal notranslate"><span class="pre">False</span></code> (default), the returned result is a list of the
+neighboring pores as indices. If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the returned result is a
+boolean mask. (Useful for labelling)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -1111,7 +1114,7 @@ for each input pores if global pores are considered.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="openpnm.network.GenericNetwork.find_neighbor_throats">
-<span class="sig-name descname"><span class="pre">find_neighbor_throats</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pores</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'union'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flatten</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/network/GenericNetwork.html#GenericNetwork.find_neighbor_throats"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.network.GenericNetwork.find_neighbor_throats" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">find_neighbor_throats</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pores</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'union'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flatten</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">asmask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/network/GenericNetwork.html#GenericNetwork.find_neighbor_throats"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.network.GenericNetwork.find_neighbor_throats" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a list of throats neighboring the given pore(s)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1136,6 +1139,9 @@ inputs have in common.</p>
 known as ‘intersection’ in set theory and (somtimes) as ‘all’ in
 boolean logic.  Both keywords are accepted and treated as ‘and’.</p>
 </p></li>
+<li><p><strong>asmask</strong> (<em>boolean</em>) – If <code class="docutils literal notranslate"><span class="pre">False</span></code> (default), the returned result is a list of the
+neighboring throats as indices. If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the returned result is a
+boolean mask. (Useful for labelling)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
