@@ -541,7 +541,7 @@ class GenericNetwork(ParamMixin, Base, ModelsMixin, LegacyMixin, LabelMixin):
         return Ts
 
     def find_neighbor_pores(self, pores, mode='union', flatten=True,
-                            include_input=False,asmask=False):
+                            include_input=False, asmask=False):
         r"""
         Returns a list of pores that are direct neighbors to the given pore(s)
 
@@ -583,13 +583,12 @@ class GenericNetwork(ParamMixin, Base, ModelsMixin, LegacyMixin, LabelMixin):
             **'and'** : Only neighbors shared by all input pores.  This is also
             known as 'intersection' in set theory and (somtimes) as 'all' in
             boolean logic.  Both keywords are accepted and treated as 'and'.
-            
-            
+
         asmask : boolean
-            If ``False`` (default) the returned result is a list of the neighboring
-            pores as idicies. If ``True`` the returned result is a boolean mask.
-            (Useful for labelling)
-            
+            If ``False`` (default) the returned result is a list of the
+            neighboringpores as idicies. If ``True`` the returned result is a
+            boolean mask.(Useful for labelling)
+
         Returns
         -------
         If ``flatten`` is ``True``, returns a 1D array of pore indices filtered
@@ -640,11 +639,13 @@ class GenericNetwork(ParamMixin, Base, ModelsMixin, LegacyMixin, LabelMixin):
                                                   am=self._am['lil'],
                                                   flatten=flatten,
                                                   include_input=include_input)
-        if asmask==False:
+        if asmask is False:
+            return neighbors
+        elif flatten is True:
+            neighbors = self._tomask(element='pore', indices=neighbors)
             return neighbors
         else:
-            neighbors=self._tomask(element='pore',indices=neighbors)
-            return neighbors
+            raise Exception('Cannot create mask on an unflattened output')
 
     def find_neighbor_throats(self, pores, mode='union', flatten=True):
         r"""
