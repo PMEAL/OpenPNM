@@ -68,8 +68,7 @@ class GenericPhase(ParamMixin, Base, ModelsMixin, LegacyMixin, LabelMixin):
 
     def __init__(self, settings={}, **kwargs):
         self.settings = SettingsAttr(PhaseSettings, settings)
-        super().__init__(settings=self.settings._deepcopy(), **kwargs)
-        self.settings._getdocs(PhaseSettings)
+        super().__init__(settings=self.settings, **kwargs)
 
         # If project has a network object, adjust pore and throat array sizes
         network = self.project.network

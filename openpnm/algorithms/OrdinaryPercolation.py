@@ -1,10 +1,9 @@
 import numpy as np
-from copy import deepcopy
 from collections import namedtuple
 from openpnm.algorithms import GenericAlgorithm
 from openpnm.topotools import site_percolation, bond_percolation
 from openpnm.topotools import remove_isolated_clusters, ispercolating
-from openpnm.utils import logging
+from openpnm.utils import logging, SettingsAttr
 from openpnm.utils import prettify_logger_message
 logger = logging.getLogger(__name__)
 
@@ -55,9 +54,8 @@ class OrdinaryPercolation(GenericAlgorithm):
     """
 
     def __init__(self, settings={}, phase=None, **kwargs):
-        self.settings._update(OrdinaryPercolationSettings, docs=True)
-        self.settings._update(settings)  # Apply user settings, if any
-        super().__init__(settings=deepcopy(self.settings), **kwargs)
+        self.settings = SettingsAttr(OrdinaryPercolationSettings, settings)
+        super().__init__(settings=self.settings, **kwargs)
         # Use the reset method to initialize all arrays
         self.reset()
         if phase is not None:

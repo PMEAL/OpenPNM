@@ -1,10 +1,8 @@
 import warnings
 import heapq as hq
-import scipy as sp
 import numpy as np
-from copy import deepcopy
 from collections import namedtuple
-from openpnm.utils import logging
+from openpnm.utils import logging, SettingsAttr
 from openpnm.topotools import find_clusters
 from openpnm.algorithms import GenericAlgorithm
 logger = logging.getLogger(__name__)
@@ -91,9 +89,9 @@ class InvasionPercolation(GenericAlgorithm):
 
     """
     def __init__(self, settings={}, phase=None, **kwargs):
-        self.settings._update(IPSettings)
-        self.settings._update(settings)
-        super().__init__(settings=deepcopy(self.settings), **kwargs)
+        self.settings = SettingsAttr(IPSettings, settings)
+        super().__init__(settings=self.settings, **kwargs)
+
         if phase is not None:
             self.settings['phase'] = phase.name
         self['pore.invasion_sequence'] = -1

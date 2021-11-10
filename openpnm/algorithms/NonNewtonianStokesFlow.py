@@ -1,5 +1,5 @@
 from openpnm.algorithms import ReactiveTransport
-from openpnm.utils import logging
+from openpnm.utils import logging, SettingsAttr
 logger = logging.getLogger(__name__)
 
 
@@ -19,8 +19,7 @@ class NonNewtonianStokesFlow(ReactiveTransport):
     """
 
     def __init__(self, settings={}, phase=None, **kwargs):
-        super().__init__(**kwargs)
-        self.settings._update(NonNewtonianStokesFlowSettings, docs=True)
-        self.settings._update(settings)  # Add user supplied settings
+        self.settings = SettingsAttr(NonNewtonianStokesFlowSettings, settings)
+        super().__init__(settings=self.settings, **kwargs)
         if phase is not None:
             self.settings['phase'] = phase.name

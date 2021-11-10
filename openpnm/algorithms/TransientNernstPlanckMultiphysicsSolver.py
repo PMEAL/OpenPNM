@@ -1,6 +1,6 @@
 import numpy as np
 from openpnm.algorithms import NernstPlanckMultiphysicsSolver
-from openpnm.utils import logging, Docorator, nbr_to_str
+from openpnm.utils import logging, Docorator, nbr_to_str, SettingsAttr
 docstr = Docorator()
 logger = logging.getLogger(__name__)
 
@@ -47,10 +47,9 @@ class TransientNernstPlanckMultiphysicsSolver(NernstPlanckMultiphysicsSolver):
 
     """
     def __init__(self, settings={}, **kwargs):
-        super().__init__(**kwargs)
-        self.settings._update(TransientNernstPlanckMultiphysicsSolverSettings,
-                              docs=True)
-        self.settings._update(settings)  # Add user defined settings
+        self.settings = SettingsAttr(TransientNernstPlanckMultiphysicsSolverSettings,
+                                     settings)
+        super().__init__(settings=self.settings, **kwargs)
 
     def run(self, t=None):
         r"""

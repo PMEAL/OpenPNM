@@ -1,8 +1,6 @@
-from copy import deepcopy
 from openpnm.algorithms import TransientReactiveTransport, FickianDiffusion
-from openpnm.utils import logging, Docorator
+from openpnm.utils import logging
 logger = logging.getLogger(__name__)
-docstr = Docorator()
 
 
 class TransientFickianDiffusion(TransientReactiveTransport, FickianDiffusion):
@@ -11,6 +9,5 @@ class TransientFickianDiffusion(TransientReactiveTransport, FickianDiffusion):
 
     """
 
-    def __init__(self, settings={}, **kwargs):
-        self.settings._update(settings)  # Add user supplied settings
-        super().__init__(settings=deepcopy(self.settings), **kwargs)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)

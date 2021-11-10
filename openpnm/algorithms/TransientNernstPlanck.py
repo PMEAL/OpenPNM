@@ -1,5 +1,5 @@
 from openpnm.algorithms import TransientReactiveTransport, NernstPlanck
-from openpnm.utils import logging
+from openpnm.utils import logging, SettingsAttr
 logger = logging.getLogger(__name__)
 
 
@@ -19,8 +19,7 @@ class TransientNernstPlanck(TransientReactiveTransport, NernstPlanck):
     """
 
     def __init__(self, settings={}, phase=None, ion='', **kwargs):
-        super().__init__(**kwargs)
-        self.settings._update(TransientNernstPlanckSettings)
-        self.settings._update(settings)  # Add user supplied settings
+        self.settings = SettingsAttr(TransientNernstPlanckSettings, settings)
+        super().__init__(settings=self.settings, **kwargs)
         if phase is not None:
             self.settings['phase'] = phase.name

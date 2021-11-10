@@ -1,6 +1,6 @@
 from copy import deepcopy
 from openpnm.algorithms import TransientReactiveTransport, IonicConduction
-from openpnm.utils import logging, Docorator
+from openpnm.utils import logging, Docorator, SettingsAttr
 logger = logging.getLogger(__name__)
 docstr = Docorator()
 
@@ -51,8 +51,7 @@ class TransientIonicConduction(TransientReactiveTransport,
     """
 
     def __init__(self, settings={}, phase=None, **kwargs):
-        self.settings._update(TransientIonicConductionSettings, docs=True)
-        self.settings._update(settings)  # Add user supplied settings
-        super().__init__(settings=deepcopy(self.settings), **kwargs)
+        self.settings = SettingsAttr(TransientIonicConductionSettings, settings)
+        super().__init__(settings=self.settings, **kwargs)
         if phase is not None:
             self.settings['phase'] = phase.name

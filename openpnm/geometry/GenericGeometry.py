@@ -83,8 +83,7 @@ class GenericGeometry(ParamMixin, Subdomain, ModelsMixin):
 
     def __init__(self, pores=[], throats=[], settings={}, **kwargs):
         self.settings = SettingsAttr(GeometrySettings, settings)
-        super().__init__(settings=deepcopy(self.settings), **kwargs)
-        self.settings._getdocs(GeometrySettings)
+        super().__init__(settings=self.settings, **kwargs)
 
         network = self.project.network
         if network:

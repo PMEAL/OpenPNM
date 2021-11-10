@@ -48,8 +48,7 @@ class GenericPhysics(ParamMixin, Subdomain, ModelsMixin):
     def __init__(self, phase=None, geometry=None, pores=None, throats=None,
                  settings={}, **kwargs):
         self.settings = SettingsAttr(PhysicsSettings, settings)
-        super().__init__(settings=deepcopy(settings), **kwargs)
-        self.settings._getdocs(PhysicsSettings)
+        super().__init__(settings=self.settings, **kwargs)
 
         network = self.project.network
         if network:

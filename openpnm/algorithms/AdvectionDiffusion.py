@@ -1,7 +1,6 @@
 import numpy as np
-from copy import deepcopy
 from openpnm.algorithms import ReactiveTransport
-from openpnm.utils import logging, Docorator
+from openpnm.utils import logging, Docorator, SettingsAttr
 docstr = Docorator()
 logger = logging.getLogger(__name__)
 
@@ -60,9 +59,8 @@ class AdvectionDiffusion(ReactiveTransport):
     """
 
     def __init__(self, settings={}, **kwargs):
-        self.settings._update(AdvectionDiffusionSettings, docs=True)
-        self.settings._update(settings)  # Add user defined settings
-        super().__init__(settings=deepcopy(self.settings), **kwargs)
+        self.settings = SettingsAttr(AdvectionDiffusionSettings, settings)
+        super().__init__(settings=self.settings, **kwargs)
 
     def set_outflow_BC(self, pores, mode='merge'):
         r"""

@@ -4,13 +4,12 @@ MixedInvasionPercolation: IP allowing pores and throats to invade separately
 ===============================================================================
 
 """
-import logging
 import heapq as hq
 import numpy as np
-from copy import deepcopy
 from collections import namedtuple
 from openpnm.algorithms import GenericAlgorithm
 from openpnm.topotools import find_clusters, site_percolation
+from openpnm.utils import logging, SettingsAttr
 
 logger = logging.getLogger(__name__)
 
@@ -45,9 +44,8 @@ class MixedInvasionPercolation(GenericAlgorithm):
     """
 
     def __init__(self, settings={}, **kwargs):
-        self.settings._update(MixedIPSettings, docs=True)
-        self.settings._update(settings)  # Add user defined settings
-        super().__init__(setting=deepcopy(self.settings), **kwargs)
+        self.settings = SettingsAttr(MixedIPSettings, settings)
+        super().__init__(setting=self.settings, **kwargs)
 
     def setup(
         self,
