@@ -213,6 +213,12 @@
     <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">Docorator</span><span class="o">.</span><span class="n">__instance__</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">Docorator</span><span class="o">.</span><span class="n">__instance__</span> <span class="o">=</span> <span class="n">DocstringProcessor</span><span class="p">()</span>
+            <span class="n">Docorator</span><span class="o">.</span><span class="n">__instance__</span><span class="o">.</span><span class="n">all_sections</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Parameters&#39;</span><span class="p">,</span>
+                                                   <span class="s1">&#39;Returns&#39;</span><span class="p">,</span>
+                                                   <span class="s1">&#39;Notes&#39;</span><span class="p">,</span>
+                                                   <span class="s1">&#39;Examples&#39;</span><span class="p">,</span>
+                                                   <span class="s1">&#39;See Also&#39;</span><span class="p">,</span>
+                                                   <span class="s1">&#39;Other Parameters&#39;</span><span class="p">,]</span>
         <span class="k">return</span> <span class="n">Docorator</span><span class="o">.</span><span class="n">__instance__</span>
 
 
