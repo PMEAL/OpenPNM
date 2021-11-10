@@ -2,12 +2,13 @@ import numpy as np
 import scipy.sparse as sprs
 import scipy.spatial as sptl
 from openpnm import topotools
-from openpnm.utils import logging
+from openpnm.utils import logging, SettingsAttr
 logger = logging.getLogger(__name__)
 from openpnm.network import GenericNetwork
 
 
-class DelaunayVoronoiDualSettings: ...
+class DelaunayVoronoiDualSettings:
+    prefix = 'dvdual'
 
 
 class DelaunayVoronoiDual(GenericNetwork):
@@ -64,9 +65,8 @@ class DelaunayVoronoiDual(GenericNetwork):
     """
 
     def __init__(self, shape=[1, 1, 1], points=None, trim=True, settings={}, **kwargs):
-        super().__init__(**kwargs)
-        self.settings._update(DelaunayVoronoiDualSettings)
-        self.settings._update(settings)
+        self.settings = SettingsAttr(DelaunayVoronoiDualSettings, settings)
+        super().__init__(settings=self.settings, **kwargs)
 
         points = self._parse_points(shape=shape, points=points)
 

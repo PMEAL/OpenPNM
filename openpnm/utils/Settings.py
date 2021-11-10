@@ -89,7 +89,7 @@ class SettingsAttr:
             super().__setattr__(attr, value)
 
     def _update(self, settings, docs=False, override=False):
-        if hasattr(settings, 'items'): # Dictionary
+        if hasattr(settings, 'items'):  # Dictionary
             for k, v in settings.items():
                 if override:
                     super().__setattr__(k, v)
@@ -169,7 +169,7 @@ class SettingsMixin:
 
     def _set_settings(self, settings):
         self._settings = deepcopy(settings)
-        if self._settings_docs is None:
+        if (self._settings_docs is None) and (settings.__doc__ is not None):
             self._settings_docs = settings.__doc__
 
     def _get_settings(self):
