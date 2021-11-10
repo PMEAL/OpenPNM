@@ -610,6 +610,187 @@
                 
   <section id="invasionpercolation">
 <span id="invasion-percolation-api"></span><h1>InvasionPercolation<a class="headerlink" href="#invasionpercolation" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="openpnm.algorithms.InvasionPercolation">
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">InvasionPercolation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/InvasionPercolation.html#InvasionPercolation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.InvasionPercolation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="generic_algorithm.html#openpnm.algorithms.GenericAlgorithm" title="openpnm.algorithms.GenericAlgorithm.GenericAlgorithm"><code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.algorithms.GenericAlgorithm.GenericAlgorithm</span></code></a></p>
+<p>A classic/basic invasion percolation algorithm optimized for speed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>network</strong> (<em>OpenPNM Network object</em>) – The Network upon which the invasion will occur.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This algorithm uses a binary heap to store all a list of all accessible
+throats, sorted according to entry pressure.  This means that item [0] in
+the heap is the most easily invaded throat, so looking up which throat
+to invade next is computationally trivial.  In order to keep the list
+sorted new throats to the list takes more time, however, the heap data
+structure is very efficient at this.  Interested users can consult the
+wikipedia page on <a class="reference external" href="https://en.wikipedia.org/wiki/Binary_heap">binary heaps</a> for more information.</p>
+<p class="rubric">Examples</p>
+<p>Start by importing the usual packages:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">scipy</span> <span class="k">as</span> <span class="nn">sp</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+</pre></div>
+</div>
+<p>Create 2D cubic network for easier visualizaiton:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">S</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">S</span><span class="p">,</span> <span class="n">spacing</span><span class="o">=</span><span class="mf">0.0001</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;pn11&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Add a basic geometry:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">geom</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">SpheresAndCylinders</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">Ps</span><span class="p">,</span> <span class="n">throats</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">Ts</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Create an invading phase, and attach the capillary pressure model:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">water</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">phases</span><span class="o">.</span><span class="n">Water</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">water</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.entry_pressure&#39;</span><span class="p">,</span>
+<span class="gp">... </span>                <span class="n">model</span><span class="o">=</span><span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">physics</span><span class="o">.</span><span class="n">capillary_pressure</span><span class="o">.</span><span class="n">washburn</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Initialize an invasion percolation object and define inlets:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ip</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">InvasionPercolation</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="n">water</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ip</span><span class="o">.</span><span class="n">set_inlets</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ip</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>After running the algorithm the invading phase configuration at a given
+saturation can be obtained and assigned to the phase object:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">water</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">ip</span><span class="o">.</span><span class="n">results</span><span class="p">(</span><span class="n">Snwp</span><span class="o">=</span><span class="mf">0.5</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Because it was a 2D network it’s easy to quickly visualize the invasion
+pattern as an image for verification:</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Because the network is 2D and cubic, an image can be generated with
+color corresponding to a value.  The following plots the entire
+invasion sequence, and the water configuraiton at Snwp = 0.5.</p>
+<p><code class="docutils literal notranslate"><span class="pre">plt.subplot(1,</span> <span class="pre">2,</span> <span class="pre">1)</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">plt.imshow(np.reshape(ip['pore.invasion_sequence'],</span> <span class="pre">newshape=S[S</span> <span class="pre">&gt;</span> <span class="pre">1]))</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">plt.subplot(1,</span> <span class="pre">2,</span> <span class="pre">2)</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">plt.imshow(np.reshape(water['pore.occupancy'],</span> <span class="pre">newshape=S[S</span> <span class="pre">&gt;</span> <span class="pre">1]))</span></code></p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.algorithms.InvasionPercolation.apply_trapping">
+<span class="sig-name descname"><span class="pre">apply_trapping</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outlets</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/InvasionPercolation.html#InvasionPercolation.apply_trapping"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.InvasionPercolation.apply_trapping" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply trapping based on algorithm described by Y. Masson [1].
+It is applied as a post-process and runs the percolation algorithm
+in reverse assessing the occupancy of pore neighbors. Consider the
+following scenario when running standard IP without trapping,
+three situations can happen after each invasion step:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>The number of defending clusters stays the same and clusters
+can shrink</p></li>
+<li><p>A cluster of size one is suppressed</p></li>
+<li><p>A cluster is split into multiple clusters</p></li>
+</ul>
+</div></blockquote>
+<p>In reverse the following opposite situations can happen:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>The number of defending clusters stays the same and clusters
+can grow</p></li>
+<li><p>A cluster of size one is created</p></li>
+<li><p>Mutliple clusters merge into one cluster</p></li>
+</ul>
+</div></blockquote>
+<p>With trapping the reversed rules are adjusted so that only clusters
+that do not connect to a sink can grow and merge. At the point that a
+neighbor connected to a sink is touched the trapped cluster stops
+growing as this is the point of trapping in forward invasion time.</p>
+<p>Logger info displays the invasion sequence and pore index and a message
+with condition number based on the modified trapping rules and the
+assignment of the pore to a given cluster.</p>
+<p>Initially all invaded pores are given cluster label -1
+Outlets / Sinks are given -2
+New clusters that grow into fully trapped clusters are either
+identified at the point of breakthrough or grow from nothing if the
+full invasion sequence is run, they are assigned numbers from 0 up.</p>
+<p>Ref:
+[1] Masson, Y., 2016. A fast two-step algorithm for invasion
+percolation with trapping. Computers &amp; Geosciences, 90, pp.41-48</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>outlets</strong> (<em>list</em><em> or </em><em>array of pore indices for defending fluid to escape</em>) – </p></li>
+<li><p><strong>through</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>Creates a throat array called ‘pore.clusters’ in the Algorithm</em></p></li>
+<li><p><em>dictionary. Any positive number is a trapped cluster</em></p></li>
+<li><p><em>Also creates 2 boolean arrays Np and Nt long called ‘&lt;element&gt;.trapped’</em></p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.algorithms.InvasionPercolation.get_intrusion_data">
+<span class="sig-name descname"><span class="pre">get_intrusion_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/InvasionPercolation.html#InvasionPercolation.get_intrusion_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.InvasionPercolation.get_intrusion_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the percolation data as the invader volume or number fraction vs
+the capillary capillary pressure.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.algorithms.InvasionPercolation.plot_intrusion_curve">
+<span class="sig-name descname"><span class="pre">plot_intrusion_curve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_markers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">25</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/InvasionPercolation.html#InvasionPercolation.plot_intrusion_curve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.InvasionPercolation.plot_intrusion_curve" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the percolation curve as the invader volume or number fraction vs
+the capillary capillary pressure.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.algorithms.InvasionPercolation.results">
+<span class="sig-name descname"><span class="pre">results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Snwp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/InvasionPercolation.html#InvasionPercolation.results"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.InvasionPercolation.results" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the phase configuration at the specified non-wetting phase
+(invading phase) saturation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>Snwp</strong> (<em>scalar</em><em>, </em><em>between 0 and 1</em>) – The network saturation for which the phase configuration is
+desired.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>Two dictionary containing arrays that describe the pore and throat</em></p></li>
+<li><p><em>distribution at the given saturation.  Specifically, these are</em></p></li>
+<li><p><strong>**’pore.occupancy’**</strong> (<em>1 indicates the pores is invaded and 0</em>)</p></li>
+<li><p><em>otherwise.</em></p></li>
+<li><p><strong>**’throat.occupancy’**</strong> (<em>Same as described above but for throats.</em>)</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.algorithms.InvasionPercolation.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_steps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/InvasionPercolation.html#InvasionPercolation.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.InvasionPercolation.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform the algorithm</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>n_steps</strong> (<em>int</em>) – The number of throats to invaded during this step</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.algorithms.InvasionPercolation.set_inlets">
+<span class="sig-name descname"><span class="pre">set_inlets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/InvasionPercolation.html#InvasionPercolation.set_inlets"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.InvasionPercolation.set_inlets" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>pores</strong> (<em>array_like</em>) – The list of inlet pores from which the Phase can enter the Network</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
 
