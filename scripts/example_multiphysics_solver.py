@@ -22,7 +22,7 @@ plt.plot(t, y)
 # %% Set up for the solvers
 Nx = 10
 shape = [Nx, Nx, 1]
-spacing = 1/Nx
+spacing = 1e-4 #1/Nx
 net = op.network.Cubic(shape=shape, spacing=spacing)
 geo = op.geometry.SpheresAndCylinders(network=net, pores=net.Ps, throats=net.Ts)
 air = op.phases.Air(network=net)
@@ -30,19 +30,24 @@ phys = op.physics.GenericPhysics(network=net, phase=air, geometry=geo)
 
 # make diffusivity afunction of temperature - ALREADY IS!!
 air['pore.temperature'] = 300
+
 air.add_model(propname='pore.diffusivity',
               model=op.models.misc.linear, 
               m=1.860793056e-06,
               b=-0.0005375624384,
               prop='pore.temperature')
-
+'''
+air.add_model(propname='pore.diffusivity',
+              model=op.models.misc.constant,
+              value=2.067547840000001e-04)
+'''
 phys.add_model(propname='throat.diffusive_conductance', 
                model=op.models.physics.diffusive_conductance.generic_diffusive)
 
 air.remove_model(propname='pore.thermal_conductivity')
 air.add_model(propname='pore.thermal_conductivity',
               model=op.models.misc.constant,
-              value=2.5,
+              value=0.0262,
               regen_mode='constant')
 
 
@@ -87,17 +92,20 @@ tspan = [0, 1000]
 tout = np.linspace(tspan[0], tspan[1])
 sol = tfc.run(x0=T0, tspan=tspan, integrator=rk45, saveat=tout)
 '''
-print(air['pore.diffusivity'])
+# print(air['pore.diffusivity'])
 # manually solve multiphysics system
 t_initial = 10
-t_final = 210
+t_final = 20
 t_step = 10
 t_prev = 0
-for i in range(t_initial, t_final, t_step):
-    print('time:', i, "s")
-    tspan = [t_prev, i]
-    t_prev = i
-    tout = i
+C_avg = []
+t = np.arange(t_initial, t_final, t_step)
+for ti in t:
+    print('time:', ti, "s")
+    tspan = [t_prev, ti]
+    t_prev = ti
+    tout = ti
+    # While loop solve until solution no longer changes
     sol_1 = tfc.run(x0=T0, tspan=tspan, integrator=rk45, saveat=tout)
     air.regenerate_models() # update diffusivuty
     phys.regenerate_models() # update diffusive conductance because tfd does not have iterative props
@@ -105,7 +113,13 @@ for i in range(t_initial, t_final, t_step):
     # update initial coniditions
     T0 = sol_1[:, 1]
     c0 = sol_2[:, 1]
+    C_avg.append(c0.mean())
 
+# plot
+fig, ax = plt.subplots()
+ax.plot(t, C_avg)
+
+# note: dual coupling, time step needs to be small, hamed benchamrk solution
 end_1 = sol_1[:, -1]
 end_2 = sol_2[:, -1]
 
@@ -122,3 +136,6 @@ ax[0].get_yaxis().set_visible(False)
 ax[1].get_yaxis().set_visible(False)
 im_1.set_clim(300, 400)
 im_2.set_clim(0, 100)
+
+# Export Geometry
+op.io.COMSOL.export_data(network=net, filename='multiphysics_solver')
