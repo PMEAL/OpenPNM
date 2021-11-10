@@ -1,5 +1,6 @@
 import numpy as np
 import openpnm as op
+import pytest
 
 
 class GenericNetworkTest:
@@ -57,6 +58,15 @@ class GenericNetworkTest:
         a = self.net.find_neighbor_pores(pores=[0, 1], mode='or',
                                          include_input=True)
         assert np.all(a == [0, 1, 2, 10, 11, 100, 101])
+
+    def test_find_neighbor_pores_asmask(self):
+        a = self.net.find_neighbor_pores(pores=[0, 2], flatten=True, asmask=True)
+        assert sum(a) == 6
+        assert a.dtype == 'bool'
+
+    def tes_find_neighbor_pores_asmask_unflattened(self):
+        with pytest.raises():
+            a = self.net.find_neighbor_pores(pores=[0, 2], flatten=False, asmask=True)
 
     def test_find_neighbor_pores_numeric_intersection_include_input(self):
         a = self.net.find_neighbor_pores(pores=[0, 2], mode='and',
