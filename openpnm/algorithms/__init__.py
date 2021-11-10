@@ -16,7 +16,6 @@ from .ReactiveTransport import ReactiveTransport, SettingsReactiveTransport
 from .TransientReactiveTransport import TransientReactiveTransport
 
 from .StokesFlow import StokesFlow
-from .NonNewtonianStokesFlow import NonNewtonianStokesFlow
 
 from .FickianDiffusion import FickianDiffusion
 from .TransientFickianDiffusion import TransientFickianDiffusion
@@ -36,11 +35,5 @@ from .Porosimetry import Porosimetry
 
 from .IonicConduction import IonicConduction
 from .TransientIonicConduction import TransientIonicConduction
-
-# from .NernstPlanck import *
-# from .TransientNernstPlanck import *
-
-# from .NernstPlanckMultiphysicsSolver import *
-# from .TransientNernstPlanckMultiphysicsSolver *
 
 from . import metrics
