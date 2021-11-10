@@ -97,7 +97,7 @@ class SettingsAttr:
                 else:
                     setattr(self, k, v)
         if docs:
-            super().__setattr__('__doc__', settings.__doc__)
+            self._getdocs(settings)
 
     @property
     def _attrs(self):
@@ -107,6 +107,12 @@ class SettingsAttr:
         attrs = [i for i in attrs if not i.startswith('_')]
         attrs = sorted(attrs)
         return attrs
+
+    def _deepcopy(self):
+        return deepcopy(self)
+
+    def _getdocs(self, settings):
+        super().__setattr__('__doc__', settings.__doc__)
 
     def __getitem__(self, key):
         return getattr(self, key)
@@ -123,6 +129,27 @@ class SettingsAttr:
 
     def __repr__(self):
         return self.__str__()
+
+
+class Settings(dict):
+
+    __instance__ = None
+
+    def __new__(cls, *args, **kwargs):
+        if Settings.__instance__ is None:
+            Settings.__instance__ = super().__new__(cls)
+        return Settings.__instance__
+
+    def get_settings(self, cls):
+        c = cls()
+        self[c.__class__.__name__] = cls
+        return cls
+
+    def set_settings(self):
+        s = SettingsAttr()
+        for k, v in self.items():
+            s._update(v, docs=True)
+        return s
 
 
 class SettingsData(HasTraits):

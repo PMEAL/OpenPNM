@@ -16,6 +16,7 @@ from .Project import Project
 from .Settings import SettingsAttr
 from .Settings import SettingsData
 from .Settings import TypedList
+from .Settings import Settings
 
 
 # You can add info to the logger message by inserting the desired %(item)

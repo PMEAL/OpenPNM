@@ -8,15 +8,15 @@ from scipy.spatial import cKDTree
 from openpnm.topotools import iscoplanar, is_fully_connected, dimensionality
 from openpnm.algorithms import GenericAlgorithm
 from openpnm.utils import logging, prettify_logger_message
-from openpnm.utils import Docorator
+from openpnm.utils import Docorator, Settings
 from openpnm.utils import is_symmetric
 from openpnm.solvers import PardisoSpsolve
-from copy import deepcopy
-
+sets = Settings()
 docstr = Docorator()
 logger = logging.getLogger(__name__)
 
 
+@sets.get_settings
 @docstr.get_sections(base='GenericTransportSettings', sections=['Parameters',
                                                                 'Other Parameters'])
 @docstr.dedent
@@ -74,7 +74,7 @@ class GenericTransport(GenericAlgorithm):
                  **kwargs):
         self.settings._update(GenericTransportSettings, docs=True)
         self.settings._update(settings)  # Add user supplied settings
-        super().__init__(settings=deepcopy(self.settings), **kwargs)
+        super().__init__(settings=self.settings._deepcopy(), **kwargs)
         # Assign phase if given during init
         if phase is not None:
             self.settings['phase'] = phase.name

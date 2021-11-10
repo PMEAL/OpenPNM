@@ -1,11 +1,12 @@
 import numpy as np
 from openpnm.core import Base, LegacyMixin, LabelMixin
-from openpnm.utils import logging, Docorator
-from copy import deepcopy
+from openpnm.utils import logging, Docorator, Settings
 logger = logging.getLogger(__name__)
 docstr = Docorator()
+sets = Settings()
 
 
+@sets.get_settings
 @docstr.get_sections(base='GenericAlgorithmSettings', sections=docstr.all_sections)
 @docstr.dedent
 class GenericAlgorithmSettings:
@@ -18,6 +19,7 @@ class GenericAlgorithmSettings:
 
     """
     prefix = 'alg'
+    name = ''
 
 
 @docstr.get_sections(base='GenericAlgorithm', sections=['Parameters'])
@@ -40,7 +42,7 @@ class GenericAlgorithm(Base, LegacyMixin, LabelMixin):
     def __init__(self, settings={}, **kwargs):
         self.settings._update(GenericAlgorithmSettings, docs=True)
         self.settings._update(settings)  # Add user supplied settings
-        super().__init__(settings=deepcopy(self.settings), **kwargs)
+        super().__init__(settings=self.settings._deepcopy(), **kwargs)
         if self.project:
             self['pore.all'] = np.ones(self.project.network.Np, dtype=bool)
             self['throat.all'] = np.ones(self.project.network.Nt, dtype=bool)
