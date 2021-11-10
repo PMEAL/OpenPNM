@@ -295,8 +295,7 @@
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conns</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">coords</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">project</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">settings</span><span class="o">=</span><span class="p">{},</span>
                  <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="n">def_sets</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;prefix&#39;</span><span class="p">:</span> <span class="s1">&#39;net&#39;</span><span class="p">}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">def_sets</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;prefix&#39;</span><span class="p">,</span> <span class="s1">&#39;net&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">project</span><span class="o">=</span><span class="n">project</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">coords</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -717,7 +716,7 @@
         <span class="k">return</span> <span class="n">Ts</span></div>
 
 <div class="viewcode-block" id="GenericNetwork.find_neighbor_pores"><a class="viewcode-back" href="../../../modules/network/generic.html#openpnm.network.GenericNetwork.find_neighbor_pores">[docs]</a>    <span class="k">def</span> <span class="nf">find_neighbor_pores</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;union&#39;</span><span class="p">,</span> <span class="n">flatten</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                            <span class="n">include_input</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+                            <span class="n">include_input</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">asmask</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a list of pores that are direct neighbors to the given pore(s)</span>
 
@@ -759,6 +758,11 @@
 <span class="sd">            **&#39;and&#39;** : Only neighbors shared by all input pores.  This is also</span>
 <span class="sd">            known as &#39;intersection&#39; in set theory and (somtimes) as &#39;all&#39; in</span>
 <span class="sd">            boolean logic.  Both keywords are accepted and treated as &#39;and&#39;.</span>
+
+<span class="sd">        asmask : boolean</span>
+<span class="sd">            If ``False`` (default) the returned result is a list of the</span>
+<span class="sd">            neighboringpores as idicies. If ``True`` the returned result is a</span>
+<span class="sd">            boolean mask.(Useful for labelling)</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -810,7 +814,13 @@
                                                   <span class="n">am</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_am</span><span class="p">[</span><span class="s1">&#39;lil&#39;</span><span class="p">],</span>
                                                   <span class="n">flatten</span><span class="o">=</span><span class="n">flatten</span><span class="p">,</span>
                                                   <span class="n">include_input</span><span class="o">=</span><span class="n">include_input</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">neighbors</span></div>
+        <span class="k">if</span> <span class="n">asmask</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">neighbors</span>
+        <span class="k">elif</span> <span class="n">flatten</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">neighbors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tomask</span><span class="p">(</span><span class="n">element</span><span class="o">=</span><span class="s1">&#39;pore&#39;</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="n">neighbors</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">neighbors</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Cannot create mask on an unflattened output&#39;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="GenericNetwork.find_neighbor_throats"><a class="viewcode-back" href="../../../modules/network/generic.html#openpnm.network.GenericNetwork.find_neighbor_throats">[docs]</a>    <span class="k">def</span> <span class="nf">find_neighbor_throats</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;union&#39;</span><span class="p">,</span> <span class="n">flatten</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -1121,7 +1131,7 @@
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.3.0.<br>
 </p>
     </div>
     
