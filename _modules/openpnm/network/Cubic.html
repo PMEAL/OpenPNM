@@ -182,7 +182,7 @@
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">openpnm.network</span> <span class="kn">import</span> <span class="n">GenericNetwork</span>
 <span class="kn">from</span> <span class="nn">openpnm</span> <span class="kn">import</span> <span class="n">topotools</span>
-<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">logging</span><span class="p">,</span> <span class="n">SettingsAttr</span>
+<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">logging</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -200,9 +200,11 @@
 <span class="sd">    shape : array_like</span>
 <span class="sd">        The [Nx, Ny, Nz] size of the network in terms of the number of pores in</span>
 <span class="sd">        each direction</span>
+
 <span class="sd">    spacing : array_like, optional</span>
 <span class="sd">        The spacing between pore centers in each direction. If not given, then</span>
 <span class="sd">        [1, 1, 1] is assumed.</span>
+
 <span class="sd">    connectivity : int, optional</span>
 <span class="sd">        The number of connections to neighboring pores.  Connections are made</span>
 <span class="sd">        symmetrically to any combination of face, edge, or corners neighbors.</span>
@@ -221,6 +223,11 @@
 <span class="sd">    name : string</span>
 <span class="sd">        An optional name for the object to help identify it.  If not given,</span>
 <span class="sd">        one will be generated.</span>
+
+<span class="sd">    project : OpenPNM Project object, optional</span>
+<span class="sd">        Each OpenPNM object must be part of a *Project*.  If none is supplied</span>
+<span class="sd">        then one will be created and this Network will be automatically</span>
+<span class="sd">        assigned to it.  To create a *Project* use ``openpnm.Project()``.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
@@ -255,8 +262,10 @@
 <span class="sd">    &lt;http://www.paraview.org&gt;`_.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">spacing</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">connectivity</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">spacing</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">connectivity</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
+                 <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">project</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">project</span><span class="o">=</span><span class="n">project</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
         <span class="c1"># Take care of 1D/2D networks</span>
         <span class="n">shape</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">ndmin</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>

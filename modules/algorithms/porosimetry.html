@@ -610,6 +610,86 @@
                 
   <section id="porosimetry">
 <span id="porosimetry-api"></span><h1>Porosimetry<a class="headerlink" href="#porosimetry" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="openpnm.algorithms.Porosimetry">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Porosimetry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/Porosimetry.html#Porosimetry"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.Porosimetry" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="ordinary_percolation.html#openpnm.algorithms.OrdinaryPercolation" title="openpnm.algorithms.OrdinaryPercolation.OrdinaryPercolation"><code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.algorithms.OrdinaryPercolation.OrdinaryPercolation</span></code></a></p>
+<p>Simulates mercury instrustion porosimetry using ordinary percolation</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>network</strong> (<em>OpenPNM Network object</em>) – The Network upon which this simulation should be run</p></li>
+<li><p><strong>name</strong> (<em>string</em><em>, </em><em>optional</em>) – An identifying name for the object.  If none is given then one is
+generated.</p></li>
+<li><p><strong>project</strong> (<em>OpenPNM Project object</em>) – Either a Network or a Project must be specified</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Mercury intrusion progresses by applying increasing pressures to the
+invading mercury phase, and measuring the resultant volume of invading
+fluid.  This corresponds directly to an ordinary percolation process,
+with access limitations enabled.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="ordinary_percolation.html#openpnm.algorithms.OrdinaryPercolation" title="openpnm.algorithms.OrdinaryPercolation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OrdinaryPercolation</span></code></a></p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.algorithms.Porosimetry.results">
+<span class="sig-name descname"><span class="pre">results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Pc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/Porosimetry.html#Porosimetry.results"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.Porosimetry.results" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.algorithms.Porosimetry.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/Porosimetry.html#Porosimetry.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.Porosimetry.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Runs the percolation algorithm to determine which pores and throats
+will be invaded at each given pressure point.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>points</strong> (<em>int</em><em> or </em><em>array_like</em>) – An array containing the pressure points to apply.  If a scalar is
+given then an array will be generated with the given number of
+points spaced between the lowest and highest values of
+throat entry pressures using logarithmic spacing.  To specify low
+and high pressure points use the <code class="docutils literal notranslate"><span class="pre">start</span></code> and <code class="docutils literal notranslate"><span class="pre">stop</span></code> arguments.</p></li>
+<li><p><strong>start</strong> (<em>int</em>) – The optional starting point to use when generating pressure points.
+If not given the half the lowest capillary entry pressure in the
+network is used.</p></li>
+<li><p><strong>stop</strong> (<em>int</em>) – The optional stopping point to use when generating pressure points.
+If not given, then twice the highest capillary entry pressure in
+the network is used.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The inlet sites are set to invaded to start the simulation.  This means
+that if ‘internal’ pores are used as inlets the capillary pressure
+curve will begin at a non-zero invading phase saturation.  To avoid
+this either set the inlet pore volumes to zero or add boundary pores
+to the inlet face, and set their volumes to zero.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.algorithms.Porosimetry.set_partial_filling">
+<span class="sig-name descname"><span class="pre">set_partial_filling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">propname</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/Porosimetry.html#Porosimetry.set_partial_filling"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.Porosimetry.set_partial_filling" title="Permalink to this definition">¶</a></dt>
+<dd><p>Define which pore filling model to apply.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>propname</strong> (<em>string</em>) – Dictionary key on the physics object(s) containing the pore
+filling model(s) to apply.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>It is assumed that these models are functions of the <cite>quantity</cite>
+specified in the algorithms settings.  This values is applied to the
+corresponding phase just prior to regenerating the given pore-scale
+model(s).</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
 
