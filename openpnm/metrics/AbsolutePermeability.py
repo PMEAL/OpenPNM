@@ -17,9 +17,7 @@ default_settings = {
 
 class AbsolutePermeability(GenericTransportMetrics):
     r"""
-    This class works by applying 'value' boundary conditions across the
-    domain to find molar flow, then using Fick's law to back-calculate
-    the absolute permeability of the domain.
+    This class calculates the absolute permeability of the domain.
 
     """
 
