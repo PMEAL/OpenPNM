@@ -6,38 +6,15 @@ logger = logging.getLogger(__name__)
 docstr = Docorator()
 
 
-@docstr.get_sections(base='IonicConductionSettings', sections=['Parameters'])
 @docstr.dedent
 class IonicConductionSettings:
     r"""
 
     Parameters
     ----------
-    phase : OpenPNM Phase object
-        The phase on which the algorithm is to be run.
-    quantity : str (default = ``'pore.mole_fraction'``)
-          The name of the physical quantity to be calculated.
-    conductance : str (default = ``'throat.ionic_conductance'``)
-        The name of thepore-scale transport conductance values.  These are
-        typically calculated by a model attached to a *Physics* object
-        associated with the given *Phase*.
-    charge_conservation : str (default = ``'electroneutrality'``)
-        The assumption adopted to enforce charge conservation when
-        performing ions transport simulations.
-
-    Other Parameters
-    ----------------
-
-    **The following parameters pertain to the ReactiveTransport class**
-
-    %(ReactiveTransportSettings.other_parameters)s
-
-    ----
-
-    **The following parameters pertain to the GenericTransport class**
-
-    %(GenericTransportSettings.other_parameters)s
-
+    %(ReactiveTransportSettings.parameters)s
+    charge_conservation : str
+        <??>
     """
     quantity = 'pore.potential'
     conductance = 'throat.ionic_conductance'

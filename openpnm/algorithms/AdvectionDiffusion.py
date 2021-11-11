@@ -13,24 +13,17 @@ class AdvectionDiffusionSettings:
     Parameters
     ----------
     %(ReactiveTransportSettings.parameters)s
-    quantity : str
-        The name of the physical quantity to be calculated. The default
-        value is 'pore.concentration'.
-    conductance : str
-        The name of the advective-diffusive conductance model to use for
-        calculating the transport conductance used by the algorithm. The
-        default value is 'throat.ad_dif_conductance'.
     diffusive_conductance : str
         The name of the diffusive conductance values to be used by the
         specified ``conductance`` model to find the advective-diffusive
-        conductance. The default value is 'throat.diffusive_conductance'.
+        conductance.
     hydraulic_conductance : str, optional
         The name of the hydraulic conductance values to be used by the
         specified ``conductance`` model to find the advective-diffusive
-        conductance. The default value is 'throat.hydraulic_conductance'.
+        conductance.
     pressure : str, optional
         The name of the pressure values calculated by the ``StokesFlow``
-        algorithm. The default value is 'pore.pressure'.
+        algorithm.
 
     ----
 
@@ -45,7 +38,7 @@ class AdvectionDiffusionSettings:
     %(GenericTransportSettings.other_parameters)s
 
     """
-    prefix = 'advdiff'
+    prefix = 'ad'
     quantity = 'pore.concentration'
     conductance = 'throat.ad_dif_conductance'
     diffusive_conductance = 'throat.diffusive_conductance'

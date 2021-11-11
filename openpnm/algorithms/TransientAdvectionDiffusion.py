@@ -33,6 +33,7 @@ class TransientAdvectionDiffusionSettings:
 
     %(GenericTransportSettings.other_parameters)s
     """
+    prefix = 'trans_ad'
 
 
 class TransientAdvectionDiffusion(TransientReactiveTransport,

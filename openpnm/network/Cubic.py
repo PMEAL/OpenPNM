@@ -12,10 +12,6 @@ from openpnm.utils import logging, SettingsAttr
 logger = logging.getLogger(__name__)
 
 
-class Settings:
-    prefix = 'cubic'
-
-
 class Cubic(GenericNetwork):
     r"""
     Simple cubic lattice with connectivity from 6 to 26
@@ -91,10 +87,8 @@ class Cubic(GenericNetwork):
     <http://www.paraview.org>`_.
     """
 
-    def __init__(self, shape, spacing=[1, 1, 1], connectivity=6, settings={},
-                 **kwargs):
-        self.settings = SettingsAttr(Settings, settings)
-        super().__init__(settings=self.settings, **kwargs)
+    def __init__(self, shape, spacing=[1, 1, 1], connectivity=6, **kwargs):
+        super().__init__(**kwargs)
 
         # Take care of 1D/2D networks
         shape = np.array(shape, ndmin=1)

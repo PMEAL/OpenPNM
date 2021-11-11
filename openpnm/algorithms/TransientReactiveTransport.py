@@ -16,24 +16,8 @@ class TransientReactiveTransportSettings:
     ----------
     %(ReactiveTransportSettings.parameters)s
 
-    quantity : str
-        The name of the physical quantity to be calculated
-    conductance : str
-        The name of the pore-scale transport conductance values. These are
-        typically calculated by a model attached to a *Physics* object
-        associated with the given *Phase*.
-    pore_volume : str
-        The name of the pore volume property to use in setting up the transient
-        system. Default is 'pore.volume' but 'pore.volume_effective' could be
-        used if needed.
-
     Other Parameters
     ----------------
-    saveat : float, array_like
-        List of time points at which the results are to be stored (if
-        array_like is passed), OR the time interval (if float is passed).
-
-    ----
 
     **The following parameters pertain to the ReactiveTransport class**
 

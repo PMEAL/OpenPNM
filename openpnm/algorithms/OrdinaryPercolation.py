@@ -3,20 +3,42 @@ from collections import namedtuple
 from openpnm.algorithms import GenericAlgorithm
 from openpnm.topotools import site_percolation, bond_percolation
 from openpnm.topotools import remove_isolated_clusters, ispercolating
-from openpnm.utils import logging, SettingsAttr
+from openpnm.utils import logging, SettingsAttr, Docorator
 from openpnm.utils import prettify_logger_message
+docstr = Docorator()
 logger = logging.getLogger(__name__)
 
-
+@docstr.get_sections(base='OrdinaryPercolationSettings',
+                     sections=['Parameters'])
+@docstr.dedent
 class OrdinaryPercolationSettings:
+    r"""
+    Parameters
+    ----------
+    %(GenericAlgorithmSettings.parameters)s
+    access_limited : bool
+        If ``True`` then invading fluid must be connected to the specified
+        inlets
+    mode : str
+        Controls whether pore or throat entry threshold values are used.
+        If ``'site'`` the pore entry is considered, if ``'bond'`` then
+        throat values are considered.
+    pore_entry_threshold : str
+        The dictionary key for the pore entry pressure array
+    throat_entry_threshold : str
+        The dictionary key for the pore entry pressure array
+    pore_volume : str
+        The dictionary key for the pore volume array
+    throat_volume : str
+        The dictionary key for the throat volume array
+    """
     phase = ''
     access_limited = True
     mode = 'bond'
     pore_entry_threshold = 'pore.entry_pressure'
     throat_entry_threshold = 'throat.entry_pressure'
-    pore_volume = ''
-    throat_volume =''
-    trapping=False
+    pore_volume = 'pore.volume'
+    throat_volume = 'throat.volume'
 
 
 class OrdinaryPercolation(GenericAlgorithm):
@@ -121,9 +143,6 @@ class OrdinaryPercolation(GenericAlgorithm):
             locations.
 
         """
-        if self.settings['trapping'] is False:
-            logger.warning('Setting outlets is meaningless unless trapping '
-                           + 'was set to True during setup')
         Ps = self._parse_indices(pores)
         if np.sum(self['pore.inlets'][Ps]) > 0:
             raise Exception('Some outlets are already defined as inlets')

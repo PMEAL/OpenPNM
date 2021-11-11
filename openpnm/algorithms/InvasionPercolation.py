@@ -2,13 +2,29 @@ import warnings
 import heapq as hq
 import numpy as np
 from collections import namedtuple
-from openpnm.utils import logging, SettingsAttr
+from openpnm.utils import logging, SettingsAttr, Docorator
 from openpnm.topotools import find_clusters
 from openpnm.algorithms import GenericAlgorithm
 logger = logging.getLogger(__name__)
+docstr = Docorator()
 
 
+@docstr.get_sections(base='IPSettings',
+                     sections=['Parameters', 'Other Parameters'])
+@docstr.dedent
 class IPSettings:
+    r"""
+
+    Parameters
+    ----------
+    %(GenericAlgorithmSettings.parameters)s
+    pore_volume : str
+        The dictionary key for the pore volume array
+    throat_volume : str
+        The dictionary key for the throat volume array
+    entry_pressure : str
+        The dictionary key for the throat capillary pressure
+    """
     phase = ''
     pore_volume = 'pore.volume'
     throat_volume = 'throat.volume'

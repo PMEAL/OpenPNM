@@ -9,20 +9,45 @@ import numpy as np
 from collections import namedtuple
 from openpnm.algorithms import GenericAlgorithm
 from openpnm.topotools import find_clusters, site_percolation
-from openpnm.utils import logging, SettingsAttr
-
+from openpnm.utils import logging, SettingsAttr, Docorator
+docstr = Docorator()
 logger = logging.getLogger(__name__)
 
 
+@docstr.get_sections(base='MixedIPSettings',
+                     sections=['Parameters', 'Other Parameters'])
+@docstr.dedent
 class MixedIPSettings:
+    r"""
+    Parameters
+    ----------
+    %(GenericAlgorithmSettings.parameters)s
+    pore_entry_pressure : string
+        The dictionary key on the Phase object where the pore entry
+        pressure values are stored.
+    throat_entry_pressure : string
+        The dictionary key on the Phase object where the throat entry
+        pressure values are stored.
+    snap_off : string
+        The dictionary key on the Phase object where the throat snap-off
+        pressure values are stored.
+    invade_isolated_Ts : boolean
+        If ``True``, isolated throats are invaded at the higher invasion
+        pressure of their connected pores.
+    late_pore_filling : string
+        The name of the model used to determine late pore filling as
+        a function of applied pressure.
+    late_throat_filling : string
+        The name of the model used to determine late throat filling as
+        a function of applied pressure.
+
+    """
     pore_entry_pressure = "pore.entry_pressure"
     throat_entry_pressure = "throat.entry_pressure"
     snap_off = ""
     invade_isolated_Ts = False
     late_pore_filling = ""
     late_throat_filling = ""
-    cooperative_pore_filling = ''
-    trapping = False
 
 
 class MixedInvasionPercolation(GenericAlgorithm):

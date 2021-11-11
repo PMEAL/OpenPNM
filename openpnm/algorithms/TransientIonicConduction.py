@@ -5,8 +5,6 @@ logger = logging.getLogger(__name__)
 docstr = Docorator()
 
 
-@docstr.get_sections(base='TransientIonicConductionSettings',
-                     sections=['Parameters'])
 @docstr.dedent
 class TransientIonicConductionSettings:
     r"""

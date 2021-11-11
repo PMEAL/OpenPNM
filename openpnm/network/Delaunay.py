@@ -1,5 +1,5 @@
 from openpnm import topotools
-from openpnm.utils import logging, SettingsAttr
+from openpnm.utils import logging
 from openpnm.network import DelaunayVoronoiDual
 logger = logging.getLogger(__name__)
 
@@ -87,11 +87,10 @@ class Delaunay(DelaunayVoronoiDual):
 
     """
 
-    def __init__(self, shape=[1, 1, 1], points=None, settings={}, **kwargs):
-        self.settings = SettingsAttr({'prefix': 'delaunay'}, settings)
+    def __init__(self, shape=[1, 1, 1], points=None, **kwargs):
         # Clean-up input points
         points = self._parse_points(shape=shape, points=points)
-        super().__init__(shape=shape, points=points, settings=self.settings, **kwargs)
+        super().__init__(shape=shape, points=points, **kwargs)
         # Initialize network object
         topotools.trim(network=self, pores=self.pores(['voronoi']))
         pop = ['pore.voronoi', 'throat.voronoi', 'throat.interconnect',

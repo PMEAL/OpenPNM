@@ -12,18 +12,24 @@ import numpy as np
 from scipy.sparse import coo_matrix, dok_matrix
 from openpnm.algorithms import MixedInvasionPercolation
 from transforms3d._gohlketransforms import angle_between_vectors
-from openpnm.utils import logging, SettingsAttr
-
+from openpnm.utils import logging, SettingsAttr, Docorator
+docstr = Docorator()
 logger = logging.getLogger(__name__)
 
 
+@docstr.dedent
 class MixedIPCoopSettings:
-    pore_entry_pressure = "pore.entry_pressure"
-    throat_entry_pressure = "throat.entry_pressure"
-    snap_off = ""
-    invade_isolated_Ts = False
-    late_pore_filling = ""
-    late_throat_filling = ""
+    r"""
+
+    Parameters
+    ----------
+    %(MixedIPSettings.parameters)s
+    cooperative_pore_filling : string
+        The name of the model used to determine the meniscus properties
+        required for assessing cooperative pore filling.
+
+    """
+    cooperative_pore_filling = ""
 
 
 class MixedInvasionPercolationCoop(MixedInvasionPercolation):

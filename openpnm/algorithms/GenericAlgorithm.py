@@ -12,8 +12,7 @@ class GenericAlgorithmSettings:
 
     Parameters
     ----------
-    prefix : str
-        The prefix to use when generating a name for the algorithm.
+    %(BaseSettings.parameters)s
 
     """
     prefix = 'alg'

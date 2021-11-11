@@ -4,36 +4,7 @@ logger = logging.getLogger(__name__)
 docstr = Docorator()
 
 
-@docstr.get_sections(base='FourierConductionSettings',
-                     sections=['Parameters'])
-@docstr.dedent
 class FourierConductionSettings:
-    r"""
-
-    Parameters
-    ----------
-    %(GenericTransportSettings.parameters)s
-    quantity : str (default = ``'pore.temperature'``
-        The name of the physical quantity to be calculated
-    conductance : str (default = ``'pore.thermal_conductance'``)
-        The name of the pore-scale transport conductance values. These are
-        typically calculated by a model attached to a *Physics* object
-        associated with the given *Phase*.
-
-    Other Parameters
-    ----------------
-
-    **The following parameters pertain to the ReactiveTransport class**
-
-    %(ReactiveTransportSettings.other_parameters)s
-
-    ----
-
-    **The following parameters pertain to the GenericTransport class**
-
-    %(GenericTransportSettings.other_parameters)s
-
-    """
     quantity = 'pore.temperature'
     conductance = 'throat.thermal_conductance'
 

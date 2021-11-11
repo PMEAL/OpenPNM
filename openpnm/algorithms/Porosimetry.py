@@ -1,23 +1,23 @@
 import numpy as np
 from openpnm.algorithms import OrdinaryPercolation
-from openpnm.utils import logging, SettingsAttr
+from openpnm.utils import logging, SettingsAttr, Docorator
+docstr = Docorator()
 logger = logging.getLogger(__name__)
 
 
+@docstr.dedent
 class PorosimetrySettings:
-    phase = ''
-    pore_volume = 'pore.volume'
-    throat_volume = 'throat.volume'
-    mode = 'bond'
-    access_limited = True
-    quantity = 'pressure'
-    throat_entry_pressure = 'throat.entry_pressure'
-    pore_volume = 'pore.volume'
-    throat_volume = 'throat.volume'
+    r"""
+    %(OrdinaryPercolationSettings.parameters)s
+    late_pore_filling : string
+        The name of the model used to determine partial pore filling as
+        a function of applied pressure.
+    late_throat_filling : string
+        The name of the model used to determine partial throat filling as
+        a function of applied pressure.
+    """
     late_pore_filling = ''
     late_throat_filling = ''
-    pore_partial_filling = ''
-    throat_partial_filling = ''
 
 
 class Porosimetry(OrdinaryPercolation):

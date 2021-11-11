@@ -8,7 +8,6 @@ __all__ = [
     "SettingsData",
     "TypedList",
     "Settings",
-    "SettingsMixin",
     ]
 
 
@@ -157,28 +156,6 @@ class Settings(dict):
         for k, v in self.items():
             s._update(v, docs=True)
         return s
-
-
-class SettingsMixin:
-
-    def __new__(cls, *args, **kwargs):
-        instance = super(SettingsMixin, cls).__new__(cls, *args, **kwargs)
-        instance._settings = None
-        instance._settings_docs = None
-        return instance
-
-    def _set_settings(self, settings):
-        self._settings = deepcopy(settings)
-        if (self._settings_docs is None) and (settings.__doc__ is not None):
-            self._settings_docs = settings.__doc__
-
-    def _get_settings(self):
-        sets = self._settings
-        if sets is not None:
-            sets.__doc__ = self._settings_docs
-        return sets
-
-    settings = property(fget=_get_settings, fset=_set_settings)
 
 
 class SettingsData(HasTraits):

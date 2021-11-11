@@ -1,10 +1,11 @@
 import warnings
 import uuid
+from copy import deepcopy
 import numpy as np
 from collections import namedtuple
 from openpnm.utils import Workspace, logging
-from openpnm.utils import SettingsAttr, SettingsMixin, ParamMixin
-from openpnm.utils.misc import PrintableList, PrintableDict, Docorator
+from openpnm.utils import SettingsAttr
+from openpnm.utils.misc import PrintableList, Docorator
 docstr = Docorator()
 logger = logging.getLogger(__name__)
 ws = Workspace()
@@ -30,7 +31,7 @@ class BaseSettings:
 
 
 @docstr.get_sections(base='Base', sections=['Parameters'])
-class Base(SettingsMixin, dict):
+class Base(dict):
     r"""
     Contains methods for working with the data in the OpenPNM dict objects
 
@@ -110,6 +111,12 @@ class Base(SettingsMixin, dict):
     +----------------+--------------------------------------------------------+
 
     """
+
+    def __new__(cls, *args, **kwargs):
+        instance = super(Base, cls).__new__(cls, *args, **kwargs)
+        instance._settings = None
+        instance._settings_docs = None
+        return instance
 
     def __init__(self, Np=0, Nt=0, name=None, project=None, network=None, settings={}):
         super().__init__()
@@ -275,18 +282,18 @@ class Base(SettingsMixin, dict):
 
     project = property(fget=_get_project)
 
-    # def _set_settings(self, settings):
-    #     self._settings = settings
-    #     if self._settings_docs is None:
-    #         self._settings_docs = settings.__doc__
+    def _set_settings(self, settings):
+        self._settings = deepcopy(settings)
+        if (self._settings_docs is None) and (settings.__doc__ is not None):
+            self._settings_docs = settings.__doc__
 
-    # def _get_settings(self):
-    #     sets = self._settings
-    #     if sets is not None:
-    #         sets.__doc__ = self._settings_docs
-    #     return sets
+    def _get_settings(self):
+        sets = self._settings
+        if sets is not None:
+            sets.__doc__ = self._settings_docs
+        return sets
 
-    # settings = property(fget=_get_settings, fset=_set_settings)
+    settings = property(fget=_get_settings, fset=_set_settings)
 
     @property
     def network(self):
