@@ -2,24 +2,24 @@ from openpnm.utils import logging, Workspace
 from openpnm.phases import GenericPhase
 from openpnm.physics import GenericPhysics
 from openpnm.algorithms import StokesFlow
-from openpnm.metrics import GenericMetric
+from openpnm.metrics import GenericTransportMetrics
 from openpnm import models
 logger = logging.getLogger(__name__)
 ws = Workspace()
 
 default_settings = {
-    'inlet': None,
-    'outlet': None,
+    'inlet': 'left',
+    'outlet': 'right',
     'area': None,
     'length': None,
 }
 
 
-class AbsolutePermeability(GenericMetric):
+class AbsolutePermeability(GenericTransportMetrics):
     r"""
     This class works by applying 'value' boundary conditions across the
     domain to find molar flow, then using Fick's law to back-calculate
-    the effective permeability of the domain.
+    the absolute permeability of the domain.
 
     """
 

@@ -23,6 +23,7 @@ The table below gives a list of available Metrics:
 """
 
 from .GenericMetric import GenericMetric
+from .GenericTransportMetrics import GenericTransportMetrics
 from .MercuryIntrusion import MercuryIntrusion
 from .FormationFactor import FormationFactor
 from .RelativePermeability import RelativePermeability
