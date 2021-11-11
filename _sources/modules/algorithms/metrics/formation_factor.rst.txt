@@ -4,6 +4,6 @@
 FormationFactor
 --------------------------------------------------------------------------------
 
-.. autoclass:: openpnm.metrics.FormationFactor
+.. autoclass:: openpnm.algorithms.metrics.FormationFactor
    :members:
    :show-inheritance:

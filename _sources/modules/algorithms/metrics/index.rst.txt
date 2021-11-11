@@ -11,7 +11,7 @@ Metrics
 Overview of Module
 --------------------------------------------------------------------------------
 
-.. automodule:: openpnm.metrics
+.. automodule:: openpnm.algorithms.metrics
 
 --------------------------------------------------------------------------------
 Transport Properties
