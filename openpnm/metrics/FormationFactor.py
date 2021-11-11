@@ -96,5 +96,5 @@ class FormationFactor(GenericTransportMetrics):
                                    rates=Diff.rate(pores=inlet),
                                    prop_diff=1)
         # Deff = R*L/A  # Conc gradient and diffusivity were both unity
-        F = 1/Deff[0]
+        F = 1/Deff
         return F

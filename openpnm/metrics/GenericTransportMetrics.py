@@ -48,4 +48,4 @@ class GenericTransportMetrics(Base):
         if domain_length is None:
             domain_length = get_domain_length(network, inlets=inlets, outlets=outlets)
         D = np.sum(rates) * domain_length / domain_area / Dx
-        return np.atleast_1d(D)
+        return D

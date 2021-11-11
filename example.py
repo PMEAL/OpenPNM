@@ -25,12 +25,15 @@ phys_hg = op.physics.Standard(network=pn, phase=hg, geometry=geo)
 # mip.plot_intrusion_curve()
 
 # %% Perform Stokes flow simulation
-perm = op.algorithms.StokesFlow(network=pn, phase=water)
-perm.set_value_BC(pores=pn.pores('right'), values=0)
-perm.set_value_BC(pores=pn.pores('left'), values=101325)
-perm.run()
-water.update(perm.results())
-
+sf = op.algorithms.StokesFlow(network=pn, phase=water)
+sf.set_value_BC(pores=pn.pores('right'), values=0)
+sf.set_value_BC(pores=pn.pores('left'), values=101325)
+sf.run()
+water.update(sf.results())
+# calculate absolute permeability in x direction
+perm = op.metrics.AbsolutePermeability(network=pn, project=proj)
+K = perm.run()
+# K 7.51015925e-13
 # %% Perform reaction-diffusion simulation
 # Add reaction to phys_air
 phys_air['pore.n'] = 2
@@ -54,6 +57,9 @@ fd = op.algorithms.FickianDiffusion(network=pn, phase=air)
 fd.set_value_BC(pores=pn.pores('left'), values=1)
 fd.set_value_BC(pores=pn.pores('right'), values=0)
 fd.run()
-
+# calculate formation factor in x direction
+FF = op.metrics.FormationFactor(network=pn, project=proj)
+F = FF.run()
+# F 20.53387084881872
 # %% Output network and the phases to a VTP file for visualization in Paraview
 proj.export_data(phases=[hg, air, water], filename='output.vtp')
