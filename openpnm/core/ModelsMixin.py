@@ -393,7 +393,7 @@ class ModelsMixin:
         try:
             kwargs = self.models[prop].copy()
         except KeyError:
-            logger.info(prop+' not found, will retry if deep is True')
+            logger.info(f'{prop} not found, will retry if deep is True')
             return
         # Pop model and regen_mode from temporary dict
         model = kwargs.pop('model')

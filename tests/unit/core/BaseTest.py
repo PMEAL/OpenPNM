@@ -735,39 +735,6 @@ class BaseTest:
         a = self.net.get('pore.coords')
         assert a.shape == (self.net.Np, 3)
 
-    # def test_interleave_data_with_unyts_on_all(self):
-    #     import unyt
-    #     pn = op.network.Cubic(shape=[10, 1, 1])
-    #     geo1 = op.geometry.GenericGeometry(network=pn, pores=[0, 1, 2, 3, 4])
-    #     geo2 = op.geometry.GenericGeometry(network=pn, pores=[5, 6, 7, 8, 9])
-    #     geo1['pore.test'] = np.random.rand(geo1.Np, ) * unyt.m
-    #     geo2['pore.test'] = np.random.rand(geo2.Np, ) * unyt.m
-    #     assert hasattr(pn['pore.test'], 'units')
-
-    # def test_interleave_data_with_unyts_on_only_one(self):
-    #     import unyt
-    #     pn = op.network.Cubic(shape=[10, 1, 1])
-    #     geo1 = op.geometry.GenericGeometry(network=pn, pores=[0, 1, 2, 3, 4])
-    #     geo2 = op.geometry.GenericGeometry(network=pn, pores=[5, 6, 7, 8, 9])
-    #     geo1['pore.test'] = np.random.rand(geo1.Np, )
-    #     geo2['pore.test'] = np.random.rand(geo2.Np, ) * unyt.m
-    #     assert hasattr(pn['pore.test'], 'units')
-
-    # def test_interpolate_date_with_unyts(self):
-    #     import unyt
-    #     pn = op.network.Cubic(shape=[10, 1, 1])
-    #     geo = op.geometry.GenericGeometry(network=pn, pores=pn.Ps)
-    #     geo['pore.test'] = np.random.rand(geo.Np, ) * unyt.m
-    #     a = geo.interpolate_data('pore.test')
-    #     assert hasattr(a, 'units')
-
-    # def test_interpolate_date_with_unyts_but_none_assigned(self):
-    #     pn = op.network.Cubic(shape=[10, 1, 1])
-    #     geo = op.geometry.GenericGeometry(network=pn, pores=pn.Ps)
-    #     geo['pore.test'] = np.random.rand(geo.Np, )
-    #     b = geo.interpolate_data('pore.test')
-    #     assert not hasattr(b, 'units')
-
     def test_subdict_getitem_on_network_from_network(self):
         pn = op.network.Cubic(shape=[5, 5, 5])
         pn['pore.foo.bar'] = 1
