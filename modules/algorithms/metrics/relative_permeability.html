@@ -610,69 +610,6 @@
                 
   <section id="relativepermeability">
 <span id="relative-permeabilitiy-api"></span><h1>RelativePermeability<a class="headerlink" href="#relativepermeability" title="Permalink to this headline">¶</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="openpnm.algorithms.metrics.RelativePermeability">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">RelativePermeability</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/openpnm/algorithms/metrics/RelativePermeability.html#RelativePermeability"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.metrics.RelativePermeability" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../generic_algorithm.html#openpnm.algorithms.GenericAlgorithm" title="openpnm.algorithms.GenericAlgorithm.GenericAlgorithm"><code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.algorithms.GenericAlgorithm.GenericAlgorithm</span></code></a></p>
-<p>A subclass of Generic Algorithm to calculate relative permeabilities
-of fluids in a drainage process.</p>
-<p>The main roles of this subclass are to get invasion sequence and
-implement a method for calculating the relative permeabilities of the
-fluids flowing in three directions.</p>
-<p class="rubric">Notes</p>
-<ol class="arabic simple">
-<li><p>The results can be plotted using <cite>plot_Kr_curves</cite>, and numerical
-data can be obtained with <cite>get_Kr_data</cite>.</p></li>
-<li><p>Properties related to the invading phase have subscript ‘nwp’,
-while those related to the defending phase (if there is any) are
-named by subscript ‘wp’.</p></li>
-<li><p>As the relative permeability definition is the ratio of effective
-to absolute permeability, domain length and area calculation will
-appear in both nominator and denominator. Ignoring those variables,
-we only use the flow rate of the phase of interest in single and
-multiphase permeability calculation.</p></li>
-</ol>
-<dl class="py method">
-<dt class="sig sig-object py" id="openpnm.algorithms.metrics.RelativePermeability.get_Kr_data">
-<span class="sig-name descname"><span class="pre">get_Kr_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/openpnm/algorithms/metrics/RelativePermeability.html#RelativePermeability.get_Kr_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.metrics.RelativePermeability.get_Kr_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns data points of the relative permeability of the phase(s)
-in flow direction(s) and Saturation points.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="openpnm.algorithms.metrics.RelativePermeability.plot_Kr_curves">
-<span class="sig-name descname"><span class="pre">plot_Kr_curves</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/openpnm/algorithms/metrics/RelativePermeability.html#RelativePermeability.plot_Kr_curves"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.metrics.RelativePermeability.plot_Kr_curves" title="Permalink to this definition">¶</a></dt>
-<dd><p>Plots the relative permeability curve of the phase(s) in flow
-direction(s) as Kr vs Saturation points.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="openpnm.algorithms.metrics.RelativePermeability.run">
-<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Snwp_num</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/openpnm/algorithms/metrics/RelativePermeability.html#RelativePermeability.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.metrics.RelativePermeability.run" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculates the saturation of each phase using the invasion
-sequence.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>Snwp_num</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of saturation point to calculate the relative
-permeability values. If not given, default value is 100.
-Saturation points will be Snwp_num (or 100 by default)
-equidistant points in range [0,1].</p>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<ol class="arabic simple">
-<li><p>For three directions of flow the absolute permeability values
-will be calculated using _abs_perm_calc.</p></li>
-<li><p>For each saturation point, the saturation values are calculated
-by _sat_occ_update. This function also updates occupancies of
-each phase in pores/throats. Effective permeabilities of each
-phase is then calculated. Relative permeability is defined by
-devision of K_eff and K_abs.</p></li>
-</ol>
-</dd></dl>
-
-</dd></dl>
-
 </section>
 
 
