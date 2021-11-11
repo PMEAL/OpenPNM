@@ -200,11 +200,9 @@
 <span class="sd">    shape : array_like</span>
 <span class="sd">        The [Nx, Ny, Nz] size of the network in terms of the number of pores in</span>
 <span class="sd">        each direction</span>
-
 <span class="sd">    spacing : array_like, optional</span>
 <span class="sd">        The spacing between pore centers in each direction. If not given, then</span>
 <span class="sd">        [1, 1, 1] is assumed.</span>
-
 <span class="sd">    connectivity : int, optional</span>
 <span class="sd">        The number of connections to neighboring pores.  Connections are made</span>
 <span class="sd">        symmetrically to any combination of face, edge, or corners neighbors.</span>
@@ -223,11 +221,6 @@
 <span class="sd">    name : string</span>
 <span class="sd">        An optional name for the object to help identify it.  If not given,</span>
 <span class="sd">        one will be generated.</span>
-
-<span class="sd">    project : OpenPNM Project object, optional</span>
-<span class="sd">        Each OpenPNM object must be part of a *Project*.  If none is supplied</span>
-<span class="sd">        then one will be created and this Network will be automatically</span>
-<span class="sd">        assigned to it.  To create a *Project* use ``openpnm.Project()``.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>

@@ -212,12 +212,8 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    project : OpenPNM Project object, optional</span>
-<span class="sd">        The Project with which the object should be assigned.  If not supplied</span>
-<span class="sd">        then a new Project is created</span>
 <span class="sd">    name : string, optional</span>
 <span class="sd">        The unique name of the object.  If not given one will be generated.</span>
-
 <span class="sd">    Np : int, default is 0</span>
 <span class="sd">        The total number of pores to be assigned to the object</span>
 <span class="sd">    Nt : int, default is 0</span>
@@ -293,7 +289,8 @@
         <span class="n">instance</span><span class="o">.</span><span class="n">_settings_docs</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">return</span> <span class="n">instance</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Np</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">Nt</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">project</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">settings</span><span class="o">=</span><span class="p">{}):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Np</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">Nt</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">project</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">settings</span><span class="o">=</span><span class="p">{}):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">settings</span> <span class="o">=</span> <span class="n">SettingsAttr</span><span class="p">(</span><span class="n">BaseSettings</span><span class="p">,</span> <span class="n">settings</span><span class="p">)</span>
 
