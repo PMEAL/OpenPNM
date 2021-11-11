@@ -28,3 +28,4 @@ from .MercuryIntrusion import MercuryIntrusion
 from .FormationFactor import FormationFactor
 from .PNFlow import PNFlow
 from .AbsolutePermeability import AbsolutePermeability
+from .EffectiveDiffusivity import EffectiveDiffusivity
