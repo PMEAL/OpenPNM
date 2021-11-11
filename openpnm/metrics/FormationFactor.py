@@ -56,7 +56,7 @@ class FormationFactor(GenericTransportMetrics):
 
     >>> FF = op.metrics.FormationFactor(network=pn)
     >>> F = FF.run()
-    >>> print(F)
+    >>> print(np.round(F))
     21.0
 
     """

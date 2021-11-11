@@ -116,8 +116,6 @@ class ExtrasTest:
         ws.settings['loglevel'] = 50
         classes = [c for c in dir(op.algorithms) if not c.startswith('__')]
         mod = importlib.import_module('openpnm.algorithms')
-        # metrics should be ignored
-        classes.pop(classes.index('metrics'))
         for c in classes:
             clss = getattr(mod, c)
             if not isinstance(clss, ModuleType):
