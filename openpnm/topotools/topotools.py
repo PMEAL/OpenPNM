@@ -1,9 +1,10 @@
 import numpy as np
 import scipy as sp
 import scipy.ndimage as spim
+from scipy.spatial import cKDTree
 from scipy.sparse import csgraph
 from scipy.spatial import ConvexHull
-from openpnm.utils import logging, Workspace
+from openpnm.utils import logging, Workspace, prettify_logger_message
 logger = logging.getLogger(__name__)
 ws = Workspace()
 
@@ -1864,3 +1865,85 @@ def get_shape(network):
     d = {'vert.coords': network.coords, 'edge.conns': network.conns}
     shp = get_shape(d)
     return shp
+
+
+def get_domain_area(network, inlets=None, outlets=None):
+    r"""
+    Determine the cross sectional area relative to the inlets/outlets.
+
+    Parameters
+    ----------
+    network : OpenPNM Network Object
+        The network object containing the pore coordinates
+
+    inlets : array_like
+        The pore indices of the inlets.
+
+    putlets : array_Like
+        The pore indices of the outlets.
+
+    Returns
+    -------
+    area : scalar
+        The cross sectional area relative to the inlets/outlets.
+
+    """
+    logger.warning('Attempting to estimate inlet area...will be low')
+    if dimensionality(network).sum() != 3:
+        raise Exception('The network is not 3D, specify area manually')
+    inlets = network.coords[inlets]
+    outlets = network.coords[outlets]
+    if not iscoplanar(inlets):
+        logger.error('Detected inlet pores are not coplanar')
+    if not iscoplanar(outlets):
+        logger.error('Detected outlet pores are not coplanar')
+    Nin = np.ptp(inlets, axis=0) > 0
+    if Nin.all():
+        logger.warning('Detected inlets are not oriented along a principle axis')
+    Nout = np.ptp(outlets, axis=0) > 0
+    if Nout.all():
+        logger.warning('Detected outlets are not oriented along a principle axis')
+    hull_in = ConvexHull(points=inlets[:, Nin])
+    hull_out = ConvexHull(points=outlets[:, Nout])
+    if hull_in.volume != hull_out.volume:
+        logger.error('Inlet and outlet faces are different area')
+    area = hull_in.volume  # In 2D: volume=area, area=perimeter
+    return area
+
+
+def get_domain_length(network, inlets=None, outlets=None):
+    r"""
+    Determine the domain length relative to the inlets/outlets.
+
+    Parameters
+    ----------
+    network : OpenPNM Network Object
+        The network object containing the pore coordinates
+
+    inlets : array_like
+        The pore indices of the inlets.
+
+    putlets : array_Like
+        The pore indices of the outlets.
+
+    Returns
+    -------
+    area : scalar
+        The domain length relative to the inlets/outlets.
+
+    """
+    msg = ('Attempting to estimate domain length...could be low if'
+           ' boundary pores were not added')
+    logger.warning(prettify_logger_message(msg))
+    inlets = network.coords[inlets]
+    outlets = network.coords[outlets]
+    if not iscoplanar(inlets):
+        logger.error('Detected inlet pores are not coplanar')
+    if not iscoplanar(outlets):
+        logger.error('Detected inlet pores are not coplanar')
+    tree = cKDTree(data=inlets)
+    Ls = np.unique(np.float64(tree.query(x=outlets)[0]))
+    if not np.allclose(Ls, Ls[0]):
+        logger.error('A unique value of length could not be found')
+    length = Ls[0]
+    return length
