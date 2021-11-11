@@ -9,8 +9,7 @@ class GenericMetric(Base):
 
     """
 
-    def __init__(self, network=None, project=None, settings={}, **kwargs):
-        self.settings['prefix'] = 'metric'
+    def __init__(self, network=None, project=None, **kwargs):
         super().__init__(project=project, **kwargs)
         project = self.project
         self['pore.all'] = np.ones((project.network.Np, ), dtype=bool)

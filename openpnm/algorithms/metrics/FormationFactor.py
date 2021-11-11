@@ -11,6 +11,7 @@ ws = Workspace()
 
 
 class FormationFactorSettings:
+    prefix = 'ff'
     inlets = {'x': 'left',
               'y': 'front',
               'z': 'top'}
@@ -89,7 +90,8 @@ class FormationFactor(GenericMetric):
 #        for i in project:
 #            if i not in keep:
 #                project.purge_object(i)
-        super().__init__(network=network, project=project, **kwargs)
+        super().__init__(network=network, project=project,
+                         settings=self.settings, **kwargs)
 
     def run(self):
         r"""
