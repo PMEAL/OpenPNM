@@ -44,7 +44,7 @@ class EffectiveDiffusivity(GenericTransportMetrics):
 
     >>> ED = op.metrics.EffectiveDiffusivity(network=pn)
     >>> Deff = ED.run()
-    >>> print(np.round(D_eff,decimals=3))
+    >>> print(np.round(Deff,decimals=3))
     0.049
 
     """
