@@ -175,7 +175,7 @@
   <h1>Source code for openpnm.algorithms.TransientReactiveTransport</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">openpnm.algorithms</span> <span class="kn">import</span> <span class="n">ReactiveTransport</span>
-<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">logging</span><span class="p">,</span> <span class="n">Docorator</span><span class="p">,</span> <span class="n">SettingsAttr</span>
+<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">logging</span><span class="p">,</span> <span class="n">GenericSettings</span><span class="p">,</span> <span class="n">Docorator</span>
 <span class="kn">from</span> <span class="nn">openpnm.integrators</span> <span class="kn">import</span> <span class="n">ScipyRK45</span>
 <span class="n">docstr</span> <span class="o">=</span> <span class="n">Docorator</span><span class="p">()</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -184,15 +184,31 @@
 <span class="nd">@docstr</span><span class="o">.</span><span class="n">get_sections</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="s1">&#39;TransientReactiveTransportSettings&#39;</span><span class="p">,</span>
                      <span class="n">sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Parameters&#39;</span><span class="p">,</span> <span class="s1">&#39;Other Parameters&#39;</span><span class="p">])</span>
 <span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
-<span class="k">class</span> <span class="nc">TransientReactiveTransportSettings</span><span class="p">:</span>
+<span class="k">class</span> <span class="nc">TransientReactiveTransportSettings</span><span class="p">(</span><span class="n">GenericSettings</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    %(ReactiveTransportSettings.parameters)s</span>
 
+<span class="sd">    quantity : str</span>
+<span class="sd">        The name of the physical quantity to be calculated</span>
+<span class="sd">    conductance : str</span>
+<span class="sd">        The name of the pore-scale transport conductance values. These are</span>
+<span class="sd">        typically calculated by a model attached to a *Physics* object</span>
+<span class="sd">        associated with the given *Phase*.</span>
+<span class="sd">    pore_volume : str</span>
+<span class="sd">        The name of the pore volume property to use in setting up the transient</span>
+<span class="sd">        system. Default is &#39;pore.volume&#39; but &#39;pore.volume_effective&#39; could be</span>
+<span class="sd">        used if needed.</span>
+
 <span class="sd">    Other Parameters</span>
 <span class="sd">    ----------------</span>
+<span class="sd">    saveat : float, array_like</span>
+<span class="sd">        List of time points at which the results are to be stored (if</span>
+<span class="sd">        array_like is passed), OR the time interval (if float is passed).</span>
+
+<span class="sd">    ----</span>
 
 <span class="sd">    **The following parameters pertain to the ReactiveTransport class**</span>
 
@@ -205,6 +221,8 @@
 <span class="sd">    %(GenericTransportSettings.other_parameters)s</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">phase</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">pore_volume</span> <span class="o">=</span> <span class="s1">&#39;pore.volume&#39;</span>
 
 
@@ -216,6 +234,8 @@
 <span class="sd">    ----------</span>
 <span class="sd">    network : GenericNetwork</span>
 <span class="sd">        The Network with which this algorithm is associated.</span>
+<span class="sd">    project : Project</span>
+<span class="sd">        The Project with which this algorithm is associated.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
@@ -224,8 +244,9 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="o">=</span><span class="p">{},</span> <span class="n">phase</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span> <span class="o">=</span> <span class="n">SettingsAttr</span><span class="p">(</span><span class="n">TransientReactiveTransportSettings</span><span class="p">,</span> <span class="n">settings</span><span class="p">)</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">settings</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">_update_settings_and_docs</span><span class="p">(</span><span class="n">TransientReactiveTransportSettings</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">phase</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;phase&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">phase</span><span class="o">.</span><span class="n">name</span>
         <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;pore.ic&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
