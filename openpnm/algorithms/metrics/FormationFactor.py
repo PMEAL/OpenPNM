@@ -1,5 +1,5 @@
 import numpy as np
-from openpnm.utils import logging, Project, Workspace, PrintableDict
+from openpnm.utils import logging, Project, Workspace, PrintableDict, SettingsAttr
 from openpnm.phases import GenericPhase
 from openpnm.physics import GenericPhysics
 from openpnm.algorithms import FickianDiffusion
@@ -76,7 +76,7 @@ class FormationFactor(GenericMetric):
     """
 
     def __init__(self, network=None, project=None, settings={}, **kwargs):
-        self.settings._update(FormationFactorSettings)
+        self.settings = SettingsAttr(FormationFactorSettings, settings)
         self.results = PrintableDict()
         self.results._value = "Formation Factor"
         self.results._key = "Direction"

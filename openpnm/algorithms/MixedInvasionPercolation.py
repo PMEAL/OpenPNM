@@ -48,6 +48,8 @@ class MixedIPSettings:
     invade_isolated_Ts = False
     late_pore_filling = ""
     late_throat_filling = ""
+    cooperative_pore_filling = ""
+    trapping = ""
 
 
 class MixedInvasionPercolation(GenericAlgorithm):
@@ -70,7 +72,7 @@ class MixedInvasionPercolation(GenericAlgorithm):
 
     def __init__(self, settings={}, **kwargs):
         self.settings = SettingsAttr(MixedIPSettings, settings)
-        super().__init__(setting=self.settings, **kwargs)
+        super().__init__(settings=self.settings, **kwargs)
 
     def setup(
         self,

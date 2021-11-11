@@ -133,10 +133,9 @@ class GenericNetwork(ParamMixin, Base, ModelsMixin, LegacyMixin, LabelMixin):
         instance._am = {}
         return instance
 
-    def __init__(self, conns=None, coords=None, settings={},
-                 **kwargs):
+    def __init__(self, conns=None, coords=None, settings={}, **kwargs):
         self.settings = SettingsAttr(NetworkSettings, settings)
-        super().__init__(settings=deepcopy(self.settings), **kwargs)
+        super().__init__(settings=self.settings, **kwargs)
         self.settings._getdocs(NetworkSettings)
 
         if coords is not None:

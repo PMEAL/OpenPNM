@@ -288,12 +288,17 @@ class Base(dict):
             self._settings_docs = settings.__doc__
 
     def _get_settings(self):
+        if self._settings is None:
+            self._settings = SettingsAttr()
         sets = self._settings
         if sets is not None:
             sets.__doc__ = self._settings_docs
         return sets
 
-    settings = property(fget=_get_settings, fset=_set_settings)
+    def _del_settings(self):
+        self._settings = None
+
+    settings = property(fget=_get_settings, fset=_set_settings, fdel=_del_settings)
 
     @property
     def network(self):

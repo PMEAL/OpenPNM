@@ -9,15 +9,16 @@ logger = logging.getLogger(__name__)
 class PorosimetrySettings:
     r"""
     %(OrdinaryPercolationSettings.parameters)s
-    late_pore_filling : string
+    pore_partial_filling : string
         The name of the model used to determine partial pore filling as
         a function of applied pressure.
-    late_throat_filling : string
+    throat_partial_filling : string
         The name of the model used to determine partial throat filling as
         a function of applied pressure.
     """
-    late_pore_filling = ''
-    late_throat_filling = ''
+    quantity = 'pore.pressure'
+    pore_partial_filling = ''
+    throat_partial_filling = ''
 
 
 class Porosimetry(OrdinaryPercolation):
