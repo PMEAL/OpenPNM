@@ -610,63 +610,6 @@
                 
   <section id="vtk">
 <span id="vtk-api"></span><h1>VTK<a class="headerlink" href="#vtk" title="Permalink to this headline">¶</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="openpnm.io.VTK">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">VTK</span></span><a class="reference internal" href="../../_modules/openpnm/io/VTK.html#VTK"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.io.VTK" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.io.GenericIO.GenericIO</span></code></p>
-<p>The Visualization Toolkit (VTK) format defined by Kitware and used by
-Paraview.</p>
-<p class="rubric">Notes</p>
-<p>Because OpenPNM data is unstructured, the actual output format is VTP,
-not VTK.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="openpnm.io.VTK.export_data">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">export_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">network</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phases</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'</span> <span class="pre">|</span> <span class="pre">'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill_nans</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill_infs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/io/VTK.html#VTK.export_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.io.VTK.export_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Save network and phase data to a single vtp file for visualizing in
-Paraview.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>network</strong> (<em>OpenPNM Network Object</em>) – The Network containing the data to be written</p></li>
-<li><p><strong>phases</strong> (<em>list</em><em>, </em><em>optional</em>) – A list containing OpenPNM Phase object(s) containing data to be
-written</p></li>
-<li><p><strong>filename</strong> (<em>string</em><em>, </em><em>optional</em>) – Filename to write data.  If no name is given the file is named
-after the network</p></li>
-<li><p><strong>delim</strong> (<em>string</em>) – Specify which character is used to delimit the data names.  The
-default is ‘ | ‘ which creates a nice clean output in the Paraview
-pipeline viewer (e.g. net | property | pore | diameter)</p></li>
-<li><p><strong>fill_nans</strong> (<em>scalar</em>) – The value to use to replace NaNs with.  The VTK file format does
-not work with NaNs, so they must be dealt with.  The default is
-<cite>None</cite> which means property arrays with NaNs are not written to the
-file.  Other useful options might be 0 or -1, but the user must
-be aware that these are not real values, only place holders.</p></li>
-<li><p><strong>fill_infs</strong> (<em>scalar</em>) – The value to use to replace infs with.  The default is <code class="docutils literal notranslate"><span class="pre">None</span></code>
-which means that property arrays containing <code class="docutils literal notranslate"><span class="pre">None</span></code> will <em>not</em>
-be written to the file, and a warning will be issued.  A useful
-value is</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="openpnm.io.VTK.import_data">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">import_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'</span> <span class="pre">|</span> <span class="pre">'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/io/VTK.html#VTK.import_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.io.VTK.import_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Read in pore and throat data from a saved VTK file.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>filename</strong> (<em>string</em><em> (</em><em>optional</em><em>)</em>) – The name of the file containing the data to import. The formatting
-of this file is outlined below.</p></li>
-<li><p><strong>project</strong> (<em>OpenPNM Project object</em>) – A GenericNetwork is created and added to the specified Project.
-If no Project is supplied then one will be created and returned.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
 </section>
 
 
