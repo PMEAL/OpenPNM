@@ -1,11 +1,9 @@
-import numpy as np
-from openpnm.utils import logging, Project, Workspace, PrintableDict
+from openpnm.utils import logging, Workspace
 from openpnm.phases import GenericPhase
 from openpnm.physics import GenericPhysics
 from openpnm.algorithms import StokesFlow
 from openpnm.metrics import GenericMetric
 from openpnm import models
-from openpnm import topotools
 logger = logging.getLogger(__name__)
 ws = Workspace()
 
@@ -15,6 +13,7 @@ default_settings = {
     'area': None,
     'length': None,
 }
+
 
 class AbsolutePermeability(GenericMetric):
     r"""
@@ -49,11 +48,13 @@ class AbsolutePermeability(GenericMetric):
         inlet = self.network.pores(self.settings['inlet'])
         outlet = self.network.pores(self.settings['outlet'])
         perm = StokesFlow(network=self.project.network, phase=phase)
-        perm.set_value_BC(pores=inlet, values= 1)
+        perm.set_value_BC(pores=inlet, values=1)
         perm.set_value_BC(pores=outlet, values=0)
         perm.run()
         phase.update(perm.results())
-        K= self._calc_eff_prop(inlets=inlet, outlets=outlet,
-                       domain_area=None, domain_length=None, rates=perm.rate(pores=inlet),
-                       prop_diff=1)
+        K = self._calc_eff_prop(inlets=inlet, outlets=outlet,
+                                domain_area=self.settings['area'],
+                                domain_length=self.settings['length'],
+                                rates=perm.rate(pores=inlet),
+                                prop_diff=1)
         return K
