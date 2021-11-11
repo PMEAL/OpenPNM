@@ -4,7 +4,7 @@ Stoke's flow:
 
 .. math::
 
-    Q = \frac{A^2}{8 \mu L} \Delta P
+    Q = \frac{A^2}{8 \pi \mu L} \Delta P
       = \frac{S_{hydraulic}}{\mu} \Delta P
 
 Thus :math:`S_{hydraulic}` represents the combined effect of the area
@@ -64,7 +64,7 @@ def spheres_and_cylinders(
 
     .. math::
 
-        Q = \frac{A^2}{8 \mu L} \Delta P
+        Q = \frac{A^2}{8 \pi \mu L} \Delta P
           = \frac{S_{hydraulic}}{\mu} \Delta P
 
     Thus :math:`S_{hydraulic}` represents the combined effect of the area
@@ -130,7 +130,7 @@ def circles_and_rectangles(
 
     .. math::
 
-        Q = \frac{A^2}{8 \mu L} \Delta P
+        Q = \frac{A^2}{8 \pi \mu L} \Delta P
           = \frac{S_{hydraulic}}{\mu} \Delta P
 
     Thus :math:`S_{hydraulic}` represents the combined effect of the area
@@ -190,7 +190,7 @@ def cones_and_cylinders(
 
     .. math::
 
-        Q = \frac{A^2}{8 \mu L} \Delta P
+        Q = \frac{A^2}{8 \pi \mu L} \Delta P
           = \frac{S_{hydraulic}}{\mu} \Delta P
 
     Thus :math:`S_{hydraulic}` represents the combined effect of the area
@@ -252,7 +252,7 @@ def trapezoids_and_rectangles(
 
     .. math::
 
-        Q = \frac{A^2}{8 \mu L} \Delta P
+        Q = \frac{A^2}{8 \pi \mu L} \Delta P
           = \frac{S_{hydraulic}}{\mu} \Delta P
 
     Thus :math:`S_{hydraulic}` represents the combined effect of the area
@@ -312,7 +312,7 @@ def pyramids_and_cuboids(
 
     .. math::
 
-        Q = \frac{A^2}{8 \mu L} \Delta P
+        Q = \frac{A^2}{8 \pi \mu L} \Delta P
           = \frac{S_{hydraulic}}{\mu} \Delta P
 
     Thus :math:`S_{hydraulic}` represents the combined effect of the area
@@ -380,7 +380,7 @@ def cubes_and_cuboids(
 
     .. math::
 
-        Q = \frac{A^2}{8 \mu L} \Delta P
+        Q = \frac{A^2}{8 \pi \mu L} \Delta P
           = \frac{S_{hydraulic}}{\mu} \Delta P
 
     Thus :math:`S_{hydraulic}` represents the combined effect of the area
@@ -448,7 +448,7 @@ def squares_and_rectangles(
 
     .. math::
 
-        Q = \frac{A^2}{8 \mu L} \Delta P
+        Q = \frac{A^2}{8 \pi \mu L} \Delta P
           = \frac{S_{hydraulic}}{\mu} \Delta P
 
     Thus :math:`S_{hydraulic}` represents the combined effect of the area
@@ -510,7 +510,7 @@ def intersecting_cones(
 
     .. math::
 
-        Q = \frac{A^2}{8 \mu L} \Delta P
+        Q = \frac{A^2}{8 \pi \mu L} \Delta P
           = \frac{S_{hydraulic}}{\mu} \Delta P
 
     Thus :math:`S_{hydraulic}` represents the combined effect of the area
@@ -557,7 +557,7 @@ def intersecting_trapezoids(
 
     .. math::
 
-        Q = \frac{A^2}{8 \mu L} \Delta P
+        Q = \frac{A^2}{8 \pi \mu L} \Delta P
           = \frac{S_{hydraulic}}{\mu} \Delta P
 
     Thus :math:`S_{hydraulic}` represents the combined effect of the area
@@ -606,7 +606,7 @@ def intersecting_pyramids(
 
     .. math::
 
-        Q = \frac{A^2}{8 \mu L} \Delta P
+        Q = \frac{A^2}{8 \pi \mu L} \Delta P
           = \frac{S_{hydraulic}}{\mu} \Delta P
 
     Thus :math:`S_{hydraulic}` represents the combined effect of the area
@@ -653,7 +653,7 @@ def ncylinders_in_series(
 
     .. math::
 
-        Q = \frac{A^2}{8 \mu L} \Delta P
+        Q = \frac{A^2}{8 \pi \mu L} \Delta P
           = \frac{S_{hydraulic}}{\mu} \Delta P
 
     Thus :math:`S_{hydraulic}` represents the combined effect of the area

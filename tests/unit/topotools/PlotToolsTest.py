@@ -61,15 +61,15 @@ class PlotToolsTest:
         with pytest.raises(Exception):
             op.topotools.plot_networkx(pn)
 
-    def test_generate_voxel_image(self): ...
-        # pn = op.network.Cubic(shape=[5, 5, 1])
-        # geo = op.geometry.SpheresAndCylinders(network=pn,
-        #                                       pores=pn.Ps, throats=pn.Ts)
-        # im = op.topotools.generate_voxel_image(network=pn,
-        #                                        pore_shape='sphere',
-        #                                        throat_shape='cylinder',
-        #                                        max_dim=500)
-        # assert im.shape[0] == 500
+    def test_generate_voxel_image(self):
+        pn = op.network.Cubic(shape=[5, 5, 1])
+        geo = op.geometry.SpheresAndCylinders(network=pn,
+                                              pores=pn.Ps, throats=pn.Ts)
+        im = op.topotools.generate_voxel_image(network=pn,
+                                               pore_shape='sphere',
+                                               throat_shape='cylinder',
+                                               max_dim=500)
+        assert im.shape[0] == 500
 
 
 if __name__ == '__main__':
