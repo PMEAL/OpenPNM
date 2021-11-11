@@ -4,6 +4,6 @@
 MercuryIntrusion
 --------------------------------------------------------------------------------
 
-.. autoclass:: openpnm.metrics.MercuryIntrusion
+.. autoclass:: openpnm.algorithms.metrics.MercuryIntrusion
    :members:
    :show-inheritance:
