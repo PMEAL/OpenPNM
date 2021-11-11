@@ -10,116 +10,134 @@ repo, which can be browsed
 
 ----
 
-Generators
+User Guide
 ----------
 
-.. tabbed:: Tutorials
+.. tabbed:: General
 
    .. toctree::
       :maxdepth: 1
       :glob:
 
-      examples/generators/tutorials/*
+      examples/user guide/*
 
-.. tabbed:: How-to guides
+Tutorials
+---------
 
-   .. toctree::
-      :maxdepth: 1
-      :glob:
-
-      examples/generators/howtos/*
-
-Filters
--------
-
-.. tabbed:: Tutorials
+.. tabbed:: Network
 
    .. toctree::
       :maxdepth: 1
       :glob:
 
-      examples/filters/tutorials/*
+      examples/tutorials/networks/*
 
-.. tabbed:: How-to guides
-
-   .. toctree::
-      :maxdepth: 1
-      :glob:
-
-      examples/filters/howtos/*
-
-Metrics
--------
-
-.. tabbed:: Tutorials
+.. tabbed:: Geometry
 
    .. toctree::
       :maxdepth: 1
       :glob:
 
-      examples/metrics/tutorials/*
-
-.. tabbed:: How-to guides
-
-   .. toctree::
-      :maxdepth: 1
-      :glob:
-
-      examples/metrics/howtos/*
-
-Networks
---------
-
-.. tabbed:: Tutorials
+      examples/tutorials/geometry/*
+      
+.. tabbed:: Phase
 
    .. toctree::
       :maxdepth: 1
       :glob:
 
-      examples/networks/tutorials/*
+      examples/tutorials/phase/*
 
-.. tabbed:: How-to guides
-
-   .. toctree::
-      :maxdepth: 1
-      :glob:
-
-      examples/networks/howtos/*
-
-Tools
------
-
-.. tabbed:: Tutorials
+.. tabbed:: Materials
 
    .. toctree::
       :maxdepth: 1
       :glob:
 
-      examples/tools/tutorials/*
-
-.. tabbed:: How-to guides
+      examples/tutorials/materials/*
+      
+.. tabbed:: io
 
    .. toctree::
       :maxdepth: 1
       :glob:
 
-      examples/tools/howtos/*
+      examples/tutorials/io/*
 
-Visualization
+Simulations
+-----------
+
+.. tabbed:: General
+
+   .. toctree::
+      :maxdepth: 1
+      :glob:
+
+      examples/simulations/general/*
+
+.. tabbed:: Percolation
+
+   .. toctree::
+      :maxdepth: 1
+      :glob:
+
+      examples/simulations/percolation/*
+      
+.. tabbed:: Single Phase
+
+   .. toctree::
+      :maxdepth: 1
+      :glob:
+
+      examples/simulations/single_phase/*
+
+.. tabbed:: Reactive
+
+   .. toctree::
+      :maxdepth: 1
+      :glob:
+
+      examples/simulations/reactive/*
+      
+.. tabbed:: Transient
+
+   .. toctree::
+      :maxdepth: 1
+      :glob:
+
+      examples/simulations/transient/*
+
+.. tabbed:: Multiphase
+
+   .. toctree::
+      :glob:
+      :maxdepth: 1
+
+      examples/simulations/multiphase/*
+      
+.. tabbed:: Multiphysics
+
+   .. toctree::
+      :maxdepth: 1
+      :glob:
+
+      examples/simulations/multiphysics/*
+
+Contributions
 -------------
 
-.. tabbed:: Tutorials
+.. tabbed:: Paper Recreations 
 
    .. toctree::
       :maxdepth: 1
       :glob:
 
-      examples/visualization/tutorials/*
+      examples/contrib/paper recreations/*        
 
-.. tabbed:: How-to guides
+.. tabbed:: Other
 
    .. toctree::
       :maxdepth: 1
       :glob:
 
-      examples/visualization/howtos/*
+      examples/contrib/*
