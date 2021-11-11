@@ -76,22 +76,12 @@ class FormationFactor(GenericMetric):
 
     """
 
-    def __init__(self, network=None, project=None, settings={}, **kwargs):
+    def __init__(self, settings={}, **kwargs):
         self.settings = SettingsAttr(FormationFactorSettings, settings)
         self.results = PrintableDict()
         self.results._value = "Formation Factor"
         self.results._key = "Direction"
-        if network is None:
-            network = project.network
-        if project is None:
-            project = network.project
-#        project = ws.copy_project(network.project)
-#        keep = [network] + list(project.geometries().values())
-#        for i in project:
-#            if i not in keep:
-#                project.purge_object(i)
-        super().__init__(network=network, project=project,
-                         settings=self.settings, **kwargs)
+        super().__init__(settings=self.settings, **kwargs)
 
     def run(self):
         r"""

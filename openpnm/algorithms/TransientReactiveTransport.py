@@ -41,8 +41,6 @@ class TransientReactiveTransport(ReactiveTransport):
     ----------
     network : GenericNetwork
         The Network with which this algorithm is associated.
-    project : Project
-        The Project with which this algorithm is associated.
 
     Notes
     -----

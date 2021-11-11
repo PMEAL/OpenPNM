@@ -30,7 +30,6 @@ class DelaunayVoronoiDual(GenericNetwork):
     points : array_like or int
         Can either be an N-by-3 array of point coordinates which will be used,
         or a scalar value indicating the number of points to generate
-
     shape : array_like
         The size and shape of the domain used for generating and trimming
         excess points. The coordinates are treated as the outer corner of a
@@ -42,11 +41,6 @@ class DelaunayVoronoiDual(GenericNetwork):
     name : string
         An optional name for the object to help identify it.  If not given,
         one will be generated.
-
-    project : OpenPNM Project object, optional
-        Each OpenPNM object must be part of a *Project*.  If none is supplied
-        then one will be created and this Network will be automatically
-        assigned to it.  To create a *Project* use ``openpnm.Project()``.
 
     Examples
     --------

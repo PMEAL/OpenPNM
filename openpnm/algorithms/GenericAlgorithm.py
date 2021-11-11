@@ -31,8 +31,6 @@ class GenericAlgorithm(Base, LegacyMixin, LabelMixin):
         The network object to which this algorithm will apply.
     name : str, optional
         Name of the algorithm
-    project : Project, optional
-        Either a Network or a Project must be supplied
 
     """
 

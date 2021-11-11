@@ -38,8 +38,6 @@ class GenericGeometry(ParamMixin, Subdomain, ModelsMixin):
     name : str
         A unique name to apply to the object.  This name will also be used as a
         label to identify where this Geometry applies.
-    project : Project, optional
-        A Project can be specified instead of ``network``.
 
     Examples
     --------

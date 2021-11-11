@@ -37,12 +37,8 @@ class Base(dict):
 
     Parameters
     ----------
-    project : OpenPNM Project object, optional
-        The Project with which the object should be assigned.  If not supplied
-        then a new Project is created
     name : string, optional
         The unique name of the object.  If not given one will be generated.
-
     Np : int, default is 0
         The total number of pores to be assigned to the object
     Nt : int, default is 0
@@ -118,7 +114,8 @@ class Base(dict):
         instance._settings_docs = None
         return instance
 
-    def __init__(self, Np=0, Nt=0, name=None, project=None, network=None, settings={}):
+    def __init__(self, Np=0, Nt=0, network=None, name=None, project=None,
+                 settings={}):
         super().__init__()
         self.settings = SettingsAttr(BaseSettings, settings)
 
