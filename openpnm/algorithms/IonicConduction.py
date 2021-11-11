@@ -1,43 +1,21 @@
 import numpy as np
 from openpnm.algorithms import ReactiveTransport
 from openpnm.models.physics import generic_source_term as gst
-from openpnm.utils import logging, Docorator, GenericSettings
+from openpnm.utils import logging, Docorator, SettingsAttr
 logger = logging.getLogger(__name__)
 docstr = Docorator()
 
 
 @docstr.get_sections(base='IonicConductionSettings', sections=['Parameters'])
 @docstr.dedent
-class IonicConductionSettings(GenericSettings):
+class IonicConductionSettings:
     r"""
 
     Parameters
     ----------
-    phase : OpenPNM Phase object
-        The phase on which the algorithm is to be run.
-    quantity : str (default = ``'pore.mole_fraction'``)
-          The name of the physical quantity to be calculated.
-    conductance : str (default = ``'throat.ionic_conductance'``)
-        The name of thepore-scale transport conductance values.  These are
-        typically calculated by a model attached to a *Physics* object
-        associated with the given *Phase*.
-    charge_conservation : str (default = ``'electroneutrality'``)
-        The assumption adopted to enforce charge conservation when
-        performing ions transport simulations.
-
-    Other Parameters
-    ----------------
-
-    **The following parameters pertain to the ReactiveTransport class**
-
-    %(ReactiveTransportSettings.other_parameters)s
-
-    ----
-
-    **The following parameters pertain to the GenericTransport class**
-
-    %(GenericTransportSettings.other_parameters)s
-
+    %(ReactiveTransportSettings.parameters)s
+    charge_conservation : str
+        <??>
     """
     quantity = 'pore.potential'
     conductance = 'throat.ionic_conductance'
@@ -62,9 +40,8 @@ class IonicConduction(ReactiveTransport):
     """
 
     def __init__(self, settings={}, **kwargs):
-        super().__init__(**kwargs)
-        self.settings._update_settings_and_docs(IonicConductionSettings())
-        self.settings.update(settings)
+        self.settings = SettingsAttr(IonicConductionSettings, settings)
+        super().__init__(settings=self.settings, **kwargs)
 
     def _charge_conservation_eq_source_term(self, e_alg):
         # Source term for Poisson or charge conservation (electroneutrality) eq

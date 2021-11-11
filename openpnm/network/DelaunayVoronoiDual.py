@@ -60,8 +60,9 @@ class DelaunayVoronoiDual(GenericNetwork):
 
     """
 
-    def __init__(self, shape=[1, 1, 1], points=None, **kwargs):
+    def __init__(self, shape=[1, 1, 1], points=None, trim=True, **kwargs):
         super().__init__(**kwargs)
+
         points = self._parse_points(shape=shape, points=points)
 
         # Deal with points that are only 2D...they break tessellations
@@ -134,9 +135,7 @@ class DelaunayVoronoiDual(GenericNetwork):
         self['throat.interconnect'][Ts] = True
 
         # Trim all pores that lie outside of the specified domain
-        if self.settings['trim'] == False:
-            pass
-        else:
+        if trim:
             self._trim_external_pores(shape=shape)
             self._label_faces()
 

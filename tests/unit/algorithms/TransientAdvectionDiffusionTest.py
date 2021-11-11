@@ -18,8 +18,8 @@ class TransientAdvectionDiffusionTest:
         self.phys['throat.hydraulic_conductance'] = 1e-15
         self.geo['pore.volume'] = 1e-14
         self.sf = op.algorithms.StokesFlow(network=self.net, phase=self.phase)
-        self.sf.settings.update({'quantity': 'pore.pressure',
-                                 'conductance': 'throat.hydraulic_conductance'})
+        self.sf.settings._update({'quantity': 'pore.pressure',
+                                  'conductance': 'throat.hydraulic_conductance'})
         self.sf.set_value_BC(pores=self.net.pores('right'), values=1)
         self.sf.set_value_BC(pores=self.net.pores('left'), values=0)
         self.sf.run()
@@ -33,7 +33,7 @@ class TransientAdvectionDiffusionTest:
     def test_transient_advection_diffusion(self):
         ad = op.algorithms.TransientAdvectionDiffusion(network=self.net,
                                                        phase=self.phase)
-        ad.settings.update({
+        ad.settings._update({
             'quantity': 'pore.concentration',
             'conductance':'throat.ad_dif_conductance',
             'diffusive_conductance': 'throat.diffusive_conductance',

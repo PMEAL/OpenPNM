@@ -1,8 +1,14 @@
 import numpy as np
 import openpnm.models.misc as misc
 from openpnm.phases import GenericPhase as GenericPhase
-from openpnm.utils import logging
+from openpnm.utils import logging, SettingsAttr
 logger = logging.getLogger(__name__)
+
+
+class MultiPhaseSettings:
+    phases = []
+    throat_occupancy = 'manual'
+    partition_coef_prefix = 'throat.partition_coef'
 
 
 class MultiPhase(GenericPhase):
@@ -55,15 +61,8 @@ class MultiPhase(GenericPhase):
     """
 
     def __init__(self, phases=[], settings={}, **kwargs):
-        super().__init__(**kwargs)
-        self.settings.update(
-            {
-                'phases': [],
-                'throat_occupancy': 'manual',
-                'partition_coef_prefix': 'throat.partition_coef'
-            }
-        )
-        self.settings.update(settings)
+        self.settings = SettingsAttr(MultiPhaseSettings, settings)
+        super().__init__(settings=self.settings, **kwargs)
 
         self['pore.occupancy.all'] = np.zeros(self.Np, dtype=float)
         self['throat.occupancy.all'] = np.zeros(self.Nt, dtype=float)

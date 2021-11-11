@@ -39,7 +39,7 @@ rk45 = op.integrators.ScipyRK45(verbose=True)
 # %% Try w/ GenericTransport
 print(f"\n{'+'*65}", "\n--> Using GenericTransport", f"\n{'+'*65}\n", flush=True)
 gt = op.algorithms.GenericTransport(network=net, phase=air)
-gt.settings.update(alg_settings)
+gt.settings._update(alg_settings)
 gt.set_value_BC(net.pores("left"), 1.0)
 gt.set_value_BC(net.pores("right"), 0.4)
 
@@ -50,7 +50,7 @@ print(gt["pore.concentration"].mean())
 # %% Try w/ ReactiveTransport
 print(f"\n{'+'*65}", "\n--> Using ReactiveTransport", f"\n{'+'*65}\n", flush=True)
 rt = op.algorithms.ReactiveTransport(network=net, phase=air)
-rt.settings.update(alg_settings)
+rt.settings._update(alg_settings)
 
 rt.set_value_BC(net.pores("left"), 1.0)
 rt.set_value_BC(net.pores("right"), 0.4)
@@ -80,7 +80,7 @@ air["throat.diffusive_conductance"] = np.random.rand(net.Nt) * spacing
 V = net["pore.volume"] = spacing**3
 
 trt = op.algorithms.TransientReactiveTransport(network=net, phase=air)
-trt.settings.update(alg_settings)
+trt.settings._update(alg_settings)
 trt.set_value_BC(net.pores("left"), 1.0)
 trt.set_value_BC(net.pores("right"), 0.4)
 c0 = np.zeros(trt.Np)
@@ -129,7 +129,7 @@ t_settings = {
     "t_step": dt,
     "t_output": tout.tolist()
 }
-trt_legacy.settings.update({**alg_settings, **t_settings})
+trt_legacy.settings._update({**alg_settings, **t_settings})
 trt_legacy.set_value_BC(net.pores("left"), 1.0)
 trt_legacy.set_value_BC(net.pores("right"), 0.4)
 trt_legacy.set_IC(0.0)

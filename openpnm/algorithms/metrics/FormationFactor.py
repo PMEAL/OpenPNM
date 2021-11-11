@@ -1,5 +1,5 @@
 import numpy as np
-from openpnm.utils import logging, Project, Workspace, PrintableDict
+from openpnm.utils import logging, Project, Workspace, PrintableDict, SettingsAttr
 from openpnm.phases import GenericPhase
 from openpnm.physics import GenericPhysics
 from openpnm.algorithms import FickianDiffusion
@@ -8,6 +8,22 @@ from openpnm import models
 from openpnm import topotools
 logger = logging.getLogger(__name__)
 ws = Workspace()
+
+
+class FormationFactorSettings:
+    prefix = 'ff'
+    inlets = {'x': 'left',
+              'y': 'front',
+              'z': 'top'}
+    outlets = {'x': 'right',
+               'y': 'back',
+               'z': 'bottom'}
+    areas = {'x': None,
+             'y': None,
+             'z': None}
+    lengths = {'x': None,
+               'y': None,
+               'z': None}
 
 
 class FormationFactor(GenericMetric):
@@ -61,19 +77,7 @@ class FormationFactor(GenericMetric):
     """
 
     def __init__(self, network=None, project=None, settings={}, **kwargs):
-        self.settings.update({'inlets': {'x': 'left',
-                                         'y': 'front',
-                                         'z': 'top'},
-                              'outlets': {'x': 'right',
-                                          'y': 'back',
-                                          'z': 'bottom'},
-                              'areas': {'x': None,
-                                        'y': None,
-                                        'z': None},
-                              'lengths': {'x': None,
-                                          'y': None,
-                                          'z': None}})
-
+        self.settings = SettingsAttr(FormationFactorSettings, settings)
         self.results = PrintableDict()
         self.results._value = "Formation Factor"
         self.results._key = "Direction"
@@ -86,7 +90,8 @@ class FormationFactor(GenericMetric):
 #        for i in project:
 #            if i not in keep:
 #                project.purge_object(i)
-        super().__init__(network=network, project=project, **kwargs)
+        super().__init__(network=network, project=project,
+                         settings=self.settings, **kwargs)
 
     def run(self):
         r"""

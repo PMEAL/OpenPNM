@@ -13,8 +13,7 @@ import logging as logging
 from .misc import *
 from .Workspace import Workspace
 from .Project import Project
-from .Settings import SettingsAttr
-from .Settings import SettingsData
+from .Settings import *
 
 
 # You can add info to the logger message by inserting the desired %(item)

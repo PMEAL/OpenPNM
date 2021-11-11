@@ -9,10 +9,10 @@ on pore networks.
 
 """
 
-from .GenericAlgorithm import GenericAlgorithm, SettingsGenericAlgorithm
-from .GenericTransport import GenericTransport, SettingsGenericTransport
+from .GenericAlgorithm import GenericAlgorithm
+from .GenericTransport import GenericTransport
 
-from .ReactiveTransport import ReactiveTransport, SettingsReactiveTransport
+from .ReactiveTransport import ReactiveTransport
 from .TransientReactiveTransport import TransientReactiveTransport
 
 from .StokesFlow import StokesFlow

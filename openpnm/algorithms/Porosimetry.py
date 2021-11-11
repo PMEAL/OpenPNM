@@ -1,7 +1,24 @@
-from openpnm.algorithms import OrdinaryPercolation
-from openpnm.utils import logging
 import numpy as np
+from openpnm.algorithms import OrdinaryPercolation
+from openpnm.utils import logging, SettingsAttr, Docorator
+docstr = Docorator()
 logger = logging.getLogger(__name__)
+
+
+@docstr.dedent
+class PorosimetrySettings:
+    r"""
+    %(OrdinaryPercolationSettings.parameters)s
+    pore_partial_filling : string
+        The name of the model used to determine partial pore filling as
+        a function of applied pressure.
+    throat_partial_filling : string
+        The name of the model used to determine partial throat filling as
+        a function of applied pressure.
+    """
+    quantity = 'pore.pressure'
+    pore_partial_filling = ''
+    throat_partial_filling = ''
 
 
 class Porosimetry(OrdinaryPercolation):
@@ -33,37 +50,8 @@ class Porosimetry(OrdinaryPercolation):
     """
 
     def __init__(self, settings={}, phase=None, **kwargs):
-        def_set = {'phase': None,
-                   'pore_volume': 'pore.volume',
-                   'throat_volume': 'throat.volume',
-                   'mode': 'bond',
-                   'access_limited': True,
-                   'quantity': 'pressure',
-                   'throat_entry_pressure': 'throat.entry_pressure',
-                   'pore_volume': 'pore.volume',
-                   'throat_volume': 'throat.volume',
-                   'late_pore_filling': '',
-                   'late_throat_filling': '',
-                   'gui': {'setup': {'phase': None,
-                                     'quantity': '',
-                                     'throat_entry_pressure': '',
-                                     'pore_volume': '',
-                                     'throat_volume': '',
-                                     'late_pore_filling': '',
-                                     'late_throat_filling': ''},
-                           'set_inlets':   {'pores': None,
-                                            'overwrite': False},
-                           'set_outlets':  {'pores': None,
-                                            'overwrite': False},
-                           'set_residual': {'pores': None,
-                                            'throats': None,
-                                            'overwrite': False}
-                           }
-                   }
-        super().__init__(**kwargs)
-        self.settings.update(def_set)
-        # Apply user settings, if any
-        self.settings.update(settings)
+        self.settings = SettingsAttr(PorosimetrySettings, settings)
+        super().__init__(settings=self.settings, **kwargs)
         # Use the reset method to initialize all arrays
         self.reset()
         if phase is not None:
@@ -111,7 +99,7 @@ class Porosimetry(OrdinaryPercolation):
                        'throat.invasion_pressure': t_inv}
         else:
             p_inv, t_inv = super().results(Pc).values()
-            phase = self.project.find_phase(self)
+            phase = self.project[self.settings.phase]
             quantity = self.settings['quantity'].split('.')[-1]
             lpf = np.array([1])
             if self.settings['pore_partial_filling']:

@@ -6,7 +6,10 @@ from openpnm.phases import GenericPhase
 from openpnm.topotools import trim
 import openpnm.models as mods
 logger = logging.getLogger(__name__)
-defsets = {'adjust_psd': 'clip'}
+
+
+class BundleOfTubesSettings:
+    adjust_psd = 'clip'
 
 
 class BundleOfTubes(Project):
@@ -48,21 +51,14 @@ class BundleOfTubes(Project):
         The name to give the Project
 
     """
-    def __init__(
-        self,
-        shape,
-        spacing=1.0,
-        length=1.0,
-        psd_params={"distribution": "norm", "loc": None, "scale": None},
-        name=None,
-        settings={},
-        **kwargs
-    ):
+    def __init__(self, shape, spacing=1.0, length=1.0,
+                 psd_params={"distribution": "norm", "loc": None, "scale": None},
+                 name=None, settings={}, **kwargs):
         import scipy.stats as spst
 
         super().__init__(name=name)
-        self.settings.update(defsets)
-        self.settings.update(settings)
+        self.settings._update(BundleOfTubesSettings, docs=True)
+        self.settings._update(settings)  # Add user supplied settings
 
         if isinstance(shape, int):
             shape = np.array([shape, shape, 2])

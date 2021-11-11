@@ -1,5 +1,5 @@
 from openpnm.algorithms import ReactiveTransport
-from openpnm.utils import logging, Docorator, GenericSettings
+from openpnm.utils import logging, Docorator, SettingsAttr
 docstr = Docorator()
 logger = logging.getLogger(__name__)
 
@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 @docstr.get_sections(base='OhmicConductionSettings',
                      sections=['Parameters'])
 @docstr.dedent
-class OhmicConductionSettings(GenericSettings):
+class OhmicConductionSettings:
     r"""
 
     Parameters
@@ -48,6 +48,5 @@ class OhmicConduction(ReactiveTransport):
     """
 
     def __init__(self, settings={}, **kwargs):
-        super().__init__(**kwargs)
-        self.settings._update_settings_and_docs(OhmicConductionSettings())
-        self.settings.update(settings)
+        self.settings = SettingsAttr(OhmicConductionSettings, settings)
+        super().__init__(settings=self.settings, **kwargs)
