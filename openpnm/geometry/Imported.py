@@ -1,6 +1,6 @@
 import openpnm.models as mods
 from openpnm.geometry import GenericGeometry
-from openpnm.utils import logging, GenericSettings
+from openpnm.utils import logging, SettingsAttr
 logger = logging.getLogger(__name__)
 
 
@@ -9,7 +9,6 @@ class ImportedSettings:
 
     Parameters
     ----------
-
     pore_diameter : str (default = 'pore.extended_diameter')
         Key into the extracted data array to use as pore diameter in other
         geometry calculations. The default is .  Use of 'pore.' is not
@@ -73,15 +72,14 @@ class Imported(GenericGeometry):
     """
 
     def __init__(self, settings={}, **kwargs):
-        self.settings._update(ImportedSettings)
-        self.settings._update(settings)
+        self.settings = SettingsAttr(ImportedSettings, settings)
         if 'network' in kwargs.keys():
             network = kwargs.pop('network')
         elif 'project' in kwargs.keys():
             project = kwargs.pop('project')
             network = project.network
         super().__init__(network=network, pores=network.Ps, throats=network.Ts,
-                         **kwargs)
+                         settings=self.settings, **kwargs)
         # Transfer all geometrical properties off of network
         exclude = self.settings['exclude_props']
         exclude.extend(['pore.coords', 'throat.conns', 'pore.region_label'])
