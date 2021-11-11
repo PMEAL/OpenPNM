@@ -1,11 +1,10 @@
 import pytest
 import numpy as np
-import scipy as sp
-import matplotlib.pyplot as plt
 from openpnm.materials import BundleOfTubes
 
 
 class BundleOfTubesTest:
+
     def setup_class(self):
         pass
 
@@ -70,7 +69,7 @@ class BundleOfTubesTest:
             spacing=1.0,
             length=0.01,
             psd_params={"distribution": "normal", "loc": 0.02, "scale": 0.001},
-            settings={"adjust_psd": None},
+            settings={"adjust_psd": ''},
         )
         assert np.all(geo["throat.size_distribution"] == geo["throat.diameter"])
 

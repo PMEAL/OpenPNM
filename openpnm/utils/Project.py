@@ -3,7 +3,7 @@ import uuid
 import openpnm
 import numpy as np
 from copy import deepcopy
-from openpnm.utils import SettingsDict, HealthDict, Workspace, logging
+from openpnm.utils import HealthDict, Workspace, logging
 from .Grid import Tableist
 logger = logging.getLogger(__name__)
 ws = Workspace()
@@ -36,11 +36,12 @@ class Project(list):
     """
 
     def __init__(self, *args, **kwargs):
+        from openpnm.utils import SettingsAttr
         name = kwargs.pop('name', None)
         super().__init__(*args, **kwargs)
-        self.settings = SettingsDict()
+        self.settings = SettingsAttr()
         ws[name] = self  # Register self with workspace
-        self.settings['_uuid'] = str(uuid.uuid4())
+        self.settings['uuid'] = str(uuid.uuid4())
 
     def extend(self, obj):
         r"""
@@ -236,9 +237,6 @@ class Project(list):
         # If received phase, just return self
         if obj._isa('phase'):
             return obj
-        # If phase happens to be in settings (i.e. algorithm), look it up
-        if 'phase' in obj.settings.keys():
-            return self.phases()[obj.settings['phase']]
         # Otherwise find it using bottom-up approach (i.e. look in phase keys)
         for item in self.phases().values():
             if ('pore.' + obj.name in item) or ('throat.' + obj.name in item):
@@ -264,10 +262,6 @@ class Project(list):
         If no Geometry object can be found, then an Exception is raised.
 
         """
-        # If geometry happens to be in settings, look it up directly
-        if 'geometry' in physics.settings.keys():
-            geom = self.geometries()[physics.settings['geometry']]
-            return geom
         # Otherwise, use the bottom-up approach
         for geo in self.geometries().values():
             if physics in self.find_physics(geometry=geo):
@@ -305,42 +299,40 @@ class Project(list):
 
         Notes
         -----
-        The Project has an ``grid`` attribute that shows the association of
+        The Project has a ``grid`` attribute that shows the associations of
         all objects.  If each Geometry represents a row and each Phase is a
         column, then each row/col intersection represents a Physics. This
-        method finds the PHysics' at each intersection
+        method finds the Physics' at each intersection
 
         """
 
         if geometry is not None and phase is not None:
             physics = self.find_physics(geometry=geometry)
             phases = list(self.phases().values())
-            phys = physics[phases.index(phase)]
-            return phys
-        elif geometry is not None and phase is None:
+            return physics[phases.index(phase)]
+
+        if geometry is not None and phase is None:
             result = []
-            net = self.network
-            geoPs = net['pore.'+geometry.name]
-            geoTs = net['throat.'+geometry.name]
-            for phase in self.phases().values():
-                physics = self.find_physics(phase=phase)
+            geoPs = self.network[f'pore.{geometry.name}']
+            geoTs = self.network[f'throat.{geometry.name}']
+            for _phase in self.phases().values():
+                physics = self.find_physics(phase=_phase)
                 for phys in physics:
-                    Ps = phase.map_pores(pores=phys.Ps, origin=phys)
-                    physPs = phase.tomask(pores=Ps)
-                    Ts = phase.map_throats(throats=phys.Ts, origin=phys)
-                    physTs = phase.tomask(throats=Ts)
+                    Ps = _phase.map_pores(pores=phys.Ps, origin=phys)
+                    physPs = _phase.tomask(pores=Ps)
+                    Ts = _phase.map_throats(throats=phys.Ts, origin=phys)
+                    physTs = _phase.tomask(throats=Ts)
                     if np.all(geoPs == physPs) and np.all(geoTs == physTs):
                         result.append(phys)
             return result
-        elif geometry is None and phase is not None:
+
+        if geometry is None and phase is not None:
             names = set(self.physics().keys())
             keys = set([item.split('.')[-1] for item in phase.keys()])
             hits = names.intersection(keys)
-            phys = [self.physics().get(i, None) for i in hits]
-            return phys
-        else:
-            phys = list(self.physics().values())
-            return phys
+            return [self.physics().get(i, None) for i in hits]
+
+        return list(self.physics().values())
 
     def find_full_domain(self, obj):
         r"""
@@ -629,6 +621,9 @@ class Project(list):
                      + '{0:<65}'.format(item.__repr__()))
         s.append(hr)
         return '\n'.join(s)
+
+    def __repr__(self):
+        return self.__str__()
 
     def check_geometry_health(self):
         r"""

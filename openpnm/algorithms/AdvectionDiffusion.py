@@ -1,6 +1,6 @@
 import numpy as np
 from openpnm.algorithms import ReactiveTransport
-from openpnm.utils import logging, Docorator, GenericSettings
+from openpnm.utils import logging, Docorator, SettingsAttr
 docstr = Docorator()
 logger = logging.getLogger(__name__)
 
@@ -8,29 +8,22 @@ logger = logging.getLogger(__name__)
 @docstr.get_sections(base='AdvectionDiffusionSettings',
                      sections=['Parameters', 'Other Parameters'])
 @docstr.dedent
-class AdvectionDiffusionSettings(GenericSettings):
+class AdvectionDiffusionSettings:
     r"""
     Parameters
     ----------
     %(ReactiveTransportSettings.parameters)s
-    quantity : str
-        The name of the physical quantity to be calculated. The default
-        value is 'pore.concentration'.
-    conductance : str
-        The name of the advective-diffusive conductance model to use for
-        calculating the transport conductance used by the algorithm. The
-        default value is 'throat.ad_dif_conductance'.
     diffusive_conductance : str
         The name of the diffusive conductance values to be used by the
         specified ``conductance`` model to find the advective-diffusive
-        conductance. The default value is 'throat.diffusive_conductance'.
+        conductance.
     hydraulic_conductance : str, optional
         The name of the hydraulic conductance values to be used by the
         specified ``conductance`` model to find the advective-diffusive
-        conductance. The default value is 'throat.hydraulic_conductance'.
+        conductance.
     pressure : str, optional
         The name of the pressure values calculated by the ``StokesFlow``
-        algorithm. The default value is 'pore.pressure'.
+        algorithm.
 
     ----
 
@@ -45,7 +38,7 @@ class AdvectionDiffusionSettings(GenericSettings):
     %(GenericTransportSettings.other_parameters)s
 
     """
-
+    prefix = 'ad'
     quantity = 'pore.concentration'
     conductance = 'throat.ad_dif_conductance'
     diffusive_conductance = 'throat.diffusive_conductance'
@@ -59,9 +52,8 @@ class AdvectionDiffusion(ReactiveTransport):
     """
 
     def __init__(self, settings={}, **kwargs):
-        super().__init__(**kwargs)
-        self.settings._update_settings_and_docs(AdvectionDiffusionSettings())
-        self.settings.update(settings)
+        self.settings = SettingsAttr(AdvectionDiffusionSettings, settings)
+        super().__init__(settings=self.settings, **kwargs)
 
     def set_outflow_BC(self, pores, mode='merge'):
         r"""
@@ -155,3 +147,24 @@ class AdvectionDiffusion(ReactiveTransport):
                                 + 'specified', pores[np.where(hits)])
         # Then call parent class function if above check passes
         super()._set_BC(pores=pores, bctype=bctype, bcvalues=bcvalues, mode=mode)
+
+
+if __name__ == "__main__":
+
+    import openpnm as op
+    pn = op.network.Cubic(shape=[10, 10, 1])
+    geo = op.geometry.SpheresAndCylinders(network=pn, pores=pn.Ps, throats=pn.Ts)
+    air = op.phases.Air(network=pn)
+    phys = op.physics.Standard(network=pn, phase=air, geometry=geo)
+    flow = op.algorithms.StokesFlow(network=pn, phase=air)
+    flow.set_value_BC(pores=pn.pores('left'), values=1)
+    flow.set_value_BC(pores=pn.pores('right'), values=0)
+    flow.run()
+    ad = op.algorithms.AdvectionDiffusion(network=pn, phase=air)
+    ad.set_value_BC(pores=pn.pores('front'), values=1)
+    ad.set_value_BC(pores=pn.pores('back'), values=0)
+    ad.run()
+    # import matplotlib.pyplot as plt
+    # fig, ax = plt.subplots(1, 1)
+    # ax.imshow(ad['pore.concentration'].reshape([10, 10]))
+

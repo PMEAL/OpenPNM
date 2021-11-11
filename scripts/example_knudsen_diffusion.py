@@ -1,12 +1,13 @@
-import openpnm as op
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
+import openpnm as op
 
 
 # Get Deff w/o including Knudsen effect
+shape = np.array([10, 10, 10])
 spacing = 1.0
 net = op.network.Cubic(shape=[10, 10, 10], spacing=spacing)
-geom = op.geometry.StickAndBall(network=net, pores=net.Ps, throats=net.Ts)
+geom = op.geometry.SpheresAndCylinders(network=net, pores=net.Ps, throats=net.Ts)
 air = op.phases.Air(network=net)
 phys = op.physics.Standard(network=net, geometry=geom, phase=air)
 odiff = op.models.physics.diffusive_conductance.ordinary_diffusion
@@ -15,8 +16,8 @@ fd = op.algorithms.FickianDiffusion(network=net, phase=air)
 fd.set_value_BC(pores=net.pores("left"), values=1.0)
 fd.set_value_BC(pores=net.pores("right"), values=0.0)
 fd.run()
-L = (net.shape * net.spacing)[1]
-A = (net.shape * net.spacing)[[0, 2]].prod()
+L = (shape * spacing)[1]
+A = (shape * spacing)[[0, 2]].prod()
 Mdot = fd.rate(pores=net.pores("left")).squeeze()
 Deff0 =  Mdot * L / A
 
@@ -30,7 +31,7 @@ Deff = []
 for spacing in spacings:
     np.random.seed(10)
     net = op.network.Cubic(shape=[10, 10, 10], spacing=spacing)
-    geom = op.geometry.StickAndBall(network=net, pores=net.Ps, throats=net.Ts)
+    geom = op.geometry.SpheresAndCylinders(network=net, pores=net.Ps, throats=net.Ts)
     air = op.phases.Air(network=net)
     phys = op.physics.Standard(network=net, geometry=geom, phase=air)
     phys.add_model(propname="throat.diffusive_conductance", model=mdiff)
@@ -38,8 +39,8 @@ for spacing in spacings:
     fd.set_value_BC(pores=net.pores("left"), values=1.0)
     fd.set_value_BC(pores=net.pores("right"), values=0.0)
     fd.run()
-    L = (net.shape * net.spacing)[1]
-    A = (net.shape * net.spacing)[[0, 2]].prod()
+    L = (shape * spacing)[1]
+    A = (shape * spacing)[[0, 2]].prod()
     Mdot = fd.rate(pores=net.pores("left")).squeeze()
     Deff.append(Mdot * L / A)
 

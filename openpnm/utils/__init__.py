@@ -4,31 +4,16 @@ r"""
 
 ----
 
-This module contains 2 very important classes (Project and Workspace) as well
+This module contains two very important classes (Project and Workspace) as well
 as a number of helper classes.
 
 """
 
 import logging as logging
-from .misc import Docorator
-from .misc import PrintableDict
-from .misc import PrintableList
-from .misc import NestedDict
-from .misc import SubDict
-from .misc import SettingsDict
-from .misc import GenericSettings
-from .misc import HealthDict
-from .misc import flat_list
-from .misc import sanitize_dict
-from .misc import unique_list
-from .misc import tic, toc
-from .misc import is_symmetric
-from .misc import nbr_to_str
-from .misc import conduit_dict_to_array
-from .misc import conduit_array_to_dict
-from .misc import prettify_logger_message
+from .misc import *
 from .Workspace import Workspace
 from .Project import Project
+from .Settings import *
 
 
 # You can add info to the logger message by inserting the desired %(item)

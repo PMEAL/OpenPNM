@@ -1,15 +1,30 @@
 import numpy as np
 import scipy.sparse as sprs
 import scipy.spatial as sptl
-from openpnm.core import Base, ModelsMixin, LegacyMixin, LabelMixin
+from copy import deepcopy
+from openpnm.core import Base, ModelsMixin, LegacyMixin, LabelMixin, ParamMixin
 from openpnm import topotools
+from openpnm.utils import Docorator, SettingsAttr
 from openpnm.utils import Workspace, logging
 import openpnm.models.topology as tm
 logger = logging.getLogger(__name__)
 ws = Workspace()
+docstr = Docorator()
 
 
-class GenericNetwork(Base, ModelsMixin, LegacyMixin, LabelMixin):
+@docstr.get_sections(base='NetworkSettings', sections=['Parameters'])
+@docstr.dedent
+class NetworkSettings:
+    r"""
+
+    Parameters
+    ----------
+    %(BaseSettings.parameters)s
+    """
+    prefix = 'net'
+
+
+class GenericNetwork(ParamMixin, Base, ModelsMixin, LegacyMixin, LabelMixin):
     r"""
     This generic class contains the main functionality used by all networks
 
@@ -118,15 +133,16 @@ class GenericNetwork(Base, ModelsMixin, LegacyMixin, LabelMixin):
         instance._am = {}
         return instance
 
-    def __init__(self, conns=None, coords=None, project=None, settings={},
-                 **kwargs):
-        self.settings.setdefault('prefix', 'net')
-        self.settings.update(settings)
-        super().__init__(project=project, **kwargs)
+    def __init__(self, conns=None, coords=None, settings={}, **kwargs):
+        self.settings = SettingsAttr(NetworkSettings, settings)
+        super().__init__(settings=self.settings, **kwargs)
+        self.settings._getdocs(NetworkSettings)
+
         if coords is not None:
             Np = np.shape(coords)[0]
             self['pore.all'] = np.ones(Np, dtype=bool)
             self['pore.coords'] = np.array(coords)
+
         if conns is not None:
             Nt = np.shape(conns)[0]
             self['throat.all'] = np.ones(Nt, dtype=bool)
@@ -156,6 +172,10 @@ class GenericNetwork(Base, ModelsMixin, LegacyMixin, LabelMixin):
             return self.get(f"{element}._id")
         vals = super().__getitem__(key)
         return vals
+
+    @property
+    def _subdomains(self):
+        return list(self.project.geometries().values())
 
     def _gen_ids(self):
         IDs = self.get('pore._id', np.array([], ndmin=1, dtype=np.int64))

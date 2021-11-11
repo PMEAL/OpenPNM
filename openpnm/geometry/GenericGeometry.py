@@ -1,10 +1,25 @@
-from openpnm.core import Subdomain, ModelsMixin
+from copy import deepcopy
+from openpnm.core import Subdomain, ModelsMixin, ParamMixin
+from openpnm.utils import Docorator, SettingsAttr
 from openpnm.utils import Workspace, logging
 logger = logging.getLogger(__name__)
 ws = Workspace()
+docstr = Docorator()
 
 
-class GenericGeometry(Subdomain, ModelsMixin):
+@docstr.get_sections(base='GeometrySettings', sections=['Parameters'])
+@docstr.dedent
+class GeometrySettings:
+    r"""
+
+    Parameters
+    ----------
+    %(BaseSettings.parameters)s
+    """
+    prefix = 'geo'
+
+
+class GenericGeometry(ParamMixin, Subdomain, ModelsMixin):
     r"""
     This generic class is meant as a starter for custom Geometry objects
 
@@ -23,8 +38,6 @@ class GenericGeometry(Subdomain, ModelsMixin):
     name : str
         A unique name to apply to the object.  This name will also be used as a
         label to identify where this Geometry applies.
-    project : Project, optional
-        A Project can be specified instead of ``network``.
 
     Examples
     --------
@@ -67,72 +80,20 @@ class GenericGeometry(Subdomain, ModelsMixin):
     """
 
     def __init__(self, pores=[], throats=[], settings={}, **kwargs):
-        # Define some default settings
-        self.settings.update({'prefix': 'geo'})
-        # Overwrite with user supplied settings, if any
-        self.settings.update(settings)
-
-        super().__init__(**kwargs)
+        self.settings = SettingsAttr(GeometrySettings, settings)
+        super().__init__(settings=self.settings, **kwargs)
 
         network = self.project.network
         if network:
             network[f'pore.{self.name}'] = False
             network[f'throat.{self.name}'] = False
             try:
-                self.add_locations(pores=pores, throats=throats)
+                self.set_locations(pores=pores, throats=throats, mode='add')
             except Exception as e:
                 network.project.purge_object(self)
+                raise e
                 logger.error(f'{e}, instantiation cancelled')
 
-    def add_locations(self, pores=[], throats=[]):
-        r"""
-        Adds associations between this geometry and the given pore and/or
-        throat locations.
-
-        Parameters
-        ----------
-        pores and throats : array_like
-            The pore and/or throat locations for which the association should
-            be added.  These indices are for the full domain.
-
-        Notes
-        -----
-        If a physics object is associated with this geometry, then its
-        pore and/or throat associations are also changed.
-        """
-        pores = self.network._parse_indices(pores)
-        throats = self.network._parse_indices(throats)
-        objects = self.project.find_physics(self)
-        objects.append(self)
-        for obj in objects:
-            if len(pores) > 0:
-                obj._set_locations(element='pore', indices=pores, mode='add')
-            if len(throats) > 0:
-                obj._set_locations(element='throat', indices=throats, mode='add')
-
-    def drop_locations(self, pores=[], throats=[]):
-        r"""
-        Removes association between this geometry and the given pore and/or
-        throat locations.
-
-        Parameters
-        ----------
-        pores and throats : array_like
-            The pore and/or throat locations from which the association should
-            be removed.  These indices refer to the full domain.
-
-        Notes
-        -----
-        If a physics object is associated with this geometry, then its
-        pore and/or throat associations are also changed.
-
-        """
-        pores = self.network._parse_indices(pores)
-        throats = self.network._parse_indices(throats)
-        objects = self.project.find_physics(self)
-        objects.append(self)
-        for obj in objects:
-            if len(pores) > 0:
-                obj._set_locations(element='pore', indices=pores, mode='drop')
-            if len(throats) > 0:
-                obj._set_locations(element='throat', indices=throats, mode='drop')
+    def _get_phys(self):
+        return self.project.find_physics(geometry=self)
+    physics = property(fget=_get_phys)

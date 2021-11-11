@@ -1,5 +1,7 @@
-from openpnm.core import Base, LegacyMixin, ModelsMixin, LabelMixin
-from openpnm.utils import Workspace, logging, Docorator
+from copy import deepcopy
+from openpnm.core import Base, LegacyMixin, ModelsMixin, LabelMixin, ParamMixin
+from openpnm.utils import Workspace, logging
+from openpnm.utils import Docorator, SettingsAttr
 from numpy import ones
 import openpnm.models as mods
 docstr = Docorator()
@@ -7,9 +9,20 @@ logger = logging.getLogger(__name__)
 ws = Workspace()
 
 
+@docstr.get_sections(base='PhaseSettings', sections=['Parameters'])
+@docstr.dedent
+class PhaseSettings:
+    r"""
+    Parameters
+    ----------
+    %(BaseSettings.parameters)s
+    """
+    prefix = 'phase'
+
+
 @docstr.get_sections(base='GenericPhase', sections=['Parameters'])
 @docstr.dedent
-class GenericPhase(Base, ModelsMixin, LegacyMixin, LabelMixin):
+class GenericPhase(ParamMixin, Base, ModelsMixin, LegacyMixin, LabelMixin):
     r"""
     This generic class is meant as a starter for custom Phase objects
 
@@ -53,13 +66,9 @@ class GenericPhase(Base, ModelsMixin, LegacyMixin, LabelMixin):
 
     """
 
-    def __init__(self, network=None, project=None, settings={}, **kwargs):
-        # Define some default settings
-        self.settings.update({'prefix': 'phase'})
-        # Overwrite with user supplied settings, if any
-        self.settings.update(settings)
-
-        super().__init__(network=network, project=project, **kwargs)
+    def __init__(self, settings={}, **kwargs):
+        self.settings = SettingsAttr(PhaseSettings, settings)
+        super().__init__(settings=self.settings, **kwargs)
 
         # If project has a network object, adjust pore and throat array sizes
         network = self.project.network
@@ -91,3 +100,15 @@ class GenericPhase(Base, ModelsMixin, LegacyMixin, LabelMixin):
                                mode='mean')
         vals = super().__getitem__(key)
         return vals
+
+    @property
+    def phase(self):
+        return self
+
+    @property
+    def physics(self):
+        return self.project.find_physics(phase=self)
+
+    @property
+    def _subdomains(self):
+        return self.project.find_physics(phase=self)

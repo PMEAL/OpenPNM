@@ -6,7 +6,7 @@ class GenericPhysicsTest:
 
     def setup_class(self):
         self.net = op.network.Cubic(shape=[3, 3, 3])
-        self.geo = op.geometry.StickAndBall(network=self.net,
+        self.geo = op.geometry.SpheresAndCylinders(network=self.net,
                                             pores=self.net.Ps,
                                             throats=self.net.Ts)
 
@@ -42,21 +42,34 @@ class GenericPhysicsTest:
             phys.project.find_geometry(phys)
 
     def test_instantiate_with_only_network(self):
-        phase = op.phases.GenericPhase(network=self.net)
+        _ = op.phases.GenericPhase(network=self.net)
         phys = op.physics.GenericPhysics(network=self.net)
         assert phys.project is not None
         with pytest.raises(Exception):
-            _ = phys.project.find_phase(phys) is phase
+            _ = phys.project.find_phase(phys)
         with pytest.raises(Exception):
             _ = phys.project.find_geometry(phys)
 
-    def test_set_phase_afer_instantiation(self):
+    def test_instantiate_with_pores_and_throats(self):
+        net = op.network.Cubic(shape=[3, 3, 3])
+        _ = op.geometry.GenericGeometry(network=net,
+                                        pores=net.Ps,
+                                        throats=net.Ts)
+        phase = op.phases.GenericPhase(network=net)
+        phys = op.physics.GenericPhysics(network=net,
+                                         phase=phase,
+                                         pores=net.Ps,
+                                         throats=net.Ts)
+        assert phys.Np == 27
+        assert phys.Nt == 54
+
+    def test_set_phase_after_instantiation(self):
         phys = op.physics.GenericPhysics(network=self.net)
         phase = op.phases.GenericPhase(network=self.net)
         assert 'pore.' + phys.name not in phase.keys()
         phys.set_phase(phase=phase, mode='add')
         assert 'pore.' + phys.name in phase.keys()
-        phys.set_phase(phase=phase, mode='remove')
+        phys.set_phase(phase=phase, mode='drop')
         assert 'pore.' + phys.name not in phase.keys()
 
     def test_set_geom_after_instantiation(self):
@@ -86,7 +99,7 @@ class GenericPhysicsTest:
         phase2 = op.phases.GenericPhase(network=net)
         phys = op.physics.GenericPhysics(network=net, phase=phase1,
                                          geometry=geo)
-        phys.set_phase(phase=phase2, mode='swap')
+        phys.set_phase(phase=phase2, mode='move')
         assert phys.Np == 27
         assert phys.Nt == 54
 
@@ -126,21 +139,75 @@ class GenericPhysicsTest:
         with pytest.raises(Exception):
             phys.set_geometry(geometry=geo, mode='add')
 
-    def test_drop_geo_add_phys(self):
+    def test_using_geometry_attr(self):
         net = op.network.Cubic(shape=[3, 3, 3])
         geo = op.geometry.GenericGeometry(network=net, pores=net.Ps,
                                           throats=net.Ts)
         phase = op.phases.GenericPhase(network=net)
         phys = op.physics.GenericPhysics(network=net, phase=phase,
                                          geometry=geo)
-        geo.drop_locations(pores=[0])
-        geo2 = op.geometry.GenericGeometry(network=net, pores=[0])
-        phys2 = op.physics.GenericPhysics(network=net, phase=phase,
-                                          geometry=geo2)
-        assert geo.Np == 26
-        assert phys.Np == 26
-        assert geo2.Np == 1
-        assert phys2.Np == 1
+        assert phys.Np == 27
+        del phys.geometry
+        assert phys.Np == 0
+        phys.geometry = geo
+        assert phys.Np == 27
+        assert phys.geometry is geo
+
+    def test_using_phase_attr(self):
+        net = op.network.Cubic(shape=[3, 3, 3])
+        geo = op.geometry.GenericGeometry(network=net, pores=net.Ps,
+                                          throats=net.Ts)
+        phase1 = op.phases.GenericPhase(network=net)
+        phase2 = op.phases.GenericPhase(network=net)
+        phys = op.physics.GenericPhysics(network=net, phase=phase1,
+                                         geometry=geo)
+        assert phys.Np == 27
+        assert phys in phase1.physics
+        assert phys not in phase2.physics
+        phys.phase = phase2
+        assert phys in phase2.physics
+        assert phys not in phase1.physics
+        assert phys.Np == 27
+
+    def test_set_phase_modes(self):
+        net = op.network.Cubic(shape=[3, 3, 3])
+        geo = op.geometry.GenericGeometry(network=net, pores=net.Ps,
+                                          throats=net.Ts)
+        phase1 = op.phases.GenericPhase(network=net)
+        phase2 = op.phases.GenericPhase(network=net)
+        phys = op.physics.GenericPhysics(network=net, phase=phase1,
+                                         geometry=geo)
+        assert phys.Np == 27
+        assert phys.Nt == 54
+        assert phys in phase1.physics
+        assert phys not in phase2.physics
+        with pytest.raises(Exception):
+            phys.set_phase(phase=phase2, mode='add')
+        phys.set_phase(phase=phase2, mode='move')
+        assert phys in phase2.physics
+        assert phys not in phase1.physics
+        assert phys.Np == 27
+        assert phys.Nt == 54
+        phys.set_phase(mode='drop')
+        phys.set_phase(phase=phase1, mode='add')
+        assert phys.Np == 0
+        assert phys.Nt == 0
+        assert phys in phase1.physics
+        assert phys not in phase2.physics
+
+    def test_set_geometry_mode_move(self):
+        pn = op.network.Cubic([6, 1, 1])
+        g1 = op.geometry.GenericGeometry(network=pn, pores=[0, 1, 2])
+        g2 = op.geometry.GenericGeometry(network=pn, pores=[3, 4, 5])
+        air = op.phases.Air(network=pn)
+        phys1 = op.physics.GenericPhysics(network=pn, phase=air, geometry=g1)
+        phys2 = op.physics.GenericPhysics(network=pn, phase=air)
+        phys2.set_geometry(geometry=g1, mode='move')
+        assert phys1.Np == 0
+        assert phys2.Np == 3
+        phys1.set_geometry(geometry=g2, mode='add')
+        assert phys1.Np == 3
+        assert phys2.Np == 3
 
 
 if __name__ == '__main__':

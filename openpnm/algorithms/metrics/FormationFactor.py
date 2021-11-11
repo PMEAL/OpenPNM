@@ -1,5 +1,5 @@
 import numpy as np
-from openpnm.utils import logging, Project, Workspace, PrintableDict
+from openpnm.utils import logging, Project, Workspace, PrintableDict, SettingsAttr
 from openpnm.phases import GenericPhase
 from openpnm.physics import GenericPhysics
 from openpnm.algorithms import FickianDiffusion
@@ -8,6 +8,22 @@ from openpnm import models
 from openpnm import topotools
 logger = logging.getLogger(__name__)
 ws = Workspace()
+
+
+class FormationFactorSettings:
+    prefix = 'ff'
+    inlets = {'x': 'left',
+              'y': 'front',
+              'z': 'top'}
+    outlets = {'x': 'right',
+               'y': 'back',
+               'z': 'bottom'}
+    areas = {'x': None,
+             'y': None,
+             'z': None}
+    lengths = {'x': None,
+               'y': None,
+               'z': None}
 
 
 class FormationFactor(GenericMetric):
@@ -43,7 +59,7 @@ class FormationFactor(GenericMetric):
     --------
     >>> import openpnm as op
     >>> pn = op.network.Cubic(shape=[10, 10, 10], spacing=1e-5)
-    >>> geo = op.geometry.StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts)
+    >>> geo = op.geometry.SpheresAndCylinders(network=pn, pores=pn.Ps, throats=pn.Ts)
 
     Now find the formation factor of the network:
 
@@ -60,33 +76,12 @@ class FormationFactor(GenericMetric):
 
     """
 
-    def __init__(self, network=None, project=None, settings={}, **kwargs):
-        self.settings.update({'inlets': {'x': 'left',
-                                         'y': 'front',
-                                         'z': 'top'},
-                              'outlets': {'x': 'right',
-                                          'y': 'back',
-                                          'z': 'bottom'},
-                              'areas': {'x': None,
-                                        'y': None,
-                                        'z': None},
-                              'lengths': {'x': None,
-                                          'y': None,
-                                          'z': None}})
-
+    def __init__(self, settings={}, **kwargs):
+        self.settings = SettingsAttr(FormationFactorSettings, settings)
         self.results = PrintableDict()
         self.results._value = "Formation Factor"
         self.results._key = "Direction"
-        if network is None:
-            network = project.network
-        if project is None:
-            project = network.project
-#        project = ws.copy_project(network.project)
-#        keep = [network] + list(project.geometries().values())
-#        for i in project:
-#            if i not in keep:
-#                project.purge_object(i)
-        super().__init__(network=network, project=project, **kwargs)
+        super().__init__(settings=self.settings, **kwargs)
 
     def run(self):
         r"""

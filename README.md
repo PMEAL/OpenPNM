@@ -1,9 +1,7 @@
-[![](https://github.com/PMEAL/OpenPNM/workflows/Ubuntu/badge.svg)](https://github.com/PMEAL/OpenPNM/actions)
-[![](https://github.com/PMEAL/OpenPNM/workflows/macOS/badge.svg)](https://github.com/PMEAL/OpenPNM/actions)
-[![](https://github.com/PMEAL/OpenPNM/workflows/Windows/badge.svg)](https://github.com/PMEAL/OpenPNM/actions)
-[![](https://github.com/PMEAL/OpenPNM/workflows/Examples/badge.svg)](https://github.com/PMEAL/OpenPNM/actions) <br>
+[![](https://github.com/PMEAL/OpenPNM/actions/workflows/tests.yml/badge.svg)](https://github.com/PMEAL/OpenPNM/actions)
+[![](https://github.com/PMEAL/OpenPNM/actions/workflows/examples.yml/badge.svg)](https://github.com/PMEAL/OpenPNM/actions)
 [![](https://codecov.io/gh/PMEAL/OpenPNM/branch/dev/graph/badge.svg)](https://codecov.io/gh/PMEAL/OpenPNM)
-[![](https://img.shields.io/badge/ReadTheDocs-GO-blue.svg)](https://pmeal.github.io/OpenPNM/)
+[![](https://img.shields.io/badge/Documentation-Read-blue.svg)](https://pmeal.github.io/OpenPNM/)
 [![](https://badge.fury.io/py/openpnm.svg)](https://pypi.python.org/pypi/openpnm)
 [![](https://anaconda.org/conda-forge/openpnm/badges/installer/conda.svg)](https://anaconda.org/conda-forge/openpnm)
 
@@ -59,7 +57,7 @@ The following code block illustrates how to use OpenPNM to perform a mercury int
 
 import openpnm as op
 pn = op.network.Cubic(shape=[10, 10, 10], spacing=0.0001)
-geo = op.geometry.StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts)
+geo = op.geometry.SpheresAndCylinders(network=pn, pores=pn.Ps, throats=pn.Ts)
 Hg = op.phases.Mercury(network=pn)
 phys = op.physics.Standard(network=pn, phase=Hg, geometry=geo)
 mip = op.algorithms.Porosimetry(network=pn, phase=Hg)

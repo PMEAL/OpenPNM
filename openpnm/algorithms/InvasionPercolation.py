@@ -1,12 +1,34 @@
 import warnings
 import heapq as hq
-import scipy as sp
 import numpy as np
 from collections import namedtuple
-from openpnm.utils import logging
+from openpnm.utils import logging, SettingsAttr, Docorator
 from openpnm.topotools import find_clusters
 from openpnm.algorithms import GenericAlgorithm
 logger = logging.getLogger(__name__)
+docstr = Docorator()
+
+
+@docstr.get_sections(base='IPSettings',
+                     sections=['Parameters', 'Other Parameters'])
+@docstr.dedent
+class IPSettings:
+    r"""
+
+    Parameters
+    ----------
+    %(GenericAlgorithmSettings.parameters)s
+    pore_volume : str
+        The dictionary key for the pore volume array
+    throat_volume : str
+        The dictionary key for the throat volume array
+    entry_pressure : str
+        The dictionary key for the throat capillary pressure
+    """
+    phase = ''
+    pore_volume = 'pore.volume'
+    throat_volume = 'throat.volume'
+    entry_pressure = 'throat.entry_pressure'
 
 
 class InvasionPercolation(GenericAlgorithm):
@@ -45,7 +67,7 @@ class InvasionPercolation(GenericAlgorithm):
 
     Add a basic geometry:
 
-    >>> geom = op.geometry.StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts)
+    >>> geom = op.geometry.SpheresAndCylinders(network=pn, pores=pn.Ps, throats=pn.Ts)
 
     Create an invading phase, and attach the capillary pressure model:
 
@@ -83,22 +105,9 @@ class InvasionPercolation(GenericAlgorithm):
 
     """
     def __init__(self, settings={}, phase=None, **kwargs):
-        def_set = {'phase': None,
-                   'pore_volume': 'pore.volume',
-                   'throat_volume': 'throat.volume',
-                   'entry_pressure': 'throat.entry_pressure',
-                   'gui': {'setup':          {'phase': None,
-                                              'entry_pressure': '',
-                                              'pore_volume': '',
-                                              'throat_volume': ''},
-                           'set_inlets':     {'pores': None,
-                                              'overwrite': False},
-                           'apply_trapping': {'outlets': None}
-                           }
-                   }
-        super().__init__(**kwargs)
-        self.settings.update(def_set)
-        self.settings.update(settings)
+        self.settings = SettingsAttr(IPSettings, settings)
+        super().__init__(settings=self.settings, **kwargs)
+
         if phase is not None:
             self.settings['phase'] = phase.name
         self['pore.invasion_sequence'] = -1
@@ -480,7 +489,7 @@ class InvasionPercolation(GenericAlgorithm):
 if __name__ == '__main__':
     import openpnm as op
     pn = op.network.Cubic(shape=[10, 10, 10], spacing=1e-4)
-    geo = op.geometry.StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts)
+    geo = op.geometry.SpheresAndCylinders(network=pn, pores=pn.Ps, throats=pn.Ts)
     water = op.phases.Water(network=pn, name='h2o')
     phys_water = op.physics.Standard(network=pn, phase=water, geometry=geo)
     ip = InvasionPercolation(network=pn, phase=water)

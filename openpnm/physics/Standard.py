@@ -29,12 +29,7 @@ class Standard(GenericPhysics):
     """
 
     def __init__(self, project=None, network=None, phase=None,
-                 geometry=None, settings={}, **kwargs):
-
-        # Define some default settings
-        self.settings.update({'prefix': 'phys'})
-        # Overwrite with user supplied settings, if any
-        self.settings.update(settings)
+                 geometry=None, **kwargs):
 
         # Deal with network or project arguments
         if network is not None:
@@ -46,12 +41,8 @@ class Standard(GenericPhysics):
         super().__init__(project=project, phase=phase, geometry=geometry,
                          **kwargs)
 
-        self.add_model(propname='throat.flow_shape_factors',
-                       model=mods.flow_shape_factors.conical_frustum_and_stick)
         self.add_model(propname='throat.hydraulic_conductance',
                        model=mods.hydraulic_conductance.hagen_poiseuille)
-        self.add_model(propname='throat.poisson_shape_factors',
-                       model=mods.poisson_shape_factors.conical_frustum_and_stick)
         self.add_model(propname='throat.diffusive_conductance',
                        model=mods.diffusive_conductance.mixed_diffusion)
         self.add_model(propname='throat.ad_dif_conductance',
@@ -59,6 +50,6 @@ class Standard(GenericPhysics):
         self.add_model(propname='throat.entry_pressure',
                        model=mods.capillary_pressure.washburn)
         self.add_model(propname='throat.thermal_conductance',
-                       model=mods.thermal_conductance.series_resistors)
+                       model=mods.thermal_conductance.generic_thermal)
         self.add_model(propname='throat.electrical_conductance',
-                       model=mods.electrical_conductance.series_resistors)
+                       model=mods.electrical_conductance.generic_electrical)

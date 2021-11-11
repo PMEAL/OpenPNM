@@ -93,6 +93,8 @@ setup(
         'terminaltables',
         'tqdm',
         'transforms3d',
+        'traits',
+        'attr',
     ],
     author='OpenPNM Team',
     author_email='jgostick@uwaterloo.ca',

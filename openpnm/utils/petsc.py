@@ -11,10 +11,13 @@ import scipy.sparse
 from openpnm.core import Base
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)
-import petsc4py
-# Next line must be before importing PETSc
-petsc4py.init(sys.argv)
-from petsc4py import PETSc
+try:
+    import petsc4py
+    # Next line must be before importing PETSc
+    petsc4py.init(sys.argv)
+    from petsc4py import PETSc
+except ModuleNotFoundError:
+    pass
 
 
 class PETScSparseLinearSolver(Base):
@@ -43,8 +46,8 @@ class PETScSparseLinearSolver(Base):
                    'atol': 1e-06,
                    'rtol': 1e-06,
                    'maxiter': 1000}
-        self.settings.update(def_set)
-        self.settings.update(settings)
+        self.settings._update(def_set)
+        self.settings._update(settings)
         self.A = sp.sparse.csr_matrix(A)
         self.b = b
         # Matrix of coefficients size

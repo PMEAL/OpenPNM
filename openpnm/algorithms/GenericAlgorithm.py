@@ -1,55 +1,46 @@
-from openpnm.core import Base, LegacyMixin, LabelMixin
-from openpnm.utils import logging, Docorator
 import numpy as np
+from openpnm.core import Base, LegacyMixin, LabelMixin
+from openpnm.utils import logging, Docorator, SettingsAttr
 logger = logging.getLogger(__name__)
 docstr = Docorator()
+
+
+@docstr.get_sections(base='GenericAlgorithmSettings', sections=docstr.all_sections)
+@docstr.dedent
+class GenericAlgorithmSettings:
+    r"""
+
+    Parameters
+    ----------
+    %(BaseSettings.parameters)s
+
+    """
+    prefix = 'alg'
+    name = ''
 
 
 @docstr.get_sections(base='GenericAlgorithm', sections=['Parameters'])
 @docstr.dedent
 class GenericAlgorithm(Base, LegacyMixin, LabelMixin):
     r"""
-    Generic class to define the foundation of Algorithms.
+    Generic class to define the foundation of Algorithms
 
     Parameters
     ----------
-    network : (OpenPNM Network object)
+    network : GenericNetwork
         The network object to which this algorithm will apply.
-    name : (string, optional)
+    name : str, optional
         Name of the algorithm
-    project : (OpenPNM Project object, optional)
-        Either a Network or a Project must be supplied
-
-    Notes
-    -----
-    This class defines the following methods, which all raise a
-    ``NotImplementedError`` and must be defined by the various subclasses
-
-    +---------------------+---------------------------------------------------+
-    | Methods             | Description                                       |
-    +=====================+===================================================+
-    | ``results``         | Generates an array or arrays of data produced by  |
-    |                     | the algorithm to be returned to the Phase         |
-    +---------------------+---------------------------------------------------+
-    | ``setup``           | Collects values to be placed in ``settings``. The |
-    |                     | main benefit is defining default values and       |
-    |                     | providing documentation on each settings          |
-    +---------------------+---------------------------------------------------+
-    | ``reset``           | Removes generated data, specified values, and     |
-    |                     | any other information lingering on an Algorithm   |
-    +---------------------+---------------------------------------------------+
 
     """
 
-    def __init__(self, network=None, project=None, settings={}, **kwargs):
-        self.settings.setdefault('prefix', 'alg')
-        self.settings.update(settings)
+    def __init__(self, settings={}, **kwargs):
+        self.settings = SettingsAttr(GenericAlgorithmSettings, settings)
+        super().__init__(settings=self.settings, **kwargs)
 
-        super().__init__(project=project, network=network, **kwargs)
-        project = self.network.project
-        if project:
-            self['pore.all'] = np.ones((project.network.Np, ), dtype=bool)
-            self['throat.all'] = np.ones((project.network.Nt, ), dtype=bool)
+        if self.project:
+            self['pore.all'] = np.ones(self.project.network.Np, dtype=bool)
+            self['throat.all'] = np.ones(self.project.network.Nt, dtype=bool)
 
     def results(self):
         r"""

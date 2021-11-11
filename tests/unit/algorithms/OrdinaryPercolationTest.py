@@ -8,9 +8,9 @@ class OrdinaryPercolationTest:
 
     def setup_class(self):
         self.net = op.network.Cubic(shape=[5, 5, 5], spacing=0.0005)
-        self.geo = op.geometry.StickAndBall(network=self.net,
-                                            pores=self.net.Ps,
-                                            throats=self.net.Ts)
+        self.geo = op.geometry.SpheresAndCylinders(network=self.net,
+                                             pores=self.net.Ps,
+                                             throats=self.net.Ts)
         self.water = op.phases.Water(network=self.net)
         self.air = op.phases.Air(network=self.net)
         self.phys = op.physics.GenericPhysics(network=self.net,
@@ -145,8 +145,8 @@ class OrdinaryPercolationTest:
     def test_entry_vs_invasion_pressure(self):
         self.alg = op.algorithms.OrdinaryPercolation(network=self.net,
                                                      phase=self.water)
-        self.alg.settings.update({'mode': 'bond',
-                                  'access_limited': True})
+        self.alg.settings._update({'mode': 'bond',
+                                   'access_limited': True})
         self.alg.set_inlets(pores=self.net.pores('top'))
         self.alg.set_outlets(pores=self.net.pores('bottom'))
         self.alg.run()

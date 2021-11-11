@@ -21,23 +21,15 @@ class CubicDual(GenericNetwork):
         The size and shape of the primary cubic network in terms of the
         number of pores in each direction.  Secondary nodes will be added at
         centers of each unit cell.
-
     spacing : list of floats
         The distance between pores of the primary network in each of the
         principal directions
-
     label_1 : string
         The label to apply to the primary cubic lattices, which defaults to
         'primary'
-
     label_2 : string
         The label to apply to the secondary cubic lattices, which defaults to
         'seconary'
-
-    project : OpenPNM Project object (optional)
-        If not provided one will be generated and the network will be assigned
-        to it.  It can be retrieved from ``net.project``.
-
     name : string
         An optional name for the object to help identify it.  If not given,
         one will be generated.
@@ -118,9 +110,6 @@ class CubicDual(GenericNetwork):
         for item in net.labels():
             if 'boundary' in item:
                 net.pop(item)
-        # Label non-surface pores and throats as internal
-        net['pore.internal'] = True
-        net['throat.internal'] = True
         # Transfer all dictionary items from 'net' to 'self'
         for item in net:
             self.update({item: net[item]})

@@ -1,4 +1,4 @@
-from openpnm.core import Base, LegacyMixin, LabelMixin
+from openpnm.core import Base, LegacyMixin, LabelMixin, ParamMixin
 import numpy as np
 
 
@@ -49,43 +49,115 @@ class Subdomain(Base, LegacyMixin, LabelMixin):
                                 + hit + ' is already defined')
         super().__setitem__(key, value)
 
+    @property
+    def _domain(self):
+        try:
+            return self.phase
+        except AttributeError:
+            return self.network
+
     def _set_locations(self, element, indices, mode):
         r"""
-        This private method is called by ``set_locations`` and
-        ``remove_locations`` as needed.
+        Element agnostic version of ``set_locations``
+
+        Parameters
+        ----------
+        element : str
+            Whether 'pore' or 'throat' values are being set
+        indices : array_like
+            The global indices of the pores or throats being set
+         mode : str
+            Controls how the locations are set.  Options are:
+
+            * 'switch'
+                Assigned the object to the specified locations and unassigns
+                any other objects from those locations if present
+            * 'add'
+                Assigns the object to the specified locations. An error is
+                riased if the locations are already assigned to another object
+            * 'drop'
+                Removes the object from the specified locations
+
+        Notes
+        -----
+        This was originally kept for backward compatibility since
+        ``_set_locations`` is called thoughout the code; however, it turned
+        out to be necessary to have a generic version that accepted
+        ``element``.
 
         """
-        boss = self.project.find_full_domain(self)
-        element = self._parse_element(element=element, single=True)
+        if element.startswith('pore'):
+            self.set_locations(pores=indices, mode=mode)
+        if element.startswith('throat'):
+            self.set_locations(throats=indices, mode=mode)
+
+    def set_locations(self, pores=None, throats=None, mode='switch'):
+        r"""
+        Assign a Subdomain object to specific pores and/or throats
+
+        Parameters
+        ----------
+        pores : array_like
+            The list of pore indices to which this Subdomain should be
+            assigned
+        throats : array_like
+            The list of throat indices to which this Subdomain should be
+            assigned
+        mode : str
+            Controls how the locations are set.  Options are:
+
+            * 'switch' (default)
+                Assigns the object to the specified locations and unassigns
+                any other objects from those locations if present
+            * 'add'
+                Assigns the object to the specified locations. An error is
+                raised if the locations are already assigned to another object
+            * 'drop'
+                Removes the object from the specified locations
+
+        """
+        self._parse_mode(mode=mode, allowed=['add', 'drop', 'switch'])
+        if (pores is not None) and (throats is not None):
+            # If both are sent call method for each then return
+            self.set_locations(pores=pores, mode=mode)
+            self.set_locations(throats=throats, mode=mode)
+            return
+        elif pores is not None:
+            indices = pores
+            element = 'pore'
+        elif throats is not None:
+            indices = throats
+            element = 'throat'
+
+        boss = self._domain
 
         # Make sure label array exists in boss
-        if (element+'.'+self.name) not in boss.keys():
-            boss[element+'.'+self.name] = False
+        if (element + '.' + self.name) not in boss.keys():
+            boss[element + '.' + self.name] = False
 
-        # Check to ensure indices aren't already assigned
-        if mode == 'add':
-            if self._isa('geometry'):
-                objs = self.project.geometries().keys()
-            else:
-                objs = self.project.physics().keys()
-            for name in objs:
-                if element+'.'+name in boss.keys():
-                    if np.any(boss[element+'.'+name][indices]):
-                        raise Exception('Given indices already assigned to ' + name)
+        # Find mask of existing locations (global indexing)
+        mask = boss[element + '.' + self.name]
 
-        # Find mask of existing locations (network indexing)
-        mask = boss[element+'.'+self.name]
         # Update mask with new locations (either add or remove)
         if mode == 'add':
+            # Check to ensure indices aren't already assigned
+            for i in boss._subdomains:
+                if element + '.' + i.name in boss.keys():
+                    if np.any(boss[element + '.' + i.name][indices]):
+                        raise Exception(f'Indices already assigned to {i.name}',
+                                        ', use mode = switch instead')
+            # If no exception was raised, generate a mask
             mask = mask + boss._tomask(indices=indices, element=element)
         elif mode == 'drop':
             mask = mask * (~boss._tomask(indices=indices, element=element))
+        elif mode == 'switch':
+            for i in boss._subdomains:
+                i._set_locations(element=element, indices=indices, mode='drop')
+            mask = mask + boss._tomask(indices=indices, element=element)
+
         # Change size of all arrays on self
         for item in self.keys(element=element, mode='all'):
             self.update({item: boss[item][mask]})
-        # Update label array in network
-        boss[element+'.'+self.name] = mask
-        # Remove label from boss if ALL locations are removed
-        if mode == 'drop':
-            if ~np.any(boss[element+'.'+self.name]):
-                boss[element+'.'+self.name] = False
+
+        # Finally assign mask to boss
+        boss[element + '.' + self.name] = np.copy(mask)

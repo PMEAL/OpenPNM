@@ -21,10 +21,8 @@ class MixedPercolationTest:
                                                throats=self.net.throats())
         self.geo['pore.diameter'] = 0.5
         self.geo['throat.diameter'] = 0.25
-        self.geo.add_model(propname='throat.endpoints',
-                           model=gm.throat_endpoints.spherical_pores)
         self.geo.add_model(propname='throat.length',
-                           model=gm.throat_length.piecewise)
+                           model=gm.throat_length.spheres_and_cylinders)
         self.geo.add_model(propname='throat.volume',
                            model=gm.throat_volume.cylinder,
                            throat_diameter='throat.diameter',
@@ -201,7 +199,7 @@ class MixedPercolationTest:
         phys['pore.entry_pressure'] = 0.0
         IP_1 = mp(network=self.net)
         IP_1.settings['partial_saturation'] = False
-        IP_1.settings['snap_off'] = False
+        IP_1.settings['snap_off'] = ""
         IP_1.setup(phase=self.phase)
         IP_1.set_inlets(pores=self.inlets)
         IP_1.run(max_pressure=20)
@@ -218,7 +216,7 @@ class MixedPercolationTest:
         IP_1 = mp(network=self.net)
         self.phase['pore.occupancy'] = False
         self.phase['throat.occupancy'] = False
-        IP_1.settings['snap_off'] = False
+        IP_1.settings['snap_off'] = ""
         IP_1.setup(phase=self.phase)
         inv_points = np.arange(0, 100, 1, dtype=float)
         sat = np.zeros_like(inv_points)
@@ -258,8 +256,8 @@ class MixedPercolationTest:
         phys['pore.entry_pressure'] = Pc.flatten()
 
         IP_1 = mp(network=self.net)
-        IP_1.settings['partial_saturation'] = False
-        IP_1.settings['snap_off'] = False
+        IP_1.settings['partial_saturation'] = ""
+        IP_1.settings['snap_off'] = ""
         IP_1.setup(phase=self.phase)
         # Set the inlets as the pores with zero entry Pc
         IP_1.set_inlets(clusters=[[0], [4]])
@@ -275,7 +273,7 @@ class MixedPercolationTest:
         phys['pore.entry_pressure'] = np.arange(0, net.Np, dtype=float)
         IP_1 = mp(network=self.net)
         IP_1.settings['residual_saturation'] = True
-        IP_1.settings['snap_off'] = False
+        IP_1.settings['snap_off'] = ""
         IP_1.setup(phase=self.phase)
         T = 20
         [P1, P2] = self.net['throat.conns'][T]
@@ -292,7 +290,7 @@ class MixedPercolationTest:
         phys['throat.entry_pressure'] = np.arange(0, net.Nt, dtype=float)
         phys['pore.entry_pressure'] = np.arange(0, net.Np, dtype=float)
         IP_1 = mp(network=self.net)
-        IP_1.settings['snap_off'] = False
+        IP_1.settings['snap_off'] = ""
         IP_1.setup(phase=self.phase)
         T = 20
         [P1, P2] = self.net['throat.conns'][T]
@@ -357,12 +355,12 @@ class MixedPercolationTest:
         self.inlets = net.pores('left')
         self.outlets = None
         IP_1 = mp(network=self.net)
-        IP_1.settings['invade_isolated_Ts']=False
+        IP_1.settings['invade_isolated_Ts'] = False
         IP_1.setup(phase=self.phase)
         IP_1.set_inlets(pores=self.inlets)
         IP_1.run()
         save_seq = IP_1['throat.invasion_sequence'].copy()
-        IP_1.settings['invade_isolated_Ts']=True
+        IP_1.settings['invade_isolated_Ts'] = True
         IP_1.reset()
         IP_1.set_inlets(pores=self.inlets)
         IP_1.run()
@@ -373,7 +371,7 @@ class MixedPercolationTest:
         net = self.net
         phys = self.phys
         np.random.seed(1)
-        phys['throat.entry_pressure']=0.0
+        phys['throat.entry_pressure'] = 0.0
         phys['pore.entry_pressure']=np.random.random(net.Np)*net.Np
         inlets = net.pores('left')
         outlets = net.pores('right')
@@ -382,8 +380,8 @@ class MixedPercolationTest:
         IP_1.set_inlets(pores=inlets)
         IP_1.set_outlets(pores=outlets)
         IP_1.run()
-        assert np.any(IP_1['throat.invasion_sequence'][outlets]>-1)
-        assert np.any(IP_1['throat.invasion_sequence']==-1)
+        assert np.any(IP_1['throat.invasion_sequence'][outlets] > -1)
+        assert np.any(IP_1['throat.invasion_sequence'] == -1)
 
     def test_late_filling(self):
         self.setup_class(Np=10)

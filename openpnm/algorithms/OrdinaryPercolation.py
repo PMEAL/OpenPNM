@@ -1,11 +1,44 @@
-import scipy as sp
 import numpy as np
 from collections import namedtuple
 from openpnm.algorithms import GenericAlgorithm
 from openpnm.topotools import site_percolation, bond_percolation
 from openpnm.topotools import remove_isolated_clusters, ispercolating
-from openpnm.utils import logging
+from openpnm.utils import logging, SettingsAttr, Docorator
+from openpnm.utils import prettify_logger_message
+docstr = Docorator()
 logger = logging.getLogger(__name__)
+
+@docstr.get_sections(base='OrdinaryPercolationSettings',
+                     sections=['Parameters'])
+@docstr.dedent
+class OrdinaryPercolationSettings:
+    r"""
+    Parameters
+    ----------
+    %(GenericAlgorithmSettings.parameters)s
+    access_limited : bool
+        If ``True`` then invading fluid must be connected to the specified
+        inlets
+    mode : str
+        Controls whether pore or throat entry threshold values are used.
+        If ``'site'`` the pore entry is considered, if ``'bond'`` then
+        throat values are considered.
+    pore_entry_threshold : str
+        The dictionary key for the pore entry pressure array
+    throat_entry_threshold : str
+        The dictionary key for the pore entry pressure array
+    pore_volume : str
+        The dictionary key for the pore volume array
+    throat_volume : str
+        The dictionary key for the throat volume array
+    """
+    phase = ''
+    access_limited = True
+    mode = 'bond'
+    pore_entry_threshold = 'pore.entry_pressure'
+    throat_entry_threshold = 'throat.entry_pressure'
+    pore_volume = 'pore.volume'
+    throat_volume = 'throat.volume'
 
 
 class OrdinaryPercolation(GenericAlgorithm):
@@ -19,8 +52,6 @@ class OrdinaryPercolation(GenericAlgorithm):
     name : string, optional
         An identifying name for the object.  If none is given then one is
         generated.
-    project : OpenPNM Project object
-        Either a Network or a Project must be specified
 
     Notes
     -----
@@ -43,35 +74,10 @@ class OrdinaryPercolation(GenericAlgorithm):
     """
 
     def __init__(self, settings={}, phase=None, **kwargs):
-        def_set = {'phase': None,
-                   'access_limited': True,
-                   'mode': 'bond',
-                   'pore_entry_threshold': 'pore.entry_pressure',
-                   'throat_entry_threshold': 'throat.entry_pressure',
-                   'pore_volume': '',
-                   'throat_volume': '',
-                   'gui': {'setup':        {'phase': None,
-                                            'access_limited': None,
-                                            'mode': '',
-                                            'throat_entry_pressure': '',
-                                            'pore_entry_pressure': '',
-                                            'pore_volume': '',
-                                            'throat_volume': ''},
-                           'set_inlets':   {'pores': None,
-                                            'overwrite': False},
-                           'set_outlets':  {'pores': None,
-                                            'overwrite': False},
-                           'set_residual': {'pores': None,
-                                            'throats': None,
-                                            'overwrite': False}
-                           }
-                   }
-        super().__init__(**kwargs)
-        self.settings.update(def_set)
+        self.settings = SettingsAttr(OrdinaryPercolationSettings, settings)
+        super().__init__(settings=self.settings, **kwargs)
         # Use the reset method to initialize all arrays
         self.reset()
-        # Apply user settings, if any
-        self.settings.update(settings)
         if phase is not None:
             self.settings['phase'] = phase.name
 
@@ -135,9 +141,6 @@ class OrdinaryPercolation(GenericAlgorithm):
             locations.
 
         """
-        if self.settings['trapping'] is False:
-            logger.warning('Setting outlets is meaningless unless trapping '
-                           + 'was set to True during setup')
         Ps = self._parse_indices(pores)
         if np.sum(self['pore.inlets'][Ps]) > 0:
             raise Exception('Some outlets are already defined as inlets')
@@ -263,7 +266,7 @@ class OrdinaryPercolation(GenericAlgorithm):
         to the inlet face, and set their volumes to zero.
 
         """
-        phase = self.project.find_phase(self)
+        phase = self.project[self.settings.phase]
         # Parse inputs and generate list of invasion points if necessary
         if self.settings['mode'] == 'bond':
             self['throat.entry_pressure'] = \
@@ -344,8 +347,8 @@ class OrdinaryPercolation(GenericAlgorithm):
         Tvol = net[self.settings['throat_volume']]
         Total_vol = np.sum(Pvol) + np.sum(Tvol)
         if np.sum(Pvol[self['pore.inlets']]) > 0.0:
-            logger.warning(
-                "Inlets have non-zero volume, percolation curve won't start at 0.")
+            msg = "Inlets have non-zero volume, perc. curve won't start at 0."
+            logger.warning(prettify_logger_message(msg))
         # Find cumulative filled volume at each applied capillary pressure
         Vnwp_t = []
         Vnwp_p = []

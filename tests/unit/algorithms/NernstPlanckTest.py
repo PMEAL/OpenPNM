@@ -4,14 +4,15 @@ import openpnm as op
 from numpy.testing import assert_allclose
 
 
+@pytest.mark.skip(reason="Needs to be refactored using Integrators")
 class NernstPlanckTest:
 
     def setup_class(self):
         np.random.seed(0)
         self.net = op.network.Cubic(shape=[4, 3, 1], spacing=1.0)
-        self.geo = op.geometry.GenericGeometry(
-            network=self.net, pores=self.net.Ps, throats=self.net.Ts
-        )
+        self.geo = op.geometry.GenericGeometry(network=self.net,
+                                               pores=self.net.Ps,
+                                               throats=self.net.Ts)
         self.geo['throat.conduit_lengths.pore1'] = 0.1
         self.geo['throat.conduit_lengths.throat'] = 0.6
         self.geo['throat.conduit_lengths.pore2'] = 0.1
@@ -46,7 +47,7 @@ class NernstPlanckTest:
         self.adm = op.algorithms.NernstPlanck(
             network=self.net, phase=self.phase, ion='X'
         )
-        self.adm.settings.update({"cache_A": False, "cache_b": False})
+        self.adm.settings._update({"cache_A": False, "cache_b": False})
         self.adm.set_value_BC(pores=self.net.pores('right'), values=2)
         self.adm.set_value_BC(pores=self.net.pores('left'), values=0)
 

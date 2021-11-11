@@ -18,8 +18,6 @@ class SpheresAndCylinders(GenericGeometry):
     ----------
     network : GenericNetwork
         The network with which this Geometry should be associated
-    project : Project, optional
-        Can be supplied instead of a ``network``
     pores : array_like
         The pores in the domain where this Geometry applies
     throats : array_like
@@ -79,6 +77,10 @@ class SpheresAndCylinders(GenericGeometry):
         self.add_model(propname='pore.diameter',
                        model=mods.misc.product,
                        props=['pore.max_size', 'pore.seed'])
+
+        self.add_model(propname='pore.cross_sectional_area',
+                       model=mods.geometry.pore_cross_sectional_area.sphere,
+                       pore_diameter='pore.diameter')
 
         self.add_model(propname='pore.volume',
                        model=mods.geometry.pore_volume.sphere,

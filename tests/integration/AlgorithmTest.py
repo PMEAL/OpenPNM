@@ -71,8 +71,6 @@ def test_open_air_diffusivity():
 #    Diff.run()
 #    Diff.domain_area = 25
 #    Diff.domain_length = 5
-#    Diff_deff = Diff.calc_effective_diffusivity()/Dab
-#    assert np.round(Diff_deff, 3) == 1
 
 
 def test_Darcy_alg():
@@ -82,7 +80,7 @@ def test_Darcy_alg():
 #    Lc = 0.00004
 #    pn = op.network.Cubic(shape=divs, spacing=Lc)
 #    # Generate Geometry objects for internal and boundary pores
-#    geom = op.geometry.StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts)
+#    geom = op.geometry.SpheresAndCylinders(network=pn, pores=pn.Ps, throats=pn.Ts)
 #    # Create Phase object and associate with a Physics object
 #    air = op.phases.Air(network=pn)
 #    phys = op.physics.GenericPhysics(network=pn, phase=air, geometry=geom)
@@ -118,4 +116,3 @@ def test_Darcy_alg():
 #    assert a == b
 #    Q = -alg2.rate(inlets)
 #    K = Q*air['pore.viscosity'][0]*divs[2]*Lc/(divs[0]*divs[1]*Lc**2*(P_in-P_out))
-#    K_alg = alg2.calc_eff_permeability()

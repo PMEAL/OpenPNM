@@ -24,7 +24,6 @@ class ImportedTest:
         net = op.network.Cubic(shape=[3, 3, 3])
         geo = op.geometry.Imported(network=net)
         assert 'throat.length' not in geo.keys()
-        assert 'throat.endpoints' not in geo.keys()
         assert 'throat.conduit_lengths' not in geo.keys()
         assert 'throat.length' in geo.models.keys()
         assert 'throat.diffusive_size_factors' in geo.models.keys()

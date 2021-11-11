@@ -25,7 +25,7 @@ class MercuryIntrusion(Porosimetry):
     --------
     >>> import openpnm as op
     >>> pn = op.network.Cubic(shape=[10, 10, 10], spacing=1e-5)
-    >>> geo = op.geometry.StickAndBall(network=pn)
+    >>> geo = op.geometry.SpheresAndCylinders(network=pn)
     >>> mip = op.algorithms.metrics.MercuryIntrusion(network=pn)
     >>> mip.run()
 
@@ -38,12 +38,10 @@ class MercuryIntrusion(Porosimetry):
     >>> mip.snwp_data = [0, 0.5, 0.9]
     """
 
-    def __init__(self, network=None, project=None, settings={}, name=None,
-                 **kwargs):
-        if project is None:
-            project = network.project
-        super().__init__(network=network, project=project, **kwargs)
+    def __init__(self, network, settings={}, **kwargs):
+        super().__init__(network=network, settings=self.settings, **kwargs)
         hg = Mercury(network=network)
+        project = self.project
         self.settings['phase'] = hg.name
         mod = models.physics.capillary_pressure.washburn
         for geom in project.geometries().values():

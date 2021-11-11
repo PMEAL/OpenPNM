@@ -7,9 +7,9 @@ class MercuryIntrusionTest:
 
     def setup_class(self):
         self.net = op.network.Cubic(shape=[15, 15, 15], spacing=0.0005)
-        self.geo = op.geometry.StickAndBall(network=self.net,
-                                            pores=self.net.Ps,
-                                            throats=self.net.Ts)
+        self.geo = op.geometry.SpheresAndCylinders(network=self.net,
+                                             pores=self.net.Ps,
+                                             throats=self.net.Ts)
 
     def test_run(self):
         mip = op.algorithms.metrics.MercuryIntrusion(network=self.net)
