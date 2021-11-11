@@ -198,13 +198,11 @@
 <span class="sd">        The number of pores in each direction.  This value is a bit ambiguous</span>
 <span class="sd">        for the more complex unit cells used here, but generally refers to the</span>
 <span class="sd">        the number for &#39;corner&#39; sites</span>
-
 <span class="sd">    spacing : array_like (optional)</span>
 <span class="sd">        The spacing between pores in all three directions.  Like the ``shape``</span>
 <span class="sd">        this is a bit ambiguous but refers to the spacing between corner sites.</span>
 <span class="sd">        Essentially it controls the dimensions of the unit cell.  It a scalar</span>
 <span class="sd">        is given it is applied to all directions.  The default is 1.</span>
-
 <span class="sd">    mode : string</span>
 <span class="sd">        The type of lattice to create.  Options are:</span>
 
@@ -216,11 +214,6 @@
 <span class="sd">    name : string</span>
 <span class="sd">        An optional name for the object to help identify it.  If not given,</span>
 <span class="sd">        one will be generated.</span>
-
-<span class="sd">    project : OpenPNM Project object, optional</span>
-<span class="sd">        Each OpenPNM object must be part of a Project.  If none is supplied</span>
-<span class="sd">        then one will be created and this Network will be automatically</span>
-<span class="sd">        assigned to it.  To create a Project use ``openpnm.Project()``.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
