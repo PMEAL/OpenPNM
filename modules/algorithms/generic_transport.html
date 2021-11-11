@@ -620,6 +620,7 @@
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>network</strong> (<a class="reference internal" href="../network/generic.html#openpnm.network.GenericNetwork" title="openpnm.network.GenericNetwork"><em>GenericNetwork</em></a>) – The network object to which this algorithm will apply.</p></li>
 <li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of the algorithm</p></li>
+<li><p><strong>project</strong> (<a class="reference internal" href="../utils/project.html#openpnm.utils.Project" title="openpnm.utils.Project"><em>Project</em></a><em>, </em><em>optional</em>) – Either a Network or a Project must be supplied</p></li>
 </ul>
 </dd>
 </dl>
@@ -648,18 +649,6 @@ settings under <code class="docutils literal notranslate"><span class="pre">alg.
 <dd><p>Builds the RHS vector, without applying any boundary conditions or
 source terms. This method is trivial an basically creates a column
 vector of 0’s.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="openpnm.algorithms.GenericTransport._get_domain_area">
-<span class="sig-name descname"><span class="pre">_get_domain_area</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inlets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outlets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/GenericTransport.html#GenericTransport._get_domain_area"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.GenericTransport._get_domain_area" title="Permalink to this definition">¶</a></dt>
-<dd><p>Determines the cross sectional area relative to the inlets/outlets.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="openpnm.algorithms.GenericTransport._get_domain_length">
-<span class="sig-name descname"><span class="pre">_get_domain_length</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inlets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outlets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/GenericTransport.html#GenericTransport._get_domain_length"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.GenericTransport._get_domain_length" title="Permalink to this definition">¶</a></dt>
-<dd><p>Determines the domain length relative to the inlets/outlets.</p>
 </dd></dl>
 
 <dl class="py method">

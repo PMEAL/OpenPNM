@@ -613,9 +613,9 @@
   <section id="formationfactor">
 <span id="formation-factor-api"></span><h1>FormationFactor<a class="headerlink" href="#formationfactor" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="openpnm.algorithms.metrics.FormationFactor">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FormationFactor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/openpnm/algorithms/metrics/FormationFactor.html#FormationFactor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.metrics.FormationFactor" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.algorithms.metrics.GenericMetric.GenericMetric</span></code></p>
+<dt class="sig sig-object py" id="openpnm.metrics.FormationFactor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FormationFactor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/openpnm/metrics/FormationFactor.html#FormationFactor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.metrics.FormationFactor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.metrics.GenericTransportMetrics.GenericTransportMetrics</span></code></p>
 <p>This class works by applying ‘value’ boundary conditions across the
 domain to find molar flow, then using Fick’s law to back-calculate
 the effective diffusivity of the domain.  The formation factor is
@@ -640,102 +640,14 @@ well known.</p>
 </pre></div>
 </div>
 <p>Now find the formation factor of the network:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">F</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">FormationFactor</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">F</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">FormationFactor</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">F</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">results</span><span class="p">)</span>
-<span class="go">――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――</span>
-<span class="go">Direction                           Formation Factor</span>
-<span class="go">――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――</span>
-<span class="go">x                                   ...</span>
-<span class="go">y                                   ...</span>
-<span class="go">z                                   ...</span>
-<span class="go">――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――</span>
 </pre></div>
 </div>
 <dl class="py method">
-<dt class="sig sig-object py" id="openpnm.algorithms.metrics.FormationFactor.run">
-<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/openpnm/algorithms/metrics/FormationFactor.html#FormationFactor.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.metrics.FormationFactor.run" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="openpnm.metrics.FormationFactor.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/openpnm/metrics/FormationFactor.html#FormationFactor.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.metrics.FormationFactor.run" title="Permalink to this definition">¶</a></dt>
 <dd><p>Execute the diffusion simulations in the principle directions.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="openpnm.algorithms.metrics.FormationFactor.set_area">
-<span class="sig-name descname"><span class="pre">set_area</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">direction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">area</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/openpnm/algorithms/metrics/FormationFactor.html#FormationFactor.set_area"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.metrics.FormationFactor.set_area" title="Permalink to this definition">¶</a></dt>
-<dd><p>Specifies the area of the inlet faces normal to the given direction</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>direction</strong> (<em>string</em>) – Either ‘x’, ‘y’, or ‘z’, indicating the principle direction</p></li>
-<li><p><strong>area</strong> (<em>scalar</em>) – The numerical value of the inlet face area</p></li>
-</ul>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<p>If this value is not provided then an attempt is made to calculate it
-automatically, though this estimate is not perfectly accurate,
-especially for small networks.  This value is placed into the object’s
-setting dictionary under ‘areas’.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="openpnm.algorithms.metrics.FormationFactor.set_inlets">
-<span class="sig-name descname"><span class="pre">set_inlets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">direction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/openpnm/algorithms/metrics/FormationFactor.html#FormationFactor.set_inlets"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.metrics.FormationFactor.set_inlets" title="Permalink to this definition">¶</a></dt>
-<dd><p>Specifies which pore labels indicate the inlet face for a given
-direction</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>direction</strong> (<em>string</em>) – Either ‘x’, ‘y’, or ‘z’, indicating the principle direction</p></li>
-<li><p><strong>label</strong> (<em>string</em>) – The pore label indicating which pores define the inlet face</p></li>
-</ul>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<p>By default inlets are taken as pores labelled ‘left’, ‘top’ and
-‘front’. If your network does not have these labels you should
-either add them, or change which labels this algorithm looks for
-using this function, or manual changing the values in the
-<code class="docutils literal notranslate"><span class="pre">settings['inlets']</span></code>.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="openpnm.algorithms.metrics.FormationFactor.set_length">
-<span class="sig-name descname"><span class="pre">set_length</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">direction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/openpnm/algorithms/metrics/FormationFactor.html#FormationFactor.set_length"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.metrics.FormationFactor.set_length" title="Permalink to this definition">¶</a></dt>
-<dd><p>Specifies the length of the domain along the given direction</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>direction</strong> (<em>string</em>) – Either ‘x’, ‘y’, or ‘z’, indicating the principle direction</p></li>
-<li><p><strong>area</strong> (<em>scalar</em>) – The numerical value of the domain length</p></li>
-</ul>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<p>If this value is not provided then an attempt is made to calculate it
-automatically, though this estimate is not perfectly accurate,
-especially for small networks.  This value is placed into the object’s
-setting dictionary under ‘lengths’.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="openpnm.algorithms.metrics.FormationFactor.set_outlets">
-<span class="sig-name descname"><span class="pre">set_outlets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">direction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/openpnm/algorithms/metrics/FormationFactor.html#FormationFactor.set_outlets"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.metrics.FormationFactor.set_outlets" title="Permalink to this definition">¶</a></dt>
-<dd><p>Specifies which pore labels indicate the outlet face for a given
-direction</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>direction</strong> (<em>string</em>) – Either ‘x’, ‘y’, or ‘z’, indicating the principle direction</p></li>
-<li><p><strong>label</strong> (<em>string</em>) – The pore label indicating which pores define the outlet face</p></li>
-</ul>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<p>By default outlets are taken as pores labelled ‘right’, ‘bottom’ and
-‘back’. If your network does not have these labels you should
-either add them, or change which labels this algorithm looks for
-using this function, or manual changing the values in the
-<code class="docutils literal notranslate"><span class="pre">settings['outlets']</span></code>.</p>
 </dd></dl>
 
 </dd></dl>

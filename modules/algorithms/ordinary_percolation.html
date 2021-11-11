@@ -621,13 +621,14 @@
 <li><p><strong>network</strong> (<em>OpenPNM Network object</em>) – The Network upon which this simulation should be run</p></li>
 <li><p><strong>name</strong> (<em>string</em><em>, </em><em>optional</em>) – An identifying name for the object.  If none is given then one is
 generated.</p></li>
+<li><p><strong>project</strong> (<em>OpenPNM Project object</em>) – Either a Network or a Project must be specified</p></li>
 </ul>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>Ordinary percolation refers to the process of finding all bonds or sites
-in the network that can be invaded at a given threshold, then setting
-them all to invaded in a single step.</p>
+<p>Ordinary percolation refers the process of finding all bonds or sites in
+the network that can be invaded at a given threshold, then setting them
+all to invaded in a single step.</p>
 <p>Optionally, it is possible to then find the clusters of invaded bonds or
 sites that are NOT connected to the inlets and setting them back to
 an uninvaded state.</p>
