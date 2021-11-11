@@ -223,6 +223,8 @@
     <span class="n">invade_isolated_Ts</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">late_pore_filling</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
     <span class="n">late_throat_filling</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">cooperative_pore_filling</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">trapping</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
 
 
 <div class="viewcode-block" id="MixedInvasionPercolation"><a class="viewcode-back" href="../../../modules/algorithms/mixed_percolation.html#openpnm.algorithms.MixedInvasionPercolation">[docs]</a><span class="k">class</span> <span class="nc">MixedInvasionPercolation</span><span class="p">(</span><span class="n">GenericAlgorithm</span><span class="p">):</span>
@@ -245,7 +247,7 @@
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="o">=</span><span class="p">{},</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">settings</span> <span class="o">=</span> <span class="n">SettingsAttr</span><span class="p">(</span><span class="n">MixedIPSettings</span><span class="p">,</span> <span class="n">settings</span><span class="p">)</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">setting</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">settings</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 <div class="viewcode-block" id="MixedInvasionPercolation.setup"><a class="viewcode-back" href="../../../modules/algorithms/mixed_percolation.html#openpnm.algorithms.MixedInvasionPercolation.setup">[docs]</a>    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>

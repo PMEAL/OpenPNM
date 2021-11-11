@@ -184,15 +184,16 @@
 <span class="k">class</span> <span class="nc">PorosimetrySettings</span><span class="p">:</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    %(OrdinaryPercolationSettings.parameters)s</span>
-<span class="sd">    late_pore_filling : string</span>
+<span class="sd">    pore_partial_filling : string</span>
 <span class="sd">        The name of the model used to determine partial pore filling as</span>
 <span class="sd">        a function of applied pressure.</span>
-<span class="sd">    late_throat_filling : string</span>
+<span class="sd">    throat_partial_filling : string</span>
 <span class="sd">        The name of the model used to determine partial throat filling as</span>
 <span class="sd">        a function of applied pressure.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">late_pore_filling</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
-    <span class="n">late_throat_filling</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+    <span class="n">quantity</span> <span class="o">=</span> <span class="s1">&#39;pore.pressure&#39;</span>
+    <span class="n">pore_partial_filling</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+    <span class="n">throat_partial_filling</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
 
 
 <div class="viewcode-block" id="Porosimetry"><a class="viewcode-back" href="../../../modules/algorithms/porosimetry.html#openpnm.algorithms.Porosimetry">[docs]</a><span class="k">class</span> <span class="nc">Porosimetry</span><span class="p">(</span><span class="n">OrdinaryPercolation</span><span class="p">):</span>
