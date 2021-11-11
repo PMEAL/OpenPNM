@@ -32,8 +32,6 @@ class Porosimetry(OrdinaryPercolation):
     name : string, optional
         An identifying name for the object.  If none is given then one is
         generated.
-    project : OpenPNM Project object
-        Either a Network or a Project must be specified
 
     Notes
     -----

@@ -20,11 +20,6 @@ class MultiPhase(GenericPhase):
     ----------
     network : GenericNetwork
         The network to which this phase object will be attached.
-    project : Project, optional
-        The Project with which this phase should be associted. If a
-        ``network`` is given then this is ignored and the Network's
-        project is used. If a ``network`` is not given then this is
-        mandatory.
     name : str, optional
         The name of the phase. This is useful to keep track of the objects
         throughout the simulation. The name must be unique to the project.

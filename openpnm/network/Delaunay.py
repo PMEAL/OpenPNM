@@ -13,7 +13,6 @@ class Delaunay(DelaunayVoronoiDual):
     points : array_like or int
         Can either be an N-by-3 array of point coordinates which will be used,
         or a scalar value indicating the number of points to generate
-
     shape : array_like
         The size of the domain.  It's possible to create cubic as well as 2D
         square domains by changing the ``shape`` as follows:
@@ -26,11 +25,6 @@ class Delaunay(DelaunayVoronoiDual):
     name : string
         An optional name for the object to help identify it.  If not given,
         one will be generated.
-
-    project : OpenPNM Project object, optional
-        Each OpenPNM object must be part of a *Project*.  If none is supplied
-        then one will be created and this Network will be automatically
-        assigned to it.  To create a *Project* use ``openpnm.Project()``.
 
     See Also
     --------

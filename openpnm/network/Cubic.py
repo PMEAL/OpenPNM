@@ -25,11 +25,9 @@ class Cubic(GenericNetwork):
     shape : array_like
         The [Nx, Ny, Nz] size of the network in terms of the number of pores in
         each direction
-
     spacing : array_like, optional
         The spacing between pore centers in each direction. If not given, then
         [1, 1, 1] is assumed.
-
     connectivity : int, optional
         The number of connections to neighboring pores.  Connections are made
         symmetrically to any combination of face, edge, or corners neighbors.
@@ -48,11 +46,6 @@ class Cubic(GenericNetwork):
     name : string
         An optional name for the object to help identify it.  If not given,
         one will be generated.
-
-    project : OpenPNM Project object, optional
-        Each OpenPNM object must be part of a *Project*.  If none is supplied
-        then one will be created and this Network will be automatically
-        assigned to it.  To create a *Project* use ``openpnm.Project()``.
 
     Attributes
     ----------

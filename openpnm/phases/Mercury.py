@@ -12,9 +12,6 @@ class Mercury(GenericPhase):
     network : OpenPNM Network object
         The network to which this phase object will be attached.
 
-    project : OpenPNM Project object, optional
-        Can be supplied instead of ``network``
-
     References
     ----------
     [1] Thermophysical Properties of Materials for Nuclear Engineering: IAEA,
