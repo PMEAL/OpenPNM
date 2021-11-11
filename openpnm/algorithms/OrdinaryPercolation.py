@@ -55,9 +55,9 @@ class OrdinaryPercolation(GenericAlgorithm):
 
     Notes
     -----
-    Ordinary percolation refers the process of finding all bonds or sites in
-    the network that can be invaded at a given threshold, then setting them
-    all to invaded in a single step.
+    Ordinary percolation refers to the process of finding all bonds or sites
+    in the network that can be invaded at a given threshold, then setting
+    them all to invaded in a single step.
 
     Optionally, it is possible to then find the clusters of invaded bonds or
     sites that are NOT connected to the inlets and setting them back to
@@ -73,13 +73,12 @@ class OrdinaryPercolation(GenericAlgorithm):
 
     """
 
-    def __init__(self, settings={}, phase=None, **kwargs):
+    def __init__(self, phase, settings={}, **kwargs):
         self.settings = SettingsAttr(OrdinaryPercolationSettings, settings)
         super().__init__(settings=self.settings, **kwargs)
         # Use the reset method to initialize all arrays
         self.reset()
-        if phase is not None:
-            self.settings['phase'] = phase.name
+        self.settings['phase'] = phase.name
 
     def reset(self):
         r"""

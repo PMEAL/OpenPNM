@@ -50,9 +50,10 @@ class MixedInvasionPercolationCoop(MixedInvasionPercolation):
 
     """
 
-    def __init__(self, settings={}, **kwargs):
+    def __init__(self, phase, settings={}, **kwargs):
         self.settings = SettingsAttr(MixedIPCoopSettings, settings)
         super().__init__(settings=self.settings, **kwargs)
+        self.settings.phase = phase.name
 
     def setup(
         self,

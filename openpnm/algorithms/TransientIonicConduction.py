@@ -48,8 +48,6 @@ class TransientIonicConduction(TransientReactiveTransport,
 
     """
 
-    def __init__(self, settings={}, phase=None, **kwargs):
+    def __init__(self, settings={}, **kwargs):
         self.settings = SettingsAttr(TransientIonicConductionSettings, settings)
         super().__init__(settings=self.settings, **kwargs)
-        if phase is not None:
-            self.settings['phase'] = phase.name
