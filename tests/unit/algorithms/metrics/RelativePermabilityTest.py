@@ -42,8 +42,8 @@ class RelativePermeabilityTest:
 
     def test_one_phase_definition(self):
         rp = op.algorithms.metrics.RelativePermeability(network=self.net)
-        rp.settings.update({'nwp': self.non_wet_phase.name,
-                            'invasion_sequence': 'invasion_sequence'})
+        rp.settings._update({'nwp': self.non_wet_phase.name,
+                             'invasion_sequence': 'invasion_sequence'})
         rp.run(Snwp_num=10)
         results = rp.get_Kr_data()
         assert results['kr_wp'] is None
@@ -52,10 +52,9 @@ class RelativePermeabilityTest:
         inlets = {'x': 'back', 'y': 'back', 'z': 'back'}
         outlets = {'x': 'front', 'y': 'front', 'z': 'front'}
         rp = op.algorithms.metrics.RelativePermeability(network=self.net)
-        rp.settings.update({'nwp': self.non_wet_phase.name,
-                            'wp': self.wet_phase.name,
-                            'invasion_sequence': 'invasion_sequence'
-                            })
+        rp.settings._update({'nwp': self.non_wet_phase.name,
+                             'wp': self.wet_phase.name,
+                             'invasion_sequence': 'invasion_sequence'})
         rp.settings['flow_inlets'].update(inlets)
         rp.settings['flow_outlets'].update(outlets)
         rp.run(Snwp_num=10)
@@ -72,10 +71,9 @@ class RelativePermeabilityTest:
         rp = op.algorithms.metrics.RelativePermeability(network=self.net)
         inlets = {'x': 'top'}
         outlets = {'x': 'bottom'}
-        rp.settings.update({'nwp': self.non_wet_phase.name,
-                            'wp': self.wet_phase.name,
-                            'invasion_sequence': 'invasion_sequence',
-                            })
+        rp.settings._update({'nwp': self.non_wet_phase.name,
+                             'wp': self.wet_phase.name,
+                             'invasion_sequence': 'invasion_sequence'})
         rp.settings['flow_inlets'].update(inlets)
         rp.settings['flow_outlets'].update(outlets)
         rp.run(Snwp_num=10)
@@ -96,10 +94,9 @@ class RelativePermeabilityTest:
         inlets = {'x': 'pore_in'}
         outlets = {'x': 'pore_out'}
         rp = op.algorithms.metrics.RelativePermeability(network=self.net)
-        rp.settings.update({'nwp': self.non_wet_phase.name,
-                            'wp': self.wet_phase.name,
-                            'invasion_sequence': 'invasion_sequence'
-                            })
+        rp.settings._update({'nwp': self.non_wet_phase.name,
+                             'wp': self.wet_phase.name,
+                             'invasion_sequence': 'invasion_sequence'})
         rp.settings['flow_inlets'].update(inlets)
         rp.settings['flow_outlets'].update(outlets)
         rp.run(Snwp_num=10)
@@ -145,8 +142,8 @@ class RelativePermeabilityTest:
             shape[i] = 1
             self.setup_model2d(shape=shape)
             rp = op.algorithms.metrics.RelativePermeability(network=self.net)
-            rp.settings.update({'nwp': self.non_wet_phase.name,
-                                'invasion_sequence': 'invasion_sequence'})
+            rp.settings._update({'nwp': self.non_wet_phase.name,
+                                 'invasion_sequence': 'invasion_sequence'})
             rp.run(Snwp_num=10)
             results = rp.get_Kr_data()
             assert results['kr_wp'] is None
@@ -158,9 +155,9 @@ class RelativePermeabilityTest:
             shape[i] = 1
             self.setup_model2d(shape=shape)
             rp = op.algorithms.metrics.RelativePermeability(network=self.net)
-            rp.settings.update({'nwp': self.non_wet_phase.name,
-                                'wp': self.wet_phase.name,
-                                'invasion_sequence': 'invasion_sequence'})
+            rp.settings._update({'nwp': self.non_wet_phase.name,
+                                 'wp': self.wet_phase.name,
+                                 'invasion_sequence': 'invasion_sequence'})
             rp.run(Snwp_num=10)
             results = rp.get_Kr_data()
             nt.assert_allclose(len(results['kr_wp']), 2)

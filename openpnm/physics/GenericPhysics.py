@@ -1,8 +1,22 @@
 import numpy as np
+from copy import deepcopy
 from openpnm.core import Subdomain, ModelsMixin, ParamMixin
 from openpnm.utils import Workspace, logging
+from openpnm.utils import Docorator, SettingsAttr
 logger = logging.getLogger(__name__)
 ws = Workspace()
+docstr = Docorator()
+
+
+@docstr.get_sections(base='PhysicsSettings', sections=['Parameters'])
+@docstr.dedent
+class PhysicsSettings:
+    r"""
+    Parameters
+    ----------
+    %(BaseSettings.parameters)s
+    """
+    prefix = 'phys'
 
 
 class GenericPhysics(ParamMixin, Subdomain, ModelsMixin):
@@ -33,9 +47,8 @@ class GenericPhysics(ParamMixin, Subdomain, ModelsMixin):
 
     def __init__(self, phase=None, geometry=None, pores=None, throats=None,
                  settings={}, **kwargs):
-        self.settings.update({'prefix': 'phys'})  # Define some default settings
-        self.settings.update(settings)  # Overwrite with user supplied settings
-        super().__init__(**kwargs)
+        self.settings = SettingsAttr(PhysicsSettings, settings)
+        super().__init__(settings=self.settings, **kwargs)
 
         network = self.project.network
         if network:
@@ -192,6 +205,7 @@ class GenericPhysics(ParamMixin, Subdomain, ModelsMixin):
             Ts = self.network.throats(geometry.name)
             self.set_locations(pores=Ps, throats=Ts, mode='add')
             phase.set_label(label=self.name, pores=Ps, throats=Ts, mode='add')
+            self.settings.geometry = geometry.name
         elif mode in ['drop']:
             phase.set_label(label=self.name, mode='clear')
             self.update({'pore.all': np.array([], dtype=bool)})

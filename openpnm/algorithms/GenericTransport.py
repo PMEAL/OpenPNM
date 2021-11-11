@@ -1,34 +1,30 @@
 import numpy as np
-import openpnm as op
+import scipy.sparse.linalg
 import warnings
 import scipy.sparse.csgraph as spgr
+from copy import deepcopy
 from scipy.spatial import ConvexHull
 from scipy.spatial import cKDTree
-from openpnm.topotools import iscoplanar, is_fully_connected
+from openpnm.topotools import iscoplanar, is_fully_connected, dimensionality
 from openpnm.algorithms import GenericAlgorithm
-from openpnm.utils import logging, Docorator, GenericSettings, prettify_logger_message
+from openpnm.utils import logging, prettify_logger_message
+from openpnm.utils import Docorator, SettingsAttr
+from openpnm.utils import is_symmetric
 from openpnm.solvers import PardisoSpsolve
-# Uncomment this line when we stop supporting Python 3.6
-# from dataclasses import dataclass, field
-# from typing import List
-
 docstr = Docorator()
 logger = logging.getLogger(__name__)
 
 
-@docstr.get_sections(base='GenericTransportSettings',
-                     sections=['Parameters', 'Other Parameters'])
+@docstr.get_sections(base='GenericTransportSettings', sections=['Parameters',
+                                                                'Other Parameters'])
 @docstr.dedent
-# Uncomment this line when we stop supporting Python 3.6
-# @dataclass
-class GenericTransportSettings(GenericSettings):
+class GenericTransportSettings:
     r"""
     Defines the settings for GenericTransport algorithms
 
     Parameters
     ----------
-    phase : str
-        The name of the phase on which the algorithm acts
+    %(GenericAlgorithmSettings.parameters)s
     quantity : str
         The name of the physical quantity to be calculated
     conductance : str
@@ -44,10 +40,10 @@ class GenericTransportSettings(GenericSettings):
         If ``True``, b vector is cached and rather than getting rebuilt.
 
     """
-
-    phase = None
-    conductance = None
-    quantity = None
+    prefix = 'transport'
+    phase = ''
+    quantity = ''
+    conductance = ''
     cache_A = True
     cache_b = True
 
@@ -72,19 +68,13 @@ class GenericTransport(GenericAlgorithm):
         instance._pure_b = None
         return instance
 
-    def __init__(self, project=None, network=None, phase=None, settings={},
-                 **kwargs):
-        # Apply default settings
-        self.settings._update_settings_and_docs(GenericTransportSettings)
-        # Overwrite any given in init
-        self.settings.update(settings)
+    def __init__(self, phase=None, settings={}, **kwargs):
+        self.settings = SettingsAttr(GenericTransportSettings, settings)
+        super().__init__(settings=self.settings, **kwargs)
+
         # Assign phase if given during init
         if phase is not None:
             self.settings['phase'] = phase.name
-        # If network given, get project, otherwise let parent class create it
-        if network is not None:
-            project = network.project
-        super().__init__(project=project, **kwargs)
         self['pore.bc_rate'] = np.nan
         self['pore.bc_value'] = np.nan
 
@@ -359,13 +349,13 @@ class GenericTransport(GenericAlgorithm):
         # FIXME: this needs to be properly addressed (see issue #1548)
         try:
             if gvals in self._get_iterative_props():
-                self.settings.update({"cache_A": False, "cache_b": False})
+                self.settings._update({"cache_A": False, "cache_b": False})
         except AttributeError:
             pass
         if not self.settings['cache_A']:
             self._pure_A = None
         if self._pure_A is None:
-            phase = self.project.find_phase(self)
+            phase = self.project[self.settings.phase]
             g = phase[gvals]
             am = self.network.create_adjacency_matrix(weights=g, fmt='coo')
             self._pure_A = spgr.laplacian(am).astype(float)
@@ -652,46 +642,6 @@ class GenericTransport(GenericAlgorithm):
 
         return np.array(R, ndmin=1)
 
-    def _calc_eff_prop(self, inlets=None, outlets=None,
-                       domain_area=None, domain_length=None):
-        r"""
-        Calculates the effective transport through the network.
-
-        Parameters
-        ----------
-        inlets : array_like
-            The pores where the inlet boundary conditions were applied. If
-            not given an attempt is made to infer them from the algorithm.
-        outlets : array_like
-            The pores where the outlet boundary conditions were applied.
-            If not given an attempt is made to infer them from the
-            algorithm.
-        domain_area : float
-            The area of the inlet and/or outlet face (which shold match)
-        domain_length : float
-            The length of the domain between the inlet and outlet faces
-
-        Returns
-        -------
-        The effective transport property through the network
-
-        """
-        if self.settings['quantity'] not in self.keys():
-            raise Exception('You need to run the algorithm first.')
-        Ps = np.isfinite(self['pore.bc_value'])
-        BCs = np.unique(self['pore.bc_value'][Ps])
-        if BCs.size != 2:
-            raise Exception('More/less than 2 unique value BCs were found.')
-        Dx = np.ptp(BCs)
-        inlets = self._get_inlets() if inlets is None else inlets
-        flow = self.rate(pores=inlets)
-        if domain_area is None:
-            domain_area = self._get_domain_area(inlets=inlets, outlets=outlets)
-        if domain_length is None:
-            domain_length = self._get_domain_length(inlets=inlets, outlets=outlets)
-        D = np.sum(flow) * domain_length / domain_area / Dx
-        return np.atleast_1d(D)
-
     def _get_inlets(self):
         r"""
         Determines inlet BCs by analyzing the algorithm object.
@@ -715,7 +665,7 @@ class GenericTransport(GenericAlgorithm):
         Determines the cross sectional area relative to the inlets/outlets.
         """
         logger.warning('Attempting to estimate inlet area...will be low')
-        if op.topotools.dimensionality(self.network).sum() != 3:
+        if dimensionality(self.network).sum() != 3:
             raise Exception('The network is not 3D, specify area manually')
         inlets = self._get_inlets() if inlets is None else inlets
         outlets = self._get_outlets() if outlets is None else outlets

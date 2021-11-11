@@ -309,7 +309,7 @@ class ModelsMixin:
             raise Exception(propname+' can\'t be both dependency and propname')
         # Look for default regen_mode in settings if present, else use 'normal'
         if regen_mode == '':
-            if 'regen_mode' in self.settings.keys():
+            if 'regen_mode' in self.settings._attrs:
                 regen_mode = self.settings['regen_mode']
             else:
                 regen_mode = 'normal'
@@ -398,6 +398,7 @@ class ModelsMixin:
         # Pop model and regen_mode from temporary dict
         model = kwargs.pop('model')
         regen_mode = kwargs.pop('regen_mode', None)
+        # Only regenerate model if regen_mode is correct
         if regen_mode == 'constant':
             # Only regenerate if data not already in dictionary
             if prop not in self.keys():

@@ -1,6 +1,6 @@
 import numpy as np
 from openpnm.algorithms import ReactiveTransport
-from openpnm.utils import logging, GenericSettings, Docorator
+from openpnm.utils import logging, Docorator, SettingsAttr
 from openpnm.integrators import ScipyRK45
 docstr = Docorator()
 logger = logging.getLogger(__name__)
@@ -9,31 +9,15 @@ logger = logging.getLogger(__name__)
 @docstr.get_sections(base='TransientReactiveTransportSettings',
                      sections=['Parameters', 'Other Parameters'])
 @docstr.dedent
-class TransientReactiveTransportSettings(GenericSettings):
+class TransientReactiveTransportSettings:
     r"""
 
     Parameters
     ----------
     %(ReactiveTransportSettings.parameters)s
 
-    quantity : str
-        The name of the physical quantity to be calculated
-    conductance : str
-        The name of the pore-scale transport conductance values. These are
-        typically calculated by a model attached to a *Physics* object
-        associated with the given *Phase*.
-    pore_volume : str
-        The name of the pore volume property to use in setting up the transient
-        system. Default is 'pore.volume' but 'pore.volume_effective' could be
-        used if needed.
-
     Other Parameters
     ----------------
-    saveat : float, array_like
-        List of time points at which the results are to be stored (if
-        array_like is passed), OR the time interval (if float is passed).
-
-    ----
 
     **The following parameters pertain to the ReactiveTransport class**
 
@@ -46,8 +30,6 @@ class TransientReactiveTransportSettings(GenericSettings):
     %(GenericTransportSettings.other_parameters)s
 
     """
-
-    phase = None
     pore_volume = 'pore.volume'
 
 
@@ -59,8 +41,6 @@ class TransientReactiveTransport(ReactiveTransport):
     ----------
     network : GenericNetwork
         The Network with which this algorithm is associated.
-    project : Project
-        The Project with which this algorithm is associated.
 
     Notes
     -----
@@ -69,9 +49,8 @@ class TransientReactiveTransport(ReactiveTransport):
     """
 
     def __init__(self, settings={}, phase=None, **kwargs):
-        super().__init__(**kwargs)
-        self.settings._update_settings_and_docs(TransientReactiveTransportSettings)
-        self.settings.update(settings)
+        self.settings = SettingsAttr(TransientReactiveTransportSettings, settings)
+        super().__init__(settings=self.settings, **kwargs)
         if phase is not None:
             self.settings['phase'] = phase.name
         self["pore.ic"] = np.nan

@@ -1,5 +1,5 @@
 from openpnm.algorithms import ReactiveTransport
-from openpnm.utils import logging, Docorator, GenericSettings
+from openpnm.utils import logging, Docorator, SettingsAttr
 docstr = Docorator()
 logger = logging.getLogger(__name__)
 
@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 @docstr.get_sections(base='OhmicConductionSettings',
                      sections=['Parameters'])
 @docstr.dedent
-class OhmicConductionSettings(GenericSettings):
+class OhmicConductionSettings:
     r"""
 
     Parameters
@@ -48,43 +48,5 @@ class OhmicConduction(ReactiveTransport):
     """
 
     def __init__(self, settings={}, **kwargs):
-        super().__init__(**kwargs)
-        self.settings._update_settings_and_docs(OhmicConductionSettings())
-        self.settings.update(settings)
-
-    def calc_effective_conductivity(self, inlets=None, outlets=None,
-                                    domain_area=None, domain_length=None):
-        r"""
-        This calculates the effective electrical conductivity.
-
-        Parameters
-        ----------
-        inlets : array_like
-            The pores where the inlet voltage boundary conditions were
-            applied.  If not given an attempt is made to infer them from the
-            algorithm.
-
-        outlets : array_like
-            The pores where the outlet voltage boundary conditions were
-            applied.  If not given an attempt is made to infer them from the
-            algorithm.
-
-        domain_area : scalar, optional
-            The area of the inlet (and outlet) boundary faces.  If not given
-            then an attempt is made to estimate it, but it is usually
-            underestimated.
-
-        domain_length : scalar, optional
-            The length of the domain between the inlet and outlet boundary
-            faces.  If not given then an attempt is made to estimate it, but it
-            is usually underestimated.
-
-        Notes
-        -----
-        The area and length of the domain are found using the bounding box
-        around the inlet and outlet pores which do not necessarily lie on the
-        edge of the domain, resulting in underestimation of sizes.
-        """
-        return self._calc_eff_prop(inlets=inlets, outlets=outlets,
-                                   domain_area=domain_area,
-                                   domain_length=domain_length)
+        self.settings = SettingsAttr(OhmicConductionSettings, settings)
+        super().__init__(settings=self.settings, **kwargs)

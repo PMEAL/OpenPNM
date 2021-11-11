@@ -1,11 +1,9 @@
 import numpy as np
 from numpy.linalg import norm
 from scipy.optimize.nonlin import TerminationCondition
-# Uncomment this line when we stop supporting Python 3.6
-# from dataclasses import dataclass, field
-# from typing import List
 from openpnm.algorithms import GenericTransport
-from openpnm.utils import logging, Docorator, GenericSettings
+from openpnm.utils import logging
+from openpnm.utils import TypedList, Docorator, SettingsAttr
 docstr = Docorator()
 logger = logging.getLogger(__name__)
 
@@ -13,21 +11,12 @@ logger = logging.getLogger(__name__)
 @docstr.get_sections(base='ReactiveTransportSettings',
                      sections=['Parameters', 'Other Parameters'])
 @docstr.dedent
-# Uncomment this line when we stop supporting Python 3.6
-# @dataclass
-class ReactiveTransportSettings(GenericSettings):
+class ReactiveTransportSettings:
     r"""
 
     Parameters
     ----------
     %(GenericTransportSettings.parameters)s
-
-    quantity : str
-        The name of the physical quantity to be calculated
-    conductance : str
-        The name of the pore-scale transport conductance values. These are
-        typically calculated by a model attached to a *Physics* object
-        associated with the given *Phase*.
 
     Other Parameters
     ----------------
@@ -53,15 +42,14 @@ class ReactiveTransportSettings(GenericSettings):
     %(GenericTransportSettings.other_parameters)s
 
     """
-
-    # Swap the following 2 lines when we stop supporting Python 3.6
-    # sources: List = field(default_factory=lambda: [])
-    sources = []
+    prefix = 'react_trans'
+    nlin_max_iter = 5000
+    relaxation_source = 1.0
     relaxation_quantity = 1.0
+    sources = TypedList(types=[str])
     newton_maxiter = 5000
     f_rtol = 1e-6
     x_rtol = 1e-6
-
 
 
 @docstr.get_sections(base='ReactiveTransport', sections=['Parameters'])
@@ -82,9 +70,8 @@ class ReactiveTransport(GenericTransport):
     """
 
     def __init__(self, phase=None, settings={}, **kwargs):
-        super().__init__(**kwargs)
-        self.settings._update_settings_and_docs(ReactiveTransportSettings)
-        self.settings.update(settings)
+        self.settings = SettingsAttr(ReactiveTransportSettings, settings)
+        super().__init__(settings=self.settings, **kwargs)
         if phase is not None:
             self.settings['phase'] = phase.name
 
@@ -182,7 +169,7 @@ class ReactiveTransport(GenericTransport):
         if not iterative_props:
             return
         # Fetch objects associated with the algorithm
-        phase = self.project.find_phase(self)
+        phase = self.project[self.settings.phase]
         physics = self.project.find_physics(phase=phase)
         geometries = self.project.geometries().values()
         # Update 'quantity' on phase with the most recent value
@@ -206,7 +193,7 @@ class ReactiveTransport(GenericTransport):
         current value of 'quantity'.
 
         """
-        phase = self.project.find_phase(self)
+        phase = self.project[self.settings.phase]
         for item in self.settings['sources']:
             # Fetch linearized values of the source term
             Ps = self.pores(item)
@@ -247,7 +234,7 @@ class ReactiveTransport(GenericTransport):
         w = self.settings['relaxation_quantity']
         maxiter = self.settings['newton_maxiter']
         f_rtol = self.settings['f_rtol']
-        x_rtol = self.settings['f_xtol']
+        x_rtol = self.settings['x_rtol']
         xold = self.x
         dx = self.x - xold
         condition = TerminationCondition(f_rtol=f_rtol, x_rtol=x_rtol)
@@ -278,7 +265,7 @@ class ReactiveTransport(GenericTransport):
         running the algorithm.
         """
         import networkx as nx
-        phase = self.project.find_phase(self)
+        phase = self.project[self.settings.phase]
         physics = self.project.find_physics(phase=phase)
         geometries = self.project.geometries().values()
         # Generate global dependency graph

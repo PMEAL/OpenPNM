@@ -1,49 +1,33 @@
 import warnings
 import uuid
+from copy import deepcopy
 import numpy as np
 from collections import namedtuple
 from openpnm.utils import Workspace, logging
-from openpnm.utils.misc import PrintableList, PrintableDict, SettingsDict, Docorator
+from openpnm.utils import SettingsAttr
+from openpnm.utils.misc import PrintableList, Docorator
 docstr = Docorator()
 logger = logging.getLogger(__name__)
 ws = Workspace()
 
 
-class ParamMixin:
+@docstr.get_sections(base='BaseSettings', sections=['Parameters'])
+class BaseSettings:
+    r"""
+    The default settings to use on instance of Base
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._params = PrintableDict()
-        self._params._key = "Parameters"
-        self._params._value = "Values"
-
-    def __getitem__(self, key):
-        if key.startswith('param'):
-            try:
-                vals = self._params[key]
-            except KeyError:
-                vals = self.network._params[key]
-        else:
-            vals = super().__getitem__(key)
-        return vals
-
-    def __setitem__(self, key, value):
-        if key.startswith('param'):
-            self._params[key] = value
-        else:
-            super().__setitem__(key, value)
-
-    def __str__(self):
-        s = super().__str__()
-        s = s.rpartition('\n')[0]
-        s = s + '\n' + self._params.__str__()
-        return s
-
-    def params(self):
-        r"""
-        Return parameter names and values in a dictionary
-        """
-        return self._params
+    Parameters
+    ----------
+    prefix : str
+        The default prefix to use when generating a name
+    name : str
+        The name of the object, which will be generated if not given
+    uuid : str
+        A universally unique identifier for the object to keep things straight
+    """
+    prefix = 'base'
+    name = ''
+    uuid = ''
 
 
 @docstr.get_sections(base='Base', sections=['Parameters'])
@@ -53,12 +37,8 @@ class Base(dict):
 
     Parameters
     ----------
-    project : OpenPNM Project object, optional
-        The Project with which the object should be assigned.  If not supplied
-        then a new Project is created
     name : string, optional
         The unique name of the object.  If not given one will be generated.
-
     Np : int, default is 0
         The total number of pores to be assigned to the object
     Nt : int, default is 0
@@ -130,17 +110,15 @@ class Base(dict):
 
     def __new__(cls, *args, **kwargs):
         instance = super(Base, cls).__new__(cls, *args, **kwargs)
-        # It is necessary to set the SettingsDict here since some classes
-        # use it before calling super.__init__()
-        instance.settings = SettingsDict()
-        instance.settings['name'] = None
-        instance.settings['_uuid'] = str(uuid.uuid4())
+        instance._settings = None
+        instance._settings_docs = None
         return instance
 
-    def __init__(self, Np=0, Nt=0, name=None, project=None, network=None, settings={}):
-        self.settings.setdefault('prefix', 'base')
-        self.settings.update(settings)
+    def __init__(self, Np=0, Nt=0, network=None, name=None, project=None,
+                 settings={}):
         super().__init__()
+        self.settings = SettingsAttr(BaseSettings, settings)
+
         if project is None:
             if network is None:
                 project = ws.new_project()
@@ -151,6 +129,7 @@ class Base(dict):
         project._validate_name(name)
         project.extend(self)
         self.settings['name'] = name
+        self.settings.uuid = str(uuid.uuid4())
         self.update({'pore.all': np.ones(shape=(Np, ), dtype=bool)})
         self.update({'throat.all': np.ones(shape=(Nt, ), dtype=bool)})
 
@@ -299,6 +278,24 @@ class Base(dict):
                 return proj
 
     project = property(fget=_get_project)
+
+    def _set_settings(self, settings):
+        self._settings = deepcopy(settings)
+        if (self._settings_docs is None) and (settings.__doc__ is not None):
+            self._settings_docs = settings.__doc__
+
+    def _get_settings(self):
+        if self._settings is None:
+            self._settings = SettingsAttr()
+        sets = self._settings
+        if sets is not None:
+            sets.__doc__ = self._settings_docs
+        return sets
+
+    def _del_settings(self):
+        self._settings = None
+
+    settings = property(fget=_get_settings, fset=_set_settings, fdel=_del_settings)
 
     @property
     def network(self):

@@ -18,8 +18,6 @@ class CirclesAndRectangles(GenericGeometry):
     ----------
     network : GenericNetwork
         The network with which this Geometry should be associated
-    project : Project, optional
-        Can be supplied instead of a ``network``
     pores : array_like
         The pores in the domain where this Geometry applies
     throats : array_like

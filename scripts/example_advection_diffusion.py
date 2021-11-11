@@ -120,7 +120,7 @@ setts3.update(
         {'conductance': 'throat.ad_dif_conductance.' + Na.name,
          'diffusive_conductance': 'throat.diffusive_conductance.' + Na.name,
          'hydraulic_conductance': 'throat.hydraulic_conductance'})
-eC.settings.update(setts3)
+eC.settings._update(setts3)
 eC.set_value_BC(pores=net.pores('back'), values=1)
 eC.set_value_BC(pores=net.pores('left'), values=0.1)
 eC.set_value_BC(pores=net.pores('right'), values=0.1)
