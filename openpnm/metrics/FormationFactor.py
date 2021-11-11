@@ -47,13 +47,17 @@ class FormationFactor(GenericTransportMetrics):
     Examples
     --------
     >>> import openpnm as op
+    >>> import numpy as np
+    >>> np.random.seed(5)
     >>> pn = op.network.Cubic(shape=[10, 10, 10], spacing=1e-5)
     >>> geo = op.geometry.SpheresAndCylinders(network=pn, pores=pn.Ps, throats=pn.Ts)
 
     Now find the formation factor of the network:
 
-    >>> F = op.metrics.FormationFactor(network=pn)
-    >>> F.run()
+    >>> FF = op.metrics.FormationFactor(network=pn)
+    >>> F = FF.run()
+    >>> print(F)
+    21.0
 
     """
 

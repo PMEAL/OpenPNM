@@ -67,6 +67,7 @@ from . import algorithms
 from . import materials
 from . import topotools
 from . import io
+from . import metrics
 
 from .utils import Workspace, Project
 
