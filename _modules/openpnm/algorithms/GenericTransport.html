@@ -842,6 +842,46 @@
 
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">ndmin</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div>
 
+<div class="viewcode-block" id="GenericTransport._calc_eff_prop"><a class="viewcode-back" href="../../../modules/algorithms/generic_transport.html#openpnm.algorithms.GenericTransport._calc_eff_prop">[docs]</a>    <span class="k">def</span> <span class="nf">_calc_eff_prop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inlets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">outlets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                       <span class="n">domain_area</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">domain_length</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculates the effective transport through the network.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        inlets : array_like</span>
+<span class="sd">            The pores where the inlet boundary conditions were applied. If</span>
+<span class="sd">            not given an attempt is made to infer them from the algorithm.</span>
+<span class="sd">        outlets : array_like</span>
+<span class="sd">            The pores where the outlet boundary conditions were applied.</span>
+<span class="sd">            If not given an attempt is made to infer them from the</span>
+<span class="sd">            algorithm.</span>
+<span class="sd">        domain_area : float</span>
+<span class="sd">            The area of the inlet and/or outlet face (which shold match)</span>
+<span class="sd">        domain_length : float</span>
+<span class="sd">            The length of the domain between the inlet and outlet faces</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        The effective transport property through the network</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;quantity&#39;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;You need to run the algorithm first.&#39;</span><span class="p">)</span>
+        <span class="n">Ps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.bc_value&#39;</span><span class="p">])</span>
+        <span class="n">BCs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.bc_value&#39;</span><span class="p">][</span><span class="n">Ps</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">BCs</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;More/less than 2 unique value BCs were found.&#39;</span><span class="p">)</span>
+        <span class="n">Dx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ptp</span><span class="p">(</span><span class="n">BCs</span><span class="p">)</span>
+        <span class="n">inlets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_inlets</span><span class="p">()</span> <span class="k">if</span> <span class="n">inlets</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">inlets</span>
+        <span class="n">flow</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rate</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">inlets</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">domain_area</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">domain_area</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_domain_area</span><span class="p">(</span><span class="n">inlets</span><span class="o">=</span><span class="n">inlets</span><span class="p">,</span> <span class="n">outlets</span><span class="o">=</span><span class="n">outlets</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">domain_length</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">domain_length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_domain_length</span><span class="p">(</span><span class="n">inlets</span><span class="o">=</span><span class="n">inlets</span><span class="p">,</span> <span class="n">outlets</span><span class="o">=</span><span class="n">outlets</span><span class="p">)</span>
+        <span class="n">D</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">flow</span><span class="p">)</span> <span class="o">*</span> <span class="n">domain_length</span> <span class="o">/</span> <span class="n">domain_area</span> <span class="o">/</span> <span class="n">Dx</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">D</span><span class="p">)</span></div>
+
     <span class="k">def</span> <span class="nf">_get_inlets</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Determines inlet BCs by analyzing the algorithm object.</span>
