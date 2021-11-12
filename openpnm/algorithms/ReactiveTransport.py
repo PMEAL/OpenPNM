@@ -270,14 +270,17 @@ class ReactiveTransport(GenericTransport):
         # Generate global dependency graph
         dg = nx.compose_all([x.models.dependency_graph(deep=True)
                              for x in [phase, *geometries, *physics]])
-        base_props = [self.settings["quantity"]]
-        # Find all props downstream that depend on 'quantity'
-        dg = nx.DiGraph(nx.edge_dfs(dg, source=base_props))
+        base = [self.settings["quantity"]] + self.settings["variable_props"]
+        # Find all props downstream that depend on base props
+        dg = nx.DiGraph(nx.edge_dfs(dg, source=base))
         if len(dg.nodes) == 0:
             return []
         iterative_props = list(nx.dag.lexicographical_topological_sort(dg))
-        # Remove 'quantity' from iterative_props since it is not!
-        iterative_props.remove(self.settings["quantity"])
+        # "variable_props" should be in the returned list but not "quantity"
+        try:
+            iterative_props.remove(self.settings["quantity"])
+        except ValueError:
+            pass
         return iterative_props
 
     def _get_residual(self, x=None):
