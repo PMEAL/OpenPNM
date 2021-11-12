@@ -111,7 +111,7 @@ class BaseTest:
         b = self.net.pores(labels=['top', 'front'], mode='or')
         assert np.all(np.where(a)[0] == b)
 
-    def test_pores_with_target(self):
+    def test_pores_and_throats_with_to_global(self):
         net = op.network.Cubic(shape=[2, 2, 2])
         geo1 = op.geometry.GenericGeometry(network=net,
                                            pores=[1, 3, 5, 7],
@@ -119,27 +119,10 @@ class BaseTest:
         geo2 = op.geometry.GenericGeometry(network=net,
                                            pores=[0, 2, 4, 6],
                                            throats=range(6, 12))
-        assert np.all(net.pores('top', target=geo1) == [0, 1, 2, 3])
-        assert len(net.pores('top', target=geo2)) == 0
-        mapped = net.map_pores(pores=[0, 1, 2, 3], origin=geo1)
-        assert np.all(mapped == net.pores('geo_01'))
-        mapped = net.map_pores(pores=[0, 1, 2, 3], origin=geo2)
-        assert np.all(mapped == net.pores('geo_02'))
-
-    def test_throats_with_target(self):
-        net = op.network.Cubic(shape=[2, 2, 2])
-        geo1 = op.geometry.GenericGeometry(network=net,
-                                           pores=[1, 3, 5, 7],
-                                           throats=range(6))
-        geo2 = op.geometry.GenericGeometry(network=net,
-                                           pores=[0, 2, 4, 6],
-                                           throats=range(6, 12))
-        assert np.all(net.throats('surface', target=geo1) == [0, 1, 2, 3, 4, 5])
-        assert np.all(net.throats('surface', target=geo2) == [0, 1, 2, 3, 4, 5])
-        mapped = net.map_throats(throats=[0, 1, 2, 3, 4, 5], origin=geo1)
-        assert np.all(mapped == net.throats('geo_01'))
-        mapped = net.map_throats(throats=[0, 1, 2, 3, 4, 5], origin=geo2)
-        assert np.all(mapped == net.throats('geo_02'))
+        assert np.all(net.throats('geo_01') == geo1.throats(to_global=True))
+        assert np.all(net.throats('geo_02') == geo2.throats(to_global=True))
+        assert np.all(net.pores('geo_01') == geo1.pores(to_global=True))
+        assert np.all(net.pores('geo_02') == geo2.pores(to_global=True))
 
     def test_throats(self):
         a = self.net.throats()
