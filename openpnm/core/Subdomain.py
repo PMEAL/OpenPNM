@@ -182,7 +182,7 @@ class Subdomain(Base, LegacyMixin, LabelMixin):
         elif throats is not None:
             element = 'throat'
             locs = throats
-        mask = self.network[element + '.' + self.name]
+        mask = self._domain[element + '.' + self.name]
         inds = np.where(mask)[0]
         return inds[locs]
 
@@ -209,7 +209,8 @@ class Subdomain(Base, LegacyMixin, LabelMixin):
         if throats is not None:
             element = 'throat'
             locs = throats
-        mask = np.ones_like(self.network[element + '.all'], dtype=int)*missing_vals
-        inds = np.where(self.network[element + '.' + self.name])[0]
+        mask = np.ones_like(self._domain[element + '.all'],
+                            dtype=int)*missing_vals
+        inds = np.where(self._domain[element + '.' + self.name])[0]
         mask[inds] = self.Ps
         return mask[locs]
