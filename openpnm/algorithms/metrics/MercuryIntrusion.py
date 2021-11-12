@@ -39,8 +39,8 @@ class MercuryIntrusion(Porosimetry):
     """
 
     def __init__(self, network, settings={}, **kwargs):
-        super().__init__(network=network, settings=self.settings, **kwargs)
         hg = Mercury(network=network)
+        super().__init__(network=network, phase=hg, settings=self.settings, **kwargs)
         project = self.project
         self.settings['phase'] = hg.name
         mod = models.physics.capillary_pressure.washburn

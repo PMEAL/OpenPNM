@@ -50,7 +50,7 @@ class TransientReactiveTransport(ReactiveTransport):
 
     def __init__(self, phase, settings={}, **kwargs):
         self.settings = SettingsAttr(TransientReactiveTransportSettings, settings)
-        super().__init__(settings=self.settings, **kwargs)
+        super().__init__(phase=phase, settings=self.settings, **kwargs)
         self.settings['phase'] = phase.name
         self["pore.ic"] = np.nan
 
