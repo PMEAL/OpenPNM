@@ -196,15 +196,23 @@
 <span class="sd">        The size and shape of the primary cubic network in terms of the</span>
 <span class="sd">        number of pores in each direction.  Secondary nodes will be added at</span>
 <span class="sd">        centers of each unit cell.</span>
+
 <span class="sd">    spacing : list of floats</span>
 <span class="sd">        The distance between pores of the primary network in each of the</span>
 <span class="sd">        principal directions</span>
+
 <span class="sd">    label_1 : string</span>
 <span class="sd">        The label to apply to the primary cubic lattices, which defaults to</span>
 <span class="sd">        &#39;primary&#39;</span>
+
 <span class="sd">    label_2 : string</span>
 <span class="sd">        The label to apply to the secondary cubic lattices, which defaults to</span>
 <span class="sd">        &#39;seconary&#39;</span>
+
+<span class="sd">    project : OpenPNM Project object (optional)</span>
+<span class="sd">        If not provided one will be generated and the network will be assigned</span>
+<span class="sd">        to it.  It can be retrieved from ``net.project``.</span>
+
 <span class="sd">    name : string</span>
 <span class="sd">        An optional name for the object to help identify it.  If not given,</span>
 <span class="sd">        one will be generated.</span>

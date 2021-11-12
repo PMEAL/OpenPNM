@@ -174,7 +174,7 @@
                 
   <h1>Source code for openpnm.algorithms.metrics.FormationFactor</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">logging</span><span class="p">,</span> <span class="n">Project</span><span class="p">,</span> <span class="n">Workspace</span><span class="p">,</span> <span class="n">PrintableDict</span><span class="p">,</span> <span class="n">SettingsAttr</span>
+<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">logging</span><span class="p">,</span> <span class="n">Project</span><span class="p">,</span> <span class="n">Workspace</span><span class="p">,</span> <span class="n">PrintableDict</span>
 <span class="kn">from</span> <span class="nn">openpnm.phases</span> <span class="kn">import</span> <span class="n">GenericPhase</span>
 <span class="kn">from</span> <span class="nn">openpnm.physics</span> <span class="kn">import</span> <span class="n">GenericPhysics</span>
 <span class="kn">from</span> <span class="nn">openpnm.algorithms</span> <span class="kn">import</span> <span class="n">FickianDiffusion</span>
@@ -183,22 +183,6 @@
 <span class="kn">from</span> <span class="nn">openpnm</span> <span class="kn">import</span> <span class="n">topotools</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 <span class="n">ws</span> <span class="o">=</span> <span class="n">Workspace</span><span class="p">()</span>
-
-
-<span class="k">class</span> <span class="nc">FormationFactorSettings</span><span class="p">:</span>
-    <span class="n">prefix</span> <span class="o">=</span> <span class="s1">&#39;ff&#39;</span>
-    <span class="n">inlets</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="s1">&#39;left&#39;</span><span class="p">,</span>
-              <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="s1">&#39;front&#39;</span><span class="p">,</span>
-              <span class="s1">&#39;z&#39;</span><span class="p">:</span> <span class="s1">&#39;top&#39;</span><span class="p">}</span>
-    <span class="n">outlets</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="s1">&#39;right&#39;</span><span class="p">,</span>
-               <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="s1">&#39;back&#39;</span><span class="p">,</span>
-               <span class="s1">&#39;z&#39;</span><span class="p">:</span> <span class="s1">&#39;bottom&#39;</span><span class="p">}</span>
-    <span class="n">areas</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-             <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-             <span class="s1">&#39;z&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
-    <span class="n">lengths</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-               <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-               <span class="s1">&#39;z&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
 
 
 <div class="viewcode-block" id="FormationFactor"><a class="viewcode-back" href="../../../../modules/algorithms/metrics/formation_factor.html#openpnm.algorithms.metrics.FormationFactor">[docs]</a><span class="k">class</span> <span class="nc">FormationFactor</span><span class="p">(</span><span class="n">GenericMetric</span><span class="p">):</span>
@@ -251,12 +235,33 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="o">=</span><span class="p">{},</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span> <span class="o">=</span> <span class="n">SettingsAttr</span><span class="p">(</span><span class="n">FormationFactorSettings</span><span class="p">,</span> <span class="n">settings</span><span class="p">)</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">project</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">settings</span><span class="o">=</span><span class="p">{},</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;inlets&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="s1">&#39;left&#39;</span><span class="p">,</span>
+                                         <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="s1">&#39;front&#39;</span><span class="p">,</span>
+                                         <span class="s1">&#39;z&#39;</span><span class="p">:</span> <span class="s1">&#39;top&#39;</span><span class="p">},</span>
+                              <span class="s1">&#39;outlets&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="s1">&#39;right&#39;</span><span class="p">,</span>
+                                          <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="s1">&#39;back&#39;</span><span class="p">,</span>
+                                          <span class="s1">&#39;z&#39;</span><span class="p">:</span> <span class="s1">&#39;bottom&#39;</span><span class="p">},</span>
+                              <span class="s1">&#39;areas&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                                        <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                                        <span class="s1">&#39;z&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">},</span>
+                              <span class="s1">&#39;lengths&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                                          <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                                          <span class="s1">&#39;z&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}})</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">results</span> <span class="o">=</span> <span class="n">PrintableDict</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">_value</span> <span class="o">=</span> <span class="s2">&quot;Formation Factor&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">_key</span> <span class="o">=</span> <span class="s2">&quot;Direction&quot;</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">settings</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">network</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">network</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">network</span>
+        <span class="k">if</span> <span class="n">project</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">project</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">project</span>
+<span class="c1">#        project = ws.copy_project(network.project)</span>
+<span class="c1">#        keep = [network] + list(project.geometries().values())</span>
+<span class="c1">#        for i in project:</span>
+<span class="c1">#            if i not in keep:</span>
+<span class="c1">#                project.purge_object(i)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">network</span><span class="p">,</span> <span class="n">project</span><span class="o">=</span><span class="n">project</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 <div class="viewcode-block" id="FormationFactor.run"><a class="viewcode-back" href="../../../../modules/algorithms/metrics/formation_factor.html#openpnm.algorithms.metrics.FormationFactor.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
