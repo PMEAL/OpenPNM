@@ -174,13 +174,41 @@
                 
   <h1>Source code for openpnm.algorithms.FickianDiffusion</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">openpnm.algorithms</span> <span class="kn">import</span> <span class="n">ReactiveTransport</span>
-<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">logging</span><span class="p">,</span> <span class="n">Docorator</span><span class="p">,</span> <span class="n">SettingsAttr</span>
+<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">logging</span><span class="p">,</span> <span class="n">Docorator</span><span class="p">,</span> <span class="n">GenericSettings</span>
 <span class="n">docstr</span> <span class="o">=</span> <span class="n">Docorator</span><span class="p">()</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
-<span class="k">class</span> <span class="nc">FickianDiffusionSettings</span><span class="p">():</span>
-    <span class="n">prefix</span> <span class="o">=</span> <span class="s1">&#39;fick&#39;</span>
+<span class="nd">@docstr</span><span class="o">.</span><span class="n">get_sections</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="s1">&#39;FickianDiffusionSettings&#39;</span><span class="p">,</span>
+                     <span class="n">sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Parameters&#39;</span><span class="p">])</span>
+<span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+<span class="k">class</span> <span class="nc">FickianDiffusionSettings</span><span class="p">(</span><span class="n">GenericSettings</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    %(GenericTransportSettings.parameters)s</span>
+<span class="sd">    quantity : str (default = &#39;pore.concentration&#39;)</span>
+<span class="sd">        The name of the physical quantity to be calculated</span>
+<span class="sd">    conductance : str (default = &#39;throat.diffusive_conductance&#39;)</span>
+<span class="sd">        The name of the pore-scale transport conductance values. These are</span>
+<span class="sd">        typically calculated by a model attached to a *Physics* object</span>
+<span class="sd">        associated with the given *Phase*.</span>
+
+<span class="sd">    Other Parameters</span>
+<span class="sd">    ----------------</span>
+
+<span class="sd">    **The following parameters pertain to the ReactiveTransport class**</span>
+
+<span class="sd">    %(ReactiveTransportSettings.other_parameters)s</span>
+
+<span class="sd">    ----</span>
+
+<span class="sd">    **The following parameters pertain to the GenericTransport class**</span>
+
+<span class="sd">    %(GenericTransportSettings.other_parameters)s</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">quantity</span> <span class="o">=</span> <span class="s1">&#39;pore.concentration&#39;</span>
     <span class="n">conductance</span> <span class="o">=</span> <span class="s1">&#39;throat.diffusive_conductance&#39;</span>
 
@@ -212,8 +240,9 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="o">=</span><span class="p">{},</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span> <span class="o">=</span> <span class="n">SettingsAttr</span><span class="p">(</span><span class="n">FickianDiffusionSettings</span><span class="p">,</span> <span class="n">settings</span><span class="p">)</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">settings</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">settings</span><span class="o">=</span><span class="n">settings</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">_update_settings_and_docs</span><span class="p">(</span><span class="n">FickianDiffusionSettings</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span></div>
 </pre></div>
 
               </div>
