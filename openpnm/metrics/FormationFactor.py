@@ -1,4 +1,4 @@
-from openpnm.utils import logging, Workspace,  SettingsAttr
+from openpnm.utils import logging, Workspace,  SettingsAttr, Docorator
 from openpnm.phases import GenericPhase
 from openpnm.physics import GenericPhysics
 from openpnm.algorithms import FickianDiffusion
@@ -6,9 +6,29 @@ from openpnm.metrics import GenericTransportMetrics
 from openpnm import models
 logger = logging.getLogger(__name__)
 ws = Workspace()
+docstr = Docorator()
 
 
+@docstr.get_sections(base='EffectiveDiffusivitySettings',
+                     sections=['Parameters'])
+@docstr.dedent
 class FormationFactorSettings:
+    r"""
+    Defines the settings for FormationFactor
+
+    ----------
+    prefix : str
+        The default prefix to use when generating a name
+    inlet : str
+        The pore labels for diffusion inlet.
+    outlet : str
+        The pore labels for diffusion outlet.
+    area : scalar
+        The cross sectional area of the network relative to the inlet and outlet
+    length: scalar
+        The length of the network relative to the inlet and outlet
+
+    """
     prefix = 'ff'
     inlet = 'left'
     outlet = 'right'

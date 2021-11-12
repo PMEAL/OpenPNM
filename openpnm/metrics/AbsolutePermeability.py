@@ -1,4 +1,4 @@
-from openpnm.utils import logging, Workspace, SettingsAttr
+from openpnm.utils import logging, Workspace, SettingsAttr, Docorator
 from openpnm.phases import GenericPhase
 from openpnm.physics import GenericPhysics
 from openpnm.algorithms import StokesFlow
@@ -6,9 +6,29 @@ from openpnm.metrics import GenericTransportMetrics
 from openpnm import models
 logger = logging.getLogger(__name__)
 ws = Workspace()
+docstr = Docorator()
 
 
-class EffectiveDiffusivitySettings:
+@docstr.get_sections(base='AbsolutePermeabilitySettings',
+                     sections=['Parameters'])
+@docstr.dedent
+class AbsolutePermeabilitySettings:
+    r"""
+    Defines the settings for AbsolutePermeablity
+
+    ----------
+    prefix : str
+        The default prefix to use when generating a name
+    inlet : str
+        The pore labels for flow inlet.
+    outlet : str
+        The pore labels for flow outlet.
+    area : scalar
+        The cross sectional area of the network relative to the inlet and outlet
+    length: scalar
+        The length of the network relative to the inlet and outlet
+
+    """
     prefix = 'perm'
     inlet = 'left'
     outlet = 'right'
@@ -18,12 +38,17 @@ class EffectiveDiffusivitySettings:
 
 class AbsolutePermeability(GenericTransportMetrics):
     r"""
-    This class calculates the absolute permeability of the domain.
+    This class calculates the absolute permeability of the domain
+    using Stokes flow.
+    
+    .. math::
+
+        K = \frac{Q L }{\Delta P A \mu}
 
     """
 
     def __init__(self, settings={}, **kwargs):
-        self.settings = SettingsAttr(EffectiveDiffusivitySettings, settings)
+        self.settings = SettingsAttr(AbsolutePermeabilitySettings, settings)
         super().__init__(settings=self.settings, **kwargs)
 
     def run(self):

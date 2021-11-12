@@ -20,14 +20,14 @@ class FormationFactorTest:
     def test_given_area(self):
         Diff = op.metrics.EffectiveDiffusivity(network=self.net)
         val_1 = Diff.run()
-        Diff.settings._update({'area': (15*0.0005)**2})
+        Diff.settings['area'] = (15*0.0005)**2
         val_2 = Diff.run()
         assert val_1 != val_2
 
     def test_given_length(self):
         Diff = op.metrics.EffectiveDiffusivity(network=self.net)
         val_1 = Diff.run()
-        Diff.settings._update({'length': 15*0.0005})
+        Diff.settings['length'] = 15*0.0005
         val_2 = Diff.run()
         assert val_1 != val_2
 
