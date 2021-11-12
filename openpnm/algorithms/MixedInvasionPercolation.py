@@ -4,14 +4,52 @@ MixedInvasionPercolation: IP allowing pores and throats to invade separately
 ===============================================================================
 
 """
-import logging
 import heapq as hq
 import numpy as np
 from collections import namedtuple
 from openpnm.algorithms import GenericAlgorithm
 from openpnm.topotools import find_clusters, site_percolation
-
+from openpnm.utils import logging, SettingsAttr, Docorator
+docstr = Docorator()
 logger = logging.getLogger(__name__)
+
+
+@docstr.get_sections(base='MixedIPSettings',
+                     sections=['Parameters', 'Other Parameters'])
+@docstr.dedent
+class MixedIPSettings:
+    r"""
+    Parameters
+    ----------
+    %(GenericAlgorithmSettings.parameters)s
+    pore_entry_pressure : string
+        The dictionary key on the Phase object where the pore entry
+        pressure values are stored.
+    throat_entry_pressure : string
+        The dictionary key on the Phase object where the throat entry
+        pressure values are stored.
+    snap_off : string
+        The dictionary key on the Phase object where the throat snap-off
+        pressure values are stored.
+    invade_isolated_Ts : boolean
+        If ``True``, isolated throats are invaded at the higher invasion
+        pressure of their connected pores.
+    late_pore_filling : string
+        The name of the model used to determine late pore filling as
+        a function of applied pressure.
+    late_throat_filling : string
+        The name of the model used to determine late throat filling as
+        a function of applied pressure.
+
+    """
+    pore_entry_pressure = "pore.entry_pressure"
+    throat_entry_pressure = "throat.entry_pressure"
+    snap_off = ""
+    invade_isolated_Ts = False
+    late_pore_filling = ""
+    late_throat_filling = ""
+    cooperative_pore_filling = ""
+    trapping = ""
 
 
 class MixedInvasionPercolation(GenericAlgorithm):
@@ -33,30 +71,8 @@ class MixedInvasionPercolation(GenericAlgorithm):
     """
 
     def __init__(self, settings={}, **kwargs):
-        def_set = {
-            "pore_entry_pressure": "pore.entry_pressure",
-            "throat_entry_pressure": "throat.entry_pressure",
-            "snap_off": "",
-            "invade_isolated_Ts": False,
-            "late_pore_filling": "",
-            "late_throat_filling": "",
-            "gui": {
-                "setup": {
-                    "pore_entry_pressure": "",
-                    "throat_entry_pressure": "",
-                    "snap_off": "",
-                    "invade_isolated_Ts": "",
-                },
-                "set_inlets": {"pores": None, "clusters": None},
-                "set_outlets": {"pores": None, "overwrite": False},
-                "apply_flow": {"flowrate": None},
-                "apply_trapping": {"partial": False},
-                "set_residual": {"pores": None, "overwrite": False},
-            },
-        }
-        super().__init__(**kwargs)
-        self.settings.update(def_set)
-        self.settings.update(settings)
+        self.settings = SettingsAttr(MixedIPSettings, settings)
+        super().__init__(settings=self.settings, **kwargs)
 
     def setup(
         self,
@@ -109,7 +125,7 @@ class MixedInvasionPercolation(GenericAlgorithm):
             self.settings["phase"] = phase.name
         if throat_entry_pressure:
             self.settings["throat_entry_pressure"] = throat_entry_pressure
-            phase = self.project.find_phase(self)
+            phase = self.project[self.settings.phase]
         self["throat.entry_pressure"] = phase[self.settings["throat_entry_pressure"]]
         if len(np.shape(self["throat.entry_pressure"])) > 1:
             self._bidirectional = True
@@ -117,7 +133,7 @@ class MixedInvasionPercolation(GenericAlgorithm):
             self._bidirectional = False
         if pore_entry_pressure:
             self.settings["pore_entry_pressure"] = pore_entry_pressure
-            phase = self.project.find_phase(self)
+            phase = self.project[self.settings.phase]
         self["pore.entry_pressure"] = phase[self.settings["pore_entry_pressure"]]
         if snap_off:
             self.settings["snap_off"] = snap_off
@@ -439,7 +455,7 @@ class MixedInvasionPercolation(GenericAlgorithm):
                 "throat.invasion_sequence": self["throat.invasion_sequence"],
             }
         else:
-            phase = self.project.find_phase(self)
+            phase = self.project[self.settings.phase]
             net = self.project.network
             inv_p = self["pore.invasion_pressure"].copy()
             inv_t = self["throat.invasion_pressure"].copy()
@@ -515,7 +531,7 @@ class MixedInvasionPercolation(GenericAlgorithm):
         ee = np.cumsum(T_vol[bb] / flowrate)
         t = np.zeros((self.Nt,))
         t[bb] = ee  # Convert back to original order
-        phase = self.project.find_phase(self)
+        phase = self.project[self.settings.phase]
         phase["throat.invasion_time"] = t
 
     def get_intrusion_data(self, inv_points=None):
@@ -742,7 +758,7 @@ class MixedInvasionPercolation(GenericAlgorithm):
             logger.info("Number of trapped throats: " + str(num_tTs))
             self["throat.invasion_sequence"][self["throat.trapped"]] = -1
             # Assumes invasion has run to the end
-            phase = self.project.find_phase(self)
+            phase = self.project[self.settings.phase]
             phase["pore.occupancy"] = ~self["pore.trapped"]
             phase["throat.occupancy"] = ~self["throat.trapped"]
         else:
@@ -754,7 +770,7 @@ class MixedInvasionPercolation(GenericAlgorithm):
         This is probably wrong!!!! Each one needs to start a new cluster.
         """
         net = self.project.network
-        phase = self.project.find_phase(self)
+        phase = self.project[self.settings.phase]
         snap_off = self.settings["snap_off"]
         if queue is None:
             queue = self.queue[0]

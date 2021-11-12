@@ -38,12 +38,10 @@ class MercuryIntrusion(Porosimetry):
     >>> mip.snwp_data = [0, 0.5, 0.9]
     """
 
-    def __init__(self, network=None, project=None, settings={}, name=None,
-                 **kwargs):
-        if project is None:
-            project = network.project
-        super().__init__(network=network, project=project, **kwargs)
+    def __init__(self, network, settings={}, **kwargs):
         hg = Mercury(network=network)
+        super().__init__(network=network, phase=hg, settings=self.settings, **kwargs)
+        project = self.project
         self.settings['phase'] = hg.name
         mod = models.physics.capillary_pressure.washburn
         for geom in project.geometries().values():

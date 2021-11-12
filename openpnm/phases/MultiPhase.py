@@ -1,8 +1,14 @@
 import numpy as np
 import openpnm.models.misc as misc
 from openpnm.phases import GenericPhase as GenericPhase
-from openpnm.utils import logging
+from openpnm.utils import logging, SettingsAttr
 logger = logging.getLogger(__name__)
+
+
+class MultiPhaseSettings:
+    phases = []
+    throat_occupancy = 'manual'
+    partition_coef_prefix = 'throat.partition_coef'
 
 
 class MultiPhase(GenericPhase):
@@ -14,11 +20,6 @@ class MultiPhase(GenericPhase):
     ----------
     network : GenericNetwork
         The network to which this phase object will be attached.
-    project : Project, optional
-        The Project with which this phase should be associted. If a
-        ``network`` is given then this is ignored and the Network's
-        project is used. If a ``network`` is not given then this is
-        mandatory.
     name : str, optional
         The name of the phase. This is useful to keep track of the objects
         throughout the simulation. The name must be unique to the project.
@@ -55,15 +56,8 @@ class MultiPhase(GenericPhase):
     """
 
     def __init__(self, phases=[], settings={}, **kwargs):
-        super().__init__(**kwargs)
-        self.settings.update(
-            {
-                'phases': [],
-                'throat_occupancy': 'manual',
-                'partition_coef_prefix': 'throat.partition_coef'
-            }
-        )
-        self.settings.update(settings)
+        self.settings = SettingsAttr(MultiPhaseSettings, settings)
+        super().__init__(settings=self.settings, **kwargs)
 
         self['pore.occupancy.all'] = np.zeros(self.Np, dtype=float)
         self['throat.occupancy.all'] = np.zeros(self.Nt, dtype=float)
