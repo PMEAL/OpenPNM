@@ -46,6 +46,7 @@ class GenericTransportSettings:
     conductance = ''
     cache_A = True
     cache_b = True
+    variable_props = []
 
 
 @docstr.get_sections(base='GenericTransport', sections=['Parameters'])
