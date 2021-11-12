@@ -71,7 +71,7 @@ class ReactiveTransport(GenericTransport):
 
     def __init__(self, phase, settings={}, **kwargs):
         self.settings = SettingsAttr(ReactiveTransportSettings, settings)
-        super().__init__(settings=self.settings, **kwargs)
+        super().__init__(phase=phase, settings=self.settings, **kwargs)
         self.settings['phase'] = phase.name
 
     @docstr.dedent
