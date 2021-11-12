@@ -20,22 +20,22 @@ class FormationFactorTest:
     def test_given_area(self):
         FF = op.metrics.FormationFactor(network=self.net)
         val_1 = FF.run()
-        FF.settings.update({'area': (15*0.0005)**2})
+        FF.settings._update({'area': (15*0.0005)**2})
         val_2 = FF.run()
         assert val_1 != val_2
 
     def test_given_length(self):
         FF = op.metrics.FormationFactor(network=self.net)
         val_1 = FF.run()
-        FF.settings.update({'length': 15*0.0005})
+        FF.settings._update({'length': 15*0.0005})
         val_2 = FF.run()
         assert val_1 != val_2
 
     def test_setting_inlets(self):
         FF = op.metrics.FormationFactor(network=self.net)
-        FF.settings.update({'inlet': 'top', 'outlet': 'bottom'})
+        FF.settings._update({'inlet': 'top', 'outlet': 'bottom'})
         val_1 = FF.run()
-        FF.settings.update({'inlet': 'front', 'outlet': 'back'})
+        FF.settings._update({'inlet': 'front', 'outlet': 'back'})
         val_2 = FF.run()
         assert val_1 != val_2
 

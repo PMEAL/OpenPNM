@@ -1,4 +1,4 @@
-from openpnm.utils import logging, Workspace
+from openpnm.utils import logging, Workspace,  SettingsAttr
 from openpnm.phases import GenericPhase
 from openpnm.physics import GenericPhysics
 from openpnm.algorithms import FickianDiffusion
@@ -7,12 +7,13 @@ from openpnm import models
 logger = logging.getLogger(__name__)
 ws = Workspace()
 
-default_settings = {
-    'inlet': 'left',
-    'outlet': 'right',
-    'area': None,
-    'length': None,
-}
+
+class FormationFactorSettings:
+    prefix = 'ff'
+    inlet = 'left'
+    outlet = 'right'
+    area = None
+    length = None
 
 
 class FormationFactor(GenericTransportMetrics):
@@ -61,14 +62,9 @@ class FormationFactor(GenericTransportMetrics):
 
     """
 
-    def __init__(self, network=None, project=None, settings={}, **kwargs):
-        self.settings.update(default_settings)
-        self.settings.update(settings)
-        if network is None:
-            network = project.network
-        if project is None:
-            project = network.project
-        super().__init__(network=network, project=project, **kwargs)
+    def __init__(self, settings={}, **kwargs):
+        self.settings = SettingsAttr(FormationFactorSettings, settings)
+        super().__init__(settings=self.settings, **kwargs)
 
     def run(self):
         r"""

@@ -21,22 +21,22 @@ class FormationFactorTest:
     def test_given_area(self):
         perm = op.metrics.AbsolutePermeability(network=self.net)
         val_1 = perm.run()
-        perm.settings.update({'area': (15*0.0005)**2})
+        perm.settings._update({'area': (15*0.0005)**2})
         val_2 = perm.run()
         assert val_1 != val_2
 
     def test_given_length(self):
         perm = op.metrics.AbsolutePermeability(network=self.net)
         val_1 = perm.run()
-        perm.settings.update({'length': 15*0.0005})
+        perm.settings._update({'length': 15*0.0005})
         val_2 = perm.run()
         assert val_1 != val_2
 
     def test_setting_inlets(self):
         perm = op.metrics.AbsolutePermeability(network=self.net)
-        perm.settings.update({'inlet': 'top', 'outlet': 'bottom'})
+        perm.settings._update({'inlet': 'top', 'outlet': 'bottom'})
         val_1 = perm.run()
-        perm.settings.update({'inlet': 'front', 'outlet': 'back'})
+        perm.settings._update({'inlet': 'front', 'outlet': 'back'})
         val_2 = perm.run()
         assert val_1 != val_2
 

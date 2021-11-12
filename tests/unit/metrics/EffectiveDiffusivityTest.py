@@ -20,22 +20,22 @@ class FormationFactorTest:
     def test_given_area(self):
         Diff = op.metrics.EffectiveDiffusivity(network=self.net)
         val_1 = Diff.run()
-        Diff.settings.update({'area': (15*0.0005)**2})
+        Diff.settings._update({'area': (15*0.0005)**2})
         val_2 = Diff.run()
         assert val_1 != val_2
 
     def test_given_length(self):
         Diff = op.metrics.EffectiveDiffusivity(network=self.net)
         val_1 = Diff.run()
-        Diff.settings.update({'length': 15*0.0005})
+        Diff.settings._update({'length': 15*0.0005})
         val_2 = Diff.run()
         assert val_1 != val_2
 
     def test_setting_inlets(self):
         Diff = op.metrics.EffectiveDiffusivity(network=self.net)
-        Diff.settings.update({'inlet': 'top', 'outlet': 'bottom'})
+        Diff.settings._update({'inlet': 'top', 'outlet': 'bottom'})
         val_1 = Diff.run()
-        Diff.settings.update({'inlet': 'front', 'outlet': 'back'})
+        Diff.settings._update({'inlet': 'front', 'outlet': 'back'})
         val_2 = Diff.run()
         assert val_1 != val_2
 
