@@ -47,13 +47,12 @@ class Porosimetry(OrdinaryPercolation):
 
     """
 
-    def __init__(self, settings={}, phase=None, **kwargs):
+    def __init__(self, phase, settings={}, **kwargs):
         self.settings = SettingsAttr(PorosimetrySettings, settings)
         super().__init__(settings=self.settings, **kwargs)
         # Use the reset method to initialize all arrays
         self.reset()
-        if phase is not None:
-            self.settings['phase'] = phase.name
+        self.settings['phase'] = phase.name
 
     def set_partial_filling(self, propname):
         r"""

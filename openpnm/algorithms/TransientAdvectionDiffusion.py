@@ -44,8 +44,7 @@ class TransientAdvectionDiffusion(TransientReactiveTransport,
 
     """
 
-    def __init__(self, settings={}, phase=None, **kwargs):
+    def __init__(self, phase, settings={}, **kwargs):
         self.settings = SettingsAttr(TransientAdvectionDiffusionSettings, settings)
         super().__init__(settings=self.settings, **kwargs)
-        if phase is not None:
-            self.settings['phase'] = phase.name
+        self.settings['phase'] = phase.name
