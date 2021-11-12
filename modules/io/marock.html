@@ -610,6 +610,47 @@
                 
   <section id="marock">
 <span id="marock-api"></span><h1>MARock<a class="headerlink" href="#marock" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="openpnm.io.MARock">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MARock</span></span><a class="reference internal" href="../../_modules/openpnm/io/MARock.html#MARock"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.io.MARock" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.io.GenericIO.GenericIO</span></code></p>
+<p>3DMA-Rock is a network extraction algorithm developed by Brent Lindquist
+and his group</p>
+<p>It uses Medial Axis thinning to find the skeleton of the pore space, then
+extracts geometrical features such as pore volume and throat
+cross-sectional area.</p>
+<p>[1] Lindquist, W. Brent, S. M. Lee, W. Oh, A. B. Venkatarangan, H. Shin,
+and M. Prodanovic. “3DMA-Rock: A software package for automated analysis
+of rock pore structure in 3-D computed microtomography images.” SUNY Stony
+Brook (2005).</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.io.MARock.import_data">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">import_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">voxel_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/io/MARock.html#MARock.import_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.io.MARock.import_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load data from a 3DMA-Rock extracted network.  This format consists of
+two files: ‘rockname.np2th’ and ‘rockname.th2pn’.  They should be
+stored together in a folder which is referred to by the path argument.
+These files are binary and therefore not human readable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>string</em>) – The location of the ‘np2th’ and ‘th2np’ files. This can be an
+absolute path or relative to the current working directory.</p></li>
+<li><p><strong>network</strong> (<em>OpenPNM Network Object</em>) – If an Network object is recieved, this method will add new data to
+it but NOT overwrite anything that already exists.  This can be
+used to append data from different sources.</p></li>
+<li><p><strong>voxel_size</strong> (<em>scalar</em>) – The resolution of the image on which 3DMA-Rock was run, in terms of
+the linear length of eac voxel. The default is 1.  This is used to
+scale the voxel counts to actual dimension. It is recommended that
+this value be in SI units [m] to work well with OpenPNM.</p></li>
+<li><p><strong>project</strong> (<em>OpenPNM Project object</em>) – A GenericNetwork is created and added to the specified Project.
+If no Project is supplied then one will be created and returned.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
 
