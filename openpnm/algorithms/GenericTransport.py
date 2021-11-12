@@ -68,13 +68,10 @@ class GenericTransport(GenericAlgorithm):
         instance._pure_b = None
         return instance
 
-    def __init__(self, phase=None, settings={}, **kwargs):
+    def __init__(self, phase, settings={}, **kwargs):
         self.settings = SettingsAttr(GenericTransportSettings, settings)
         super().__init__(settings=self.settings, **kwargs)
-
-        # Assign phase if given during init
-        if phase is not None:
-            self.settings['phase'] = phase.name
+        self.settings['phase'] = phase.name
         self['pore.bc_rate'] = np.nan
         self['pore.bc_value'] = np.nan
 

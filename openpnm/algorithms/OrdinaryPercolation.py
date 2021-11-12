@@ -73,13 +73,12 @@ class OrdinaryPercolation(GenericAlgorithm):
 
     """
 
-    def __init__(self, settings={}, phase=None, **kwargs):
+    def __init__(self, phase, settings={}, **kwargs):
         self.settings = SettingsAttr(OrdinaryPercolationSettings, settings)
         super().__init__(settings=self.settings, **kwargs)
         # Use the reset method to initialize all arrays
         self.reset()
-        if phase is not None:
-            self.settings['phase'] = phase.name
+        self.settings['phase'] = phase.name
 
     def reset(self):
         r"""
