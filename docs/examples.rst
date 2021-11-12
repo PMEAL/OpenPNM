@@ -8,7 +8,7 @@ You can download the examples in IPython format from our GitHub
 repo, which can be browsed
 `here <https://github.com/PMEAL/OpenPNM/tree/dev/examples>`_.
 
-----
+-----
 
 User Guide
 ----------
