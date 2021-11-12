@@ -1053,6 +1053,26 @@ function.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="openpnm.core.Base.to_global">
+<span class="sig-name descname"><span class="pre">to_global</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throats</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/core/Base.html#Base.to_global"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.core.Base.to_global" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert local indices from a subdomain object to global values</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pores</strong> (<em>array_like</em>) – List of pore or throat indices to be converted</p></li>
+<li><p><strong>throats</strong> (<em>array_like</em>) – List of pore or throat indices to be converted</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>indices</strong> – An array of location indices</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="openpnm.core.Base.to_indices">
 <span class="sig-name descname"><span class="pre">to_indices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mask</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/core/Base.html#Base.to_indices"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.core.Base.to_indices" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert a boolean mask to a list of pore or throat indices</p>
@@ -1078,6 +1098,28 @@ of mask, which must be either Np or Nt long.</p>
 <p>This behavior could just as easily be accomplished by using the mask
 in <code class="docutils literal notranslate"><span class="pre">pn.pores()[mask]</span></code> or <code class="docutils literal notranslate"><span class="pre">pn.throats()[mask]</span></code>.  This method is
 just a convenience function and is a complement to <code class="docutils literal notranslate"><span class="pre">tomask</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.core.Base.to_local">
+<span class="sig-name descname"><span class="pre">to_local</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throats</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">missing_vals</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/core/Base.html#Base.to_local"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.core.Base.to_local" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert global indices to local values relative to a subdomain object</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pores</strong> (<em>array_like</em>) – List of pore or throat indices to be converted</p></li>
+<li><p><strong>throats</strong> (<em>array_like</em>) – List of pore or throat indices to be converted</p></li>
+<li><p><strong>missing_values</strong> (<em>scalar</em>) – The value to put into missing locations if global indices are not
+found.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>indices</strong> – An array of location indices</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">

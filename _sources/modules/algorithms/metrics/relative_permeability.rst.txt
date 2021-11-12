@@ -4,6 +4,6 @@
 RelativePermeability
 --------------------------------------------------------------------------------
 
-.. autoclass:: openpnm.algorithms.metrics.RelativePermeability
+.. autoclass:: openpnm.metrics.RelativePermeability
    :members:
    :show-inheritance:
