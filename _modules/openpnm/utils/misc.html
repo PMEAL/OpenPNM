@@ -213,12 +213,19 @@
     <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">Docorator</span><span class="o">.</span><span class="n">__instance__</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">Docorator</span><span class="o">.</span><span class="n">__instance__</span> <span class="o">=</span> <span class="n">DocstringProcessor</span><span class="p">()</span>
-            <span class="n">Docorator</span><span class="o">.</span><span class="n">__instance__</span><span class="o">.</span><span class="n">all_sections</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Parameters&#39;</span><span class="p">,</span>
-                                                   <span class="s1">&#39;Returns&#39;</span><span class="p">,</span>
-                                                   <span class="s1">&#39;Notes&#39;</span><span class="p">,</span>
-                                                   <span class="s1">&#39;Examples&#39;</span><span class="p">,</span>
-                                                   <span class="s1">&#39;See Also&#39;</span><span class="p">,</span>
-                                                   <span class="s1">&#39;Other Parameters&#39;</span><span class="p">,]</span>
+
+        <span class="c1"># Add custom parameter type sections</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">DocstringProcessor</span><span class="o">.</span><span class="n">param_like_sections</span>
+        <span class="n">Docorator</span><span class="o">.</span><span class="n">__instance__</span><span class="o">.</span><span class="n">param_like_sections</span> <span class="o">=</span> <span class="n">a</span> <span class="o">+</span> <span class="p">[]</span> <span class="c1"># [&quot;Attributes&quot;, &quot;Settings&quot;]</span>
+        <span class="c1"># Add custom text type sections</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">Docorator</span><span class="o">.</span><span class="n">__instance__</span><span class="o">.</span><span class="n">text_sections</span>
+        <span class="n">Docorator</span><span class="o">.</span><span class="n">__instance__</span><span class="o">.</span><span class="n">text_sections</span> <span class="o">=</span> <span class="n">a</span> <span class="o">+</span> <span class="p">[]</span>
+
+        <span class="c1"># Create a single list of all section types</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">Docorator</span><span class="o">.</span><span class="n">__instance__</span><span class="o">.</span><span class="n">param_like_sections</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">Docorator</span><span class="o">.</span><span class="n">__instance__</span><span class="o">.</span><span class="n">text_sections</span>
+        <span class="n">Docorator</span><span class="o">.</span><span class="n">__instance__</span><span class="o">.</span><span class="n">all_sections</span> <span class="o">=</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span>
+
         <span class="k">return</span> <span class="n">Docorator</span><span class="o">.</span><span class="n">__instance__</span>
 
 

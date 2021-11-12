@@ -36,8 +36,6 @@
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script src="../../../_static/js/custom.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
@@ -612,50 +610,6 @@
                 
   <section id="formationfactor">
 <span id="formation-factor-api"></span><h1>FormationFactor<a class="headerlink" href="#formationfactor" title="Permalink to this headline">¶</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="openpnm.metrics.FormationFactor">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FormationFactor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/openpnm/metrics/FormationFactor.html#FormationFactor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.metrics.FormationFactor" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.metrics.GenericTransportMetrics.GenericTransportMetrics</span></code></p>
-<p>This class works by applying ‘value’ boundary conditions across the
-domain to find molar flow, then using Fick’s law to back-calculate
-the effective diffusivity of the domain.  The formation factor is
-defined as:</p>
-<div class="math notranslate nohighlight">
-\[F = \frac{D_{AB}}{D_{eff}} &gt; 1\]</div>
-<p>where</p>
-<div class="math notranslate nohighlight">
-\[D_{eff} = \frac{n_{A} L }{\Delta C_{A} A }\]</div>
-<p>and</p>
-<div class="math notranslate nohighlight">
-\[D_{eff} = D_{AB} \frac{\varepsilon}{\tau}\]</div>
-<p>The formation factor is a convenient metric to compare diffusion in
-different pore networks since it does not require knowledge of the network
-porosity, unlike tortuosity. The porosity of a pore network is difficult
-to determine, mainly because the bulk volume of a network is not
-well known.</p>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span> <span class="n">spacing</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">geo</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">SpheresAndCylinders</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">Ps</span><span class="p">,</span> <span class="n">throats</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">Ts</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Now find the formation factor of the network:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">FF</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">FormationFactor</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">F</span> <span class="o">=</span> <span class="n">FF</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">F</span><span class="p">))</span>
-<span class="go">21.0</span>
-</pre></div>
-</div>
-<dl class="py method">
-<dt class="sig sig-object py" id="openpnm.metrics.FormationFactor.run">
-<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/openpnm/metrics/FormationFactor.html#FormationFactor.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.metrics.FormationFactor.run" title="Permalink to this definition">¶</a></dt>
-<dd><p>Execute the diffusion simulations in the principle directions.</p>
-</dd></dl>
-
-</dd></dl>
-
 </section>
 
 
