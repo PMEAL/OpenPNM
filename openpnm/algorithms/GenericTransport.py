@@ -707,3 +707,17 @@ class GenericTransport(GenericAlgorithm):
             logger.error('A unique value of length could not be found')
         length = Ls[0]
         return length
+
+    def set_variable_props(self, variable_props=[]):
+        r"""
+        This method is useful for setting a list of variable_props to the
+        settings dictionary of the target object.
+        
+        Parameters
+        ----------
+        variable_props : list
+            A list of the variable_props to be added to the settings
+            
+        """
+        self.settings['variable_props'] = variable_props
+        
