@@ -185,6 +185,12 @@
 <span class="sd">    ----------</span>
 <span class="sd">    network : OpenPNM Network object</span>
 <span class="sd">        The network to which this phase object will be attached.</span>
+
+<span class="sd">    project : OpenPNM Project object, optional</span>
+<span class="sd">        The Project with which this phase should be associted.  If a</span>
+<span class="sd">        ``network`` is given then this is ignored and the Network&#39;s project is</span>
+<span class="sd">        used.  If a ``network`` is not given then this is mandatory.</span>
+
 <span class="sd">    name : string, optional</span>
 <span class="sd">        The name of the phase.  This is useful to keep track of the objects</span>
 <span class="sd">        throughout the simulation.  The name must be unique to the project.  If</span>
