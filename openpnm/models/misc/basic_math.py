@@ -7,13 +7,14 @@ logger = logging.getLogger(__name__)
 
 __all__ = [
     'blank',
-    'invert',
-    'fraction',
-    'summation',
-    'normalize',
     'clip',
-    'product',
+    'constant',
+    'fraction',
+    'invert',
+    'normalize',
     'scaled',
+    'summation',
+    'product',
     ]
 
 
