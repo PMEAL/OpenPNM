@@ -126,18 +126,11 @@ class GenericNetwork(ParamMixin, Base, ModelsMixin, LegacyMixin, LabelMixin):
     future use to save construction time.
 
     """
-    def __new__(cls, *args, **kwargs):
-        instance = super(GenericNetwork, cls).__new__(cls, *args, **kwargs)
-        # Initialize adjacency and incidence matrix dictionaries
-        instance._im = {}
-        instance._am = {}
-        return instance
-
     def __init__(self, conns=None, coords=None, settings={}, **kwargs):
         self.settings = SettingsAttr(NetworkSettings, settings)
         super().__init__(settings=self.settings, **kwargs)
-        self.settings._getdocs(NetworkSettings)
-
+        self._am = {}
+        self._im = {}
         if coords is not None:
             Np = np.shape(coords)[0]
             self['pore.all'] = np.ones(Np, dtype=bool)

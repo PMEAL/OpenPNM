@@ -270,7 +270,7 @@ def multiphase_diffusion(target,
     """
     # Fetch openpnm objects
     network = target.network
-    throats = target.throats(target=network)
+    throats = target.throats(to_global=True)
     phase = target.project.find_phase(target)
     cn = network.conns[throats]
     F = network[size_factors]
