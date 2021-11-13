@@ -251,6 +251,14 @@ class Base(dict):
             raise KeyError(key)
         return vals
 
+    def __delitem__(self, key):
+        try:
+            super().__delitem__(key)
+        except KeyError as e:
+            d = self[key]  # if key is a nested dict, get all values
+            for item in d.keys():
+                super().__delitem__(item)
+
     def _set_name(self, name, validate=True):
         old_name = self.settings['name']
         if name == old_name:

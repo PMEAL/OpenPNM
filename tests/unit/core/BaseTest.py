@@ -930,6 +930,19 @@ class BaseTest:
         with pytest.raises(KeyError):
             pn.get_conduit_data('blah')
 
+    def test_del_nested_dicts(self):
+        pn = op.network.Cubic(shape=[3, 3, 3])
+        geo = op.geometry.SpheresAndCylinders(network=pn,
+                                              pores=pn.Ps,
+                                              throats=pn.Ts)
+        assert 'throat.hydraulic_size_factors.pore1' in geo.keys()
+        del geo['throat.hydraulic_size_factors']
+        assert 'throat.hydraulic_size_factors.pore1' not in geo.keys()
+        with pytest.raises(KeyError):
+            geo['throat.hydraulic_size_factors']
+        with pytest.raises(KeyError):
+            del geo['pore.blah']
+
 
 if __name__ == '__main__':
 
