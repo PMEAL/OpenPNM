@@ -5,6 +5,13 @@ from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 
 
+__all__ = [
+    'linear',
+    'polynomial',
+    'generic_function',
+    ]
+
+
 def generic_function(target, prop, func, **kwargs):
     r"""
     Runs an arbitrary function on the given data

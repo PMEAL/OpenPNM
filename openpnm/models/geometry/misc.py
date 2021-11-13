@@ -1,6 +1,5 @@
 r"""
-Helper methods for openpnm.geometry module.
-
+Helper methods for openpnm.models.geometry module
 """
 
 
