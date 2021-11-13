@@ -268,7 +268,10 @@ class Base(dict):
                 item['throat.' + name] = item.pop('throat.' + old_name)
 
     def _get_name(self):
-        return self.settings['name']
+        try:
+            return self.settings['name']
+        except AttributeError:
+            return None
 
     name = property(_get_name, _set_name)
 
