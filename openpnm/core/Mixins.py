@@ -130,28 +130,6 @@ class LegacyMixin:
         ids = origin['throat._id'][throats]
         return self._map(element='throat', ids=ids, filtered=filtered)
 
-    def check_data_health(self):
-        r"""
-        Check the health of pore and throat data arrays.
-
-        Returns
-        -------
-        health: HealthDict object
-            A  basic dictionary with an added ``health`` attribute that is
-            ``True`` if all entries in the dict are deemed healthy
-            (empty lists), or ``False`` otherwise.
-
-        Examples
-        --------
-        >>> import openpnm
-        >>> pn = openpnm.network.Cubic(shape=[5, 5, 5])
-        >>> h = pn.check_data_health()
-        >>> h.health
-        True
-        """
-        health = self.project.check_data_health(obj=self)
-        return health
-
 
 class LabelMixin:
     def _get_labels(self, element, locations, mode):
