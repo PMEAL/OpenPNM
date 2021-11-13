@@ -940,6 +940,8 @@ class BaseTest:
         assert 'throat.hydraulic_size_factors.pore1' not in geo.keys()
         with pytest.raises(KeyError):
             geo['throat.hydraulic_size_factors']
+        with pytest.raises(KeyError):
+            del geo['pore.blah']
 
 
 if __name__ == '__main__':
