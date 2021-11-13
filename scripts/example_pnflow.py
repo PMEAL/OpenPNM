@@ -6,7 +6,7 @@ pn = op.network.Cubic(shape=[10, 10, 10], spacing=1e-4)
 geo = op.geometry.SpheresAndCylinders(network=pn, pores=pn.Ps, throats=pn.Ts)
 air = op.phases.Air(network=pn)
 phys = op.physics.Standard(network=pn, phase=air, geometry=geo)
-F = op.algorithms.metrics.FormationFactor(network=pn)
+F = op.metrics.FormationFactor(network=pn)
 F.run()
 
 
@@ -20,4 +20,4 @@ path = "./"
 prefix = pn.project.name
 op.io.Statoil.export_data(network=pn, path=path, prefix=prefix,
                           shape=[1e-3, 1e-3, 1e-3])
-# op.algorithms.metrics.PNFlow.run(pn.project.name, path=path)
+# op.metrics.PNFlow.run(pn.project.name, path=path)

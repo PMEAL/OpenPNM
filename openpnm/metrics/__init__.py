@@ -1,6 +1,6 @@
 r"""
 
-**openpnm.algorithms.metrics**
+**openpnm.metrics**
 
 ----
 
@@ -23,7 +23,9 @@ The table below gives a list of available Metrics:
 """
 
 from .GenericMetric import GenericMetric
+from .GenericTransportMetrics import GenericTransportMetrics
 from .MercuryIntrusion import MercuryIntrusion
 from .FormationFactor import FormationFactor
-from .RelativePermeability import RelativePermeability
 from .PNFlow import PNFlow
+from .AbsolutePermeability import AbsolutePermeability
+from .EffectiveDiffusivity import EffectiveDiffusivity
