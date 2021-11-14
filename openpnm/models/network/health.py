@@ -2,6 +2,7 @@ import numpy as np
 
 
 __all__ = [
+    'bidirectional_throats',
     'cluster_number',
     'cluster_size',
     'isolated_pores',
@@ -167,3 +168,9 @@ def find_coincident_pores(target, thresh=1e-6):
     a.data -= 1.0
     a = a.tolil()
     return a.rows
+
+
+def bidirectional_throats(target):
+    net = target
+    biTs = net['throat.conns'][:, 0] > net['throat.conns'][:, 1]
+    return biTs
