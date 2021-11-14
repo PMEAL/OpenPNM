@@ -11,7 +11,7 @@ network topology.
 """
 
 from .topotools import *
-from .pertools import *
+from .perctools import *
 from .graphtools import *
 from .plottools import *
 from . import generators

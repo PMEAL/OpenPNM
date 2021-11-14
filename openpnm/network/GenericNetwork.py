@@ -1,12 +1,11 @@
 import numpy as np
 import scipy.sparse as sprs
 import scipy.spatial as sptl
-from copy import deepcopy
 from openpnm.core import Base, ModelsMixin, LegacyMixin, LabelMixin, ParamMixin
 from openpnm import topotools
 from openpnm.utils import Docorator, SettingsAttr
 from openpnm.utils import Workspace, logging
-import openpnm.models.topology as tm
+import openpnm.models.network as mods
 logger = logging.getLogger(__name__)
 ws = Workspace()
 docstr = Docorator()
@@ -141,7 +140,7 @@ class GenericNetwork(ParamMixin, Base, ModelsMixin, LegacyMixin, LabelMixin):
             self['throat.all'] = np.ones(Nt, dtype=bool)
             self['throat.conns'] = np.array(conns)
         self.add_model(propname='pore.coordination_number',
-                       model=tm.coordination_number,
+                       model=mods.coordination_number,
                        regen_mode='explicit')
 
     def __setitem__(self, key, value):
