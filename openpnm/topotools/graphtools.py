@@ -6,6 +6,25 @@ logger = logging.getLogger(__name__)
 ws = Workspace()
 
 
+__all__ = [
+    'drop_sites',
+    'find_neighbor_sites',
+    'find_neighbor_bonds',
+    'find_connected_sites',
+    'find_connecting_bonds',
+    'find_complement',
+    'istriu',
+    'istril',
+    'istriangular',
+    'issymmetric',
+    '_am_to_im',
+    '_im_to_am',
+    'tri_to_am',
+    'vor_to_am',
+    'conns_to_am',
+    ]
+
+
 def find_neighbor_sites(sites, am, flatten=True, include_input=False,
                         logic='or'):
     r"""

@@ -3,6 +3,16 @@ import openpnm as op
 from tqdm import tqdm
 
 
+__all__ = [
+    'plot_tutorial',
+    'plot_connections',
+    'plot_coordinates',
+    'plot_networkx',
+    'plot_network_jupyter',
+    'generate_voxel_image',
+]
+
+
 def plot_connections(network,
                      throats=None,
                      ax=None,

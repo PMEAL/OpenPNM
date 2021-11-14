@@ -6,6 +6,16 @@ logger = logging.getLogger(__name__)
 ws = Workspace()
 
 
+__all__ = [
+    'ispercolating',
+    'remove_isolated_clusters',
+    'site_percolation',
+    'bond_percolation',
+    'find_clusters',
+    'find_path',
+    ]
+
+
 def ispercolating(am, inlets, outlets, mode='site'):
     r"""
     Determines if a percolating clusters exists in the network spanning
