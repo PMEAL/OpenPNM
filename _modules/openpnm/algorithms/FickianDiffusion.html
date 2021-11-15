@@ -174,41 +174,13 @@
                 
   <h1>Source code for openpnm.algorithms.FickianDiffusion</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">openpnm.algorithms</span> <span class="kn">import</span> <span class="n">ReactiveTransport</span>
-<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">logging</span><span class="p">,</span> <span class="n">Docorator</span><span class="p">,</span> <span class="n">GenericSettings</span>
+<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">logging</span><span class="p">,</span> <span class="n">Docorator</span><span class="p">,</span> <span class="n">SettingsAttr</span>
 <span class="n">docstr</span> <span class="o">=</span> <span class="n">Docorator</span><span class="p">()</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
-<span class="nd">@docstr</span><span class="o">.</span><span class="n">get_sections</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="s1">&#39;FickianDiffusionSettings&#39;</span><span class="p">,</span>
-                     <span class="n">sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Parameters&#39;</span><span class="p">])</span>
-<span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
-<span class="k">class</span> <span class="nc">FickianDiffusionSettings</span><span class="p">(</span><span class="n">GenericSettings</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    %(GenericTransportSettings.parameters)s</span>
-<span class="sd">    quantity : str (default = &#39;pore.concentration&#39;)</span>
-<span class="sd">        The name of the physical quantity to be calculated</span>
-<span class="sd">    conductance : str (default = &#39;throat.diffusive_conductance&#39;)</span>
-<span class="sd">        The name of the pore-scale transport conductance values. These are</span>
-<span class="sd">        typically calculated by a model attached to a *Physics* object</span>
-<span class="sd">        associated with the given *Phase*.</span>
-
-<span class="sd">    Other Parameters</span>
-<span class="sd">    ----------------</span>
-
-<span class="sd">    **The following parameters pertain to the ReactiveTransport class**</span>
-
-<span class="sd">    %(ReactiveTransportSettings.other_parameters)s</span>
-
-<span class="sd">    ----</span>
-
-<span class="sd">    **The following parameters pertain to the GenericTransport class**</span>
-
-<span class="sd">    %(GenericTransportSettings.other_parameters)s</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="k">class</span> <span class="nc">FickianDiffusionSettings</span><span class="p">():</span>
+    <span class="n">prefix</span> <span class="o">=</span> <span class="s1">&#39;fick&#39;</span>
     <span class="n">quantity</span> <span class="o">=</span> <span class="s1">&#39;pore.concentration&#39;</span>
     <span class="n">conductance</span> <span class="o">=</span> <span class="s1">&#39;throat.diffusive_conductance&#39;</span>
 
@@ -237,55 +209,11 @@
 
 <span class="sd">        D_{eff} = N_{A}*L/(A*\Delta C_{A})</span>
 
-<span class="sd">    This class includes a method for calculating Deff automatically assuming</span>
-<span class="sd">    appropriate boundary conditions were applied (``calc_eff_diffusivity``).</span>
-<span class="sd">    The length and area of the domain should be supplied, but if they are</span>
-<span class="sd">    not an attempt is made to calculate them.</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="o">=</span><span class="p">{},</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">settings</span><span class="o">=</span><span class="n">settings</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">_update_settings_and_docs</span><span class="p">(</span><span class="n">FickianDiffusionSettings</span><span class="p">())</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span>
-
-<div class="viewcode-block" id="FickianDiffusion.calc_effective_diffusivity"><a class="viewcode-back" href="../../../modules/algorithms/fickian_diffusion.html#openpnm.algorithms.FickianDiffusion.calc_effective_diffusivity">[docs]</a>    <span class="k">def</span> <span class="nf">calc_effective_diffusivity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inlets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">outlets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                                   <span class="n">domain_area</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">domain_length</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        This calculates the effective diffusivity in this linear transport</span>
-<span class="sd">        algorithm.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        inlets : array_like</span>
-<span class="sd">            The pores where the inlet composition boundary conditions were</span>
-<span class="sd">            applied.  If not given an attempt is made to infer them from the</span>
-<span class="sd">            algorithm.</span>
-
-<span class="sd">        outlets : array_like</span>
-<span class="sd">            The pores where the outlet composition boundary conditions were</span>
-<span class="sd">            applied.  If not given an attempt is made to infer them from the</span>
-<span class="sd">            algorithm.</span>
-
-<span class="sd">        domain_area : scalar, optional</span>
-<span class="sd">            The area of the inlet (and outlet) boundary faces.  If not given</span>
-<span class="sd">            then an attempt is made to estimate it, but it is usually</span>
-<span class="sd">            underestimated.</span>
-
-<span class="sd">        domain_length : scalar, optional</span>
-<span class="sd">            The length of the domain between the inlet and outlet boundary</span>
-<span class="sd">            faces.  If not given then an attempt is made to estimate it, but it</span>
-<span class="sd">            is usually underestimated.</span>
-
-<span class="sd">        Notes</span>
-<span class="sd">        -----</span>
-<span class="sd">        The area and length of the domain are found using the bounding box</span>
-<span class="sd">        around the inlet and outlet pores which do not necessarily lie on the</span>
-<span class="sd">        edge of the domain, resulting in underestimation of sizes.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calc_eff_prop</span><span class="p">(</span><span class="n">inlets</span><span class="o">=</span><span class="n">inlets</span><span class="p">,</span> <span class="n">outlets</span><span class="o">=</span><span class="n">outlets</span><span class="p">,</span>
-                                   <span class="n">domain_area</span><span class="o">=</span><span class="n">domain_area</span><span class="p">,</span>
-                                   <span class="n">domain_length</span><span class="o">=</span><span class="n">domain_length</span><span class="p">)</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span> <span class="o">=</span> <span class="n">SettingsAttr</span><span class="p">(</span><span class="n">FickianDiffusionSettings</span><span class="p">,</span> <span class="n">settings</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">settings</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 </pre></div>
 
               </div>

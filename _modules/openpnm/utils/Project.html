@@ -178,7 +178,7 @@
 <span class="kn">import</span> <span class="nn">openpnm</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
-<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">SettingsDict</span><span class="p">,</span> <span class="n">HealthDict</span><span class="p">,</span> <span class="n">Workspace</span><span class="p">,</span> <span class="n">logging</span>
+<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">HealthDict</span><span class="p">,</span> <span class="n">Workspace</span><span class="p">,</span> <span class="n">logging</span>
 <span class="kn">from</span> <span class="nn">.Grid</span> <span class="kn">import</span> <span class="n">Tableist</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 <span class="n">ws</span> <span class="o">=</span> <span class="n">Workspace</span><span class="p">()</span>
@@ -211,11 +211,12 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">SettingsAttr</span>
         <span class="n">name</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span> <span class="o">=</span> <span class="n">SettingsDict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span> <span class="o">=</span> <span class="n">SettingsAttr</span><span class="p">()</span>
         <span class="n">ws</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span>  <span class="c1"># Register self with workspace</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;_uuid&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;uuid&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span>
 
 <div class="viewcode-block" id="Project.extend"><a class="viewcode-back" href="../../../modules/utils/project.html#openpnm.utils.Project.extend">[docs]</a>    <span class="k">def</span> <span class="nf">extend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -411,9 +412,6 @@
         <span class="c1"># If received phase, just return self</span>
         <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">_isa</span><span class="p">(</span><span class="s1">&#39;phase&#39;</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">obj</span>
-        <span class="c1"># If phase happens to be in settings (i.e. algorithm), look it up</span>
-        <span class="k">if</span> <span class="s1">&#39;phase&#39;</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">phases</span><span class="p">()[</span><span class="n">obj</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;phase&#39;</span><span class="p">]]</span>
         <span class="c1"># Otherwise find it using bottom-up approach (i.e. look in phase keys)</span>
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">phases</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;pore.&#39;</span> <span class="o">+</span> <span class="n">obj</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">item</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="s1">&#39;throat.&#39;</span> <span class="o">+</span> <span class="n">obj</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">item</span><span class="p">):</span>
@@ -439,10 +437,6 @@
 <span class="sd">        If no Geometry object can be found, then an Exception is raised.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># If geometry happens to be in settings, look it up directly</span>
-        <span class="k">if</span> <span class="s1">&#39;geometry&#39;</span> <span class="ow">in</span> <span class="n">physics</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="n">geom</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">geometries</span><span class="p">()[</span><span class="n">physics</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;geometry&#39;</span><span class="p">]]</span>
-            <span class="k">return</span> <span class="n">geom</span>
         <span class="c1"># Otherwise, use the bottom-up approach</span>
         <span class="k">for</span> <span class="n">geo</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">geometries</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">physics</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_physics</span><span class="p">(</span><span class="n">geometry</span><span class="o">=</span><span class="n">geo</span><span class="p">):</span>
@@ -890,9 +884,9 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        health : dict</span>
-<span class="sd">            Returns a HealthDict object which a basic dictionary with an added</span>
-<span class="sd">            ``health`` attribute that is True is all entries in the dict are</span>
-<span class="sd">            deemed healthy (empty lists), or False otherwise.</span>
+<span class="sd">            Returns a HealthDict object which is a basic dictionary with an</span>
+<span class="sd">            added ``health`` attribute that is ``True`` is all entries in the</span>
+<span class="sd">            dict are deemed healthy (empty lists), or ``False`` otherwise.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">health</span> <span class="o">=</span> <span class="n">HealthDict</span><span class="p">()</span>
@@ -908,13 +902,15 @@
 
 <div class="viewcode-block" id="Project.check_network_health"><a class="viewcode-back" href="../../../modules/utils/project.html#openpnm.utils.Project.check_network_health">[docs]</a>    <span class="k">def</span> <span class="nf">check_network_health</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        This method check the network topological health by checking for:</span>
+<span class="sd">        This method check the topological health of the network</span>
+
+<span class="sd">        The following aspects are checked for:</span>
 
 <span class="sd">            (1) Isolated pores</span>
-<span class="sd">            (2) Islands or isolated clusters of pores</span>
+<span class="sd">            (2) Disconnected clusters of pores</span>
 <span class="sd">            (3) Duplicate throats</span>
-<span class="sd">            (4) Bidirectional throats (ie. symmetrical adjacency matrix)</span>
-<span class="sd">            (5) Headless throats</span>
+<span class="sd">            (4) Headless throats</span>
+<span class="sd">            (5) Bidirectional throats</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -928,79 +924,40 @@
 <span class="sd">        from the network to restore health.  This list is a suggestion only,</span>
 <span class="sd">        and is based on keeping the largest cluster and trimming the others.</span>
 
-<span class="sd">        Notes</span>
-<span class="sd">        -----</span>
 <span class="sd">        - Does not yet check for duplicate pores</span>
 <span class="sd">        - Does not yet suggest which throats to remove</span>
 <span class="sd">        - This is just a &#39;check&#39; and does not &#39;fix&#39; the problems it finds</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">import</span> <span class="nn">scipy.sparse.csgraph</span> <span class="k">as</span> <span class="nn">csg</span>
-        <span class="kn">import</span> <span class="nn">scipy.sparse</span> <span class="k">as</span> <span class="nn">sprs</span>
+        <span class="kn">import</span> <span class="nn">openpnm.models.network.health</span> <span class="k">as</span> <span class="nn">mods</span>
 
         <span class="n">health</span> <span class="o">=</span> <span class="n">HealthDict</span><span class="p">()</span>
-        <span class="n">health</span><span class="p">[</span><span class="s1">&#39;disconnected_clusters&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">health</span><span class="p">[</span><span class="s1">&#39;isolated_pores&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">health</span><span class="p">[</span><span class="s1">&#39;trim_pores&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">health</span><span class="p">[</span><span class="s1">&#39;duplicate_throats&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">health</span><span class="p">[</span><span class="s1">&#39;bidirectional_throats&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">health</span><span class="p">[</span><span class="s1">&#39;headless_throats&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">health</span><span class="p">[</span><span class="s1">&#39;looped_throats&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-
         <span class="n">net</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">network</span>
 
         <span class="c1"># Check for headless throats</span>
-        <span class="n">hits</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">net</span><span class="o">.</span><span class="n">Np</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">hits</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">health</span><span class="p">[</span><span class="s1">&#39;headless_throats&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">hits</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">health</span>
+        <span class="n">headless</span> <span class="o">=</span> <span class="n">mods</span><span class="o">.</span><span class="n">headless_throats</span><span class="p">(</span><span class="n">net</span><span class="p">)</span>
+        <span class="n">health</span><span class="p">[</span><span class="s1">&#39;headless_throats&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">headless</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
 
         <span class="c1"># Check for throats that loop back onto the same pore</span>
-        <span class="n">P12</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">]</span>
-        <span class="n">hits</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">P12</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">P12</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">hits</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">health</span><span class="p">[</span><span class="s1">&#39;looped_throats&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">hits</span>
+        <span class="n">looped</span> <span class="o">=</span> <span class="n">mods</span><span class="o">.</span><span class="n">looped_throats</span><span class="p">(</span><span class="n">net</span><span class="p">)</span>
+        <span class="n">health</span><span class="p">[</span><span class="s1">&#39;looped_throats&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">looped</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
 
         <span class="c1"># Check for individual isolated pores</span>
-        <span class="n">Ps</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">num_neighbors</span><span class="p">(</span><span class="n">net</span><span class="o">.</span><span class="n">pores</span><span class="p">())</span>
-        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">Ps</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">health</span><span class="p">[</span><span class="s1">&#39;isolated_pores&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Ps</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">isolated</span> <span class="o">=</span> <span class="n">mods</span><span class="o">.</span><span class="n">isolated_pores</span><span class="p">(</span><span class="n">net</span><span class="p">)</span>
+        <span class="n">health</span><span class="p">[</span><span class="s1">&#39;isolated_pores&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">isolated</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
 
         <span class="c1"># Check for separated clusters of pores</span>
-        <span class="n">temp</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">am</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">create_adjacency_matrix</span><span class="p">(</span><span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;coo&#39;</span><span class="p">,</span> <span class="n">triu</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">Cs</span> <span class="o">=</span> <span class="n">csg</span><span class="o">.</span><span class="n">connected_components</span><span class="p">(</span><span class="n">am</span><span class="p">,</span> <span class="n">directed</span><span class="o">=</span><span class="kc">False</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">Cs</span><span class="p">)</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">Cs</span><span class="p">):</span>
-                <span class="n">temp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Cs</span> <span class="o">==</span> <span class="n">i</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
-            <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">temp</span><span class="p">])</span>
-            <span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">b</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">c</span><span class="p">):</span>
-                <span class="n">health</span><span class="p">[</span><span class="s1">&#39;disconnected_clusters&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">temp</span><span class="p">[</span><span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">]])</span>
-                <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="n">health</span><span class="p">[</span><span class="s1">&#39;trim_pores&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">temp</span><span class="p">[</span><span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">]])</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="n">mods</span><span class="o">.</span><span class="n">cluster_size</span><span class="p">(</span><span class="n">net</span><span class="p">)</span>
+        <span class="n">mx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
+        <span class="n">health</span><span class="p">[</span><span class="s1">&#39;disconnected_pores&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">size</span> <span class="o">&lt;</span> <span class="n">mx</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
 
         <span class="c1"># Check for duplicate throats</span>
-        <span class="n">am</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">create_adjacency_matrix</span><span class="p">(</span><span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;csr&#39;</span><span class="p">,</span> <span class="n">triu</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">tocoo</span><span class="p">()</span>
-        <span class="n">hits</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">am</span><span class="o">.</span><span class="n">data</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">hits</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">mergeTs</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="n">hits</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">am</span><span class="o">.</span><span class="n">row</span><span class="p">[</span><span class="n">hits</span><span class="p">],</span> <span class="n">am</span><span class="o">.</span><span class="n">col</span><span class="p">[</span><span class="n">hits</span><span class="p">]))</span><span class="o">.</span><span class="n">T</span>
-            <span class="n">ihits</span> <span class="o">=</span> <span class="n">hits</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span><span class="o">*</span><span class="n">hits</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
-            <span class="n">conns</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">]</span>
-            <span class="n">iconns</span> <span class="o">=</span> <span class="n">conns</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span><span class="o">*</span><span class="n">conns</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>  <span class="c1"># Convert to imaginary</span>
-            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">ihits</span><span class="p">:</span>
-                <span class="n">mergeTs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">iconns</span> <span class="o">==</span> <span class="n">item</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
-            <span class="n">health</span><span class="p">[</span><span class="s1">&#39;duplicate_throats&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">mergeTs</span>
+        <span class="n">dupes</span> <span class="o">=</span> <span class="n">mods</span><span class="o">.</span><span class="n">duplicate_throats</span><span class="p">(</span><span class="n">net</span><span class="p">)</span>
+        <span class="n">health</span><span class="p">[</span><span class="s1">&#39;duplicate_throats&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">dupes</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
 
         <span class="c1"># Check for bidirectional throats</span>
-        <span class="n">adjmat</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">create_adjacency_matrix</span><span class="p">(</span><span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;coo&#39;</span><span class="p">)</span>
-        <span class="n">num_full</span> <span class="o">=</span> <span class="n">adjmat</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-        <span class="n">temp</span> <span class="o">=</span> <span class="n">sprs</span><span class="o">.</span><span class="n">triu</span><span class="p">(</span><span class="n">adjmat</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-        <span class="n">num_upper</span> <span class="o">=</span> <span class="n">temp</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">num_full</span> <span class="o">&gt;</span> <span class="n">num_upper</span><span class="p">:</span>
-            <span class="n">biTs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">]</span>
-                            <span class="o">&gt;</span> <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">health</span><span class="p">[</span><span class="s1">&#39;bidirectional_throats&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">biTs</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="n">bidir</span> <span class="o">=</span> <span class="n">mods</span><span class="o">.</span><span class="n">bidirectional_throats</span><span class="p">(</span><span class="n">net</span><span class="p">)</span>
+        <span class="n">health</span><span class="p">[</span><span class="s1">&#39;bidirectional_throats&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">bidir</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
 
         <span class="k">return</span> <span class="n">health</span></div>
 
