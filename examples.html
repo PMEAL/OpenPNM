@@ -1,0 +1,372 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Examples &#8212; OpenPNM  documentation</title>
+    
+  <link href="_static/css/theme.css" rel="stylesheet">
+  <link href="_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/css/blank.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" />
+    <link rel="stylesheet" type="text/css" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    
+  <link rel="preload" as="script" href="_static/js/index.be7d3bbb2ef33a8344ce.js">
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="_static/js/custom.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Miscellaneous Classes, Functions, and Tools" href="modules/utils/misc.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+
+<a class="navbar-brand" href="https://www.openpnm.org">
+  <img src="_static/openpnm_logo.png" class="logo" alt="logo">
+</a>
+
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class=" collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="userguide/index.html">
+  <strong>
+   User Guide
+  </strong>
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="modules/index.html">
+  <strong>
+   Module Reference
+  </strong>
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
+ <a class="current reference internal nav-link" href="#">
+  Examples
+ </a>
+</li>
+
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/PMEAL/OpenPNM" rel="noopener" target="_blank" title="GitHub">
+            <span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://openpnm.substack.com/" rel="noopener" target="_blank" title="Substack">
+            <span><i class="fas fa-envelope-square"></i></span>
+            <label class="sr-only">Substack</label>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://twitter.com/OpenPnm" rel="noopener" target="_blank" title="Twitter">
+            <span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label>
+          </a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    
+  </div>
+</nav>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+              
+              <div class="toc-item">
+                
+<div class="tocsection onthispage pt-5 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
+
+<nav id="bd-toc-nav">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#user-guide">
+   User Guide
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#tutorials">
+   Tutorials
+  </a>
+  <ul class="nav section-nav flex-column">
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#simulations">
+   Simulations
+  </a>
+  <ul class="nav section-nav flex-column">
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#contributions">
+   Contributions
+  </a>
+  <ul class="nav section-nav flex-column">
+  </ul>
+ </li>
+</ul>
+
+</nav>
+              </div>
+              
+              <div class="toc-item">
+                
+              </div>
+              
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <section id="examples">
+<span id="id1"></span><h1>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h1>
+<p>You can download the examples in IPython format from our GitHub
+repo, which can be browsed
+<a class="reference external" href="https://github.com/PMEAL/OpenPNM/tree/dev/examples">here</a>.</p>
+<hr class="docutils" />
+<section id="user-guide">
+<h2>User Guide<a class="headerlink" href="#user-guide" title="Permalink to this headline">¶</a></h2>
+<div class="tabbed-set docutils">
+<input checked="checked" id="a389a545-b800-4e28-ac5e-d515c980df07" name="9c62126e-0103-486a-b5ae-8d136dd998e0" type="radio">
+</input><label class="tabbed-label" for="a389a545-b800-4e28-ac5e-d515c980df07">
+General</label><div class="tabbed-content docutils">
+<div class="toctree-wrapper compound">
+</div>
+</div>
+</div>
+</section>
+<section id="tutorials">
+<h2>Tutorials<a class="headerlink" href="#tutorials" title="Permalink to this headline">¶</a></h2>
+<div class="tabbed-set docutils">
+<input checked="checked" id="fe845fa6-61c9-4803-be4c-b4fa8c09ba7b" name="3db37a62-5f84-4257-8061-134399cfee31" type="radio">
+</input><label class="tabbed-label" for="fe845fa6-61c9-4803-be4c-b4fa8c09ba7b">
+Network</label><div class="tabbed-content docutils">
+<div class="toctree-wrapper compound">
+</div>
+</div>
+<input id="82ec8091-aafd-4db5-850d-f184c4e51021" name="3db37a62-5f84-4257-8061-134399cfee31" type="radio">
+</input><label class="tabbed-label" for="82ec8091-aafd-4db5-850d-f184c4e51021">
+Geometry</label><div class="tabbed-content docutils">
+<div class="toctree-wrapper compound">
+</div>
+</div>
+<input id="d4c91e14-109f-4905-b24e-e4da713d0ea6" name="3db37a62-5f84-4257-8061-134399cfee31" type="radio">
+</input><label class="tabbed-label" for="d4c91e14-109f-4905-b24e-e4da713d0ea6">
+Phase</label><div class="tabbed-content docutils">
+<div class="toctree-wrapper compound">
+</div>
+</div>
+<input id="d7e7eef6-966f-4979-b8e1-1b88bfabc489" name="3db37a62-5f84-4257-8061-134399cfee31" type="radio">
+</input><label class="tabbed-label" for="d7e7eef6-966f-4979-b8e1-1b88bfabc489">
+Materials</label><div class="tabbed-content docutils">
+<div class="toctree-wrapper compound">
+</div>
+</div>
+<input id="162f6185-2bb7-4e54-afa5-16b8635afc79" name="3db37a62-5f84-4257-8061-134399cfee31" type="radio">
+</input><label class="tabbed-label" for="162f6185-2bb7-4e54-afa5-16b8635afc79">
+io</label><div class="tabbed-content docutils">
+<div class="toctree-wrapper compound">
+</div>
+</div>
+</div>
+</section>
+<section id="simulations">
+<h2>Simulations<a class="headerlink" href="#simulations" title="Permalink to this headline">¶</a></h2>
+<div class="tabbed-set docutils">
+<input checked="checked" id="be4cee42-c47d-492c-b95b-650ccdb7703d" name="76e117ae-4a67-4e39-80ad-176157ba887c" type="radio">
+</input><label class="tabbed-label" for="be4cee42-c47d-492c-b95b-650ccdb7703d">
+General</label><div class="tabbed-content docutils">
+<div class="toctree-wrapper compound">
+</div>
+</div>
+<input id="b1caebc3-7c07-469a-85bf-a74d9a08fb20" name="76e117ae-4a67-4e39-80ad-176157ba887c" type="radio">
+</input><label class="tabbed-label" for="b1caebc3-7c07-469a-85bf-a74d9a08fb20">
+Percolation</label><div class="tabbed-content docutils">
+<div class="toctree-wrapper compound">
+</div>
+</div>
+<input id="5a1fda6f-0c49-4a03-b307-ed31954c96e9" name="76e117ae-4a67-4e39-80ad-176157ba887c" type="radio">
+</input><label class="tabbed-label" for="5a1fda6f-0c49-4a03-b307-ed31954c96e9">
+Single Phase</label><div class="tabbed-content docutils">
+<div class="toctree-wrapper compound">
+</div>
+</div>
+<input id="4fb2ae17-ec4a-413d-9b80-6bda91e878b7" name="76e117ae-4a67-4e39-80ad-176157ba887c" type="radio">
+</input><label class="tabbed-label" for="4fb2ae17-ec4a-413d-9b80-6bda91e878b7">
+Reactive</label><div class="tabbed-content docutils">
+<div class="toctree-wrapper compound">
+</div>
+</div>
+<input id="b9b1a1ce-c694-4c78-a99f-84faf397a35f" name="76e117ae-4a67-4e39-80ad-176157ba887c" type="radio">
+</input><label class="tabbed-label" for="b9b1a1ce-c694-4c78-a99f-84faf397a35f">
+Transient</label><div class="tabbed-content docutils">
+<div class="toctree-wrapper compound">
+</div>
+</div>
+<input id="86024a4f-292a-40ea-ad28-854b256e66d8" name="76e117ae-4a67-4e39-80ad-176157ba887c" type="radio">
+</input><label class="tabbed-label" for="86024a4f-292a-40ea-ad28-854b256e66d8">
+Multiphase</label><div class="tabbed-content docutils">
+<div class="toctree-wrapper compound">
+</div>
+</div>
+<input id="e313f8d4-441f-4f7f-ac3b-41a897025fd3" name="76e117ae-4a67-4e39-80ad-176157ba887c" type="radio">
+</input><label class="tabbed-label" for="e313f8d4-441f-4f7f-ac3b-41a897025fd3">
+Multiphysics</label><div class="tabbed-content docutils">
+<div class="toctree-wrapper compound">
+</div>
+</div>
+</div>
+</section>
+<section id="contributions">
+<h2>Contributions<a class="headerlink" href="#contributions" title="Permalink to this headline">¶</a></h2>
+<div class="tabbed-set docutils">
+<input checked="checked" id="eff917f5-08b4-41bc-92f8-3236e60fc226" name="53aad617-c653-4691-b4a5-28165dff03ab" type="radio">
+</input><label class="tabbed-label" for="eff917f5-08b4-41bc-92f8-3236e60fc226">
+Paper Recreations</label><div class="tabbed-content docutils">
+<div class="toctree-wrapper compound">
+</div>
+</div>
+<input id="34fcea16-c754-47c4-a860-3f823cdb5440" name="53aad617-c653-4691-b4a5-28165dff03ab" type="radio">
+</input><label class="tabbed-label" for="34fcea16-c754-47c4-a860-3f823cdb5440">
+Other</label><div class="tabbed-content docutils">
+<div class="toctree-wrapper compound">
+</div>
+</div>
+</div>
+</section>
+</section>
+
+
+              </div>
+              
+              
+          </main>
+          
+
+      </div>
+    </div>
+  
+  <script src="_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
+<footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2021 OpenPNM Team.<br>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.3.0.<br>
+</p>
+    </div>
+    
+  </div>
+</footer>
+  </body>
+</html>
