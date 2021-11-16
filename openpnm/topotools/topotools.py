@@ -15,6 +15,7 @@ __all__ = [  # Keep this alphabetical for easier inspection of what's imported
     'connect_pores',
     'dimensionality',
     'extend',
+    'filter_pores_by_z',
     'find_surface_pores',
     'find_pore_to_pore_distance',
     'from_cyl',
@@ -1918,3 +1919,29 @@ def get_domain_length(network, inlets=None, outlets=None):
         logger.error('A unique value of length could not be found')
     length = Ls[0]
     return length
+
+
+def filter_pores_by_z(network, pores, z=1):
+    r"""
+    Find pores with a given number of neighbors
+
+    Parameters
+    ----------
+    network : OpenPNM Network object
+        The network on which the query is to be performed
+    pores : array_like
+        The pores to be filtered
+    z : int
+        The coordination number to filter by
+
+    Returns
+    -------
+    pores : array_like
+        A list of pores which satisfy the criteria
+
+    """
+    pores = network._parse_indices(pores)
+    Nz = network.num_neighbors(pores=pores)
+    orphans = np.where(Nz == z)[0]
+    hits = pores[orphans]
+    return hits

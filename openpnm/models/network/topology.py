@@ -9,7 +9,6 @@ Pore-scale models related to topology of the network.
 
 __all__ = [  # Keep this alphabetical for easier inspection of what's imported
     'coordination_number',
-    'filter_pores_by_z',
     'distance_to_furthest_neighbor',
     'distance_to_nearest_neighbor',
     'distance_to_nearest_pore',
@@ -130,32 +129,3 @@ def reduce_coordination(target, z):
     Ts = Ts[:int(network.Nt - network.Np*(z/2))]
     Ts = network.to_mask(throats=Ts)
     return Ts
-
-
-def filter_pores_by_z(target, pores, z=1):
-    r"""
-    Find pores with a given number of neighbors
-
-    Parameters
-    ----------
-    network : OpenPNM Network object
-        The network on which the query is to be performed
-    pores : array_like
-        The pores to be filtered
-    z : int
-        The coordination number to filter by
-
-    Returns
-    -------
-    pores : array_like
-        A boolean mask of length Np with ``True`` vales indicate the pores
-        which have the specified coordination number.
-
-    """
-    network = target
-    pores = network._parse_indices(pores)
-    Nz = network.num_neighbors(pores=pores)
-    orphans = np.where(Nz == z)[0]
-    hits = pores[orphans]
-    mask = network.to_mask(pores=hits)
-    return mask
