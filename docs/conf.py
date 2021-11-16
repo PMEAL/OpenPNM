@@ -43,7 +43,8 @@ extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.mathjax',
               'sphinx_copybutton',
               'nbsphinx',
-              'nbsphinx_link']
+              'nbsphinx_link',
+              'sphinx_panels']
 
 html_theme_options = {
     "logo_link": "https://www.openpnm.org",
