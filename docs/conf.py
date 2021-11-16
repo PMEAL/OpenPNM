@@ -84,12 +84,13 @@ html_theme_options = {
 html_sidebars = {
     "contributing": ["sidebar-search-bs.html"],
     "changelog": [],
-    "examples/*": []
+    # "examples/*": []
 }
 
 html_js_files = ['js/custom.js']
 
 nbsphinx_prompt_width = "0"
+nbsphinx_allow_errors = True
 
 exclude_patterns = ['_build', '_templates']
 
