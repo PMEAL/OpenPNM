@@ -216,6 +216,50 @@
 <span class="sd">    values assigned to it which can be found by running</span>
 <span class="sd">    ``props(mode=&#39;constants&#39;)``.</span>
 
+<span class="sd">    +---+----------------------+------------------+--------------------------+</span>
+<span class="sd">    | # | Property Name        | Parameter        | Value                    |</span>
+<span class="sd">    +===+======================+==================+==========================+</span>
+<span class="sd">    | 1 | pore.molar_density   | model:           | ideal_gas                |</span>
+<span class="sd">    +---+----------------------+------------------+--------------------------+</span>
+<span class="sd">    |   |                      | regen_mode       | normal                   |</span>
+<span class="sd">    +---+----------------------+------------------+--------------------------+</span>
+<span class="sd">    |   |                      | pressure         | pore.pressure            |</span>
+<span class="sd">    +---+----------------------+------------------+--------------------------+</span>
+<span class="sd">    |   |                      | temperature      | pore.temperature         |</span>
+<span class="sd">    +---+----------------------+------------------+--------------------------+</span>
+<span class="sd">    | 2 | pore.diffusivity     | model:           | fuller                   |</span>
+<span class="sd">    +---+----------------------+------------------+--------------------------+</span>
+<span class="sd">    |   |                      | MA               | 0.032                    |</span>
+<span class="sd">    +---+----------------------+------------------+--------------------------+</span>
+<span class="sd">    |   |                      | MB               | 0.028                    |</span>
+<span class="sd">    +---+----------------------+------------------+--------------------------+</span>
+<span class="sd">    |   |                      | vA               | 16.6                     |</span>
+<span class="sd">    +---+----------------------+------------------+--------------------------+</span>
+<span class="sd">    |   |                      | vB               | 17.9                     |</span>
+<span class="sd">    +---+----------------------+------------------+--------------------------+</span>
+<span class="sd">    |   |                      | regen_mode       | normal                   |</span>
+<span class="sd">    +---+----------------------+------------------+--------------------------+</span>
+<span class="sd">    |   |                      | temperature      | pore.temperature         |</span>
+<span class="sd">    +---+----------------------+------------------+--------------------------+</span>
+<span class="sd">    |   |                      | pressure         | pore.pressure            |</span>
+<span class="sd">    +---+----------------------+------------------+--------------------------+</span>
+<span class="sd">    | 3 | pore.thermal_cond... | model:           | polynomial               |</span>
+<span class="sd">    +---+----------------------+------------------+--------------------------+</span>
+<span class="sd">    |   |                      | prop             | pore.temperature         |</span>
+<span class="sd">    +---+----------------------+------------------+--------------------------+</span>
+<span class="sd">    |   |                      | a                | [0.00422791, 7.89606e... |</span>
+<span class="sd">    +---+----------------------+------------------+--------------------------+</span>
+<span class="sd">    |   |                      | regen_mode       | normal                   |</span>
+<span class="sd">    +---+----------------------+------------------+--------------------------+</span>
+<span class="sd">    | 4 | pore.viscosity       | model:           | polynomial               |</span>
+<span class="sd">    +---+----------------------+------------------+--------------------------+</span>
+<span class="sd">    |   |                      | prop             | pore.temperature         |</span>
+<span class="sd">    +---+----------------------+------------------+--------------------------+</span>
+<span class="sd">    |   |                      | a                | [1.82082e-06, 6.51815... |</span>
+<span class="sd">    +---+----------------------+------------------+--------------------------+</span>
+<span class="sd">    |   |                      | regen_mode       | normal                   |</span>
+<span class="sd">    +---+----------------------+------------------+--------------------------+</span>
+
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
 <span class="sd">    The pore scale models for this class are taken from:</span>

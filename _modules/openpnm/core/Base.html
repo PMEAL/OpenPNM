@@ -225,7 +225,61 @@
 <span class="sd">    including Networks, Geometries, Phases, Physics, and Algorithms.  This</span>
 <span class="sd">    class is a subclass of the standard ``dict`` so has the usual methods such</span>
 <span class="sd">    as ``pop`` and ``keys``, and has extra methods for working specifically</span>
-<span class="sd">    with OpenPNM data.</span>
+<span class="sd">    with OpenPNM data.  These are outlined briefly in the following table:</span>
+
+<span class="sd">    +----------------------+--------------------------------------------------+</span>
+<span class="sd">    | Method or Attribute  | Functionality                                    |</span>
+<span class="sd">    +======================+==================================================+</span>
+<span class="sd">    | ``props``            | List of keys containing numerical arrays         |</span>
+<span class="sd">    +----------------------+--------------------------------------------------+</span>
+<span class="sd">    | ``labels``           | List of key containing boolean arrays            |</span>
+<span class="sd">    +----------------------+--------------------------------------------------+</span>
+<span class="sd">    | ``pores``            | Returns pore / throat indices that have given    |</span>
+<span class="sd">    |                      | labels                                           |</span>
+<span class="sd">    | ``throats``          |                                                  |</span>
+<span class="sd">    +----------------------+--------------------------------------------------+</span>
+<span class="sd">    | ``Ps``, ``Ts``       | Indices for ALL pores and throats on object      |</span>
+<span class="sd">    +----------------------+--------------------------------------------------+</span>
+<span class="sd">    | ``num_pores`` ,      | Counts the number of pores or throats with a     |</span>
+<span class="sd">    |                      | given label                                      |</span>
+<span class="sd">    | ``num_throats``      |                                                  |</span>
+<span class="sd">    +----------------------+--------------------------------------------------+</span>
+<span class="sd">    | ``Np``, ``Nt``       | Total number of pores and throats on the object  |</span>
+<span class="sd">    +----------------------+--------------------------------------------------+</span>
+<span class="sd">    | ``tomask``           | Converts a list of pore or throat indices to a   |</span>
+<span class="sd">    |                      | boolean mask                                     |</span>
+<span class="sd">    +----------------------+--------------------------------------------------+</span>
+<span class="sd">    | ``toindices``        | Converts a boolean mask to pore or throat indices|</span>
+<span class="sd">    +----------------------+--------------------------------------------------+</span>
+<span class="sd">    | ``map_pores`` ,      | Given indices on object B returns corresponding  |</span>
+<span class="sd">    |                      | indices on object A                              |</span>
+<span class="sd">    | ``map_throats``      |                                                  |</span>
+<span class="sd">    +----------------------+--------------------------------------------------+</span>
+<span class="sd">    | ``interleave_data``  | Fetches data from associated objects into a      |</span>
+<span class="sd">    |                      | single array                                     |</span>
+<span class="sd">    +----------------------+--------------------------------------------------+</span>
+<span class="sd">    | ``interpolate_data`` | Given pore or throat data, interpolate the other |</span>
+<span class="sd">    +----------------------+--------------------------------------------------+</span>
+<span class="sd">    | ``filter_by_label``  | Given indices find those with specific labels    |</span>
+<span class="sd">    +----------------------+--------------------------------------------------+</span>
+<span class="sd">    | ``show_hist``        | Method for quickly plotting histograms of data   |</span>
+<span class="sd">    +----------------------+--------------------------------------------------+</span>
+<span class="sd">    | ``check_data_health``| Ensures all data arrays are valid and complete   |</span>
+<span class="sd">    +----------------------+--------------------------------------------------+</span>
+
+
+<span class="sd">    In addition to the above methods, there are a few attributes which provide</span>
+<span class="sd">    access to useful items:</span>
+
+<span class="sd">    +----------------+--------------------------------------------------------+</span>
+<span class="sd">    | Attribute      | Functionality                                          |</span>
+<span class="sd">    +================+========================================================+</span>
+<span class="sd">    | ``name``       | The string name of the object, unique to each Project  |</span>
+<span class="sd">    +----------------+--------------------------------------------------------+</span>
+<span class="sd">    | ``settings``   | A dictionary containing various setting values         |</span>
+<span class="sd">    +----------------+--------------------------------------------------------+</span>
+<span class="sd">    | ``project``    | A handle to the Project containing the object          |</span>
+<span class="sd">    +----------------+--------------------------------------------------------+</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -372,14 +426,6 @@
             <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">vals</span>
 
-    <span class="k">def</span> <span class="fm">__delitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__delitem__</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>  <span class="c1"># if key is a nested dict, get all values</span>
-            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-                <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__delitem__</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
-
     <span class="k">def</span> <span class="nf">_set_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="n">old_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="n">old_name</span><span class="p">:</span>
@@ -397,10 +443,7 @@
                 <span class="n">item</span><span class="p">[</span><span class="s1">&#39;throat.&#39;</span> <span class="o">+</span> <span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;throat.&#39;</span> <span class="o">+</span> <span class="n">old_name</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_get_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
-        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
 
     <span class="n">name</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_get_name</span><span class="p">,</span> <span class="n">_set_name</span><span class="p">)</span>
 
@@ -800,6 +843,58 @@
         <span class="n">indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_indices</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">indices</span></div>
 
+<div class="viewcode-block" id="Base.to_global"><a class="viewcode-back" href="../../../modules/core/base.html#openpnm.core.Base.to_global">[docs]</a>    <span class="k">def</span> <span class="nf">to_global</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">throats</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert local indices from a subdomain object to global values</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        pores, throats : array_like</span>
+<span class="sd">            List of pore or throat indices to be converted</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        indices : ndarray</span>
+<span class="sd">            An array of location indices</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">pores</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">element</span> <span class="o">=</span> <span class="s1">&#39;pore&#39;</span>
+            <span class="n">locs</span> <span class="o">=</span> <span class="n">pores</span>
+        <span class="k">elif</span> <span class="n">throats</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">element</span> <span class="o">=</span> <span class="s1">&#39;throat&#39;</span>
+            <span class="n">locs</span> <span class="o">=</span> <span class="n">throats</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="p">[</span><span class="n">element</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+        <span class="n">inds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">mask</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">inds</span><span class="p">[</span><span class="n">locs</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Base.to_local"><a class="viewcode-back" href="../../../modules/core/base.html#openpnm.core.Base.to_local">[docs]</a>    <span class="k">def</span> <span class="nf">to_local</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">throats</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">missing_vals</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert global indices to local values relative to a subdomain object</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        pores, throats : array_like</span>
+<span class="sd">            List of pore or throat indices to be converted</span>
+<span class="sd">        missing_values : scalar</span>
+<span class="sd">            The value to put into missing locations if global indices are not</span>
+<span class="sd">            found.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        indices : ndarray</span>
+<span class="sd">            An array of location indices</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">pores</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">element</span> <span class="o">=</span> <span class="s1">&#39;pore&#39;</span>
+            <span class="n">locs</span> <span class="o">=</span> <span class="n">pores</span>
+        <span class="k">if</span> <span class="n">throats</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">element</span> <span class="o">=</span> <span class="s1">&#39;throat&#39;</span>
+            <span class="n">locs</span> <span class="o">=</span> <span class="n">throats</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="p">[</span><span class="n">element</span> <span class="o">+</span> <span class="s1">&#39;.all&#39;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span><span class="o">*</span><span class="n">missing_vals</span>
+        <span class="n">inds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="p">[</span><span class="n">element</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">mask</span><span class="p">[</span><span class="n">inds</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Ps</span>
+        <span class="k">return</span> <span class="n">mask</span><span class="p">[</span><span class="n">locs</span><span class="p">]</span></div>
+
 <div class="viewcode-block" id="Base.interleave_data"><a class="viewcode-back" href="../../../modules/core/base.html#openpnm.core.Base.interleave_data">[docs]</a>    <span class="k">def</span> <span class="nf">interleave_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prop</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieves requested property from associated objects, to produce a full</span>
@@ -1008,47 +1103,6 @@
             <span class="n">P1</span><span class="p">,</span> <span class="n">P2</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.&#39;</span> <span class="o">+</span> <span class="n">prop</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">conns</span><span class="p">]</span><span class="o">.</span><span class="n">T</span>
             <span class="n">T</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interpolate_data</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.&#39;</span><span class="o">+</span><span class="n">prop</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">P1</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">P2</span><span class="p">))</span><span class="o">.</span><span class="n">T</span></div>
-
-    <span class="k">def</span> <span class="nf">_count</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns a dictionary containing the number of pores and throats in</span>
-<span class="sd">        the network, stored under the keys &#39;pore&#39; or &#39;throat&#39;</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        element : string, optional</span>
-<span class="sd">            Can be either &#39;pore&#39; , &#39;pores&#39;, &#39;throat&#39; or &#39;throats&#39;, which</span>
-<span class="sd">            specifies which count to return.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        A dictionary containing the number of pores and throats under the</span>
-<span class="sd">        &#39;pore&#39; and &#39;throat&#39; key respectively.</span>
-
-<span class="sd">        See Also</span>
-<span class="sd">        --------</span>
-<span class="sd">        num_pores</span>
-<span class="sd">        num_throats</span>
-
-<span class="sd">        Notes</span>
-<span class="sd">        -----</span>
-<span class="sd">        The ability to send plurals is useful for some types of &#39;programmatic&#39;</span>
-<span class="sd">        access.  For instance, the standard argument for locations is pores</span>
-<span class="sd">        or throats.  If these are bundled up in a **kwargs dict then you can</span>
-<span class="sd">        just use the dict key in count() without removing the &#39;s&#39;.</span>
-
-<span class="sd">        Examples</span>
-<span class="sd">        --------</span>
-<span class="sd">        &gt;&gt;&gt; import openpnm as op</span>
-<span class="sd">        &gt;&gt;&gt; pn = op.network.Cubic(shape=[5, 5, 5])</span>
-<span class="sd">        &gt;&gt;&gt; pn._count(&#39;pore&#39;)</span>
-<span class="sd">        125</span>
-<span class="sd">        &gt;&gt;&gt; pn._count(&#39;throat&#39;)</span>
-<span class="sd">        300</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">element</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_element</span><span class="p">(</span><span class="n">element</span><span class="o">=</span><span class="n">element</span><span class="p">,</span> <span class="n">single</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="fm">__getitem__</span><span class="p">(</span><span class="n">element</span><span class="o">+</span><span class="s1">&#39;.all&#39;</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">temp</span>
 
 <div class="viewcode-block" id="Base.show_hist"><a class="viewcode-back" href="../../../modules/core/base.html#openpnm.core.Base.show_hist">[docs]</a>    <span class="k">def</span> <span class="nf">show_hist</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                   <span class="n">props</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">,</span> <span class="s1">&#39;throat.diameter&#39;</span><span class="p">,</span> <span class="s1">&#39;throat.length&#39;</span><span class="p">],</span>
@@ -1352,6 +1406,740 @@
         <span class="k">if</span> <span class="n">obj_type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="n">mro</span><span class="p">:</span>
             <span class="n">flag</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">return</span> <span class="n">flag</span></div>
+
+
+<span class="k">class</span> <span class="nc">LegacyMixin</span><span class="p">:</span>
+
+    <span class="k">def</span> <span class="nf">tomask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_mask</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">toindices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_indices</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ids</span><span class="p">,</span> <span class="n">element</span><span class="p">,</span> <span class="n">filtered</span><span class="p">):</span>
+        <span class="n">ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ids</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+        <span class="n">locations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_indices</span><span class="p">(</span><span class="n">element</span><span class="o">=</span><span class="n">element</span><span class="p">)</span>
+        <span class="n">self_in_ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">ids</span><span class="p">,</span> <span class="bp">self</span><span class="p">[</span><span class="n">element</span><span class="o">+</span><span class="s1">&#39;._id&#39;</span><span class="p">],</span> <span class="n">assume_unique</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">ids_in_self</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">element</span><span class="o">+</span><span class="s1">&#39;._id&#39;</span><span class="p">],</span> <span class="n">ids</span><span class="p">,</span> <span class="n">assume_unique</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">ids</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+        <span class="n">mask</span><span class="p">[</span><span class="n">self_in_ids</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span> <span class="o">*</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="n">ind</span><span class="p">[</span><span class="n">self_in_ids</span><span class="p">]</span> <span class="o">=</span> <span class="n">locations</span><span class="p">[</span><span class="n">ids_in_self</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">filtered</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">ind</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;index_map&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;indices&#39;</span><span class="p">,</span> <span class="s1">&#39;mask&#39;</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">t</span><span class="p">(</span><span class="n">ind</span><span class="p">,</span> <span class="n">mask</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">map_pores</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="p">,</span> <span class="n">origin</span><span class="p">,</span> <span class="n">filtered</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Given a list of pore on a target object, finds indices of those pores</span>
+<span class="sd">        on the calling object</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        pores : array_like</span>
+<span class="sd">            The indices of the pores on the object specifiedin ``origin``</span>
+
+<span class="sd">        origin : OpenPNM Base object</span>
+<span class="sd">            The object corresponding to the indices given in ``pores``</span>
+
+<span class="sd">        filtered : boolean (default is ``True``)</span>
+<span class="sd">            If ``True`` then a ND-array of indices is returned with missing</span>
+<span class="sd">            indices removed, otherwise a named-tuple containing both the</span>
+<span class="sd">            ``indices`` and a boolean ``mask`` with ``False`` indicating</span>
+<span class="sd">            which locations were not found.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Pore indices on the calling object corresponding to the same pores</span>
+<span class="sd">        on the ``origin`` object.  Can be an array or a tuple containing an</span>
+<span class="sd">        array and a mask, depending on the value of ``filtered``.</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        pores</span>
+<span class="sd">        map_throats</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ids</span> <span class="o">=</span> <span class="n">origin</span><span class="p">[</span><span class="s1">&#39;pore._id&#39;</span><span class="p">][</span><span class="n">pores</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map</span><span class="p">(</span><span class="n">element</span><span class="o">=</span><span class="s1">&#39;pore&#39;</span><span class="p">,</span> <span class="n">ids</span><span class="o">=</span><span class="n">ids</span><span class="p">,</span> <span class="n">filtered</span><span class="o">=</span><span class="n">filtered</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">map_throats</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">throats</span><span class="p">,</span> <span class="n">origin</span><span class="p">,</span> <span class="n">filtered</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Given a list of throats on a target object, finds indices of</span>
+<span class="sd">        those throats on the calling object</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        throats : array_like</span>
+<span class="sd">            The indices of the throats on the object specified in ``origin``</span>
+
+<span class="sd">        origin : OpenPNM Base object</span>
+<span class="sd">            The object corresponding to the indices given in ``throats``</span>
+
+<span class="sd">        filtered : boolean (default is ``True``)</span>
+<span class="sd">            If ``True`` then a ND-array of indices is returned with missing</span>
+<span class="sd">            indices removed, otherwise a named-tuple containing both the</span>
+<span class="sd">            ``indices`` and a boolean ``mask`` with ``False`` indicating</span>
+<span class="sd">            which locations were not found.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Throat indices on the calling object corresponding to the same throats</span>
+<span class="sd">        on the ``origin`` object.  Can be an array or a tuple containing an</span>
+<span class="sd">        array and a mask, depending on the value of ``filtered``.</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        throats</span>
+<span class="sd">        map_pores</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ids</span> <span class="o">=</span> <span class="n">origin</span><span class="p">[</span><span class="s1">&#39;throat._id&#39;</span><span class="p">][</span><span class="n">throats</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map</span><span class="p">(</span><span class="n">element</span><span class="o">=</span><span class="s1">&#39;throat&#39;</span><span class="p">,</span> <span class="n">ids</span><span class="o">=</span><span class="n">ids</span><span class="p">,</span> <span class="n">filtered</span><span class="o">=</span><span class="n">filtered</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">check_data_health</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check the health of pore and throat data arrays.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        health: HealthDict object</span>
+<span class="sd">            A  basic dictionary with an added ``health`` attribute that is</span>
+<span class="sd">            ``True`` if all entries in the dict are deemed healthy</span>
+<span class="sd">            (empty lists), or ``False`` otherwise.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import openpnm</span>
+<span class="sd">        &gt;&gt;&gt; pn = openpnm.network.Cubic(shape=[5, 5, 5])</span>
+<span class="sd">        &gt;&gt;&gt; h = pn.check_data_health()</span>
+<span class="sd">        &gt;&gt;&gt; h.health</span>
+<span class="sd">        True</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">health</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">check_data_health</span><span class="p">(</span><span class="n">obj</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">health</span>
+
+
+<span class="k">class</span> <span class="nc">LabelMixin</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">_get_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">,</span> <span class="n">locations</span><span class="p">,</span> <span class="n">mode</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This is the actual label getter method, but it should not be called</span>
+<span class="sd">        directly.  Use ``labels`` instead.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Parse inputs</span>
+        <span class="n">locations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_indices</span><span class="p">(</span><span class="n">locations</span><span class="p">)</span>
+        <span class="n">element</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_element</span><span class="p">(</span><span class="n">element</span><span class="o">=</span><span class="n">element</span><span class="p">)</span>
+        <span class="c1"># Collect list of all pore OR throat labels</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s1">&#39;labels&#39;</span><span class="p">,</span> <span class="n">element</span><span class="o">=</span><span class="n">element</span><span class="p">)</span>
+        <span class="n">labels</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span>  <span class="c1"># Convert to ND-array for following checks</span>
+        <span class="c1"># Make an 2D array with locations in rows and labels in cols</span>
+        <span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="bp">self</span><span class="p">[</span><span class="n">item</span><span class="p">][</span><span class="n">locations</span><span class="p">]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>
+        <span class="n">num_hits</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># Number of locations with each label</span>
+        <span class="k">if</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;or&#39;</span><span class="p">,</span> <span class="s1">&#39;union&#39;</span><span class="p">,</span> <span class="s1">&#39;any&#39;</span><span class="p">]:</span>
+            <span class="n">temp</span> <span class="o">=</span> <span class="n">labels</span><span class="p">[</span><span class="n">num_hits</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;and&#39;</span><span class="p">,</span> <span class="s1">&#39;intersection&#39;</span><span class="p">]:</span>
+            <span class="n">temp</span> <span class="o">=</span> <span class="n">labels</span><span class="p">[</span><span class="n">num_hits</span> <span class="o">==</span> <span class="n">locations</span><span class="o">.</span><span class="n">size</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;xor&#39;</span><span class="p">,</span> <span class="s1">&#39;exclusive_or&#39;</span><span class="p">]:</span>
+            <span class="n">temp</span> <span class="o">=</span> <span class="n">labels</span><span class="p">[</span><span class="n">num_hits</span> <span class="o">==</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;nor&#39;</span><span class="p">,</span> <span class="s1">&#39;not&#39;</span><span class="p">,</span> <span class="s1">&#39;none&#39;</span><span class="p">]:</span>
+            <span class="n">temp</span> <span class="o">=</span> <span class="n">labels</span><span class="p">[</span><span class="n">num_hits</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;nand&#39;</span><span class="p">]:</span>
+            <span class="n">temp</span> <span class="o">=</span> <span class="n">labels</span><span class="p">[</span><span class="n">num_hits</span> <span class="o">==</span> <span class="p">(</span><span class="n">locations</span><span class="o">.</span><span class="n">size</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)]</span>
+        <span class="k">elif</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;xnor&#39;</span><span class="p">,</span> <span class="s1">&#39;nxor&#39;</span><span class="p">]:</span>
+            <span class="n">temp</span> <span class="o">=</span> <span class="n">labels</span><span class="p">[</span><span class="n">num_hits</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Unrecognized mode:&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">mode</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">PrintableList</span><span class="p">(</span><span class="n">temp</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">labels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="p">[],</span> <span class="n">throats</span><span class="o">=</span><span class="p">[],</span> <span class="n">element</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;union&#39;</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a list of labels present on the object</span>
+
+<span class="sd">        Additionally, this function can return labels applied to a specified</span>
+<span class="sd">        set of pores or throats</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        element : string</span>
+<span class="sd">            Controls whether pore or throat labels are returned.  If empty then</span>
+<span class="sd">            both are returned (default).</span>
+
+<span class="sd">        pores (or throats) : array_like</span>
+<span class="sd">            The pores (or throats) whose labels are sought.  If left empty a</span>
+<span class="sd">            list containing all pore and throat labels is returned.</span>
+
+<span class="sd">        mode : string, optional</span>
+<span class="sd">            Controls how the query should be performed.  Only applicable</span>
+<span class="sd">            when ``pores`` or ``throats`` are specified:</span>
+
+<span class="sd">            **&#39;or&#39;, &#39;union&#39;, &#39;any&#39;**: (default) Returns the labels that are</span>
+<span class="sd">            assigned to *any* of the given locations.</span>
+
+<span class="sd">            **&#39;and&#39;, &#39;intersection&#39;, &#39;all&#39;**: Labels that are present on *all*</span>
+<span class="sd">            the given locations.</span>
+
+<span class="sd">            **&#39;xor&#39;, &#39;exclusive_or&#39;** : Labels that are present on *only one*</span>
+<span class="sd">            of the given locations.</span>
+
+<span class="sd">            **&#39;nor&#39;, &#39;none&#39;, &#39;not&#39;**: Labels that are *not* present on any of</span>
+<span class="sd">            the given locations.</span>
+
+<span class="sd">            **&#39;nand&#39;**: Labels that are present on *all but one* of the given</span>
+<span class="sd">            locations</span>
+
+<span class="sd">            **&#39;xnor&#39;**: Labels that are present on *more than one* of the given</span>
+<span class="sd">            locations.  &#39;nxor&#39; is also accepted.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        A list containing the labels on the object.  If ``pores`` or</span>
+<span class="sd">        ``throats`` are given, the results are filtered according to the</span>
+<span class="sd">        specified ``mode``.</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        props</span>
+<span class="sd">        keys</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Technically, *&#39;nand&#39;* and *&#39;xnor&#39;* should also return pores with *none*</span>
+<span class="sd">        of the labels but these are not included.  This makes the returned list</span>
+<span class="sd">        more useful.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import openpnm as op</span>
+<span class="sd">        &gt;&gt;&gt; pn = op.network.Cubic(shape=[5, 5, 5])</span>
+<span class="sd">        &gt;&gt;&gt; pn.labels(pores=[11, 12])</span>
+<span class="sd">        [&#39;pore.all&#39;, &#39;pore.internal&#39;, &#39;pore.left&#39;, &#39;pore.surface&#39;]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Short-circuit query when no pores or throats are given</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">pores</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">throats</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="n">labels</span> <span class="o">=</span> <span class="n">PrintableList</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">(</span><span class="n">element</span><span class="o">=</span><span class="n">element</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;labels&#39;</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">pores</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">throats</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Cannot perform label query on pores and &#39;</span>
+                            <span class="o">+</span> <span class="s1">&#39;throats simultaneously&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">pores</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">labels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_labels</span><span class="p">(</span><span class="n">element</span><span class="o">=</span><span class="s1">&#39;pore&#39;</span><span class="p">,</span> <span class="n">locations</span><span class="o">=</span><span class="n">pores</span><span class="p">,</span>
+                                      <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">throats</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">labels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_labels</span><span class="p">(</span><span class="n">element</span><span class="o">=</span><span class="s1">&#39;throat&#39;</span><span class="p">,</span> <span class="n">locations</span><span class="o">=</span><span class="n">throats</span><span class="p">,</span>
+                                      <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">labels</span>
+
+    <span class="k">def</span> <span class="nf">set_label</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">throats</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;add&#39;</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates or updates a label array</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        label : string</span>
+<span class="sd">                The label to apply to the specified locations</span>
+<span class="sd">        pores : array_like</span>
+<span class="sd">            A list of pore indices or a boolean mask of where given label</span>
+<span class="sd">            should be added or removed (see ``mode``)</span>
+<span class="sd">        throats : array_like</span>
+<span class="sd">            A list of throat indices or a boolean mask of where given label</span>
+<span class="sd">            should be added or removed (see ``mode``)</span>
+<span class="sd">        mode : string</span>
+<span class="sd">            Controls how the labels are handled.  Options are:</span>
+
+<span class="sd">            * &#39;add&#39; (default)</span>
+<span class="sd">                Adds the given label to the specified locations while</span>
+<span class="sd">                keeping existing labels</span>
+<span class="sd">            * &#39;overwrite&#39;</span>
+<span class="sd">                Removes existing label from all locations before</span>
+<span class="sd">                adding the label in the specified locations</span>
+<span class="sd">            * &#39;remove&#39;</span>
+<span class="sd">                Removes the given label from the specified locations</span>
+<span class="sd">                leaving the remainder intact</span>
+<span class="sd">            * &#39;purge&#39;</span>
+<span class="sd">                Removes the specified label from the object completely</span>
+<span class="sd">            * &#39;clear&#39;</span>
+<span class="sd">                Sets all the labels to ``False`` but does not remove the label</span>
+<span class="sd">                array</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_parse_mode</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>
+                         <span class="n">allowed</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;add&#39;</span><span class="p">,</span> <span class="s1">&#39;overwrite&#39;</span><span class="p">,</span> <span class="s1">&#39;remove&#39;</span><span class="p">,</span> <span class="s1">&#39;purge&#39;</span><span class="p">,</span>
+                                  <span class="s1">&#39;clear&#39;</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">label</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;pore&#39;</span><span class="p">,</span> <span class="s1">&#39;throat&#39;</span><span class="p">]:</span>
+            <span class="n">label</span> <span class="o">=</span> <span class="n">label</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">pores</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">throats</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="n">pores</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span> <span class="n">throats</span><span class="o">=</span><span class="n">throats</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="k">elif</span> <span class="n">pores</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">locs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_indices</span><span class="p">(</span><span class="n">pores</span><span class="p">)</span>
+            <span class="n">element</span> <span class="o">=</span> <span class="s1">&#39;pore&#39;</span>
+        <span class="k">elif</span> <span class="n">throats</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">locs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_indices</span><span class="p">(</span><span class="n">throats</span><span class="p">)</span>
+            <span class="n">element</span> <span class="o">=</span> <span class="s1">&#39;throat&#39;</span>
+
+        <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;add&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">element</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">label</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="bp">self</span><span class="p">[</span><span class="n">element</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="bp">self</span><span class="p">[</span><span class="n">element</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">label</span><span class="p">][</span><span class="n">locs</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;overwrite&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="p">[</span><span class="n">element</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="bp">self</span><span class="p">[</span><span class="n">element</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">label</span><span class="p">][</span><span class="n">locs</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="n">mode</span><span class="o">==</span> <span class="s1">&#39;remove&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="p">[</span><span class="n">element</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">label</span><span class="p">][</span><span class="n">locs</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;clear&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore&#39;</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat&#39;</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;purge&#39;</span><span class="p">:</span>
+            <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;pore.&#39;</span> <span class="o">+</span> <span class="n">label</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;throat.&#39;</span> <span class="o">+</span> <span class="n">label</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">_get_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;or&#39;</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This is the actual method for getting indices, but should not be called</span>
+<span class="sd">        directly.  Use ``pores`` or ``throats`` instead.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Parse and validate all input values.</span>
+        <span class="n">element</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_element</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">single</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_labels</span><span class="p">(</span><span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span> <span class="n">element</span><span class="o">=</span><span class="n">element</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">element</span><span class="o">+</span><span class="s1">&#39;.all&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Cannot proceed without </span><span class="si">{}</span><span class="s1">.all&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">element</span><span class="p">))</span>
+
+        <span class="c1"># Begin computing label array</span>
+        <span class="k">if</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;or&#39;</span><span class="p">,</span> <span class="s1">&#39;any&#39;</span><span class="p">,</span> <span class="s1">&#39;union&#39;</span><span class="p">]:</span>
+            <span class="n">union</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">element</span><span class="o">+</span><span class="s1">&#39;.all&#39;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">:</span>  <span class="c1"># Iterate over labels and collect all indices</span>
+                <span class="n">union</span> <span class="o">=</span> <span class="n">union</span> <span class="o">+</span> <span class="bp">self</span><span class="p">[</span><span class="n">element</span><span class="o">+</span><span class="s1">&#39;.&#39;</span><span class="o">+</span><span class="n">item</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+            <span class="n">ind</span> <span class="o">=</span> <span class="n">union</span>
+        <span class="k">elif</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;and&#39;</span><span class="p">,</span> <span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="s1">&#39;intersection&#39;</span><span class="p">]:</span>
+            <span class="n">intersect</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">element</span><span class="o">+</span><span class="s1">&#39;.all&#39;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">:</span>  <span class="c1"># Iterate over labels and collect all indices</span>
+                <span class="n">intersect</span> <span class="o">=</span> <span class="n">intersect</span><span class="o">*</span><span class="bp">self</span><span class="p">[</span><span class="n">element</span><span class="o">+</span><span class="s1">&#39;.&#39;</span><span class="o">+</span><span class="n">item</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+            <span class="n">ind</span> <span class="o">=</span> <span class="n">intersect</span>
+        <span class="k">elif</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;xor&#39;</span><span class="p">,</span> <span class="s1">&#39;exclusive_or&#39;</span><span class="p">]:</span>
+            <span class="n">xor</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">element</span><span class="o">+</span><span class="s1">&#39;.all&#39;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">:</span>  <span class="c1"># Iterate over labels and collect all indices</span>
+                <span class="n">info</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">element</span><span class="o">+</span><span class="s1">&#39;.&#39;</span><span class="o">+</span><span class="n">item</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+                <span class="n">xor</span> <span class="o">=</span> <span class="n">xor</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">(</span><span class="n">info</span><span class="p">)</span>
+            <span class="n">ind</span> <span class="o">=</span> <span class="p">(</span><span class="n">xor</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;nor&#39;</span><span class="p">,</span> <span class="s1">&#39;not&#39;</span><span class="p">,</span> <span class="s1">&#39;none&#39;</span><span class="p">]:</span>
+            <span class="n">nor</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">element</span><span class="o">+</span><span class="s1">&#39;.all&#39;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">:</span>  <span class="c1"># Iterate over labels and collect all indices</span>
+                <span class="n">info</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">element</span><span class="o">+</span><span class="s1">&#39;.&#39;</span><span class="o">+</span><span class="n">item</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+                <span class="n">nor</span> <span class="o">=</span> <span class="n">nor</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">(</span><span class="n">info</span><span class="p">)</span>
+            <span class="n">ind</span> <span class="o">=</span> <span class="p">(</span><span class="n">nor</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;nand&#39;</span><span class="p">]:</span>
+            <span class="n">nand</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">element</span><span class="o">+</span><span class="s1">&#39;.all&#39;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">:</span>  <span class="c1"># Iterate over labels and collect all indices</span>
+                <span class="n">info</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">element</span><span class="o">+</span><span class="s1">&#39;.&#39;</span><span class="o">+</span><span class="n">item</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+                <span class="n">nand</span> <span class="o">=</span> <span class="n">nand</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">(</span><span class="n">info</span><span class="p">)</span>
+            <span class="n">ind</span> <span class="o">=</span> <span class="p">(</span><span class="n">nand</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">labels</span><span class="p">))</span> <span class="o">*</span> <span class="p">(</span><span class="n">nand</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;xnor&#39;</span><span class="p">,</span> <span class="s1">&#39;nxor&#39;</span><span class="p">]:</span>
+            <span class="n">xnor</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">element</span><span class="o">+</span><span class="s1">&#39;.all&#39;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">:</span>  <span class="c1"># Iterate over labels and collect all indices</span>
+                <span class="n">info</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">element</span><span class="o">+</span><span class="s1">&#39;.&#39;</span><span class="o">+</span><span class="n">item</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+                <span class="n">xnor</span> <span class="o">=</span> <span class="n">xnor</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">(</span><span class="n">info</span><span class="p">)</span>
+            <span class="n">ind</span> <span class="o">=</span> <span class="p">(</span><span class="n">xnor</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Unsupported mode: &#39;</span><span class="o">+</span><span class="n">mode</span><span class="p">)</span>
+        <span class="c1"># Extract indices from boolean mask</span>
+        <span class="n">ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">ind</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">ind</span> <span class="o">=</span> <span class="n">ind</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ind</span>
+
+    <span class="k">def</span> <span class="nf">pores</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;or&#39;</span><span class="p">,</span> <span class="n">asmask</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns pore indicies where given labels exist, according to the logic</span>
+<span class="sd">        specified by the ``mode`` argument.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        labels : string or list of strings</span>
+<span class="sd">            The label(s) whose pores locations are requested.  This argument</span>
+<span class="sd">            also accepts &#39;*&#39; for wildcard searches.</span>
+
+<span class="sd">        mode : string</span>
+<span class="sd">            Specifies how the query should be performed.  The options are:</span>
+
+<span class="sd">            **&#39;or&#39;, &#39;union&#39;, &#39;any&#39;** : (default) Pores with *one or more* of</span>
+<span class="sd">            the given labels are returned.</span>
+
+<span class="sd">            **&#39;and&#39;, &#39;intersection&#39;, &#39;all&#39;** : Pores with *all* of the given</span>
+<span class="sd">            labels are returned.</span>
+
+<span class="sd">            **&#39;xor&#39;, &#39;exclusive_or&#39;** : Pores with *only one* of the given</span>
+<span class="sd">            labels are returned.</span>
+
+<span class="sd">            **&#39;nor&#39;, &#39;none&#39;, &#39;not&#39;** : Pores with *none* of the given labels</span>
+<span class="sd">            are returned.</span>
+
+<span class="sd">            **&#39;nand&#39;** : Pores with *not all* of the given labels are</span>
+<span class="sd">            returned.</span>
+
+<span class="sd">            **&#39;xnor&#39;** : Pores with *more than one* of the given labels are</span>
+<span class="sd">            returned.</span>
+
+<span class="sd">        asmask : boolean</span>
+<span class="sd">            If ``True`` then a boolean array of length Np is returned with</span>
+<span class="sd">            ``True`` values indicating the pores that satisfy the query.</span>
+
+<span class="sd">        target : OpenPNM Base object</span>
+<span class="sd">            If given, the returned indices will be indexed relative to the</span>
+<span class="sd">            ``target`` object.  This can be used to determine how indices on</span>
+<span class="sd">            one object map onto another object.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        A Numpy array containing pore indices filtered by the logic specified</span>
+<span class="sd">        in ``mode``.</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        throats</span>
+<span class="sd">        map_pores</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Technically, *nand* and *xnor* should also return pores with *none* of</span>
+<span class="sd">        the labels but these are not included.  This makes the returned list</span>
+<span class="sd">        more useful.</span>
+
+<span class="sd">        To perform more complex or compound queries, you can opt to receive</span>
+<span class="sd">        the result a a boolean mask (``asmask=True``), then manipulate the</span>
+<span class="sd">        arrays manually.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import openpnm as op</span>
+<span class="sd">        &gt;&gt;&gt; pn = op.network.Cubic(shape=[5, 5, 5])</span>
+<span class="sd">        &gt;&gt;&gt; Ps = pn.pores(labels=[&#39;top&#39;, &#39;back&#39;], mode=&#39;union&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; Ps[:5]  # Look at first 5 pore indices</span>
+<span class="sd">        array([ 4,  9, 14, 19, 20])</span>
+<span class="sd">        &gt;&gt;&gt; pn.pores(labels=[&#39;top&#39;, &#39;back&#39;], mode=&#39;xnor&#39;)</span>
+<span class="sd">        array([ 24,  49,  74,  99, 124])</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ind</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_indices</span><span class="p">(</span><span class="n">element</span><span class="o">=</span><span class="s1">&#39;pore&#39;</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">target</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ind</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">map_pores</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">ind</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">filtered</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">asmask</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">target</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">ind</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">tomask</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">ind</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ind</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tomask</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">ind</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ind</span>
+
+    <span class="k">def</span> <span class="nf">throats</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;or&#39;</span><span class="p">,</span> <span class="n">asmask</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns throat locations where given labels exist, according to the</span>
+<span class="sd">        logic specified by the ``mode`` argument.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        labels : string or list of strings</span>
+<span class="sd">            The throat label(s) whose locations are requested.  If omitted,</span>
+<span class="sd">            &#39;all&#39; throat inidices are returned.  This argument also accepts</span>
+<span class="sd">            &#39;*&#39; for wildcard searches.</span>
+
+<span class="sd">        mode : string</span>
+<span class="sd">            Specifies how the query should be performed.  The options are:</span>
+
+<span class="sd">            **&#39;or&#39;, &#39;union&#39;, &#39;any&#39;** : (default) Throats with *one or more* of</span>
+<span class="sd">            the given labels are returned.</span>
+
+<span class="sd">            **&#39;and&#39;, &#39;intersection&#39;, &#39;all&#39;** : Throats with *all* of the given</span>
+<span class="sd">            labels are returned.</span>
+
+<span class="sd">            **&#39;xor&#39;, &#39;exclusive_or&#39;** : Throats with *only one* of the given</span>
+<span class="sd">            labels are returned.</span>
+
+<span class="sd">            **&#39;nor&#39;, &#39;none&#39;, &#39;not&#39;** : Throats with *none* of the given labels</span>
+<span class="sd">            are returned.</span>
+
+<span class="sd">            **&#39;nand&#39;** : Throats with *not all* of the given labels are</span>
+<span class="sd">            returned.</span>
+
+<span class="sd">            **&#39;xnor&#39;** : Throats with *more than one* of the given labels are</span>
+<span class="sd">            returned.</span>
+
+<span class="sd">        asmask : boolean</span>
+<span class="sd">            If ``True`` then a boolean array of length Nt is returned with</span>
+<span class="sd">            ``True`` values indicating the throats that satisfy the query.</span>
+
+<span class="sd">        target : OpenPNM Base object</span>
+<span class="sd">            If given, the returned indices will be indexed relative to the</span>
+<span class="sd">            ``target`` object.  This can be used to determine how indices on</span>
+<span class="sd">            one object map onto another object.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        A Numpy array containing throat indices filtered by the logic specified</span>
+<span class="sd">        in ``mode``.</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        pores</span>
+<span class="sd">        map_throats</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import openpnm as op</span>
+<span class="sd">        &gt;&gt;&gt; pn = op.network.Cubic(shape=[3, 3, 3])</span>
+<span class="sd">        &gt;&gt;&gt; Ts = pn.throats()</span>
+<span class="sd">        &gt;&gt;&gt; Ts[0:5]  # Look at first 5 throat indices</span>
+<span class="sd">        array([0, 1, 2, 3, 4])</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ind</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_indices</span><span class="p">(</span><span class="n">element</span><span class="o">=</span><span class="s1">&#39;throat&#39;</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">target</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ind</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">map_throats</span><span class="p">(</span><span class="n">throats</span><span class="o">=</span><span class="n">ind</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">filtered</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">asmask</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">target</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">ind</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">tomask</span><span class="p">(</span><span class="n">throats</span><span class="o">=</span><span class="n">ind</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ind</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tomask</span><span class="p">(</span><span class="n">throats</span><span class="o">=</span><span class="n">ind</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ind</span>
+
+    <span class="k">def</span> <span class="nf">filter_by_label</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="p">[],</span> <span class="n">throats</span><span class="o">=</span><span class="p">[],</span> <span class="n">labels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;or&#39;</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns which of the supplied pores (or throats) has the specified</span>
+<span class="sd">        label(s)</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        pores, or throats : array_like</span>
+<span class="sd">            List of pores or throats to be filtered</span>
+
+<span class="sd">        labels : list of strings</span>
+<span class="sd">            The labels to apply as a filter</span>
+
+<span class="sd">        mode : string</span>
+
+<span class="sd">            Controls how the filter is applied.  Options include:</span>
+
+<span class="sd">            **&#39;or&#39;, &#39;union&#39;, &#39;any&#39;**: (default) Returns a list of the given</span>
+<span class="sd">            locations where *any* of the given labels exist.</span>
+
+<span class="sd">            **&#39;and&#39;, &#39;intersection&#39;, &#39;all&#39;**: Only locations where *all* the</span>
+<span class="sd">            given labels are found.</span>
+
+<span class="sd">            **&#39;xor&#39;, &#39;exclusive_or&#39;**: Only locations where exactly *one* of</span>
+<span class="sd">            the given labels are found.</span>
+
+<span class="sd">            **&#39;nor&#39;, &#39;none&#39;, &#39;not&#39;**: Only locations where *none* of the given</span>
+<span class="sd">            labels are found.</span>
+
+<span class="sd">            **&#39;nand&#39;** : Only locations with *some but not all* of the given</span>
+<span class="sd">            labels are returned.</span>
+
+<span class="sd">            **&#39;xnor&#39;** : Only locations with *more than one* of the given</span>
+<span class="sd">            labels are returned.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        A list of pores (or throats) that have been filtered according the</span>
+<span class="sd">        given criteria.  The returned list is a subset of the received list of</span>
+<span class="sd">        pores (or throats).</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        pores</span>
+<span class="sd">        throats</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import openpnm as op</span>
+<span class="sd">        &gt;&gt;&gt; pn = op.network.Cubic(shape=[5, 5, 5])</span>
+<span class="sd">        &gt;&gt;&gt; pn.filter_by_label(pores=[0, 1, 25, 32], labels=&#39;left&#39;)</span>
+<span class="sd">        array([0, 1])</span>
+<span class="sd">        &gt;&gt;&gt; Ps = pn.pores([&#39;top&#39;, &#39;bottom&#39;, &#39;back&#39;], mode=&#39;or&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; pn.filter_by_label(pores=Ps, labels=[&#39;top&#39;, &#39;back&#39;],</span>
+<span class="sd">        ...                    mode=&#39;and&#39;)</span>
+<span class="sd">        array([ 24,  49,  74,  99, 124])</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Convert inputs to locations and element</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">throats</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">pores</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Can only filter either pores OR labels&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">pores</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">element</span> <span class="o">=</span> <span class="s1">&#39;pore&#39;</span>
+            <span class="n">locations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_indices</span><span class="p">(</span><span class="n">pores</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">throats</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">element</span> <span class="o">=</span> <span class="s1">&#39;throat&#39;</span>
+            <span class="n">locations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_indices</span><span class="p">(</span><span class="n">throats</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">))</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_labels</span><span class="p">(</span><span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span> <span class="n">element</span><span class="o">=</span><span class="n">element</span><span class="p">)</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="n">element</span><span class="o">+</span><span class="s1">&#39;.&#39;</span><span class="o">+</span><span class="n">item</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">]</span>
+        <span class="n">all_locs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_indices</span><span class="p">(</span><span class="n">element</span><span class="o">=</span><span class="n">element</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tomask</span><span class="p">(</span><span class="n">indices</span><span class="o">=</span><span class="n">all_locs</span><span class="p">,</span> <span class="n">element</span><span class="o">=</span><span class="n">element</span><span class="p">)</span>
+        <span class="n">ind</span> <span class="o">=</span> <span class="n">mask</span><span class="p">[</span><span class="n">locations</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">locations</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">num_pores</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;or&#39;</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the number of pores of the specified labels</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        labels : list of strings, optional</span>
+<span class="sd">            The pore labels that should be included in the count.</span>
+<span class="sd">            If not supplied, all pores are counted.</span>
+
+<span class="sd">        labels : list of strings</span>
+<span class="sd">            Label of pores to be returned</span>
+
+<span class="sd">        mode : string, optional</span>
+<span class="sd">            Specifies how the count should be performed.  The options are:</span>
+
+<span class="sd">            **&#39;or&#39;, &#39;union&#39;, &#39;any&#39;** : (default) Pores with *one or more* of</span>
+<span class="sd">            the given labels are counted.</span>
+
+<span class="sd">            **&#39;and&#39;, &#39;intersection&#39;, &#39;all&#39;** : Pores with *all* of the given</span>
+<span class="sd">            labels are counted.</span>
+
+<span class="sd">            **&#39;xor&#39;, &#39;exclusive_or&#39;** : Pores with *only one* of the given</span>
+<span class="sd">            labels are counted.</span>
+
+<span class="sd">            **&#39;nor&#39;, &#39;none&#39;, &#39;not&#39;** : Pores with *none* of the given labels</span>
+<span class="sd">            are counted.</span>
+
+<span class="sd">            **&#39;nand&#39;** : Pores with *some but not all* of the given labels are</span>
+<span class="sd">            counted.</span>
+
+<span class="sd">            **&#39;xnor&#39;** : Pores with *more than one* of the given labels are</span>
+<span class="sd">            counted.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Np : int</span>
+<span class="sd">            Number of pores with the specified labels</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        num_throats</span>
+<span class="sd">        count</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Technically, *&#39;nand&#39;* and *&#39;xnor&#39;* should also count pores with *none*</span>
+<span class="sd">        of the labels, however, to make the count more useful these are not</span>
+<span class="sd">        included.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import openpnm as op</span>
+<span class="sd">        &gt;&gt;&gt; pn = op.network.Cubic(shape=[5, 5, 5])</span>
+<span class="sd">        &gt;&gt;&gt; pn.num_pores()</span>
+<span class="sd">        125</span>
+<span class="sd">        &gt;&gt;&gt; pn.num_pores(labels=[&#39;top&#39;])</span>
+<span class="sd">        25</span>
+<span class="sd">        &gt;&gt;&gt; pn.num_pores(labels=[&#39;top&#39;, &#39;front&#39;], mode=&#39;or&#39;)</span>
+<span class="sd">        45</span>
+<span class="sd">        &gt;&gt;&gt; pn.num_pores(labels=[&#39;top&#39;, &#39;front&#39;], mode=&#39;xnor&#39;)</span>
+<span class="sd">        5</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Count number of pores of specified type</span>
+        <span class="n">Ps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_indices</span><span class="p">(</span><span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span> <span class="n">element</span><span class="o">=</span><span class="s1">&#39;pore&#39;</span><span class="p">)</span>
+        <span class="n">Np</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">Ps</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">Np</span>
+
+    <span class="k">def</span> <span class="nf">num_throats</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;union&#39;</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the number of throats of the specified labels</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        labels : list of strings, optional</span>
+<span class="sd">            The throat labels that should be included in the count.</span>
+<span class="sd">            If not supplied, all throats are counted.</span>
+
+<span class="sd">        mode : string, optional</span>
+<span class="sd">            Specifies how the count should be performed.  The options are:</span>
+
+<span class="sd">            **&#39;or&#39;, &#39;union&#39;, &#39;any&#39;** : (default) Throats with *one or more* of</span>
+<span class="sd">            the given labels are counted.</span>
+
+<span class="sd">            **&#39;and&#39;, &#39;intersection&#39;, &#39;all&#39;** : Throats with *all* of the given</span>
+<span class="sd">            labels are counted.</span>
+
+<span class="sd">            **&#39;xor&#39;, &#39;exclusive_or&#39;** : Throats with *only one* of the given</span>
+<span class="sd">            labels are counted.</span>
+
+<span class="sd">            **&#39;nor&#39;, &#39;none&#39;, &#39;not&#39;** : Throats with *none* of the given labels</span>
+<span class="sd">            are counted.</span>
+
+<span class="sd">            **&#39;nand&#39;** : Throats with *some but not all* of the given labels</span>
+<span class="sd">            are counted.</span>
+
+<span class="sd">            **&#39;xnor&#39;** : Throats with *more than one* of the given labels are</span>
+<span class="sd">            counted.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Nt : int</span>
+<span class="sd">            Number of throats with the specified labels</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        num_pores</span>
+<span class="sd">        count</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Technically, *&#39;nand&#39;* and *&#39;xnor&#39;* should also count throats with</span>
+<span class="sd">        *none* of the labels, however, to make the count more useful these are</span>
+<span class="sd">        not included.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Count number of pores of specified type</span>
+        <span class="n">Ts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_indices</span><span class="p">(</span><span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span> <span class="n">element</span><span class="o">=</span><span class="s1">&#39;throat&#39;</span><span class="p">)</span>
+        <span class="n">Nt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">Ts</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">Nt</span>
+
+    <span class="k">def</span> <span class="nf">_count</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a dictionary containing the number of pores and throats in</span>
+<span class="sd">        the network, stored under the keys &#39;pore&#39; or &#39;throat&#39;</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        element : string, optional</span>
+<span class="sd">            Can be either &#39;pore&#39; , &#39;pores&#39;, &#39;throat&#39; or &#39;throats&#39;, which</span>
+<span class="sd">            specifies which count to return.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        A dictionary containing the number of pores and throats under the</span>
+<span class="sd">        &#39;pore&#39; and &#39;throat&#39; key respectively.</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        num_pores</span>
+<span class="sd">        num_throats</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        The ability to send plurals is useful for some types of &#39;programmatic&#39;</span>
+<span class="sd">        access.  For instance, the standard argument for locations is pores</span>
+<span class="sd">        or throats.  If these are bundled up in a **kwargs dict then you can</span>
+<span class="sd">        just use the dict key in count() without removing the &#39;s&#39;.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import openpnm as op</span>
+<span class="sd">        &gt;&gt;&gt; pn = op.network.Cubic(shape=[5, 5, 5])</span>
+<span class="sd">        &gt;&gt;&gt; pn._count(&#39;pore&#39;)</span>
+<span class="sd">        125</span>
+<span class="sd">        &gt;&gt;&gt; pn._count(&#39;throat&#39;)</span>
+<span class="sd">        300</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">element</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_element</span><span class="p">(</span><span class="n">element</span><span class="o">=</span><span class="n">element</span><span class="p">,</span> <span class="n">single</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="nb">super</span><span class="p">(</span><span class="n">Base</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__getitem__</span><span class="p">(</span><span class="n">element</span><span class="o">+</span><span class="s1">&#39;.all&#39;</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">temp</span>
 </pre></div>
 
               </div>

@@ -221,6 +221,7 @@
     <span class="n">conductance</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
     <span class="n">cache_A</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">cache_b</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">variable_props</span> <span class="o">=</span> <span class="p">[]</span>
 
 
 <div class="viewcode-block" id="GenericTransport"><a class="viewcode-back" href="../../../modules/algorithms/generic_transport.html#openpnm.algorithms.GenericTransport">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">get_sections</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="s1">&#39;GenericTransport&#39;</span><span class="p">,</span> <span class="n">sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Parameters&#39;</span><span class="p">])</span>
@@ -812,7 +813,114 @@
             <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;group&#39;</span><span class="p">:</span>
                 <span class="n">R</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">R</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">ndmin</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">ndmin</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_get_inlets</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Determines inlet BCs by analyzing the algorithm object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">Ps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.bc_value&#39;</span><span class="p">])</span>
+        <span class="n">BCs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.bc_value&#39;</span><span class="p">][</span><span class="n">Ps</span><span class="p">])</span>
+        <span class="n">inlets</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.bc_value&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span><span class="n">BCs</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">inlets</span>
+
+    <span class="k">def</span> <span class="nf">_get_outlets</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Determines outlet BCs by analyzing the algorithm object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">Ps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.bc_value&#39;</span><span class="p">])</span>
+        <span class="n">BCs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.bc_value&#39;</span><span class="p">][</span><span class="n">Ps</span><span class="p">])</span>
+        <span class="n">outlets</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.bc_value&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">amin</span><span class="p">(</span><span class="n">BCs</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">outlets</span>
+
+<div class="viewcode-block" id="GenericTransport._get_domain_area"><a class="viewcode-back" href="../../../modules/algorithms/generic_transport.html#openpnm.algorithms.GenericTransport._get_domain_area">[docs]</a>    <span class="k">def</span> <span class="nf">_get_domain_area</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inlets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">outlets</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Determines the cross sectional area relative to the inlets/outlets.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Attempting to estimate inlet area...will be low&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">dimensionality</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;The network is not 3D, specify area manually&#39;</span><span class="p">)</span>
+        <span class="n">inlets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_inlets</span><span class="p">()</span> <span class="k">if</span> <span class="n">inlets</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">inlets</span>
+        <span class="n">outlets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_outlets</span><span class="p">()</span> <span class="k">if</span> <span class="n">outlets</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">outlets</span>
+        <span class="n">inlets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="n">inlets</span><span class="p">]</span>
+        <span class="n">outlets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="n">outlets</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">iscoplanar</span><span class="p">(</span><span class="n">inlets</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Detected inlet pores are not coplanar&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">iscoplanar</span><span class="p">(</span><span class="n">outlets</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Detected outlet pores are not coplanar&#39;</span><span class="p">)</span>
+        <span class="n">Nin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ptp</span><span class="p">(</span><span class="n">inlets</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">Nin</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Detected inlets are not oriented along a principle axis&#39;</span><span class="p">)</span>
+        <span class="n">Nout</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ptp</span><span class="p">(</span><span class="n">outlets</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">Nout</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Detected outlets are not oriented along a principle axis&#39;</span><span class="p">)</span>
+        <span class="n">hull_in</span> <span class="o">=</span> <span class="n">ConvexHull</span><span class="p">(</span><span class="n">points</span><span class="o">=</span><span class="n">inlets</span><span class="p">[:,</span> <span class="n">Nin</span><span class="p">])</span>
+        <span class="n">hull_out</span> <span class="o">=</span> <span class="n">ConvexHull</span><span class="p">(</span><span class="n">points</span><span class="o">=</span><span class="n">outlets</span><span class="p">[:,</span> <span class="n">Nout</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">hull_in</span><span class="o">.</span><span class="n">volume</span> <span class="o">!=</span> <span class="n">hull_out</span><span class="o">.</span><span class="n">volume</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Inlet and outlet faces are different area&#39;</span><span class="p">)</span>
+        <span class="n">area</span> <span class="o">=</span> <span class="n">hull_in</span><span class="o">.</span><span class="n">volume</span>  <span class="c1"># In 2D: volume=area, area=perimeter</span>
+        <span class="k">return</span> <span class="n">area</span></div>
+
+<div class="viewcode-block" id="GenericTransport._get_domain_length"><a class="viewcode-back" href="../../../modules/algorithms/generic_transport.html#openpnm.algorithms.GenericTransport._get_domain_length">[docs]</a>    <span class="k">def</span> <span class="nf">_get_domain_length</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inlets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">outlets</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Determines the domain length relative to the inlets/outlets.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Attempting to estimate domain length...could be low if&#39;</span>
+               <span class="s1">&#39; boundary pores were not added&#39;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">prettify_logger_message</span><span class="p">(</span><span class="n">msg</span><span class="p">))</span>
+        <span class="n">inlets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_inlets</span><span class="p">()</span> <span class="k">if</span> <span class="n">inlets</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">inlets</span>
+        <span class="n">outlets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_outlets</span><span class="p">()</span> <span class="k">if</span> <span class="n">outlets</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">outlets</span>
+        <span class="n">inlets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="n">inlets</span><span class="p">]</span>
+        <span class="n">outlets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="n">outlets</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">iscoplanar</span><span class="p">(</span><span class="n">inlets</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Detected inlet pores are not coplanar&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">iscoplanar</span><span class="p">(</span><span class="n">outlets</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Detected inlet pores are not coplanar&#39;</span><span class="p">)</span>
+        <span class="n">tree</span> <span class="o">=</span> <span class="n">cKDTree</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">inlets</span><span class="p">)</span>
+        <span class="n">Ls</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">outlets</span><span class="p">)[</span><span class="mi">0</span><span class="p">]))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">Ls</span><span class="p">,</span> <span class="n">Ls</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;A unique value of length could not be found&#39;</span><span class="p">)</span>
+        <span class="n">length</span> <span class="o">=</span> <span class="n">Ls</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">length</span></div>
+
+    <span class="k">def</span> <span class="nf">set_variable_props</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable_props</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;merge&#39;</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method is useful for setting variable_props to the settings </span>
+<span class="sd">        dictionary of the target object. Variable_props and their dependent</span>
+<span class="sd">        properties get updated iteratively.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        variable_props : str, or List(str)</span>
+<span class="sd">            A single string or list of strings to be added as variable_props </span>
+<span class="sd">        mode : str, optional</span>
+<span class="sd">            Controls how the variable_props are applied. The default value is </span>
+<span class="sd">            &#39;merge&#39;. Options are:</span>
+
+<span class="sd">            ===========  =====================================================</span>
+<span class="sd">            mode         meaning</span>
+<span class="sd">            ===========  =====================================================</span>
+<span class="sd">            &#39;merge&#39;      Adds supplied variable_props to already existing list</span>
+<span class="sd">                         (if any), and prevents duplicates</span>
+<span class="sd">            &#39;overwrite&#39;  Deletes all exisitng variable_props and then adds </span>
+<span class="sd">                         the specified new ones</span>
+<span class="sd">            ===========  =====================================================</span>
+<span class="sd">            </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># If single string, make it a list</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">variable_props</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">variable_props</span> <span class="o">=</span> <span class="p">[</span><span class="n">variable_props</span><span class="p">]</span>
+        <span class="c1"># Handle mode</span>
+        <span class="n">mode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_mode</span><span class="p">(</span><span class="n">mode</span><span class="p">,</span> <span class="n">allowed</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;merge&#39;</span><span class="p">,</span> <span class="s1">&#39;overwrite&#39;</span><span class="p">],</span> <span class="n">single</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;merge&#39;</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;overwrite&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;variable_props&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># parse each propname and append to variable_props in settings</span>
+        <span class="k">for</span> <span class="n">variable_prop</span> <span class="ow">in</span> <span class="n">variable_props</span><span class="p">:</span>
+            <span class="n">variable_prop</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_prop</span><span class="p">(</span><span class="n">variable_prop</span><span class="p">,</span> <span class="s1">&#39;pore&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;variable_props&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">variable_prop</span><span class="p">)</span></div>
+        
 </pre></div>
 
               </div>

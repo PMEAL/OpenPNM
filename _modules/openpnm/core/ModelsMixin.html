@@ -429,6 +429,23 @@
 <span class="sd">    Physics do. By using a mixin class, all objects can inherit from Base</span>
 <span class="sd">    while the model functionality can be added only where needed.</span>
 
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The following table gives a brief overview of the methods that are</span>
+<span class="sd">    added to the object by this mixin.  In addition to these methods, a</span>
+<span class="sd">    ``models`` attribute is also added, which is a dictionary that</span>
+<span class="sd">    contains all of the models and their parameters.</span>
+
+<span class="sd">    +----------------------+--------------------------------------------------+</span>
+<span class="sd">    | Method or Attribute  | Functionality                                    |</span>
+<span class="sd">    +======================+==================================================+</span>
+<span class="sd">    | ``add_model``        | Add a given model and parameters to the object   |</span>
+<span class="sd">    +----------------------+--------------------------------------------------+</span>
+<span class="sd">    | ``regenerate_model`` | Runs the model(s) to recalculate data            |</span>
+<span class="sd">    +----------------------+--------------------------------------------------+</span>
+<span class="sd">    | ``remove_model``     | Removes specified model as well as it&#39;s data     |</span>
+<span class="sd">    +----------------------+--------------------------------------------------+</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="ModelsMixin.add_model"><a class="viewcode-back" href="../../../modules/core/modelsmixin.html#openpnm.core.ModelsMixin.add_model">[docs]</a>    <span class="k">def</span> <span class="nf">add_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">propname</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">regen_mode</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
