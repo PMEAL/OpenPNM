@@ -91,7 +91,7 @@ class ReactiveTransport(GenericTransport):
             return
         # Remove item from label dictionary
         for item in self.settings['sources']:
-            self.pop(item)
+            self.pop(item, None)
         # Reset the settings dict
         self.settings['sources'] = []
 
@@ -131,7 +131,11 @@ class ReactiveTransport(GenericTransport):
         locs_BC = np.isfinite(self['pore.bc_value']) + np.isfinite(self['pore.bc_rate'])
         if (locs & locs_BC).any():
             raise Exception("BCs present in given pores, can't assign source term")
-        self[propname] = False
+        if mode == 'overwrite':
+            self[propname] = False
+        if mode == 'add':
+            if propname not in self.keys():
+                self[propname] = False
         self[propname][locs] = True
         # Check if propname already in source term list
         if propname not in self.settings['sources']:
@@ -149,9 +153,11 @@ class ReactiveTransport(GenericTransport):
             The pore indices where the source term should be applied.
 
         """
-        locs = self.tomask(pores=pores or self.Ps)
-        self.set_label(propname, pores=locs, mode='remove')
-        # TODO: if pores=None: remove the label -> reuse in reset method
+        propname = self._parse_prop(propname, 'pore')
+        if pores is None:
+            self.pop(propname, None)
+        else:
+            self[propname][pores] = False
 
     def _update_iterative_props(self):
         """r
