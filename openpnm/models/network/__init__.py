@@ -9,5 +9,5 @@ networks
 
 """
 
-from .topology import *
-from .health import *
+from ._topology import *
+from ._health import *
