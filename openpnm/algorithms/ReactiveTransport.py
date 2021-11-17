@@ -131,7 +131,8 @@ class ReactiveTransport(GenericTransport):
         locs_BC = np.isfinite(self['pore.bc_value']) + np.isfinite(self['pore.bc_rate'])
         if (locs & locs_BC).any():
             raise Exception("BCs present in given pores, can't assign source term")
-        self.set_label(propname, pores=locs, mode=mode)
+        self[propname] = False
+        self[propname][locs] = True
         # Check if propname already in source term list
         if propname not in self.settings['sources']:
             self.settings['sources'].append(propname)
@@ -195,7 +196,7 @@ class ReactiveTransport(GenericTransport):
         phase = self.project[self.settings.phase]
         for item in self.settings['sources']:
             # Fetch linearized values of the source term
-            Ps = self.pores(item)
+            Ps = self[item]
             S1, S2 = [phase[f"{item}.{Si}"] for Si in ["S1", "S2"]]
             # Modify A and b: diag(A) += -S1, b += S2
             diag = self.A.diagonal()
