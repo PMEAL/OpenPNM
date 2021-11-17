@@ -708,16 +708,41 @@ class GenericTransport(GenericAlgorithm):
         length = Ls[0]
         return length
 
-    def set_variable_props(self, variable_props=[]):
+    def set_variable_props(self, variable_props, mode='merge'):
         r"""
-        This method is useful for setting a list of variable_props to the
-        settings dictionary of the target object.
+        This method is useful for setting variable_props to the settings 
+        dictionary of the target object. Variable_props and their dependent
+        properties get updated iteratively.
         
         Parameters
         ----------
-        variable_props : list
-            A list of the variable_props to be added to the settings
+        variable_props : str, or List(str)
+            A single string or list of strings to be added as variable_props 
+        mode : str, optional
+            Controls how the variable_props are applied. The default value is 
+            'merge'. Options are:
+
+            ===========  =====================================================
+            mode         meaning
+            ===========  =====================================================
+            'merge'      Adds supplied variable_props to already existing list
+                         (if any), and prevents duplicates
+            'overwrite'  Deletes all exisitng variable_props and then adds 
+                         the specified new ones
+            ===========  =====================================================
             
         """
-        self.settings['variable_props'] = variable_props
+        # If single string, make it a list
+        if isinstance(variable_props, str):
+            variable_props = [variable_props]
+        # Handle mode
+        mode = self._parse_mode(mode, allowed=['merge', 'overwrite'], single=True)
+        if mode == 'merge':
+            pass
+        elif mode == 'overwrite':
+            self.settings['variable_props'] = []
+        # parse each propname and append to variable_props in settings
+        for variable_prop in variable_props:
+            variable_prop = self._parse_prop(variable_prop, 'pore')
+            self.settings['variable_props'].append(variable_prop)
         
