@@ -254,23 +254,6 @@ class ModelsMixin:
     Physics do. By using a mixin class, all objects can inherit from Base
     while the model functionality can be added only where needed.
 
-    Notes
-    -----
-    The following table gives a brief overview of the methods that are
-    added to the object by this mixin.  In addition to these methods, a
-    ``models`` attribute is also added, which is a dictionary that
-    contains all of the models and their parameters.
-
-    +----------------------+--------------------------------------------------+
-    | Method or Attribute  | Functionality                                    |
-    +======================+==================================================+
-    | ``add_model``        | Add a given model and parameters to the object   |
-    +----------------------+--------------------------------------------------+
-    | ``regenerate_model`` | Runs the model(s) to recalculate data            |
-    +----------------------+--------------------------------------------------+
-    | ``remove_model``     | Removes specified model as well as it's data     |
-    +----------------------+--------------------------------------------------+
-
     """
 
     def add_model(self, propname, model, regen_mode='', **kwargs):

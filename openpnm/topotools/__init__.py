@@ -42,6 +42,8 @@ from .topotools import to_cyl
 from .topotools import to_sph
 from .topotools import trim
 from .topotools import trim_occluded_throats
+from .topotools import get_domain_area
+from .topotools import get_domain_length
 
 from .perctools import ispercolating
 from .perctools import remove_isolated_clusters

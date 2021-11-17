@@ -67,7 +67,7 @@ setup(
         'openpnm.models.phases',
         'openpnm.models.physics',
         'openpnm.algorithms',
-        'openpnm.algorithms.metrics',
+        'openpnm.metrics',
         'openpnm.topotools',
         'openpnm.topotools.generators',
         'openpnm.materials',

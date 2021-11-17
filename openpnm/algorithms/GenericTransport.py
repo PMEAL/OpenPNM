@@ -746,3 +746,4 @@ class GenericTransport(GenericAlgorithm):
             variable_prop = self._parse_prop(variable_prop, 'pore')
             self.settings['variable_props'].append(variable_prop)
         
+        
