@@ -1,9 +1,8 @@
 codecov
 jupyter
 nbval
+porespy
 pytest
 pytest-cache
 pytest-codestyle
 pytest-cov
-nbval
-porespy

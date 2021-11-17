@@ -1,0 +1,24 @@
+name: Style Check
+
+on: [pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0              # otherwise, you will failed to push refs to dest repo
+
+      - name: Find changed files
+        run:
+          echo "_CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }} -- '*.py' | tr -s '\n' ' ' )" >> ${GITHUB_ENV}
+
+      - name: wemake-python-styleguide
+        uses: wemake-services/wemake-python-styleguide@0.15.3
+        with:
+          reporter: 'github-pr-review'
+          path: "${{ env._CHANGED_FILES }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

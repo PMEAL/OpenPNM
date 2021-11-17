@@ -2,8 +2,10 @@ import numpy as np
 import openpnm as op
 from openpnm.phases import mixtures
 from numpy.testing import assert_allclose
+import pytest
 
 
+@pytest.mark.skip(reason="Needs to be refactored using Integrators")
 class TransientMultiphysicsNernstPlanckSolverTest:
 
     def setup_class(self):
@@ -110,8 +112,8 @@ class TransientMultiphysicsNernstPlanckSolverTest:
 
         mnp = op.algorithms.TransientNernstPlanckMultiphysicsSolver
         self.mnp = mnp(network=self.net, phase=self.sw, settings=setts2)
-        self.mnp.settings.update({'potential_field': self.p.name,
-                                  'ions': [self.eA.name, self.eB.name]})
+        self.mnp.settings._update({'potential_field': self.p.name,
+                                   'ions': [self.eA.name, self.eB.name]})
 
     def test_run_algs(self):
         self.sf.run()

@@ -71,8 +71,6 @@ def test_open_air_diffusivity():
 #    Diff.run()
 #    Diff.domain_area = 25
 #    Diff.domain_length = 5
-#    Diff_deff = Diff.calc_effective_diffusivity()/Dab
-#    assert np.round(Diff_deff, 3) == 1
 
 
 def test_Darcy_alg():
@@ -118,4 +116,3 @@ def test_Darcy_alg():
 #    assert a == b
 #    Q = -alg2.rate(inlets)
 #    K = Q*air['pore.viscosity'][0]*divs[2]*Lc/(divs[0]*divs[1]*Lc**2*(P_in-P_out))
-#    K_alg = alg2.calc_eff_permeability()

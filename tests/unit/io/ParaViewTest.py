@@ -3,8 +3,10 @@ import sys
 from os.path import realpath
 from pathlib import Path
 import openpnm as op
+import pytest
 
 
+@pytest.mark.skip(reason="Installing paraview takes forever!")
 class ParaViewTest:
 
     def setup_class(self):

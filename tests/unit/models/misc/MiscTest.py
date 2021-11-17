@@ -288,6 +288,17 @@ class MiscTest:
                       model=mods.basic_math.invert)
         assert net['pore.entry_pressure'][0] == 0.5
 
+    def test_match_histograms(self):
+        net = op.network.Cubic(shape=[5, 5, 5])
+        c = [0.1, 0.3, 0.8, 1.2]
+        h = [5, 20, 20, 100]
+        a = mods.match_histogram(target=net, bin_centers=c, bin_heights=h,
+                                 element='pore')
+        assert np.all(np.unique(a) == c)
+        vals, nums = np.unique(a, return_counts=True)
+        assert nums[3] == np.amax(nums)
+        assert nums[0] == np.amin(nums)
+
 
 if __name__ == '__main__':
 

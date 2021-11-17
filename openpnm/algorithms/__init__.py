@@ -9,14 +9,13 @@ on pore networks.
 
 """
 
-from .GenericAlgorithm import GenericAlgorithm
-from .GenericTransport import GenericTransport
+from .GenericAlgorithm import GenericAlgorithm, GenericAlgorithmSettings
+from .GenericTransport import GenericTransport, GenericTransportSettings
 
-from .ReactiveTransport import ReactiveTransport
+from .ReactiveTransport import ReactiveTransport, ReactiveTransportSettings
 from .TransientReactiveTransport import TransientReactiveTransport
 
 from .StokesFlow import StokesFlow
-from .NonNewtonianStokesFlow import NonNewtonianStokesFlow
 
 from .FickianDiffusion import FickianDiffusion
 from .TransientFickianDiffusion import TransientFickianDiffusion
@@ -36,13 +35,3 @@ from .Porosimetry import Porosimetry
 
 from .IonicConduction import IonicConduction
 from .TransientIonicConduction import TransientIonicConduction
-
-from .NernstPlanck import NernstPlanck
-from .TransientNernstPlanck import TransientNernstPlanck
-
-from .NernstPlanckMultiphysicsSolver import NernstPlanckMultiphysicsSolver
-from .TransientNernstPlanckMultiphysicsSolver import (
-    TransientNernstPlanckMultiphysicsSolver
-)
-
-from . import metrics
