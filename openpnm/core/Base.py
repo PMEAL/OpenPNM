@@ -50,62 +50,8 @@ class Base(dict):
     including Networks, Geometries, Phases, Physics, and Algorithms.  This
     class is a subclass of the standard ``dict`` so has the usual methods such
     as ``pop`` and ``keys``, and has extra methods for working specifically
-    with OpenPNM data.  These are outlined briefly in the following table:
-
-    +----------------------+--------------------------------------------------+
-    | Method or Attribute  | Functionality                                    |
-    +======================+==================================================+
-    | ``props``            | List of keys containing numerical arrays         |
-    +----------------------+--------------------------------------------------+
-    | ``labels``           | List of key containing boolean arrays            |
-    +----------------------+--------------------------------------------------+
-    | ``pores``            | Returns pore / throat indices that have given    |
-    |                      | labels                                           |
-    | ``throats``          |                                                  |
-    +----------------------+--------------------------------------------------+
-    | ``Ps``, ``Ts``       | Indices for ALL pores and throats on object      |
-    +----------------------+--------------------------------------------------+
-    | ``num_pores`` ,      | Counts the number of pores or throats with a     |
-    |                      | given label                                      |
-    | ``num_throats``      |                                                  |
-    +----------------------+--------------------------------------------------+
-    | ``Np``, ``Nt``       | Total number of pores and throats on the object  |
-    +----------------------+--------------------------------------------------+
-    | ``tomask``           | Converts a list of pore or throat indices to a   |
-    |                      | boolean mask                                     |
-    +----------------------+--------------------------------------------------+
-    | ``toindices``        | Converts a boolean mask to pore or throat indices|
-    +----------------------+--------------------------------------------------+
-    | ``map_pores`` ,      | Given indices on object B returns corresponding  |
-    |                      | indices on object A                              |
-    | ``map_throats``      |                                                  |
-    +----------------------+--------------------------------------------------+
-    | ``interleave_data``  | Fetches data from associated objects into a      |
-    |                      | single array                                     |
-    +----------------------+--------------------------------------------------+
-    | ``interpolate_data`` | Given pore or throat data, interpolate the other |
-    +----------------------+--------------------------------------------------+
-    | ``filter_by_label``  | Given indices find those with specific labels    |
-    +----------------------+--------------------------------------------------+
-    | ``show_hist``        | Method for quickly plotting histograms of data   |
-    +----------------------+--------------------------------------------------+
-    | ``check_data_health``| Ensures all data arrays are valid and complete   |
-    +----------------------+--------------------------------------------------+
-
-
-    In addition to the above methods, there are a few attributes which provide
-    access to useful items:
-
-    +----------------+--------------------------------------------------------+
-    | Attribute      | Functionality                                          |
-    +================+========================================================+
-    | ``name``       | The string name of the object, unique to each Project  |
-    +----------------+--------------------------------------------------------+
-    | ``settings``   | A dictionary containing various setting values         |
-    +----------------+--------------------------------------------------------+
-    | ``project``    | A handle to the Project containing the object          |
-    +----------------+--------------------------------------------------------+
-
+    with OpenPNM data.
+    
     """
 
     def __new__(cls, *args, **kwargs):

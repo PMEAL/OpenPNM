@@ -34,34 +34,6 @@ between 0 and 0.1.  Throat diameters are taken as half the size of the smaller
 of it's two neighbors.  All other properties are calculated using the geometry
 of spheres and throats.
 
-The table belows shows the specific models used on ``_StickAndBall``:
-
-+----+----------------------+------------------+--------------------------+
-| #  | Property Name        | Parameter        | Value                    |
-+====+======================+==================+==========================+
-| 1  | pore.seed            | model:           | random                   |
-+----+----------------------+------------------+--------------------------+
-| 2  | pore.max_size        | model:           | largest_sphere           |
-+----+----------------------+------------------+--------------------------+
-| 3  | pore.diameter        | model:           | product                  |
-+----+----------------------+------------------+--------------------------+
-| 4  | pore.area            | model:           | sphere                   |
-+----+----------------------+------------------+--------------------------+
-| 5  | pore.volume          | model:           | sphere                   |
-+----+----------------------+------------------+--------------------------+
-| 6  | throat.max_size      | model:           | from_neighbor_pores      |
-+----+----------------------+------------------+--------------------------+
-| 7  | throat.diameter      | model:           | scaled                   |
-+----+----------------------+------------------+--------------------------+
-| 8  | throat.length        | model:           | piecewise                |
-+----+----------------------+------------------+--------------------------+
-| 9  | throat.surface_area  | model:           | cylinder                 |
-+----+----------------------+------------------+--------------------------+
-| 10 | throat.volume        | model:           | cylinder                 |
-+----+----------------------+------------------+--------------------------+
-| 11 | throat.area          | model:           | cylinder                 |
-+----+----------------------+------------------+--------------------------+
-
 ----
 
 **Customizing a Preconfigured Geometry Instance**

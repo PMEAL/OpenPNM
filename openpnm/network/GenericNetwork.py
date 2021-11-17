@@ -36,54 +36,6 @@ class GenericNetwork(ParamMixin, Base, ModelsMixin, LegacyMixin, LabelMixin):
     conns : array_like
         An Nt-by-2 array of [head, tail] connections between pores.
 
-    Notes
-    -----
-    The GenericNetwork class houses a number of methods used for querying and
-    managing the network's spatial and topological information.  The following
-    table gives a very short overview of the methods added those already found
-    on the ``openpnm.core.Base`` class.
-
-    +-----------------------------+-------------------------------------------+
-    | Method or Attribute         | Functionality                             |
-    +=============================+===========================================+
-    | ``create_adjacency_matrix`` | Create an adjacency matrix using given    |
-    |                             | weights in a specified format             |
-    +-----------------------------+-------------------------------------------+
-    | ``create_incidence_matrix`` | Create an incidence matrix using given    |
-    |                             | weights in a specified format             |
-    +-----------------------------+-------------------------------------------+
-    | ``get_adjacency_matrix``    | Retrieve an existing adjacency matrix in  |
-    |                             | the specified format (from ``am``)        |
-    +-----------------------------+-------------------------------------------+
-    | ``get_incidence_matrix``    | Retrieve an existing incidence matrix in  |
-    |                             | the specified format (from ``im``)        |
-    +-----------------------------+-------------------------------------------+
-    | ``am``                      | Returns the adjacency matrix in COO format|
-    +-----------------------------+-------------------------------------------+
-    | ``im``                      | Returns the incidence matrix in COO format|
-    +-----------------------------+-------------------------------------------+
-    | ``find_neighbor_pores``     | For a given set of pores, find all        |
-    |                             | neighboring pores                         |
-    +-----------------------------+-------------------------------------------+
-    | ``find_neighbor_throats``   | For a given set of pores, find all        |
-    |                             | neighboring throats                       |
-    +-----------------------------+-------------------------------------------+
-    | ``find_connecting_throat``  | For each pair of throats find the pores   |
-    |                             | they connect                              |
-    +-----------------------------+-------------------------------------------+
-    | ``find_connected_pores``    | For each throat, find the pores which it  |
-    |                             | connects                                  |
-    +-----------------------------+-------------------------------------------+
-    | ``num_neighbors``           | For a given set of pores find the number  |
-    |                             | of neighbors for each                     |
-    +-----------------------------+-------------------------------------------+
-    | ``find_nearby_pores``       | For a given set of pores, find pores that |
-    |                             | are within a certain distance             |
-    +-----------------------------+-------------------------------------------+
-    | ``check_network_health``    | Check the topology for any problems such  |
-    |                             | as isolated pores                         |
-    +-----------------------------+-------------------------------------------+
-
     Examples
     --------
     >>> import openpnm as op
