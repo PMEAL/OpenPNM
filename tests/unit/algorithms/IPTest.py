@@ -57,7 +57,7 @@ class IPTest:
         alg.set_inlets(pores=self.net.pores("top"))
         alg.run()
         alg.apply_trapping(outlets=self.net.pores("bottom"))
-        assert "pore.trapped" in alg.labels()
+        assert "pore.trapped" in alg.keys()
 
     def test_plot_intrusion_curve(self):
         alg = op.algorithms.InvasionPercolation(network=self.net, phase=self.water)

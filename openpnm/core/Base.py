@@ -51,7 +51,7 @@ class Base(dict):
     class is a subclass of the standard ``dict`` so has the usual methods such
     as ``pop`` and ``keys``, and has extra methods for working specifically
     with OpenPNM data.
-    
+
     """
 
     def __new__(cls, *args, **kwargs):
@@ -833,6 +833,47 @@ class Base(dict):
             P1, P2 = self['pore.' + prop][self.network.conns].T
             T = self.interpolate_data(propname='pore.'+prop, mode=mode)
         return np.vstack((P1, T, P2)).T
+
+    def _count(self, element=None):
+        r"""
+        Returns a dictionary containing the number of pores and throats in
+        the network, stored under the keys 'pore' or 'throat'
+
+        Parameters
+        ----------
+        element : string, optional
+            Can be either 'pore' , 'pores', 'throat' or 'throats', which
+            specifies which count to return.
+
+        Returns
+        -------
+        A dictionary containing the number of pores and throats under the
+        'pore' and 'throat' key respectively.
+
+        See Also
+        --------
+        num_pores
+        num_throats
+
+        Notes
+        -----
+        The ability to send plurals is useful for some types of 'programmatic'
+        access.  For instance, the standard argument for locations is pores
+        or throats.  If these are bundled up in a **kwargs dict then you can
+        just use the dict key in count() without removing the 's'.
+
+        Examples
+        --------
+        >>> import openpnm as op
+        >>> pn = op.network.Cubic(shape=[5, 5, 5])
+        >>> pn._count('pore')
+        125
+        >>> pn._count('throat')
+        300
+        """
+        element = self._parse_element(element=element, single=True)
+        temp = np.size(self.__getitem__(element+'.all'))
+        return temp
 
     def show_hist(self,
                   props=['pore.diameter', 'throat.diameter', 'throat.length'],
