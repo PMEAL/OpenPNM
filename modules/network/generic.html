@@ -26,9 +26,6 @@
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/blank.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
     
   <link rel="preload" as="script" href="../../_static/js/index.be7d3bbb2ef33a8344ce.js">
 
@@ -97,7 +94,7 @@
 </li>
 
 <li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="../../examples.html">
+ <a class="reference internal nav-link" href="../../examples/examples.html">
   Examples
  </a>
 </li>
@@ -616,7 +613,7 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="openpnm.network.GenericNetwork">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">GenericNetwork</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/network/GenericNetwork.html#GenericNetwork"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.network.GenericNetwork" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.core.Base.ParamMixin</span></code>, <a class="reference internal" href="../core/base.html#openpnm.core.Base" title="openpnm.core.Base.Base"><code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.core.Base.Base</span></code></a>, <a class="reference internal" href="../core/modelsmixin.html#openpnm.core.ModelsMixin" title="openpnm.core.ModelsMixin.ModelsMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.core.ModelsMixin.ModelsMixin</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.core.Base.LegacyMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.core.Base.LabelMixin</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.core.Mixins.ParamMixin</span></code>, <a class="reference internal" href="../core/base.html#openpnm.core.Base" title="openpnm.core.Base.Base"><code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.core.Base.Base</span></code></a>, <a class="reference internal" href="../core/modelsmixin.html#openpnm.core.ModelsMixin" title="openpnm.core.ModelsMixin.ModelsMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.core.ModelsMixin.ModelsMixin</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.core.Mixins.LegacyMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.core.Mixins.LabelMixin</span></code></p>
 <p>This generic class contains the main functionality used by all networks</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -626,74 +623,6 @@
 </ul>
 </dd>
 </dl>
-<p class="rubric">Notes</p>
-<p>The GenericNetwork class houses a number of methods used for querying and
-managing the network’s spatial and topological information.  The following
-table gives a very short overview of the methods added those already found
-on the <code class="docutils literal notranslate"><span class="pre">openpnm.core.Base</span></code> class.</p>
-<table class="table">
-<colgroup>
-<col style="width: 40%" />
-<col style="width: 60%" />
-</colgroup>
-<thead>
-<tr class="row-odd"><th class="head"><p>Method or Attribute</p></th>
-<th class="head"><p>Functionality</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">create_adjacency_matrix</span></code></p></td>
-<td><p>Create an adjacency matrix using given
-weights in a specified format</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">create_incidence_matrix</span></code></p></td>
-<td><p>Create an incidence matrix using given
-weights in a specified format</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">get_adjacency_matrix</span></code></p></td>
-<td><p>Retrieve an existing adjacency matrix in
-the specified format (from <code class="docutils literal notranslate"><span class="pre">am</span></code>)</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">get_incidence_matrix</span></code></p></td>
-<td><p>Retrieve an existing incidence matrix in
-the specified format (from <code class="docutils literal notranslate"><span class="pre">im</span></code>)</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">am</span></code></p></td>
-<td><p>Returns the adjacency matrix in COO format</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">im</span></code></p></td>
-<td><p>Returns the incidence matrix in COO format</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">find_neighbor_pores</span></code></p></td>
-<td><p>For a given set of pores, find all
-neighboring pores</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">find_neighbor_throats</span></code></p></td>
-<td><p>For a given set of pores, find all
-neighboring throats</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">find_connecting_throat</span></code></p></td>
-<td><p>For each pair of throats find the pores
-they connect</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">find_connected_pores</span></code></p></td>
-<td><p>For each throat, find the pores which it
-connects</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">num_neighbors</span></code></p></td>
-<td><p>For a given set of pores find the number
-of neighbors for each</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">find_nearby_pores</span></code></p></td>
-<td><p>For a given set of pores, find pores that
-are within a certain distance</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">check_network_health</span></code></p></td>
-<td><p>Check the topology for any problems such
-as isolated pores</p></td>
-</tr>
-</tbody>
-</table>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
 </pre></div>

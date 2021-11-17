@@ -25,9 +25,6 @@
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/css/blank.css" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" />
-    <link rel="stylesheet" type="text/css" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
-    <link rel="stylesheet" type="text/css" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
     
   <link rel="preload" as="script" href="_static/js/index.be7d3bbb2ef33a8344ce.js">
 
@@ -94,7 +91,7 @@
 </li>
 
 <li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="examples.html">
+ <a class="reference internal nav-link" href="examples/examples.html">
   Examples
  </a>
 </li>
@@ -210,15 +207,11 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/algorithms/generic_transport.html#openpnm.algorithms.GenericTransport._apply_BCs">_apply_BCs() (GenericTransport method)</a>
 </li>
-      <li><a href="modules/algorithms/generic_transport.html#openpnm.algorithms.GenericTransport._build_A">_build_A() (GenericTransport method)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/algorithms/generic_transport.html#openpnm.algorithms.GenericTransport._build_A">_build_A() (GenericTransport method)</a>
+</li>
       <li><a href="modules/algorithms/generic_transport.html#openpnm.algorithms.GenericTransport._build_b">_build_b() (GenericTransport method)</a>
-</li>
-      <li><a href="modules/algorithms/generic_transport.html#openpnm.algorithms.GenericTransport._get_domain_area">_get_domain_area() (GenericTransport method)</a>
-</li>
-      <li><a href="modules/algorithms/generic_transport.html#openpnm.algorithms.GenericTransport._get_domain_length">_get_domain_length() (GenericTransport method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -462,7 +455,7 @@
 </li>
       <li><a href="modules/utils/misc.html#openpnm.utils.flat_list">flat_list() (in module openpnm.utils)</a>
 </li>
-      <li><a href="modules/algorithms/metrics/formation_factor.html#openpnm.algorithms.metrics.FormationFactor">FormationFactor (class in openpnm.algorithms.metrics)</a>
+      <li><a href="modules/algorithms/metrics/formation_factor.html#openpnm.metrics.FormationFactor">FormationFactor (class in openpnm.metrics)</a>
 </li>
       <li><a href="modules/algorithms/fourier_conduction.html#openpnm.algorithms.FourierConduction">FourierConduction (class in openpnm.algorithms)</a>
 </li>
@@ -514,8 +507,6 @@
         <li><a href="modules/algorithms/ordinary_percolation.html#openpnm.algorithms.OrdinaryPercolation.get_intrusion_data">(OrdinaryPercolation method)</a>
 </li>
       </ul></li>
-      <li><a href="modules/algorithms/metrics/relative_permeability.html#openpnm.algorithms.metrics.RelativePermeability.get_Kr_data">get_Kr_data() (RelativePermeability method)</a>
-</li>
       <li><a href="modules/algorithms/ordinary_percolation.html#openpnm.algorithms.OrdinaryPercolation.get_percolation_threshold">get_percolation_threshold() (OrdinaryPercolation method)</a>
 </li>
   </ul></td>
@@ -620,7 +611,7 @@
 </li>
       <li><a href="modules/phases/mercury.html#openpnm.phases.Mercury">Mercury (class in openpnm.phases)</a>
 </li>
-      <li><a href="modules/algorithms/metrics/mercury_intrusion.html#openpnm.algorithms.metrics.MercuryIntrusion">MercuryIntrusion (class in openpnm.algorithms.metrics)</a>
+      <li><a href="modules/algorithms/metrics/mercury_intrusion.html#openpnm.metrics.MercuryIntrusion">MercuryIntrusion (class in openpnm.metrics)</a>
 </li>
       <li><a href="modules/algorithms/mixed_percolation.html#openpnm.algorithms.MixedInvasionPercolation">MixedInvasionPercolation (class in openpnm.algorithms)</a>
 </li>
@@ -634,8 +625,6 @@
       <ul>
         <li><a href="modules/algorithms/index.html#module-openpnm.algorithms">openpnm.algorithms</a>
 </li>
-        <li><a href="modules/algorithms/metrics/index.html#module-openpnm.algorithms.metrics">openpnm.algorithms.metrics</a>
-</li>
         <li><a href="modules/core/index.html#module-openpnm.core">openpnm.core</a>
 </li>
         <li><a href="modules/geometry/index.html#module-openpnm.geometry">openpnm.geometry</a>
@@ -643,6 +632,8 @@
         <li><a href="modules/io/index.html#module-openpnm.io">openpnm.io</a>
 </li>
         <li><a href="modules/materials/index.html#module-openpnm.materials">openpnm.materials</a>
+</li>
+        <li><a href="modules/algorithms/metrics/index.html#module-openpnm.metrics">openpnm.metrics</a>
 </li>
         <li><a href="modules/models/index.html#module-openpnm.models">openpnm.models</a>
 </li>
@@ -771,13 +762,6 @@
 </li>
       </ul></li>
       <li>
-    openpnm.algorithms.metrics
-
-      <ul>
-        <li><a href="modules/algorithms/metrics/index.html#module-openpnm.algorithms.metrics">module</a>
-</li>
-      </ul></li>
-      <li>
     openpnm.core
 
       <ul>
@@ -803,6 +787,13 @@
 
       <ul>
         <li><a href="modules/materials/index.html#module-openpnm.materials">module</a>
+</li>
+      </ul></li>
+      <li>
+    openpnm.metrics
+
+      <ul>
+        <li><a href="modules/algorithms/metrics/index.html#module-openpnm.metrics">module</a>
 </li>
       </ul></li>
       <li>
@@ -1114,8 +1105,6 @@
         <li><a href="modules/algorithms/ordinary_percolation.html#openpnm.algorithms.OrdinaryPercolation.plot_intrusion_curve">(OrdinaryPercolation method)</a>
 </li>
       </ul></li>
-      <li><a href="modules/algorithms/metrics/relative_permeability.html#openpnm.algorithms.metrics.RelativePermeability.plot_Kr_curves">plot_Kr_curves() (RelativePermeability method)</a>
-</li>
       <li><a href="modules/utils/project.html#openpnm.utils.Project.pop">pop() (Project method)</a>
 </li>
       <li><a href="modules/models/geometry.html#openpnm.models.geometry.throat_vector.pore_to_pore">pore_to_pore() (in module openpnm.models.geometry.throat_vector)</a>
@@ -1168,8 +1157,6 @@
       </ul></li>
       <li><a href="modules/core/modelsmixin.html#openpnm.core.ModelsMixin.regenerate_models">regenerate_models() (ModelsMixin method)</a>
 </li>
-      <li><a href="modules/algorithms/metrics/relative_permeability.html#openpnm.algorithms.metrics.RelativePermeability">RelativePermeability (class in openpnm.algorithms.metrics)</a>
-</li>
       <li><a href="modules/utils/project.html#openpnm.utils.Project.remove">remove() (Project method)</a>
 </li>
       <li><a href="modules/algorithms/advection_diffusion.html#openpnm.algorithms.AdvectionDiffusion.remove_BC">remove_BC() (AdvectionDiffusion method)</a>
@@ -1204,7 +1191,7 @@
         <li><a href="modules/algorithms/porosimetry.html#openpnm.algorithms.Porosimetry.results">(Porosimetry method)</a>
 </li>
       </ul></li>
-      <li><a href="modules/algorithms/metrics/formation_factor.html#openpnm.algorithms.metrics.FormationFactor.run">run() (FormationFactor method)</a>
+      <li><a href="modules/algorithms/metrics/formation_factor.html#openpnm.metrics.FormationFactor.run">run() (FormationFactor method)</a>
 
       <ul>
         <li><a href="modules/algorithms/invasion_percolation.html#openpnm.algorithms.InvasionPercolation.run">(InvasionPercolation method)</a>
@@ -1214,8 +1201,6 @@
         <li><a href="modules/algorithms/ordinary_percolation.html#openpnm.algorithms.OrdinaryPercolation.run">(OrdinaryPercolation method)</a>
 </li>
         <li><a href="modules/algorithms/porosimetry.html#openpnm.algorithms.Porosimetry.run">(Porosimetry method)</a>
-</li>
-        <li><a href="modules/algorithms/metrics/relative_permeability.html#openpnm.algorithms.metrics.RelativePermeability.run">(RelativePermeability method)</a>
 </li>
         <li><a href="modules/algorithms/transient_reactive_transport.html#openpnm.algorithms.TransientReactiveTransport.run">(TransientReactiveTransport method)</a>
 </li>
@@ -1238,31 +1223,23 @@
       </ul></li>
       <li><a href="modules/utils/workspace.html#openpnm.utils.Workspace.save_workspace">save_workspace() (Workspace method)</a>
 </li>
-      <li><a href="modules/algorithms/metrics/formation_factor.html#openpnm.algorithms.metrics.FormationFactor.set_area">set_area() (FormationFactor method)</a>
-</li>
       <li><a href="modules/physics/generic_physics.html#openpnm.physics.GenericPhysics.set_geometry">set_geometry() (GenericPhysics method)</a>
 </li>
-      <li><a href="modules/algorithms/metrics/formation_factor.html#openpnm.algorithms.metrics.FormationFactor.set_inlets">set_inlets() (FormationFactor method)</a>
+      <li><a href="modules/algorithms/invasion_percolation.html#openpnm.algorithms.InvasionPercolation.set_inlets">set_inlets() (InvasionPercolation method)</a>
 
       <ul>
-        <li><a href="modules/algorithms/invasion_percolation.html#openpnm.algorithms.InvasionPercolation.set_inlets">(InvasionPercolation method)</a>
-</li>
         <li><a href="modules/algorithms/mixed_percolation.html#openpnm.algorithms.MixedInvasionPercolation.set_inlets">(MixedInvasionPercolation method)</a>
 </li>
         <li><a href="modules/algorithms/ordinary_percolation.html#openpnm.algorithms.OrdinaryPercolation.set_inlets">(OrdinaryPercolation method)</a>
 </li>
       </ul></li>
-      <li><a href="modules/algorithms/metrics/formation_factor.html#openpnm.algorithms.metrics.FormationFactor.set_length">set_length() (FormationFactor method)</a>
-</li>
       <li><a href="modules/core/subdomain.html#openpnm.core.Subdomain.set_locations">set_locations() (Subdomain method)</a>
 </li>
       <li><a href="modules/algorithms/advection_diffusion.html#openpnm.algorithms.AdvectionDiffusion.set_outflow_BC">set_outflow_BC() (AdvectionDiffusion method)</a>
 </li>
-      <li><a href="modules/algorithms/metrics/formation_factor.html#openpnm.algorithms.metrics.FormationFactor.set_outlets">set_outlets() (FormationFactor method)</a>
+      <li><a href="modules/algorithms/mixed_percolation.html#openpnm.algorithms.MixedInvasionPercolation.set_outlets">set_outlets() (MixedInvasionPercolation method)</a>
 
       <ul>
-        <li><a href="modules/algorithms/mixed_percolation.html#openpnm.algorithms.MixedInvasionPercolation.set_outlets">(MixedInvasionPercolation method)</a>
-</li>
         <li><a href="modules/algorithms/ordinary_percolation.html#openpnm.algorithms.OrdinaryPercolation.set_outlets">(OrdinaryPercolation method)</a>
 </li>
       </ul></li>
@@ -1278,10 +1255,10 @@
         <li><a href="modules/algorithms/ordinary_percolation.html#openpnm.algorithms.OrdinaryPercolation.set_residual">(OrdinaryPercolation method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/algorithms/reactive_transport.html#openpnm.algorithms.ReactiveTransport.set_source">set_source() (ReactiveTransport method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/algorithms/generic_transport.html#openpnm.algorithms.GenericTransport.set_value_BC">set_value_BC() (GenericTransport method)</a>
 </li>
       <li><a href="modules/utils/misc.html#openpnm.utils.SettingsDict">SettingsDict (class in openpnm.utils)</a>
@@ -1334,11 +1311,11 @@
 </li>
       <li><a href="modules/io/dict.html#openpnm.io.Dict.to_dict">to_dict() (Dict class method)</a>
 </li>
-      <li><a href="modules/core/base.html#openpnm.core.Base.to_global">to_global() (Base method)</a>
+      <li><a href="modules/core/subdomain.html#openpnm.core.Subdomain.to_global">to_global() (Subdomain method)</a>
 </li>
       <li><a href="modules/core/base.html#openpnm.core.Base.to_indices">to_indices() (Base method)</a>
 </li>
-      <li><a href="modules/core/base.html#openpnm.core.Base.to_local">to_local() (Base method)</a>
+      <li><a href="modules/core/subdomain.html#openpnm.core.Subdomain.to_local">to_local() (Subdomain method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>

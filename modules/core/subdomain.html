@@ -26,9 +26,6 @@
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/blank.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
     
   <link rel="preload" as="script" href="../../_static/js/index.be7d3bbb2ef33a8344ce.js">
 
@@ -97,7 +94,7 @@
 </li>
 
 <li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="../../examples.html">
+ <a class="reference internal nav-link" href="../../examples/examples.html">
   Examples
  </a>
 </li>
@@ -616,7 +613,7 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="openpnm.core.Subdomain">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Subdomain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/core/Subdomain.html#Subdomain"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.core.Subdomain" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="base.html#openpnm.core.Base" title="openpnm.core.Base.Base"><code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.core.Base.Base</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.core.Base.LegacyMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.core.Base.LabelMixin</span></code></p>
+<dd><p>Bases: <a class="reference internal" href="base.html#openpnm.core.Base" title="openpnm.core.Base.Base"><code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.core.Base.Base</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.core.Mixins.LegacyMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">openpnm.core.Mixins.LabelMixin</span></code></p>
 <p>This subclass of the Base class provides the ability assign the object
 to specific locations (pores and throats) in the domain.  This class
 is subclassed by GenericGeometry and GenericPhysics.</p>
@@ -657,6 +654,48 @@ raised if the locations are already assigned to another object</p>
 </ul>
 </p></li>
 </ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.core.Subdomain.to_global">
+<span class="sig-name descname"><span class="pre">to_global</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throats</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/core/Subdomain.html#Subdomain.to_global"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.core.Subdomain.to_global" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert local indices from a subdomain object to global values</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pores</strong> (<em>array_like</em>) – List of pore or throat indices to be converted</p></li>
+<li><p><strong>throats</strong> (<em>array_like</em>) – List of pore or throat indices to be converted</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>indices</strong> – An array of location indices</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.core.Subdomain.to_local">
+<span class="sig-name descname"><span class="pre">to_local</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throats</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">missing_vals</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/core/Subdomain.html#Subdomain.to_local"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.core.Subdomain.to_local" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert global indices to local values relative to a subdomain object</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pores</strong> (<em>array_like</em>) – List of pore or throat indices to be converted</p></li>
+<li><p><strong>throats</strong> (<em>array_like</em>) – List of pore or throat indices to be converted</p></li>
+<li><p><strong>missing_values</strong> (<em>scalar</em>) – The value to put into missing locations if global indices are not
+found.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>indices</strong> – An array of location indices</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ndarray</p>
 </dd>
 </dl>
 </dd></dl>
