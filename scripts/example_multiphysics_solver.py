@@ -24,13 +24,12 @@ Nx = 10
 shape = [Nx, Nx, 1]
 spacing = 1e-4 #1/Nx
 net = op.network.Cubic(shape=shape, spacing=spacing)
-geo = op.geometry.SpheresAndCylinders(network=net, pores=net.Ps, throats=net.Ts)
+geo = op.geometry.CirclesAndRectangles(network=net, pores=net.Ps, throats=net.Ts)
 air = op.phases.Air(network=net)
 phys = op.physics.GenericPhysics(network=net, phase=air, geometry=geo)
 
-# make diffusivity afunction of temperature - ALREADY IS!!
+# make diffusivity a function of temperature - ALREADY IS!!
 air['pore.temperature'] = 300
-
 air.add_model(propname='pore.diffusivity',
               model=op.models.misc.linear, 
               m=1.860793056e-06,
@@ -49,7 +48,6 @@ air.add_model(propname='pore.thermal_conductivity',
               model=op.models.misc.constant,
               value=0.0262,
               regen_mode='constant')
-
 
 phys.add_model(propname='throat.thermal_conductance',
                model=op.models.physics.thermal_conductance.generic_thermal)
@@ -92,6 +90,7 @@ tspan = [0, 1000]
 tout = np.linspace(tspan[0], tspan[1])
 sol = tfc.run(x0=T0, tspan=tspan, integrator=rk45, saveat=tout)
 '''
+
 # print(air['pore.diffusivity'])
 # manually solve multiphysics system
 t_initial = 10
@@ -138,4 +137,4 @@ im_1.set_clim(300, 400)
 im_2.set_clim(0, 100)
 
 # Export Geometry
-op.io.COMSOL.export_data(network=net, filename='multiphysics_solver')
+op.io.COMSOL.export_data(network=net, filename='multiphysics_solver_2d')
