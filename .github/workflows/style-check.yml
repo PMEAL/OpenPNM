@@ -15,9 +15,12 @@ jobs:
         run:
           pip install flake8 wemake-python-styleguide
 
+      - name: Get Diff Action
+        uses: technote-space/get-diff-action@v4.0.1
+
       - name: Run style guide on changed files
         run:
-          git diff -u | flake8 --diff
+          echo ${{ env.GIT_DIFF }}
 
       # For now, let's comment out the automated WPS style guide
       # - name: Find changed files
