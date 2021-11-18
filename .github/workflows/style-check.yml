@@ -17,8 +17,10 @@ jobs:
 
       - name: Find git diff
         run:
+          git fetch --all
           echo "$GITHUB_BASE_REF"
           echo "GIT_DIFF=$(git diff -u $GITHUB_BASE_REF)" >> $GITHUB_ENV
+          git diff -u dev
 
       - name: Run style guide on changed portions
         run:
