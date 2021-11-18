@@ -284,10 +284,7 @@ class ReactiveTransport(GenericTransport):
             return []
         iterative_props = list(nx.dag.lexicographical_topological_sort(dg))
         # "variable_props" should be in the returned list but not "quantity"
-        try:
-            iterative_props.remove(self.settings["quantity"])
-        except ValueError:
-            pass
+        iterative_props.remove(self.settings["quantity"])
         return iterative_props
 
     def _get_residual(self, x=None):
