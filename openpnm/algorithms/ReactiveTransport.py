@@ -1,46 +1,22 @@
 import numpy as np
 from numpy.linalg import norm
 from scipy.optimize.nonlin import TerminationCondition
-from openpnm.algorithms import GenericTransport, SettingsGenericTransport
-from openpnm.utils import logging, Docorator, GenericSettings
-from openpnm.utils import SettingsAttr
-from traits.api import List, Str, Int
+from openpnm.algorithms import GenericTransport
+from openpnm.utils import logging
+from openpnm.utils import TypedList, Docorator, SettingsAttr
 docstr = Docorator()
 logger = logging.getLogger(__name__)
 
 
-# @docstr.get_sections(base='SettingsReactiveTransport', sections=docstr.all_sections)
-# @docstr.dedent
-class SettingsReactiveTransport(SettingsGenericTransport):
-    r"""
-
-    Parameters
-    ----------
-    %(SettingsGenericTransport.parameters)s
-    sources : list of strings
-        The names of the source term models
-
-    """
-    sources = List(Str())
-    test = Int(3)
-
-
 @docstr.get_sections(base='ReactiveTransportSettings',
-                     sections=docstr.all_sections)
+                     sections=['Parameters', 'Other Parameters'])
 @docstr.dedent
-class ReactiveTransportSettings(GenericSettings):
+class ReactiveTransportSettings:
     r"""
 
     Parameters
     ----------
     %(GenericTransportSettings.parameters)s
-
-    quantity : str
-        The name of the physical quantity to be calculated
-    conductance : str
-        The name of the pore-scale transport conductance values. These are
-        typically calculated by a model attached to a *Physics* object
-        associated with the given *Phase*.
 
     Other Parameters
     ----------------
@@ -66,16 +42,14 @@ class ReactiveTransportSettings(GenericSettings):
     %(GenericTransportSettings.other_parameters)s
 
     """
-
+    prefix = 'react_trans'
     nlin_max_iter = 5000
     relaxation_source = 1.0
     relaxation_quantity = 1.0
-    sources = []
-    relaxation_quantity = 1.0
+    sources = TypedList(types=[str])
     newton_maxiter = 5000
     f_rtol = 1e-6
     x_rtol = 1e-6
-
 
 
 @docstr.get_sections(base='ReactiveTransport', sections=['Parameters'])
@@ -95,14 +69,10 @@ class ReactiveTransport(GenericTransport):
 
     """
 
-    def __init__(self, phase=None, settings={}, **kwargs):
-        super().__init__(**kwargs)
-        self.settings._update_settings_and_docs(ReactiveTransportSettings)
-        self.settings.update(settings)
-        self.sets = SettingsAttr(SettingsReactiveTransport())
-        self.sets._update(settings)
-        if phase is not None:
-            self.settings['phase'] = phase.name
+    def __init__(self, phase, settings={}, **kwargs):
+        self.settings = SettingsAttr(ReactiveTransportSettings, settings)
+        super().__init__(phase=phase, settings=self.settings, **kwargs)
+        self.settings['phase'] = phase.name
 
     @docstr.dedent
     def reset(self, source_terms=False, **kwargs):
@@ -121,7 +91,7 @@ class ReactiveTransport(GenericTransport):
             return
         # Remove item from label dictionary
         for item in self.settings['sources']:
-            self.pop(item)
+            self.pop(item, None)
         # Reset the settings dict
         self.settings['sources'] = []
 
@@ -161,7 +131,12 @@ class ReactiveTransport(GenericTransport):
         locs_BC = np.isfinite(self['pore.bc_value']) + np.isfinite(self['pore.bc_rate'])
         if (locs & locs_BC).any():
             raise Exception("BCs present in given pores, can't assign source term")
-        self.set_label(propname, pores=locs, mode=mode)
+        if mode == 'overwrite':
+            self[propname] = False
+        if mode == 'add':
+            if propname not in self.keys():
+                self[propname] = False
+        self[propname][locs] = True
         # Check if propname already in source term list
         if propname not in self.settings['sources']:
             self.settings['sources'].append(propname)
@@ -178,9 +153,11 @@ class ReactiveTransport(GenericTransport):
             The pore indices where the source term should be applied.
 
         """
-        locs = self.tomask(pores=pores or self.Ps)
-        self.set_label(propname, pores=locs, mode='remove')
-        # TODO: if pores=None: remove the label -> reuse in reset method
+        propname = self._parse_prop(propname, 'pore')
+        if pores is None:
+            self.pop(propname, None)
+        else:
+            self[propname][pores] = False
 
     def _update_iterative_props(self):
         """r
@@ -198,7 +175,7 @@ class ReactiveTransport(GenericTransport):
         if not iterative_props:
             return
         # Fetch objects associated with the algorithm
-        phase = self.project.find_phase(self)
+        phase = self.project[self.settings.phase]
         physics = self.project.find_physics(phase=phase)
         geometries = self.project.geometries().values()
         # Update 'quantity' on phase with the most recent value
@@ -222,10 +199,10 @@ class ReactiveTransport(GenericTransport):
         current value of 'quantity'.
 
         """
-        phase = self.project.find_phase(self)
+        phase = self.project[self.settings.phase]
         for item in self.settings['sources']:
             # Fetch linearized values of the source term
-            Ps = self.pores(item)
+            Ps = self[item]
             S1, S2 = [phase[f"{item}.{Si}"] for Si in ["S1", "S2"]]
             # Modify A and b: diag(A) += -S1, b += S2
             diag = self.A.diagonal()
@@ -263,7 +240,7 @@ class ReactiveTransport(GenericTransport):
         w = self.settings['relaxation_quantity']
         maxiter = self.settings['newton_maxiter']
         f_rtol = self.settings['f_rtol']
-        x_rtol = self.settings['f_xtol']
+        x_rtol = self.settings['x_rtol']
         xold = self.x
         dx = self.x - xold
         condition = TerminationCondition(f_rtol=f_rtol, x_rtol=x_rtol)
@@ -294,7 +271,7 @@ class ReactiveTransport(GenericTransport):
         running the algorithm.
         """
         import networkx as nx
-        phase = self.project.find_phase(self)
+        phase = self.project[self.settings.phase]
         physics = self.project.find_physics(phase=phase)
         geometries = self.project.geometries().values()
         # Generate global dependency graph

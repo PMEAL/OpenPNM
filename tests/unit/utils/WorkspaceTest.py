@@ -48,35 +48,35 @@ class WorkspaceTest:
         assert 'OpenPNM Version' in s[1]
         self.ws.clear()
 
-    def test_save_and_load_project(self):
-        proj = self.ws.new_project('test_proj')
-        net = op.network.Cubic(shape=[3, 3, 3], project=proj)
-        op.phases.Air(network=net)
-        self.ws.save_project(proj)
-        assert proj.name in self.ws.keys()
-        self.ws.close_project(proj)
-        assert 'test_proj' not in self.ws.keys()
-        assert proj.workspace == {}
-        proj = self.ws.load_project(filename='test_proj.pnm')
-        assert 'test_proj' in self.ws.keys()
-        assert isinstance(proj, op.Project)
-        shape = op.topotools.get_shape(proj.network)
-        assert_allclose(shape, [3, 3, 3])
-        self.ws.clear()
-        try:
-            os.remove('test_proj.pnm')
-        except PermissionError:
-            print('Could not delete test_proj.pnm')
+    # def test_save_and_load_project(self):
+    #     proj = self.ws.new_project('test_proj')
+    #     net = op.network.Cubic(shape=[3, 3, 3], project=proj)
+    #     op.phases.Air(network=net)
+    #     self.ws.save_project(proj)
+    #     assert proj.name in self.ws.keys()
+    #     self.ws.close_project(proj)
+    #     assert 'test_proj' not in self.ws.keys()
+    #     assert proj.workspace == {}
+    #     proj = self.ws.load_project(filename='test_proj.pnm')
+    #     assert 'test_proj' in self.ws.keys()
+    #     assert isinstance(proj, op.Project)
+    #     shape = op.topotools.get_shape(proj.network)
+    #     assert_allclose(shape, [3, 3, 3])
+    #     self.ws.clear()
+    #     try:
+    #         os.remove('test_proj.pnm')
+    #     except PermissionError:
+    #         print('Could not delete test_proj.pnm')
 
-    def test_load_project_with_name_conflict(self):
-        self.ws.clear()
-        proj = self.ws.new_project(name='test')
-        pn = op.network.Cubic(shape=[3, 3, 3], project=proj)
-        op.phases.Air(network=pn)
-        self.ws.save_project(proj, filename='test.pnm')
-        self.ws.load_project('test.pnm')
-        assert set(self.ws.keys()) == set(['test', 'proj_01'])
-        os.remove('test.pnm')
+    # def test_load_project_with_name_conflict(self):
+    #     self.ws.clear()
+    #     proj = self.ws.new_project(name='test')
+    #     pn = op.network.Cubic(shape=[3, 3, 3], project=proj)
+    #     op.phases.Air(network=pn)
+    #     self.ws.save_project(proj, filename='test.pnm')
+    #     self.ws.load_project('test.pnm')
+    #     assert set(self.ws.keys()) == set(['test', 'proj_01'])
+    #     os.remove('test.pnm')
 
     # def test_save_and_load_project_from_pickled_list(self):
     #     proj = self.ws.new_project()

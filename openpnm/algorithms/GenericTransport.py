@@ -2,46 +2,29 @@ import numpy as np
 import scipy.sparse.linalg
 import warnings
 import scipy.sparse.csgraph as spgr
+from copy import deepcopy
 from scipy.spatial import ConvexHull
 from scipy.spatial import cKDTree
 from openpnm.topotools import iscoplanar, is_fully_connected, dimensionality
-from openpnm.algorithms import GenericAlgorithm, SettingsGenericAlgorithm
-from openpnm.utils import logging, Docorator, prettify_logger_message
-from openpnm.utils import GenericSettings, SettingsAttr
+from openpnm.algorithms import GenericAlgorithm
+from openpnm.utils import logging, prettify_logger_message
+from openpnm.utils import Docorator, SettingsAttr
 from openpnm.utils import is_symmetric
 from openpnm.solvers import PardisoSpsolve
-from traits.api import Str
-
 docstr = Docorator()
 logger = logging.getLogger(__name__)
 
 
-# @docstr.get_sections(base='SettingsGenericTransport', sections=docstr.all_sections)
-# @docstr.dedent
-class SettingsGenericTransport(SettingsGenericAlgorithm):
-    r"""
-
-    Parameters
-    ----------
-    %(SettingsGenericAlgorithm.parameters)s
-    phase : str
-        The name of the phase witih which this algorithm is associated
-
-    """
-    phase = Str()
-
-
-@docstr.get_sections(base='GenericTransportSettings',
-                     sections=docstr.all_sections)
+@docstr.get_sections(base='GenericTransportSettings', sections=['Parameters',
+                                                                'Other Parameters'])
 @docstr.dedent
-class GenericTransportSettings(GenericSettings):
+class GenericTransportSettings:
     r"""
     Defines the settings for GenericTransport algorithms
 
     Parameters
     ----------
-    phase : str
-        The name of the phase on which the algorithm acts
+    %(GenericAlgorithmSettings.parameters)s
     quantity : str
         The name of the physical quantity to be calculated
     conductance : str
@@ -57,10 +40,10 @@ class GenericTransportSettings(GenericSettings):
         If ``True``, b vector is cached and rather than getting rebuilt.
 
     """
-
-    phase = None
-    conductance = None
-    quantity = None
+    prefix = 'transport'
+    phase = ''
+    quantity = ''
+    conductance = ''
     cache_A = True
     cache_b = True
 
@@ -85,21 +68,10 @@ class GenericTransport(GenericAlgorithm):
         instance._pure_b = None
         return instance
 
-    def __init__(self, project=None, network=None, phase=None, settings={},
-                 **kwargs):
-        # Apply default settings
-        self.settings._update_settings_and_docs(GenericTransportSettings)
-        # Overwrite any given in init
-        self.settings.update(settings)
-        # Assign phase if given during init
-        if phase is not None:
-            self.settings['phase'] = phase.name
-        # If network given, get project, otherwise let parent class create it
-        if network is not None:
-            project = network.project
-        super().__init__(project=project, **kwargs)
-        self.sets = SettingsAttr(SettingsGenericTransport())
-        self.sets._update(settings)
+    def __init__(self, phase, settings={}, **kwargs):
+        self.settings = SettingsAttr(GenericTransportSettings, settings)
+        super().__init__(settings=self.settings, **kwargs)
+        self.settings['phase'] = phase.name
         self['pore.bc_rate'] = np.nan
         self['pore.bc_value'] = np.nan
 
@@ -374,13 +346,13 @@ class GenericTransport(GenericAlgorithm):
         # FIXME: this needs to be properly addressed (see issue #1548)
         try:
             if gvals in self._get_iterative_props():
-                self.settings.update({"cache_A": False, "cache_b": False})
+                self.settings._update({"cache_A": False, "cache_b": False})
         except AttributeError:
             pass
         if not self.settings['cache_A']:
             self._pure_A = None
         if self._pure_A is None:
-            phase = self.project.find_phase(self)
+            phase = self.project[self.settings.phase]
             g = phase[gvals]
             am = self.network.create_adjacency_matrix(weights=g, fmt='coo')
             self._pure_A = spgr.laplacian(am).astype(float)
@@ -666,71 +638,3 @@ class GenericTransport(GenericAlgorithm):
                 R = np.sum(R)
 
         return np.array(R, ndmin=1)
-
-    def _get_inlets(self):
-        r"""
-        Determines inlet BCs by analyzing the algorithm object.
-        """
-        Ps = np.isfinite(self['pore.bc_value'])
-        BCs = np.unique(self['pore.bc_value'][Ps])
-        inlets = np.where(self['pore.bc_value'] == np.amax(BCs))[0]
-        return inlets
-
-    def _get_outlets(self):
-        r"""
-        Determines outlet BCs by analyzing the algorithm object.
-        """
-        Ps = np.isfinite(self['pore.bc_value'])
-        BCs = np.unique(self['pore.bc_value'][Ps])
-        outlets = np.where(self['pore.bc_value'] == np.amin(BCs))[0]
-        return outlets
-
-    def _get_domain_area(self, inlets=None, outlets=None):
-        r"""
-        Determines the cross sectional area relative to the inlets/outlets.
-        """
-        logger.warning('Attempting to estimate inlet area...will be low')
-        if dimensionality(self.network).sum() != 3:
-            raise Exception('The network is not 3D, specify area manually')
-        inlets = self._get_inlets() if inlets is None else inlets
-        outlets = self._get_outlets() if outlets is None else outlets
-        inlets = self.network.coords[inlets]
-        outlets = self.network.coords[outlets]
-        if not iscoplanar(inlets):
-            logger.error('Detected inlet pores are not coplanar')
-        if not iscoplanar(outlets):
-            logger.error('Detected outlet pores are not coplanar')
-        Nin = np.ptp(inlets, axis=0) > 0
-        if Nin.all():
-            logger.warning('Detected inlets are not oriented along a principle axis')
-        Nout = np.ptp(outlets, axis=0) > 0
-        if Nout.all():
-            logger.warning('Detected outlets are not oriented along a principle axis')
-        hull_in = ConvexHull(points=inlets[:, Nin])
-        hull_out = ConvexHull(points=outlets[:, Nout])
-        if hull_in.volume != hull_out.volume:
-            logger.error('Inlet and outlet faces are different area')
-        area = hull_in.volume  # In 2D: volume=area, area=perimeter
-        return area
-
-    def _get_domain_length(self, inlets=None, outlets=None):
-        r"""
-        Determines the domain length relative to the inlets/outlets.
-        """
-        msg = ('Attempting to estimate domain length...could be low if'
-               ' boundary pores were not added')
-        logger.warning(prettify_logger_message(msg))
-        inlets = self._get_inlets() if inlets is None else inlets
-        outlets = self._get_outlets() if outlets is None else outlets
-        inlets = self.network.coords[inlets]
-        outlets = self.network.coords[outlets]
-        if not iscoplanar(inlets):
-            logger.error('Detected inlet pores are not coplanar')
-        if not iscoplanar(outlets):
-            logger.error('Detected inlet pores are not coplanar')
-        tree = cKDTree(data=inlets)
-        Ls = np.unique(np.float64(tree.query(x=outlets)[0]))
-        if not np.allclose(Ls, Ls[0]):
-            logger.error('A unique value of length could not be found')
-        length = Ls[0]
-        return length

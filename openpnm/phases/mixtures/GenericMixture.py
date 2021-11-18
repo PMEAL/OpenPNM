@@ -5,14 +5,13 @@ from chemicals import numba_vectorized
 from chemicals import R, k
 from openpnm.phases import GenericPhase as GenericPhase
 from openpnm.utils import HealthDict, PrintableList, SubDict
-from openpnm.utils import Docorator, GenericSettings
-from openpnm import models
+from openpnm.utils import Docorator, SettingsAttr
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 docstr = Docorator()
 
 
-class GenericMixtureSettings(GenericSettings):
+class GenericMixtureSettings:
     r"""
     The following settings are specific to Mixture objects
 
@@ -49,9 +48,8 @@ class GenericMixture(GenericPhase):
     """
 
     def __init__(self, components=[], settings={}, **kwargs):
-        self.settings._update_settings_and_docs(GenericMixtureSettings)
-        self.settings.update(settings)
-        super().__init__(settings={'prefix': 'mix'}, **kwargs)
+        self.settings = SettingsAttr(GenericMixtureSettings, settings)
+        super().__init__(settings=self.settings, **kwargs)
 
         # Add any supplied phases to the phases list
         for comp in components:

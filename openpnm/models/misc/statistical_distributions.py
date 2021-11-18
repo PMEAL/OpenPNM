@@ -5,6 +5,15 @@ from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 
 
+__all__ = [
+    'random',
+    'weibull',
+    'normal',
+    'generic_distribution',
+    'match_histogram',
+    ]
+
+
 def random(target, element, seed=None, num_range=[0, 1]):
     r"""
     Create an array of random numbers of a specified size.
@@ -197,3 +206,32 @@ def generic_distribution(target, seeds, func):
     seeds = target[seeds]
     value = func.ppf(seeds)
     return value
+
+
+def match_histogram(target, bin_centers, bin_heights, element='pore'):
+    r"""
+    Generate values corresponding to a given histogram
+
+    Parameters
+    ----------
+    target : OpenPNM object
+        The object for which values are to be generated
+    bin_centers : array_like
+        The x-axis of the histogram, such as pore sizes
+    bin_heights : array_like
+        The y-axis of the histogram, such as the number of pores of each size
+    element : str
+        Controls how many values to generate. Can either be 'pore' or 'throat'.
+
+    Returns
+    -------
+    vals : ndarray
+        Values corresponding to ``bin_centers`` generated in proportion to the
+        respective ``bin_heights``.
+
+    """
+    N = target._count(element)
+    h = np.cumsum(bin_heights)
+    b = np.digitize(np.random.rand(N)*np.amax(h), bins=h)
+    vals = np.array(bin_centers)[b]
+    return vals

@@ -10,6 +10,11 @@ class PickleTest:
     def setup_class(self):
         pass
 
+    def teardown_class(self, tmpdir=None):
+        os.remove('test.pkl')
+        os.remove("proj.pkl")
+        os.remove("pn.pkl")
+
     def test_create_save_and_load_workspace(self, tmpdir=None):
         ws = op.Workspace()
         ws.clear()
@@ -21,7 +26,6 @@ class PickleTest:
         assert len(ws) == 2
         ws = op.io.Pickle.load_workspace('test.pkl', overwrite=True)
         assert len(ws) == 1
-        os.remove('test.pkl')
 
     def test_create_save_and_load_project(self, tmpdir=None):
         ws = op.Workspace()
@@ -32,7 +36,6 @@ class PickleTest:
         proj = op.io.Pickle.load_project('proj.pkl')
         assert isinstance(proj, list)
         assert len(ws) == 2
-        os.remove('proj.pkl')
 
     def test_load_project_with_multiple_projects(self, tmpdir=None):
         ws = op.Workspace()
@@ -43,7 +46,6 @@ class PickleTest:
         op.io.Pickle.save_workspace(filename='proj.pkl')
         with pytest.raises(Exception):
             proj = op.io.Pickle.load_project('proj.pkl')
-        os.remove('proj.pkl')
 
     def test_load_handmade_project(self, tmpdir=None):
         ws = op.Workspace()
@@ -54,14 +56,12 @@ class PickleTest:
         proj = op.io.Pickle.load_project('proj.pkl')
         assert isinstance(proj, op.Project)
         assert len(ws.keys()) == 2
-        os.remove('proj.pkl')
 
     def test_load_poorly_made_project(self, tmpdir=None):
         proj = 5
         pickle.dump(proj, open('proj.pkl', 'wb'))
         with pytest.raises(Exception):
             proj = op.io.Pickle.load_project('proj.pkl')
-        os.remove('proj.pkl')
 
     def test_load_from_saved_dict(self, tmpdir=None):
         ws = op.Workspace()
@@ -75,7 +75,6 @@ class PickleTest:
                                             overwrite=False)
         assert len(ws.keys()) == 2
         assert isinstance(ws, op.Workspace)
-        os.remove("test.pkl")
 
     def test_load_workspace_from_poorly_made_dict(self):
         ws = op.Workspace()
@@ -84,7 +83,6 @@ class PickleTest:
         pickle.dump(pn, open('pn.pkl', 'wb'))
         with pytest.raises(Exception):
             ws = op.io.Pickle.load_workspace('pn.pkl')
-        os.remove("pn.pkl")
 
 
 if __name__ == '__main__':
@@ -99,3 +97,4 @@ if __name__ == '__main__':
                 t.__getattribute__(item)()
             except TypeError:
                 t.__getattribute__(item)(tmpdir=py.path.local())
+    t.teardown_class()

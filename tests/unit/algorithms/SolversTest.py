@@ -18,7 +18,8 @@ class SolversTest:
             network=self.net, phase=self.phase, geometry=self.geom)
         self.phys['throat.conductance'] = np.linspace(1, 5, num=self.net.Nt)
         self.alg = op.algorithms.GenericTransport(network=self.net, phase=self.phase)
-        self.alg.settings.update(quantity='pore.x', conductance='throat.conductance')
+        self.alg.settings._update({'quantity': 'pore.x',
+                                   'conductance': 'throat.conductance'})
         self.alg.set_value_BC(pores=self.net.pores('front'), values=1.0)
         self.alg.set_value_BC(pores=self.net.pores('bottom'), values=0.0)
 

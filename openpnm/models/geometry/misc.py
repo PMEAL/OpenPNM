@@ -1,6 +1,5 @@
 r"""
-Helper methods for openpnm.geometry module.
-
+Helper methods for openpnm.models.geometry module
 """
 
 
@@ -9,7 +8,7 @@ def _get_conduit_diameters(target, pore_diameter, throat_diameter):
     Private helper methods for fetching conduit diameters.
     """
     network = target.project.network
-    throats = target.throats(target=network)
+    throats = target.throats(to_global=True)
     cn = network["throat.conns"][throats]
 
     D1 = network[pore_diameter][cn[:, 0]]

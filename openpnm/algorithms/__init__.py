@@ -9,10 +9,10 @@ on pore networks.
 
 """
 
-from .GenericAlgorithm import GenericAlgorithm, SettingsGenericAlgorithm
-from .GenericTransport import GenericTransport, SettingsGenericTransport
+from .GenericAlgorithm import GenericAlgorithm, GenericAlgorithmSettings
+from .GenericTransport import GenericTransport, GenericTransportSettings
 
-from .ReactiveTransport import ReactiveTransport, SettingsReactiveTransport
+from .ReactiveTransport import ReactiveTransport, ReactiveTransportSettings
 from .TransientReactiveTransport import TransientReactiveTransport
 
 from .StokesFlow import StokesFlow
@@ -35,5 +35,3 @@ from .Porosimetry import Porosimetry
 
 from .IonicConduction import IonicConduction
 from .TransientIonicConduction import TransientIonicConduction
-
-from . import metrics

@@ -254,23 +254,6 @@ class ModelsMixin:
     Physics do. By using a mixin class, all objects can inherit from Base
     while the model functionality can be added only where needed.
 
-    Notes
-    -----
-    The following table gives a brief overview of the methods that are
-    added to the object by this mixin.  In addition to these methods, a
-    ``models`` attribute is also added, which is a dictionary that
-    contains all of the models and their parameters.
-
-    +----------------------+--------------------------------------------------+
-    | Method or Attribute  | Functionality                                    |
-    +======================+==================================================+
-    | ``add_model``        | Add a given model and parameters to the object   |
-    +----------------------+--------------------------------------------------+
-    | ``regenerate_model`` | Runs the model(s) to recalculate data            |
-    +----------------------+--------------------------------------------------+
-    | ``remove_model``     | Removes specified model as well as it's data     |
-    +----------------------+--------------------------------------------------+
-
     """
 
     def add_model(self, propname, model, regen_mode='', **kwargs):
@@ -309,7 +292,7 @@ class ModelsMixin:
             raise Exception(propname+' can\'t be both dependency and propname')
         # Look for default regen_mode in settings if present, else use 'normal'
         if regen_mode == '':
-            if 'regen_mode' in self.settings.keys():
+            if 'regen_mode' in self.settings._attrs:
                 regen_mode = self.settings['regen_mode']
             else:
                 regen_mode = 'normal'
@@ -393,18 +376,13 @@ class ModelsMixin:
         try:
             kwargs = self.models[prop].copy()
         except KeyError:
-            logger.info(prop+' not found, will retry if deep is True')
+            logger.info(f'{prop} not found, will retry if deep is True')
             return
         # Pop model and regen_mode from temporary dict
         model = kwargs.pop('model')
         regen_mode = kwargs.pop('regen_mode', None)
         # Only regenerate model if regen_mode is correct
-        if self.settings['freeze_models']:
-            # Don't run ANY models if freeze_models is set to True
-            msg = (f"{prop} was not run since freeze_models is set to"
-                   " True in object settings.")
-            logger.warning(prettify_logger_message(msg))
-        elif regen_mode == 'constant':
+        if regen_mode == 'constant':
             # Only regenerate if data not already in dictionary
             if prop not in self.keys():
                 self[prop] = model(target=self, **kwargs)

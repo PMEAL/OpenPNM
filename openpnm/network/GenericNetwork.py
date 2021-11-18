@@ -1,12 +1,27 @@
 import numpy as np
 import scipy.sparse as sprs
 import scipy.spatial as sptl
+from copy import deepcopy
 from openpnm.core import Base, ModelsMixin, LegacyMixin, LabelMixin, ParamMixin
 from openpnm import topotools
+from openpnm.utils import Docorator, SettingsAttr
 from openpnm.utils import Workspace, logging
 import openpnm.models.topology as tm
 logger = logging.getLogger(__name__)
 ws = Workspace()
+docstr = Docorator()
+
+
+@docstr.get_sections(base='NetworkSettings', sections=['Parameters'])
+@docstr.dedent
+class NetworkSettings:
+    r"""
+
+    Parameters
+    ----------
+    %(BaseSettings.parameters)s
+    """
+    prefix = 'net'
 
 
 class GenericNetwork(ParamMixin, Base, ModelsMixin, LegacyMixin, LabelMixin):
@@ -20,54 +35,6 @@ class GenericNetwork(ParamMixin, Base, ModelsMixin, LegacyMixin, LabelMixin):
 
     conns : array_like
         An Nt-by-2 array of [head, tail] connections between pores.
-
-    Notes
-    -----
-    The GenericNetwork class houses a number of methods used for querying and
-    managing the network's spatial and topological information.  The following
-    table gives a very short overview of the methods added those already found
-    on the ``openpnm.core.Base`` class.
-
-    +-----------------------------+-------------------------------------------+
-    | Method or Attribute         | Functionality                             |
-    +=============================+===========================================+
-    | ``create_adjacency_matrix`` | Create an adjacency matrix using given    |
-    |                             | weights in a specified format             |
-    +-----------------------------+-------------------------------------------+
-    | ``create_incidence_matrix`` | Create an incidence matrix using given    |
-    |                             | weights in a specified format             |
-    +-----------------------------+-------------------------------------------+
-    | ``get_adjacency_matrix``    | Retrieve an existing adjacency matrix in  |
-    |                             | the specified format (from ``am``)        |
-    +-----------------------------+-------------------------------------------+
-    | ``get_incidence_matrix``    | Retrieve an existing incidence matrix in  |
-    |                             | the specified format (from ``im``)        |
-    +-----------------------------+-------------------------------------------+
-    | ``am``                      | Returns the adjacency matrix in COO format|
-    +-----------------------------+-------------------------------------------+
-    | ``im``                      | Returns the incidence matrix in COO format|
-    +-----------------------------+-------------------------------------------+
-    | ``find_neighbor_pores``     | For a given set of pores, find all        |
-    |                             | neighboring pores                         |
-    +-----------------------------+-------------------------------------------+
-    | ``find_neighbor_throats``   | For a given set of pores, find all        |
-    |                             | neighboring throats                       |
-    +-----------------------------+-------------------------------------------+
-    | ``find_connecting_throat``  | For each pair of throats find the pores   |
-    |                             | they connect                              |
-    +-----------------------------+-------------------------------------------+
-    | ``find_connected_pores``    | For each throat, find the pores which it  |
-    |                             | connects                                  |
-    +-----------------------------+-------------------------------------------+
-    | ``num_neighbors``           | For a given set of pores find the number  |
-    |                             | of neighbors for each                     |
-    +-----------------------------+-------------------------------------------+
-    | ``find_nearby_pores``       | For a given set of pores, find pores that |
-    |                             | are within a certain distance             |
-    +-----------------------------+-------------------------------------------+
-    | ``check_network_health``    | Check the topology for any problems such  |
-    |                             | as isolated pores                         |
-    +-----------------------------+-------------------------------------------+
 
     Examples
     --------
@@ -111,23 +78,16 @@ class GenericNetwork(ParamMixin, Base, ModelsMixin, LegacyMixin, LabelMixin):
     future use to save construction time.
 
     """
-    def __new__(cls, *args, **kwargs):
-        instance = super(GenericNetwork, cls).__new__(cls, *args, **kwargs)
-        # Initialize adjacency and incidence matrix dictionaries
-        instance._im = {}
-        instance._am = {}
-        return instance
-
-    def __init__(self, conns=None, coords=None, project=None, settings={},
-                 **kwargs):
-        def_sets = {'prefix': 'net'}
-        self.settings.update(def_sets)
-        self.settings.update(settings)
-        super().__init__(project=project, **kwargs)
+    def __init__(self, conns=None, coords=None, settings={}, **kwargs):
+        self.settings = SettingsAttr(NetworkSettings, settings)
+        super().__init__(settings=self.settings, **kwargs)
+        self._am = {}
+        self._im = {}
         if coords is not None:
             Np = np.shape(coords)[0]
             self['pore.all'] = np.ones(Np, dtype=bool)
             self['pore.coords'] = np.array(coords)
+
         if conns is not None:
             Nt = np.shape(conns)[0]
             self['throat.all'] = np.ones(Nt, dtype=bool)
