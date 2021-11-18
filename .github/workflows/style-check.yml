@@ -17,13 +17,11 @@ jobs:
 
       - name: Find git diff
         run: |
-          # echo "$GITHUB_BASE_REF"
-          # echo "GIT_DIFF=$(git diff -u $GITHUB_BASE_REF)" >> $GITHUB_ENV
-          git diff origin/dev
+          echo "GIT_DIFF=$(git diff -u origin/$GITHUB_BASE_REF)" >> $GITHUB_ENV
 
       - name: Run style guide on changed portions
         run:
-          echo "" | flake8 --diff
+          echo "$GIT_DIFF" | flake8 --diff
 
       # For now, let's comment out the automated WPS style guide
       # - name: Find changed files
