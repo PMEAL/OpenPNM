@@ -31,8 +31,8 @@ class GenericTransportTest:
         phys = op.physics.GenericPhysics(network=net, phase=phase, geometry=geom)
         phys["throat.conductance"] = 1.0
         alg = op.algorithms.GenericTransport(network=net, phase=phase)
-        alg.settings.update({"quantity": "pore.concentration",
-                             "conductance": "throat.conductance"})
+        alg.settings._update({"quantity": "pore.concentration",
+                              "conductance": "throat.conductance"})
         with pytest.raises(Exception):
             alg.run()
 

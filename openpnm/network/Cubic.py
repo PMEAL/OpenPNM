@@ -1,7 +1,7 @@
 import numpy as np
 from openpnm.network import GenericNetwork
 from openpnm import topotools
-from openpnm.utils import logging
+from openpnm.utils import logging, SettingsAttr
 
 logger = logging.getLogger(__name__)
 
@@ -39,10 +39,6 @@ class Cubic(GenericNetwork):
     name : string
         An optional name for the object to help identify it.  If not given,
         one will be generated.
-    project : OpenPNM Project object, optional
-        Each OpenPNM object must be part of a *Project*.  If none is supplied
-        then one will be created and this Network will be automatically
-        assigned to it.  To create a *Project* use ``openpnm.Project()``.
 
     Attributes
     ----------
@@ -80,10 +76,8 @@ class Cubic(GenericNetwork):
 
     """
 
-    def __init__(self, shape, spacing=[1, 1, 1], connectivity=6,
-                 name=None, project=None, **kwargs):
-
-        super().__init__(name=name, project=project, **kwargs)
+    def __init__(self, shape, spacing=[1, 1, 1], connectivity=6, **kwargs):
+        super().__init__(**kwargs)
 
         # Take care of 1D/2D networks
         shape = np.array(shape, ndmin=1)

@@ -28,8 +28,8 @@ class GenericSourceTermTest:
                    "logarithm", "natural_logarithm"]
         self.alg = op.algorithms.ReactiveTransport(network=self.net,
                                                    phase=self.phase)
-        self.alg.settings.update({'conductance': 'throat.diffusive_conductance',
-                                  'quantity': 'pore.mole_fraction'})
+        self.alg.settings._update({'conductance': 'throat.diffusive_conductance',
+                                   'quantity': 'pore.mole_fraction'})
         self.alg.set_value_BC(values=0.4, pores=self.BC_pores)
         self.alg.set_source(propname='pore.source_term',
                             pores=self.source_pores)
@@ -54,8 +54,8 @@ class GenericSourceTermTest:
                             regen_mode='normal')
         self.alg = op.algorithms.ReactiveTransport(network=self.net,
                                                    phase=self.phase)
-        self.alg.settings.update({'conductance': 'throat.diffusive_conductance',
-                                  'quantity': 'pore.mole_fraction'})
+        self.alg.settings._update({'conductance': 'throat.diffusive_conductance',
+                                   'quantity': 'pore.mole_fraction'})
         self.alg.set_value_BC(values=0.4, pores=self.BC_pores)
         self.alg.set_source(propname='pore.source1',
                             pores=self.source_pores)
@@ -83,8 +83,8 @@ class GenericSourceTermTest:
         self.alg.set_value_BC(values=0.4, pores=self.BC_pores)
         self.alg.set_source(propname='pore.source1',
                             pores=self.source_pores)
-        self.alg.settings.update({'conductance': 'throat.diffusive_conductance',
-                                  'quantity': 'pore.mole_fraction'})
+        self.alg.settings._update({'conductance': 'throat.diffusive_conductance',
+                                   'quantity': 'pore.mole_fraction'})
         self.alg.run()
         self.phase.update(self.alg.results())
         self.phys.regenerate_models(propnames='pore.source1')
@@ -115,8 +115,8 @@ class GenericSourceTermTest:
         self.alg.set_value_BC(values=0.4, pores=self.BC_pores)
         self.alg.set_source(propname='pore.source1',
                             pores=self.source_pores)
-        self.alg.settings.update({'conductance': 'throat.diffusive_conductance',
-                                  'quantity': 'pore.mole_fraction'})
+        self.alg.settings._update({'conductance': 'throat.diffusive_conductance',
+                                   'quantity': 'pore.mole_fraction'})
         self.alg.run()
         self.phase.update(self.alg.results())
         self.phys.regenerate_models(propnames='pore.source1')
@@ -145,8 +145,8 @@ class GenericSourceTermTest:
         self.alg.set_value_BC(values=0.4, pores=self.BC_pores)
         self.alg.set_source(propname='pore.source1',
                             pores=self.source_pores)
-        self.alg.settings.update({'conductance': 'throat.diffusive_conductance',
-                                  'quantity': 'pore.mole_fraction'})
+        self.alg.settings._update({'conductance': 'throat.diffusive_conductance',
+                                   'quantity': 'pore.mole_fraction'})
         self.alg.run()
         self.phase.update(self.alg.results())
         self.phys.regenerate_models(propnames='pore.source1')
@@ -177,8 +177,8 @@ class GenericSourceTermTest:
         self.alg.set_value_BC(values=0.4, pores=self.BC_pores)
         self.alg.set_source(propname='pore.source1',
                             pores=self.source_pores)
-        self.alg.settings.update({'conductance': 'throat.diffusive_conductance',
-                                  'quantity': 'pore.mole_fraction'})
+        self.alg.settings._update({'conductance': 'throat.diffusive_conductance',
+                                   'quantity': 'pore.mole_fraction'})
         self.alg.run()
         self.phase.update(self.alg.results())
         self.phys.regenerate_models(propnames='pore.source1')
@@ -208,8 +208,8 @@ class GenericSourceTermTest:
         self.alg.set_value_BC(values=0.4, pores=self.BC_pores)
         self.alg.set_source(propname='pore.source1',
                             pores=self.source_pores)
-        self.alg.settings.update({'conductance': 'throat.diffusive_conductance',
-                                  'quantity': 'pore.mole_fraction'})
+        self.alg.settings._update({'conductance': 'throat.diffusive_conductance',
+                                   'quantity': 'pore.mole_fraction'})
         self.alg.run()
         self.phase.update(self.alg.results())
         self.phys.regenerate_models(propnames='pore.source1')

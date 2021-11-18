@@ -22,10 +22,6 @@ class SpeciesByName(GenericSpecies):
         The name of the species to generate.  This is used to lookup tabulated
         constants in the ``chemicals`` package, which attempts to find a match. For
         instance, 'water', 'Water', and 'H2O' all work.
-    project : OpenPNM Project object, optional
-        The Project with which this phase should be associted.  If a
-        ``network`` is given then this is ignored and the Network's project
-        is used.  If a ``network`` is not given then this is mandatory.
     name : string, optional
         The name of the phase.  This is useful to keep track of the objects
         throughout the simulation.  The name must be unique to the project.

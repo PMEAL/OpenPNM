@@ -32,29 +32,29 @@ class AdvectionDiffusionTest:
         self.phase.update(self.sf.results())
 
         self.ad = AdvectionDiffusion(network=self.net, phase=self.phase)
-        self.ad.settings.update({"cache_A": False, "cache_b": False})
+        self.ad.settings._update({"cache_A": False, "cache_b": False})
         self.ad.set_value_BC(pores=self.net.pores('right'), values=2)
         self.ad.set_value_BC(pores=self.net.pores('left'), values=0)
 
     def test_settings(self):
-        self.ad.settings.update({'quantity': "pore.blah",
-                                 'conductance': "throat.foo",
-                                 'diffusive_conductance': "throat.foo2",
-                                 'hydraulic_conductance': "throat.foo3",
-                                 'pressure': "pore.bar",
-                                 })
+        self.ad.settings._update({'quantity': "pore.blah",
+                                  'conductance': "throat.foo",
+                                  'diffusive_conductance': "throat.foo2",
+                                  'hydraulic_conductance': "throat.foo3",
+                                  'pressure': "pore.bar",
+                                  })
         assert self.ad.settings["quantity"] == "pore.blah"
         assert self.ad.settings["conductance"] == "throat.foo"
         assert self.ad.settings["diffusive_conductance"] == "throat.foo2"
         assert self.ad.settings["hydraulic_conductance"] == "throat.foo3"
         assert self.ad.settings["pressure"] == "pore.bar"
         # Reset back to previous values for other tests to run
-        self.ad.settings.update({'quantity': "pore.concentration",
-                                 'conductance': "throat.ad_dif_conductance",
-                                 "diffusive_conductance": "throat.diffusive_conductance",
-                                 "hydraulic_conductance": "throat.hydraulic_conductance",
-                                 "pressure": "pore.pressure"
-                                 })
+        self.ad.settings._update({'quantity': "pore.concentration",
+                                  'conductance': "throat.ad_dif_conductance",
+                                  "diffusive_conductance": "throat.diffusive_conductance",
+                                  "hydraulic_conductance": "throat.hydraulic_conductance",
+                                  "pressure": "pore.pressure"
+                                  })
 
     def test_conductance_gets_updated_when_pressure_changes(self):
         mod = op.models.physics.ad_dif_conductance.ad_dif
@@ -148,9 +148,8 @@ class AdvectionDiffusionTest:
         ad.set_value_BC(pores=self.net.pores('right'), values=2)
 
         for s_scheme in ['upwind', 'hybrid', 'powerlaw', 'exponential']:
-            ad.settings.update({
-                                'quantity': 'pore.concentration',
-                                'conductance': f'throat.ad_dif_conductance_{s_scheme}'
+            ad.settings._update({'quantity': 'pore.concentration',
+                                 'conductance': f'throat.ad_dif_conductance_{s_scheme}'
             })
             ad.set_outflow_BC(pores=self.net.pores('left'))
             ad.run()
@@ -199,8 +198,8 @@ class AdvectionDiffusionTest:
         ad.set_outflow_BC(pores=self.net.pores('left'))
 
         for s_scheme in ['upwind', 'hybrid', 'powerlaw', 'exponential']:
-            ad.settings.update({'quantity': 'pore.concentration',
-                                'conductance': f'throat.ad_dif_conductance_{s_scheme}'})
+            ad.settings._update({'quantity': 'pore.concentration',
+                                 'conductance': f'throat.ad_dif_conductance_{s_scheme}'})
             ad.run()
             y = ad[ad.settings['quantity']].reshape(4, 3).mean(axis=1)
             # Calculate grad_c @ face on which outflow BC was imposed
@@ -220,9 +219,9 @@ class AdvectionDiffusionTest:
         ad.set_value_BC(pores=self.net.pores('left'), values=0)
 
         for s_scheme in ['upwind', 'hybrid', 'powerlaw', 'exponential']:
-            ad.settings.update({'quantity': 'pore.concentration',
-                                'conductance': f'throat.ad_dif_conductance_{s_scheme}',
-                                's_scheme': s_scheme})
+            ad.settings._update({'quantity': 'pore.concentration',
+                                 'conductance': f'throat.ad_dif_conductance_{s_scheme}',
+                                 's_scheme': s_scheme})
             ad.run()
 
             mdot_inlet = ad.rate(pores=self.net.pores("right"))[0]

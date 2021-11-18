@@ -38,6 +38,19 @@ class Docorator(DocstringProcessor):
     def __new__(cls, *args, **kwargs):
         if Docorator.__instance__ is None:
             Docorator.__instance__ = DocstringProcessor()
+
+        # Add custom parameter type sections
+        a = DocstringProcessor.param_like_sections
+        Docorator.__instance__.param_like_sections = a + [] # ["Attributes", "Settings"]
+        # Add custom text type sections
+        a = Docorator.__instance__.text_sections
+        Docorator.__instance__.text_sections = a + []
+
+        # Create a single list of all section types
+        a = Docorator.__instance__.param_like_sections
+        b = Docorator.__instance__.text_sections
+        Docorator.__instance__.all_sections = a + b
+
         return Docorator.__instance__
 
 

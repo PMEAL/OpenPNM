@@ -145,8 +145,8 @@ class OrdinaryPercolationTest:
     def test_entry_vs_invasion_pressure(self):
         self.alg = op.algorithms.OrdinaryPercolation(network=self.net,
                                                      phase=self.water)
-        self.alg.settings.update({'mode': 'bond',
-                                  'access_limited': True})
+        self.alg.settings._update({'mode': 'bond',
+                                   'access_limited': True})
         self.alg.set_inlets(pores=self.net.pores('top'))
         self.alg.set_outlets(pores=self.net.pores('bottom'))
         self.alg.run()

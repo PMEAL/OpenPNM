@@ -7,15 +7,29 @@ With added cooperative filling algorithms
 
 """
 import time
-import logging
 import heapq as hq
-import scipy as sp
 import numpy as np
 from scipy.sparse import coo_matrix, dok_matrix
 from openpnm.algorithms import MixedInvasionPercolation
 from transforms3d._gohlketransforms import angle_between_vectors
-
+from openpnm.utils import logging, SettingsAttr, Docorator
+docstr = Docorator()
 logger = logging.getLogger(__name__)
+
+
+@docstr.dedent
+class MixedIPCoopSettings:
+    r"""
+
+    Parameters
+    ----------
+    %(MixedIPSettings.parameters)s
+    cooperative_pore_filling : string
+        The name of the model used to determine the meniscus properties
+        required for assessing cooperative pore filling.
+
+    """
+    cooperative_pore_filling = ""
 
 
 class MixedInvasionPercolationCoop(MixedInvasionPercolation):
@@ -37,30 +51,8 @@ class MixedInvasionPercolationCoop(MixedInvasionPercolation):
     """
 
     def __init__(self, settings={}, **kwargs):
-        def_set = {
-            "pore_entry_pressure": "pore.entry_pressure",
-            "throat_entry_pressure": "throat.entry_pressure",
-            "snap_off": "",
-            "invade_isolated_Ts": False,
-            "late_pore_filling": "",
-            "late_throat_filling": "",
-            "gui": {
-                "setup": {
-                    "pore_entry_pressure": "",
-                    "throat_entry_pressure": "",
-                    "snap_off": "",
-                    "invade_isolated_Ts": "",
-                },
-                "set_inlets": {"pores": None, "clusters": None},
-                "set_outlets": {"pores": None, "overwrite": False},
-                "apply_flow": {"flowrate": None},
-                "apply_trapping": {"partial": False},
-                "set_residual": {"pores": None, "overwrite": False},
-            },
-        }
-        super().__init__(**kwargs)
-        self.settings.update(def_set)
-        self.settings.update(settings)
+        self.settings = SettingsAttr(MixedIPCoopSettings, settings)
+        super().__init__(settings=self.settings, **kwargs)
 
     def setup(
         self,
@@ -117,7 +109,7 @@ class MixedInvasionPercolationCoop(MixedInvasionPercolation):
             self.settings["phase"] = phase.name
         if throat_entry_pressure:
             self.settings["throat_entry_pressure"] = throat_entry_pressure
-            phase = self.project.find_phase(self)
+            phase = self.project[self.settings.phase]
         self["throat.entry_pressure"] = phase[self.settings["throat_entry_pressure"]]
         if len(np.shape(self["throat.entry_pressure"])) > 1:
             self._bidirectional = True
@@ -125,7 +117,7 @@ class MixedInvasionPercolationCoop(MixedInvasionPercolation):
             self._bidirectional = False
         if pore_entry_pressure:
             self.settings["pore_entry_pressure"] = pore_entry_pressure
-            phase = self.project.find_phase(self)
+            phase = self.project[self.settings.phase]
         self["pore.entry_pressure"] = phase[self.settings["pore_entry_pressure"]]
         if snap_off:
             self.settings["snap_off"] = snap_off
@@ -140,7 +132,7 @@ class MixedInvasionPercolationCoop(MixedInvasionPercolation):
         self.reset()
 
     def _max_pressure(self):
-        phase = self.project.find_phase(self)
+        phase = self.project[self.settings.phase]
         if self.settings["throat_entry_pressure"]:
             max_tPc = np.max(phase[self.settings["throat_entry_pressure"]])
         else:
@@ -335,7 +327,7 @@ class MixedInvasionPercolationCoop(MixedInvasionPercolation):
         """
         start = time.time()
         net = self.project.network
-        phase = self.project.find_phase(self)
+        phase = self.project[self.settings.phase]
         all_phys = self.project.find_physics(phase=phase)
         if inv_points is None:
             inv_points = np.arange(0, 1.01, 0.01) * self._max_pressure()
@@ -428,7 +420,7 @@ class MixedInvasionPercolationCoop(MixedInvasionPercolation):
             The invasion pressures at which to assess coopertive pore filling.
         """
         net = self.project.network
-        phase = self.project.find_phase(self)
+        phase = self.project[self.settings.phase]
         all_phys = self.project.find_physics(phase=phase)
         if inv_points is None:
             inv_points = np.arange(0, 1.01, 0.01) * self._max_pressure()

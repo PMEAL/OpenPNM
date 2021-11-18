@@ -1,12 +1,27 @@
 import numpy as np
 import scipy.sparse as sprs
 import scipy.spatial as sptl
+from copy import deepcopy
 from openpnm.core import Base, ModelsMixin, LegacyMixin, LabelMixin, ParamMixin
 from openpnm import topotools
+from openpnm.utils import Docorator, SettingsAttr
 from openpnm.utils import Workspace, logging
 import openpnm.models.topology as tm
 logger = logging.getLogger(__name__)
 ws = Workspace()
+docstr = Docorator()
+
+
+@docstr.get_sections(base='NetworkSettings', sections=['Parameters'])
+@docstr.dedent
+class NetworkSettings:
+    r"""
+
+    Parameters
+    ----------
+    %(BaseSettings.parameters)s
+    """
+    prefix = 'net'
 
 
 class GenericNetwork(ParamMixin, Base, ModelsMixin, LegacyMixin, LabelMixin):
@@ -20,13 +35,6 @@ class GenericNetwork(ParamMixin, Base, ModelsMixin, LegacyMixin, LabelMixin):
         An Np-by-3 array of [x, y, z] coordinates for each pore.
     conns : array_like
         An Nt-by-2 array of [head, tail] connections between pores.
-
-    Notes
-    -----
-    The ``GenericNetwork`` class houses a number of methods used for
-    querying and managing the network's spatial and topological
-    information.  The following table gives a very short overview of the
-    methods added those already found on the ``openpnm.core.Base`` class.
 
     Examples
     --------
@@ -72,22 +80,16 @@ class GenericNetwork(ParamMixin, Base, ModelsMixin, LegacyMixin, LabelMixin):
     stored for future use to save construction time.
 
     """
-    def __new__(cls, *args, **kwargs):
-        instance = super(GenericNetwork, cls).__new__(cls, *args, **kwargs)
-        # Initialize adjacency and incidence matrix dictionaries
-        instance._im = {}
-        instance._am = {}
-        return instance
-
-    def __init__(self, conns=None, coords=None, project=None, settings={},
-                 **kwargs):
-        self.settings.setdefault('prefix', 'net')
-        self.settings.update(settings)
-        super().__init__(project=project, **kwargs)
+    def __init__(self, conns=None, coords=None, settings={}, **kwargs):
+        self.settings = SettingsAttr(NetworkSettings, settings)
+        super().__init__(settings=self.settings, **kwargs)
+        self._am = {}
+        self._im = {}
         if coords is not None:
             Np = np.shape(coords)[0]
             self['pore.all'] = np.ones(Np, dtype=bool)
             self['pore.coords'] = np.array(coords)
+
         if conns is not None:
             Nt = np.shape(conns)[0]
             self['throat.all'] = np.ones(Nt, dtype=bool)
