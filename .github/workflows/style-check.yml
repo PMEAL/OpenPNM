@@ -19,8 +19,6 @@ jobs:
         run: |
           # echo "$GITHUB_BASE_REF"
           # echo "GIT_DIFF=$(git diff -u $GITHUB_BASE_REF)" >> $GITHUB_ENV
-          git diff dev
-          git diff dev .
           git diff dev..enhance_styleguide
 
       - name: Run style guide on changed portions
