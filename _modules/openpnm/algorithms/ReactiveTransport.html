@@ -25,6 +25,9 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/blank.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
     
   <link rel="preload" as="script" href="../../../_static/js/index.be7d3bbb2ef33a8344ce.js">
 
@@ -91,7 +94,7 @@
 </li>
 
 <li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="../../../examples/examples.html">
+ <a class="reference internal nav-link" href="../../../examples.html">
   Examples
  </a>
 </li>
@@ -452,17 +455,14 @@
         <span class="c1"># Generate global dependency graph</span>
         <span class="n">dg</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">compose_all</span><span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">dependency_graph</span><span class="p">(</span><span class="n">deep</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
                              <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">[</span><span class="n">phase</span><span class="p">,</span> <span class="o">*</span><span class="n">geometries</span><span class="p">,</span> <span class="o">*</span><span class="n">physics</span><span class="p">]])</span>
-        <span class="n">base</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;quantity&quot;</span><span class="p">]]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;variable_props&quot;</span><span class="p">]</span>
-        <span class="c1"># Find all props downstream that depend on base props</span>
-        <span class="n">dg</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">edge_dfs</span><span class="p">(</span><span class="n">dg</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">base</span><span class="p">))</span>
+        <span class="n">base_props</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;quantity&quot;</span><span class="p">]]</span>
+        <span class="c1"># Find all props downstream that depend on &#39;quantity&#39;</span>
+        <span class="n">dg</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">edge_dfs</span><span class="p">(</span><span class="n">dg</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">base_props</span><span class="p">))</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dg</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[]</span>
         <span class="n">iterative_props</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">dag</span><span class="o">.</span><span class="n">lexicographical_topological_sort</span><span class="p">(</span><span class="n">dg</span><span class="p">))</span>
-        <span class="c1"># &quot;variable_props&quot; should be in the returned list but not &quot;quantity&quot;</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">iterative_props</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;quantity&quot;</span><span class="p">])</span>
-        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-            <span class="k">pass</span>
+        <span class="c1"># Remove &#39;quantity&#39; from iterative_props since it is not!</span>
+        <span class="n">iterative_props</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;quantity&quot;</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">iterative_props</span>
 
     <span class="k">def</span> <span class="nf">_get_residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
