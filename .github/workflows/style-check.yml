@@ -16,10 +16,9 @@ jobs:
           pip install flake8 wemake-python-styleguide
 
       - name: Find git diff
-        run:
+        run: |
           echo "$GITHUB_BASE_REF"
-          # echo "GIT_DIFF=$(git diff -u $GITHUB_BASE_REF)" >> $GITHUB_ENV
-          git diff -u dev
+          echo "GIT_DIFF=$(git diff -u $GITHUB_BASE_REF)" >> $GITHUB_ENV
 
       - name: Run style guide on changed portions
         run:
