@@ -225,7 +225,61 @@
 <span class="sd">    including Networks, Geometries, Phases, Physics, and Algorithms.  This</span>
 <span class="sd">    class is a subclass of the standard ``dict`` so has the usual methods such</span>
 <span class="sd">    as ``pop`` and ``keys``, and has extra methods for working specifically</span>
-<span class="sd">    with OpenPNM data.</span>
+<span class="sd">    with OpenPNM data.  These are outlined briefly in the following table:</span>
+
+<span class="sd">    +----------------------+--------------------------------------------------+</span>
+<span class="sd">    | Method or Attribute  | Functionality                                    |</span>
+<span class="sd">    +======================+==================================================+</span>
+<span class="sd">    | ``props``            | List of keys containing numerical arrays         |</span>
+<span class="sd">    +----------------------+--------------------------------------------------+</span>
+<span class="sd">    | ``labels``           | List of key containing boolean arrays            |</span>
+<span class="sd">    +----------------------+--------------------------------------------------+</span>
+<span class="sd">    | ``pores``            | Returns pore / throat indices that have given    |</span>
+<span class="sd">    |                      | labels                                           |</span>
+<span class="sd">    | ``throats``          |                                                  |</span>
+<span class="sd">    +----------------------+--------------------------------------------------+</span>
+<span class="sd">    | ``Ps``, ``Ts``       | Indices for ALL pores and throats on object      |</span>
+<span class="sd">    +----------------------+--------------------------------------------------+</span>
+<span class="sd">    | ``num_pores`` ,      | Counts the number of pores or throats with a     |</span>
+<span class="sd">    |                      | given label                                      |</span>
+<span class="sd">    | ``num_throats``      |                                                  |</span>
+<span class="sd">    +----------------------+--------------------------------------------------+</span>
+<span class="sd">    | ``Np``, ``Nt``       | Total number of pores and throats on the object  |</span>
+<span class="sd">    +----------------------+--------------------------------------------------+</span>
+<span class="sd">    | ``tomask``           | Converts a list of pore or throat indices to a   |</span>
+<span class="sd">    |                      | boolean mask                                     |</span>
+<span class="sd">    +----------------------+--------------------------------------------------+</span>
+<span class="sd">    | ``toindices``        | Converts a boolean mask to pore or throat indices|</span>
+<span class="sd">    +----------------------+--------------------------------------------------+</span>
+<span class="sd">    | ``map_pores`` ,      | Given indices on object B returns corresponding  |</span>
+<span class="sd">    |                      | indices on object A                              |</span>
+<span class="sd">    | ``map_throats``      |                                                  |</span>
+<span class="sd">    +----------------------+--------------------------------------------------+</span>
+<span class="sd">    | ``interleave_data``  | Fetches data from associated objects into a      |</span>
+<span class="sd">    |                      | single array                                     |</span>
+<span class="sd">    +----------------------+--------------------------------------------------+</span>
+<span class="sd">    | ``interpolate_data`` | Given pore or throat data, interpolate the other |</span>
+<span class="sd">    +----------------------+--------------------------------------------------+</span>
+<span class="sd">    | ``filter_by_label``  | Given indices find those with specific labels    |</span>
+<span class="sd">    +----------------------+--------------------------------------------------+</span>
+<span class="sd">    | ``show_hist``        | Method for quickly plotting histograms of data   |</span>
+<span class="sd">    +----------------------+--------------------------------------------------+</span>
+<span class="sd">    | ``check_data_health``| Ensures all data arrays are valid and complete   |</span>
+<span class="sd">    +----------------------+--------------------------------------------------+</span>
+
+
+<span class="sd">    In addition to the above methods, there are a few attributes which provide</span>
+<span class="sd">    access to useful items:</span>
+
+<span class="sd">    +----------------+--------------------------------------------------------+</span>
+<span class="sd">    | Attribute      | Functionality                                          |</span>
+<span class="sd">    +================+========================================================+</span>
+<span class="sd">    | ``name``       | The string name of the object, unique to each Project  |</span>
+<span class="sd">    +----------------+--------------------------------------------------------+</span>
+<span class="sd">    | ``settings``   | A dictionary containing various setting values         |</span>
+<span class="sd">    +----------------+--------------------------------------------------------+</span>
+<span class="sd">    | ``project``    | A handle to the Project containing the object          |</span>
+<span class="sd">    +----------------+--------------------------------------------------------+</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -428,6 +482,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_settings</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="n">settings</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">fget</span><span class="o">=</span><span class="n">_get_settings</span><span class="p">,</span> <span class="n">fset</span><span class="o">=</span><span class="n">_set_settings</span><span class="p">,</span> <span class="n">fdel</span><span class="o">=</span><span class="n">_del_settings</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">_domain</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">phase</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">network</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">network</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1008,47 +1069,6 @@
             <span class="n">P1</span><span class="p">,</span> <span class="n">P2</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.&#39;</span> <span class="o">+</span> <span class="n">prop</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">conns</span><span class="p">]</span><span class="o">.</span><span class="n">T</span>
             <span class="n">T</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interpolate_data</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.&#39;</span><span class="o">+</span><span class="n">prop</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">P1</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">P2</span><span class="p">))</span><span class="o">.</span><span class="n">T</span></div>
-
-    <span class="k">def</span> <span class="nf">_count</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns a dictionary containing the number of pores and throats in</span>
-<span class="sd">        the network, stored under the keys &#39;pore&#39; or &#39;throat&#39;</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        element : string, optional</span>
-<span class="sd">            Can be either &#39;pore&#39; , &#39;pores&#39;, &#39;throat&#39; or &#39;throats&#39;, which</span>
-<span class="sd">            specifies which count to return.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        A dictionary containing the number of pores and throats under the</span>
-<span class="sd">        &#39;pore&#39; and &#39;throat&#39; key respectively.</span>
-
-<span class="sd">        See Also</span>
-<span class="sd">        --------</span>
-<span class="sd">        num_pores</span>
-<span class="sd">        num_throats</span>
-
-<span class="sd">        Notes</span>
-<span class="sd">        -----</span>
-<span class="sd">        The ability to send plurals is useful for some types of &#39;programmatic&#39;</span>
-<span class="sd">        access.  For instance, the standard argument for locations is pores</span>
-<span class="sd">        or throats.  If these are bundled up in a **kwargs dict then you can</span>
-<span class="sd">        just use the dict key in count() without removing the &#39;s&#39;.</span>
-
-<span class="sd">        Examples</span>
-<span class="sd">        --------</span>
-<span class="sd">        &gt;&gt;&gt; import openpnm as op</span>
-<span class="sd">        &gt;&gt;&gt; pn = op.network.Cubic(shape=[5, 5, 5])</span>
-<span class="sd">        &gt;&gt;&gt; pn._count(&#39;pore&#39;)</span>
-<span class="sd">        125</span>
-<span class="sd">        &gt;&gt;&gt; pn._count(&#39;throat&#39;)</span>
-<span class="sd">        300</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">element</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_element</span><span class="p">(</span><span class="n">element</span><span class="o">=</span><span class="n">element</span><span class="p">,</span> <span class="n">single</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="fm">__getitem__</span><span class="p">(</span><span class="n">element</span><span class="o">+</span><span class="s1">&#39;.all&#39;</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">temp</span>
 
 <div class="viewcode-block" id="Base.show_hist"><a class="viewcode-back" href="../../../modules/core/base.html#openpnm.core.Base.show_hist">[docs]</a>    <span class="k">def</span> <span class="nf">show_hist</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                   <span class="n">props</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">,</span> <span class="s1">&#39;throat.diameter&#39;</span><span class="p">,</span> <span class="s1">&#39;throat.length&#39;</span><span class="p">],</span>

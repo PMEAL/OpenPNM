@@ -176,12 +176,11 @@
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">scipy.sparse</span> <span class="k">as</span> <span class="nn">sprs</span>
 <span class="kn">import</span> <span class="nn">scipy.spatial</span> <span class="k">as</span> <span class="nn">sptl</span>
-<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
-<span class="kn">from</span> <span class="nn">openpnm.core</span> <span class="kn">import</span> <span class="n">Base</span><span class="p">,</span> <span class="n">ModelsMixin</span><span class="p">,</span> <span class="n">LegacyMixin</span><span class="p">,</span> <span class="n">LabelMixin</span><span class="p">,</span> <span class="n">ParamMixin</span>
+<span class="kn">from</span> <span class="nn">openpnm.core</span> <span class="kn">import</span> <span class="n">Base</span><span class="p">,</span> <span class="n">ModelsMixin</span><span class="p">,</span> <span class="n">LabelMixin</span><span class="p">,</span> <span class="n">ParamMixin</span>
 <span class="kn">from</span> <span class="nn">openpnm</span> <span class="kn">import</span> <span class="n">topotools</span>
 <span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">Docorator</span><span class="p">,</span> <span class="n">SettingsAttr</span>
 <span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">Workspace</span><span class="p">,</span> <span class="n">logging</span>
-<span class="kn">import</span> <span class="nn">openpnm.models.topology</span> <span class="k">as</span> <span class="nn">tm</span>
+<span class="kn">import</span> <span class="nn">openpnm.models.network</span> <span class="k">as</span> <span class="nn">mods</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 <span class="n">ws</span> <span class="o">=</span> <span class="n">Workspace</span><span class="p">()</span>
 <span class="n">docstr</span> <span class="o">=</span> <span class="n">Docorator</span><span class="p">()</span>
@@ -199,7 +198,7 @@
     <span class="n">prefix</span> <span class="o">=</span> <span class="s1">&#39;net&#39;</span>
 
 
-<div class="viewcode-block" id="GenericNetwork"><a class="viewcode-back" href="../../../modules/network/generic.html#openpnm.network.GenericNetwork">[docs]</a><span class="k">class</span> <span class="nc">GenericNetwork</span><span class="p">(</span><span class="n">ParamMixin</span><span class="p">,</span> <span class="n">Base</span><span class="p">,</span> <span class="n">ModelsMixin</span><span class="p">,</span> <span class="n">LegacyMixin</span><span class="p">,</span> <span class="n">LabelMixin</span><span class="p">):</span>
+<div class="viewcode-block" id="GenericNetwork"><a class="viewcode-back" href="../../../modules/network/generic.html#openpnm.network.GenericNetwork">[docs]</a><span class="k">class</span> <span class="nc">GenericNetwork</span><span class="p">(</span><span class="n">ParamMixin</span><span class="p">,</span> <span class="n">Base</span><span class="p">,</span> <span class="n">ModelsMixin</span><span class="p">,</span> <span class="n">LabelMixin</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This generic class contains the main functionality used by all networks</span>
 
@@ -210,6 +209,54 @@
 
 <span class="sd">    conns : array_like</span>
 <span class="sd">        An Nt-by-2 array of [head, tail] connections between pores.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The GenericNetwork class houses a number of methods used for querying and</span>
+<span class="sd">    managing the network&#39;s spatial and topological information.  The following</span>
+<span class="sd">    table gives a very short overview of the methods added those already found</span>
+<span class="sd">    on the ``openpnm.core.Base`` class.</span>
+
+<span class="sd">    +-----------------------------+-------------------------------------------+</span>
+<span class="sd">    | Method or Attribute         | Functionality                             |</span>
+<span class="sd">    +=============================+===========================================+</span>
+<span class="sd">    | ``create_adjacency_matrix`` | Create an adjacency matrix using given    |</span>
+<span class="sd">    |                             | weights in a specified format             |</span>
+<span class="sd">    +-----------------------------+-------------------------------------------+</span>
+<span class="sd">    | ``create_incidence_matrix`` | Create an incidence matrix using given    |</span>
+<span class="sd">    |                             | weights in a specified format             |</span>
+<span class="sd">    +-----------------------------+-------------------------------------------+</span>
+<span class="sd">    | ``get_adjacency_matrix``    | Retrieve an existing adjacency matrix in  |</span>
+<span class="sd">    |                             | the specified format (from ``am``)        |</span>
+<span class="sd">    +-----------------------------+-------------------------------------------+</span>
+<span class="sd">    | ``get_incidence_matrix``    | Retrieve an existing incidence matrix in  |</span>
+<span class="sd">    |                             | the specified format (from ``im``)        |</span>
+<span class="sd">    +-----------------------------+-------------------------------------------+</span>
+<span class="sd">    | ``am``                      | Returns the adjacency matrix in COO format|</span>
+<span class="sd">    +-----------------------------+-------------------------------------------+</span>
+<span class="sd">    | ``im``                      | Returns the incidence matrix in COO format|</span>
+<span class="sd">    +-----------------------------+-------------------------------------------+</span>
+<span class="sd">    | ``find_neighbor_pores``     | For a given set of pores, find all        |</span>
+<span class="sd">    |                             | neighboring pores                         |</span>
+<span class="sd">    +-----------------------------+-------------------------------------------+</span>
+<span class="sd">    | ``find_neighbor_throats``   | For a given set of pores, find all        |</span>
+<span class="sd">    |                             | neighboring throats                       |</span>
+<span class="sd">    +-----------------------------+-------------------------------------------+</span>
+<span class="sd">    | ``find_connecting_throat``  | For each pair of throats find the pores   |</span>
+<span class="sd">    |                             | they connect                              |</span>
+<span class="sd">    +-----------------------------+-------------------------------------------+</span>
+<span class="sd">    | ``find_connected_pores``    | For each throat, find the pores which it  |</span>
+<span class="sd">    |                             | connects                                  |</span>
+<span class="sd">    +-----------------------------+-------------------------------------------+</span>
+<span class="sd">    | ``num_neighbors``           | For a given set of pores find the number  |</span>
+<span class="sd">    |                             | of neighbors for each                     |</span>
+<span class="sd">    +-----------------------------+-------------------------------------------+</span>
+<span class="sd">    | ``find_nearby_pores``       | For a given set of pores, find pores that |</span>
+<span class="sd">    |                             | are within a certain distance             |</span>
+<span class="sd">    +-----------------------------+-------------------------------------------+</span>
+<span class="sd">    | ``check_network_health``    | Check the topology for any problems such  |</span>
+<span class="sd">    |                             | as isolated pores                         |</span>
+<span class="sd">    +-----------------------------+-------------------------------------------+</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -268,7 +315,7 @@
             <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.all&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">Nt</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
             <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">conns</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.coordination_number&#39;</span><span class="p">,</span>
-                       <span class="n">model</span><span class="o">=</span><span class="n">tm</span><span class="o">.</span><span class="n">coordination_number</span><span class="p">,</span>
+                       <span class="n">model</span><span class="o">=</span><span class="n">mods</span><span class="o">.</span><span class="n">coordination_number</span><span class="p">,</span>
                        <span class="n">regen_mode</span><span class="o">=</span><span class="s1">&#39;explicit&#39;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>

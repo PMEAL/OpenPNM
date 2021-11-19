@@ -218,6 +218,66 @@
 <span class="sd">    values assigned to it which can be found by running</span>
 <span class="sd">    ``props(mode=&#39;constants&#39;)``.</span>
 
+<span class="sd">    +---+----------------------+------------------+--------------------------+</span>
+<span class="sd">    | # | Property Name        | Parameter        | Value                    |</span>
+<span class="sd">    +===+======================+==================+==========================+</span>
+<span class="sd">    | 1 | pore.vapor_pressure  | model:           | antoine                  |</span>
+<span class="sd">    +---+----------------------+------------------+--------------------------+</span>
+<span class="sd">    |   |                      | A                | 9.85767                  |</span>
+<span class="sd">    +---+----------------------+------------------+--------------------------+</span>
+<span class="sd">    |   |                      | B                | 3007.129                 |</span>
+<span class="sd">    +---+----------------------+------------------+--------------------------+</span>
+<span class="sd">    |   |                      | C                | -10.001                  |</span>
+<span class="sd">    +---+----------------------+------------------+--------------------------+</span>
+<span class="sd">    |   |                      | regen_mode       | normal                   |</span>
+<span class="sd">    +---+----------------------+------------------+--------------------------+</span>
+<span class="sd">    |   |                      | temperature      | pore.temperature         |</span>
+<span class="sd">    +---+----------------------+------------------+--------------------------+</span>
+<span class="sd">    | 2 | pore.density         | model:           | linear                   |</span>
+<span class="sd">    +---+----------------------+------------------+--------------------------+</span>
+<span class="sd">    |   |                      | prop             | pore.temperature         |</span>
+<span class="sd">    +---+----------------------+------------------+--------------------------+</span>
+<span class="sd">    |   |                      | b                | 14280.9                  |</span>
+<span class="sd">    +---+----------------------+------------------+--------------------------+</span>
+<span class="sd">    |   |                      | m                | -2.47004                 |</span>
+<span class="sd">    +---+----------------------+------------------+--------------------------+</span>
+<span class="sd">    |   |                      | regen_mode       | normal                   |</span>
+<span class="sd">    +---+----------------------+------------------+--------------------------+</span>
+<span class="sd">    | 3 | pore.molar_density   | model:           | standard                 |</span>
+<span class="sd">    +---+----------------------+------------------+--------------------------+</span>
+<span class="sd">    |   |                      | regen_mode       | normal                   |</span>
+<span class="sd">    +---+----------------------+------------------+--------------------------+</span>
+<span class="sd">    |   |                      | mol_weight       | pore.molecular_weight    |</span>
+<span class="sd">    +---+----------------------+------------------+--------------------------+</span>
+<span class="sd">    |   |                      | density          | pore.density             |</span>
+<span class="sd">    +---+----------------------+------------------+--------------------------+</span>
+<span class="sd">    | 4 | pore.surface_tension | model:           | linear                   |</span>
+<span class="sd">    +---+----------------------+------------------+--------------------------+</span>
+<span class="sd">    |   |                      | prop             | pore.temperature         |</span>
+<span class="sd">    +---+----------------------+------------------+--------------------------+</span>
+<span class="sd">    |   |                      | b                | 0.56254                  |</span>
+<span class="sd">    +---+----------------------+------------------+--------------------------+</span>
+<span class="sd">    |   |                      | m                | -0.00028                 |</span>
+<span class="sd">    +---+----------------------+------------------+--------------------------+</span>
+<span class="sd">    |   |                      | regen_mode       | normal                   |</span>
+<span class="sd">    +---+----------------------+------------------+--------------------------+</span>
+<span class="sd">    | 5 | pore.thermal_cond... | model:           | polynomial               |</span>
+<span class="sd">    +---+----------------------+------------------+--------------------------+</span>
+<span class="sd">    |   |                      | prop             | pore.temperature         |</span>
+<span class="sd">    +---+----------------------+------------------+--------------------------+</span>
+<span class="sd">    |   |                      | a                | [3.98691, 0.0170967, ... |</span>
+<span class="sd">    +---+----------------------+------------------+--------------------------+</span>
+<span class="sd">    |   |                      | regen_mode       | normal                   |</span>
+<span class="sd">    +---+----------------------+------------------+--------------------------+</span>
+<span class="sd">    | 6 | pore.viscosity       | model:           | polynomial               |</span>
+<span class="sd">    +---+----------------------+------------------+--------------------------+</span>
+<span class="sd">    |   |                      | prop             | pore.temperature         |</span>
+<span class="sd">    +---+----------------------+------------------+--------------------------+</span>
+<span class="sd">    |   |                      | a                | [0.00355837, -1.00131... |</span>
+<span class="sd">    +---+----------------------+------------------+--------------------------+</span>
+<span class="sd">    |   |                      | regen_mode       | normal                   |</span>
+<span class="sd">    +---+----------------------+------------------+--------------------------+</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
