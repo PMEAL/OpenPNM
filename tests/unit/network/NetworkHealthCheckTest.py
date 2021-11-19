@@ -13,14 +13,13 @@ class CheckNetworkHealthTest:
         self.net = op.network.Cubic(shape=[2, 2, 2], project=self.proj)
 
     def test_check_network_health_healthy(self):
-        a = self.net.check_network_health()
-        items = set(['disconnected_clusters',
+        a = self.proj.check_network_health()
+        items = set(['headless_throats',
+                     'looped_throats',
                      'isolated_pores',
-                     'trim_pores',
+                     'disconnected_pores',
                      'duplicate_throats',
-                     'bidirectional_throats',
-                     'headless_throats',
-                     'looped_throats'])
+                     'bidirectional_throats'])
         assert items == a.keys()
         assert np.size(list(a.values())) == 0
 
@@ -30,9 +29,8 @@ class CheckNetworkHealthTest:
         Ps = Ps*(net['pore.coords'][:, 1] > 2.5)
         Ts = net.find_neighbor_throats(pores=Ps, mode='exclusive_or')
         trim(network=net, throats=Ts)
-        a = net.check_network_health()
-        assert len(a['disconnected_clusters']) == 2
-        assert len(a['trim_pores']) == 10
+        a = net.project.check_network_health()
+        assert len(a['disconnected_pores']) == 10
 
     def test_check_network_health_two_isolated_clusters(self):
         net = op.network.Cubic(shape=[5, 5, 5])

@@ -105,7 +105,7 @@ def electroneutrality(target,
 
     # Fetch openpnm objects
     network = target.network
-    throats = network.map_throats(throats=target.Ts, origin=target)
+    throats = network.throats(target.name)
     phase = target.project.find_phase(target)
     cn = network.conns[throats]
 

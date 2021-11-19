@@ -309,6 +309,13 @@ class Base(dict):
     settings = property(fget=_get_settings, fset=_set_settings, fdel=_del_settings)
 
     @property
+    def _domain(self):
+        try:
+            return self.phase
+        except AttributeError:
+            return self.network
+
+    @property
     def network(self):
         r"""
         A shortcut to get a handle to the associated network

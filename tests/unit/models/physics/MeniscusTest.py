@@ -163,7 +163,7 @@ class MeniscusTest:
         a = np.around(phys["throat.no_target_pressure.radius"], 10)
         b = np.around(phys["throat.small_target_pressure.radius"], 10)
         assert np.allclose(a, b)
-        h = phys.check_data_health()
+        h = phys.project.check_data_health(phys)
         for check in h.values():
             if len(check) > 0:
                 assert 1 == 2

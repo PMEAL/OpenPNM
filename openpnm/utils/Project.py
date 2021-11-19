@@ -318,10 +318,10 @@ class Project(list):
             for _phase in self.phases().values():
                 physics = self.find_physics(phase=_phase)
                 for phys in physics:
-                    Ps = _phase.map_pores(pores=phys.Ps, origin=phys)
-                    physPs = _phase.tomask(pores=Ps)
-                    Ts = _phase.map_throats(throats=phys.Ts, origin=phys)
-                    physTs = _phase.tomask(throats=Ts)
+                    Ps = _phase.pores(phys.name)
+                    physPs = _phase.to_mask(pores=Ps)
+                    Ts = _phase.throats(phys.name)
+                    physTs = _phase.to_mask(throats=Ts)
                     if np.all(geoPs == physPs) and np.all(geoTs == physTs):
                         result.append(phys)
             return result
@@ -754,7 +754,7 @@ class Project(list):
         - This is just a 'check' and does not 'fix' the problems it finds
 
         """
-        import openpnm.models.network.health as mods
+        import openpnm.models.network as mods
 
         health = HealthDict()
         net = self.network

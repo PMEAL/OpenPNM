@@ -135,17 +135,17 @@ class VoronoiFibers(Project):
 
         # Tidy up network
         h = net.check_network_health()
-        if len(h["trim_pores"]) > 0:
-            topotools.trim(network=net, pores=h["trim_pores"])
+        if len(h["disconnected_pores"]) > 0:
+            topotools.trim(network=net, pores=h["disconnected_pores"])
         # Copy the Delaunay throat diameters to the boundary pores
         Ps = net.pores(["delaunay", "boundary"], mode="xnor")
-        map_Ps = del_geom.map_pores(pores=Ps, origin=net)
+        map_Ps = del_geom.to_global(pores=Ps)
         all_Ts = net.find_neighbor_throats(pores=Ps, flatten=False)
         for i, Ts in enumerate(all_Ts):
             Ts = np.asarray(Ts)
             Ts = Ts[net["throat.delaunay"][Ts]]
             if len(Ts) > 0:
-                map_Ts = del_geom.map_throats(throats=Ts, origin=net)
+                map_Ts = del_geom.to_global(throats=Ts)
                 td = del_geom["throat.diameter"][map_Ts]
                 ta = del_geom["throat.area"][map_Ts]
                 del_geom["pore.diameter"][map_Ps[i]] = td
@@ -941,11 +941,11 @@ class DelaunayGeometry(GenericGeometry):
 
         if len(pores) > 0:
             net = self.network
-            net_pores = net.map_pores(pores=pores, origin=self)
+            net_pores = self.to_global(pores=pores)
             centroids = self["pore.centroid"][pores]
             coords = net["pore.coords"][net_pores]
             net_throats = net.find_neighbor_throats(pores=net_pores)
-            throats = self.map_throats(throats=net_throats, origin=net)
+            throats = self.to_global(throats=net_throats)
             tcentroids = self["throat.centroid"][throats]
             # Can't create volume from one throat
             if 1 <= len(throats):

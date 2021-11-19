@@ -1,8 +1,8 @@
-from openpnm.core import Base, LegacyMixin, LabelMixin, ParamMixin
+from openpnm.core import Base, LabelMixin, ParamMixin
 import numpy as np
 
 
-class Subdomain(Base, LegacyMixin, LabelMixin):
+class Subdomain(Base, LabelMixin):
     r"""
     This subclass of the Base class provides the ability assign the object
     to specific locations (pores and throats) in the domain.  This class
@@ -48,13 +48,6 @@ class Subdomain(Base, LegacyMixin, LabelMixin):
                 raise Exception('Cannot create ' + key + ' when '
                                 + hit + ' is already defined')
         super().__setitem__(key, value)
-
-    @property
-    def _domain(self):
-        try:
-            return self.phase
-        except AttributeError:
-            return self.network
 
     def _set_locations(self, element, indices, mode):
         r"""

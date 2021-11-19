@@ -73,7 +73,7 @@ def conduit_conductance(target, throat_conductance,
     value = phase[throat_conductance].copy()
     value[mask] = value[mask]*factor
     # Now map throats onto target object
-    Ts = network.map_throats(throats=target.Ts, origin=target)
+    Ts = network.throats(target.name)
     return value[Ts]
 
 
@@ -125,9 +125,9 @@ def late_filling(target, pressure='pore.pressure',
     values = np.clip(1 - Swp, 0.0, 1.0)
     # Now map element onto target object
     if element == 'throat':
-        Ts = network.map_throats(throats=target.Ts, origin=target)
+        Ts = network.throats(target.name)
         values = values[Ts]
     else:
-        Ps = network.map_pores(pores=target.Ps, origin=target)
+        Ps = network.pores(target.name)
         values = values[Ps]
     return values

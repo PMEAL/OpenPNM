@@ -1,7 +1,7 @@
 import numpy as np
 import scipy.sparse as sprs
 import scipy.spatial as sptl
-from openpnm.core import Base, ModelsMixin, LegacyMixin, LabelMixin, ParamMixin
+from openpnm.core import Base, ModelsMixin, LabelMixin, ParamMixin
 from openpnm import topotools
 from openpnm.utils import Docorator, SettingsAttr
 from openpnm.utils import Workspace, logging
@@ -23,7 +23,7 @@ class NetworkSettings:
     prefix = 'net'
 
 
-class GenericNetwork(ParamMixin, Base, ModelsMixin, LegacyMixin, LabelMixin):
+class GenericNetwork(ParamMixin, Base, ModelsMixin, LabelMixin):
     r"""
     This generic class contains the main functionality used by all networks
 

@@ -58,7 +58,7 @@ def distance_to_furthest_neighbor(target):
     Find the distance between each pore and its furthest topological neighbor
     """
     network = target.project.network
-    throats = network.map_throats(throats=target.Ts, origin=target)
+    throats = network.throats(target.name)
     cn = network['throat.conns'][throats]
     C1 = network['pore.coords'][cn[:, 0]]
     C2 = network['pore.coords'][cn[:, 1]]

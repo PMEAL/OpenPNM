@@ -54,7 +54,7 @@ def from_neighbor_throats(target, prop, mode='min', ignore_nans=True):
         if ignore_nans:
             np.subtract.at(counts, im.row, nans[im.col])
         values = values/counts
-    Ps = boss.map_pores(target.pores(), target)
+    Ps = boss.pores(target.name)
     return np.array(values)[Ps]
 
 
@@ -86,7 +86,8 @@ def from_neighbor_pores(target, prop, mode='min', ignore_nans=True):
     prj = target.project
     lookup = prj.find_full_domain(target)
     network = prj.network
-    throats = network.map_throats(target.throats(), target)
+    domain = target._domain
+    throats = domain.throats(target.name)
     P12 = network.find_connected_pores(throats)
     pvalues = lookup[prop][P12]
     if ignore_nans:

@@ -121,6 +121,6 @@ def effective(target, pore_volume='pore.volume',
     eff_vol = np.copy(network[pore_volume])
     np.add.at(eff_vol, P1, 1/2*network[throat_volume])
     np.add.at(eff_vol, P2, 1/2*network[throat_volume])
-    pores = network.map_pores(pores=target.Ps, origin=target)
+    pores = network.pores(target.name)
     value = eff_vol[pores]
     return value

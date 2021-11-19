@@ -409,7 +409,6 @@ class LabelMixin:
         See Also
         --------
         throats
-        map_pores
 
         Notes
         -----
@@ -491,7 +490,6 @@ class LabelMixin:
         See Also
         --------
         pores
-        map_throats
 
         Examples
         --------

@@ -651,48 +651,48 @@ class BaseTest:
         assert self.net['pore.test_dict.test1'].shape == (self.net.Np, )
         assert 'pore.test_dict.test2' in self.net.keys()
 
-    def test_map_pores(self):
-        a = self.geo21['pore._id']
-        b = self.geo22['pore._id']
-        assert a.size == self.geo21.Np
-        assert b.size == self.geo22.Np
-        assert ~np.any(np.in1d(a, b))
-        Pgeo21 = self.net2.map_pores(pores=self.geo21.Ps, origin=self.geo21)
-        assert np.all(Pgeo21 == self.net2.pores(self.geo21.name))
-        Pgeo22 = self.net2.map_pores(pores=self.geo22.Ps, origin=self.geo22)
-        assert np.all(Pgeo22 == self.net2.pores(self.geo22.name))
+    # def test_map_pores(self):
+    #     a = self.geo21['pore._id']
+    #     b = self.geo22['pore._id']
+    #     assert a.size == self.geo21.Np
+    #     assert b.size == self.geo22.Np
+    #     assert ~np.any(np.in1d(a, b))
+    #     Pgeo21 = self.net2.map_pores(pores=self.geo21.Ps, origin=self.geo21)
+    #     assert np.all(Pgeo21 == self.net2.pores(self.geo21.name))
+    #     Pgeo22 = self.net2.map_pores(pores=self.geo22.Ps, origin=self.geo22)
+    #     assert np.all(Pgeo22 == self.net2.pores(self.geo22.name))
 
-    def test_map_throats(self):
-        a = self.geo21['throat._id']
-        assert a.size == self.geo21.Nt
-        Tgeo21 = self.net2.map_throats(throats=self.geo21.Ts,
-                                       origin=self.geo21)
-        assert np.all(Tgeo21 == self.net2.throats(self.geo21.name))
+    # def test_map_throats(self):
+    #     a = self.geo21['throat._id']
+    #     assert a.size == self.geo21.Nt
+    #     Tgeo21 = self.net2.map_throats(throats=self.geo21.Ts,
+    #                                    origin=self.geo21)
+    #     assert np.all(Tgeo21 == self.net2.throats(self.geo21.name))
 
-    def test_map_pores_unfiltered(self):
-        b = self.net.map_pores(pores=self.geo.Ps, origin=self.geo,
-                               filtered=False)
-        assert np.all(b.indices == self.net.pores(self.geo.name))
-        assert b.mask.size == self.geo.Np
+    # def test_map_pores_unfiltered(self):
+    #     b = self.net.map_pores(pores=self.geo.Ps, origin=self.geo,
+    #                            filtered=False)
+    #     assert np.all(b.indices == self.net.pores(self.geo.name))
+    #     assert b.mask.size == self.geo.Np
 
-    def test_map_pores_unfiltered_missing(self):
-        Ps = self.net2.Ps[15:20]
-        b = self.geo22.map_pores(pores=Ps, origin=self.net2, filtered=False)
-        assert sum(b.mask) == 2
-        assert len(b.mask) == 5
+    # def test_map_pores_unfiltered_missing(self):
+    #     Ps = self.net2.Ps[15:20]
+    #     b = self.geo22.map_pores(pores=Ps, origin=self.net2, filtered=False)
+    #     assert sum(b.mask) == 2
+    #     assert len(b.mask) == 5
 
-    def test_map_pores_reverse(self):
-        Ps = self.net2.Ps[:5]
-        b = self.geo21.map_pores(pores=Ps, origin=self.net2)
-        assert np.all(b == [0, 1, 2, 3, 4])
-        Ps = self.net2.Ps[-5:]
-        b = self.geo22.map_pores(pores=Ps, origin=self.net2)
-        assert np.all(b == [4, 5, 6, 7, 8])
+    # def test_map_pores_reverse(self):
+    #     Ps = self.net2.Ps[:5]
+    #     b = self.geo21.map_pores(pores=Ps, origin=self.net2)
+    #     assert np.all(b == [0, 1, 2, 3, 4])
+    #     Ps = self.net2.Ps[-5:]
+    #     b = self.geo22.map_pores(pores=Ps, origin=self.net2)
+    #     assert np.all(b == [4, 5, 6, 7, 8])
 
-    def test_map_pores_missing(self):
-        Ps = self.net2.Ps[:5]
-        b = self.geo22.map_pores(pores=Ps, origin=self.net2)
-        assert len(b) == 0
+    # def test_map_pores_missing(self):
+    #     Ps = self.net2.Ps[:5]
+    #     b = self.geo22.map_pores(pores=Ps, origin=self.net2)
+    #     assert len(b) == 0
 
     def test_getitem_with_no_matches(self):
         self.geo.pop('pore.blah', None)

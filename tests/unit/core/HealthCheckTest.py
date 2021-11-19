@@ -135,20 +135,20 @@ class HealthCheckTest:
         proj = self.ws.copy_project(self.proj)
         phys11 = proj['phys_01']
         phys11['pore.blah'] = 1.0
-        a = phys11.check_data_health()
+        a = proj.check_data_health(phys11)
         assert a.health
         phys11['pore.blah'][0] = np.nan
-        a = phys11.check_data_health()
+        a = proj.check_data_health(phys11)
         assert not a.health
         assert a['pore.blah'] == 'Has NaNs'
 
     def test_check_data_health_wrong_length(self):
         proj = self.ws.copy_project(self.proj)
         network = proj.network
-        a = network.check_data_health()
+        a = proj.check_data_health(network)
         assert a.health
         network.update({'pore.blah': np.array([1, 2, 3])})
-        a = network.check_data_health()
+        a = proj.check_data_health(network)
         assert not a.health
         assert a['pore.blah'] == 'Wrong Length'
 
