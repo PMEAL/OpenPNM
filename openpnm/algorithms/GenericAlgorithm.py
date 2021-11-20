@@ -21,7 +21,7 @@ class GenericAlgorithmSettings:
 
 @docstr.get_sections(base='GenericAlgorithm', sections=['Parameters'])
 @docstr.dedent
-class GenericAlgorithm(Base, LegacyMixin, LabelMixin):
+class GenericAlgorithm(Base, LegacyMixin):
     r"""
     Generic class to define the foundation of Algorithms
 

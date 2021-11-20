@@ -50,61 +50,7 @@ class Base(dict):
     including Networks, Geometries, Phases, Physics, and Algorithms.  This
     class is a subclass of the standard ``dict`` so has the usual methods such
     as ``pop`` and ``keys``, and has extra methods for working specifically
-    with OpenPNM data.  These are outlined briefly in the following table:
-
-    +----------------------+--------------------------------------------------+
-    | Method or Attribute  | Functionality                                    |
-    +======================+==================================================+
-    | ``props``            | List of keys containing numerical arrays         |
-    +----------------------+--------------------------------------------------+
-    | ``labels``           | List of key containing boolean arrays            |
-    +----------------------+--------------------------------------------------+
-    | ``pores``            | Returns pore / throat indices that have given    |
-    |                      | labels                                           |
-    | ``throats``          |                                                  |
-    +----------------------+--------------------------------------------------+
-    | ``Ps``, ``Ts``       | Indices for ALL pores and throats on object      |
-    +----------------------+--------------------------------------------------+
-    | ``num_pores`` ,      | Counts the number of pores or throats with a     |
-    |                      | given label                                      |
-    | ``num_throats``      |                                                  |
-    +----------------------+--------------------------------------------------+
-    | ``Np``, ``Nt``       | Total number of pores and throats on the object  |
-    +----------------------+--------------------------------------------------+
-    | ``tomask``           | Converts a list of pore or throat indices to a   |
-    |                      | boolean mask                                     |
-    +----------------------+--------------------------------------------------+
-    | ``toindices``        | Converts a boolean mask to pore or throat indices|
-    +----------------------+--------------------------------------------------+
-    | ``map_pores`` ,      | Given indices on object B returns corresponding  |
-    |                      | indices on object A                              |
-    | ``map_throats``      |                                                  |
-    +----------------------+--------------------------------------------------+
-    | ``interleave_data``  | Fetches data from associated objects into a      |
-    |                      | single array                                     |
-    +----------------------+--------------------------------------------------+
-    | ``interpolate_data`` | Given pore or throat data, interpolate the other |
-    +----------------------+--------------------------------------------------+
-    | ``filter_by_label``  | Given indices find those with specific labels    |
-    +----------------------+--------------------------------------------------+
-    | ``show_hist``        | Method for quickly plotting histograms of data   |
-    +----------------------+--------------------------------------------------+
-    | ``check_data_health``| Ensures all data arrays are valid and complete   |
-    +----------------------+--------------------------------------------------+
-
-
-    In addition to the above methods, there are a few attributes which provide
-    access to useful items:
-
-    +----------------+--------------------------------------------------------+
-    | Attribute      | Functionality                                          |
-    +================+========================================================+
-    | ``name``       | The string name of the object, unique to each Project  |
-    +----------------+--------------------------------------------------------+
-    | ``settings``   | A dictionary containing various setting values         |
-    +----------------+--------------------------------------------------------+
-    | ``project``    | A handle to the Project containing the object          |
-    +----------------+--------------------------------------------------------+
+    with OpenPNM data.
 
     """
 
@@ -894,6 +840,47 @@ class Base(dict):
             P1, P2 = self['pore.' + prop][self.network.conns].T
             T = self.interpolate_data(propname='pore.'+prop, mode=mode)
         return np.vstack((P1, T, P2)).T
+
+    def _count(self, element=None):
+        r"""
+        Returns a dictionary containing the number of pores and throats in
+        the network, stored under the keys 'pore' or 'throat'
+
+        Parameters
+        ----------
+        element : string, optional
+            Can be either 'pore' , 'pores', 'throat' or 'throats', which
+            specifies which count to return.
+
+        Returns
+        -------
+        A dictionary containing the number of pores and throats under the
+        'pore' and 'throat' key respectively.
+
+        See Also
+        --------
+        num_pores
+        num_throats
+
+        Notes
+        -----
+        The ability to send plurals is useful for some types of 'programmatic'
+        access.  For instance, the standard argument for locations is pores
+        or throats.  If these are bundled up in a **kwargs dict then you can
+        just use the dict key in count() without removing the 's'.
+
+        Examples
+        --------
+        >>> import openpnm as op
+        >>> pn = op.network.Cubic(shape=[5, 5, 5])
+        >>> pn._count('pore')
+        125
+        >>> pn._count('throat')
+        300
+        """
+        element = self._parse_element(element=element, single=True)
+        temp = np.size(self.__getitem__(element+'.all'))
+        return temp
 
     def show_hist(self,
                   props=['pore.diameter', 'throat.diameter', 'throat.length'],

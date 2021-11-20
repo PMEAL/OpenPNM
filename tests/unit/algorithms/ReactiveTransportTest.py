@@ -146,7 +146,7 @@ class ReactiveTransportTest:
         self.alg.remove_source(propname='pore.reaction', pores=[0, 2])
         assert self.alg['pore.reaction'].sum() == 2
         self.alg.remove_source(propname='pore.reaction')
-        assert self.alg['pore.reaction'].sum() == 0
+        assert 'pore.reaction' not in self.alg.keys()
 
     def test_source_relaxation_consistency_w_base_solution(self):
         self.alg.reset(bcs=True, source_terms=True)

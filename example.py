@@ -21,7 +21,8 @@ phys_hg = op.physics.Standard(network=pn, phase=hg, geometry=geo)
 mip = op.algorithms.Porosimetry(network=pn, phase=hg)
 mip.set_inlets(pores=pn.pores(['top', 'bottom']))
 mip.run()
-# mip.plot_intrusion_curve()
+hg.update(mip.results(Pc=70000)  )
+#   mip.plot_intrusion_curve()
 
 # %% Perform Stokes flow simulation
 sf = op.algorithms.StokesFlow(network=pn, phase=water)

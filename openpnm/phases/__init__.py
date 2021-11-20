@@ -23,16 +23,6 @@ regenerating models.
 OpenPNM include a few Phase subclasses that contain a suite of pre-configured
 models that predict the thermophysical properties of certain common phases.
 
-+-------------+---------------------------------------------------------------+
-| Class       | Comments                                                      |
-+=============+===============================================================+
-| Water       | Most models include the impact of salinity                    |
-+-------------+---------------------------------------------------------------+
-| Air         | A mixture of O2 and N2, but no humidity                       |
-+-------------+---------------------------------------------------------------+
-| Mercury     | Useful for porosimetry simulations, assumed theta is 140      |
-+-------------+---------------------------------------------------------------+
-
 ----
 
 **Customizing a GenericPhase Instance**
