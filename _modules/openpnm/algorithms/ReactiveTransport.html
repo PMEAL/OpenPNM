@@ -301,7 +301,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">propname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_prop</span><span class="p">(</span><span class="n">propname</span><span class="p">,</span> <span class="s2">&quot;pore&quot;</span><span class="p">)</span>
-        <span class="n">locs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tomask</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pores</span><span class="p">)</span>
+        <span class="n">locs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_mask</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pores</span><span class="p">)</span>
         <span class="c1"># Check if any BC is already set in the same locations</span>
         <span class="n">locs_BC</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.bc_value&#39;</span><span class="p">])</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.bc_rate&#39;</span><span class="p">])</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">locs</span> <span class="o">&amp;</span> <span class="n">locs_BC</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
@@ -323,7 +323,7 @@
 <span class="sd">            The pore indices where the source term should be applied.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">locs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tomask</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pores</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">Ps</span><span class="p">)</span>
+        <span class="n">locs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_mask</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pores</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">Ps</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="n">propname</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="n">locs</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;remove&#39;</span><span class="p">)</span></div>
         <span class="c1"># TODO: if pores=None: remove the label -&gt; reuse in reset method</span>
 

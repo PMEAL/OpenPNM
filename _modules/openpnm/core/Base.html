@@ -846,13 +846,13 @@
 
 <span class="sd">        See Also</span>
 <span class="sd">        --------</span>
-<span class="sd">        tomask</span>
+<span class="sd">        to_mask</span>
 
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
 <span class="sd">        This behavior could just as easily be accomplished by using the mask</span>
 <span class="sd">        in ``pn.pores()[mask]`` or ``pn.throats()[mask]``.  This method is</span>
-<span class="sd">        just a convenience function and is a complement to ``tomask``.</span>
+<span class="sd">        just a convenience function and is a complement to ``to_mask``.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
@@ -891,7 +891,7 @@
 <span class="sd">        &gt;&gt;&gt; Ps = pn[&#39;pore.top&#39;]</span>
 <span class="sd">        &gt;&gt;&gt; Ts = pn.find_neighbor_throats(pores=Ps)</span>
 <span class="sd">        &gt;&gt;&gt; g1 = op.geometry.GenericGeometry(network=pn, pores=Ps, throats=Ts)</span>
-<span class="sd">        &gt;&gt;&gt; Ts = ~pn.tomask(throats=Ts)</span>
+<span class="sd">        &gt;&gt;&gt; Ts = ~pn.to_mask(throats=Ts)</span>
 <span class="sd">        &gt;&gt;&gt; g2 = op.geometry.GenericGeometry(network=pn, pores=~Ps, throats=Ts)</span>
 <span class="sd">        &gt;&gt;&gt; g1[&#39;pore.value&#39;] = 1</span>
 <span class="sd">        &gt;&gt;&gt; print(g1[&#39;pore.value&#39;])</span>

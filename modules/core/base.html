@@ -875,7 +875,7 @@ when nans are inserted.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Ps</span> <span class="o">=</span> <span class="n">pn</span><span class="p">[</span><span class="s1">&#39;pore.top&#39;</span><span class="p">]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Ts</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">find_neighbor_throats</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">Ps</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">g1</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">GenericGeometry</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="n">Ps</span><span class="p">,</span> <span class="n">throats</span><span class="o">=</span><span class="n">Ts</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">Ts</span> <span class="o">=</span> <span class="o">~</span><span class="n">pn</span><span class="o">.</span><span class="n">tomask</span><span class="p">(</span><span class="n">throats</span><span class="o">=</span><span class="n">Ts</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Ts</span> <span class="o">=</span> <span class="o">~</span><span class="n">pn</span><span class="o">.</span><span class="n">to_mask</span><span class="p">(</span><span class="n">throats</span><span class="o">=</span><span class="n">Ts</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">g2</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">GenericGeometry</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">pores</span><span class="o">=~</span><span class="n">Ps</span><span class="p">,</span> <span class="n">throats</span><span class="o">=</span><span class="n">Ts</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">g1</span><span class="p">[</span><span class="s1">&#39;pore.value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">g1</span><span class="p">[</span><span class="s1">&#39;pore.value&#39;</span><span class="p">])</span>
@@ -1072,12 +1072,12 @@ of mask, which must be either Np or Nt long.</p>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">tomask</span></code></p>
+<p><a class="reference internal" href="#openpnm.core.Base.to_mask" title="openpnm.core.Base.to_mask"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_mask</span></code></a></p>
 </div>
 <p class="rubric">Notes</p>
 <p>This behavior could just as easily be accomplished by using the mask
 in <code class="docutils literal notranslate"><span class="pre">pn.pores()[mask]</span></code> or <code class="docutils literal notranslate"><span class="pre">pn.throats()[mask]</span></code>.  This method is
-just a convenience function and is a complement to <code class="docutils literal notranslate"><span class="pre">tomask</span></code>.</p>
+just a convenience function and is a complement to <code class="docutils literal notranslate"><span class="pre">to_mask</span></code>.</p>
 </dd></dl>
 
 <dl class="py method">
