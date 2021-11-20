@@ -226,32 +226,32 @@ class BaseTest:
         mask = np.zeros((self.net.Np), dtype=bool)
         Ps = [0, 3, 6]
         mask[Ps] = True
-        a = self.net.toindices(mask)
+        a = self.net.to_indices(mask)
         assert np.all(a == Ps)
 
     def test_toindices_throats(self):
         mask = np.zeros((self.net.Nt), dtype=bool)
         Ts = [0, 3, 6]
         mask[Ts] = True
-        a = self.net.toindices(mask)
+        a = self.net.to_indices(mask)
         assert np.all(a == Ts)
 
     def test_toindices_float_mask(self):
         mask = (np.random.rand(self.net.Np) < 0.5)
         inds_in = np.where(mask)[0]
-        inds_out = self.net.toindices(mask*1.0)
+        inds_out = self.net.to_indices(mask*1.0)
         assert np.all(inds_in == inds_out)
 
     def test_toindices_invalid_mask(self):
         mask = self.net.Np
         with pytest.raises(Exception):
-            self.net.toindices(mask)
+            self.net.to_indices(mask)
 
     def test_toindices_wrong_mask(self):
         mask = np.zeros((self.net.Nt)-2, dtype=bool)
         mask[[0, 3, 6]] = True
         with pytest.raises(Exception):
-            self.net.toindices(mask)
+            self.net.to_indices(mask)
 
     def test_count(self):
         with pytest.raises(Exception):

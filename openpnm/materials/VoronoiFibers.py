@@ -145,7 +145,7 @@ class VoronoiFibers(Project):
             Ts = np.asarray(Ts)
             Ts = Ts[net["throat.delaunay"][Ts]]
             if len(Ts) > 0:
-                map_Ts = del_geom.to_global(throats=Ts)
+                map_Ts = del_geom.to_local(throats=Ts)
                 td = del_geom["throat.diameter"][map_Ts]
                 ta = del_geom["throat.area"][map_Ts]
                 del_geom["pore.diameter"][map_Ps[i]] = td
@@ -534,11 +534,8 @@ class DelaunayGeometry(GenericGeometry):
         s = self.network["pore.surface"]
         d = self.network["pore.delaunay"]
         Ps = self.network.pores()[np.logical_and(d, np.logical_or(i, s))]
-        inds = self.network._map(
-            ids=self["pore._id"][Ps], element="pore", filtered=True
-        )
         # Get the fiber image
-        self._get_fiber_image(inds)
+        self._get_fiber_image()
         hull_image = np.ones_like(self._fiber_image, dtype=np.uint16) * -1
         self._hull_image = hull_image
         for pore in Ps:
@@ -607,7 +604,7 @@ class DelaunayGeometry(GenericGeometry):
                         check_p_old = check_p_new
         return np.asarray(line_points)
 
-    def _get_fiber_image(self, cpores):
+    def _get_fiber_image(self):
         r"""
         Produce image by filling in voxels along throat edges using Bresenham
         line then performing distance transform on fiber voxels to erode the
@@ -945,7 +942,7 @@ class DelaunayGeometry(GenericGeometry):
             centroids = self["pore.centroid"][pores]
             coords = net["pore.coords"][net_pores]
             net_throats = net.find_neighbor_throats(pores=net_pores)
-            throats = self.to_global(throats=net_throats)
+            throats = self.to_local(throats=net_throats)
             tcentroids = self["throat.centroid"][throats]
             # Can't create volume from one throat
             if 1 <= len(throats):

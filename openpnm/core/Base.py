@@ -629,7 +629,7 @@ class Base(dict):
 
         See Also
         --------
-        toindices
+        to_indices
 
         Examples
         --------

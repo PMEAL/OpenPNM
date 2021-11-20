@@ -1,4 +1,3 @@
-import scipy as sp
 import numpy as np
 import openpnm as op
 import openpnm.models.physics as pm

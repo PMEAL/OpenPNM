@@ -207,7 +207,8 @@ def taylor_aris_diffusion(target,
     """
     # Fetch openpnm objects
     network = target.network
-    throats = network.throats(target.name)
+    domain = target._domain
+    throats = domain.throats(target.name)
     phase = target.project.find_phase(target)
     cn = network['throat.conns'][throats]
     F = network[size_factors]

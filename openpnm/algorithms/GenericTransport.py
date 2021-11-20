@@ -410,7 +410,7 @@ class GenericTransport(GenericAlgorithm):
             x_BC[ind] = self['pore.bc_value'][ind]
             self.b[~ind] -= (self.A * x_BC)[~ind]
             # Update A
-            P_bc = self.toindices(ind)
+            P_bc = self.to_indices(ind)
             mask = np.isin(self.A.row, P_bc) | np.isin(self.A.col, P_bc)
             # Remove entries from A for all BC rows/cols
             self.A.data[mask] = 0

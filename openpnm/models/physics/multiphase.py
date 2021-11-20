@@ -116,7 +116,6 @@ def late_filling(target, pressure='pore.pressure',
 
     """
     element = pressure.split('.')[0]
-    network = target.network
     domain = target._domain
     phase = target.project.find_phase(target)
     pc_star = phase[Pc_star]

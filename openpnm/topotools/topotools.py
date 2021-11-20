@@ -1683,7 +1683,7 @@ def add_boundary_pores(network, pores, offset=None, move_to=None,
     # Parse the input pores
     Ps = np.array(pores, ndmin=1)
     if Ps.dtype is bool:
-        Ps = network.toindices(Ps)
+        Ps = network.to_indices(Ps)
     if np.size(pores) == 0:  # Handle an empty array if given
         return np.array([], dtype=np.int64)
     # Clone the specifed pores
