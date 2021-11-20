@@ -7,11 +7,12 @@ __all__ = [
     "SettingsAttr",
     "SettingsData",
     "TypedList",
+    "TypedSet",
     "Settings",
     ]
 
 
-class TypedList(list):
+class TypedMixin:
 
     def __init__(self, iterable=[], types=[]):
         self._types = types
@@ -32,6 +33,21 @@ class TypedList(list):
 
     types = property(fget=_get_types, fset=_set_types)
 
+    def _check_type(self, value):
+        if (type(value) not in self.types) and (len(self.types) > 0):
+            raise TypeError("This list cannot accept values of type " +
+                            f"{type(value)}")
+
+
+class TypedSet(TypedMixin, set):
+
+    def add(self, item):
+        self._check_type(item)
+        super().add(item)
+
+
+class TypedList(TypedMixin, list):
+
     def __setitem__(self, ind, value):
         self._check_type(value)
         super().__setitem__(ind, value)
@@ -48,11 +64,6 @@ class TypedList(list):
     def insert(self, index, value):
         self._check_type(value)
         super().insert(index, value)
-
-    def _check_type(self, value):
-        if (type(value) not in self.types) and (len(self.types) > 0):
-            raise TypeError("This list cannot accept values of type " +
-                            f"{type(value)}")
 
 
 class SettingsAttr:

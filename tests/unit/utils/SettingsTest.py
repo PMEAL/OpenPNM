@@ -1,6 +1,6 @@
 from traits.api import Int, List, Str, Float, TraitError, ListStr
 import openpnm as op
-from openpnm.utils import SettingsAttr, TypedList
+from openpnm.utils import SettingsAttr, TypedList, TypedSet
 import pytest
 
 
@@ -108,6 +108,26 @@ class SettingsTest:
         assert sets8.b == 2.2
         with pytest.raises(Exception):
             sets8.b = 'str'
+
+    def test_typed_set_inferred_type_after_init(self):
+        s = TypedSet()
+        s.add(0)
+        s2 = set((0, 2))
+        assert s2.difference(s) == set([2])
+        s.add(2)
+        assert s2.difference(s) == set()
+        s.add(2)
+        assert len(s) == 2  # Ensure length stays the same
+        with pytest.raises(Exception):
+            s.add('1')
+
+    def test_typed_set_given_multiple_types_during_init(self):
+        s = TypedSet(types=[int, float])
+        s.add(1)
+        s.add(2.0)
+        assert len(s) == 2
+        with pytest.raises(Exception):
+            s.add([2])
 
 
 if __name__ == '__main__':
