@@ -210,54 +210,6 @@
 <span class="sd">    conns : array_like</span>
 <span class="sd">        An Nt-by-2 array of [head, tail] connections between pores.</span>
 
-<span class="sd">    Notes</span>
-<span class="sd">    -----</span>
-<span class="sd">    The GenericNetwork class houses a number of methods used for querying and</span>
-<span class="sd">    managing the network&#39;s spatial and topological information.  The following</span>
-<span class="sd">    table gives a very short overview of the methods added those already found</span>
-<span class="sd">    on the ``openpnm.core.Base`` class.</span>
-
-<span class="sd">    +-----------------------------+-------------------------------------------+</span>
-<span class="sd">    | Method or Attribute         | Functionality                             |</span>
-<span class="sd">    +=============================+===========================================+</span>
-<span class="sd">    | ``create_adjacency_matrix`` | Create an adjacency matrix using given    |</span>
-<span class="sd">    |                             | weights in a specified format             |</span>
-<span class="sd">    +-----------------------------+-------------------------------------------+</span>
-<span class="sd">    | ``create_incidence_matrix`` | Create an incidence matrix using given    |</span>
-<span class="sd">    |                             | weights in a specified format             |</span>
-<span class="sd">    +-----------------------------+-------------------------------------------+</span>
-<span class="sd">    | ``get_adjacency_matrix``    | Retrieve an existing adjacency matrix in  |</span>
-<span class="sd">    |                             | the specified format (from ``am``)        |</span>
-<span class="sd">    +-----------------------------+-------------------------------------------+</span>
-<span class="sd">    | ``get_incidence_matrix``    | Retrieve an existing incidence matrix in  |</span>
-<span class="sd">    |                             | the specified format (from ``im``)        |</span>
-<span class="sd">    +-----------------------------+-------------------------------------------+</span>
-<span class="sd">    | ``am``                      | Returns the adjacency matrix in COO format|</span>
-<span class="sd">    +-----------------------------+-------------------------------------------+</span>
-<span class="sd">    | ``im``                      | Returns the incidence matrix in COO format|</span>
-<span class="sd">    +-----------------------------+-------------------------------------------+</span>
-<span class="sd">    | ``find_neighbor_pores``     | For a given set of pores, find all        |</span>
-<span class="sd">    |                             | neighboring pores                         |</span>
-<span class="sd">    +-----------------------------+-------------------------------------------+</span>
-<span class="sd">    | ``find_neighbor_throats``   | For a given set of pores, find all        |</span>
-<span class="sd">    |                             | neighboring throats                       |</span>
-<span class="sd">    +-----------------------------+-------------------------------------------+</span>
-<span class="sd">    | ``find_connecting_throat``  | For each pair of throats find the pores   |</span>
-<span class="sd">    |                             | they connect                              |</span>
-<span class="sd">    +-----------------------------+-------------------------------------------+</span>
-<span class="sd">    | ``find_connected_pores``    | For each throat, find the pores which it  |</span>
-<span class="sd">    |                             | connects                                  |</span>
-<span class="sd">    +-----------------------------+-------------------------------------------+</span>
-<span class="sd">    | ``num_neighbors``           | For a given set of pores find the number  |</span>
-<span class="sd">    |                             | of neighbors for each                     |</span>
-<span class="sd">    +-----------------------------+-------------------------------------------+</span>
-<span class="sd">    | ``find_nearby_pores``       | For a given set of pores, find pores that |</span>
-<span class="sd">    |                             | are within a certain distance             |</span>
-<span class="sd">    +-----------------------------+-------------------------------------------+</span>
-<span class="sd">    | ``check_network_health``    | Check the topology for any problems such  |</span>
-<span class="sd">    |                             | as isolated pores                         |</span>
-<span class="sd">    +-----------------------------+-------------------------------------------+</span>
-
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import openpnm as op</span>
