@@ -118,7 +118,7 @@ class SettingsTest:
         assert s2.difference(s) == set()
         s.add(2)
         assert len(s) == 2  # Ensure length stays the same
-        with pytest.raises():
+        with pytest.raises(Exception):
             s.add('1')
 
     def test_typed_set_given_multiple_types_during_init(self):
@@ -126,7 +126,7 @@ class SettingsTest:
         s.add(1)
         s.add(2.0)
         assert len(s) == 2
-        with pytest.raises():
+        with pytest.raises(Exception):
             s.add([2])
 
 
