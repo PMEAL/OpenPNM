@@ -126,7 +126,7 @@ class ReactiveTransport(GenericTransport):
 
         """
         propname = self._parse_prop(propname, "pore")
-        locs = self.tomask(pores=pores)
+        locs = self.to_mask(pores=pores)
         # Check if any BC is already set in the same locations
         locs_BC = np.isfinite(self['pore.bc_value']) + np.isfinite(self['pore.bc_rate'])
         if (locs & locs_BC).any():

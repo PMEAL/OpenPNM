@@ -106,7 +106,7 @@ class CubicDual(GenericNetwork):
             net['pore.surface'][Ps] = True
             Ts = net.find_neighbor_throats(pores=Ps, mode='xnor')
             net['throat.surface'][Ts] = True
-            net['throat.'+face] = net.tomask(throats=Ts)
+            net['throat.'+face] = net.to_mask(throats=Ts)
         for item in net.labels():
             if 'boundary' in item:
                 net.pop(item)

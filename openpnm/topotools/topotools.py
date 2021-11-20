@@ -9,6 +9,43 @@ logger = logging.getLogger(__name__)
 ws = Workspace()
 
 
+__all__ = [  # Keep this alphabetical for easier inspection of what's imported
+    'add_boundary_pores',
+    'clone_pores',
+    'connect_pores',
+    'dimensionality',
+    'extend',
+    'filter_pores_by_z',
+    'find_surface_pores',
+    'find_pore_to_pore_distance',
+    'from_cyl',
+    'from_sph',
+    'generate_base_points',
+    'get_domain_area',
+    'get_domain_length',
+    'get_shape',
+    'get_spacing',
+    'is_fully_connected',
+    'iscoplanar',
+    'isoutside',
+    'label_faces',
+    'merge_networks',
+    'merge_pores',
+    'reflect_base_points',
+    'rotate_coords',
+    'shear_coords',
+    'stitch',
+    'stitch_pores',
+    'subdivide',
+    'template_cylinder_annulus',
+    'template_sphere_shell',
+    'to_cyl',
+    'to_sph',
+    'trim',
+    'trim_occluded_throats',
+    ]
+
+
 def isoutside(coords, shape):
     r"""
     Identifies points that lie outside the specified shape
@@ -248,9 +285,9 @@ def trim(network, pores=[], throats=[]):
         if (obj.Np == Np_old) and (obj.Nt == Nt_old):
             Ps = Pkeep_inds
             Ts = Tkeep_inds
-        else:
-            Ps = obj.map_pores(pores=Pkeep, origin=network)
-            Ts = obj.map_throats(throats=Tkeep, origin=network)
+        else:  # If subdomain object then Np/Nt < Np/Nt_old
+            Ps = obj.to_local(pores=Pkeep_inds, missing_vals=None)
+            Ts = obj.to_local(throats=Tkeep_inds, missing_vals=None)
         for key in list(obj.keys()):
             temp = obj.pop(key)
             if key.split('.')[0] == 'throat':
@@ -355,43 +392,6 @@ def extend(network, coords=[], conns=[], labels=[], **kwargs):
     # Clear adjacency and incidence matrices which will be out of date now
     network._am.clear()
     network._im.clear()
-
-
-def reduce_coordination(network, z):
-    r"""
-    Deletes throats on network to match specified average coordination number
-
-    Parameters
-    ----------
-    network : OpenPNM Network object
-        The network whose throats are to be trimmed
-    z : scalar
-        The desire average coordination number.  It is not possible to specify
-        the distribution of the coordination, only the mean value.
-
-    Notes
-    -----
-    This method first finds the minimum spanning tree of the network using
-    random weights on each throat, then assures that these throats are *not*
-    deleted, in order to maintain network connectivity.
-
-    """
-    # Find minimum spanning tree using random weights
-    am = network.create_adjacency_matrix(weights=np.random.rand(network.Nt),
-                                         triu=False)
-    mst = csgraph.minimum_spanning_tree(am, overwrite=True)
-    mst = mst.tocoo()
-
-    # Label throats on spanning tree to avoid deleting them
-    Ts = network.find_connecting_throat(mst.row, mst.col)
-    Ts = np.hstack(Ts)
-    network['throat.mst'] = False
-    network['throat.mst'][Ts] = True
-
-    # Trim throats not on the spanning tree to acheive desired coordination
-    Ts = np.random.permutation(network.throats('mst', mode='nor'))
-    Ts = Ts[:int(network.Nt - network.Np*(z/2))]
-    trim(network=network, throats=Ts)
 
 
 def label_faces(network, tol=0.0, label='surface'):
@@ -967,10 +967,8 @@ def find_pore_to_pore_distance(network, pores1=None, pores2=None):
     ----------
     network : OpenPNM Network Object
         The network object containing the pore coordinates
-
     pores1 : array_like
         The pore indices of the first set
-
     pores2 : array_Like
         The pore indices of the second set.  It's OK if these indices are
         partially or completely duplicating ``pores``.
@@ -995,32 +993,6 @@ def find_pore_to_pore_distance(network, pores1=None, pores2=None):
     p2 = np.array(pores2, ndmin=1)
     coords = network['pore.coords']
     return cdist(coords[p1], coords[p2])
-
-
-def filter_pores_by_z(network, pores, z=1):
-    r"""
-    Find pores with a given number of neighbors
-
-    Parameters
-    ----------
-    network : OpenPNM Network object
-        The network on which the query is to be performed
-    pores : array_like
-        The pores to be filtered
-    z : int
-        The coordination number to filter by
-
-    Returns
-    -------
-    pores : array_like
-        The pores which have the specified coordination number
-
-    """
-    pores = network._parse_indices(pores)
-    Nz = network.num_neighbors(pores=pores)
-    orphans = np.where(Nz == z)[0]
-    hits = pores[orphans]
-    return hits
 
 
 def subdivide(network, pores, shape, labels=[]):
@@ -1174,14 +1146,14 @@ def subdivide(network, pores, shape, labels=[]):
 def trim_occluded_throats(network, mask='all'):
     r"""
     Remove throats with zero area from the network and also remove
-    pores that are isolated (as a result or otherwise)
+    pores that are isolated as a result
 
     Parameters
     ----------
     network : OpenPNM Network Object
 
     mask : string
-        Applies routine only to pores and throats with this label
+        Applies routine only to throats with this label
     """
     occluded_ts = network['throat.area'] == 0
     if np.sum(occluded_ts) > 0:
@@ -1711,7 +1683,7 @@ def add_boundary_pores(network, pores, offset=None, move_to=None,
     # Parse the input pores
     Ps = np.array(pores, ndmin=1)
     if Ps.dtype is bool:
-        Ps = network.toindices(Ps)
+        Ps = network.to_indices(Ps)
     if np.size(pores) == 0:  # Handle an empty array if given
         return np.array([], dtype=np.int64)
     # Clone the specifed pores
@@ -1947,3 +1919,29 @@ def get_domain_length(network, inlets=None, outlets=None):
         logger.error('A unique value of length could not be found')
     length = Ls[0]
     return length
+
+
+def filter_pores_by_z(network, pores, z=1):
+    r"""
+    Find pores with a given number of neighbors
+
+    Parameters
+    ----------
+    network : OpenPNM Network object
+        The network on which the query is to be performed
+    pores : array_like
+        The pores to be filtered
+    z : int
+        The coordination number to filter by
+
+    Returns
+    -------
+    pores : array_like
+        A list of pores which satisfy the criteria
+
+    """
+    pores = network._parse_indices(pores)
+    Nz = network.num_neighbors(pores=pores)
+    orphans = np.where(Nz == z)[0]
+    hits = pores[orphans]
+    return hits

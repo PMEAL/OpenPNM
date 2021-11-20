@@ -58,7 +58,8 @@ def ad_dif(target,
 
     """
     network = target.project.network
-    throats = network.map_throats(throats=target.Ts, origin=target)
+    domain = target._domain
+    throats = domain.throats(target.name)
     phase = target.project.find_phase(target)
     cn = network['throat.conns'][throats]
     # Find g for half of pore 1, throat, and half of pore 2

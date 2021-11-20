@@ -57,7 +57,7 @@ class VTKTest:
         self.phys_4['throat.baz'] = 22
 
         self.net['pore.object'] = np.ones(self.net.Np, dtype=object)
-        self.net.check_data_health()
+        self.net.project.check_data_health(self.net)
 
     def teardown_class(self):
         ws = op.Workspace()

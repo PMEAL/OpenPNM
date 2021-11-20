@@ -6,6 +6,16 @@ logger = logging.getLogger(__name__)
 ws = Workspace()
 
 
+__all__ = [
+    'ispercolating',
+    'remove_isolated_clusters',
+    'site_percolation',
+    'bond_percolation',
+    'find_clusters',
+    'find_path',
+    ]
+
+
 def ispercolating(am, inlets, outlets, mode='site'):
     r"""
     Determines if a percolating clusters exists in the network spanning
@@ -273,7 +283,7 @@ def _bond_percolation(network, tmask):
     # Find pores attached to each invaded throats
     Ps = network.find_connected_pores(throats=tmask, flatten=True)
     # Adjust cluster numbers such that non-invaded pores are labelled -1
-    p_clusters = (clusters + 1)*(network.tomask(pores=Ps).astype(int)) - 1
+    p_clusters = (clusters + 1)*(network.to_mask(pores=Ps).astype(int)) - 1
     # Label invaded throats with their neighboring pore's label
     t_clusters = clusters[network['throat.conns']][:, 0]
     # Label non-invaded throats with -1
