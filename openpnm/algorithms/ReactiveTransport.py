@@ -126,7 +126,7 @@ class ReactiveTransport(GenericTransport):
 
         """
         propname = self._parse_prop(propname, "pore")
-        locs = self.tomask(pores=pores)
+        locs = self.to_mask(pores=pores)
         # Check if any BC is already set in the same locations
         locs_BC = np.isfinite(self['pore.bc_value']) + np.isfinite(self['pore.bc_rate'])
         if (locs & locs_BC).any():
@@ -148,7 +148,7 @@ class ReactiveTransport(GenericTransport):
             The pore indices where the source term should be applied.
 
         """
-        locs = self.tomask(pores=pores or self.Ps)
+        locs = self.to_mask(pores=pores or self.Ps)
         self.set_label(propname, pores=locs, mode='remove')
         # TODO: if pores=None: remove the label -> reuse in reset method
 

@@ -78,7 +78,7 @@ class BundleOfTubes(Project):
         Ps_top = net.pores('top')
         Ps_bot = net.pores('bottom')
         Ts = net.find_connecting_throat(P1=Ps_top, P2=Ps_bot)
-        Ts = net.tomask(throats=Ts)
+        Ts = net.to_mask(throats=Ts)
         trim(network=net, throats=~Ts)
 
         geom = GenericGeometry(network=net, pores=net.Ps, throats=net.Ts)

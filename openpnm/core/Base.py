@@ -671,13 +671,13 @@ class Base(dict):
 
         See Also
         --------
-        tomask
+        to_mask
 
         Notes
         -----
         This behavior could just as easily be accomplished by using the mask
         in ``pn.pores()[mask]`` or ``pn.throats()[mask]``.  This method is
-        just a convenience function and is a complement to ``tomask``.
+        just a convenience function and is a complement to ``to_mask``.
 
         """
         if np.amax(mask) > 1:
@@ -716,7 +716,7 @@ class Base(dict):
         >>> Ps = pn['pore.top']
         >>> Ts = pn.find_neighbor_throats(pores=Ps)
         >>> g1 = op.geometry.GenericGeometry(network=pn, pores=Ps, throats=Ts)
-        >>> Ts = ~pn.tomask(throats=Ts)
+        >>> Ts = ~pn.to_mask(throats=Ts)
         >>> g2 = op.geometry.GenericGeometry(network=pn, pores=~Ps, throats=Ts)
         >>> g1['pore.value'] = 1
         >>> print(g1['pore.value'])

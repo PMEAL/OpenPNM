@@ -434,10 +434,10 @@ class LabelMixin:
         if to_global and hasattr(self, 'to_global'):
             ind = self.to_global(pores=ind)
             if asmask:
-                ind = self._domain.tomask(pores=ind)
+                ind = self._domain.to_mask(pores=ind)
         else:
             if asmask:
-                ind = self.tomask(pores=ind)
+                ind = self.to_mask(pores=ind)
         return ind
 
     def throats(self, labels='all', mode='or', asmask=False, to_global=False):
@@ -504,10 +504,10 @@ class LabelMixin:
         if to_global and hasattr(self, 'to_global'):
             ind = self.to_global(throats=ind)
             if asmask:
-                ind = self._domain.tomask(throats=ind)
+                ind = self._domain.to_mask(throats=ind)
         else:
             if asmask:
-                ind = self.tomask(throats=ind)
+                ind = self.to_mask(throats=ind)
         return ind
 
     def filter_by_label(self, pores=[], throats=[], labels=None, mode='or'):

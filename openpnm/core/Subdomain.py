@@ -189,7 +189,8 @@ class Subdomain(Base, LabelMixin):
             List of pore or throat indices to be converted
         missing_values : scalar
             The value to put into missing locations if global indices are not
-            found.
+            found.  If ``missing_vals`` is ``None``, then any missing values
+            are removed from the returned list.
 
         Returns
         -------
@@ -203,7 +204,12 @@ class Subdomain(Base, LabelMixin):
             element = 'throat'
             locs = throats
         mask = np.ones_like(self._domain[element + '.all'],
-                            dtype=int)*missing_vals
+                            dtype=int)*-1
         inds = np.where(self._domain[element + '.' + self.name])[0]
-        mask[inds] = self.Ps
-        return mask[locs]
+        mask[inds] = self._get_indices(element)
+        vals = mask[locs]
+        if missing_vals is None:
+            vals = vals[vals >= 0]
+        else:
+            vals[vals >= 0] = missing_vals
+        return vals

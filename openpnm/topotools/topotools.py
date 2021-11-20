@@ -285,9 +285,9 @@ def trim(network, pores=[], throats=[]):
         if (obj.Np == Np_old) and (obj.Nt == Nt_old):
             Ps = Pkeep_inds
             Ts = Tkeep_inds
-        else:
-            Ps = obj.to_global(pores=Pkeep)
-            Ts = obj.to_global(throats=Tkeep)
+        else:  # If subdomain object then Np/Nt < Np/Nt_old
+            Ps = obj.to_local(pores=Pkeep_inds, missing_vals=None)
+            Ts = obj.to_local(throats=Tkeep_inds, missing_vals=None)
         for key in list(obj.keys()):
             temp = obj.pop(key)
             if key.split('.')[0] == 'throat':

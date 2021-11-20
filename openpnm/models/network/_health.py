@@ -1,4 +1,6 @@
 import numpy as np
+from openpnm.utils import logging
+logger = logging.getLogger(__name__)
 
 
 __all__ = [
@@ -59,11 +61,14 @@ def cluster_size(target, cluster=None):
 
 def isolated_pores(target):
     r"""
-    find which pores, if any, are not connected to a throat
+    Find which pores, if any, are not connected to a throat
     """
     net = target.network
     values = np.ones(net.Np, dtype=bool)
     hits = np.unique(net.conns)
+    if np.any(hits >= target.Np):
+        logger.warning("Some throats point to non-existent pores")
+        hits = hits[hits < target.Np]
     values[hits] = False
     return values
 

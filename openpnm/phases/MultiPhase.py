@@ -37,7 +37,7 @@ class MultiPhase(GenericPhase):
     >>> mphase = MultiPhase(network=net, phases=[air, water], name='multi')
     >>> Ps = net['pore.coords'][:, 0] < 3  # Pick some pores to be air filled
     >>> Ts = net.find_neighbor_throats(pores=Ps)  # Find neighboring throats
-    >>> Ts = net.tomask(throats=Ts)  # Convert throat indices to mask
+    >>> Ts = net.to_mask(throats=Ts)  # Convert throat indices to mask
     >>> mphase.set_occupancy(phase=air, Pvals=Ps, Tvals=Ts)  # Assign occupancies
     >>> mphase.set_occupancy(phase=water, Pvals=~Ps, Tvals=~Ts)
 
@@ -148,7 +148,7 @@ class MultiPhase(GenericPhase):
 
         >>> Ps = net['pore.coords'][:, 0] < 3  # Pick some pores to be air filled
         >>> Ts = net.find_neighbor_throats(pores=Ps)  # Find neighboring throats
-        >>> Ts = net.tomask(throats=Ts)  # Convert throat indices to mask
+        >>> Ts = net.to_mask(throats=Ts)  # Convert throat indices to mask
         >>> mphase.set_occupancy(phase=air, Pvals=Ps, Tvals=Ts)  # Assign occupancies
         >>> mphase.set_occupancy(phase=water, Pvals=~Ps, Tvals=~Ts)
 
