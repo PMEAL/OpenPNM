@@ -58,6 +58,7 @@ def conduit_conductance(target, throat_conductance,
 
     """
     network = target.project.network
+    domain = target._domain
     phase = target.project.find_phase(target)
     Tinv = phase[throat_occupancy] < 0.5
     P12 = network['throat.conns']
@@ -73,7 +74,7 @@ def conduit_conductance(target, throat_conductance,
     value = phase[throat_conductance].copy()
     value[mask] = value[mask]*factor
     # Now map throats onto target object
-    Ts = network.throats(target.name)
+    Ts = domain.throats(target.name)
     return value[Ts]
 
 
@@ -115,7 +116,8 @@ def late_filling(target, pressure='pore.pressure',
 
     """
     element = pressure.split('.')[0]
-    network = target.project.network
+    network = target.network
+    domain = target._domain
     phase = target.project.find_phase(target)
     pc_star = phase[Pc_star]
     Pc = phase[pressure]
@@ -125,9 +127,9 @@ def late_filling(target, pressure='pore.pressure',
     values = np.clip(1 - Swp, 0.0, 1.0)
     # Now map element onto target object
     if element == 'throat':
-        Ts = network.throats(target.name)
+        Ts = domain.throats(target.name)
         values = values[Ts]
     else:
-        Ps = network.pores(target.name)
+        Ps = domain.pores(target.name)
         values = values[Ps]
     return values

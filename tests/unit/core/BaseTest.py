@@ -90,7 +90,7 @@ class BaseTest:
         a = self.net.pores(labels=['top', 'left'], mode='nor')
         assert np.all(a == [9, 10, 12, 13, 15, 16, 18, 19, 21, 22, 24, 25])
         b = self.net.pores(labels=['top', 'left'], mode='or')
-        c = self.net.tomask(pores=a)*self.net.tomask(pores=b)
+        c = self.net.to_mask(pores=a)*self.net.to_mask(pores=b)
         assert c.sum() == 0
 
     def test_pores_two_labels_nand(self):
@@ -211,16 +211,16 @@ class BaseTest:
             self.net.filter_by_label(pores=[0, 1, 2], throats=[0, 1, 2])
 
     def test_tomask_pores(self):
-        a = self.net.tomask(pores=self.net.pores('top'))
+        a = self.net.to_mask(pores=self.net.pores('top'))
         assert np.sum(a) == 9
 
     def test_tomask_throats(self):
-        a = self.net.tomask(throats=self.net.throats('label1'))
+        a = self.net.to_mask(throats=self.net.throats('label1'))
         assert np.sum(a) == 6
 
     def test_tomask_pores_and_throats(self):
         with pytest.raises(Exception):
-            _ = self.net.tomask(throats=[0, 1, 2], pores=[0, 1, 2])
+            _ = self.net.to_mask(throats=[0, 1, 2], pores=[0, 1, 2])
 
     def test_toindices_pores(self):
         mask = np.zeros((self.net.Np), dtype=bool)
