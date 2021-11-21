@@ -9,39 +9,16 @@ class Mercury(GenericPhase):
 
     Parameters
     ----------
-    network : OpenPNM Network object
-        The network to which this phase object will be attached.
+    %(GenericPhase.parameters)s
 
     References
     ----------
-    [1] Thermophysical Properties of Materials for Nuclear Engineering: IAEA,
-        Vienna, 2008. ISBN 978-92-0-106508-7:
+    The correlations and constants for this class were taken from:
 
-    Examples
-    --------
-    >>> import openpnm as op
-    >>> pn = op.network.Cubic(shape=[5, 5, 5])
-    >>> hg = op.phases.Mercury(network=pn)
+    ::
 
-    Notes
-    -----
-    The table below shows all of the pore-scale models that are included with
-    this class to calculate the physical properties of this fluid as functions
-    of the relevant state variables.
-
-    This object is initialized at standard conditions of 298 K and 101325 Pa.
-    If these conditions are changed the dependent properties can be
-    recalculated by calling ``regenerate_models``.
-
-    All of these parameters can be adjusted manually by editing the entries in
-    the **ModelsDict** stored in the ``models`` attribute of the object.
-
-    For a full listing of models and their parameters use ``print(obj.models)``
-    where ``obj`` is the handle to the object.
-
-    In addition to these models, this class also has a number of constant
-    values assigned to it which can be found by running
-    ``props(mode='constants')``.
+        Thermophysical Properties of Materials for Nuclear Engineering:
+        IAEA, Vienna, 2008. ISBN 978-92-0-106508-7:
 
     """
     def __init__(self, name=None, **kwargs):

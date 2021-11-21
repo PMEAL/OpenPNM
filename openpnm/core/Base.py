@@ -37,8 +37,17 @@ class Base(dict):
 
     Parameters
     ----------
+    network : OpenPNM network object
+        The network to which this object is associated
+    settings : dataclass-like or dict, optional
+        User defined settings for the object to override defaults. Can be a
+        dataclass-type object with settings stored as attributes or a python
+        dicionary of key-value pairs. Settings are stored in the ``settings``
+        attribute of the object.
     name : string, optional
-        The unique name of the object.  If not given one will be generated.
+        A unique name to assign to the object for easier identification.  If
+        not given one will be generated.
+
     Np : int, default is 0
         The total number of pores to be assigned to the object
     Nt : int, default is 0

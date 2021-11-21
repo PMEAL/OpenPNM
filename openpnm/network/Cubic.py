@@ -7,11 +7,13 @@ Cubic: Generate lattice-like networks
 import numpy as np
 from openpnm.network import GenericNetwork
 from openpnm import topotools
-from openpnm.utils import logging, SettingsAttr
+from openpnm.utils import logging, Docorator
 
+docstr = Docorator()
 logger = logging.getLogger(__name__)
 
 
+@docstr.dedent
 class Cubic(GenericNetwork):
     r"""
     Simple cubic lattice with connectivity from 6 to 26
@@ -23,8 +25,8 @@ class Cubic(GenericNetwork):
     Parameters
     ----------
     shape : array_like
-        The [Nx, Ny, Nz] size of the network in terms of the number of pores in
-        each direction
+        The [Nx, Ny, Nz] size of the network in terms of the number of pores
+        in each direction.  For a 2D network
     spacing : array_like, optional
         The spacing between pore centers in each direction. If not given, then
         [1, 1, 1] is assumed.
@@ -33,31 +35,26 @@ class Cubic(GenericNetwork):
         symmetrically to any combination of face, edge, or corners neighbors.
         The default is 6 to create a simple cubic structure, but options are:
 
-        - 6: Faces only
-        - 14: Faces and Corners
-        - 18: Faces and Edges
-        - 20: Edges and Corners
-        - 26: Faces, Edges and Corners
+        ===========  =====================================================
+        Value        Result
+        ===========  =====================================================
+        6            Faces only
+        14           Faces and Corners
+        18           Faces and Edges
+        20           Edges and Corners
+        26           Faces, Edges and Corners
+        ===========  =====================================================
 
         For a more random distribution of connectivity, use a high
         ``connectivity`` (i.e. 26) and then delete a fraction of the throats
-        using ``openpnm.topotools.reduce_coordination``.
+        using ``openpnm.topotools.reduce_coordination``.  Also note that
+        corners-only and edges-only are not permitted since they create
+        disconnected networks. If you require one of these topologies you
+        can specify 14 or 18, then use ``openpnm.topotools.trim`` to remove
+        the face-to-face connections, which can be identified by looking
+        for throats with a length equal to the network spacing.
 
-    name : string
-        An optional name for the object to help identify it.  If not given,
-        one will be generated.
-
-    Attributes
-    ----------
-    spacing : int or array
-        The distance between pore centers.  This value becomes meaningless
-        if the topology is manipulated at all (i.e. by adding boundary pores)
-        since there is not unique or consistent value.  In such cases an
-        exception is thrown.
-
-    shape : array
-        The shape of the network.  Like ``spacing`` this values is meaningless
-        if the topology is manipulated, so an Exception is thrown.
+    %(GenericNetwork.parameters)s
 
     Examples
     --------
@@ -86,6 +83,7 @@ class Cubic(GenericNetwork):
         # Take care of 1D/2D networks
         shape = np.array(shape, ndmin=1)
         shape = np.concatenate((shape, [1] * (3 - shape.size))).astype(int)
+        shape = np.maximum(shape, [1, 1, 1])
 
         arr = np.atleast_3d(np.empty(shape))
 

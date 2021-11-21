@@ -1,63 +1,20 @@
 import openpnm.models as mods
 import openpnm.models.geometry as gmods
 from openpnm.geometry import GenericGeometry
+from openpnm.utils import Docorator
 
 
+docstr = Docorator()
+
+
+@docstr.dedent
 class SpheresAndCylinders(GenericGeometry):
     r"""
-    Spheres and Cylinders subclass of GenericGeometry. This subclass is
-    meant as a basic default geometry to get started quickly.
 
-    Pore diameters are randomly assigned between 0 and the largest sphere
-    that does not overlap with it's nearest neighbor.
-
-    Throat diameters are half the diameter of the smaller of it's two
-    neighboring pores.
 
     Parameters
     ----------
-    network : GenericNetwork
-        The network with which this Geometry should be associated
-    pores : array_like
-        The pores in the domain where this Geometry applies
-    throats : array_like
-        The throats in the domain where this Geometry applies
-    name : str
-        The name of the object, which is also used as the label where this
-        geometry is defined.
-
-    Examples
-    --------
-    Geometry objects (along with Physics objects) can be applied to a
-    subset of pores and/or throats.  This allows for different geometrical
-    property models to be applied in different regions. This is illustrated
-    in the following code:
-
-    >>> import numpy as np
-    >>> import scipy as sp
-    >>> import openpnm as op
-    >>> from openpnm.geometry import SpheresAndCylinders
-    >>> import matplotlib.pyplot as plt
-    >>> pn = op.network.CubicDual(shape=[5, 5, 5])
-    >>> Ps = pn.pores('primary')
-    >>> Ts = pn.throats('primary')
-    >>> geo1 = SpheresAndCylinders(network=pn, pores=Ps, throats=Ts)
-    >>> Ps = pn.pores('secondary')
-    >>> Ts = pn.throats(['secondary', 'interconnect'])
-    >>> geo2 = SpheresAndCylinders(network=pn, pores=Ps, throats=Ts)
-
-    Now override the 'pore.diameter' values on the ``geo2`` object:
-
-    >>> geo2.remove_model('pore.diameter')  # Remove model and data
-    >>> geo2['pore.diameter'] = np.random.rand(geo2.Np) * 0.05
-
-    Look at the 'pore.diameter' distributions on each object:
-
-    >>> fig = plt.hist(geo1['pore.diameter'], bins=20, alpha=0.5)
-    >>> fig = plt.hist(geo2['pore.diameter'], bins=20, alpha=0.5)
-
-    The resulting figure shows that these two Geometry object each have a
-    different pore size distribution, with ``geo2`` being much smaller:
+    %(GenericGeometry.parameters)s
 
     """
 
