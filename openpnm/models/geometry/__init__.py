@@ -3,6 +3,26 @@ This submodule contains pore-scale models that calculate geometrical
 properties. These models are to be added to a Geometry object.
 """
 
+# The follow bits are to initialize some boilerplate docstrings for docrep
+from openpnm.utils import Docorator as _doc
+_docstr = _doc()
+
+
+@_docstr.get_sections(base='models.diameters', sections=['Parameters'])
+def _dummy_model_diameters(target):
+    r"""
+
+    Parameters
+    ----------
+    pore_diameter : str
+        Name of the dictionary key on ``target`` where the array containing
+        pore diameter values is stored
+    throat_diameter : str
+        Name of the dictionary key on ``target`` where the array containing
+        throat diameter values is stored
+
+    """
+
 from . import pore_size
 from . import pore_seed
 from . import pore_volume

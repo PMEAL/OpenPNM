@@ -31,13 +31,8 @@ def spheres_and_cylinders(
 
     Parameters
     ----------
-    %(models.parameters)s
-    pore_diameter : str
-        Name of the dictionary key on ``target`` where the array containing
-        pore diameter values is stored
-    throat_diameter : str
-        Name of the dictionary key on ``target`` where the array containing
-        throat diameter values is stored
+    %(models.target.parameters)s
+    %(models.diameters.parameters)s
 
     Returns
     -------

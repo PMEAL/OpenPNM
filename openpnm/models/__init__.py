@@ -80,8 +80,8 @@ from openpnm.utils import Docorator as _doc
 _docstr = _doc()
 
 
-@_docstr.get_sections(base='models', sections=['Parameters'])
-def _dummy_model(target):
+@_docstr.get_sections(base='models.target', sections=['Parameters'])
+def _dummy_model_target(target):
     r"""
 
     Parameters
