@@ -1,27 +1,21 @@
-r"""
-===============================================================================
-Submodule -- throat_centroid
-===============================================================================
-
-"""
 import numpy as _np
 
 
 def pore_coords(target):
     r"""
-    Calculate throat centroid values by averaging adjacent pore coordinates.
+    Calculate throat centroid values by averaging adjacent pore coordinates
 
     Parameters
     ----------
-    target : OpenPNM Object
-        The object which this model is associated with. This controls the
-        length of the calculated array, and also provides access to other
-        necessary properties.
+    target : OpenPNM Base object
+        Object with which this model is associated. This controls
+        the length of the calculated array, and also provides access to
+        other necessary properties.
 
     Returns
     -------
-    value : NumPy ndarray
-        Array containing throat centroid values.
+    value : ndarray
+        A numpy ndarray containing throat centroid values
 
     """
     network = target.project.network

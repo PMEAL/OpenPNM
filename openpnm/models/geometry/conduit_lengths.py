@@ -17,6 +17,7 @@ docstr = Docorator()
 # Fetch this docstring and use it on the other models in this file
 @docstr.get_sections(base='models.geometry.conduit_lengths',
                      sections=['Parameters', 'Returns'])
+@docstr.dedent
 def spheres_and_cylinders(
     target,
     pore_diameter="pore.diameter",
@@ -30,10 +31,7 @@ def spheres_and_cylinders(
 
     Parameters
     ----------
-    target : OpenPNM Base object
-        Object with which this model is associated. This controls
-        the length of the calculated array, and also provides access to
-        other necessary properties.
+    %(models.parameters)s
     pore_diameter : str
         Name of the dictionary key on ``target`` where the array containing
         pore diameter values is stored

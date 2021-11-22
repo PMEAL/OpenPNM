@@ -1,13 +1,11 @@
-r"""
-"""
-import numpy as _np
-from numpy.linalg import norm as _norm
-from openpnm.utils import logging as _logging
-_logger = _logging.getLogger(__name__)
+from openpnm.utils import Docorator
 
 
+docstr = Docorator()
 
 
+@docstr.get_sections(base='models.geometry.throat_length',
+                     sections=['Parameters', 'Returns'])
 def spheres_and_cylinders(
     target,
     pore_diameter='pore.diameter',
@@ -19,21 +17,21 @@ def spheres_and_cylinders(
 
     Parameters
     ----------
-    target : GenericGeometry
-        Geometry object which this model is associated with. This controls the
-        length of the calculated array, and also provides access to other
-        necessary properties.
-
+    target : OpenPNM Base object
+        Object with which this model is associated. This controls
+        the length of the calculated array, and also provides access to
+        other necessary properties.
     pore_diameter : str
-        Dictionary key of the pore diameter values.
-
+        Name of the dictionary key on ``target`` where the array containing
+        pore diameter values is stored
     throat_diameter : str
-        Dictionary key of the throat diameter values.
+        Name of the dictionary key on ``target`` where the array containing
+        throat diameter values is stored
 
     Returns
     -------
-    ndarray
-        Array containing throat length values.
+    lengths : ndarray
+        A numpy ndarray containing throat length values
 
     """
     from openpnm.models.geometry import conduit_lengths
@@ -54,21 +52,11 @@ def circles_and_rectangles(
 
     Parameters
     ----------
-    target : GenericGeometry
-        Geometry object which this model is associated with. This controls the
-        length of the calculated array, and also provides access to other
-        necessary properties.
-
-    pore_diameter : str
-        Dictionary key of the pore diameter values.
-
-    throat_diameter : str
-        Dictionary key of the throat diameter values.
+    %(models.geometry.throat_length.parameters)
 
     Returns
     -------
-    ndarray
-        Array containing throat length values.
+    %(models.geometry.throat_length.returns)
 
     """
     from openpnm.models.geometry import conduit_lengths
@@ -89,21 +77,11 @@ def cones_and_cylinders(
 
     Parameters
     ----------
-    target : GenericGeometry
-        Geometry object which this model is associated with. This controls the
-        length of the calculated array, and also provides access to other
-        necessary properties.
-
-    pore_diameter : str
-        Dictionary key of the pore diameter values.
-
-    throat_diameter : str
-        Dictionary key of the throat diameter values.
+    %(models.geometry.throat_length.parameters)
 
     Returns
     -------
-    ndarray
-        Array containing throat length values.
+    %(models.geometry.throat_length.returns
 
     """
     from openpnm.models.geometry import conduit_lengths
@@ -124,21 +102,11 @@ def trapezoids_and_rectangles(
 
     Parameters
     ----------
-    target : GenericGeometry
-        Geometry object which this model is associated with. This controls the
-        length of the calculated array, and also provides access to other
-        necessary properties.
-
-    pore_diameter : str
-        Dictionary key of the pore diameter values.
-
-    throat_diameter : str
-        Dictionary key of the throat diameter values.
+    %(models.geometry.throat_length.parameters)
 
     Returns
     -------
-    ndarray
-        Array containing throat length values.
+    %(models.geometry.throat_length.returns
 
     """
     from openpnm.models.geometry import conduit_lengths
@@ -159,21 +127,11 @@ def pyramids_and_cuboids(
 
     Parameters
     ----------
-    target : GenericGeometry
-        Geometry object which this model is associated with. This controls the
-        length of the calculated array, and also provides access to other
-        necessary properties.
-
-    pore_diameter : str
-        Dictionary key of the pore diameter values.
-
-    throat_diameter : str
-        Dictionary key of the throat diameter values.
+    %(models.geometry.throat_length.parameters)
 
     Returns
     -------
-    ndarray
-        Array containing throat length values.
+    %(models.geometry.throat_length.returns
 
     """
     from openpnm.models.geometry import conduit_lengths
@@ -194,21 +152,11 @@ def cubes_and_cuboids(
 
     Parameters
     ----------
-    target : GenericGeometry
-        Geometry object which this model is associated with. This controls the
-        length of the calculated array, and also provides access to other
-        necessary properties.
-
-    pore_diameter : str
-        Dictionary key of the pore diameter values.
-
-    throat_diameter : str
-        Dictionary key of the throat diameter values.
+    %(models.geometry.throat_length.parameters)
 
     Returns
     -------
-    ndarray
-        Array containing throat length values.
+    %(models.geometry.throat_length.returns
 
     """
     from openpnm.models.geometry import conduit_lengths
@@ -229,21 +177,11 @@ def squares_and_rectangles(
 
     Parameters
     ----------
-    target : GenericGeometry
-        Geometry object which this model is associated with. This controls the
-        length of the calculated array, and also provides access to other
-        necessary properties.
-
-    pore_diameter : str
-        Dictionary key of the pore diameter values.
-
-    throat_diameter : str
-        Dictionary key of the throat diameter values.
+    %(models.geometry.throat_length.parameters)
 
     Returns
     -------
-    ndarray
-        Array containing throat length values.
+    %(models.geometry.throat_length.returns
 
     """
     from openpnm.models.geometry import conduit_lengths

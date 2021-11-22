@@ -5,7 +5,7 @@ from openpnm.utils import Docorator
 docstr = Docorator()
 
 
-@docstr.get_sections(base=['models.geometry.pore_cross_section'],
+@docstr.get_sections(base='models.geometry.pore_cross_section',
                      sections=['Parameters', 'Returns'])
 def sphere(target, pore_diameter='pore.diameter'):
     r"""
