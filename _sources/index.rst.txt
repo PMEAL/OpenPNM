@@ -9,7 +9,7 @@
 
    userguide/index
    modules/index
-   examples
+   examples/examples
 
 .. raw:: html
 
