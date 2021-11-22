@@ -210,8 +210,8 @@ def pendular_ring(target, throat_diameter='throat.diameter',
     """
     network = target.network
     conns = network['throat.conns']
-    Rp = target[pore_diameter]
-    Rt = target[throat_diameter]
+    Rp = target[pore_diameter]/2
+    Rt = target[throat_diameter]/2
     a = _np.atleast_2d(Rt).T
     q = _np.arcsin(a/Rp[conns])
     b = Rp[conns]*_np.cos(q)
