@@ -1,22 +1,8 @@
-r"""
-The diffusive size factor is the geometrical part of the pre-factor in
-Fick's law:
-
-.. math::
-
-    n_A = \frac{A}{L} \Delta C_A
-        = S_{diffusive} D_{AB} \Delta C_A
-
-Thus :math:`S_{diffusive}` represents the combined effect of the area and
-length of the *conduit*, which consists of a throat and 1/2 of the pore
-on each end.
-
-"""
-
 import numpy as _np
 import openpnm.models.geometry.conduit_lengths as _conduit_lengths
-import openpnm.geometry.GenericGeometry as _GenericGeometry
 from .misc import _get_conduit_diameters
+from openpnm.utils import Docorator
+
 
 __all__ = [
     "spheres_and_cylinders",
@@ -31,10 +17,13 @@ __all__ = [
     "intersecting_pyramids",
     "ncylinders_in_series"
 ]
+docstr = Docorator()
 
 
+@docstr.get_sections(base='models.geometry.diffusive_size_factor',
+                     sections=['Parameters', 'Returns', 'Notes'])
 def spheres_and_cylinders(
-    target: _GenericGeometry,
+    target,
     pore_diameter="pore.diameter",
     throat_diameter="throat.diameter",
 ):
@@ -44,14 +33,22 @@ def spheres_and_cylinders(
 
     Parameters
     ----------
-    target : GenericGeometry
-        Geometry object which this model is associated with. This controls
+    target : OpenPNM Base object
+        Object with which this model is associated. This controls
         the length of the calculated array, and also provides access to
         other necessary properties.
     pore_diameter : str
-        Dictionary key of the pore diameter values.
+        Name of the dictionary key on ``target`` where the array containing
+        pore diameter values is stored
     throat_diameter : str
-        Dictionary key of the throat diameter values.
+        Name of the dictionary key on ``target`` where the array containing
+        throat diameter values is stored
+
+    Returns
+    -------
+    size_factors : dict
+        A dictionary containing the diffusive size factors, which can be
+        accessed via the dict keys 'pore1', 'pore2', and 'throat'.
 
     Notes
     -----
@@ -81,6 +78,7 @@ def spheres_and_cylinders(
     return {"pore1": 1 / F1, "throat": 1 / Ft, "pore2": 1 / F2}
 
 
+@docstr.dedent
 def circles_and_rectangles(
     target,
     pore_diameter="pore.diameter",
@@ -88,32 +86,19 @@ def circles_and_rectangles(
 ):
     r"""
     Computes diffusive shape coefficient for conduits assuming pores are
-    circles and throats are rectangles.
+    circles and throats are rectangles
 
     Parameters
     ----------
-    target : GenericGeometry
-        Geometry object which this model is associated with. This controls
-        the length of the calculated array, and also provides access to
-        other necessary properties.
-    pore_diameter : str
-        Dictionary key of the pore diameter values.
-    throat_diameter : str
-        Dictionary key of the throat diameter values.
+    %(models.geometry.diffusive_size_factor.parameters)s
+
+    Returns
+    -------
+    %(models.geometry.diffusive_size_factor.returns)s
 
     Notes
     -----
-    The diffusive size factor is the geometrical part of the pre-factor in
-    Fick's law:
-
-    .. math::
-
-        n_A = \frac{A}{L} \Delta C_A
-            = S_{diffusive} D_{AB} \Delta C_A
-
-    Thus :math:`S_{diffusive}` represents the combined effect of the area and
-    length of the *conduit*, which consists of a throat and 1/2 of the pore
-    on each end.
+    %(models.geometry.diffusive_size_factor.notes)s
 
     This model should only be used for true 2D networks, i.e. with planar
     symmetry.
@@ -132,6 +117,7 @@ def circles_and_rectangles(
     return {"pore1": 1 / F1, "throat": 1 / Ft, "pore2": 1 / F2}
 
 
+@docstr.dedent
 def cones_and_cylinders(
     target,
     pore_diameter="pore.diameter",
@@ -143,33 +129,18 @@ def cones_and_cylinders(
 
     Parameters
     ----------
-    target : GenericGeometry
-        Geometry object which this model is associated with. This controls
-        the length of the calculated array, and also provides access to
-        other necessary properties.
-    pore_diameter : string
-        Dictionary key of the pore diameter values.
-    throat_diameter : string
-        Dictionary key of the throat diameter values.
+    %(models.geometry.diffusive_size_factor.parameters)s
 
     Returns
     -------
-    A dictionary containing the diffusive_shape_coefficient, which can be
-    accessed via the dict keys 'pore1', 'pore2', and 'throat'.
+    %(models.geometry.diffusive_size_factor.returns)s
 
     Notes
     -----
-    The diffusive size factor is the geometrical part of the pre-factor in
-    Fick's law:
+    %(models.geometry.diffusive_size_factor.notes)s
 
-    .. math::
-
-        n_A = \frac{A}{L} \Delta C_A
-            = S_{diffusive} D_{AB} \Delta C_A
-
-    Thus :math:`S_{diffusive}` represents the combined effect of the area and
-    length of the *conduit*, which consists of a throat and 1/2 of the pore
-    on each end.
+    This model should only be used for true 2D networks, i.e. with planar
+    symmetry.
 
     """
     D1, Dt, D2 = _get_conduit_diameters(target, pore_diameter, throat_diameter)
@@ -185,6 +156,7 @@ def cones_and_cylinders(
     return {"pore1": 1 / F1, "throat": 1 / Ft, "pore2": 1 / F2}
 
 
+@docstr.dedent
 def trapezoids_and_rectangles(
     target,
     pore_diameter="pore.diameter",
@@ -196,28 +168,15 @@ def trapezoids_and_rectangles(
 
     Parameters
     ----------
-    target : GenericGeometry
-        Geometry object which this model is associated with. This controls
-        the length of the calculated array, and also provides access to
-        other necessary properties.
-    pore_diameter : str
-        Dictionary key of the pore diameter values.
-    throat_diameter : str
-        Dictionary key of the throat diameter values.
+    %(models.geometry.diffusive_size_factor.parameters)s
+
+    Returns
+    -------
+    %(models.geometry.diffusive_size_factor.returns)s
 
     Notes
     -----
-    The diffusive size factor is the geometrical part of the pre-factor in
-    Fick's law:
-
-    .. math::
-
-        n_A = \frac{A}{L} \Delta C_A
-            = S_{diffusive} D_{AB} \Delta C_A
-
-    Thus :math:`S_{diffusive}` represents the combined effect of the area and
-    length of the *conduit*, which consists of a throat and 1/2 of the pore
-    on each end.
+    %(models.geometry.diffusive_size_factor.notes)s
 
     This model should only be used for true 2D networks, i.e. with planar
     symmetry.
@@ -253,28 +212,18 @@ def pyramids_and_cuboids(
 
     Parameters
     ----------
-    target : GenericGeometry
-        Geometry object which this model is associated with. This controls
-        the length of the calculated array, and also provides access to
-        other necessary properties.
-    pore_diameter : str
-        Dictionary key of the pore diameter values.
-    throat_diameter : str
-        Dictionary key of the throat diameter values.
+    %(models.geometry.diffusive_size_factor.parameters)s
+
+    Returns
+    -------
+    %(models.geometry.diffusive_size_factor.returns)s
 
     Notes
     -----
-    The diffusive size factor is the geometrical part of the pre-factor in
-    Fick's law:
+    %(models.geometry.diffusive_size_factor.notes)s
 
-    .. math::
-
-        n_A = \frac{A}{L} \Delta C_A
-            = S_{diffusive} D_{AB} \Delta C_A
-
-    Thus :math:`S_{diffusive}` represents the combined effect of the area and
-    length of the *conduit*, which consists of a throat and 1/2 of the pore
-    on each end.
+    This model should only be used for true 2D networks, i.e. with planar
+    symmetry.
 
     """
     D1, Dt, D2 = _get_conduit_diameters(target, pore_diameter, throat_diameter)
@@ -290,6 +239,7 @@ def pyramids_and_cuboids(
     return {"pore1": 1 / F1, "throat": 1 / Ft, "pore2": 1 / F2}
 
 
+@docstr.dedent
 def cubes_and_cuboids(
     target,
     pore_diameter="pore.diameter",
@@ -303,32 +253,22 @@ def cubes_and_cuboids(
 
     Parameters
     ----------
-    target : GenericGeometry
-        Geometry object which this model is associated with. This controls
-        the length of the calculated array, and also provides access to
-        other necessary properties.
-    pore_diameter : str
-        Dictionary key of the pore diameter values.
-    throat_diameter : str
-        Dictionary key of the throat diameter values.
+    %(models.geometry.diffusive_size_factor.parameters)s
     pore_aspect : list
         Aspect ratio of the pores
     throat_aspect : list
         Aspect ratio of the throats
 
+    Returns
+    -------
+    %(models.geometry.diffusive_size_factor.returns)s
+
     Notes
     -----
-    The diffusive size factor is the geometrical part of the pre-factor in
-    Fick's law:
+    %(models.geometry.diffusive_size_factor.notes)s
 
-    .. math::
-
-        n_A = \frac{A}{L} \Delta C_A
-            = S_{diffusive} D_{AB} \Delta C_A
-
-    Thus :math:`S_{diffusive}` represents the combined effect of the area and
-    length of the *conduit*, which consists of a throat and 1/2 of the pore
-    on each end.
+    This model should only be used for true 2D networks, i.e. with planar
+    symmetry.
 
     """
     D1, Dt, D2 = _get_conduit_diameters(target, pore_diameter, throat_diameter)
@@ -344,6 +284,7 @@ def cubes_and_cuboids(
     return {"pore1": 1 / F1, "throat": 1 / Ft, "pore2": 1 / F2}
 
 
+@docstr.dedent
 def squares_and_rectangles(
     target,
     pore_diameter="pore.diameter",
@@ -357,32 +298,19 @@ def squares_and_rectangles(
 
     Parameters
     ----------
-    target : GenericGeometry
-        Geometry object which this model is associated with. This controls
-        the length of the calculated array, and also provides access to
-        other necessary properties.
-    pore_diameter : str
-        Dictionary key of the pore diameter values.
-    throat_diameter : str
-        Dictionary key of the throat diameter values.
+    %(models.geometry.diffusive_size_factor.parameters)s
     pore_aspect : list
         Aspect ratio of the pores
     throat_aspect : list
         Aspect ratio of the throats
 
+    Returns
+    -------
+    %(models.geometry.diffusive_size_factor.returns)s
+
     Notes
     -----
-    The diffusive size factor is the geometrical part of the pre-factor in
-    Fick's law:
-
-    .. math::
-
-        n_A = \frac{A}{L} \Delta C_A
-            = S_{diffusive} D_{AB} \Delta C_A
-
-    Thus :math:`S_{diffusive}` represents the combined effect of the area and
-    length of the *conduit*, which consists of a throat and 1/2 of the pore
-    on each end.
+    %(models.geometry.diffusive_size_factor.notes)s
 
     This model should only be used for true 2D networks, i.e. with planar
     symmetry.
@@ -412,35 +340,27 @@ def intersecting_cones(
 
     Parameters
     ----------
-    target : GenericGeometry
-        Geometry object which this model is associated with. This controls
-        the length of the calculated array, and also provides access to
-        other necessary properties.
-    pore_diameter : str
-        Dictionary key of the pore diameter values.
-    throat_diameter : str
-        Dictionary key of the throat diameter values.
+    %(models.geometry.diffusive_size_factor.parameters)s
     midpoint : str, optional
-        Dictionary key of the midpoint values.
+        Name of the dictionary key on ``target`` where the array containing
+        throat midpoint values is stored
+
+    Returns
+    -------
+    %(models.geometry.diffusive_size_factor.returns)s
 
     Notes
     -----
-    The diffusive size factor is the geometrical part of the pre-factor in
-    Fick's law:
+    %(models.geometry.diffusive_size_factor.notes)s
 
-    .. math::
-
-        n_A = \frac{A}{L} \Delta C_A
-            = S_{diffusive} D_{AB} \Delta C_A
-
-    Thus :math:`S_{diffusive}` represents the combined effect of the area and
-    length of the *conduit*, which consists of a throat and 1/2 of the pore
-    on each end.
+    This model should only be used for true 2D networks, i.e. with planar
+    symmetry.
 
     """
     raise NotImplementedError
 
 
+@docstr.dedent
 def intersecting_trapezoids(
     target,
     pore_diameter="pore.diameter",
@@ -452,28 +372,18 @@ def intersecting_trapezoids(
 
     Parameters
     ----------
-    target : GenericGeometry
-        Geometry object which this model is associated with. This controls
-        the length of the calculated array, and also provides access to
-        other necessary properties.
-    pore_diameter : str
-        Dictionary key of the pore diameter values.
-    throat_diameter : str
-        Dictionary key of the throat diameter values.
+    %(models.geometry.diffusive_size_factor.parameters)s
+    midpoint : str, optional
+        Name of the dictionary key on ``target`` where the array containing
+        throat midpoint values is stored
+
+    Returns
+    -------
+    %(models.geometry.diffusive_size_factor.returns)s
 
     Notes
     -----
-    The diffusive size factor is the geometrical part of the pre-factor in
-    Fick's law:
-
-    .. math::
-
-        n_A = \frac{A}{L} \Delta C_A
-            = S_{diffusive} D_{AB} \Delta C_A
-
-    Thus :math:`S_{diffusive}` represents the combined effect of the area and
-    length of the *conduit*, which consists of a throat and 1/2 of the pore
-    on each end.
+    %(models.geometry.diffusive_size_factor.notes)s
 
     This model should only be used for true 2D networks, i.e. with planar
     symmetry.
@@ -483,7 +393,7 @@ def intersecting_trapezoids(
 
 
 def intersecting_pyramids(
-    target: _GenericGeometry,
+    target,
     pore_diameter="pore.diameter",
     throat_diameter="throat.diameter",
     midpoint=None,
@@ -493,37 +403,25 @@ def intersecting_pyramids(
 
     Parameters
     ----------
-    target : GenericGeometry
-        Geometry object which this model is associated with. This controls
-        the length of the calculated array, and also provides access to
-        other necessary properties.
-    pore_diameter : str
-        Dictionary key of the pore diameter values.
-    throat_diameter : str
-        Dictionary key of the throat diameter values.
+    %(models.geometry.diffusive_size_factor.parameters)s
     midpoint : str, optional
-        Dictionary key of the midpoint values.
+        Name of the dictionary key on ``target`` where the array containing
+        throat midpoint values is stored
+
+    Returns
+    -------
+    %(models.geometry.diffusive_size_factor.returns)s
 
     Notes
     -----
-    The diffusive size factor is the geometrical part of the pre-factor in
-    Fick's law:
-
-    .. math::
-
-        n_A = \frac{A}{L} \Delta C_A
-            = S_{diffusive} D_{AB} \Delta C_A
-
-    Thus :math:`S_{diffusive}` represents the combined effect of the area and
-    length of the *conduit*, which consists of a throat and 1/2 of the pore
-    on each end.
+    %(models.geometry.diffusive_size_factor.notes)s
 
     """
     raise NotImplementedError
 
 
 def ncylinders_in_series(
-    target: _GenericGeometry,
+    target,
     pore_diameter="pore.diameter",
     throat_diameter="throat.diameter",
     n=5
@@ -532,32 +430,20 @@ def ncylinders_in_series(
     Computes diffusive size factors for conduits of spheres and cylinders
     with the spheres approximated as N cylinders in series.
 
+
     Parameters
     ----------
-    target : GenericGeometry
-        Geometry object which this model is associated with. This controls
-        the length of the calculated array, and also provides access to
-        other necessary properties.
-    pore_diameter : str
-        Dictionary key pointing to the pore diameter values.
-    throat_diameter : str
-        Dictionary key pointing to the throat diameter values.
+    %(models.geometry.diffusive_size_factor.parameters)s
     n : int
-        Number of cylindrical divisions for each pore
+        Number of cylindrical divisions for each pore and throat
+
+    Returns
+    -------
+    %(models.geometry.diffusive_size_factor.returns)s
 
     Notes
     -----
-    The diffusive size factor is the geometrical part of the pre-factor in
-    Fick's law:
-
-    .. math::
-
-        n_A = \frac{A}{L} \Delta C_A
-            = S_{diffusive} D_{AB} \Delta C_A
-
-    Thus :math:`S_{diffusive}` represents the combined effect of the area and
-    length of the *conduit*, which consists of a throat and 1/2 of the pore
-    on each end.
+    %(models.geometry.diffusive_size_factor.notes)s
 
     """
     D1, Dt, D2 = _get_conduit_diameters(target, pore_diameter, throat_diameter)
