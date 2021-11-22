@@ -385,8 +385,8 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">network</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">network</span>
     <span class="n">conns</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">]</span>
-    <span class="n">Rp</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">pore_diameter</span><span class="p">]</span>
-    <span class="n">Rt</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">throat_diameter</span><span class="p">]</span>
+    <span class="n">Rp</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">pore_diameter</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span>
+    <span class="n">Rt</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">throat_diameter</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span>
     <span class="n">a</span> <span class="o">=</span> <span class="n">_np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">Rt</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
     <span class="n">q</span> <span class="o">=</span> <span class="n">_np</span><span class="o">.</span><span class="n">arcsin</span><span class="p">(</span><span class="n">a</span><span class="o">/</span><span class="n">Rp</span><span class="p">[</span><span class="n">conns</span><span class="p">])</span>
     <span class="n">b</span> <span class="o">=</span> <span class="n">Rp</span><span class="p">[</span><span class="n">conns</span><span class="p">]</span><span class="o">*</span><span class="n">_np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">q</span><span class="p">)</span>
