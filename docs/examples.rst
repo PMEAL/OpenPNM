@@ -56,14 +56,6 @@ Tutorials
 Simulations
 -----------
 
-.. tabbed:: General
-
-   .. toctree::
-      :maxdepth: 1
-      :glob:
-
-      examples/simulations/general/*
-
 .. tabbed:: Percolation
 
    .. toctree::
@@ -72,13 +64,13 @@ Simulations
 
       examples/simulations/percolation/*
       
-.. tabbed:: Single Phase
+.. tabbed:: Steady State
 
    .. toctree::
       :maxdepth: 1
       :glob:
 
-      examples/simulations/single_phase/*
+      examples/simulations/steady_state/*
 
 .. tabbed:: Reactive
 
@@ -95,14 +87,6 @@ Simulations
       :glob:
 
       examples/simulations/transient/*
-
-.. tabbed:: Multiphase
-
-   .. toctree::
-      :glob:
-      :maxdepth: 1
-
-      examples/simulations/multiphase/*
       
 .. tabbed:: Multiphysics
 
@@ -115,37 +99,13 @@ Simulations
 Contributions
 -------------
         
-.. tabbed:: Gostick
+.. tabbed:: Paper Recreations
             
    .. toctree::
       :maxdepth: 1
       :glob:
                   
-      examples/contrib/paper recreations/Gostick et al. (2007)/*
-                  
-.. tabbed:: Blunt
-                
-   .. toctree::
-      :maxdepth: 1
-      :glob:
-                      
-      examples/contrib/paper recreations/Blunt et al. (2013)/*  
-      
-.. tabbed:: Tranter
-                
-   .. toctree::
-      :maxdepth: 1
-      :glob:
-                      
-      examples/contrib/paper recreations/Tranter et al. (2017)/* 
-
-.. tabbed:: Wu
-                
-   .. toctree::
-      :maxdepth: 1
-      :glob:
-                      
-      examples/contrib/paper recreations/Wu et al. (2010)/*        
+      examples/contrib/paper recreations/**      
 
 .. tabbed:: Other
                 
@@ -153,5 +113,5 @@ Contributions
       :maxdepth: 1
       :glob:
           
-      examples/contrib/maze_solver         
-      
+      examples/contrib/*
+                 
