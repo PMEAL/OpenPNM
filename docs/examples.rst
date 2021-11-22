@@ -10,19 +10,16 @@ repo, which can be browsed
 
 -----
 
-User Guide
-----------
+Tutorials
+---------
 
-.. tabbed:: General
+.. tabbed:: Getting Started
 
    .. toctree::
       :maxdepth: 1
       :glob:
 
-      examples/user guide/*
-
-Tutorials
----------
+      examples/tutorials/getting_started/*
 
 .. tabbed:: Network
 
@@ -30,7 +27,7 @@ Tutorials
       :maxdepth: 1
       :glob:
 
-      examples/tutorials/networks/*
+      examples/tutorials/network/*
 
 .. tabbed:: Geometry
 
@@ -46,23 +43,15 @@ Tutorials
       :maxdepth: 1
       :glob:
 
-      examples/tutorials/phase/*
+      examples/tutorials/phase/*  
 
-.. tabbed:: Materials
-
-   .. toctree::
-      :maxdepth: 1
-      :glob:
-
-      examples/tutorials/materials/*
-      
-.. tabbed:: io
+.. tabbed:: Advanced
 
    .. toctree::
       :maxdepth: 1
       :glob:
 
-      examples/tutorials/io/*
+      examples/tutorials/advanced/*  
 
 Simulations
 -----------
@@ -125,19 +114,44 @@ Simulations
 
 Contributions
 -------------
-
-.. tabbed:: Paper Recreations 
-
+        
+.. tabbed:: Gostick
+            
    .. toctree::
       :maxdepth: 1
       :glob:
+                  
+      examples/contrib/paper recreations/Gostick et al. (2007)/*
+                  
+.. tabbed:: Blunt
+                
+   .. toctree::
+      :maxdepth: 1
+      :glob:
+                      
+      examples/contrib/paper recreations/Blunt et al. (2013)/*  
+      
+.. tabbed:: Tranter
+                
+   .. toctree::
+      :maxdepth: 1
+      :glob:
+                      
+      examples/contrib/paper recreations/Tranter et al. (2017)/* 
 
-      examples/contrib/paper recreations/*        
+.. tabbed:: Wu
+                
+   .. toctree::
+      :maxdepth: 1
+      :glob:
+                      
+      examples/contrib/paper recreations/Wu et al. (2010)/*        
 
 .. tabbed:: Other
-
+                
    .. toctree::
       :maxdepth: 1
       :glob:
-
-      examples/contrib/*
+          
+      examples/contrib/maze_solver         
+      
