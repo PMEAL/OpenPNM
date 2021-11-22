@@ -1,52 +1,47 @@
-r"""
-These models calculate pore volumes depending on the specified shape
-"""
-
 import numpy as np
 from numpy import pi as _pi
+from openpnm.utils import Docorator
 
 
+docstr = Docorator()
+
+@docstr.get_sections(base='models.geometry.pore_volume',
+                     sections=['Parameters', 'Returns'])
 def sphere(target, pore_diameter='pore.diameter'):
     r"""
     Calculate pore volume from diameter assuming a spherical pore body
 
     Parameters
     ----------
-    target : OpenPNM Object
-        The object which this model is associated with. This controls
-        the length of the calculated array, and also provides access to other
-        necessary geometric properties.
-
-    pore_diameter : string
-        The dictionary key of the pore diameter values
+    target : OpenPNM Base object
+        Object with which this model is associated. This controls
+        the length of the calculated array, and also provides access to
+        other necessary properties.
+    pore_diameter : str
+        Name of the dictionary key on ``target`` where the array containing
+        pore diameter values is stored
 
     Returns
     -------
-    value : NumPy ndarray
-        Array containing pore volume values.
+    volumes : ndarray
+        Numpy ndarray containing pore volume values
 
     """
     return _pi/6*target[pore_diameter]**3
 
 
+@docstr.dedent
 def cube(target, pore_diameter='pore.diameter'):
     r"""
     Calculate pore volume from diameter assuming a cubic pore body
 
     Parameters
     ----------
-    target : OpenPNM Object
-        The object which this model is associated with. This controls
-        the length of the calculated array, and also provides access to other
-        necessary geometric properties.
-
-    pore_diameter : string
-        The dictionary key of the pore diameter values
+    %(models.geometry.pore_volume.parameters)s
 
     Returns
     -------
-    value : NumPy ndarray
-        Array containing pore volume values.
+    %(models.geometry.pore_volume.returns)s
 
     """
     return target[pore_diameter]**3
@@ -58,13 +53,11 @@ def circle(target, pore_diameter='pore.diameter'):
 
     Parameters
     ----------
-    target : OpenPNM Object
-        The object which this model is associated with. This controls
-        the length of the calculated array, and also provides access to other
-        necessary geometric properties.
+    %(models.geometry.pore_volume.parameters)s
 
-    pore_diameter : string
-        The dictionary key of the pore diameter values
+    Returns
+    -------
+    %(models.geometry.pore_volume.returns)s
 
     """
     return _pi/4 * target[pore_diameter]**2
@@ -76,13 +69,11 @@ def square(target, pore_diameter='pore.diameter'):
 
     Parameters
     ----------
-    target : OpenPNM Object
-        The object which this model is associated with. This controls
-        the length of the calculated array, and also provides access to other
-        necessary geometric properties.
+    %(models.geometry.pore_volume.parameters)s
 
-    pore_diameter : string
-        The dictionary key of the pore diameter values
+    Returns
+    -------
+    %(models.geometry.pore_volume.returns)s
 
     """
     return target[pore_diameter]**2
@@ -92,26 +83,22 @@ def effective(target, pore_volume='pore.volume',
               throat_volume='throat.volume'):
     r"""
     Calculate the effective pore volume for optional use in transient
-    simulations. The effective pore volume is calculated by adding half the
-    volume of all neighbouring throats to the pore volume.
+    simulations. The effective pore volume is calculated by adding half
+    the volume of all neighbouring throats to the pore volume.
 
     Parameters
     ----------
-    target : OpenPNM Object
-        The object which this model is associated with. This controls
-        the length of the calculated array, and also provides access to other
-        necessary geometric properties.
-
-    pore_volume : string
-        The dictionary key of the pore volume values
-
+    %(models.geometry.pore_volume.parameters)s
+    pore_volume : str
+        Name of the dictionary key on ``target`` where the array containing
+        pore volume values is stored
     throat_volume : string
-        The dictionary key of the throat volume values
+        Name of the dictionary key on ``target`` where the array containing
+        throat volume values is stored
 
     Returns
     -------
-    value : NumPy ndarray
-        Array containing pore volume values.
+    %(models.geometry.pore_volume.returns)s
 
     """
     network = target.project.network

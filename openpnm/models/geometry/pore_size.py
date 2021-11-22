@@ -1,10 +1,3 @@
-r"""
-The pore-size models in this sub-module are used to apply desired pore-size
-distributions to a pore network.  Most of the models accept pore seeds, and
-then look-up pore-sizes from cumuative distribtions functions.  There is also
-a model for finding the largest possible sphere that can be placed on each
-site.
-"""
 from openpnm.utils import logging as _logging
 from openpnm.models import misc as _misc
 import numpy as _np
@@ -56,46 +49,43 @@ def largest_sphere(target, fixed_diameter='pore.fixed_diameter', iters=5):
     Finds the maximum diameter pore that can be placed in each location without
     overlapping any neighbors.
 
-    This method iteratively expands pores by increasing their diameter to
-    encompass half of the distance to the nearest neighbor.  If the neighbor
-    is not growing because it's already touching a different neighbor, then
-    the given pore will never quite touch this neighbor.  Increating the value
-    of ``iters`` will get it closer, but it's case of
-    [Zeno's paradox](https://en.wikipedia.org/wiki/Zeno%27s_paradoxes) with
-    each step cutting the remaining distance in half
-
     Parameters
     ----------
-    target : OpenPNM Object
-        The object which this model is associated with. This controls the
-        length of the calculated array, and also provides access to other
-        necessary properties.
-
+    target : OpenPNM Base object
+        Object with which this model is associated. This controls
+        the length of the calculated array, and also provides access to
+        other necessary properties.
     fixed_diameter : string
-        The dictionary key containing the pore diameter values already
-        assigned to network, if any.  If not provided a starting value is
-        assumed as half-way to the nearest neighbor.
-
+        Name of the dictionary key on ``target`` where the array containing
+        pore diameter values is stored, if any. If not provided a starting
+        value is assumed as half-way to the nearest neighbor.
     iters : integer
         The number of iterations to perform when searching for maximum
         diameter.  This function iteratively grows pores until they touch
         their nearest neighbor, which is also growing, so this parameter limits
-        the maximum number of iterations.  The default is 10, but 5 is usally
-        enough.
+        the maximum number of iterations.  The default is 10.
 
     Returns
     -------
-    D : NumPy ndarray
-        Array containing pore diameter values.
+    diameters : ndarray
+        A numpy ndarray containing pore diameter values
 
     Notes
     -----
+    This function iteratively expands pores by increasing their diameter to
+    encompass half of the distance to the nearest neighbor.  If the neighbor
+    is not growing because it's already touching a different neighbor, then
+    the given pore will never quite touch this neighbor.  Increasing the value
+    of ``iters`` will get it closer, but it's case of
+    `Zeno's paradox <https://en.wikipedia.org/wiki/Zeno%27s_paradoxes>`_ with
+    each step cutting the remaining distance in half.
+
     This model looks into all pores in the network when finding the diameter.
     This means that when multiple Geometry objects are defined, it will
     consider the diameter of pores on adjacent Geometries. If no diameters
     have been assigned to these neighboring pores it will assume 0.  If
     diameter value are assigned to the neighboring pores AFTER this model is
-    run, the pores will overlap.  This can be remedied by running this model
+    run, the pores may overlap.  This can be remedied by running this model
     again.
 
     """
@@ -131,27 +121,26 @@ def largest_sphere(target, fixed_diameter='pore.fixed_diameter', iters=5):
 def equivalent_diameter(target, pore_volume='pore.volume',
                         pore_shape='sphere'):
     r"""
-    Calculates the diameter of a sphere or edge-length of a cube with same
+    Calculate the diameter of a sphere or edge-length of a cube with same
     volume as the pore.
 
     Parameters
     ----------
-    target : OpenPNM Geometry Object
-        The Geometry object which this model is associated with. This controls
-        the length of the calculated array, and also provides access to other
-        necessary geometric properties.
-
-    pore_volume : string
-        The dictionary key containing the pore volume values
-
-    pore_shape : string
+    target : OpenPNM Base object
+        Object with which this model is associated. This controls
+        the length of the calculated array, and also provides access to
+        other necessary properties.
+    pore_volume : str
+        Name of the dictionary key on ``target`` where the array containing
+        pore volume values is stored
+    pore_shape : str
         The shape of the pore body to assume when back-calculating from
         volume.  Options are 'sphere' (default) or 'cube'.
 
     Returns
     -------
-    D : NumPy ndarray
-        Array containing pore diameter values.
+    diameters : ndarray
+        A number ndarray containing pore diameter values
 
     """
     from scipy.special import cbrt

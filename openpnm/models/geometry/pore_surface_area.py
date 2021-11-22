@@ -1,36 +1,44 @@
-r"""
-"""
 import numpy as _np
+from openpnm.utils import Docorator
 
 
+docstr = Docorator()
+
+
+@docstr.get_sections(base='models.geometry.pore_surface_area',
+                     sections=['Parameters', 'Returns', 'Notes'])
 def sphere(
     target,
     pore_diameter='pore.diameter',
     throat_cross_sectional_area='throat.cross_sectional_area'
 ):
     r"""
-    Calculates internal surface area of pore bodies assuming they are
-    spherical then subtracts the area of the neighboring throats in a
-    crude way, by simply considering the throat cross-sectional area, thus
-    not accounting for the actual curvature of the intersection.
+    Calculates internal surface area of pore bodies assuming they are spheres,
+    then subtracts the areas of the neighboring throats
 
     Parameters
     ----------
-    target : GenericGeometry
-        The Geometry object for which these values are being calculated.
-        This controls the length of the calculated array, and also
-        provides access to other necessary thermofluid properties.
+    target : OpenPNM Base object
+        Object with which this model is associated. This controls
+        the length of the calculated array, and also provides access to
+        other necessary properties.
     pore_diameter : str
-        The dictionary key to the pore diameter array.
+        Name of the dictionary key on ``target`` where the array containing
+        pore diameter values is stored
     throat_cross_sectional_area : str
-        The dictionary key to the throat cross sectional area array.
-        Throat areas are needed since their insection with the pore are
-        removed from the computation.
+        Name of the dictionary key on ``target`` where the array containing
+        throat cross sectional area values is stored
 
     Returns
     -------
-    value : NumPy ndarray
-        Array containing pore surface area values.
+    surface_areas : ndarray
+        Numpy ndarry containing pore surface area values
+
+    Notes
+    -----
+    This function subtracts the area of the neighboring throats in a
+    crude way, by simply considering the throat cross-sectional area,
+    thus not accounting for the actual curvature of the intersection.
 
     """
     network = target.project.network
@@ -42,6 +50,7 @@ def sphere(
     return value
 
 
+@docstr.dedent
 def circle(
     target,
     pore_diameter='pore.diameter',
@@ -49,27 +58,19 @@ def circle(
 ):
     r"""
     Calculates internal surface area of pore bodies assuming they are
-    circular then subtracts the area of the neighboring throats in a
-    crude way, by simply considering the throat cross-sectional area, thus
-    not accounting for the actual curvature of the intersection.
+    circular then subtracts the area of the neighboring throats.
 
     Parameters
     ----------
-    target : GenericGeometry
-        The Geometry object for which these values are being calculated.
-        This controls the length of the calculated array, and also
-        provides access to other necessary thermofluid properties.
-    pore_diameter : str
-        The dictionary key to the pore diameter array.
-    throat_cross_sectional_area : str
-        The dictionary key to the throat cross sectional area array.
-        Throat areas are needed since their insection with the pore are
-        removed from the computation.
+    %(models.geometry.pore_surface_area.parameters)s
 
     Returns
     -------
-    value : NumPy ndarray
-        Array containing pore surface area values.
+    %(models.geometry.pore_surface_area.returns)s
+
+    Notes
+    -----
+    %(models.geometry.pore_surface_area.notes)s
 
     """
     network = target.project.network
@@ -92,21 +93,11 @@ def cube(
 
     Parameters
     ----------
-    target : GenericGeometry
-        The Geometry object for which these values are being calculated.
-        This controls the length of the calculated array, and also
-        provides access to other necessary thermofluid properties.
-    pore_diameter : string
-        The dictionary key to the pore diameter array.
-    throat_cross_sectional_area : str
-        The dictionary key to the throat cross sectional area array.
-        Throat areas are needed since their insection with the pore are
-        removed from the computation.
+    %(models.geometry.pore_surface_area.parameters)s
 
     Returns
     -------
-    value : NumPy ndarray
-        Array containing pore surface area values.
+    %(models.geometry.pore_surface_area.returns)s
 
     """
     network = target.project.network
@@ -128,21 +119,11 @@ def square(
 
     Parameters
     ----------
-    target : GenericGeometry
-        The Geometry object for which these values are being calculated.
-        This controls the length of the calculated array, and also
-        provides access to other necessary thermofluid properties.
-    pore_diameter : str
-        The dictionary key to the pore diameter array.
-    throat_cross_sectional_area : str
-        The dictionary key to the throat cross sectional area array.
-        Throat areas are needed since their insection with the pore are
-        removed from the computation.
+    %(models.geometry.pore_surface_area.parameters)s
 
     Returns
     -------
-    value : NumPy ndarray
-        Array containing pore surface area values.
+    %(models.geometry.pore_surface_area.returns)s
 
     """
     network = target.project.network
