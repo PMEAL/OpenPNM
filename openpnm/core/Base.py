@@ -811,14 +811,19 @@ class Base(dict):
             values *= self[propname].units
         return values
 
-    def get_conduit_data(self, prop, mode='mean'):
+    def get_conduit_data(self, poreprop, throatprop=None, mode='mean'):
         r"""
         Combined requested data into a single 3-column array
 
         Parameters
         ----------
-        prop : string
-            The dictionary key to the property of interest
+        poreprop : str
+            The dictionary key to the pore property of interest
+        throatprop : str, optional
+            The dictionary key to the throat property of interest. If not
+            given then the same property as ``poreprop`` is assumed.  So
+            if poreprop = 'pore.foo' (or just 'foo'), then throatprop is
+            set to 'throat.foo').
         mode : string
             How interpolation should be peformed for missing values. If values
             are present for both pores and throats, then this argument is
@@ -827,7 +832,7 @@ class Base(dict):
                 * 'mean' (default)
                     Finds the mean value of the neighboring pores (or throats)
                 * 'min'
-                    Finds the minimuem of the neighboring pores (or throats)
+                    Finds the minimum of the neighboring pores (or throats)
                 * 'max'
                     Finds the maximum of the neighboring pores (or throats)
 
@@ -838,16 +843,24 @@ class Base(dict):
             for each pore-throat-pore conduit.
 
         """
+        # Deal with various args
+        if not poreprop.startswith('pore'):
+            poreprop = 'pore.' + poreprop
+        if throatprop is None:
+            throatprop = 'throat.' + poreprop.split('.', 1)[1]
+        if not throatprop.startswith('throat'):
+            throatprop = 'throat.' + throatprop
+        # Generate array
         try:
-            T = self['throat.' + prop]
+            T = self[throatprop]
             try:
-                P1, P2 = self['pore.' + prop][self.network.conns].T
+                P1, P2 = self[poreprop][self.network.conns].T
             except KeyError:
-                P = self.interpolate_data(propname='throat.'+prop, mode=mode)
+                P = self.interpolate_data(propname=throatprop, mode=mode)
                 P1, P2 = P[self.network.conns].T
         except KeyError:
-            P1, P2 = self['pore.' + prop][self.network.conns].T
-            T = self.interpolate_data(propname='pore.'+prop, mode=mode)
+            P1, P2 = self[poreprop][self.network.conns].T
+            T = self.interpolate_data(propname=poreprop, mode=mode)
         return np.vstack((P1, T, P2)).T
 
     def _count(self, element=None):

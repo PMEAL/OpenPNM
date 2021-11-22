@@ -1,6 +1,4 @@
 import numpy as _np
-from .misc import _get_conduit_diameters
-from .throat_length import ctc as _ctc
 from openpnm.utils import Docorator
 
 
@@ -51,8 +49,9 @@ def spheres_and_cylinders(
         ``[pore1, throat, pore2]``.
 
     """
-    L_ctc = _ctc(target)
-    D1, Dt, D2 = _get_conduit_diameters(target, pore_diameter, throat_diameter)
+    L_ctc = target.network['throat.spacing']
+    D1, Dt, D2 = target.network.get_conduit_data(poreprop=pore_diameter,
+                                                 throatprop=throat_diameter).T
 
     # Handle the case where Dt > Dp
     if (Dt > D1).any() or (Dt > D2).any():
@@ -125,8 +124,9 @@ def cones_and_cylinders(
     %(models.geometry.conduit_lengths.returns)s
 
     """
-    L_ctc = _ctc(target)
-    D1, Dt, D2 = _get_conduit_diameters(target, pore_diameter, throat_diameter)
+    L_ctc = target.network['throat.spacing']
+    D1, Dt, D2 = target.network.get_conduit_data(poreprop=pore_diameter,
+                                                 throatprop=throat_diameter).T
 
     L1 = D1 / 2
     L2 = D2 / 2
@@ -168,8 +168,9 @@ def trapezoids_and_rectangles(
     symmetry.
 
     """
-    L_ctc = _ctc(target)
-    D1, Dt, D2 = _get_conduit_diameters(target, pore_diameter, throat_diameter)
+    L_ctc = target.network['throat.spacing']
+    D1, Dt, D2 = target.network.get_conduit_data(poreprop=pore_diameter,
+                                                 throatprop=throat_diameter).T
 
     L1 = D1 / 2
     L2 = D2 / 2
@@ -232,8 +233,9 @@ def cubes_and_cuboids(
     %(models.geometry.conduit_lengths.returns)s
 
     """
-    L_ctc = _ctc(target)
-    D1, Dt, D2 = _get_conduit_diameters(target, pore_diameter, throat_diameter)
+    L_ctc = target.network['throat.spacing']
+    D1, Dt, D2 = target.network.get_conduit_data(poreprop=pore_diameter,
+                                                 throatprop=throat_diameter).T
 
     L1 = D1 / 2
     L2 = D2 / 2
