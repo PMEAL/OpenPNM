@@ -6,22 +6,6 @@ Generators (:mod:`openpnm.topotools.generators`)
 This module contains a selection of functions that deal specifically with
 generating sufficient information that can be turned into an openpnm network.
 
-.. currentmodule:: openpnm.topotools.generators
-
-.. autosummary::
-   :template: mybase.rst
-   :toctree: generated/
-   :nosignatures:
-
-   cubic
-   delaunay
-   gabriel
-   voronoi
-   voronoi_delaunay_dual
-   cubic_template
-   fcc
-   bcc
-
 """
 
 from .cubic import cubic

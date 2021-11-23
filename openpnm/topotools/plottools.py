@@ -1,7 +1,10 @@
 import numpy as np
 import openpnm as op
 from tqdm import tqdm
+from auto_all import start_all, end_all
 
+
+start_all()
 
 def plot_connections(network,
                      throats=None,
@@ -882,3 +885,4 @@ def generate_voxel_image(network, pore_shape="sphere", throat_shape="cylinder",
         max_dim = int(max_dim * 1.25)
     return im
 
+end_all()

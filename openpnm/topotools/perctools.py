@@ -2,9 +2,12 @@ import numpy as np
 import scipy.sparse as sprs
 from scipy.sparse import csgraph
 from openpnm.utils import PrintableDict, logging, Workspace
+from auto_all import start_all, end_all
 logger = logging.getLogger(__name__)
 ws = Workspace()
 
+
+start_all()
 
 def ispercolating(am, inlets, outlets, mode='site'):
     r"""
@@ -347,3 +350,5 @@ def find_path(network, pore_pairs, weights=None):
     pdict = PrintableDict
     dict_ = pdict(**{'pores': pores, 'throats': throats})
     return dict_
+
+end_all()
