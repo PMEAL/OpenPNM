@@ -21,8 +21,27 @@ window.onload = function () {
         $(" nav.bd-links ").children().hide()
     }
 
-    var selected = $("a.current")
-    selected.html("&#8594; " + selected.text())
+    // var selected = $("a.current")
+    // selected.html("&#8594; " + selected.text())
+
+    $(".toctree-l3").hide()
+
+    exclude = [
+        'append', 'clear', 'copy', 'count', 'extend', 'fromkeys', 'get',
+        'index', 'insert', 'items', 'keys', 'pop', 'popitem', 'remove',
+        'reverse', 'setdefault', 'sort', 'update', 'values'
+    ]
+
+    for (i in exclude) {
+        // Search through first column of the table for "exclude[i]("
+        tmp = $("tr").find(`td:first:contains(${exclude[i]}()`)
+        // Find the row(s) containing the returned query
+        row = tmp.closest('tr')
+        // Hide that row
+        // row.hide()
+        // Comment the line above and uncomment the next for DEBUGGING
+        row.css("background-color", "red")
+    }
 };
 
 // window.onload = function() {
