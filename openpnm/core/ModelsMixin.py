@@ -3,9 +3,12 @@ import numpy as np
 from openpnm.utils import PrintableDict, logging, Workspace
 from openpnm.utils.misc import is_valid_propname
 from openpnm.utils import prettify_logger_message
+from auto_all import start_all, end_all
 logger = logging.getLogger(__name__)
 ws = Workspace()
 
+
+start_all()
 
 class ModelsDict(PrintableDict):
     r"""
@@ -247,28 +250,25 @@ class ModelWrapper(dict):
 
 
 class ModelsMixin:
-    r"""
+    """
     This class is meant to be combined by the Base class in multiple
     inheritence. This approach is used since Network and Algorithm do not
     need to have any ``models`` attribute, while Phase, Geometry, and
     Physics do. By using a mixin class, all objects can inherit from Base
     while the model functionality can be added only where needed.
-
     """
 
     def add_model(self, propname, model, regen_mode='', **kwargs):
         r"""
-        Adds a new model to the models dictionary (``object.models``)
+        Adds a new model to the models dictionary.
 
         Parameters
         ----------
-        propname : string
+        propname : str
             The name of the property to be calculated by the model.
-
         model : function
             A reference (handle) to the function to be used.
-
-        regen_mode : string
+        regen_mode : str
             Controls how/when the model is run (See Notes for more details).
             Options are:
 
@@ -316,17 +316,15 @@ class ModelsMixin:
 
         Parameters
         ----------
-        propnames : string or list of strings
+        propnames : str or list[str]
             The list of property names to be regenerated.  If None are given
             then ALL models are re-run (except for those whose ``regen_mode``
             is 'constant').
-
-        exclude : list of strings
+        exclude : list[str]
             Since the default behavior is to run ALL models, this can be used
             to exclude specific models.  It may be more convenient to supply
             as list of 2 models to exclude than to specify 8 models to include.
-
-        deep : boolean
+        deep : bool
             Specifies whether or not to regenerate models on all associated
             objects.  For instance, if ``True``, then all Physics models will
             be regenerated when method is called on the corresponding Phase.
@@ -401,11 +399,10 @@ class ModelsMixin:
 
         Parameters
         ----------
-        propname : string or list of strings
+        propname : str or list[str]
             The property or list of properties to remove
-
-        mode : list of strings
-            Controls what is removed.  Options are:
+        mode : list[str]
+            Controls what is removed. Options are:
 
             *'model'* : Removes the model but not any numerical data that may
             already exist.
@@ -426,6 +423,7 @@ class ModelsMixin:
                     del self[item]
 
     def _get_models(self):
+        """List of available models on the objects"""
         if not hasattr(self, '_models_dict'):
             self._models_dict = ModelsDict()
         return self._models_dict
@@ -437,3 +435,5 @@ class ModelsMixin:
             self.add_model(propname=model, **dict_[model])
 
     models = property(fget=_get_models, fset=_set_models)
+
+end_all()

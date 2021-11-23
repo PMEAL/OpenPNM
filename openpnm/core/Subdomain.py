@@ -1,6 +1,9 @@
-from openpnm.core import Base, LegacyMixin, LabelMixin, ParamMixin
 import numpy as np
+from openpnm.core import Base, LegacyMixin, LabelMixin, ParamMixin
+from auto_all import start_all, end_all
 
+
+start_all()
 
 class Subdomain(Base, LegacyMixin, LabelMixin):
     r"""
@@ -214,3 +217,5 @@ class Subdomain(Base, LegacyMixin, LabelMixin):
         inds = np.where(self._domain[element + '.' + self.name])[0]
         mask[inds] = self.Ps
         return mask[locs]
+
+end_all()

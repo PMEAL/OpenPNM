@@ -1,9 +1,13 @@
 from collections import namedtuple
 import numpy as np
 from openpnm.utils import PrintableDict, PrintableList
+from auto_all import start_all, end_all
 
+
+start_all()
 
 class ParamMixin:
+    """Brief explanation of ParamMixin"""
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -41,11 +45,14 @@ class ParamMixin:
 
 
 class LegacyMixin:
+    """Brief explanation of LegacyMixin"""
 
     def tomask(self, *args, **kwargs):
+        """Brief explanation of tomask"""
         return self.to_mask(*args, **kwargs)
 
     def toindices(self, *args, **kwargs):
+        """Brief explanation of tomask"""
         return self.to_indices(*args, **kwargs)
 
     def _map(self, ids, element, filtered):
@@ -105,21 +112,21 @@ class LegacyMixin:
         ----------
         throats : array_like
             The indices of the throats on the object specified in ``origin``
-
-        origin : OpenPNM Base object
+        origin : Base
             The object corresponding to the indices given in ``throats``
-
-        filtered : boolean (default is ``True``)
-            If ``True`` then a ND-array of indices is returned with missing
+        filtered : bool, default is ``True``
+            If ``True`` then a ndarray of indices is returned with missing
             indices removed, otherwise a named-tuple containing both the
             ``indices`` and a boolean ``mask`` with ``False`` indicating
             which locations were not found.
 
         Returns
         -------
-        Throat indices on the calling object corresponding to the same throats
-        on the ``origin`` object.  Can be an array or a tuple containing an
-        array and a mask, depending on the value of ``filtered``.
+        ndarray
+            Throat indices on the calling object corresponding to the same
+            throats on the ``origin`` object.  Can be an array or a tuple
+            containing an array and a mask, depending on the value of
+            ``filtered``.
 
         See Also
         --------
@@ -154,6 +161,8 @@ class LegacyMixin:
 
 
 class LabelMixin:
+    """Brief explanation of LabelMixin"""
+
     def _get_labels(self, element, locations, mode):
         r"""
         This is the actual label getter method, but it should not be called
@@ -730,3 +739,5 @@ class LabelMixin:
         Ts = self._get_indices(labels=labels, mode=mode, element='throat')
         Nt = np.shape(Ts)[0]
         return Nt
+
+end_all()

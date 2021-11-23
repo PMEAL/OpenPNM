@@ -6,6 +6,7 @@ from collections import namedtuple
 from openpnm.utils import Workspace, logging
 from openpnm.utils import SettingsAttr
 from openpnm.utils.misc import PrintableList, Docorator
+from auto_all import start_all, end_all
 docstr = Docorator()
 logger = logging.getLogger(__name__)
 ws = Workspace()
@@ -24,11 +25,13 @@ class BaseSettings:
         The name of the object, which will be generated if not given
     uuid : str
         A universally unique identifier for the object to keep things straight
+
     """
     prefix = 'base'
     name = ''
     uuid = ''
 
+start_all()
 
 @docstr.get_sections(base='Base', sections=['Parameters'])
 class Base(dict):
@@ -37,7 +40,7 @@ class Base(dict):
 
     Parameters
     ----------
-    name : string, optional
+    name : str, optional
         The unique name of the object.  If not given one will be generated.
     Np : int, default is 0
         The total number of pores to be assigned to the object
@@ -221,6 +224,7 @@ class Base(dict):
                 item['throat.' + name] = item.pop('throat.' + old_name)
 
     def _get_name(self):
+        """String representing the name of the object"""
         try:
             return self.settings['name']
         except AttributeError:
@@ -229,6 +233,7 @@ class Base(dict):
     name = property(_get_name, _set_name)
 
     def _get_project(self):
+        """A shortcut to get a handle to the associated project."""
         for proj in ws.values():
             if self in proj:
                 return proj
@@ -241,6 +246,7 @@ class Base(dict):
             self._settings_docs = settings.__doc__
 
     def _get_settings(self):
+        """Dictionary containing object settings."""
         if self._settings is None:
             self._settings = SettingsAttr()
         sets = self._settings
@@ -256,8 +262,8 @@ class Base(dict):
     @property
     def network(self):
         r"""
-        A shortcut to get a handle to the associated network
-        There can only be one so this works
+        A shortcut to get a handle to the associated network.
+        There can only be one so this works.
         """
         return self.project.network
 
@@ -499,12 +505,12 @@ class Base(dict):
 
     @property
     def Np(self):
-        r"""A shortcut to query the total number of pores on the object'"""
+        r"""A shortcut to query the total number of pores on the object"""
         return np.shape(self.get('pore.all'))[0]
 
     @property
     def Nt(self):
-        r"""A shortcut to query the total number of throats on the object'"""
+        r"""A shortcut to query the total number of throats on the object"""
         return np.shape(self.get('throat.all'))[0]
 
     @property
@@ -537,15 +543,20 @@ class Base(dict):
 
         Parameters
         ----------
-        pores or throats : array_like
-            List of pore or throat indices. Only one of these can be specified
-            at a time, and the returned result will be of the corresponding
+        pores : array_like
+            List of pore indices. Only one of these can be specified at a
+            time, and the returned result will be of the corresponding
+            length.
+        throats : array_like
+            List of throat indices. Only one of these can be specified at
+            a time, and the returned result will be of the corresponding
             length.
 
         Returns
         -------
-        A boolean mask of length Np or Nt with ``True`` in the specified pore
-        or throat locations.
+        ndarray
+            A boolean mask of length Np or Nt with ``True`` in the
+            specified pore or throat locations.
 
         See Also
         --------
@@ -586,8 +597,9 @@ class Base(dict):
 
         Returns
         -------
-        A list of pore or throat indices corresponding the locations where
-        the received mask was ``True``.
+        ndarray
+            A list of pore or throat indices corresponding the locations
+            where the received mask was ``True``.
 
         See Also
         --------
@@ -623,12 +635,12 @@ class Base(dict):
 
         Notes
         -----
-        This makes an effort to maintain the data 'type' when possible; however
-        when data are missing this can be tricky.  Data can be missing in two
-        different ways: A set of pores is not assisgned to a geometry or the
-        network contains multiple geometries and data does not exist on all.
-        Float and boolean data is fine, but missing ints are converted to float
-        when nans are inserted.
+        This makes an effort to maintain the data 'type' when possible;
+        however when data are missing this can be tricky. Data can be
+        missing in two different ways: A set of pores is not assisgned to
+        a geometry or the network contains multiple geometries and data
+        does not exist on all. Float and boolean data is fine, but missing
+        ints are converted to float when nans are inserted.
 
         Examples
         --------
@@ -823,14 +835,15 @@ class Base(dict):
 
         Parameters
         ----------
-        element : string, optional
+        element : str, optional
             Can be either 'pore' , 'pores', 'throat' or 'throats', which
             specifies which count to return.
 
         Returns
         -------
-        A dictionary containing the number of pores and throats under the
-        'pore' and 'throat' key respectively.
+        dict
+            A dictionary containing the number of pores and throats under
+            the 'pore' and 'throat' key respectively.
 
         See Also
         --------
@@ -840,8 +853,8 @@ class Base(dict):
         Notes
         -----
         The ability to send plurals is useful for some types of 'programmatic'
-        access.  For instance, the standard argument for locations is pores
-        or throats.  If these are bundled up in a **kwargs dict then you can
+        access. For instance, the standard argument for locations is pores
+        or throats. If these are bundled up in a **kwargs dict then you can
         just use the dict key in count() without removing the 's'.
 
         Examples
@@ -1157,3 +1170,5 @@ class Base(dict):
         if obj_type.lower() in mro:
             flag = True
         return flag
+
+end_all()
