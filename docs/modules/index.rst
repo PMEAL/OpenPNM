@@ -13,18 +13,6 @@ find a comprehensive documentation of the modules, classes, and finally the
 methods, occasionally with basic embedded examples on how to use them.
 
 .. toctree::
-   :hidden:
    :maxdepth: 1
 
-   Core <core>
-   Network <network>
-   Geometry <geometry>
-   Phase <phases>
-   Physics <physics>
-   Materials <materials>
-   Algorithms <algorithms>
-   Metrics <metrics>
-   TopoTools <topotools>
-   Models <models>
-   IO <io>
-   Utils <utils>
+   core
