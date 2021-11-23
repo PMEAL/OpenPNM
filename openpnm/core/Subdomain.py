@@ -1,5 +1,6 @@
 import numpy as np
 from openpnm.core import Base, LabelMixin, ParamMixin
+from auto_all import start_all, end_all
 
 
 start_all()
