@@ -26,7 +26,7 @@ def ctc(target):
 
     """
     network = target.project.network
-    throats = network.map_throats(throats=target.Ts, origin=target)
+    throats = network.throats(target.name)
     cn = network['throat.conns'][throats]
     C1 = network['pore.coords'][cn[:, 0]]
     C2 = network['pore.coords'][cn[:, 1]]
@@ -51,7 +51,7 @@ def classic(target, pore_diameter='pore.diameter'):
 
     """
     network = target.project.network
-    throats = network.map_throats(throats=target.Ts, origin=target)
+    throats = network.throats(target.name)
     cn = network['throat.conns'][throats]
     ctc_dist = ctc(target)
     value = ctc_dist - network[pore_diameter][cn].sum(axis=1) / 2

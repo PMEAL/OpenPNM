@@ -137,28 +137,6 @@ class LegacyMixin:
         ids = origin['throat._id'][throats]
         return self._map(element='throat', ids=ids, filtered=filtered)
 
-    def check_data_health(self):
-        r"""
-        Check the health of pore and throat data arrays.
-
-        Returns
-        -------
-        health: HealthDict object
-            A  basic dictionary with an added ``health`` attribute that is
-            ``True`` if all entries in the dict are deemed healthy
-            (empty lists), or ``False`` otherwise.
-
-        Examples
-        --------
-        >>> import openpnm
-        >>> pn = openpnm.network.Cubic(shape=[5, 5, 5])
-        >>> h = pn.check_data_health()
-        >>> h.health
-        True
-        """
-        health = self.project.check_data_health(obj=self)
-        return health
-
 
 class LabelMixin:
     """Brief explanation of LabelMixin"""
@@ -440,7 +418,6 @@ class LabelMixin:
         See Also
         --------
         throats
-        map_pores
 
         Notes
         -----
@@ -466,10 +443,10 @@ class LabelMixin:
         if to_global and hasattr(self, 'to_global'):
             ind = self.to_global(pores=ind)
             if asmask:
-                ind = self._domain.tomask(pores=ind)
+                ind = self._domain.to_mask(pores=ind)
         else:
             if asmask:
-                ind = self.tomask(pores=ind)
+                ind = self.to_mask(pores=ind)
         return ind
 
     def throats(self, labels='all', mode='or', asmask=False, to_global=False):
@@ -522,7 +499,6 @@ class LabelMixin:
         See Also
         --------
         pores
-        map_throats
 
         Examples
         --------
@@ -537,10 +513,10 @@ class LabelMixin:
         if to_global and hasattr(self, 'to_global'):
             ind = self.to_global(throats=ind)
             if asmask:
-                ind = self._domain.tomask(throats=ind)
+                ind = self._domain.to_mask(throats=ind)
         else:
             if asmask:
-                ind = self.tomask(throats=ind)
+                ind = self.to_mask(throats=ind)
         return ind
 
     def filter_by_label(self, pores=[], throats=[], labels=None, mode='or'):

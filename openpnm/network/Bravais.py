@@ -188,7 +188,7 @@ class Bravais(GenericNetwork):
         # Finally scale network to specified spacing
         topotools.label_faces(self)
         Ps = self.pores(['left', 'right', 'top', 'bottom', 'front', 'back'])
-        Ps = self.tomask(pores=Ps)
+        Ps = self.to_mask(pores=Ps)
         self['pore.surface'] = Ps
         self['pore.coords'] *= np.array(spacing)
 

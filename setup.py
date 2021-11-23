@@ -61,7 +61,7 @@ setup(
         'openpnm.utils',
         'openpnm.io',
         'openpnm.models',
-        'openpnm.models.topology',
+        'openpnm.models.network',
         'openpnm.models.misc',
         'openpnm.models.geometry',
         'openpnm.models.phases',

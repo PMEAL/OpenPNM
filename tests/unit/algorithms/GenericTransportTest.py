@@ -281,7 +281,7 @@ class GenericTransportTest:
         alg = op.algorithms.GenericTransport(network=self.net,
                                              phase=self.phase)
         h = self.net.check_network_health()
-        op.topotools.trim(self.net, pores=h['trim_pores'])
+        op.topotools.trim(self.net, pores=h['disconnected_pores'])
         alg.settings['conductance'] = 'throat.diffusive_conductance'
         alg.settings['quantity'] = 'pore.mole_fraction'
         alg.set_rate_BC(pores=[0, 1, 2, 3], total_rate=1)

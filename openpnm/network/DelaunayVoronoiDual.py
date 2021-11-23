@@ -171,7 +171,7 @@ class DelaunayVoronoiDual(GenericNetwork):
 
         # Label Voronoi pores on boundary
         Ps = self.find_neighbor_pores(pores=self.pores('boundary'))
-        Ps = self['pore.voronoi']*self.tomask(pores=Ps)
+        Ps = self['pore.voronoi']*self.to_mask(pores=Ps)
         self['pore.boundary'][Ps] = True
 
         # Label Voronoi and interconnect throats on boundary
@@ -189,7 +189,7 @@ class DelaunayVoronoiDual(GenericNetwork):
         Ps = self.pores(labels=['boundary', 'delaunay'], mode='xnor')
         for P in Ps:
             Ns = self.find_neighbor_pores(pores=P)
-            Ns = Ps = self['pore.voronoi']*self.tomask(pores=Ns)
+            Ns = Ps = self['pore.voronoi']*self.to_mask(pores=Ns)
             coords = np.mean(self['pore.coords'][Ns], axis=0)
             self['pore.coords'][P] = coords
 

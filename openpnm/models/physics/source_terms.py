@@ -637,7 +637,8 @@ def butler_volmer_conc(
 
     """
     network = target.project.network
-    pores = network.map_pores(pores=target.Ps, origin=target)
+    domain = target._domain
+    pores = domain.pores(target.name)
 
     # Fetch model variables
     X = target[X]
@@ -757,7 +758,8 @@ def butler_volmer_voltage(
 
     """
     network = target.project.network
-    pores = network.map_pores(pores=target.Ps, origin=target)
+    domain = target._domain
+    pores = domain.pores(target.name)
 
     # Fetch model variables
     A_rxn = network[reaction_area][pores]

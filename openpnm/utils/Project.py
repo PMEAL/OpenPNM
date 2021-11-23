@@ -318,10 +318,10 @@ class Project(list):
             for _phase in self.phases().values():
                 physics = self.find_physics(phase=_phase)
                 for phys in physics:
-                    Ps = _phase.map_pores(pores=phys.Ps, origin=phys)
-                    physPs = _phase.tomask(pores=Ps)
-                    Ts = _phase.map_throats(throats=phys.Ts, origin=phys)
-                    physTs = _phase.tomask(throats=Ts)
+                    Ps = _phase.pores(phys.name)
+                    physPs = _phase.to_mask(pores=Ps)
+                    Ts = _phase.throats(phys.name)
+                    physTs = _phase.to_mask(throats=Ts)
                     if np.all(geoPs == physPs) and np.all(geoTs == physTs):
                         result.append(phys)
             return result
@@ -709,9 +709,9 @@ class Project(list):
         Returns
         -------
         health : dict
-            Returns a HealthDict object which a basic dictionary with an added
-            ``health`` attribute that is True is all entries in the dict are
-            deemed healthy (empty lists), or False otherwise.
+            Returns a HealthDict object which is a basic dictionary with an
+            added ``health`` attribute that is ``True`` is all entries in the
+            dict are deemed healthy (empty lists), or ``False`` otherwise.
 
         """
         health = HealthDict()
@@ -727,13 +727,15 @@ class Project(list):
 
     def check_network_health(self):
         r"""
-        This method check the network topological health by checking for:
+        This method check the topological health of the network
+
+        The following aspects are checked for:
 
             (1) Isolated pores
-            (2) Islands or isolated clusters of pores
+            (2) Disconnected clusters of pores
             (3) Duplicate throats
-            (4) Bidirectional throats (ie. symmetrical adjacency matrix)
-            (5) Headless throats
+            (4) Headless throats
+            (5) Bidirectional throats
 
         Returns
         -------
@@ -747,79 +749,40 @@ class Project(list):
         from the network to restore health.  This list is a suggestion only,
         and is based on keeping the largest cluster and trimming the others.
 
-        Notes
-        -----
         - Does not yet check for duplicate pores
         - Does not yet suggest which throats to remove
         - This is just a 'check' and does not 'fix' the problems it finds
+
         """
-        import scipy.sparse.csgraph as csg
-        import scipy.sparse as sprs
+        import openpnm.models.network as mods
 
         health = HealthDict()
-        health['disconnected_clusters'] = []
-        health['isolated_pores'] = []
-        health['trim_pores'] = []
-        health['duplicate_throats'] = []
-        health['bidirectional_throats'] = []
-        health['headless_throats'] = []
-        health['looped_throats'] = []
-
         net = self.network
 
         # Check for headless throats
-        hits = np.where(net['throat.conns'] > net.Np - 1)[0]
-        if np.size(hits) > 0:
-            health['headless_throats'] = np.unique(hits)
-            return health
+        headless = mods.headless_throats(net)
+        health['headless_throats'] = np.where(headless)[0].tolist()
 
         # Check for throats that loop back onto the same pore
-        P12 = net['throat.conns']
-        hits = np.where(P12[:, 0] == P12[:, 1])[0]
-        if np.size(hits) > 0:
-            health['looped_throats'] = hits
+        looped = mods.looped_throats(net)
+        health['looped_throats'] = np.where(looped)[0].tolist()
 
         # Check for individual isolated pores
-        Ps = net.num_neighbors(net.pores())
-        if np.sum(Ps == 0) > 0:
-            health['isolated_pores'] = np.where(Ps == 0)[0]
+        isolated = mods.isolated_pores(net)
+        health['isolated_pores'] = np.where(isolated)[0].tolist()
 
         # Check for separated clusters of pores
-        temp = []
-        am = net.create_adjacency_matrix(fmt='coo', triu=True)
-        Cs = csg.connected_components(am, directed=False)[1]
-        if np.unique(Cs).size > 1:
-            for i in np.unique(Cs):
-                temp.append(np.where(Cs == i)[0])
-            b = np.array([len(item) for item in temp])
-            c = np.argsort(b)[::-1]
-            for i, j in enumerate(c):
-                health['disconnected_clusters'].append(temp[c[i]])
-                if i > 0:
-                    health['trim_pores'].extend(temp[c[i]])
+        size = mods.cluster_size(net)
+        mx = np.max(size)
+        health['disconnected_pores'] = np.where(size < mx)[0].tolist()
 
         # Check for duplicate throats
-        am = net.create_adjacency_matrix(fmt='csr', triu=True).tocoo()
-        hits = np.where(am.data > 1)[0]
-        if len(hits) > 0:
-            mergeTs = []
-            hits = np.vstack((am.row[hits], am.col[hits])).T
-            ihits = hits[:, 0] + 1j*hits[:, 1]
-            conns = net['throat.conns']
-            iconns = conns[:, 0] + 1j*conns[:, 1]  # Convert to imaginary
-            for item in ihits:
-                mergeTs.append(np.where(iconns == item)[0])
-            health['duplicate_throats'] = mergeTs
+        dupes = mods.duplicate_throats(net)
+        health['duplicate_throats'] = np.where(dupes)[0].tolist()
 
         # Check for bidirectional throats
-        adjmat = net.create_adjacency_matrix(fmt='coo')
-        num_full = adjmat.sum()
-        temp = sprs.triu(adjmat, k=1)
-        num_upper = temp.sum()
-        if num_full > num_upper:
-            biTs = np.where(net['throat.conns'][:, 0]
-                            > net['throat.conns'][:, 1])[0]
-            health['bidirectional_throats'] = biTs.tolist()
+        bidir = mods.bidirectional_throats(net)
+        health['bidirectional_throats'] = np.where(bidir)[0].tolist()
 
         return health
 

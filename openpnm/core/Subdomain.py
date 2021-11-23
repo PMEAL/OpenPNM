@@ -1,11 +1,10 @@
 import numpy as np
-from openpnm.core import Base, LegacyMixin, LabelMixin, ParamMixin
-from auto_all import start_all, end_all
+from openpnm.core import Base, LabelMixin, ParamMixin
 
 
 start_all()
 
-class Subdomain(Base, LegacyMixin, LabelMixin):
+class Subdomain(Base, LabelMixin):
     r"""
     This subclass of the Base class provides the ability assign the object
     to specific locations (pores and throats) in the domain.  This class
@@ -51,13 +50,6 @@ class Subdomain(Base, LegacyMixin, LabelMixin):
                 raise Exception('Cannot create ' + key + ' when '
                                 + hit + ' is already defined')
         super().__setitem__(key, value)
-
-    @property
-    def _domain(self):
-        try:
-            return self.phase
-        except AttributeError:
-            return self.network
 
     def _set_locations(self, element, indices, mode):
         r"""
@@ -199,7 +191,8 @@ class Subdomain(Base, LegacyMixin, LabelMixin):
             List of pore or throat indices to be converted
         missing_values : scalar
             The value to put into missing locations if global indices are not
-            found.
+            found.  If ``missing_vals`` is ``None``, then any missing values
+            are removed from the returned list.
 
         Returns
         -------
@@ -213,9 +206,14 @@ class Subdomain(Base, LegacyMixin, LabelMixin):
             element = 'throat'
             locs = throats
         mask = np.ones_like(self._domain[element + '.all'],
-                            dtype=int)*missing_vals
+                            dtype=int)*-1
         inds = np.where(self._domain[element + '.' + self.name])[0]
-        mask[inds] = self.Ps
-        return mask[locs]
+        mask[inds] = self._get_indices(element)
+        vals = mask[locs]
+        if missing_vals is None:
+            vals = vals[vals >= 0]
+        else:
+            vals[vals >= 0] = missing_vals
+        return vals
 
 end_all()

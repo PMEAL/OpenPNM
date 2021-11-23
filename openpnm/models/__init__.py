@@ -76,7 +76,7 @@ automatically ensures that models are called in the correct order.
 """
 
 from . import misc
-from . import topology
+from . import network
 from . import geometry
 from . import phases
 from . import physics
