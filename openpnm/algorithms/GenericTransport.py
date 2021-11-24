@@ -669,9 +669,7 @@ class GenericTransport(GenericAlgorithm):
             variable_props = [variable_props]
         # Handle mode
         mode = self._parse_mode(mode, allowed=['merge', 'overwrite'], single=True)
-        if mode == 'merge':
-            pass
-        elif mode == 'overwrite':
+        if mode == 'overwrite':
             self.settings['variable_props'] = []
         # parse each propname and append to variable_props in settings
         for variable_prop in variable_props:
