@@ -26,5 +26,5 @@ from . import metrics
 
 from .utils import Workspace, Project
 
-import numpy
-numpy.seterr(divide='ignore', invalid='ignore')
+import numpy as _np
+_np.seterr(divide='ignore', invalid='ignore')
