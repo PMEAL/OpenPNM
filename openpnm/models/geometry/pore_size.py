@@ -1,7 +1,11 @@
+from openpnm.utils import Docorator
 from openpnm.utils import logging as _logging
 from openpnm.models import misc as _misc
 import numpy as _np
+
+
 _logger = _logging.getLogger(__name__)
+docstr = Docorator()
 
 
 def weibull(target, shape, scale, loc, seeds='pore.seed'):
@@ -44,6 +48,7 @@ def from_neighbor_throats(target, prop, mode='max'):
 from_neighbor_throats.__doc__ = _misc.from_neighbor_throats.__doc__
 
 
+@docstr.dedent
 def largest_sphere(target, fixed_diameter='pore.fixed_diameter', iters=5):
     r"""
     Finds the maximum diameter pore that can be placed in each location without
@@ -51,10 +56,7 @@ def largest_sphere(target, fixed_diameter='pore.fixed_diameter', iters=5):
 
     Parameters
     ----------
-    target : OpenPNM Base object
-        Object with which this model is associated. This controls
-        the length of the calculated array, and also provides access to
-        other necessary properties.
+    %(models.target.parameters)s
     fixed_diameter : string
         Name of the dictionary key on ``target`` where the array containing
         pore diameter values is stored, if any. If not provided a starting
@@ -118,6 +120,7 @@ def largest_sphere(target, fixed_diameter='pore.fixed_diameter', iters=5):
     return D[network.pores(target.name)]
 
 
+@docstr.dedent
 def equivalent_diameter(target, pore_volume='pore.volume',
                         pore_shape='sphere'):
     r"""
@@ -126,10 +129,7 @@ def equivalent_diameter(target, pore_volume='pore.volume',
 
     Parameters
     ----------
-    target : OpenPNM Base object
-        Object with which this model is associated. This controls
-        the length of the calculated array, and also provides access to
-        other necessary properties.
+    %(models.target.parameters)s
     pore_volume : str
         Name of the dictionary key on ``target`` where the array containing
         pore volume values is stored

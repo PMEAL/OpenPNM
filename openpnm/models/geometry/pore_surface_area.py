@@ -7,6 +7,7 @@ docstr = Docorator()
 
 @docstr.get_sections(base='models.geometry.pore_surface_area',
                      sections=['Parameters', 'Returns', 'Notes'])
+@docstr.dedent
 def sphere(
     target,
     pore_diameter='pore.diameter',
@@ -18,13 +19,8 @@ def sphere(
 
     Parameters
     ----------
-    target : OpenPNM Base object
-        Object with which this model is associated. This controls
-        the length of the calculated array, and also provides access to
-        other necessary properties.
-    pore_diameter : str
-        Name of the dictionary key on ``target`` where the array containing
-        pore diameter values is stored
+    %(models.target.parameters)s
+    %(models.geometry.pdia)s
     throat_cross_sectional_area : str
         Name of the dictionary key on ``target`` where the array containing
         throat cross sectional area values is stored

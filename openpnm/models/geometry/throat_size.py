@@ -1,7 +1,9 @@
-r"""
-"""
-from openpnm.models import misc as _misc
 import numpy as _np
+from openpnm.models import misc as _misc
+from openpnm.utils import Docorator
+
+
+docstr = Docorator()
 
 
 def weibull(target, shape, scale, loc, seeds='throat.seed'):
@@ -42,6 +44,7 @@ def from_neighbor_pores(target, prop='pore.diameter', mode='min'):
 from_neighbor_pores.__doc__ = _misc.from_neighbor_pores.__doc__
 
 
+@docstr.dedent
 def equivalent_diameter(target, throat_area='throat.area',
                         throat_shape='circle'):
     r"""
@@ -50,10 +53,7 @@ def equivalent_diameter(target, throat_area='throat.area',
 
     Parameters
     ----------
-    target : OpenPNM Base object
-        Object with which this model is associated. This controls
-        the length of the calculated array, and also provides access to
-        other necessary properties.
+    %(models.target.parameters)s
     thorat_area : str
         Name of the dictionary key on ``target`` where the array containing
         throat area values is stored

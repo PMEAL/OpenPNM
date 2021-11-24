@@ -2,15 +2,6 @@ import numpy as _np
 from openpnm.utils import Docorator
 
 
-__all__ = [
-    "spheres_and_cylinders",
-    "circles_and_rectangles",
-    "cones_and_cylinders",
-    "trapezoids_and_rectangles",
-    "pyramids_and_cuboids",
-    "cubes_and_cuboids",
-    "squares_and_rectangles"
-]
 docstr = Docorator()
 
 
@@ -32,7 +23,8 @@ def spheres_and_cylinders(
     Parameters
     ----------
     %(models.target.parameters)s
-    %(models.diameters.parameters)s
+    %(models.geometry.pdia)s
+    %(models.geometry.tdia)s
 
     Returns
     -------

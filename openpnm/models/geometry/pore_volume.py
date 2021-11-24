@@ -5,21 +5,18 @@ from openpnm.utils import Docorator
 
 docstr = Docorator()
 
+
 @docstr.get_sections(base='models.geometry.pore_volume',
                      sections=['Parameters', 'Returns'])
+@docstr.dedent
 def sphere(target, pore_diameter='pore.diameter'):
     r"""
     Calculate pore volume from diameter assuming a spherical pore body
 
     Parameters
     ----------
-    target : OpenPNM Base object
-        Object with which this model is associated. This controls
-        the length of the calculated array, and also provides access to
-        other necessary properties.
-    pore_diameter : str
-        Name of the dictionary key on ``target`` where the array containing
-        pore diameter values is stored
+    %(models.target.parameters)s
+    %(models.geometry.pdia)s
 
     Returns
     -------
@@ -89,12 +86,8 @@ def effective(target, pore_volume='pore.volume',
     Parameters
     ----------
     %(models.geometry.pore_volume.parameters)s
-    pore_volume : str
-        Name of the dictionary key on ``target`` where the array containing
-        pore volume values is stored
-    throat_volume : string
-        Name of the dictionary key on ``target`` where the array containing
-        throat volume values is stored
+    %(models.geometry.pvol)s
+    %(models.geometry.tvol)s
 
     Returns
     -------

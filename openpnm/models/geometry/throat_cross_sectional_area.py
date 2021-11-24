@@ -1,26 +1,26 @@
-r"""
-"""
 from numpy import pi as _pi
+from openpnm.utils import Docorator
 
 
+docstr = Docorator()
+docstr.params['models.geometry.throat_cross_sectional_area.returns'] = \
+    r"""areas : ndarray
+            A numpy ndarray containing throat cross-sectional area values"""
+
+
+@docstr.dedent
 def cylinder(target, throat_diameter='throat.diameter'):
     r"""
     Calculate throat cross-sectional area for a cylindrical throat
 
     Parameters
     ----------
-    target : OpenPNM Object
-        The object which this model is associated with. This controls the
-        length of the calculated array, and also provides access to other
-        necessary properties.
-
-    throat_diameter : string
-        Dictionary key of the throat diameter values
+    %(models.target.parameters)s
+    %(models.geometry.tdia.parameters)s
 
     Returns
     -------
-    value : NumPy ndarray
-        Array containing throat cross-sectional area values.
+    %(models.geometry.throat_cross_sectional_area.returns)s
 
     """
     diams = target[throat_diameter]
@@ -28,24 +28,19 @@ def cylinder(target, throat_diameter='throat.diameter'):
     return value
 
 
+@docstr.dedent
 def cuboid(target, throat_diameter='throat.diameter'):
     r"""
     Calculate throat cross-sectional area for a cuboid throat
 
     Parameters
     ----------
-    target : OpenPNM Object
-        The object which this model is associated with. This controls the
-        length of the calculated array, and also provides access to other
-        necessary properties.
-
-    throat_diameter : string
-        Dictionary key of the throat diameter values
+    %(models.target.parameters)s
+    %(models.geometry.tdia.parameters)s
 
     Returns
     -------
-    value : NumPy ndarray
-        Array containing throat cross-sectional area values.
+    %(models.geometry.throat_cross_sectional_area.returns)s
 
     """
     diams = target[throat_diameter]
@@ -59,13 +54,12 @@ def rectangle(target, throat_diameter='throat.diameter'):
 
     Parameters
     ----------
-    target : OpenPNM Object
-        The object which this model is associated with. This controls the
-        length of the calculated array, and also provides access to other
-        necessary properties.
+    %(models.target.parameters)s
+    %(models.geometry.tdia.parameters)s
 
-    throat_diameter : string
-        Dictionary key of the throat diameter values
+    Returns
+    -------
+    %(models.geometry.throat_cross_sectional_area.returns)s
 
     """
     return target[throat_diameter]

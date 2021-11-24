@@ -7,19 +7,16 @@ docstr = Docorator()
 
 @docstr.get_sections(base='models.geometry.pore_cross_section',
                      sections=['Parameters', 'Returns'])
+@docstr.dedent
 def sphere(target, pore_diameter='pore.diameter'):
     r"""
-    Calculate cross-sectional area assuming the pore body is a sphere.
+    Calculate cross-sectional area assuming the pore body is a sphere
 
     Parameters
     ----------
-    target : OpenPNM Base object
-        Object with which this model is associated. This controls
-        the length of the calculated array, and also provides access to
-        other necessary properties.
-    pore_diameter : str
-        Name of the dictionary key on ``target`` where the array containing
-        pore diameter values is stored
+    %(models.target.parameters)s
+    %(models.geometry.pdia)s
+
 
     Returns
     -------
@@ -33,7 +30,7 @@ def sphere(target, pore_diameter='pore.diameter'):
 
 def cone(target, pore_diameter='pore.diameter'):
     r"""
-    Calculate cross-sectional area assuming the pore body is a cone.
+    Calculate cross-sectional area assuming the pore body is a cone
 
     Parameters
     ----------

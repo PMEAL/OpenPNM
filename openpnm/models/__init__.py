@@ -75,23 +75,18 @@ automatically ensures that models are called in the correct order.
 
 """
 
-# The follow bits are to initialize some boilerplate docstrings for docrep
+
+# %% The following bits are to initialize some boilerplate docstrings for docrep
 from openpnm.utils import Docorator as _doc
 _docstr = _doc()
+_docstr.params['models.target.parameters'] = \
+    r"""target : OpenPNM Base object
+            Object with which this model is associated. This controls
+            the length of the calculated array, and also provides access to
+            other necessary properties."""
 
 
-@_docstr.get_sections(base='models.target', sections=['Parameters'])
-def _dummy_model_target(target):
-    r"""
-
-    Parameters
-    ----------
-    target : OpenPNM Base object
-        Object with which this model is associated. This controls
-        the length of the calculated array, and also provides access to
-        other necessary properties.
-
-    """
+# %%
 
 
 __all__ = [

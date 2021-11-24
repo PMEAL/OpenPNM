@@ -34,7 +34,8 @@ def spheres_and_cylinders(
     Parameters
     ----------
     %(models.target.parameters)s
-    %(models.diameters.parameters)s
+    %(models.geometry.pdia)s
+    %(models.geometry.tdia)s
 
     Returns
     -------
