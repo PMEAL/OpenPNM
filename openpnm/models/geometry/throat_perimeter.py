@@ -41,7 +41,7 @@ def cuboid(target, throat_diameter='throat.diameter'):
 
     Returns
     -------
-    %(models.geometry.throat_perimeter.results)s
+    %(models.geometry.throat_perimeter.returns)s
 
     """
     return target[throat_diameter]*4
@@ -57,7 +57,7 @@ def rectangle(target, throat_diameter='throat.diameter'):
 
     Returns
     -------
-    %(models.geometry.throat_perimeter.results)s
+    %(models.geometry.throat_perimeter.returns)s
 
     """
     return 1.0

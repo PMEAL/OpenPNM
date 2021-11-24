@@ -16,7 +16,7 @@ def cylinder(target, throat_diameter='throat.diameter'):
     Parameters
     ----------
     %(models.target.parameters)s
-    %(models.geometry.tdia.parameters)s
+    %(models.geometry.tdia)s
 
     Returns
     -------
@@ -36,7 +36,7 @@ def cuboid(target, throat_diameter='throat.diameter'):
     Parameters
     ----------
     %(models.target.parameters)s
-    %(models.geometry.tdia.parameters)s
+    %(models.geometry.tdia)s
 
     Returns
     -------
@@ -55,7 +55,7 @@ def rectangle(target, throat_diameter='throat.diameter'):
     Parameters
     ----------
     %(models.target.parameters)s
-    %(models.geometry.tdia.parameters)s
+    %(models.geometry.tdia)s
 
     Returns
     -------
