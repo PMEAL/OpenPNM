@@ -1,10 +1,13 @@
-from openpnm.network import GenericNetwork, Cubic
-from openpnm import topotools
-from openpnm.utils import logging, Workspace
 import numpy as np
+from openpnm import topotools
+from openpnm.network import GenericNetwork, Cubic
+from openpnm.utils import logging, Workspace
+from auto_all import start_all, end_all
 logger = logging.getLogger(__name__)
 ws = Workspace()
 
+
+start_all()
 
 class Bravais(GenericNetwork):
     r"""
@@ -14,30 +17,35 @@ class Bravais(GenericNetwork):
     Cubic for higher porosity materials, but also have more interesting
     non-straight connections between the various pore sites.
 
-    More information on Bravais lattice notation can be `found on wikipedia
-    <https://en.wikipedia.org/wiki/Bravais_lattice>`_.
+    More information on Bravais lattice notation can be `found on
+    wikipedia <https://en.wikipedia.org/wiki/Bravais_lattice>`_.
 
     Parameters
     ----------
     shape : array_like
-        The number of pores in each direction.  This value is a bit ambiguous
-        for the more complex unit cells used here, but generally refers to the
-        the number for 'corner' sites
+        The number of pores in each direction. This value is a bit
+        ambiguous for the more complex unit cells used here, but generally
+        refers to the the number for 'corner' sites
     spacing : array_like (optional)
-        The spacing between pores in all three directions.  Like the ``shape``
-        this is a bit ambiguous but refers to the spacing between corner sites.
-        Essentially it controls the dimensions of the unit cell.  It a scalar
-        is given it is applied to all directions.  The default is 1.
-    mode : string
-        The type of lattice to create.  Options are:
+        The spacing between pores in all three directions. Like the
+        ``shape`` this is a bit ambiguous but refers to the spacing
+        between corner sites. Essentially it controls the dimensions of
+        the unit cell. If a scalar is given it is applied to all
+        directions. The default is 1.
+    mode : str
+        The type of lattice to create. Options are:
 
-        - 'sc' : Simple cubic (Same as ``Cubic``)
-        - 'bcc' : Body-centered cubic lattice
-        - 'fcc' : Face-centered cubic lattice
-        - 'hcp' : Hexagonal close packed (Note Implemented Yet)
+            'sc'
+                Simple cubic (Same as ``Cubic``)
+            'bcc'
+                Body-centered cubic lattice
+            'fcc'
+                Face-centered cubic lattice
+            'hcp'
+                Hexagonal close packed (Note Implemented Yet)
 
-    name : string
-        An optional name for the object to help identify it.  If not given,
+    name : str
+        An optional name for the object to help identify it. If not given,
         one will be generated.
 
     See Also
@@ -68,9 +76,9 @@ class Bravais(GenericNetwork):
     >>> sc.Np, bcc.Np, fcc.Np
     (27, 35, 63)
 
-    Since these three networks all have the same domain size, it is clear that
-    both 'bcc' and 'fcc' have more pores per unit volume.  This is particularly
-    helpful for modeling higher porosity materials.
+    Since these three networks all have the same domain size, it is clear
+    that both 'bcc' and 'fcc' have more pores per unit volume.  This is
+    particularly helpful for modeling higher porosity materials.
 
     They all have the same number corner sites, which corresponds to the
     [3, 3, 3] shape that was specified:
@@ -79,16 +87,29 @@ class Bravais(GenericNetwork):
     (27, 27, 27)
 
     Visualization of these three networks can be done quickly using the
-    functions in topotools.  Firstly, merge them all into a single network
+    functions in topotools. Firstly, merge them all into a single network
     for convenience:
 
     >>> bcc['pore.coords'][:, 0] += 3
     >>> fcc['pore.coords'][:, 0] += 6
+    >>> import matplotlib.pyplot as plt
     >>> op.topotools.merge_networks(sc, [bcc, fcc])
-    >>> fig = op.topotools.plot_connections(sc)
+    >>> fig, ax = plt.subplots()
+    >>> op.topotools.plot_connections(sc, ax=ax)
 
-    .. image:: /../docs/_static/images/bravais_networks.png
-        :align: center
+    .. plot::
+
+       import openpnm as op
+       import matplotlib.pyplot as plt
+       sc = op.network.Bravais(shape=[3, 3, 3], mode='sc')
+       bcc = op.network.Bravais(shape=[3, 3, 3], mode='bcc')
+       fcc = op.network.Bravais(shape=[3, 3, 3], mode='fcc')
+       bcc['pore.coords'][:, 0] += 3
+       fcc['pore.coords'][:, 0] += 6
+       op.topotools.merge_networks(sc, [bcc, fcc])
+       fig, ax = plt.subplots(figsize=(6, 6))
+       op.topotools.plot_connections(sc, ax=ax)
+       plt.show()
 
     For larger networks and more control over presentation use `Paraview
     <http://www.paraview.org>`_.
@@ -196,19 +217,20 @@ class Bravais(GenericNetwork):
         r"""
         Add boundary pores to the specified faces of the network
 
-        Pores are offset from the faces by 1/2 of the given ``spacing``, such
-        that they lie directly on the boundaries.
+        Pores are offset from the faces by 1/2 of the given ``spacing``,
+        such that they lie directly on the boundaries.
 
         Parameters
         ----------
-        labels : string or list of strings
-            The labels indicating the pores defining each face where boundary
-            pores are to be added (e.g. 'left' or ['left', 'right'])
-
+        labels : str or list[str]
+            The labels indicating the pores defining each face where
+            boundary pores are to be added (e.g. 'left' or
+            ['left', 'right'])
         spacing : scalar or array_like
-            The spacing of the network (e.g. [1, 1, 1]).  This must be given
-            since it can be quite difficult to infer from the network,
-            for instance if boundary pores have already added to other faces.
+            The spacing of the network (e.g. [1, 1, 1]).  This must be
+            given since it can be quite difficult to infer from the
+            network, for instance if boundary pores have already added
+            to other faces.
 
         """
         spacing = np.array(spacing)
@@ -223,3 +245,5 @@ class Bravais(GenericNetwork):
                 offset = -1*offset
             topotools.add_boundary_pores(network=self, pores=Ps, offset=offset,
                                          apply_label=item + '_boundary')
+
+end_all()

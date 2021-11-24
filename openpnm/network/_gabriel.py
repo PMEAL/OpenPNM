@@ -3,8 +3,11 @@ import scipy.spatial as sptl
 from openpnm.network import Delaunay
 from openpnm.topotools import trim
 from openpnm.utils import logging
+from auto_all import start_all, end_all
 logger = logging.getLogger(__name__)
 
+
+start_all()
 
 class Gabriel(Delaunay):
     r"""
@@ -32,14 +35,13 @@ class Gabriel(Delaunay):
 
         [x, y, 0] - will produce a 2D square domain of size x by y
 
-    name : string
-        An optional name for the object to help identify it.  If not given,
+    name : str
+        An optional name for the object to help identify it. If not given,
         one will be generated.
 
     Examples
     --------
     >>> import openpnm as op
-    >>> import scipy as sp
     >>> import matplotlib.pyplot as plt
     >>> pts = np.random.rand(100, 3) * [1, 1, 0]  # Set z-axis to 0
     >>> gn = op.network.Gabriel(shape=[1, 1, 0], points=pts)
@@ -50,11 +52,22 @@ class Gabriel(Delaunay):
     >>> gn['pore.coords'] += [1, 0, 0]
     >>> op.topotools.merge_networks(dn, gn)
     >>> fig, ax = plt.subplots()
-    >>> _ = op.topotools.plot_connections(dn, ax=ax)
-    >>> _ = op.topotools.plot_coordinates(dn, c='r', s=100, ax=ax)
+    >>> op.topotools.plot_connections(dn, ax=ax)
+    >>> op.topotools.plot_coordinates(dn, c='r', s=100, ax=ax)
 
-    .. image:: /../docs/_static/images/gabriel_network.png
-        :align: center
+    .. plot::
+
+       import openpnm as op
+       import matplotlib.pyplot as plt
+       pts = np.random.rand(100, 3) * [1, 1, 0]  # Set z-axis to 0
+       gn = op.network.Gabriel(shape=[1, 1, 0], points=pts)
+       dn = op.network.Delaunay(shape=[1, 1, 0], points=pts)
+       gn['pore.coords'] += [1, 0, 0]
+       op.topotools.merge_networks(dn, gn)
+       fig, ax = plt.subplots(figsize=(6, 3))
+       op.topotools.plot_connections(dn, ax=ax)
+       op.topotools.plot_coordinates(dn, c='r', s=100, ax=ax)
+       plt.axis("off")
 
     """
 
@@ -75,3 +88,5 @@ class Gabriel(Delaunay):
             # Identify throats whose centroid is not near an unconnected node
             g = np.around(n, decimals=5) == np.around(r, decimals=5)
             trim(self, throats=~g)
+
+end_all()

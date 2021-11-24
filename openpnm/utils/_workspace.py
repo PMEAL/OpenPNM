@@ -1,10 +1,14 @@
 import openpnm
 import numpy as np
 from openpnm.utils import SettingsDict, logging
+from auto_all import start_all, end_all
 logger = logging.getLogger(__name__)
 
 
+start_all()
+
 class SettingsDict(SettingsDict):
+    """Brief explanation of 'SettingsDict'"""
     def __setitem__(self, key, value):
         if key == 'loglevel':
             logger = logging.getLogger()
@@ -22,7 +26,7 @@ class Workspace(dict):
     This class is a
     `singleton <https://en.wikipedia.org/wiki/Singleton_pattern>`_ so that
     whenever and wherever a Workspace is instantiated, the same instance is
-    obtained.  This allows it to maintain a definitive record of all open
+    obtained. This allows it to maintain a definitive record of all open
     Projects.
 
     See Also
@@ -31,8 +35,8 @@ class Workspace(dict):
 
     Notes
     -----
-    The Workspace object contains a variety of functions that one might expect
-    from the 'file-menu' in a typical GUI.
+    The Workspace object contains a variety of functions that one might
+    expect from the 'file-menu' in a typical GUI.
 
     """
 
@@ -63,8 +67,7 @@ class Workspace(dict):
         super().__setitem__(name, project)
 
     def copy(self):
-        r"""
-        """
+        """Brief explanation of 'copy'"""
         raise Exception('Cannot copy Workspace, only one can exist at a time')
 
     def _create_console_handles(self, project):
@@ -82,7 +85,7 @@ class Workspace(dict):
 
     def save_workspace(self, filename=None):
         r"""
-        Save all projects in the current workspace as a single file
+        Saves all projects in the current workspace as a single file
 
         Parameters
         ----------
@@ -96,6 +99,7 @@ class Workspace(dict):
         each project in the workspace. This archive can be extracted and each
         ``pnm`` file can be loaded manually using ``load_project`` or the
         ``openpnm.io.PNM`` class.
+
         """
         from datetime import datetime
         if filename is None:
@@ -109,11 +113,11 @@ class Workspace(dict):
 
     def load_workspace(self, filename):
         r"""
-        Load project(s) from a saved workspace into current workspace
+        Loads project(s) from a saved workspace into current workspace
 
         Parameters
         ----------
-        filename : str or path object
+        filename : str or Path
             The filename containing the saved workspace
 
         Notes
@@ -136,10 +140,9 @@ class Workspace(dict):
 
         Parameters
         ----------
-        project : OpenPNM Project
+        project : Project
             The project to save.
-
-        filename : string, optional
+        filename : str, optional
             If no filename is given, the given project name is used. See Notes
             for more information.
 
@@ -164,14 +167,16 @@ class Workspace(dict):
         r"""
         Loads a Project from the specified 'pnm' file
 
-        The loaded project is added to the Workspace . This will *not* delete
+        The loaded project is added to the Workspace. This will *not* delete
         any existing Projects in the Workspace and will rename any Projects
         being loaded if necessary.
 
         Parameters
         ----------
-        filename : string or path object
-            The name of the file to open.  See Notes for more information.
+        filename : str or Path
+            The name of the file to open. See Notes for more information.
+        overwrite : bool
+            Brief explanation of 'overwrite'
 
         See Also
         --------
@@ -179,7 +184,7 @@ class Workspace(dict):
 
         Notes
         -----
-        The filename can be a string such as 'saved_file.pnm'.  The string can
+        The filename can be a string such as 'saved_file.pnm'. The string can
         include absolute path such as 'C:\networks\saved_file.pnm', or can
         be a relative path such as '..\..\saved_file.pnm', which will look
         2 directories above the current working directory.  Can also be a
@@ -196,20 +201,25 @@ class Workspace(dict):
         Removes the specified Project from the Workspace
 
         This does not save the project, so any changes will be lost.
+
+        Parameters
+        ----------
+        project : Project
+            The Project object to be copied
+
         """
         del self[project.name]
 
     def copy_project(self, project, name=None):
         r"""
-        Make a copy of an existing Project
+        Makes a copy of an existing Project
 
         Parameters
         ----------
-        project : Project object
+        project : Project
             The Project object to be copied
-
-        name : string, optional
-            A name for the new copy of the project.  If not supplied, then
+        name : str, optional
+            A name for the new copy of the project. If not supplied, then
             one will be generated (e.g. 'proj_02')
 
         Returns
@@ -227,8 +237,8 @@ class Workspace(dict):
 
         Parameters
         ----------
-        name : string (optional)
-            The unique name to give to the project.  If none is given, one
+        name : str, optional
+            The unique name to give to the project. If none is given, one
             will be automatically generated (e.g. 'proj_01`)
 
         Returns
@@ -274,6 +284,7 @@ class Workspace(dict):
         Notes
         -----
         When a new Workspace is created the
+
         """
         if not hasattr(self, '_next_id'):
             # If _next_id has not been set, then assign it
@@ -299,3 +310,5 @@ class Workspace(dict):
             s.append(' ' + item.name)
             s.append(item.__str__())
         return '\n'.join(s)
+
+end_all()

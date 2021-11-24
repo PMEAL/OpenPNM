@@ -2,9 +2,11 @@ import numpy as np
 from openpnm.network import GenericNetwork
 from openpnm import topotools
 from openpnm.utils import logging, SettingsAttr
-
+from auto_all import start_all, end_all
 logger = logging.getLogger(__name__)
 
+
+start_all()
 
 class Cubic(GenericNetwork):
     r"""
@@ -17,39 +19,34 @@ class Cubic(GenericNetwork):
     Parameters
     ----------
     shape : array_like
-        The [Nx, Ny, Nz] size of the network in terms of the number of pores in
-        each direction
+        The [Nx, Ny, Nz] size of the network in terms of the number of
+        pores in each direction
     spacing : array_like, optional
-        The spacing between pore centers in each direction. If not given, then
-        [1, 1, 1] is assumed.
+        The spacing between pore centers in each direction. If not given,
+        then [1, 1, 1] is assumed.
     connectivity : int, optional
-        The number of connections to neighboring pores.  Connections are made
-        symmetrically to any combination of face, edge, or corners neighbors.
-        The default is 6 to create a simple cubic structure, but options are:
+        The number of connections to neighboring pores. Connections are
+        made symmetrically to any combination of face, edge, or corners
+        neighbors. The default is 6 to create a simple cubic structure,
+        but options are:
 
-        - 6: Faces only
-        - 14: Faces and Corners
-        - 18: Faces and Edges
-        - 20: Edges and Corners
-        - 26: Faces, Edges and Corners
+            6
+                Faces only
+            14
+                Faces and Corners
+            18
+                Faces and Edges
+            20
+                Edges and Corners
+            26
+                Faces, Edges and Corners
 
         For a more random distribution of connectivity, use a high
-        ``connectivity`` (i.e. 26) and then delete a fraction of the throats
+        connectivity (i.e. 26) and then delete a fraction of the throats
         using ``openpnm.topotools.reduce_coordination``.
-    name : string
-        An optional name for the object to help identify it.  If not given,
+    name : str
+        An optional name for the object to help identify it. If not given,
         one will be generated.
-
-    Attributes
-    ----------
-    spacing : int or array
-        The distance between pore centers.  This value becomes meaningless
-        if the topology is manipulated at all (i.e. by adding boundary pores)
-        since there is not unique or consistent value.  In such cases an
-        exception is thrown.
-    shape : array
-        The shape of the network.  Like ``spacing`` this values is meaningless
-        if the topology is manipulated, so an Exception is thrown.
 
     Examples
     --------
@@ -60,6 +57,10 @@ class Cubic(GenericNetwork):
     125
 
     And it can be plotted for quick visualization using:
+
+    >>> fig, ax = plt.subplots()
+    >>> op.topotools.plot_connections(network=pn, ax=ax)
+    >>> op.topotools.plot_coordinates(network=pn, c='r', s=75, ax=ax)
 
     .. plot::
 
@@ -170,12 +171,14 @@ class Cubic(GenericNetwork):
         Parameters
         ----------
         labels : string or list of strings
-            The labels indicating the pores defining each face where boundary
-            pores are to be added (e.g. 'left' or ['left', 'right'])
+            The labels indicating the pores defining each face where
+            boundary pores are to be added (e.g. 'left' or
+            ['left', 'right'])
         spacing : scalar or array_like
-            The spacing of the network (e.g. [1, 1, 1]).  This should be given
-            since it can be quite difficult to infer from the network, for
-            instance if boundary pores have already added to other faces.
+            The spacing of the network (e.g. [1, 1, 1]). This should be
+            given since it can be quite difficult to infer from the
+            network, for instance if boundary pores have already added to
+            other faces.
 
         """
         if isinstance(labels, str):
@@ -215,3 +218,5 @@ class Cubic(GenericNetwork):
             except KeyError:
                 logger.warning("No pores labelled " + label
                                + " were found, skipping boundary addition")
+
+end_all()

@@ -14,7 +14,7 @@
       .. autosummary::
          :toctree:
          {% for item in all_methods %}
-            {%- if not item.startswith('_') and item not in ['append', 'clear', 'copy', 'count', 'extend', 'fromkeys', 'get', 'index', 'insert', 'items', 'keys', 'pop', 'popitem', 'remove', 'reverse', 'setdefault', 'sort', 'update', 'values'] %}
+            {%- if not item.startswith('_') %}
             {{ name }}.{{ item }}
             {%- endif -%}
          {%- endfor %}
@@ -23,12 +23,13 @@
 
    {% block attributes %}
    {% if attributes %}
-   .. autosummary::
-      :toctree:
-      {% for item in all_attributes %}
-         {%- if not item.startswith('_') %}
-         {{ name }}.{{ item }}
-         {%- endif -%}
-      {%- endfor %}
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         {% for item in all_attributes %}
+            {%- if not item.startswith('_') %}
+            {{ name }}.{{ item }}
+            {%- endif -%}
+         {%- endfor %}
    {% endif %}
    {% endblock %}

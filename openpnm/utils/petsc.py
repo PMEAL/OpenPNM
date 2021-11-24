@@ -1,8 +1,7 @@
 """
-===============================================================================
-petsc: A class for solving sparse linear systems using petsc
-===============================================================================
-
+============================================================
+petsc: A class for solving sparse linear systems using PETSc
+============================================================
 """
 import sys
 import numpy as np
@@ -23,10 +22,13 @@ except ModuleNotFoundError:
 class PETScSparseLinearSolver(Base):
     r"""
     Solve the sparse linear system Ax = b using petsc solvers. Parallel
-    computing is supported and matrix partitioning over the available cores is
-    automatically handled by running:
+    computing is supported and matrix partitioning over the available
+    cores is automatically handled by running:
+
     $ mpirun -np 4 python3.5 script.py
+
     for parallel computing.
+
     """
     def __init__(self, A, b, settings={}):
         r"""
@@ -34,10 +36,9 @@ class PETScSparseLinearSolver(Base):
 
         Parameters
         ----------
-        CoefMat : sparse matrix
-            2D Coefficient matrix
-
-        rhs : dense matrix
+        A : sparse matrix
+            2D mass matrix
+        b : ndarray
             1D RHS vector
         """
         # Set some default settings
@@ -196,17 +197,15 @@ class PETScSparseLinearSolver(Base):
 
         Parameters
         ----------
-        solver_type : string, optional
+        solver_type : str, optional
             Default is the iterative solver 'cg' based on the
             Conjugate Gradient method.
-
-        preconditioner_type : string, optional
+        preconditioner_type : str, optional
             Default is the 'jacobi' preconditioner, i.e., diagonal
             scaling preconditioning. The preconditioner is used with
             iterative solvers. When a direct solver is used, this
             parameter is ignored.
-
-        factorization_type : string, optional
+        factorization_type : str, optional
             The factorization type used with the direct solver.
             Default is 'lu'. This parameter is ignored when an
             iterative solver is used.
@@ -223,6 +222,7 @@ class PETScSparseLinearSolver(Base):
         The summary table of the different possibilities
         can be found here:
         https://www.mcs.anl.gov/petsc/documentation/linearsolvertable.html
+
         """
         self.x0 = np.zeros_like(self.b) if x0 is None else x0
 

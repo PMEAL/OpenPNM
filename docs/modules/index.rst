@@ -16,3 +16,4 @@ methods, occasionally with basic embedded examples on how to use them.
    :maxdepth: 1
 
    core
+   utils

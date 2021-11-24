@@ -6,6 +6,7 @@ from openpnm import topotools
 from openpnm.utils import Docorator, SettingsAttr
 from openpnm.utils import Workspace, logging
 import openpnm.models.network as mods
+from auto_all import start_all, end_all
 logger = logging.getLogger(__name__)
 ws = Workspace()
 docstr = Docorator()
@@ -22,6 +23,8 @@ class NetworkSettings:
     """
     prefix = 'net'
 
+
+start_all()
 
 class GenericNetwork(ParamMixin, Base, ModelsMixin, LabelMixin):
     r"""
@@ -856,3 +859,5 @@ class GenericNetwork(ParamMixin, Base, ModelsMixin, LabelMixin):
 
         """
         return self.project.check_network_health()
+
+end_all()

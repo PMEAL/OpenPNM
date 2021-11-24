@@ -2,28 +2,32 @@ import numpy as np
 from openpnm.network import Cubic
 from openpnm import topotools
 from openpnm.utils import logging
+from auto_all import start_all, end_all
 logger = logging.getLogger(__name__)
 
 
+start_all()
+
 class CubicTemplate(Cubic):
     r"""
-    Simple cubic lattice with arbitrary domain shape specified by a template
-    image
+    Simple cubic lattice with arbitrary domain shape specified by a
+    template image
 
-    The class creates a standard Cubic network the same shape as the provided
-    image, then trims pores from the network that are not in the mask.
+    The class creates a standard Cubic network the same shape as the
+    provided image, then trims pores from the network that are not in the
+    mask.
 
     Parameters
     ----------
     template : array_like
-        The array (image) describing the desired shape of the domain.  All
-        locations in the image that are marked as ``True`` are kept while the
-        rest of trimmed to yeild the shape.
+        The array (image) describing the desired shape of the domain. All
+        locations in the image that are marked as ``True`` are kept while
+        the rest of trimmed to yeild the shape.
     spacing : array_like, optional
-        The spacing between pore centers in each direction. If not given, then
-        [1, 1, 1] is assumed.
-    name : string
-        An optional name for the object to help identify it.  If not given,
+        The spacing between pore centers in each direction. If not given,
+        then [1, 1, 1] is assumed.
+    name : str
+        An optional name for the object to help identify it. If not given,
         one will be generated.
 
     Notes
@@ -31,25 +35,27 @@ class CubicTemplate(Cubic):
     The other arguments are the same as ``Cubic`` except that ``shape`` is
     inferred from the ``template`` image.
 
-    See Also
-    --------
-    The following methods in ``topotools`` can help generate template images:
-
-    template_cylinder_annulus
-    template_sphere_shell
-
     Examples
     --------
     >>> import openpnm as op
-    >>> im = op.topotools.template_cylinder_annulus(15, 10, 5)
+    >>> im = op.topotools.template_cylinder_annulus(10, 15, 10)
     >>> pn = op.network.CubicTemplate(template=im)
 
     And it can be plotted for quick visualization using:
 
-    >>> fig = op.topotools.plot_connections(network=pn)
+    >>> import matplotlib.pyplot as plt
+    >>> fig, ax = plt.subplots()
+    >>> op.topotools.plot_connections(network=pn, ax=ax)
 
-    .. image:: /../docs/_static/images/cubic_template_network.png
-        :align: center
+    .. plot::
+
+       import openpnm as op
+       import matplotlib.pyplot as plt
+       im = op.topotools.template_cylinder_annulus(10, 15, 10)
+       pn = op.network.CubicTemplate(template=im)
+       fig, ax = plt.subplots(figsize=(5, 5))
+       op.topotools.plot_connections(network=pn, ax=ax, linewidth=0.5)
+       plt.show()
 
     For larger networks and more control over presentation use `Paraview
     <http://www.paraview.org>`_.
@@ -70,3 +76,5 @@ class CubicTemplate(Cubic):
         mask_surface = self["pore.surface"]
         mask_internal_surface = (num_neighbors < max_neighbors) & ~mask_surface
         self.set_label("pore.internal_surface", pores=mask_internal_surface)
+
+end_all()

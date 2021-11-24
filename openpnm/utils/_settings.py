@@ -1,16 +1,10 @@
+from copy import deepcopy
 from traits.api import HasTraits, Trait
 from openpnm.utils import PrintableDict
-from copy import deepcopy
+from auto_all import start_all, end_all
 
 
-__all__ = [
-    "SettingsAttr",
-    "SettingsData",
-    "TypedList",
-    "TypedSet",
-    "Settings",
-    ]
-
+start_all()
 
 class TypedMixin:
 
@@ -67,6 +61,7 @@ class TypedList(TypedMixin, list):
 
 
 class SettingsAttr:
+    """Brief explanation of 'SettingsAttr'"""
 
     def __init__(self, *args):
         for i, item in enumerate(args):
@@ -149,6 +144,7 @@ class SettingsAttr:
 
 
 class Settings(dict):
+    """Brief explanation of 'Settings'"""
 
     __instance__ = None
 
@@ -170,6 +166,7 @@ class Settings(dict):
 
 
 class SettingsData(HasTraits):
+    """Brief explanation of 'SettingsData'"""
 
     def __str__(self):
         d = PrintableDict()
@@ -184,11 +181,11 @@ class SettingsData(HasTraits):
 
 
 class SettingsAttr2:
-    r"""
-    """
 
     def __init__(self, settings):
         r"""
+        Brief explanation of 'SettingsAttr2'
+
         Parameters
         ----------
         settings : key-value collection
@@ -205,9 +202,10 @@ class SettingsAttr2:
         -----
         This class is a wrapper around the ``HasTraits`` class from the
         ``traits`` package. The main point is the provide a clean namespace
-        on the object so that only the specified attributes show up.  It also
+        on the object so that only the specified attributes show up. It also
         allows for combining multiple objects into one using the ``_update``
         method.
+
         """
         # Add blank HasTraits object to self._settings
         if isinstance(settings, SettingsData):
@@ -295,3 +293,5 @@ class SettingsAttr2:
     @property
     def _attrs(self):
         return self.__dir__()
+
+end_all()

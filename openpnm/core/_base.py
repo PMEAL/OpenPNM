@@ -363,17 +363,19 @@ class Base(dict):
             Can be either 'pore' or 'throat', which limits the returned list of
             keys to only 'pore' or 'throat' keys.  If neither is given, then
             both are assumed.
-
         mode : str, optional
-            Controls which keys are returned.  Options are:
-                **'labels'** : Limits the returned list of keys to only 'labels'
-                (boolean arrays)
+            Controls which keys are returned. Options are:
 
-                **'props'** : Limits he return list of keys to only 'props'
-                (numerical arrays).
+                **'labels'**
+                    Limits the returned list of keys to only 'labels'
+                    (boolean arrays)
+                **'props'**
+                    Limits he return list of keys to only 'props'
+                    (numerical arrays).
+                **'all'**
+                    Returns both 'labels' and 'props'. This is equivalent
+                    to sending a list of both 'labels' and 'props'.
 
-                **'all'** : Returns both 'labels' and 'props'.  This is equivalent
-                to sending a list of both 'labels' and 'props'.
             If no mode is specified then the normal KeysView object is
             returned.
         deep : bool
@@ -387,10 +389,10 @@ class Base(dict):
 
         Notes
         -----
-        This subclass can be used to get dictionary keys of specific kinds of
-        data.  It's use augments ``props`` and ``labels`` by returning a list
-        containing both types, but possibly limited by element type ('pores'
-        or 'throats'.)
+        This subclass can be used to get dictionary keys of specific
+        kinds of data.  It's use augments ``props`` and ``labels`` by
+        returning a list containing both types, but possibly limited by
+        element type ('pores' or 'throats'.)
 
         Examples
         --------
@@ -799,28 +801,30 @@ class Base(dict):
 
     def get_conduit_data(self, prop, mode='mean'):
         r"""
-        Combined requested data into a single 3-column array
+        Combines requested data into a single 3-column array.
 
         Parameters
         ----------
         prop : str
             The dictionary key to the property of interest
         mode : str
-            How interpolation should be peformed for missing values. If values
-            are present for both pores and throats, then this argument is
-            ignored.  The ``interpolate`` data method is used.  Options are:
-                * 'mean' (default):
+            How interpolation should be peformed for missing values. If
+            values are present for both pores and throats, then this
+            argument is ignored. The ``interpolate`` data method is used.
+            Options are:
+
+                **'mean'** (default):
                     Finds the mean value of the neighboring pores (or throats)
-                * 'min'
+                **'min'**
                     Finds the minimuem of the neighboring pores (or throats)
-                * 'max'
+                **'max'**
                     Finds the maximum of the neighboring pores (or throats)
 
         Returns
         -------
         conduit_data : ndarray
-            An Nt-by-3 array with each column containg the requested property
-            for each pore-throat-pore conduit.
+            An Nt-by-3 array with each column containg the requested
+            property for each pore-throat-pore conduit.
 
         """
         try:

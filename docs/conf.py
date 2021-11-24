@@ -1,15 +1,10 @@
-# Configuration file for the Sphinx documentation builder.
-#
-# This file only contains a selection of the most common options. For a full
-# list see the documentation:
-# https://www.sphinx-doc.org/en/master/usage/configuration.html
-
-# -- Path setup --------------------------------------------------------------
-
+#------------------------------------------------------------------------#
+# Path setup                                                             #
+#------------------------------------------------------------------------#
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-#
+
 import os
 import sys
 
@@ -17,7 +12,9 @@ sys.path.insert(0, os.path.abspath('.'))
 sys.path.insert(0, os.path.abspath('../'))
 sys.path.insert(0, os.path.abspath('../../'))
 
-# -- Project information -----------------------------------------------------
+#------------------------------------------------------------------------#
+# Project info                                                           #
+#------------------------------------------------------------------------#
 
 project = 'OpenPNM'
 copyright = '2021, PMEAL'
@@ -27,7 +24,9 @@ author = 'OpenPNM Dev Team'
 from openpnm import __version__
 release = __version__
 
-# -- General configuration ---------------------------------------------------
+#------------------------------------------------------------------------#
+# General config                                                         #
+#------------------------------------------------------------------------#
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
@@ -61,11 +60,49 @@ templates_path = ['_templates']
 exclude_patterns = ['_build']
 
 
-# -- Options for HTML output -------------------------------------------------
+#------------------------------------------------------------------------#
+# Matplotlib plot_directive options                                      #
+#------------------------------------------------------------------------#
 
-# The theme to use for HTML and HTML Help pages.  See the documentation for
-# a list of builtin themes.
-#
+plot_pre_code = """
+import numpy as np
+np.random.seed(123)
+"""
+plot_include_source = False
+plot_formats = [('svg', 200), 'pdf']
+plot_html_show_formats = False
+plot_html_show_source_link = False
+
+import math
+phi = (math.sqrt(5) + 1)/2
+
+font_size = 13*72/96.0  # 13 px
+
+plot_rcparams = {
+    'font.size': font_size,
+    'axes.titlesize': font_size,
+    'axes.labelsize': font_size,
+    'xtick.labelsize': font_size,
+    'ytick.labelsize': font_size,
+    'legend.fontsize': font_size,
+    'figure.autolayout': True,
+    'figure.figsize': (3*phi, 3),
+    'figure.subplot.bottom': 0.2,
+    'figure.subplot.left': 0.2,
+    'figure.subplot.right': 0.9,
+    'figure.subplot.top': 0.85,
+    'figure.subplot.wspace': 0.4,
+    'text.usetex': False,
+}
+
+import matplotlib.pyplot as plt
+plt.ioff()
+
+
+#------------------------------------------------------------------------#
+# HTML/theme options                                                     #
+#------------------------------------------------------------------------#
+
 html_theme = 'pydata_sphinx_theme'
 
 html_js_files = ['js/custom.js']

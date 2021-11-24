@@ -2,36 +2,40 @@ import numpy as np
 from openpnm.network import GenericNetwork, Cubic
 from openpnm import topotools
 from openpnm.utils import logging, Workspace
+from auto_all import start_all, end_all
 logger = logging.getLogger(__name__)
 ws = Workspace()
 
+
+start_all()
 
 class CubicDual(GenericNetwork):
     r"""
     Body centered cubic lattice plus face centered nodes on the surfaces
 
-    This network is essentially a *'bcc'* lattice, *except* that the seconary
-    network (body-centered pores) has pores on each face of the domain, which
-    breaks the body-centric arranagement.  This allows boundary conditions to
-    be applied to the seconary network for transport simuations.
+    This network is essentially a *'bcc'* lattice, *except* that the
+    seconary network (body-centered pores) has pores on each face of the
+    domain, which breaks the body-centric arranagement. This allows
+    boundary conditions to be applied to the seconary network for
+    transport simuations.
 
     Parameters
     ----------
-    shape : list of ints
+    shape : list[int]
         The size and shape of the primary cubic network in terms of the
-        number of pores in each direction.  Secondary nodes will be added at
-        centers of each unit cell.
-    spacing : list of floats
+        number of pores in each direction. Secondary nodes will be added
+        at centers of each unit cell.
+    spacing : list[float]
         The distance between pores of the primary network in each of the
         principal directions
-    label_1 : string
-        The label to apply to the primary cubic lattices, which defaults to
-        'primary'
-    label_2 : string
-        The label to apply to the secondary cubic lattices, which defaults to
-        'seconary'
-    name : string
-        An optional name for the object to help identify it.  If not given,
+    label_1 : str
+        The label to apply to the primary cubic lattices, which defaults
+        to 'primary'
+    label_2 : str
+        The label to apply to the secondary cubic lattices, which defaults
+        to 'seconary'
+    name : str
+        An optional name for the object to help identify it. If not given,
         one will be generated.
 
     See Also
@@ -51,16 +55,28 @@ class CubicDual(GenericNetwork):
     And it can be plotted for quick visualization using:
 
     >>> fig, ax = plt.subplots()
-    >>> _ = op.topotools.plot_connections(network=pn,
-    ...                                   throats=pn.throats('primary'),
-    ...                                   color='b', ax=ax)
-    >>> _ = op.topotools.plot_connections(network=pn,
-    ...                                   throats=pn.throats('secondary'),
-    ...                                   color='r', ax=ax)
-    >>> _ = op.topotools.plot_coordinates(network=pn, c='r', s=75, ax=ax)
+    >>> op.topotools.plot_connections(network=pn,
+    ...                               throats=pn.throats('primary'),
+    ...                               color='g', ax=ax)
+    >>> op.topotools.plot_connections(network=pn,
+    ...                               throats=pn.throats('secondary'),
+    ...                               color='b', ax=ax)
+    >>> op.topotools.plot_coordinates(network=pn, c='r', s=25, ax=ax)
 
-    .. image:: /../docs/_static/images/cubic_dual_network.png
-        :align: center
+    .. plot::
+
+       import openpnm as op
+       import matplotlib.pyplot as plt
+       pn = op.network.CubicDual(shape=[3, 3, 3])
+       fig, ax = plt.subplots(figsize=(5, 5))
+       op.topotools.plot_connections(network=pn,
+                                     throats=pn.throats('primary'),
+                                     color='g', ax=ax)
+       op.topotools.plot_connections(network=pn,
+                                     throats=pn.throats('secondary'),
+                                     color='b', ax=ax)
+       op.topotools.plot_coordinates(network=pn, c='r', s=25, ax=ax)
+       plt.show()
 
     For larger networks and more control over presentation use `Paraview
     <http://www.paraview.org>`_.
@@ -122,19 +138,20 @@ class CubicDual(GenericNetwork):
         r"""
         Add boundary pores to the specified faces of the network
 
-        Pores are offset from the faces by 1/2 of the given ``spacing``, such
-        that they lie directly on the boundaries.
+        Pores are offset from the faces by 1/2 of the given ``spacing``,
+        such that they lie directly on the boundaries.
 
         Parameters
         ----------
-        labels : string or list of strings
-            The labels indicating the pores defining each face where boundary
-            pores are to be added (e.g. 'left' or ['left', 'right'])
-
+        labels : str or list[str]
+            The labels indicating the pores defining each face where
+            boundary pores are to be added (e.g. 'left' or
+            ['left', 'right'])
         spacing : scalar or array_like
-            The spacing of the network (e.g. [1, 1, 1]).  This must be given
-            since it can be quite difficult to infer from the network,
-            for instance if boundary pores have already added to other faces.
+            The spacing of the network (e.g. [1, 1, 1]).  This must be
+            given since it can be quite difficult to infer from the
+            network, for instance if boundary pores have already added to
+            other faces.
 
         """
         spacing = np.array(spacing)
@@ -149,3 +166,5 @@ class CubicDual(GenericNetwork):
                 offset = -1*offset
             topotools.add_boundary_pores(network=self, pores=Ps, offset=offset,
                                          apply_label=item + '_boundary')
+
+end_all()

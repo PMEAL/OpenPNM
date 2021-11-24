@@ -4,10 +4,13 @@ import openpnm
 import numpy as np
 from copy import deepcopy
 from openpnm.utils import HealthDict, Workspace, logging
-from .Grid import Tableist
+from ._grid import Tableist
+from auto_all import start_all, end_all
 logger = logging.getLogger(__name__)
 ws = Workspace()
 
+
+start_all()
 
 class Project(list):
     r"""
@@ -16,16 +19,16 @@ class Project(list):
 
     A simulation is defined as a Network and all of it's associated objects.
     When instantiating a Network, a Project can be passed as an argument, but
-    if not given one is created.  When instantiating any other object either
-    a Network or a Project can be supplied.  In the former case, the
-    Network's Project is retrieved and used.  The end result is that all
+    if not given one is created. When instantiating any other object either
+    a Network or a Project can be supplied. In the former case, the
+    Network's Project is retrieved and used. The end result is that all
     objects are stored in a specific Project.
 
     The Project to which any object belongs can be retrieved with
-    ``obj.project``.  Conversely, printing a Project displays a list of all
+    ``obj.project``. Conversely, printing a Project displays a list of all
     objects it contains.
 
-    Moreover, all Projects are registered with the Workspace.  Since there can
+    Moreover, all Projects are registered with the Workspace. Since there can
     be only instance of the Workspace it is possible to view all open Projects
     by printing the Workspace.
 
@@ -45,11 +48,10 @@ class Project(list):
 
     def extend(self, obj):
         r"""
-        This function is used to add objects to the project.  Arguments can
+        This function is used to add objects to the project. Arguments can
         be single OpenPNM objects, an OpenPNM project list, or a plain list of
-        OpenPNM objects.  Note that if an object has the same name as one
+        OpenPNM objects. Note that if an object has the same name as one
         already existing on the project, the it will be renamed automatically.
-
         """
         if not isinstance(obj, list):
             obj = [obj]
@@ -164,8 +166,8 @@ class Project(list):
 
         Parameters
         ----------
-        name : string
-            The name to give to the new project.  If not supplied, a name
+        name : str
+            The name to give to the new project. If not supplied, a name
             is automatically generated.
 
         Returns
@@ -176,8 +178,8 @@ class Project(list):
         Notes
         -----
         Because they are new objects, they are given a new uuid
-        (``obj.settings['_uuid']``), but the uuid of the original object is
-        also stored (``obj.settings['_uuid_old']``) for reference.
+        (``obj.settings['_uuid']``), but the uuid of the original object
+        is also stored (``obj.settings['_uuid_old']``) for reference.
 
         """
         if name is None:
@@ -219,20 +221,21 @@ class Project(list):
 
     def find_phase(self, obj):
         r"""
-        Find the Phase associated with a given object.
+        Finds the Phase associated with a given object.
 
         Parameters
         ----------
-        obj : OpenPNM Object
+        obj : Base
             Can either be a Physics or Algorithm object
 
         Returns
         -------
-        phase : OpenPNM Phase object
+        phase : GenericPhase
 
         Raises
         ------
         If no Phase object can be found, then an Exception is raised.
+
         """
         # If received phase, just return self
         if obj._isa('phase'):
@@ -246,16 +249,16 @@ class Project(list):
 
     def find_geometry(self, physics):
         r"""
-        Find the Geometry associated with a given Physics
+        Finds the Geometry associated with a given Physics
 
         Parameters
         ----------
-        physics : OpenPNM Physics Object
-            Must be a Physics object
+        physics : GenericPhysics
+            The Physics object for which the Geometry object is sought
 
         Returns
         -------
-        geom : OpenPNM Geometry object
+        geom : GenericGeometry
 
         Raises
         ------
@@ -271,27 +274,26 @@ class Project(list):
 
     def find_physics(self, geometry=None, phase=None):
         r"""
-        Find the Physics object(s) associated with a given Geometry, Phase,
-        or combination.
+        Finds the Physics object(s) associated with a given Geometry,
+        Phase, or combination.
 
         Parameters
         ----------
-        geometry : OpenPNM Geometry Object
+        geometry : GenericGeometry
             The Geometry object for which the Physics object(s) are sought
-
-        phase : OpenPNM Phase Object
+        phase : GenericPhase
             The Phase object for which the Physics object(s) are sought
 
         Returns
         -------
         physics : list
-            A list containing the Physics object(s).  If only a ``geometry`` is
-            specified the the Physics for all Phases is returned.  If only a
-            ``phase`` is specified, then the Physics for all Geometries is
-            returned.  If both ``geometry`` and ``phase`` is specified then
-            the list only contains a single Physics.  If no Physics is found,
-            the the list will be empty.  See the Notes section for more
-            information.
+            A list containing the Physics object(s). If only a
+            ``geometry`` is specified the the Physics for all Phases is
+            returned. If only a ``phase`` is specified, then the Physics
+            for all Geometries is returned.  If both ``geometry`` and
+            ``phase`` is specified then the list only contains a single
+            Physics. If no Physics is found, the the list will be empty.
+            See the Notes section for more information.
 
         See Also
         --------
@@ -336,19 +338,19 @@ class Project(list):
 
     def find_full_domain(self, obj):
         r"""
-        Find the full domain object associated with a given object.
-        For geometry the network is found, for physics the phase is found and
-        for all other objects which are defined for for the full domain,
-        themselves are found.
+        Finds the full domain object associated with a given object.
+        For geometry the network is found, for physics the phase is found
+        and for all other objects which are defined for for the full
+        domain, themselves are found.
 
         Parameters
         ----------
-        obj : OpenPNM Object
+        obj : Base
             Can be any object
 
         Returns
         -------
-        obj : An OpenPNM object
+        obj : Base
 
         """
         if 'Subdomain' not in obj._mro():
@@ -385,22 +387,25 @@ class Project(list):
 
     def purge_object(self, obj, deep=False):
         r"""
-        Remove an object from the Project.  This removes all references to
-        the object from all other objects (i.e. removes labels)
+        Removes an object from the Project.  This removes all references
+        to the object from all other objects (i.e. removes labels)
 
         Parameters
         ----------
-        obj : OpenPNM Object or list of objects
+        obj : Base or list[Base]
             The object(s) to purge
-
-        deep : boolean
+        deep : bool
             A flag that indicates whether to remove associated objects.
             If ``True``, then removing a Geometry or Phase also removes
-            the associated Physics objects.  If ``False`` (default) then
+            the associated Physics objects. If ``False`` (default) then
             only the given object is removed, along with its labels in all
-            associated objects.  Removing a Physics always keeps associated
-            Geometry and Phases since they might also be associated with other
-            Physics objects.
+            associated objects. Removing a Physics always keeps associated
+            Geometry and Phases since they might also be associated with
+            other Physics objects.
+
+        Returns
+        -------
+        None
 
         Raises
         ------
@@ -447,9 +452,15 @@ class Project(list):
 
         Parameters
         ----------
-        obj : OpenPNM object or list of objects
-            The objects to be saved.  Depending on the object type, the file
-            extension will be one of 'net', 'geo', 'phase', 'phys' or 'alg'.
+        obj : Base or list[Base]
+            The objects to be saved. Depending on the object type, the
+            file extension will be one of 'net', 'geo', 'phase', 'phys'
+            or 'alg'.
+
+        Returns
+        -------
+        None
+
         """
         from openpnm.io import Pickle
         Pickle.save_object_to_file(objs=obj)
@@ -460,11 +471,15 @@ class Project(list):
 
         Parameters
         ----------
-        filename : string or path object
+        filename : str or Path
             The name of the file containing the saved object.  Can include
-            an absolute or relative path as well.  If only a filename is
-            given it will be saved in the current working directory.  The
+            an absolute or relative path as well. If only a filename is
+            given it will be saved in the current working directory. The
             object type is inferred from
+
+        Returns
+        -------
+        None
 
         """
         from openpnm.io import Pickle
@@ -472,21 +487,23 @@ class Project(list):
 
     def save_project(self, filename=None):
         r"""
-        Save the current project to a ``pnm`` file.
+        Saves the current project to a ``pnm`` file.
 
         Parameters
         ----------
-        filename : string or path object
-            The name of the file.  Can include an absolute or relative path
-            as well.  If only a filename is given it will be saved in the
+        filename : str or Path
+            The name of the file. Can include an absolute or relative path
+            as well. If only a filename is given it will be saved in the
             current working directory.
+
+        Returns
+        -------
+        None
 
         """
         ws.save_project(project=self, filename=filename)
 
     def _new_object(self, objtype, name=None):
-        r"""
-        """
         if objtype.startswith('net'):
             obj = openpnm.network.GenericNetwork(project=self, name=name)
         elif objtype.startswith('geo'):
@@ -504,42 +521,41 @@ class Project(list):
 
     def export_data(self, phases=[], filename=None, filetype=None):
         r"""
-        Export the pore and throat data from the given object(s) into the
-        specified file and format.
+        Exports the pore and throat data from the given object(s) into
+        the specified file and format.
 
         Parameters
         ----------
-        phases : list of OpenPNM Phase Objects
+        phases : list[GenericPhase]
             The data on each supplied phase will be added to file
-
-        filename : string
+        filename : str
             The file name to use.  If none is supplied then one will be
             automatically generated based on the name of the project
             containing the supplied Network, with the date and time appended.
+        filetype : str
+            Which file format to store the data. If a valid extension is
+            included in the ``filename``, this is ignored. Option are:
 
-        filetype : string
-            Which file format to store the data.  If a valid extension is
-            included in the ``filename``, this is ignored.  Option are:
-
-            **'vtk'** : (default) The Visualization Toolkit format, used by
-            various softwares such as Paraview.  This actually produces a 'vtp'
-            file.  NOTE: This can be quite slow since all the data is written
-            to a simple text file.  For large data simulations consider
-            'xdmf'.
-
-            **'csv'** : The comma-separated values format, which is easily
-            openned in any spreadsheet program.  The column names represent
-            the property name, including the type and name of the object to
-            which they belonged, all separated by the pipe character.
-
-            **'xdmf'** : The extensible data markup format, is a very efficient
-            format for large data sets.  This actually results in the creation
-            of two files, the *xmf* file and an associated *hdf* file.  The
-            *xmf* file contains instructions for looking into the *hdf* file
-            where the data is stored. Paraview opens the *xmf* format natively,
-            and is very fast.
-
-            **'mat'** : Matlab 'mat-file', which can be openned in Matlab.
+            'vtk'
+                (default) The Visualization Toolkit format, used by
+                various softwares such as Paraview. This actually produces a 'vtp'
+                file. NOTE: This can be quite slow since all the data is written
+                to a simple text file. For large data simulations consider
+                'xdmf'.
+            'csv'
+                The comma-separated values format, which is easily
+                openned in any spreadsheet program. The column names represent
+                the property name, including the type and name of the object to
+                which they belonged, all separated by the pipe character.
+            'xdmf'
+                The extensible data markup format, is a very efficient
+                format for large data sets. This actually results in the creation
+                of two files, the *xmf* file and an associated *hdf* file. The
+                *xmf* file contains instructions for looking into the *hdf* file
+                where the data is stored. Paraview opens the *xmf* format natively,
+                and is very fast.
+            'mat'
+                Matlab 'mat-file', which can be openned in Matlab.
 
         Notes
         -----
@@ -627,11 +643,13 @@ class Project(list):
 
     def check_geometry_health(self):
         r"""
-        Perform a check to find pores with overlapping or undefined Geometries
+        Performs a check to find pores with overlapping or undefined
+        Geometries.
 
         Returns
         -------
         A HealthDict
+
         """
         health = HealthDict()
         health['overlapping_pores'] = []
@@ -659,16 +677,17 @@ class Project(list):
 
     def check_physics_health(self, phase):
         r"""
-        Perform a check to find pores which have overlapping or missing Physics
+        Performs a check to find pores which have overlapping or missing
+        Physics.
 
         Parameters
         ----------
-        phase : OpenPNM Phase object
+        phase : GenericPhase
             The Phase whose Physics should be checked
 
         Returns
         -------
-        A HealthDict
+        HealthDict
 
         """
         health = HealthDict()
@@ -699,11 +718,11 @@ class Project(list):
 
     def check_data_health(self, obj):
         r"""
-        Check the health of pore and throat data arrays.
+        Checks the health of pore and throat data arrays.
 
         Parameters
         ----------
-        obj : OpenPNM object
+        obj : Base
             A handle of the object to be checked
 
         Returns
@@ -727,7 +746,7 @@ class Project(list):
 
     def check_network_health(self):
         r"""
-        This method check the topological health of the network
+        This method checks the topological health of the network
 
         The following aspects are checked for:
 
@@ -740,8 +759,8 @@ class Project(list):
         Returns
         -------
         health : dict
-            A dictionary containing the offending pores or throat numbers under
-            each named key.
+            A dictionary containing the offending pores or throat numbers
+            under each named key.
 
         Notes
         -----
@@ -787,8 +806,7 @@ class Project(list):
         return health
 
     def show_model_dependencies(self, prop, obj):
-        r"""
-        """
+        """Brief explanation of 'show_model_dependencies'"""
         deps = {prop: self._get_deps(prop, obj)}
         self._view_dependencies(deps)
 
@@ -861,10 +879,10 @@ class Project(list):
             The type of locations to inspect, either 'pores', or 'throats'
         indices : array_like
             The pore or throat indices to inspect
-        objs : list of OpenPNM Objects
+        objs : list[Base]
             If given, then only the properties on the recieved object are
             inspected.  If not given, then all objects are inspected (default).
-        mode : list of strings
+        mode : list[str]
             Indicates whether to inspect 'props', 'labels', or 'all'.  The
             default is all
 
@@ -873,6 +891,7 @@ class Project(list):
         df : Pandas DataFrame
             A data frame object with each location as a column and each row
             as a property and/or label.
+
         """
         from pandas import DataFrame
         props = {}
@@ -902,17 +921,16 @@ class Project(list):
 
         Parameters
         ----------
-        objs : list of OpenPNM objects
-            Can be used to specify which specific objects to regenerate.  The
-            default is to regenerate all objects.  If a subset of objects is
+        objs : list[Base]
+            Can be used to specify which specific objects to regenerate. The
+            default is to regenerate all objects. If a subset of objects is
             given, this function ensure they are generated in a sensible order
             such as any phases are done before any physics objects.
-
-        propnames : list of strings, or string
-            The specific model to regenerate.  If none are given then ALL
-            models on all objects are regenerated.  If a subset is given,
+        propnames : list[str], or str
+            The specific model to regenerate. If none are given then ALL
+            models on all objects are regenerated. If a subset is given,
             then only object that have a corresponding model are regenerated,
-            to avoid any problems.  This means that a single model can be
+            to avoid any problems. This means that a single model can be
             given, without specifying the objects.
 
         """
@@ -936,8 +954,6 @@ class Project(list):
                 obj.regenerate_models()
 
     def _generate_grid(self):
-        r"""
-        """
         grid = ProjectGrid()
         # Create first/index column of grid
         rows = [self.network.name] + list(self.geometries().keys())
@@ -1007,12 +1023,13 @@ class ProjectGrid(Tableist):
         -------
         table
             A table object containing only a single row
+
         """
         return self.get_row(name)._grid.table_data[0]
 
     def col(self, name):
         r"""
-        Retrieve a specified column from the table
+        Retrieves a specified column from the table
 
         Parameters
         ----------
@@ -1023,6 +1040,7 @@ class ProjectGrid(Tableist):
         -------
         table
             A table object containing only a single column
+
         """
         temp = self.get_col(name)._grid.table_data
         temp = [i[0] for i in temp]
@@ -1030,7 +1048,7 @@ class ProjectGrid(Tableist):
 
     def geometries(self):
         r"""
-        Retrieve a list of all geometries
+        Retrieves a list of all geometries
         """
         temp = self.index[1:]
         temp = [i[0] for i in temp]
@@ -1038,6 +1056,8 @@ class ProjectGrid(Tableist):
 
     def phases(self):
         r"""
-        Retrieve a list of all phases
+        Retrieves a list of all phases
         """
         return self.header[0][1:]
+
+end_all()

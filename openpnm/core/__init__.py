@@ -12,6 +12,7 @@ The Base class
 The ``Base`` class is a ``dict`` that has added methods for indexing the pores
 and throats, applying labels, and managing the stored data.  All OpenPNM
 object inherit from ``Base`` so possess these methods.
+
 ----
 
 ``Base`` objects, Networks, Phases, Algorithms, are assigned to all locations
@@ -46,7 +47,7 @@ and run.
 
 """
 
-from .ModelsMixin import *
-from .Base import *
-from .Mixins import *
-from .Subdomain import *
+from ._models_mixin import *
+from ._base import *
+from ._mixins import *
+from ._subdomain import *

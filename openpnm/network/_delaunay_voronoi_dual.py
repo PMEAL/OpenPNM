@@ -3,9 +3,12 @@ import scipy.sparse as sprs
 import scipy.spatial as sptl
 from openpnm import topotools
 from openpnm.utils import logging
-logger = logging.getLogger(__name__)
 from openpnm.network import GenericNetwork
+from auto_all import start_all, end_all
+logger = logging.getLogger(__name__)
 
+
+start_all()
 
 class DelaunayVoronoiDual(GenericNetwork):
     r"""
@@ -34,11 +37,9 @@ class DelaunayVoronoiDual(GenericNetwork):
         The size and shape of the domain used for generating and trimming
         excess points. The coordinates are treated as the outer corner of a
         rectangle [x, y, z] whose opposite corner lies at [0, 0, 0].
-
-        By default, a domain size of [1, 1, 1] is used.  To create a 2D network
+        By default, a domain size of [1, 1, 1] is used. To create a 2D network
         set the Z-dimension to 0.
-
-    name : string
+    name : str
         An optional name for the object to help identify it.  If not given,
         one will be generated.
 
@@ -135,6 +136,7 @@ class DelaunayVoronoiDual(GenericNetwork):
 
     @property
     def tri(self):
+        """A shortcut to get a handle to the Delanuay subnetwork"""
         if not hasattr(self, '_tri'):
             points = self._vor.points
             self._tri = sptl.Delaunay(points=points)
@@ -142,11 +144,10 @@ class DelaunayVoronoiDual(GenericNetwork):
 
     @property
     def vor(self):
+        """A shortcut to get a handle to the Voronoi subnetwork"""
         return self._vor
 
     def _trim_external_pores(self, shape):
-        r'''
-        '''
         # Find all pores within the domain
         Ps = topotools.isoutside(coords=self['pore.coords'], shape=shape)
         self['pore.external'] = False
@@ -257,6 +258,7 @@ class DelaunayVoronoiDual(GenericNetwork):
         -----
         This metod is not fully optimized as it scans through each pore in a
         for-loop, so could be slow for large networks.
+
         """
         if pores is None:
             pores = self.pores('delaunay')
@@ -287,8 +289,8 @@ class DelaunayVoronoiDual(GenericNetwork):
 
     def _label_faces(self):
         r'''
-        Label the pores sitting on the faces of the domain in accordance with
-        the conventions used for cubic etc.
+        Label the pores sitting on the faces of the domain in accordance
+        with the conventions used for cubic etc.
         '''
         coords = np.around(self['pore.coords'], decimals=10)
         min_labels = ['front', 'left', 'bottom']
@@ -302,20 +304,20 @@ class DelaunayVoronoiDual(GenericNetwork):
     def add_boundary_pores(self, labels=['top', 'bottom', 'front', 'back',
                                          'left', 'right'], offset=None):
         r"""
-        Add boundary pores to the specified faces of the network
+        Add boundary pores to the specified faces of the network.
 
         Pores are offset from the faces of the domain.
 
         Parameters
         ----------
-        labels : string or list of strings
-            The labels indicating the pores defining each face where boundary
-            pores are to be added (e.g. 'left' or ['left', 'right'])
-
+        labels : str or list[str]
+            The labels indicating the pores defining each face where
+            boundary pores are to be added (e.g. 'left' or ['left', 'right'])
         offset : scalar or array_like
-            The spacing of the network (e.g. [1, 1, 1]).  This must be given
-            since it can be quite difficult to infer from the network,
-            for instance if boundary pores have already added to other faces.
+            The spacing of the network (e.g. [1, 1, 1]).  This must be
+            given since it can be quite difficult to infer from the
+            network, for instance if boundary pores have already added to
+            other faces.
 
         """
         offset = np.array(offset)
@@ -330,3 +332,5 @@ class DelaunayVoronoiDual(GenericNetwork):
                 ax_off = -1*ax_off
             topotools.add_boundary_pores(network=self, pores=Ps, offset=ax_off,
                                          apply_label=item + '_boundary')
+
+end_all()

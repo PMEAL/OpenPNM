@@ -19,7 +19,7 @@ simulations.
 
 .. toctree::
    :hidden:
-   :maxdepth: 0
+   :maxdepth: 4
 
    user_guide/index
    modules/index

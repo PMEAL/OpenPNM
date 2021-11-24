@@ -1,7 +1,11 @@
 import terminaltables as tt
+from auto_all import start_all, end_all
 
 
-class Tableist():
+start_all()
+
+class Tableist:
+    """Brief explanation of Tableist"""
 
     def __init__(self, rows=1, cols=1, blank='---', style='ascii'):
         super().__init__()
@@ -41,13 +45,17 @@ class Tableist():
 
         Parameters
         ----------
-        col : int or string
+        col : int or str
             Either the column index as an integer or the column name as a
             string.
-        vals
-            The values to put into each row.  If a single value is given
+        vals : any or list
+            The values to put into each row. If a single value is given
             it is placed into each row, otherwise a list of values should be
             given containing the value for each row.
+
+        Returns
+        -------
+        None
 
         """
         try:
@@ -59,17 +67,21 @@ class Tableist():
 
     def set_row(self, row, vals):
         r"""
-        Assign values to a row
+        Assigns values to a row
 
         Parameters
         ----------
-        row : int or string
+        row : int or str
             Either the row index as an integer or the row name as a
             string.
-        vals
-            The values to put into each column.  If a single value is given
+        vals‌ :‌ any or list
+            The values to put into each column. If a single value is given
             it is placed into each column, otherwise a list of values should
             be given containing the value for each column.
+
+        Returns
+        -------
+        None
 
         """
         try:
@@ -80,9 +92,7 @@ class Tableist():
             self._grid.table_data[row][c] = vals[c]
 
     def set_row_and_col(self, row, col, val):
-        r"""
-
-        """
+        r"""Brief explanation of 'set_row_and_col"""
         header = self.get_row(0)
         index = self.get_col(0)
         try:
@@ -190,7 +200,7 @@ class Tableist():
 
     def get_col(self, col):
         r"""
-        Fetch all the entries in a single column
+        Fetches all the entries in a single column
 
         Parameters
         ----------
@@ -220,10 +230,14 @@ class Tableist():
         Parameters
         ----------
         row : int
-            The row below which to insert new row(s).  If not given, then
+            The row below which to insert new row(s). If not given, then
             rows are inserted at the bottom
         num : int
             The number of rows to insert.  The default is 1.
+
+        Returns
+        -------
+        None
 
         """
         if num == 0:
@@ -248,6 +262,10 @@ class Tableist():
         num : int
             The number of columns to insert.  The default is 1.
 
+        Returns
+        -------
+        None
+
         """
         if num == 0:
             return
@@ -268,6 +286,10 @@ class Tableist():
         col : int
             The column to delete
 
+        Returns
+        -------
+        None
+
         """
         for row in self._grid.table_data:
             row.pop(col)
@@ -280,6 +302,10 @@ class Tableist():
         ----------
         row : int
             The row to delete
+
+        Returns
+        -------
+        None
 
         """
         self._grid.table_data.pop(row)
@@ -294,3 +320,5 @@ class Tableist():
 
     def __repr__(self):
         return self._grid.table.__str__()
+
+end_all()
