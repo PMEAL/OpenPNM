@@ -16,19 +16,6 @@ class TransientReactiveTransportSettings:
     ----------
     %(ReactiveTransportSettings.parameters)s
 
-    Other Parameters
-    ----------------
-
-    **The following parameters pertain to the ReactiveTransport class**
-
-    %(ReactiveTransportSettings.other_parameters)s
-
-    ----
-
-    **The following parameters pertain to the GenericTransport class**
-
-    %(GenericTransportSettings.other_parameters)s
-
     """
     pore_volume = 'pore.volume'
 

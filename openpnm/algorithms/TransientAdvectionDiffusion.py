@@ -10,28 +10,8 @@ class TransientAdvectionDiffusionSettings:
     Parameters
     ----------
     %(AdvectionDiffusionSettings.parameters)s
+    %(TransientReactiveTransportSettings.parameters)s
 
-    Other Parameters
-    ----------------
-    %(AdvectionDiffusionSettings.other_parameters)s
-
-    ----
-
-    **The following parameters pertain to the TransientReactiveTransport class**
-
-    %(TransientReactiveTransportSettings.other_parameters)s
-
-    ----
-
-    **The following parameters pertain to the ReactiveTransport class**
-
-    %(ReactiveTransportSettings.other_parameters)s
-
-    ----
-
-    **The following parameters pertain to the GenericTransport class**
-
-    %(GenericTransportSettings.other_parameters)s
     """
     prefix = 'trans_ad'
 

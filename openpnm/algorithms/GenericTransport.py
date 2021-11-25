@@ -15,8 +15,7 @@ docstr = Docorator()
 logger = logging.getLogger(__name__)
 
 
-@docstr.get_sections(base='GenericTransportSettings', sections=['Parameters',
-                                                                'Other Parameters'])
+@docstr.get_sections(base='GenericTransportSettings', sections=['Parameters'])
 @docstr.dedent
 class GenericTransportSettings:
     r"""
@@ -31,9 +30,6 @@ class GenericTransportSettings:
         The name of the pore-scale transport conductance values. These are
         typically calculated by a model attached to a *Physics* object
         associated with the given *Phase*.
-
-    Other Parameters
-    ----------------
     cache_A : bool
         If ``True``, A matrix is cached and rather than getting rebuilt.
     cache_b : bool
@@ -642,16 +638,16 @@ class GenericTransport(GenericAlgorithm):
 
     def set_variable_props(self, variable_props, mode='merge'):
         r"""
-        This method is useful for setting variable_props to the settings 
+        This method is useful for setting variable_props to the settings
         dictionary of the target object. Variable_props and their dependent
         properties get updated iteratively.
-        
+
         Parameters
         ----------
         variable_props : str, or List(str)
-            A single string or list of strings to be added as variable_props 
+            A single string or list of strings to be added as variable_props
         mode : str, optional
-            Controls how the variable_props are applied. The default value is 
+            Controls how the variable_props are applied. The default value is
             'merge'. Options are:
 
             ===========  =====================================================
@@ -659,10 +655,10 @@ class GenericTransport(GenericAlgorithm):
             ===========  =====================================================
             'merge'      Adds supplied variable_props to already existing list
                          (if any), and prevents duplicates
-            'overwrite'  Deletes all exisitng variable_props and then adds 
+            'overwrite'  Deletes all exisitng variable_props and then adds
                          the specified new ones
             ===========  =====================================================
-            
+
         """
         # If single string, make it a list
         if isinstance(variable_props, str):
@@ -675,5 +671,5 @@ class GenericTransport(GenericAlgorithm):
         for variable_prop in variable_props:
             variable_prop = self._parse_prop(variable_prop, 'pore')
             self.settings['variable_props'].append(variable_prop)
-        
-        
+
+

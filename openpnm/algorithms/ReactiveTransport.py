@@ -8,8 +8,7 @@ docstr = Docorator()
 logger = logging.getLogger(__name__)
 
 
-@docstr.get_sections(base='ReactiveTransportSettings',
-                     sections=['Parameters', 'Other Parameters'])
+@docstr.get_sections(base='ReactiveTransportSettings', sections=['Parameters'])
 @docstr.dedent
 class ReactiveTransportSettings:
     r"""
@@ -17,9 +16,6 @@ class ReactiveTransportSettings:
     Parameters
     ----------
     %(GenericTransportSettings.parameters)s
-
-    Other Parameters
-    ----------------
     sources : list
         List of source terms that have been added
     relaxation_quantity : float (default = 1.0)
@@ -34,12 +30,6 @@ class ReactiveTransportSettings:
         Relative tolerance for the solution residual
     x_rtol : float
         Relative tolerance for the solution vector
-
-    ----
-
-    **The following parameters pertain to the ``GenericTransport`` class**
-
-    %(GenericTransportSettings.other_parameters)s
 
     """
     prefix = 'react_trans'

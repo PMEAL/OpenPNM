@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 
 
 @docstr.get_sections(base='AdvectionDiffusionSettings',
-                     sections=['Parameters', 'Other Parameters'])
+                     sections=['Parameters'])
 @docstr.dedent
 class AdvectionDiffusionSettings:
     r"""
@@ -24,18 +24,6 @@ class AdvectionDiffusionSettings:
     pressure : str, optional
         The name of the pressure values calculated by the ``StokesFlow``
         algorithm.
-
-    ----
-
-    **The following parameters pertain to the ReactiveTransport class**
-
-    %(ReactiveTransportSettings.other_parameters)s
-
-    ----
-
-    **The following parameters pertain to the GenericTransport class**
-
-    %(GenericTransportSettings.other_parameters)s
 
     """
     prefix = 'ad'
