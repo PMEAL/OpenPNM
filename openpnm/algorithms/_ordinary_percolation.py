@@ -8,6 +8,9 @@ from openpnm.utils import prettify_logger_message
 docstr = Docorator()
 logger = logging.getLogger(__name__)
 
+__all__ = ['OrdinaryPercolation']
+
+
 @docstr.get_sections(base='OrdinaryPercolationSettings',
                      sections=['Parameters'])
 @docstr.dedent

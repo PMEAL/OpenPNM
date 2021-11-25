@@ -6,8 +6,8 @@ def salinity(target, temperature='pore.temperature',
     r"""
     Calculates the salinity in g salt per kg of solution from concentration
 
-    Parameter
-    ---------
+    Parameters
+    ----------
     target : GenericPhase
         The object for which these values are being calculated.  This
         controls the length of the calculated array, and also provides
@@ -50,10 +50,11 @@ def salinity(target, temperature='pore.temperature',
 
 def mole_weighted_average(target, prop):
     r"""
+    Brief explanation of 'mole_weighted_average'
 
     Parameters
     ----------
-    target : OpenPNM Mixture Object
+    target : GenericMixture
         The object for which these values are being calculated.  This
         controls the length of the calculated array, and also provides
         access to other necessary thermofluid properties.
@@ -90,7 +91,7 @@ def fuller_diffusivity(target, molecular_weight='pore.molecular_weight',
 
     Parameters
     ----------
-    target : OpenPNM Mixture Object
+    target : GenericMixture
         The object for which these values are being calculated.  This
         controls the length of the calculated array, and also provides
         access to other necessary thermofluid properties.
@@ -143,7 +144,7 @@ def wilke_fuller_diffusivity(
 
     Parameters
     ----------
-    target : OpenPNM Mixture Object
+    target : GenericMixture
         The object for which these values are being calculated.  This
         controls the length of the calculated array, and also provides
         access to other necessary thermofluid properties.
@@ -167,8 +168,8 @@ def wilke_fuller_diffusivity(
         The dict contains one array for each component, containing the
         diffusion coefficient of that component at each location.
 
-    Reference
-    ---------
+    References
+    ----------
     Fairbanks DF and CR Wilke, Diffusion Coefficients in Multicomponent
     Gas Mixtures. Industrial & Engineering Chemistry, 42(3), p471–475 (1950).
     `DOI: 10.1021/ie50483a022 <http://doi.org/10.1021/ie50483a022>`_

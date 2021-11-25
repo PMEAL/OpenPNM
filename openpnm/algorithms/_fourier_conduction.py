@@ -3,6 +3,8 @@ from openpnm.utils import logging, Docorator, SettingsAttr
 logger = logging.getLogger(__name__)
 docstr = Docorator()
 
+__all__ = ['FourierConduction']
+
 
 class FourierConductionSettings:
     quantity = 'pore.temperature'

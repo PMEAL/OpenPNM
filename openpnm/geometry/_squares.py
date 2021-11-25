@@ -26,39 +26,6 @@ class SquaresAndRectangles(GenericGeometry):
         The name of the object, which is also used as the label where this
         geometry is defined.
 
-    Examples
-    --------
-    Geometry objects (along with Physics objects) can be applied to a
-    subset of pores and/or throats.  This allows for different geometrical
-    property models to be applied in different regions. This is illustrated
-    in the following code:
-
-    >>> import numpy as np
-    >>> import scipy as sp
-    >>> import openpnm as op
-    >>> import matplotlib.pyplot as plt
-    >>> from openpnm.geometry import SquaresAndRectangles
-    >>> pn = op.network.CubicDual(shape=[5, 5, 5])
-    >>> Ps = pn.pores('primary')
-    >>> Ts = pn.throats('primary')
-    >>> geo1 = SquaresAndRectangles(network=pn, pores=Ps, throats=Ts)
-    >>> Ps = pn.pores('secondary')
-    >>> Ts = pn.throats(['secondary', 'interconnect'])
-    >>> geo2 = SquaresAndRectangles(network=pn, pores=Ps, throats=Ts)
-
-    Now override the 'pore.diameter' values on the ``geo2`` object:
-
-    >>> geo2.remove_model('pore.diameter')  # Remove model and data
-    >>> geo2['pore.diameter'] = np.random.rand(geo2.Np) * 0.05
-
-    Look at the 'pore.diameter' distributions on each object:
-
-    >>> fig = plt.hist(geo1['pore.diameter'], bins=20, alpha=0.5)
-    >>> fig = plt.hist(geo2['pore.diameter'], bins=20, alpha=0.5)
-
-    The resulting figure shows that these two Geometry object each have a
-    different pore size distribution, with ``geo2`` being much smaller:
-
     """
 
     def __init__(self, **kwargs):

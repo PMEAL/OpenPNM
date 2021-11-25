@@ -7,6 +7,8 @@ from openpnm.utils import TypedList, Docorator, SettingsAttr
 docstr = Docorator()
 logger = logging.getLogger(__name__)
 
+__all__ = ['ReactiveTransport']
+
 
 @docstr.get_sections(base='ReactiveTransportSettings',
                      sections=['Parameters', 'Other Parameters'])

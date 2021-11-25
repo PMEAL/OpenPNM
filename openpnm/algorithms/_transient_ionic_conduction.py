@@ -4,6 +4,8 @@ from openpnm.utils import logging, Docorator, SettingsAttr
 logger = logging.getLogger(__name__)
 docstr = Docorator()
 
+__all__ = ['TransientIonicConduction']
+
 
 @docstr.dedent
 class TransientIonicConductionSettings:
@@ -45,7 +47,6 @@ class TransientIonicConduction(TransientReactiveTransport,
     r"""
     A subclass of GenericTransport to perform steady and transient simulations
     of pure diffusion and advection-diffusion problems.
-
     """
 
     def __init__(self, phase, settings={}, **kwargs):

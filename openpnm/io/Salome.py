@@ -9,7 +9,7 @@ class Salome(GenericIO):
     Write a Salome (salome-platform.org) py script to generate a geometry.
     The exported py file should be loaded from Salome with "load script".
     """
-    _header = '''
+    _header = """
 import numpy as np
 def pnm_2_salome(cylinder_head, cylinder_tail, cylinder_r,
                  sphere_c, sphere_r, explicit=False):
@@ -65,12 +65,12 @@ def pnm_2_salome(cylinder_head, cylinder_tail, cylinder_r,
     if salome.sg.hasDesktop():
         salome.sg.updateObjBrowser()
 
-    '''
-    _footer = '''
+    """
+    _footer = """
 pnm_2_salome(cylinder_head, cylinder_tail, cylinder_r,
              sphere_c, sphere_r, explicit=explicit)
 
-    '''
+    """
 
     @classmethod
     def export_data(cls, network, phases=[], filename='', explicit=False):

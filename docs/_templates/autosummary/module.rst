@@ -1,4 +1,4 @@
-{{ name | escape | underline }}
+:noindex:
 
 .. automodule:: {{ fullname }}
 

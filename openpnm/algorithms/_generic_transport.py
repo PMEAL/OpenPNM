@@ -14,9 +14,11 @@ from openpnm.solvers import PardisoSpsolve
 docstr = Docorator()
 logger = logging.getLogger(__name__)
 
+__all__ = ['GenericTransport', 'GenericTransportSettings']
 
-@docstr.get_sections(base='GenericTransportSettings', sections=['Parameters',
-                                                                'Other Parameters'])
+
+@docstr.get_sections(base='GenericTransportSettings',
+                     sections=['Parameters', 'Other Parameters'])
 @docstr.dedent
 class GenericTransportSettings:
     r"""
@@ -60,6 +62,7 @@ class GenericTransport(GenericAlgorithm):
     %(GenericAlgorithm.parameters)s
 
     """
+
     def __new__(cls, *args, **kwargs):
         instance = super(GenericTransport, cls).__new__(cls, *args, **kwargs)
         # Create some instance attributes
@@ -78,6 +81,7 @@ class GenericTransport(GenericAlgorithm):
 
     @property
     def x(self):
+        """Shortcut to the solution currently stored on the algorithm."""
         return self[self.settings['quantity']]
 
     @x.setter
@@ -374,6 +378,7 @@ class GenericTransport(GenericAlgorithm):
 
     @property
     def A(self):
+        """The coefficients matrix (as in Ax = b)"""
         if self._A is None:
             self._build_A()
         return self._A
@@ -642,16 +647,16 @@ class GenericTransport(GenericAlgorithm):
 
     def set_variable_props(self, variable_props, mode='merge'):
         r"""
-        This method is useful for setting variable_props to the settings 
+        This method is useful for setting variable_props to the settings
         dictionary of the target object. Variable_props and their dependent
         properties get updated iteratively.
-        
+
         Parameters
         ----------
         variable_props : str, or List(str)
-            A single string or list of strings to be added as variable_props 
+            A single string or list of strings to be added as variable_props
         mode : str, optional
-            Controls how the variable_props are applied. The default value is 
+            Controls how the variable_props are applied. The default value is
             'merge'. Options are:
 
             ===========  =====================================================
@@ -659,10 +664,10 @@ class GenericTransport(GenericAlgorithm):
             ===========  =====================================================
             'merge'      Adds supplied variable_props to already existing list
                          (if any), and prevents duplicates
-            'overwrite'  Deletes all exisitng variable_props and then adds 
+            'overwrite'  Deletes all exisitng variable_props and then adds
                          the specified new ones
             ===========  =====================================================
-            
+
         """
         # If single string, make it a list
         if isinstance(variable_props, str):
@@ -675,5 +680,3 @@ class GenericTransport(GenericAlgorithm):
         for variable_prop in variable_props:
             variable_prop = self._parse_prop(variable_prop, 'pore')
             self.settings['variable_props'].append(variable_prop)
-        
-        

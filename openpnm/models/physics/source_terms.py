@@ -483,10 +483,10 @@ def natural_logarithm(target, X, A1='', A2='', A3='', A4='', A5=''):
 
 
 def _build_func(eq, **args):
-    r'''
+    r"""
     Take a symbolic equation and return the lambdified version plus the
     linearization of form S1 * x + S2
-    '''
+    """
     from sympy import lambdify
     eq_prime = eq.diff(args['x'])
     s1 = eq_prime
@@ -498,7 +498,7 @@ def _build_func(eq, **args):
 
 
 def general_symbolic(target, eqn, x, **kwargs):
-    r'''
+    r"""
     A general function to interpret a sympy equation and evaluate the linear
     components of the source term.
 
@@ -519,8 +519,8 @@ def general_symbolic(target, eqn, x, **kwargs):
         used 'as is'.  Numpy arrays are not accepted.  These must be stored
         in the ``target`` dictionary and referenced by key.
 
-    Example
-    ----------
+    Examples
+    --------
     >>> import openpnm as op
     >>> from openpnm.models.physics import generic_source_term as gst
     >>> import numpy as np
@@ -537,7 +537,7 @@ def general_symbolic(target, eqn, x, **kwargs):
     ...                 model=gst.general_symbolic,
     ...                 eqn=y, x='pore.x', **arg_map)
 
-    '''
+    """
     from sympy import symbols, sympify
     eqn = sympify(eqn)
     # Get the data

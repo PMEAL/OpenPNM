@@ -6,22 +6,22 @@ logger = logging.getLogger(__name__)
 
 class ImportedSettings:
     r"""
+    Brief explanation of 'ImportedSettings'.
 
     Parameters
     ----------
-    pore_diameter : str (default = 'pore.extended_diameter')
+    pore_diameter : str, default is 'pore.extended_diameter'
         Key into the extracted data array to use as pore diameter in other
-        geometry calculations. The default is .  Use of 'pore.' is not
-        required.
-    throat_diameter : str (default = 'throat.equivalent_diameter')
+        geometry calculations. Use of 'pore.' is not required.
+    throat_diameter : str, default is 'throat.equivalent_diameter'
         Key into the extracted data array to use as throat diameter in other
         geometry calculations. Use of 'throat.' is not required.
-    pore_shape : str {'sphere' (default), 'cube'}
+    pore_shape : str, default is 'sphere'
         Specifies which shape to assume when calculating dependent properties
-        such as volume and surface area.
-    throat_shape : str {'cylinder' (default), 'cuboid'}
+        such as volume and surface area. Options are 'sphere' and 'cube'.
+    throat_shape : str, default is 'cylinder'
         Specifies which shape to assume when calculating dependent properties
-        such as volume and surface area.
+        such as volume and surface area. Options are 'cylinder' and 'cuboid'.
 
     """
     pore_diameter = 'extended_diameter'
@@ -44,7 +44,7 @@ class Imported(GenericGeometry):
     ----------
     network : GenericNetwork
         The network with which this Geometry should be associated
-    exclude : list of strings
+    exclude : list[str]
         A list of which network properties should *not* be transferred to
         new geometry object.  'pore.coords' and 'throat.conns' are *always*
         excluded.  Note that labels are not transferred, only properties.
@@ -55,11 +55,11 @@ class Imported(GenericGeometry):
     Notes
     -----
     An error occurs when adding other geometries to a network that has
-    geometrical properties such as 'pore.diameter'.  This can occur when
+    geometrical properties such as 'pore.diameter'. This can occur when
     adding boundary pores or in more elaborate scenarios such as stitching
-    networks together.  The issue arises because OpenPNM prevents a property,
+    networks together. The issue arises because OpenPNM prevents a property,
     such as 'pore.volume', from existing on both the network and also a
-    geometry.  Thus it is necessary to move the extracted network properties
+    geometry. Thus it is necessary to move the extracted network properties
     to this ``Imported`` class, then create new geometry objects for any
     added pores as needed.
 

@@ -5,6 +5,8 @@ from openpnm.utils import logging, Docorator, SettingsAttr
 logger = logging.getLogger(__name__)
 docstr = Docorator()
 
+__all__ = ['StokesFlow']
+
 
 class StokesFlowSettings:
     prefix = 'stokes'
@@ -15,7 +17,6 @@ class StokesFlowSettings:
 class StokesFlow(ReactiveTransport):
     r"""
     A subclass of GenericLinearTransport to simulate viscous flow.
-
     """
 
     def __init__(self, settings={}, **kwargs):

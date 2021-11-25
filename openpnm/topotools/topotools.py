@@ -182,7 +182,7 @@ def shear_coords(network, ay=0, az=0, bx=0, bz=0, cx=0, cy=0, S=None):
 
 
 def trim(network, pores=[], throats=[]):
-    '''
+    """
     Remove pores or throats from the network
 
     Parameters
@@ -207,7 +207,7 @@ def trim(network, pores=[], throats=[]):
     >>> pn.Nt
     296
 
-    '''
+    """
     pores = network._parse_indices(pores)
     throats = network._parse_indices(throats)
     Pkeep = np.copy(network['pore.all'])
@@ -273,7 +273,7 @@ def trim(network, pores=[], throats=[]):
 
 
 def extend(network, coords=[], conns=[], labels=[], **kwargs):
-    r'''
+    r"""
     Add pores or throats to the network from a list of coords or conns.
 
     Parameters
@@ -291,7 +291,7 @@ def extend(network, coords=[], conns=[], labels=[], **kwargs):
     labels : str, or list[str], optional
         A list of labels to apply to the new pores and throats
 
-    '''
+    """
     if 'throat_conns' in kwargs.keys():
         conns = kwargs['throat_conns']
     if 'pore_coords' in kwargs.keys():
@@ -678,7 +678,7 @@ def merge_networks(network, donor=[]):
 
 def stitch(network, donor, P_network, P_donor, method='nearest',
            len_max=np.inf, label_suffix='', label_stitches='stitched'):
-    r'''
+    r"""
     Stitches a second a network to the current network.
 
     Parameters
@@ -733,7 +733,7 @@ def stitch(network, donor, P_network, P_donor, method='nearest',
     >>> [pn.Np, pn.Nt]
     [250, 625]
 
-    '''
+    """
     # Parse inputs
     if isinstance(label_stitches, str):
         label_stitches = [label_stitches]
@@ -820,7 +820,7 @@ def stitch_pores(network, pores1, pores2, mode='gabriel'):
 
 
 def connect_pores(network, pores1, pores2, labels=[], add_conns=True):
-    r'''
+    r"""
     Returns the possible connections between two groups of pores, and optionally
     makes the connections.
 
@@ -879,7 +879,7 @@ def connect_pores(network, pores1, pores2, labels=[], add_conns=True):
            [32, 80],
            [32, 68]])
 
-    '''
+    """
     # Assert that `pores1` and `pores2` are list of lists
     try:
         len(pores1[0])
@@ -908,7 +908,7 @@ def connect_pores(network, pores1, pores2, labels=[], add_conns=True):
 
 
 def find_pore_to_pore_distance(network, pores1=None, pores2=None):
-    r'''
+    r"""
     Find the distance between all pores on set 1 to each pore in set 2
 
     Parameters
@@ -935,7 +935,7 @@ def find_pore_to_pore_distance(network, pores1=None, pores2=None):
     larger sets a KD-tree approach would be better, which is available in
     ``scipy.spatial``.
 
-    '''
+    """
     from scipy.spatial.distance import cdist
     p1 = np.array(pores1, ndmin=1)
     p2 = np.array(pores2, ndmin=1)
@@ -944,7 +944,7 @@ def find_pore_to_pore_distance(network, pores1=None, pores2=None):
 
 
 def subdivide(network, pores, shape, labels=[]):
-    r'''
+    r"""
     It trim the pores and replace them by cubic networks with the sent shape.
 
     Parameters
@@ -972,7 +972,7 @@ def subdivide(network, pores, shape, labels=[]):
     >>> pn.Np
     482
 
-    '''
+    """
     mro = network._mro()
     if 'Cubic' not in mro:
         raise Exception('Subdivide is only supported for Cubic Networks')
@@ -1503,7 +1503,7 @@ def from_spherical(r, theta, phi):
 
 
 def reflect_base_points(base_pts, domain_size):
-    r'''
+    r"""
     Helper function for relecting a set of points about the faces of a
     given domain.
 
@@ -1538,7 +1538,7 @@ def reflect_base_points(base_pts, domain_size):
     as needed and returned to the original shape.  If N=3 then the transposing is
     skipped so the user needs to ensure the the form of [3 x N].
 
-    '''
+    """
     domain_size = np.array(domain_size)
     if len(domain_size) == 1:
         r, theta, phi = base_pts
@@ -1642,7 +1642,7 @@ def add_boundary_pores(network, pores, offset=None, move_to=None,
 
 
 def iscoplanar(coords):
-    r'''
+    r"""
     Determines if given pores are coplanar with each other
 
     Parameters
@@ -1657,7 +1657,7 @@ def iscoplanar(coords):
         A boolean value of whether given points are coplanar (``True``) or
         not (``False``)
 
-    '''
+    """
     coords = np.array(coords, ndmin=1)
     if np.shape(coords)[0] < 3:
         raise Exception('At least 3 input pores are required')

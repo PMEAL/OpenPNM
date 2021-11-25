@@ -3,6 +3,8 @@ from openpnm.utils import logging, Docorator, SettingsAttr
 docstr = Docorator()
 logger = logging.getLogger(__name__)
 
+__all__ = ['TransientAdvectionDiffusion']
+
 
 @docstr.dedent
 class TransientAdvectionDiffusionSettings:
@@ -32,6 +34,7 @@ class TransientAdvectionDiffusionSettings:
     **The following parameters pertain to the GenericTransport class**
 
     %(GenericTransportSettings.other_parameters)s
+
     """
     prefix = 'trans_ad'
 
@@ -41,7 +44,6 @@ class TransientAdvectionDiffusion(TransientReactiveTransport,
     r"""
     A subclass of GenericTransport to perform steady and transient simulations
     of pure diffusion and advection-diffusion problems.
-
     """
 
     def __init__(self, phase, settings={}, **kwargs):

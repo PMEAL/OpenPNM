@@ -15,8 +15,8 @@ class XDMF(GenericIO):
     `XDMF.org <http://www.xdmf.org/index.php/Main_Page>`_
     """
 
-    _header = '''<?xml version="1.0" ?>
-                 <!DOCTYPE Xdmf SYSTEM "Xdmf.dtd" []>'''
+    _header = """<?xml version="1.0" ?>
+                 <!DOCTYPE Xdmf SYSTEM "Xdmf.dtd" []>"""
 
     @classmethod
     def export_data(cls, network, phases=[], filename=''):

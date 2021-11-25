@@ -3,6 +3,8 @@ from openpnm.utils import logging, Docorator, SettingsAttr
 docstr = Docorator()
 logger = logging.getLogger(__name__)
 
+__all__ = ['OhmicConduction']
+
 
 @docstr.get_sections(base='OhmicConductionSettings',
                      sections=['Parameters'])

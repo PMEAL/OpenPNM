@@ -8,6 +8,8 @@ from openpnm.algorithms import GenericAlgorithm
 logger = logging.getLogger(__name__)
 docstr = Docorator()
 
+__all__ = ['InvasionPercolation']
+
 
 @docstr.get_sections(base='IPSettings',
                      sections=['Parameters', 'Other Parameters'])
@@ -24,6 +26,7 @@ class IPSettings:
         The dictionary key for the throat volume array
     entry_pressure : str
         The dictionary key for the throat capillary pressure
+
     """
     phase = ''
     pore_volume = 'pore.volume'
@@ -126,7 +129,7 @@ class InvasionPercolation(GenericAlgorithm):
 
     def run(self, n_steps=None):
         r"""
-        Perform the algorithm
+        Performs the algorithm.
 
         Parameters
         ----------
@@ -434,13 +437,13 @@ class InvasionPercolation(GenericAlgorithm):
 
         Notes
         -----
-        (1) ``idx`` and ``indptr`` are properties are the network's incidence
+        ``idx`` and ``indptr`` are properties are the network's incidence
         matrix, and are used to quickly find neighbor throats.
 
-        (2) Numba doesn't like forein data types (i.e. GenericNetwork), and so
+        Numba doesn't like forein data types (i.e. GenericNetwork), and so
         ``find_neighbor_throats`` method cannot be called in a jitted method.
 
-        (3) Nested wrapper is for performance issues (reduced OpenPNM import)
+        Nested wrapper is for performance issues (reduced OpenPNM import)
         time due to local numba import
 
         """

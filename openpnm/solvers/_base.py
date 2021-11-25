@@ -1,18 +1,25 @@
 from numpy.linalg import norm
 
+__all__ = ['BaseSolver', 'DirectSolver', 'IterativeSolver']
+
 
 class BaseSolver:
+    """Brief description of 'BaseSolver'"""
+    def __init__(self):
+        ...
 
-    def __init__(self): ...
+    def solve(self):
+        """Brief description of 'solve'"""
+        raise NotImplementedError
 
-    def solve(self): raise NotImplementedError
 
-
-class DirectSolver(BaseSolver): ...
+class DirectSolver(BaseSolver):
+    """Brief description of 'DirectSolver'"""
+    ...
 
 
 class IterativeSolver(BaseSolver):
-
+    """Brief description of 'IterativeSolver'"""
     def __init__(self, tol=1e-8, maxiter=5000):
         self.tol = tol
         self.maxiter = maxiter
@@ -51,4 +58,4 @@ class IterativeSolver(BaseSolver):
         Calculates the residual based on the given ``x`` using:
             ``res = norm(A*x - b)``
         """
-        return norm(A*x - b)
+        return norm(A * x - b)

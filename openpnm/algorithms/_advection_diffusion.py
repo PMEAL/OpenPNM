@@ -4,6 +4,8 @@ from openpnm.utils import logging, Docorator, SettingsAttr
 docstr = Docorator()
 logger = logging.getLogger(__name__)
 
+__all__ = ['AdvectionDiffusion']
+
 
 @docstr.get_sections(base='AdvectionDiffusionSettings',
                      sections=['Parameters', 'Other Parameters'])
@@ -64,14 +66,17 @@ class AdvectionDiffusion(ReactiveTransport):
         pores : array_like
             The pore indices where the condition should be applied
         mode : str, optional
-            Controls how the boundary conditions are applied.  Options are:
+            Controls how the boundary conditions are applied. Options are:
 
-            'merge' - (Default) Adds supplied boundary conditions to already
-            existing conditions, and also overwrites any existing values.
-            If at rate or value BC exists at the given locations, these
-            are deleted, and outflow conditions are given priority.
-            'overwrite' - Deletes all boundary conditions of the given type
-            then adds the specified new ones.
+                'merge' (default)
+                    Adds supplied boundary conditions to already existing
+                    conditions, and also overwrites any existing values.
+                    If at rate or value BC exists at the given locations,
+                    these are deleted, and outflow conditions are given
+                    priority.
+                'overwrite'
+                    Deletes all boundary conditions of the given type then
+                    adds the specified new ones.
 
         Notes
         -----
@@ -150,7 +155,6 @@ class AdvectionDiffusion(ReactiveTransport):
 
 
 if __name__ == "__main__":
-
     import openpnm as op
     pn = op.network.Cubic(shape=[10, 10, 1])
     geo = op.geometry.SpheresAndCylinders(network=pn, pores=pn.Ps, throats=pn.Ts)

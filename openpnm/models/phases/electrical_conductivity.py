@@ -6,7 +6,7 @@ import numpy as _np
 def percolating_continua(target, phi_crit, tau,
                          volume_fraction='pore.volume_fraction',
                          bulk_property='pore.intrinsic_conductivity'):
-    r'''
+    r"""
     Calculates the effective property of a continua using percolation theory
 
     Parameters
@@ -39,7 +39,7 @@ def percolating_continua(target, phi_crit, tau,
 
         \sigma_{effective}=\sigma_{bulk}(\phi - \phi_{critical})^\lambda
 
-    '''
+    """
     sigma = target[bulk_property]
     phi = target[volume_fraction]
     diff_phi = _np.clip(phi - phi_crit, a_min=0, a_max=_np.inf)

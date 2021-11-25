@@ -26,11 +26,26 @@ window.onload = function () {
 
     // $(".toctree-l3").hide()
 
+    // List of methods exclusive to Python's dict and list
     exclude = [
         'append', 'clear', 'copy', 'count', 'extend', 'fromkeys', 'get',
         'index', 'insert', 'items', 'keys', 'pop', 'popitem', 'remove',
         'reverse', 'setdefault', 'sort', 'update', 'values'
     ]
+    // List of methods exclusive to numpy's ndaray
+    exclude = exclude.concat(
+        ['all', 'any', 'argmax', 'argmin', 'argpartition', 'argsort',
+        'astype', 'base', 'byteswap', 'choose', 'clip', 'compress', 'conj',
+        'conjugate', 'copy', 'ctypes', 'cumprod', 'cumsum', 'data',
+        'diagonal', 'dot', 'dtype', 'dump', 'dumps', 'fill', 'flags', 'flat',
+        'flatten', 'getfield', 'imag', 'item', 'itemset', 'itemsize', 'max',
+        'mean', 'min', 'nbytes', 'ndim', 'newbyteorder', 'nonzero',
+        'partition', 'prod', 'ptp', 'put', 'ravel', 'real', 'repeat',
+        'reshape', 'resize', 'round', 'searchsorted', 'setfield', 'setflags',
+        'shape', 'size', 'sort', 'squeeze', 'std', 'strides', 'sum',
+        'swapaxes', 'take', 'tobytes', 'tofile', 'tolist', 'tostring',
+        'trace', 'transpose', 'var', 'view', '__call__']
+    )
 
     // Hide methods exclusive to dict and list from tables
     for (let i = 0; i < exclude.length; i++) {
@@ -53,6 +68,27 @@ window.onload = function () {
         // Comment the line above and uncomment the next for DEBUGGING
         // tmp.css("background-color", "red")
     }
+
+    // Hide attributes exclusive to numpy's ndarray from tables
+    exclude_attrs = [
+        'base', 'ctypes', 'data', 'flags', 'flat', 'imag', 'itemsize',
+        'nbytes', 'real', 'strides'
+    ]
+    for (let i = 0; i < exclude_attrs.length; i++) {
+        // Search through toctree for "exclude_attrs[i]"
+        tmp = $(`dt:contains(${exclude_attrs[i]})`)
+        // Hide that element
+        tmp.hide()
+        // Hide attr's description (2nd column)
+        tmp.next("dd").hide()
+    }
+
+    // Change h1 font to monospace if inside Module Reference
+    tmp = $("a:contains('Module Reference')")[0]
+    if (tmp.parentElement.classList.contains("active") == true){
+        $("h1").css("font-family", "Ubuntu Mono")
+    }
+
 };
 
 // window.onload = function() {

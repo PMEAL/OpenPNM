@@ -47,7 +47,7 @@ and run.
 
 """
 
-from ._models_mixin import *
+from ._models import *
 from ._base import *
 from ._mixins import *
 from ._subdomain import *
