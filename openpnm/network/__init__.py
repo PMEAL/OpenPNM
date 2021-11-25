@@ -39,12 +39,12 @@ have a z-component (but set to 0).
 
 """
 
-from ._generic import *
-from ._cubic import *
-from ._cubic_dual import *
-from ._bravais import *
-from ._cubic_template import *
-from ._delaunay_voronoi_dual import *
-from ._voronoi import *
-from ._delaunay import *
-from ._gabriel import *
+from ._generic import GenericNetwork
+from ._cubic import Cubic
+from ._cubic_dual import CubicDual
+from ._bravais import Bravais
+from ._cubic_template import CubicTemplate
+from ._delaunay_voronoi_dual import DelaunayVoronoiDual
+from ._voronoi import Voronoi
+from ._delaunay import Delaunay
+from ._gabriel import Gabriel

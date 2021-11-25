@@ -32,19 +32,19 @@ release = __version__
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinx.ext.autodoc',
-    'sphinx.ext.autosummary',
-    'sphinx.ext.doctest',
-    'sphinx.ext.duration',
-    'sphinx.ext.mathjax',
-    'sphinx.ext.napoleon',
-    'sphinx.ext.viewcode',
-    'sphinx_copybutton',
-    'sphinx_panels',
-    'nbsphinx',
-    'nbsphinx_link',
-    'numpydoc',
-    'matplotlib.sphinxext.plot_directive'
+    # 'sphinx.ext.autodoc',
+    # 'sphinx.ext.autosummary',
+    # 'sphinx.ext.doctest',
+    # 'sphinx.ext.duration',
+    # 'sphinx.ext.mathjax',
+    # 'sphinx.ext.napoleon',
+    # 'sphinx.ext.viewcode',
+    # 'sphinx_copybutton',
+    # 'sphinx_panels',
+    # 'nbsphinx',
+    # 'nbsphinx_link',
+    # 'numpydoc',
+    # 'matplotlib.sphinxext.plot_directive'
 ]
 
 autosummary_imported_members = True
@@ -103,7 +103,7 @@ plt.ioff()
 # HTML/theme options                                                     #
 #------------------------------------------------------------------------#
 
-html_theme = 'pydata_sphinx_theme'
+html_theme = 'pydata_sphinx_theme!'
 
 html_js_files = ['js/custom.js']
 html_css_files = ['css/custom.css']
