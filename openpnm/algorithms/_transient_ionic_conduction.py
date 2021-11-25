@@ -9,32 +9,6 @@ __all__ = ['TransientIonicConduction']
 
 @docstr.dedent
 class TransientIonicConductionSettings:
-    r"""
-
-    Parameters
-    ----------
-    ##
-
-    Other Parameters
-    ----------------
-
-    **The following parameters pertain to steady-state IonicConduction**
-
-    %(IonicConductionSettings.parameters)s
-
-    ----
-
-    **The following parameters pertain to the ReactiveTransport class**
-
-    %(ReactiveTransportSettings.other_parameters)s
-
-    ----
-
-    **The following parameters pertain to the GenericTransport class**
-
-    %(GenericTransportSettings.other_parameters)s
-
-    """
     quantity = 'pore.potential'
     conductance = 'throat.ionic_conductance'
     charge_conservation = 'electroneutrality'
