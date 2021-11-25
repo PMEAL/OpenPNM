@@ -66,8 +66,8 @@ to all the other calculated pore-scale properties, call the
 37752.0
 
 """
-from .GenericPhase import GenericPhase
-from .Air import Air
-from .Water import Water
-from .Mercury import Mercury
-from .MultiPhase import MultiPhase
+from ._generic import GenericPhase
+from ._air import Air
+from ._water import Water
+from ._mercury import Mercury
+from ._multiphase import MultiPhase

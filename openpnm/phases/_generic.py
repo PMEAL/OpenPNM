@@ -102,10 +102,12 @@ class GenericPhase(ParamMixin, Base, ModelsMixin, LabelMixin):
 
     @property
     def phase(self):
+        """A shortcut to get a handle to the associated phase (itself)."""
         return self
 
     @property
     def physics(self):
+        """A shortcut to query the associated physics(es)."""
         return self.project.find_physics(phase=self)
 
     @property
