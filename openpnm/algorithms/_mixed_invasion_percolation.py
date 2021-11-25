@@ -1,7 +1,8 @@
-"""
-===============================================================================
-MixedInvasionPercolation: IP allowing pores and throats to invade separately
-===============================================================================
+r"""
+========================
+MixedInvasionPercolation
+========================
+IP allowing pores and throats to invade separately.
 
 """
 import heapq as hq
@@ -12,6 +13,8 @@ from openpnm.topotools import find_clusters, site_percolation
 from openpnm.utils import logging, SettingsAttr, Docorator
 docstr = Docorator()
 logger = logging.getLogger(__name__)
+
+__all__ = ['MixedInvasionPercolation']
 
 
 @docstr.get_sections(base='MixedIPSettings',

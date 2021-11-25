@@ -5,6 +5,8 @@ from openpnm.utils import logging, Docorator, SettingsAttr
 logger = logging.getLogger(__name__)
 docstr = Docorator()
 
+__all__ = ['IonicConduction']
+
 
 @docstr.get_sections(base='IonicConductionSettings', sections=['Parameters'])
 @docstr.dedent

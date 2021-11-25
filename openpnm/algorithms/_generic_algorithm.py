@@ -4,6 +4,8 @@ from openpnm.utils import logging, Docorator, SettingsAttr
 logger = logging.getLogger(__name__)
 docstr = Docorator()
 
+__all__ = ['GenericAlgorithm']
+
 
 @docstr.get_sections(base='GenericAlgorithmSettings', sections=docstr.all_sections)
 @docstr.dedent

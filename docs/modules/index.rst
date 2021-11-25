@@ -16,4 +16,9 @@ methods, occasionally with basic embedded examples on how to use them.
    :maxdepth: 1
 
    core
-   phases
+   algorithms
+
+TODO:
+- get rid of the ( .. ) in toctree
+- also document overloaded methods in Base and other places
+- maybe unify ..plot directive and actual example snippets

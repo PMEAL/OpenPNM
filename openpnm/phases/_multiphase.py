@@ -133,8 +133,8 @@ class MultiPhase(GenericPhase):
         kwargs : dict
             Keyword arguments to be passed to the ``model``.
 
-        Example
-        -------
+        Examples
+        --------
         >>> import openpnm as op
         >>> from openpnm.phases import Air, Water, MultiPhase
         >>> from openpnm.models.misc import constant
@@ -199,8 +199,8 @@ class MultiPhase(GenericPhase):
         For convenience and as an OpenPNM convention, the ``propname`` is
         augmented as outlined by the following example.
 
-        Example
-        -------
+        Examples
+        --------
         Let's say the two phases corresponding to the interface model are
         named: 'air' and 'water', and the interface propname to be added
         is 'throat.foo'. After augmentation, 'throat.foo.air:water' will
@@ -231,8 +231,8 @@ class MultiPhase(GenericPhase):
         phases : List[GenericPhase]
             List of two phases that together form the interface property.
 
-        Example
-        -------
+        Examples
+        --------
         >>> import openpnm as op
         >>> net = op.network.Cubic(shape=[5, 5, 5])
         >>> air = op.phases.Air(network=net, name='air')

@@ -3,12 +3,11 @@ import numpy as np
 from openpnm.utils import PrintableDict, logging, Workspace
 from openpnm.utils.misc import is_valid_propname
 from openpnm.utils import prettify_logger_message
-from auto_all import start_all, end_all
 logger = logging.getLogger(__name__)
 ws = Workspace()
 
+__all__ = ['ModelsDict', 'ModelsMixin']
 
-start_all()
 
 class ModelsDict(PrintableDict):
     r"""
@@ -100,6 +99,26 @@ class ModelsDict(PrintableDict):
         ...                  width=3.0,
         ...                  edge_color='lightgrey',
         ...                  font_weight='bold')
+
+        .. plot::
+
+           import networkx as nx
+           import openpnm as op
+           import matplotlib.pyplot as plt
+           net = op.network.Cubic(shape=[3, 3, 3])
+           geo = op.geometry.SpheresAndCylinders(network=net,
+                                                 pores=net.Ps,
+                                                 throats=net.Ts)
+           dtree = geo.models.dependency_graph()
+           nx.draw_spectral(dtree,
+                            arrowsize=50,
+                            font_size=32,
+                            with_labels=True,
+                            node_size=2000,
+                            width=3.0,
+                            edge_color='lightgrey',
+                            font_weight='bold')
+           plt.show()
 
         """
         import networkx as nx
@@ -435,5 +454,3 @@ class ModelsMixin:
             self.add_model(propname=model, **dict_[model])
 
     models = property(fget=_get_models, fset=_set_models)
-
-end_all()

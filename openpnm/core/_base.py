@@ -6,10 +6,11 @@ from collections import namedtuple
 from openpnm.utils import Workspace, logging
 from openpnm.utils import SettingsAttr
 from openpnm.utils.misc import PrintableList, Docorator
-from auto_all import start_all, end_all
 docstr = Docorator()
 logger = logging.getLogger(__name__)
 ws = Workspace()
+
+__all__ = ['Base']
 
 
 @docstr.get_sections(base='BaseSettings', sections=['Parameters'])
@@ -31,7 +32,6 @@ class BaseSettings:
     name = ''
     uuid = ''
 
-start_all()
 
 @docstr.get_sections(base='Base', sections=['Parameters'])
 class Base(dict):
@@ -1181,5 +1181,3 @@ class Base(dict):
         if obj_type.lower() in mro:
             flag = True
         return flag
-
-end_all()

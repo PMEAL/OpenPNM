@@ -1,9 +1,9 @@
-# -*- coding: utf-8 -*-
-"""
-===============================================================================
-MixedInvasionPercolationCoop: IP allowing pores and throats to invade separately
-With added cooperative filling algorithms
-===============================================================================
+r"""
+============================
+MixedInvasionPercolationCoop
+============================
+IP allowing pores and throats to invade separately with added cooperative
+filling algorithms.
 
 """
 import time
@@ -15,6 +15,8 @@ from transforms3d._gohlketransforms import angle_between_vectors
 from openpnm.utils import logging, SettingsAttr, Docorator
 docstr = Docorator()
 logger = logging.getLogger(__name__)
+
+__all__ = ['MixedInvasionPercolationCoop']
 
 
 @docstr.dedent
@@ -44,10 +46,6 @@ class MixedInvasionPercolationCoop(MixedInvasionPercolation):
     network : GenericNetwork
         The Network upon which the invasion should occur.
 
-    Notes
-    ----
-    n/a
-
     """
 
     def __init__(self, settings={}, **kwargs):
@@ -74,36 +72,30 @@ class MixedInvasionPercolationCoop(MixedInvasionPercolation):
         phase : GenericPhase
             The Phase object containing the physical properties of the invading
             fluid.
-
         pore_entry_pressure : str
             The dictionary key on the Phase object where the pore entry
             pressure values are stored.  The default is
             'pore.entry_pressure'.
-
         throat_entry_pressure : str
             The dictionary key on the Phase object where the throat entry
             pressure values are stored.  The default is
             'throat.entry_pressure'.
-
         snap_off : str
             The dictionary key on the Phase object where the throat snap-off
             pressure values are stored.
-
         invade_isolated_Ts : boolean
             If True, isolated throats are invaded at the higher invasion
             pressure of their connected pores.
-
         late_pore_filling : str
             The name of the model used to determine late pore filling as
             a function of applied pressure.
-
         late_throat_filling : str
             The name of the model used to determine late throat filling as
             a function of applied pressure.
-
         cooperative_pore_filling : str
             The name of the model used to determine the meniscus properties
             required for assessing cooperative pore filling.
+
         """
         if phase:
             self.settings["phase"] = phase.name
@@ -244,11 +236,18 @@ class MixedInvasionPercolationCoop(MixedInvasionPercolation):
 
     def _plane_intersect(self, a, b):
         """
-        a, b   4-tuples/lists
-               Ax + By +Cz + D = 0
-               A, B, C, D in order
-        output: 2 points on line of intersection, np.arrays, shape (3,)
-        https://bit.ly/2LkBEyc
+        Brief description of '_plane_intersect'
+
+        Parameters
+        ----------
+        a, b : 4-tuples/lists
+            Ax + By +Cz + D = 0 where A, B, C, D in order
+
+        Returns
+        -------
+        ndarray
+            Two points on line of intersection (see https://bit.ly/2LkBEyc)
+
         """
         a_vec, b_vec = np.array(a[:3]), np.array(b[:3])
         aXb_vec = np.cross(a_vec, b_vec)
@@ -312,10 +311,12 @@ class MixedInvasionPercolationCoop(MixedInvasionPercolation):
         This coop filling model iterates through the invasion pressures set by
         the inv_points variable and calls the meniscus model whose dictionary
         key must be given in the algorithm's setup.
+
         The meniscus model supplies the position of the meniscus inside each
         throat as if there were a meniscus in every throat for a given pressure
         The contact line of the meniscus traces a circle around the inner
         surface of the throat which is assumed to be toroidal.
+
         The contact circle lies on a plane that is defined by the throat's
         normal vector which runs along the axis of symmetry of the torus.
         For every pore, every connecting throat is compared with each of it's
@@ -324,6 +325,7 @@ class MixedInvasionPercolationCoop(MixedInvasionPercolation):
         advance enough. For highly wetting fluid the contact point may be
         advanced well into the throat whilst still being at negative capillary
         pressure.
+
         """
         start = time.time()
         net = self.project.network
@@ -408,9 +410,10 @@ class MixedInvasionPercolationCoop(MixedInvasionPercolation):
 
     def _setup_coop_filling_bulge(self, inv_points=None):
         r"""
-        Evaluate the cooperative pore filling condition that the combined
+        Evaluates the cooperative pore filling condition that the combined
         filling angle in next neighbor throats cannot exceed the geometric
         angle between their throat planes.
+
         This is used when the invading fluid has access to multiple throats
         connected to a pore
 
@@ -418,6 +421,7 @@ class MixedInvasionPercolationCoop(MixedInvasionPercolation):
         ----------
         inv_points : array_like
             The invasion pressures at which to assess coopertive pore filling.
+
         """
         net = self.project.network
         phase = self.project[self.settings.phase]
@@ -541,6 +545,7 @@ class MixedInvasionPercolationCoop(MixedInvasionPercolation):
         are now given access to the invading phase. Two throats with access to
         the invading phase can cooperatively fill any pores that they are both
         connected to, common pores.
+
         The invasion of theses throats connected to the common pore is handled
         elsewhere.
         """

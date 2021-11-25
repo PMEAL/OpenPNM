@@ -4,6 +4,8 @@ from openpnm.utils import logging, SettingsAttr, Docorator
 docstr = Docorator()
 logger = logging.getLogger(__name__)
 
+__all__ = ['Porosimetry']
+
 
 @docstr.dedent
 class PorosimetrySettings:

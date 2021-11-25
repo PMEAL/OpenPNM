@@ -1,9 +1,8 @@
 import numpy as np
 from openpnm.core import Base, LabelMixin, ParamMixin
-from auto_all import start_all, end_all
 
+__all__ = ['Subdomain']
 
-start_all()
 
 class Subdomain(Base, LabelMixin):
     r"""
@@ -216,5 +215,3 @@ class Subdomain(Base, LabelMixin):
         else:
             vals[vals >= 0] = missing_vals
         return vals
-
-end_all()

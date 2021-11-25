@@ -1,10 +1,9 @@
 from collections import namedtuple
 import numpy as np
 from openpnm.utils import PrintableDict, PrintableList
-from auto_all import start_all, end_all
 
+__all__ = ['ParamMixin', 'LabelMixin', 'LegacyMixin']
 
-start_all()
 
 class ParamMixin:
     """Brief explanation of ParamMixin"""
@@ -715,5 +714,3 @@ class LabelMixin:
         Ts = self._get_indices(labels=labels, mode=mode, element='throat')
         Nt = np.shape(Ts)[0]
         return Nt
-
-end_all()

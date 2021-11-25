@@ -5,6 +5,8 @@ from openpnm.integrators import ScipyRK45
 docstr = Docorator()
 logger = logging.getLogger(__name__)
 
+__all__ = ['TransientReactiveTransport']
+
 
 @docstr.get_sections(base='TransientReactiveTransportSettings',
                      sections=['Parameters', 'Other Parameters'])

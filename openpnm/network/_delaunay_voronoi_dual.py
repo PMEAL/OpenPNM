@@ -288,10 +288,10 @@ class DelaunayVoronoiDual(GenericNetwork):
         return points
 
     def _label_faces(self):
-        r'''
+        r"""
         Label the pores sitting on the faces of the domain in accordance
         with the conventions used for cubic etc.
-        '''
+        """
         coords = np.around(self['pore.coords'], decimals=10)
         min_labels = ['front', 'left', 'bottom']
         max_labels = ['back', 'right', 'top']

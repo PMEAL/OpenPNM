@@ -14,6 +14,7 @@ from openpnm.solvers import PardisoSpsolve
 docstr = Docorator()
 logger = logging.getLogger(__name__)
 
+__all__ = ['GenericTransport', 'GenericTransportSettings']
 
 @docstr.get_sections(base='GenericTransportSettings', sections=['Parameters'])
 @docstr.dedent
@@ -56,6 +57,7 @@ class GenericTransport(GenericAlgorithm):
     %(GenericAlgorithm.parameters)s
 
     """
+
     def __new__(cls, *args, **kwargs):
         instance = super(GenericTransport, cls).__new__(cls, *args, **kwargs)
         # Create some instance attributes
@@ -74,6 +76,7 @@ class GenericTransport(GenericAlgorithm):
 
     @property
     def x(self):
+        """Shortcut to the solution currently stored on the algorithm."""
         return self[self.settings['quantity']]
 
     @x.setter
@@ -370,6 +373,7 @@ class GenericTransport(GenericAlgorithm):
 
     @property
     def A(self):
+        """The coefficients matrix (as in Ax = b)"""
         if self._A is None:
             self._build_A()
         return self._A
@@ -671,5 +675,3 @@ class GenericTransport(GenericAlgorithm):
         for variable_prop in variable_props:
             variable_prop = self._parse_prop(variable_prop, 'pore')
             self.settings['variable_props'].append(variable_prop)
-
-
