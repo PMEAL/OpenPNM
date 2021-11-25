@@ -24,7 +24,7 @@ window.onload = function () {
     // var selected = $("a.current")
     // selected.html("&#8594; " + selected.text())
 
-    $(".toctree-l3").hide()
+    // $(".toctree-l3").hide()
 
     exclude = [
         'append', 'clear', 'copy', 'count', 'extend', 'fromkeys', 'get',
@@ -32,15 +32,26 @@ window.onload = function () {
         'reverse', 'setdefault', 'sort', 'update', 'values'
     ]
 
-    for (i in exclude) {
+    // Hide methods exclusive to dict and list from tables
+    for (let i = 0; i < exclude.length; i++) {
         // Search through first column of the table for "exclude[i]("
         tmp = $("tr").find(`td:first:contains(${exclude[i]}()`)
         // Find the row(s) containing the returned query
         row = tmp.closest('tr')
         // Hide that row
-        // row.hide()
+        row.hide()
         // Comment the line above and uncomment the next for DEBUGGING
-        row.css("background-color", "red")
+        // row.css("background-color", "red")
+    }
+
+    // Hide methods exclusive to dict and list from toctree
+    for (let i = 0; i < exclude.length; i++) {
+        // Search through toctree for "exclude[i]"
+        tmp = $(`.toctree-l3:contains(${exclude[i]})`)
+        // Hide that row
+        tmp.hide()
+        // Comment the line above and uncomment the next for DEBUGGING
+        // tmp.css("background-color", "red")
     }
 };
 
