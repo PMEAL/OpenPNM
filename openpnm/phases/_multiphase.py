@@ -14,7 +14,7 @@ class MultiPhaseSettings:
 class MultiPhase(GenericPhase):
     r"""
     Creates Phase object that represents a multiphase system consisting of
-    a given list of OpenPNM Phase objects.
+    a given list of GenericPhases.
 
     Parameters
     ----------

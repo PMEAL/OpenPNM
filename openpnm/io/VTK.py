@@ -49,7 +49,7 @@ class VTK(GenericIO):
         network : GenericNetwork
             The Network containing the data to be written
         phases : list, optional
-            A list containing OpenPNM Phase object(s) containing data to be
+            A list containing GenericPhase(s) containing data to be
             written
         filename : str, optional
             Filename to write data.  If no name is given the file is named

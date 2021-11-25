@@ -29,7 +29,7 @@ class XDMF(GenericIO):
         network : GenericNetwork
             The network containing the desired data
 
-        phases : list of OpenPNM Phase Objects (optional, default is none)
+        phases : list[GenericPhase]s (optional, default is none)
             A list of phase objects whose data are to be included
 
         Notes

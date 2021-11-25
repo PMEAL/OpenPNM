@@ -35,7 +35,7 @@ class Pandas(GenericIO):
         network: GenericNetwork
             The network containing the data to be stored
 
-        phases : list of OpenPNM Phase Objects
+        phases : list[GenericPhase]s
             The data on each supplied phase will be added to DataFrame
 
         join : boolean

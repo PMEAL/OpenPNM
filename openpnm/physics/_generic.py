@@ -30,14 +30,11 @@ class GenericPhysics(ParamMixin, Subdomain, ModelsMixin):
     ----------
     network : GenericNetwork
         The network to which this Physics should be attached
-
-    phase : OpenPNM Phase object
+    phase : GenericPhase
         The Phase object to which this Physics applies
-
-    geometry : OpenPNM Geometry object
+    geometry : GenericGeometry
         The Geometry object that defines the pores/throats where this Physics
         should be applied.
-
     name : str, optional
         A unique string name to identify the Physics object, typically same as
         instance name but can be anything.  If left blank, and name will be
@@ -90,7 +87,7 @@ class GenericPhysics(ParamMixin, Subdomain, ModelsMixin):
 
         Parameters
         ----------
-        phase : OpenPNM Phase object
+        phase : GenericPhase
             If mode is 'add' or 'move', this must be specified so that
             associations can be recorded in the phase dictionary.  If the
             mode is 'drop', this is not needed since the existing association
@@ -168,7 +165,7 @@ class GenericPhysics(ParamMixin, Subdomain, ModelsMixin):
 
         Parameters
         ----------
-        geometry : OpenPNM Geometry object
+        geometry : GenericGeometry
             The geometry defining the pores and throats to which this physics
             should be attached
         mode : str

@@ -39,7 +39,7 @@ have a z-component (but set to 0).
 
 """
 
-from ._generic_network import *
+from ._generic import *
 from ._cubic import *
 from ._cubic_dual import *
 from ._bravais import *

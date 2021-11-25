@@ -13,14 +13,11 @@ class Basic(GenericPhysics):
     ----------
     network : GenericNetwork
         The network to which this Physics should be attached/
-
     phase : GenericPhase
         The Phase object to which this Physics applies.
-
     geometry : GenericGeometry
         The Geometry object that defines the pores/throats where this
         Physics should be applied.
-
     name : str, optional
         A unique string name to identify the Physics object, typically
         same as instance name but can be anything.  If left blank, and

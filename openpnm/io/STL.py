@@ -25,7 +25,7 @@ class STL(GenericIO):
         network : GenericNetwork.
             The network containing the desired data.
 
-        phases : list of OpenPNM Phase Objects (place holder, default is none).
+        phases : list[GenericPhase]s (place holder, default is none).
 
         filename : str (optional).
             The name of the file containing the data to export.
