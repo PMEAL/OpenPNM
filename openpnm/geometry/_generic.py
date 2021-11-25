@@ -69,13 +69,22 @@ class GenericGeometry(ParamMixin, Subdomain, ModelsMixin):
 
     The results of the model can be seen using the ``show_hist`` function:
 
-    >>> import matplotlib as mpl
-    >>> mpl.use('Agg')
     >>> geom.show_hist('pore.size')
 
-    .. image:: /../docs/_static/images/generic_geometry_histogram.png
-        :width: 500px
-        :align: center
+    .. plot::
+
+       import openpnm as op
+       import matplotlib.pyplot as plt
+       pn = op.network.Cubic(shape=[5, 5, 5])
+       Ps = pn.pores('all')    # Get all pores
+       Ts = pn.throats('all')  # Get all throats
+       geom = op.geometry.GenericGeometry(network=pn, pores=Ps, throats=Ts)
+       geom.add_model(propname='pore.size',
+                      model=op.models.misc.random,
+                      element='pore',
+                      num_range=[0.01, 0.1])
+       geom.show_hist('pore.size')
+       plt.show()
 
     """
 
@@ -95,5 +104,6 @@ class GenericGeometry(ParamMixin, Subdomain, ModelsMixin):
                 logger.error(f'{e}, instantiation cancelled')
 
     def _get_phys(self):
+        """A shortcut to get a handle to the associated physics."""
         return self.project.find_physics(geometry=self)
     physics = property(fget=_get_phys)
