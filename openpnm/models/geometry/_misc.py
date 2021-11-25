@@ -1,6 +1,4 @@
-r"""
-Helper methods for openpnm.models.geometry module
-"""
+"""Helper methods for openpnm.models.geometry module"""
 
 
 def _get_conduit_diameters(target, pore_diameter, throat_diameter):

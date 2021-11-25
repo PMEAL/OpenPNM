@@ -1,6 +1,5 @@
 import numpy as _np
-import openpnm.geometry.GenericGeometry as _GenericGeometry
-from .misc import _get_conduit_diameters
+from ._misc import _get_conduit_diameters
 from .throat_length import ctc as _ctc
 
 __all__ = [
@@ -15,7 +14,7 @@ __all__ = [
 
 
 def spheres_and_cylinders(
-    target: _GenericGeometry,
+    target,
     pore_diameter="pore.diameter",
     throat_diameter="throat.diameter",
 ):

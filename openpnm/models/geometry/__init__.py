@@ -1,6 +1,11 @@
 r"""
+================================================
+Geometry Models (:mod:`openpnm.models.geometry`)
+================================================
+
 This submodule contains pore-scale models that calculate geometrical
 properties. These models are to be added to a Geometry object.
+
 """
 
 from . import pore_size

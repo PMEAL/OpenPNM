@@ -1,15 +1,13 @@
 r"""
-
-**openpnm.models**
-
-----
+==============================
+Models (:mod:`openpnm.models`)
+==============================
 
 This module contains a selection of pore-scale models for calculating
 geometrical, thermophysical, and multiphysics transport properties.
 
-----
-
-**Using Prewritten Models from the Library**
+Using Prewritten Models from the Library
+========================================
 
 OpenPNM includes a solid library of pre-written models for most basic and
 standard scenarios.  These are broken up into 4 categores: *geometry*,
