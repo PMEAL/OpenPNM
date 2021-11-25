@@ -5,6 +5,9 @@ from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 
 
+__all__ = ['from_neighbor_throats', 'from_neighbor_pores']
+
+
 def from_neighbor_throats(target, prop, mode='min', ignore_nans=True):
     r"""
     Adopt a value from the values found in neighboring throats

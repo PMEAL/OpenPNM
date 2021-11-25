@@ -13,4 +13,4 @@ generating an array of random numbers.
 from .statistical_distributions import *
 from .simple_equations import *
 from .basic_math import *
-from .neighbor_lookups import from_neighbor_throats, from_neighbor_pores
+from .neighbor_lookups import *
