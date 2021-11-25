@@ -9,7 +9,7 @@ class Mercury(GenericPhase):
 
     Parameters
     ----------
-    network : OpenPNM Network object
+    network : GenericNetwork
         The network to which this phase object will be attached.
 
     References

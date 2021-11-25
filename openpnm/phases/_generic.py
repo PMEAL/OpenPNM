@@ -31,7 +31,7 @@ class GenericPhase(ParamMixin, Base, ModelsMixin, LabelMixin):
 
     Parameters
     ----------
-    network : OpenPNM network object
+    network : GenericNetwork
         The network with which this object is associated
     %(Base.parameters)s
 

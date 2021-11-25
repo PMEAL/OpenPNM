@@ -32,7 +32,7 @@ class Pandas(GenericIO):
 
         Parameters
         ----------
-        network: OpenPNM Network Object
+        network: GenericNetwork
             The network containing the data to be stored
 
         phases : list of OpenPNM Phase Objects

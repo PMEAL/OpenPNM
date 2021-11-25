@@ -29,14 +29,14 @@ class iMorph(GenericIO):
 
         Parameters
         ----------
-        path : string
+        path : str
             The path of the folder where the subfiles are held
 
-        node_file : string
+        node_file : str
             The file that describes the pores and throats, the
             default iMorph name is: throats_cellsThroatsGraph_Nodes.txt
 
-        graph_file : string
+        graph_file : str
             The file that describes the connectivity of the network, the
             default iMorph name is: throats_cellsThroatsGraph.txt
 

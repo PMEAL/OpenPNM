@@ -16,10 +16,10 @@ class ImportedSettings:
     throat_diameter : str (default = 'throat.equivalent_diameter')
         Key into the extracted data array to use as throat diameter in other
         geometry calculations. Use of 'throat.' is not required.
-    pore_shape : string {'sphere' (default), 'cube'}
+    pore_shape : str {'sphere' (default), 'cube'}
         Specifies which shape to assume when calculating dependent properties
         such as volume and surface area.
-    throat_shape : string {'cylinder' (default), 'cuboid'}
+    throat_shape : str {'cylinder' (default), 'cuboid'}
         Specifies which shape to assume when calculating dependent properties
         such as volume and surface area.
 
@@ -42,13 +42,13 @@ class Imported(GenericGeometry):
 
     Parameters
     ----------
-    network : OpenPNM Network object
+    network : GenericNetwork
         The network with which this Geometry should be associated
     exclude : list of strings
         A list of which network properties should *not* be transferred to
         new geometry object.  'pore.coords' and 'throat.conns' are *always*
         excluded.  Note that labels are not transferred, only properties.
-    name : string
+    name : str
         The name of the object, which is also used as the label where this
         geometry is defined.
 

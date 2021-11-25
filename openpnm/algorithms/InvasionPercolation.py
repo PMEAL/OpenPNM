@@ -37,7 +37,7 @@ class InvasionPercolation(GenericAlgorithm):
 
     Parameters
     ----------
-    network : OpenPNM Network object
+    network : GenericNetwork
         The Network upon which the invasion will occur.
 
     Notes

@@ -307,7 +307,7 @@ class GenericMixture(GenericPhase):
         component : OpenPNM Phase object
             The phase object of the component to add.  Can also be a list
             of phases to add more than one at a time.
-        mode : string {'add', 'remove'}
+        mode : str {'add', 'remove'}
             Indicates whether to add or remove the give component(s)
 
         """

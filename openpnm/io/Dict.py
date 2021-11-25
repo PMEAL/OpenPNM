@@ -111,13 +111,13 @@ class Dict(GenericIO):
 
         Parameters
         ----------
-        network : OpenPNM Network Object (optional)
+        network : GenericNetwork (optional)
             The network containing the desired data
 
         phases : list of OpenPNM Phase Objects (optional, default is none)
             A list of phase objects whose data are to be included
 
-        element : string or list of strings
+        element : str or list[str]
             An indication of whether 'pore' and/or 'throat' data are desired.
             The default is both.
 
@@ -135,7 +135,7 @@ class Dict(GenericIO):
             parent object.  If ``interleave`` is ``True`` this argument is
             ignored.
 
-        categorize_by : string or list of strings
+        categorize_by : str or list[str]
             Indicates how the dictionaries should be organized.  The list can
             contain any, all or none of the following strings:
 
@@ -263,7 +263,7 @@ class Dict(GenericIO):
             A dictionary to save to file, presumably obtained from the
             ``to_dict`` method of this class.
 
-        filename : string or path object
+        filename : str or path object
             The filename to store the dictionary.
 
         Notes
@@ -283,7 +283,7 @@ class Dict(GenericIO):
 
         Parameters
         ----------
-        filename : string
+        filename : str
             The path to the file to be opened
 
         Notes

@@ -19,13 +19,13 @@ class HDF5(GenericIO):
 
         Parameters
         ----------
-        network : OpenPNM Network Object
+        network : GenericNetwork
             The network containing the desired data
 
         phases : list of OpenPNM Phase Objects (optional, default is none)
             A list of phase objects whose data are to be included
 
-        element : string or list of strings
+        element : str or list[str]
             An indication of whether 'pore' and/or 'throat' data are desired.
             The default is both.
 
@@ -43,7 +43,7 @@ class HDF5(GenericIO):
             parent object.  If ``interleave`` is ``True`` this argument is
             ignored.
 
-        categorize_by : string or list of strings
+        categorize_by : str or list[str]
             Indicates how the dictionaries should be organized.  The list can
             contain any, all or none of the following strings:
 

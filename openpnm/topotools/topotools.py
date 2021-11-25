@@ -76,7 +76,7 @@ def rotate_coords(network, a=0, b=0, c=0, R=None):
 
     Parameters
     ----------
-    network : OpenPNM Network object
+    network : GenericNetwork
         The network whose pore coordinates should be transformed
     a : scalar
         The amount in degrees to rotate about the x-axis
@@ -129,7 +129,7 @@ def shear_coords(network, ay=0, az=0, bx=0, bz=0, cx=0, cy=0, S=None):
 
     Parameters
     ----------
-    network : OpenPNM Network object
+    network : GenericNetwork
         The network whose pore coordinates should be transformed
     ay : scalar
         The factor by which to shear along the x-axis as a function of y
@@ -187,7 +187,7 @@ def trim(network, pores=[], throats=[]):
 
     Parameters
     ----------
-    network : OpenPNM Network Object
+    network : GenericNetwork
         The Network from which pores or throats should be removed
     pores (or throats) : array_like
         The indices of the of the pores or throats to be removed from the
@@ -278,7 +278,7 @@ def extend(network, coords=[], conns=[], labels=[], **kwargs):
 
     Parameters
     ----------
-    network : OpenPNM Network Object
+    network : GenericNetwork
         The network to which pores or throats should be added
     coords : array_like
         The coordinates of the pores to add.  These will be appended to the
@@ -288,7 +288,7 @@ def extend(network, coords=[], conns=[], labels=[], **kwargs):
         The throat connections to add.  These will be appended to the
         'throat.conns' array so should be of shape N-by-2.  Note that the
         numbering must point to existing pores.
-    labels : string, or list of strings, optional
+    labels : str, or list[str], optional
         A list of labels to apply to the new pores and throats
 
     '''
@@ -368,14 +368,14 @@ def label_faces(network, tol=0.0, label='surface'):
 
     Parameters
     ----------
-    network : OpenPNM Network object
+    network : GenericNetwork
         The network to apply the labels
     tol : scalar
         The tolerance for defining what counts as a surface pore, which is
         specifically meant for random networks.  All pores with ``tol`` of
         the maximum or minimum along each axis are counts as pores.  The
         default is 0.
-    label : string
+    label : str
         An identifying label to isolate the pores on the faces of the network.
         The default is 'surface'.  Surface pores can be found using
         ``find_surface_pores``.
@@ -413,7 +413,7 @@ def find_surface_pores(network, markers=None, label='surface'):
 
     Parameters
     ----------
-    network: OpenPNM Network Object
+    network: GenericNetwork
         The network for which the surface pores are to be found
     markers: array_like
         3 x N array of the marker coordinates to use in the triangulation.  The
@@ -425,7 +425,7 @@ def find_surface_pores(network, markers=None, label='surface'):
         appropriate label in order to identify specific faces.  For instance,
         the marker may be *above* the domain, and the label might be
         'top_surface'.
-    label : string
+    label : str
         The label to apply to the pores.  The default is 'surface'.
 
     Notes
@@ -506,7 +506,7 @@ def dimensionality(network=None, coords=None):
 
     Parameters
     ----------
-    network : OpenPNM Network object
+    network : GenericNetwork
         The network whose dimensionality is to be checked
 
     Returns
@@ -532,13 +532,13 @@ def clone_pores(network, pores, labels=['clone'], mode='parents'):
 
     Parameters
     ----------
-    network : OpenPNM Network Object
+    network : GenericNetwork
         The Network object to which the new pores are to be added
     pores : array_like
         List of pores to clone
-    labels : string, or list of strings
+    labels : str, or list[str]
         The labels to apply to the clones, default is 'clone'
-    mode : string
+    mode : str
         Controls the connections between parents and clones.  Options are:
 
         - 'parents': (Default) Each clone is connected only to its parent
@@ -594,9 +594,9 @@ def merge_networks(network, donor=[]):
 
     Parameters
     ----------
-    network : OpenPNM Network Object
+    network : GenericNetwork
         The network to which all the other networks should be added.
-    donor : OpenPNM Network Object or list of Objects
+    donor : GenericNetwork or list of Objects
         The network object(s) to add to the given network
 
     See Also
@@ -683,9 +683,9 @@ def stitch(network, donor, P_network, P_donor, method='nearest',
 
     Parameters
     ----------
-    network : OpenPNM Network Object
+    network : GenericNetwork
         The Network to which to donor Network will be attached
-    donor : OpenPNM Network Object
+    donor : GenericNetwork
         The Network to stitch on to the current Network
     P_network : array_like
         The pores on the current Network
@@ -696,14 +696,14 @@ def stitch(network, donor, P_network, P_donor, method='nearest',
         inserting them into the recipient.  The default is to append no
         text, but a common option would be to append the donor Network's
         name. To insert none of the donor labels, use ``None``.
-    label_stitches : str or list of strings
+    label_stitches : str or list[str]
         The label to apply to the newly created 'stitch' throats.  The
         defaul is 'stitched'.  If performing multiple stitches in a row it
         might be helpful to the throats created during each step uniquely
         for later identification.
     len_max : float
         Set a length limit on length of new throats
-    method : string (default = 'nearest')
+    method : str (default = 'nearest')
         The method to use when making pore to pore connections. Options are:
 
         - 'radius' : Connects each pore on the recipient network to the
@@ -828,7 +828,7 @@ def connect_pores(network, pores1, pores2, labels=[], add_conns=True):
 
     Parameters
     ----------
-    network : OpenPNM Network Object
+    network : GenericNetwork
 
     pores1 : array_like
         The first group of pores on the network
@@ -913,7 +913,7 @@ def find_pore_to_pore_distance(network, pores1=None, pores2=None):
 
     Parameters
     ----------
-    network : OpenPNM Network Object
+    network : GenericNetwork
         The network object containing the pore coordinates
     pores1 : array_like
         The pore indices of the first set
@@ -949,7 +949,7 @@ def subdivide(network, pores, shape, labels=[]):
 
     Parameters
     ----------
-    network : OpenPNM Network Object
+    network : GenericNetwork
     pores : array_like
         The first group of pores to be replaced
     shape : array_like
@@ -1096,9 +1096,9 @@ def trim_occluded_throats(network, mask='all'):
 
     Parameters
     ----------
-    network : OpenPNM Network Object
+    network : GenericNetwork
 
-    mask : string
+    mask : str
         Applies routine only to throats with this label
     """
     occluded_ts = network['throat.area'] == 0
@@ -1114,10 +1114,10 @@ def merge_pores(network, pores, labels=['merged']):
 
     Parameters
     ----------
-    network : OpenPNM Network Object
+    network : GenericNetwork
     pores : array_like
         The list of pores which are to be combined into a new single pore
-    labels : string or list of strings
+    labels : str or list[str]
         The labels to apply to the new pore and new throat connections
 
     Notes
@@ -1595,7 +1595,7 @@ def add_boundary_pores(network, pores, offset=None, move_to=None,
         instance, ``[None, None, 0]`` indicates that the boundary pores should
         moved along the z-axis to the specified location.  Either this or
         ``offset`` must be specified.
-    apply_label : string
+    apply_label : str
         This label is applied to the boundary pores.  Default is
         'boundary'.
 
@@ -1777,7 +1777,7 @@ def get_domain_area(network, inlets=None, outlets=None):
 
     Parameters
     ----------
-    network : OpenPNM Network Object
+    network : GenericNetwork
         The network object containing the pore coordinates
 
     inlets : array_like
@@ -1821,7 +1821,7 @@ def get_domain_length(network, inlets=None, outlets=None):
 
     Parameters
     ----------
-    network : OpenPNM Network Object
+    network : GenericNetwork
         The network object containing the pore coordinates
 
     inlets : array_like
@@ -1859,7 +1859,7 @@ def filter_pores_by_z(network, pores, z=1):
 
     Parameters
     ----------
-    network : OpenPNM Network object
+    network : GenericNetwork
         The network on which the query is to be performed
     pores : array_like
         The pores to be filtered

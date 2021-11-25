@@ -33,7 +33,7 @@ class Statoil(GenericIO):
 
         Parameters
         ----------
-        network : OpenPNM Network object
+        network : GenericNetwork
             The network
         shape : array_like
             An ndim-by-1 array or list containing the network dimensions
@@ -214,14 +214,14 @@ class Statoil(GenericIO):
 
         Parameters
         ----------
-        path : string
+        path : str
             The full path to the folder containing the set of \'dat\' files.
 
-        prefix : string
+        prefix : str
             The file name prefix on each file. The data files are stored
             as \<prefix\>_node1.dat.
 
-        network : OpenPNM Network Object
+        network : GenericNetwork
             If given then the data will be loaded on it and returned.  If not
             given, a Network will be created and returned.
 
@@ -340,7 +340,7 @@ class Statoil(GenericIO):
 
         Parameters
         ----------
-        network : OpenPNM Network object
+        network : GenericNetwork
             The network to which the reservoir pore should be added
         pores : array_like
             The pores to which the reservoir pore should be connected to

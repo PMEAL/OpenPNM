@@ -30,9 +30,9 @@ class IonicConduction(ReactiveTransport):
 
     Parameters
     ----------
-    network : OpenPNM Network object
+    network : GenericNetwork
         The network on which this algorithm operates
-    name : string, optional
+    name : str, optional
         A unique name to give the object for easier identification.  If not
         given, one is generated.
     """

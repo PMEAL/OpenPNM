@@ -24,7 +24,7 @@ def fcc(shape, spacing=1, mode='kdtree'):
     spacing : array_like or float
         The size of a unit cell in each direction. If an scalar is given it is
         applied in all 3 directions.
-    mode : string
+    mode : str
         Dictate how neighbors are found.  Options are:
 
         'kdtree'

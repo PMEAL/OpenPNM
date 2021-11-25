@@ -18,7 +18,7 @@ class PNFlow:
 
         Parameters
         ----------
-        prefix : string
+        prefix : str
             The prefix of the filenames (i.e. 'prefix_node1.dat')
 
         Notes

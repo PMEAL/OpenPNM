@@ -46,15 +46,15 @@ class VTK(GenericIO):
 
         Parameters
         ----------
-        network : OpenPNM Network Object
+        network : GenericNetwork
             The Network containing the data to be written
         phases : list, optional
             A list containing OpenPNM Phase object(s) containing data to be
             written
-        filename : string, optional
+        filename : str, optional
             Filename to write data.  If no name is given the file is named
             after the network
-        delim : string
+        delim : str
             Specify which character is used to delimit the data names.  The
             default is ' | ' which creates a nice clean output in the Paraview
             pipeline viewer (e.g. net | property | pore | diameter)
@@ -154,7 +154,7 @@ class VTK(GenericIO):
 
         Parameters
         ----------
-        filename : string (optional)
+        filename : str (optional)
             The name of the file containing the data to import. The formatting
             of this file is outlined below.
         project : OpenPNM Project object

@@ -146,9 +146,9 @@ def cones_and_cylinders(
         Geometry object which this model is associated with. This controls
         the length of the calculated array, and also provides access to
         other necessary properties.
-    pore_diameter : string
+    pore_diameter : str
         Dictionary key of the pore diameter values.
-    throat_diameter : string
+    throat_diameter : str
         Dictionary key of the throat diameter values.
 
     Returns

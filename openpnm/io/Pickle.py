@@ -47,7 +47,7 @@ class Pickle(GenericIO):
 
         Parameters
         ----------
-        filename : string or path object
+        filename : str or path object
             The name of the file containing the object to open. Can be a
             relative or absolute path, and can be a string or path object such
             as that produced by ``pathlib``.
@@ -81,7 +81,7 @@ class Pickle(GenericIO):
         ----------
         project : OpenPNM Project
             The project to save
-        filename : string
+        filename : str
             The filename to save the file
         """
         if filename == '':
@@ -100,7 +100,7 @@ class Pickle(GenericIO):
 
         Parameters
         ----------
-        filename : string
+        filename : str
             The filename to save the file
         """
         if filename == '':
@@ -121,7 +121,7 @@ class Pickle(GenericIO):
 
         Parameters
         ----------
-        filename : string or path object
+        filename : str or path object
             The name of the file to load
         overwrite : boolean
             A flag to indicate if the current Workspace should be
@@ -169,7 +169,7 @@ class Pickle(GenericIO):
 
         Parameters
         ----------
-        filename : string or path object
+        filename : str or path object
             The name of the file to load
 
         Returns

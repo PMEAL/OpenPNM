@@ -172,7 +172,7 @@ def plot_coordinates(network,
 
     Parameters
     ----------
-    network : OpenPNM Network Object
+    network : GenericNetwork
         The network whose topological connections to plot.
     pores : array_like (optional)
         The list of pores to plot if only a sub-sample is desired. This is
@@ -625,7 +625,7 @@ def plot_network_jupyter(network,
 
     Parameters
     ----------
-    network : OpenPNM Network object
+    network : GenericNetwork
         The network to visualize
     node_color : ndarray
         An array of values used for coloring the pores. If not given, the
@@ -837,7 +837,7 @@ def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200):
 def generate_voxel_image(network, pore_shape="sphere", throat_shape="cylinder",
                          max_dim=None, rtol=0.1):
     r"""
-    Generate a voxel image from an OpenPNM network object
+    Generate a voxel image from an GenericNetwork
 
     Parameters
     ----------

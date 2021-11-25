@@ -9,10 +9,10 @@ logger = logging.getLogger(__name__)
 class PorosimetrySettings:
     r"""
     %(OrdinaryPercolationSettings.parameters)s
-    pore_partial_filling : string
+    pore_partial_filling : str
         The name of the model used to determine partial pore filling as
         a function of applied pressure.
-    throat_partial_filling : string
+    throat_partial_filling : str
         The name of the model used to determine partial throat filling as
         a function of applied pressure.
     """
@@ -27,9 +27,9 @@ class Porosimetry(OrdinaryPercolation):
 
     Parameters
     ----------
-    network : OpenPNM Network object
+    network : GenericNetwork
         The Network upon which this simulation should be run
-    name : string, optional
+    name : str, optional
         An identifying name for the object.  If none is given then one is
         generated.
 
@@ -60,7 +60,7 @@ class Porosimetry(OrdinaryPercolation):
 
         Parameters
         ----------
-        propname : string
+        propname : str
             Dictionary key on the physics object(s) containing the pore
             filling model(s) to apply.
 

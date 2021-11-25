@@ -33,9 +33,9 @@ class MAT(GenericIO):
 
         Parameters
         ----------
-        network : OpenPNM Network Object
+        network : GenericNetwork
 
-        filename : string
+        filename : str
             Desired file name, defaults to network name if not given
 
         phases : list of phase objects ([])
@@ -68,7 +68,7 @@ class MAT(GenericIO):
 
         Parameters
         ----------
-        filename : string (optional)
+        filename : str (optional)
             The name of the file containing the data to import.  The formatting
             of this file is outlined below.
 

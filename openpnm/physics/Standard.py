@@ -11,7 +11,7 @@ class Standard(GenericPhysics):
 
     Parameters
     ----------
-    network : OpenPNM Network object
+    network : GenericNetwork
         The network to which this Physics should be attached
 
     phase : OpenPNM Phase object

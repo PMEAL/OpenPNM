@@ -47,7 +47,7 @@ class BundleOfTubes(Project):
         between different distribution types, instead of things like *mean*
         and *stddev*.
 
-    name : string, optional
+    name : str, optional
         The name to give the Project
 
     """

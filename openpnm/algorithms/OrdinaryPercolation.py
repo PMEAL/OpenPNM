@@ -47,9 +47,9 @@ class OrdinaryPercolation(GenericAlgorithm):
 
     Parameters
     ----------
-    network : OpenPNM Network object
+    network : GenericNetwork
         The Network upon which this simulation should be run
-    name : string, optional
+    name : str, optional
         An identifying name for the object.  If none is given then one is
         generated.
 

@@ -89,7 +89,7 @@ def reduce_coordination(target, z):
 
     Parameters
     ----------
-    target : OpenPNM Network object
+    target : GenericNetwork
         The network whose throats are to be trimmed
     z : scalar
         The desired average coordination number.  It is not possible to specify

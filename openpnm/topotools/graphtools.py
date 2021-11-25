@@ -32,7 +32,7 @@ def find_neighbor_sites(sites, am, flatten=True, include_input=False,
     include_input : boolean
         If ``False`` (default) the input sites will be removed from the result.
 
-    logic : string
+    logic : str
         Specifies logic to filter the resulting list.  Options are:
 
         **'or'** : (default) All neighbors of the input sites.  This is also
@@ -140,7 +140,7 @@ def find_neighbor_bonds(sites, im=None, am=None, flatten=True, logic='or'):
         be slow to generate since it is a Python ``list`` rather than a Numpy
         array.
 
-    logic : string
+    logic : str
         Specifies logic to filter the resulting list.  Options are:
 
         **'or'** : (default) All neighbors of the input sites.  This is also
@@ -255,7 +255,7 @@ def find_connected_sites(bonds, am, flatten=True, logic='or'):
         be slow to generate since it is a Python ``list`` rather than a Numpy
         array.
 
-    logic : string
+    logic : str
         Specifies logic to filter the resulting list.  Options are:
 
         **'or'** : (default) All neighbors of the input bonds.  This is also

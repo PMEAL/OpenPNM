@@ -96,7 +96,7 @@ def cube(
         The Geometry object for which these values are being calculated.
         This controls the length of the calculated array, and also
         provides access to other necessary thermofluid properties.
-    pore_diameter : string
+    pore_diameter : str
         The dictionary key to the pore diameter array.
     throat_cross_sectional_area : str
         The dictionary key to the throat cross sectional area array.

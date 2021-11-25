@@ -22,22 +22,22 @@ class MixedIPSettings:
     Parameters
     ----------
     %(GenericAlgorithmSettings.parameters)s
-    pore_entry_pressure : string
+    pore_entry_pressure : str
         The dictionary key on the Phase object where the pore entry
         pressure values are stored.
-    throat_entry_pressure : string
+    throat_entry_pressure : str
         The dictionary key on the Phase object where the throat entry
         pressure values are stored.
-    snap_off : string
+    snap_off : str
         The dictionary key on the Phase object where the throat snap-off
         pressure values are stored.
     invade_isolated_Ts : boolean
         If ``True``, isolated throats are invaded at the higher invasion
         pressure of their connected pores.
-    late_pore_filling : string
+    late_pore_filling : str
         The name of the model used to determine late pore filling as
         a function of applied pressure.
-    late_throat_filling : string
+    late_throat_filling : str
         The name of the model used to determine late throat filling as
         a function of applied pressure.
 
@@ -94,17 +94,17 @@ class MixedInvasionPercolation(GenericAlgorithm):
             The Phase object containing the physical properties of the invading
             fluid.
 
-        pore_entry_pressure : string
+        pore_entry_pressure : str
             The dictionary key on the Phase object where the pore entry
             pressure values are stored.  The default is
             'pore.entry_pressure'.
 
-        throat_entry_pressure : string
+        throat_entry_pressure : str
             The dictionary key on the Phase object where the throat entry
             pressure values are stored.  The default is
             'throat.entry_pressure'.
 
-        snap_off : string
+        snap_off : str
             The dictionary key on the Phase object where the throat snap-off
             pressure values are stored.
 
@@ -112,11 +112,11 @@ class MixedInvasionPercolation(GenericAlgorithm):
             If True, isolated throats are invaded at the higher invasion
             pressure of their connected pores.
 
-        late_pore_filling : string
+        late_pore_filling : str
             The name of the model used to determine late pore filling as
             a function of applied pressure.
 
-        late_throat_filling : string
+        late_throat_filling : str
             The name of the model used to determine late throat filling as
             a function of applied pressure.
 

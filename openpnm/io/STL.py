@@ -22,12 +22,12 @@ class STL(GenericIO):
 
         Parameters
         ----------
-        network : OpenPNM Network Object.
+        network : GenericNetwork.
             The network containing the desired data.
 
         phases : list of OpenPNM Phase Objects (place holder, default is none).
 
-        filename : string (optional).
+        filename : str (optional).
             The name of the file containing the data to export.
 
         maxsize : a float or a string "auto" (optional).
@@ -36,7 +36,7 @@ class STL(GenericIO):
             float value will be used as a maximum size. Small values result in
             finner meshes, but slower mesh calculations.
 
-        fileformat : string (optional).
+        fileformat : str (optional).
             Default is "STL Format" which corresponds to STL format. Other
             formats such as Gmsh and Fluent are supported (see ngsolve.org).
 

@@ -170,7 +170,7 @@ class Cubic(GenericNetwork):
 
         Parameters
         ----------
-        labels : string or list of strings
+        labels : str or list[str]
             The labels indicating the pores defining each face where
             boundary pores are to be added (e.g. 'left' or
             ['left', 'right'])

@@ -26,7 +26,7 @@ def ispercolating(am, inlets, outlets, mode='site'):
     outlets : array_like
         An array of indices indicating which sites are part of the outlets
 
-    mode : string
+    mode : str
         Indicates which type of percolation to apply, either `'site'` or
         `'bond'`
 
@@ -190,7 +190,7 @@ def find_clusters(network, mask=[], t_labels=False):
 
     Parameters
     ----------
-    network : OpenPNM Network Object
+    network : GenericNetwork
         The network
 
     mask : array_like, boolean
@@ -291,7 +291,7 @@ def find_path(network, pore_pairs, weights=None):
 
     Parameters
     ----------
-    network : OpenPNM Network Object
+    network : GenericNetwork
         The Network object on which the search should be performed
 
     pore_pairs : array_like

@@ -8,7 +8,7 @@ class Water(GenericPhase):
 
     Parameters
     ----------
-    network : OpenPNM Network object
+    network : GenericNetwork
         The Network to which this phase object will be associated.
 
     Examples

@@ -160,7 +160,7 @@ class DelaunayGeometry(GenericGeometry):
 
     Parameters
     ----------
-    name : string
+    name : str
         A unique name for the network
     """
 
@@ -1062,7 +1062,7 @@ class DelaunayGeometry(GenericGeometry):
         face1 : list or array containing pore indices for a face to include in
             calculations.
 
-        parm : string
+        parm : str
             Determines what information is returned:
                 volume, area (_xy, _xz, _yz), length (_x, _y, _z), minmax.
             Default volume.
@@ -1135,7 +1135,7 @@ class VoronoiGeometry(GenericGeometry):
 
     Parameters
     ----------
-    name : string
+    name : str
         A unique name for the network
     """
 

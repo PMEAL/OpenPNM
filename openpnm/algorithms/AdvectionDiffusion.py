@@ -63,7 +63,7 @@ class AdvectionDiffusion(ReactiveTransport):
         ----------
         pores : array_like
             The pore indices where the condition should be applied
-        mode : string, optional
+        mode : str, optional
             Controls how the boundary conditions are applied.  Options are:
 
             'merge' - (Default) Adds supplied boundary conditions to already
@@ -167,4 +167,3 @@ if __name__ == "__main__":
     # import matplotlib.pyplot as plt
     # fig, ax = plt.subplots(1, 1)
     # ax.imshow(ad['pore.concentration'].reshape([10, 10]))
-

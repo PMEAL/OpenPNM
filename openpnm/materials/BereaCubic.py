@@ -21,7 +21,7 @@ class BereaCubic(Project):
         The number of pores along each direction of the domain.  All other
         aspects of this model are prescribed by the code.
 
-    name : string, optional
+    name : str, optional
         The name to give the Project
 
     Notes

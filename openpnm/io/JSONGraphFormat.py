@@ -50,9 +50,9 @@ class JSONGraphFormat(GenericIO):
 
         Parameters
         ----------
-        network : OpenPNM Network Object
+        network : GenericNetwork
 
-        filename : string
+        filename : str
             Desired file name, defaults to network name if not given
         """
 
@@ -117,7 +117,7 @@ class JSONGraphFormat(GenericIO):
 
         Parameters
         ----------
-        filename : string
+        filename : str
             The name of the file containing the data to import.  The formatting
             of this file is outlined below.
 

@@ -24,7 +24,7 @@ class MixedIPCoopSettings:
     Parameters
     ----------
     %(MixedIPSettings.parameters)s
-    cooperative_pore_filling : string
+    cooperative_pore_filling : str
         The name of the model used to determine the meniscus properties
         required for assessing cooperative pore filling.
 
@@ -41,7 +41,7 @@ class MixedInvasionPercolationCoop(MixedInvasionPercolation):
 
     Parameters
     ----------
-    network : OpenPNM Network object
+    network : GenericNetwork
         The Network upon which the invasion should occur.
 
     Notes
@@ -75,17 +75,17 @@ class MixedInvasionPercolationCoop(MixedInvasionPercolation):
             The Phase object containing the physical properties of the invading
             fluid.
 
-        pore_entry_pressure : string
+        pore_entry_pressure : str
             The dictionary key on the Phase object where the pore entry
             pressure values are stored.  The default is
             'pore.entry_pressure'.
 
-        throat_entry_pressure : string
+        throat_entry_pressure : str
             The dictionary key on the Phase object where the throat entry
             pressure values are stored.  The default is
             'throat.entry_pressure'.
 
-        snap_off : string
+        snap_off : str
             The dictionary key on the Phase object where the throat snap-off
             pressure values are stored.
 
@@ -93,15 +93,15 @@ class MixedInvasionPercolationCoop(MixedInvasionPercolation):
             If True, isolated throats are invaded at the higher invasion
             pressure of their connected pores.
 
-        late_pore_filling : string
+        late_pore_filling : str
             The name of the model used to determine late pore filling as
             a function of applied pressure.
 
-        late_throat_filling : string
+        late_throat_filling : str
             The name of the model used to determine late throat filling as
             a function of applied pressure.
 
-        cooperative_pore_filling : string
+        cooperative_pore_filling : str
             The name of the model used to determine the meniscus properties
             required for assessing cooperative pore filling.
         """

@@ -14,7 +14,7 @@ def cylinder(target, throat_length='throat.length',
         The object which this model is associated with. This controls the
         length of the calculated array, and also provides access to other
         necessary properties.
-    throat_length and throat_diameter : strings
+    throat_length and throat_diameter : strs
         The dictionary keys containing the arrays with the throat diameter and
         length values.
 

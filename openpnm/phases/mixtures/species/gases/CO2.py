@@ -8,9 +8,9 @@ class CO2(GenericPhase):
 
     Parameters
     ----------
-    network : OpenPNM Network object
+    network : GenericNetwork
         The network to which this phase object will be attached.
-    name : string, optional
+    name : str, optional
         The name of the phase.  This is useful to keep track of the objects
         throughout the simulation.  The name must be unique to the project.  If
         no name is given, one is generated.

@@ -33,11 +33,11 @@ class MARock(GenericIO):
 
         Parameters
         ----------
-        path : string
+        path : str
             The location of the 'np2th' and 'th2np' files. This can be an
             absolute path or relative to the current working directory.
 
-        network : OpenPNM Network Object
+        network : GenericNetwork
             If an Network object is recieved, this method will add new data to
             it but NOT overwrite anything that already exists.  This can be
             used to append data from different sources.

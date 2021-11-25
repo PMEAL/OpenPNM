@@ -181,7 +181,7 @@ class LabelMixin:
 
         Parameters
         ----------
-        element : string
+        element : str
             Controls whether pore or throat labels are returned.  If empty then
             both are returned (default).
 
@@ -189,7 +189,7 @@ class LabelMixin:
             The pores (or throats) whose labels are sought.  If left empty a
             list containing all pore and throat labels is returned.
 
-        mode : string, optional
+        mode : str, optional
             Controls how the query should be performed.  Only applicable
             when ``pores`` or ``throats`` are specified:
 
@@ -255,7 +255,7 @@ class LabelMixin:
 
         Parameters
         ----------
-        label : string
+        label : str
                 The label to apply to the specified locations
         pores : array_like
             A list of pore indices or a boolean mask of where given label
@@ -263,7 +263,7 @@ class LabelMixin:
         throats : array_like
             A list of throat indices or a boolean mask of where given label
             should be added or removed (see ``mode``)
-        mode : string
+        mode : str
             Controls how the labels are handled.  Options are:
 
             * 'add' (default)
@@ -376,11 +376,11 @@ class LabelMixin:
 
         Parameters
         ----------
-        labels : string or list of strings
+        labels : str or list[str]
             The label(s) whose pores locations are requested.  This argument
             also accepts '*' for wildcard searches.
 
-        mode : string
+        mode : str
             Specifies how the query should be performed.  The options are:
 
             **'or', 'union', 'any'** : (default) Pores with *one or more* of
@@ -456,12 +456,12 @@ class LabelMixin:
 
         Parameters
         ----------
-        labels : string or list of strings
+        labels : str or list[str]
             The throat label(s) whose locations are requested.  If omitted,
             'all' throat inidices are returned.  This argument also accepts
             '*' for wildcard searches.
 
-        mode : string
+        mode : str
             Specifies how the query should be performed.  The options are:
 
             **'or', 'union', 'any'** : (default) Throats with *one or more* of
@@ -532,7 +532,7 @@ class LabelMixin:
         labels : list of strings
             The labels to apply as a filter
 
-        mode : string
+        mode : str
 
             Controls how the filter is applied.  Options include:
 
@@ -607,7 +607,7 @@ class LabelMixin:
         labels : list of strings
             Label of pores to be returned
 
-        mode : string, optional
+        mode : str, optional
             Specifies how the count should be performed.  The options are:
 
             **'or', 'union', 'any'** : (default) Pores with *one or more* of
@@ -673,7 +673,7 @@ class LabelMixin:
             The throat labels that should be included in the count.
             If not supplied, all throats are counted.
 
-        mode : string, optional
+        mode : str, optional
             Specifies how the count should be performed.  The options are:
 
             **'or', 'union', 'any'** : (default) Throats with *one or more* of

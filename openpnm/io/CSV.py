@@ -53,7 +53,7 @@ class CSV(GenericIO):
         phases : list of OpenPNM Phases (optional)
             The Phases whose data should be stored.
 
-        filename : string or path object
+        filename : str or path object
             The name of the file to store the data
 
         Notes
@@ -78,7 +78,7 @@ class CSV(GenericIO):
 
         Parameters
         ----------
-        filename : string (optional)
+        filename : str (optional)
             The name of the file containing the data to import.  The formatting
             of this file is outlined below.
 

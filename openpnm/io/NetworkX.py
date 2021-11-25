@@ -153,7 +153,7 @@ class NetworkX(GenericIO):
 
         Parameters
         ----------
-        network : OpenPNM Network Object
+        network : GenericNetwork
             The OpenPNM Network to be converted to a NetworkX object
 
         Returns
@@ -162,7 +162,7 @@ class NetworkX(GenericIO):
         """
         import networkx as nx
 
-        # Ensure network is an OpenPNM Network object.
+        # Ensure network is an GenericNetwork.
         if not isinstance(network, GenericNetwork):
             raise Exception('Provided network is not an OpenPNM Network.')
 
