@@ -1,10 +1,14 @@
 import os
 import numpy as np
 from pathlib import Path
-from openpnm.utils import logging
+from openpnm.utils import logging, Docorator
+
+
 logger = logging.getLogger(__name__)
+docstr = Docorator()
 
 
+@docstr.dedent
 def gaseous_species_in_water(target, chemical_formula,
                              temperature="throat.temperature"):
     r"""
@@ -12,20 +16,15 @@ def gaseous_species_in_water(target, chemical_formula,
 
     Parameters
     ----------
-    target : OpenPNM MultiPhase object
-        Target object in which data is to be stored.
-
+    %(models.target.parameters)s
     chemical_formula : string
         Chemical formula of the dissolving species.
-
-    temperature : string, optional
-        Dictionary key containing pore temperature values.
-        The default is "pore.temperature".
+    %(models.phase.T)s
 
     Returns
     -------
-    H : numpy ndarray
-        Array containing Henry's law constant (Kpx) [atm/mol-frac]
+    H : ndarray
+        A numpy ndarray containing Henry's law constant (Kpx) [atm/mol-frac]
 
     References
     ----------
