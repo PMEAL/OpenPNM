@@ -10,7 +10,7 @@ How OpenPNM Works
 
 .. csv-table::
    :header: "  ", "  "
-   :widths: 15, 50
+   :widths: 10, 50
 
     |chalkboard|, |a_series_of_tutorials| in the form of Jupyter Notebooks.
 
@@ -19,14 +19,14 @@ How OpenPNM Works
    <a href="https://github.com/PMEAL/OpenPNM/tree/dev/examples/tutorials" target="_blank">A Series of Tutorials</a>
 
 .. |chalkboard| image:: /_static/images/chalkboard.png
-   :width: 300px
+   :width: 200px
 
 Working with Networks
 =====================
 
 .. csv-table::
    :header: "  ", "  "
-   :widths: 15, 50
+   :widths: 10, 50
 
     |netgen|, |how_to_generate_various_networks|
     |netman|, |manipulating_and_altering_networks|
@@ -45,20 +45,20 @@ Working with Networks
    <a href="https://github.com/PMEAL/OpenPNM/tree/dev/examples/notebooks/networks/extraction" target="_blank">Working with Extracted Networks</a>
 
 .. |netgen| image:: https://user-images.githubusercontent.com/14086031/99129769-7f144600-25dc-11eb-95bb-b7176d82b0a0.png
-   :width: 300px
+   :width: 200px
 
 .. |netimp| image:: /_static/images/extracted_berea.png
-   :width: 300px
+   :width: 200px
 
 .. |netman| image:: https://user-images.githubusercontent.com/14086031/99127916-779e6e00-25d7-11eb-954e-d7aa8531e2f1.png
-   :width: 300px
+   :width: 200px
 
 Generating Geometrical Properties
 =================================
 
 .. csv-table::
    :header: "  "
-   :widths: 15, 50
+   :widths: 10, 50
 
    |histogram|, |creating_and_adjusting_geometry|
 
@@ -67,14 +67,14 @@ Generating Geometrical Properties
    <a href="https://github.com/PMEAL/OpenPNM/tree/dev/examples/notebooks/geometry" target="_blank">Creating and Adjusting Geometry</a>
 
 .. |histogram| image:: https://user-images.githubusercontent.com/14086031/99130228-bfc08f00-25dd-11eb-8b1d-33d46593cd4a.jpg
-   :width: 300px
+   :width: 200px
 
 Computing Thermophysical Properties
 ===================================
 
 .. csv-table::
    :header: "  "
-   :widths: 15, 50
+   :widths: 10, 50
 
    |droplet|, |defining_phases_and_computing_properties|
 
@@ -83,14 +83,14 @@ Computing Thermophysical Properties
    <a href="https://github.com/PMEAL/OpenPNM/tree/dev/examples/notebooks/phases" target="_blank">Defining Phases and Computing Properties</a>
 
 .. |droplet| image:: https://user-images.githubusercontent.com/14086031/99123744-cdbae380-25ce-11eb-943e-724d585d19b2.png
-   :width: 300px
+   :width: 200px
 
 Performing Simulations
 ======================
 
 .. csv-table::
    :header: "  ", "  "
-   :widths: 15, 50
+   :widths: 10, 50
 
    |drainage|, |percolation|
    |concdist|, |single_phase_transport|
@@ -130,22 +130,22 @@ Performing Simulations
    <a href="https://github.com/PMEAL/OpenPNM/tree/dev/examples/notebooks/algorithms/general" target="_blank">Solvers and Settings</a>
 
 .. |concdist| image:: https://user-images.githubusercontent.com/14086031/99124050-66516380-25cf-11eb-8014-9da88c8d5bad.png
-   :width: 300px
+   :width: 200px
 
 .. |dispersion| image:: https://user-images.githubusercontent.com/14086031/99127466-630da600-25d6-11eb-9d48-cb7263aa9a4e.png
-   :width: 300px
+   :width: 200px
 
 .. |reldiff| image:: https://user-images.githubusercontent.com/14086031/99130325-09a97500-25de-11eb-9524-8bcf4488f2e0.png
-   :width: 300px
+   :width: 200px
 
 .. |reactdiff| image:: https://user-images.githubusercontent.com/14086031/99127772-20000280-25d7-11eb-995a-1aca3ee97273.png
-   :width: 300px
+   :width: 200px
 
 .. |drainage| image:: https://user-images.githubusercontent.com/14086031/99127602-bed82f00-25d6-11eb-8e5e-17494176464c.png
-   :width: 300px
+   :width: 200px
 
 .. |gears| image:: https://user-images.githubusercontent.com/14086031/99123093-83853280-25cd-11eb-8cd5-30353a36d869.gif
-   :width: 300px
+   :width: 200px
 
 .. |transient| image:: https://user-images.githubusercontent.com/14086031/99130652-e9c68100-25de-11eb-964d-cb0bb68846dc.png
-   :width: 300px
+   :width: 200px
