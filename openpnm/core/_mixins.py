@@ -83,7 +83,7 @@ class LegacyMixin:
             The object corresponding to the indices given in ``pores``
 
         filtered : boolean (default is ``True``)
-            If ``True`` then a ND-array of indices is returned with missing
+            If ``True`` then a ndarray of indices is returned with missing
             indices removed, otherwise a named-tuple containing both the
             ``indices`` and a boolean ``mask`` with ``False`` indicating
             which locations were not found.
@@ -152,7 +152,7 @@ class LabelMixin:
         # Collect list of all pore OR throat labels
         labels = self.keys(mode='labels', element=element)
         labels.sort()
-        labels = np.array(labels)  # Convert to ND-array for following checks
+        labels = np.array(labels)  # Convert to ndarray for following checks
         # Make an 2D array with locations in rows and labels in cols
         arr = np.vstack([self[item][locations] for item in labels]).T
         num_hits = np.sum(arr, axis=0)  # Number of locations with each label

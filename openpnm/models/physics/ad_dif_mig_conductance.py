@@ -7,18 +7,16 @@ import numpy as _np
 __all__ = ["ad_dif_mig"]
 
 
-def ad_dif_mig(
-    target,
-    pore_pressure="pore.pressure",
-    pore_potential="pore.potential",
-    throat_hydraulic_conductance="throat.hydraulic_conductance",
-    throat_diffusive_conductance="throat.diffusive_conductance",
-    throat_valence="throat.valence",
-    pore_temperature="pore.temperature",
-    throat_temperature="throat.temperature",
-    ion="",
-    s_scheme="powerlaw",
-):
+def ad_dif_mig(target,
+               pore_pressure="pore.pressure",
+               pore_potential="pore.potential",
+               throat_hydraulic_conductance="throat.hydraulic_conductance",
+               throat_diffusive_conductance="throat.diffusive_conductance",
+               throat_valence="throat.valence",
+               pore_temperature="pore.temperature",
+               throat_temperature="throat.temperature",
+               ion="",
+               s_scheme="powerlaw"):
     r"""
     Calculate the advective-diffusive-migrative conductance of conduits
     in network, where a conduit is ( 1/2 pore - full throat - 1/2 pore ).
@@ -26,27 +24,27 @@ def ad_dif_mig(
 
     Parameters
     ----------
-    target : OpenPNM Object
+    target : GenericPhysics
         The object which this model is associated with. This controls the
         length of the calculated array, and also provides access to other
         necessary properties.
-    pore_pressure : string
+    pore_pressure : str
         Dictionary key of the pore pressure values
-    pore_potential : string
+    pore_potential : str
         Dictionary key of the pore potential values
-    throat_hydraulic_conductance : string
+    throat_hydraulic_conductance : str
         Dictionary key of the throat hydraulic conductance values
-    throat_diffusive_conductance : string
+    throat_diffusive_conductance : str
         Dictionary key of the throat diffusive conductance values
-    throat_valence : string
+    throat_valence : str
         Dictionary key of the throat ionic species valence values
-    pore_temperature : string
+    pore_temperature : str
         Dictionary key of the pore temperature values
-    throat_temperature : string
+    throat_temperature : str
         Dictionary key of the throat temperature values
-    ion : string
+    ion : str
         Name of the ionic species
-    s_scheme : string
+    s_scheme : str
         Name of the space discretization scheme to use
 
     Returns
@@ -57,17 +55,17 @@ def ad_dif_mig(
 
     Notes
     -----
-    (1) This function requires that all the necessary phase properties already
+    This function requires that all the necessary phase properties already
     be calculated.
 
-    (2) This function calculates the specified property for the *entire*
+    This function calculates the specified property for the *entire*
     network then extracts the values for the appropriate throats at the end.
 
-    (3) This function assumes cylindrical throats with constant cross-section
+    This function assumes cylindrical throats with constant cross-section
     area. Corrections for different shapes and variable cross-section area can
     be imposed by passing the proper conduit_shape_factors argument.
 
-    (4) shape_factor depends on the physics of the problem, i.e. diffusion-like
+    'shape_factor' depends on the physics of the problem, i.e. diffusion-like
     processes and fluid flow need different shape factors.
 
     """

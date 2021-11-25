@@ -353,7 +353,7 @@ def find_connecting_bonds(sites, am):
 
     Notes
     -----
-    The returned list can be converted to an ND-array, which will convert
+    The returned list can be converted to an ndarray, which will convert
     the ``None`` values to ``nan``.  These can then be found using
     ``numpy.isnan``.
 

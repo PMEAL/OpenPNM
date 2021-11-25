@@ -14,7 +14,7 @@ def generic_electrical(target,
     Calculate the electrical conductance of conduits in network, where a
     conduit is ( 1/2 pore - full throat - 1/2 pore ). See the notes section.
 
-    Parameterss
+    Parameters
     ----------
     target : GenericPhysics
         The object which this model is associated with. This controls the
@@ -53,7 +53,7 @@ def series_resistors(target,
     Calculate the electrical conductance of conduits in network, where a
     conduit is ( 1/2 pore - full throat - 1/2 pore ). See the notes section.
 
-    Parameterss
+    Parameters
     ----------
     target : GenericPhysics
         The object which this model is associated with. This controls the

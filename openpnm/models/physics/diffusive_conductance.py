@@ -132,7 +132,7 @@ def mixed_diffusion(target,
     be calculated.
 
     """
-    # Fetch openpnm objects
+    # Fetch GenericPhysicss
     network = target.network
     phase = target.project.find_phase(target)
 
@@ -205,7 +205,7 @@ def taylor_aris_diffusion(target,
     already calculated.
 
     """
-    # Fetch openpnm objects
+    # Fetch GenericPhysicss
     network = target.network
     domain = target._domain
     throats = domain.throats(target.name)
@@ -269,7 +269,7 @@ def multiphase_diffusion(target,
     information.
 
     """
-    # Fetch openpnm objects
+    # Fetch GenericPhysicss
     network = target.network
     throats = target.throats(to_global=True)
     phase = target.project.find_phase(target)

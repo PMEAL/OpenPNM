@@ -50,22 +50,20 @@ def equivalent_diameter(target, throat_area='throat.area',
 
     Parameters
     ----------
-    target : OpenPNM Object
+    target : GenericGeometry
         The object which this model is associated with. This controls the
         length of the calculated array, and also provides access to other
         necessary properties.
-
-    thorat_area : string
+    thorat_area : str
         The dictionary key to the throat area values
-
-    throat_shape : string
+    throat_shape : str
         The shape cross-sectional shape of the throat to assume when
         back-calculating from the area.  Options are 'circle' (default) or
         'square'.
 
     Returns
     -------
-    value : NumPy ndarray
+    value : ndarray
         Array containing throat equivalent diameter.
 
     """

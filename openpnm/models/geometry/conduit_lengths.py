@@ -3,21 +3,15 @@ from ._misc import _get_conduit_diameters
 from .throat_length import ctc as _ctc
 
 __all__ = [
-    "spheres_and_cylinders",
-    "circles_and_rectangles",
-    "cones_and_cylinders",
-    "trapezoids_and_rectangles",
-    "pyramids_and_cuboids",
-    "cubes_and_cuboids",
+    "spheres_and_cylinders", "circles_and_rectangles", "cones_and_cylinders",
+    "trapezoids_and_rectangles", "pyramids_and_cuboids", "cubes_and_cuboids",
     "squares_and_rectangles"
 ]
 
 
-def spheres_and_cylinders(
-    target,
-    pore_diameter="pore.diameter",
-    throat_diameter="throat.diameter",
-):
+def spheres_and_cylinders(target,
+                          pore_diameter="pore.diameter",
+                          throat_diameter="throat.diameter"):
     r"""
     Calculates conduit lengths in the network assuming pores are spheres
     and throats are cylinders.
@@ -40,6 +34,7 @@ def spheres_and_cylinders(
     ndarray
         Array (Nt by 3) containing conduit lengths' values for conduits in
         the given geometry object. The array is formatted as:
+
             [pore1, throat, pore2].T
 
     """
@@ -63,11 +58,9 @@ def spheres_and_cylinders(
     return _np.vstack((L1, Lt, L2)).T
 
 
-def circles_and_rectangles(
-    target,
-    pore_diameter="pore.diameter",
-    throat_diameter="throat.diameter"
-):
+def circles_and_rectangles(target,
+                           pore_diameter="pore.diameter",
+                           throat_diameter="throat.diameter"):
     r"""
     Calculates conduit lengths in the network assuming pores are circles
     and throats are rectangles.
@@ -90,6 +83,7 @@ def circles_and_rectangles(
     ndarray
         Array (Nt by 3) containing conduit lengths' values for conduits in
         the given geometry object. The array is formatted as:
+
             [pore1, throat, pore2].T
 
     Notes
@@ -98,18 +92,14 @@ def circles_and_rectangles(
     symmetry.
 
     """
-    return spheres_and_cylinders(
-        target=target,
-        pore_diameter=pore_diameter,
-        throat_diameter=throat_diameter
-    )
+    return spheres_and_cylinders(target=target,
+                                 pore_diameter=pore_diameter,
+                                 throat_diameter=throat_diameter)
 
 
-def cones_and_cylinders(
-    target,
-    pore_diameter="pore.diameter",
-    throat_diameter="throat.diameter"
-):
+def cones_and_cylinders(target,
+                        pore_diameter="pore.diameter",
+                        throat_diameter="throat.diameter"):
     r"""
     Calculates conduit lengths in the network assuming pores are cones
     and throats are cylinders.
@@ -132,6 +122,7 @@ def cones_and_cylinders(
     ndarray
         Array (Nt by 3) containing conduit lengths' values for conduits in
         the given geometry object. The array is formatted as:
+
             [pore1, throat, pore2].T
 
     """
@@ -152,11 +143,9 @@ def cones_and_cylinders(
     return _np.vstack((L1, Lt, L2)).T
 
 
-def trapezoids_and_rectangles(
-    target,
-    pore_diameter="pore.diameter",
-    throat_diameter="throat.diameter"
-):
+def trapezoids_and_rectangles(target,
+                              pore_diameter="pore.diameter",
+                              throat_diameter="throat.diameter"):
     r"""
     Calculates conduit lengths in the network assuming pores are
     trapezoids and throats are rectangles.
@@ -179,6 +168,7 @@ def trapezoids_and_rectangles(
     ndarray
         Array (Nt by 3) containing conduit lengths' values for conduits in
         the given geometry object. The array is formatted as:
+
             [pore1, throat, pore2].T
 
     Notes
@@ -204,11 +194,9 @@ def trapezoids_and_rectangles(
     return _np.vstack((L1, Lt, L2)).T
 
 
-def pyramids_and_cuboids(
-    target,
-    pore_diameter="pore.diameter",
-    throat_diameter="throat.diameter"
-):
+def pyramids_and_cuboids(target,
+                         pore_diameter="pore.diameter",
+                         throat_diameter="throat.diameter"):
     r"""
     Calculates conduit lengths in the network assuming pores are truncated
     pyramids and throats are cuboids.
@@ -231,19 +219,18 @@ def pyramids_and_cuboids(
     ndarray
         Array (Nt by 3) containing conduit lengths' values for conduits in
         the given geometry object. The array is formatted as:
+
             [pore1, throat, pore2].T
 
     """
-    return cones_and_cylinders(
-        target, pore_diameter=pore_diameter, throat_diameter=throat_diameter
-    )
+    return cones_and_cylinders(target,
+                               pore_diameter=pore_diameter,
+                               throat_diameter=throat_diameter)
 
 
-def cubes_and_cuboids(
-    target,
-    pore_diameter="pore.diameter",
-    throat_diameter="throat.diameter"
-):
+def cubes_and_cuboids(target,
+                      pore_diameter="pore.diameter",
+                      throat_diameter="throat.diameter"):
     r"""
     Calculates conduit lengths in the network assuming pores are cubes
     and throats are cuboids.
@@ -266,6 +253,7 @@ def cubes_and_cuboids(
     ndarray
         Array (Nt by 3) containing conduit lengths' values for conduits in
         the given geometry object. The array is formatted as:
+
             [pore1, throat, pore2].T
 
     """
@@ -286,11 +274,9 @@ def cubes_and_cuboids(
     return _np.vstack((L1, Lt, L2)).T
 
 
-def squares_and_rectangles(
-    target,
-    pore_diameter="pore.diameter",
-    throat_diameter="throat.diameter"
-):
+def squares_and_rectangles(target,
+                           pore_diameter="pore.diameter",
+                           throat_diameter="throat.diameter"):
     r"""
     Calculates conduit lengths in the network assuming pores are squares
     and throats are rectangles.
@@ -313,6 +299,7 @@ def squares_and_rectangles(
     ndarray
         Array (Nt by 3) containing conduit lengths' values for conduits in
         the given geometry object. The array is formatted as:
+
             [pore1, throat, pore2].T
 
     Notes
@@ -321,14 +308,13 @@ def squares_and_rectangles(
     symmetry.
 
     """
-    return cubes_and_cuboids(
-        target, pore_diameter=pore_diameter, throat_diameter=throat_diameter
-    )
+    return cubes_and_cuboids(target,
+                             pore_diameter=pore_diameter,
+                             throat_diameter=throat_diameter)
 
 
 # Dealing with errors and exceptions
 def _raise_incompatible_data():
     raise Exception(
         "'spheres_and_cylinders' can only be applied when throat diameter is"
-        " smaller than that of adjacent pores."
-    )
+        " smaller than that of adjacent pores.")

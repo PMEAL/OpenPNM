@@ -9,24 +9,22 @@ def antoine(target, A, B, C, temperature='pore.temperature'):
 
     Parameters
     ----------
-    target : OpenPNM Object
+    target : GenericPhase
         The object for which these values are being calculated.  This
         controls the length of the calculated array, and also provides
         access to other necessary thermofluid properties.
-
     A, B, C :  scalars
         Antoine vapor pressure coefficients for pure compounds. Since virtually
         all Antoine coefficients are reported for units of mmHg and C for
         historical reaons, this method assumes these A, B and C values are for
         mmHg and C, but converts all properties internally to return Pascals.
-
-    temperature : string
+    temperature : str
         The dictionary key containing the phase temperature values in Kelvin
         [K].  Can be either pore or throat values.
 
     Returns
     -------
-    value : NumPy ndarray
+    value : ndarray
         Array containing vapor pressure values [Pa]
 
     [1] Antoine, C. (1888), Vapor Pressure: a new relationship between pressure
@@ -46,20 +44,18 @@ def water(target, temperature='pore.temperature', salinity='pore.salinity'):
 
     Parameters
     ----------
-    target : OpenPNM Object
+    target : GenericPhase
         The object for which these values are being calculated.  This
         controls the length of the calculated array, and also provides
         access to other necessary thermofluid properties.
-
-    temperature : string
+    temperature : str
         The dictionary key containing the phase temperature values
-
-    salinity : string
+    salinity : str
         The dictionary key containing the phase salinity values
 
     Returns
     -------
-    value : NumPy ndarray
+    value : ndarray
         Array containing vapor pressure of water/seawater in [Pa]
 
     Notes

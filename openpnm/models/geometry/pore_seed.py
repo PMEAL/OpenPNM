@@ -23,15 +23,13 @@ def spatially_correlated(target, weights=None, strel=None):
 
     Parameters
     ----------
-    target : OpenPNM Object
+    target : GenericGeometry
         The object which this model is associated with. This controls the
         length of the calculated array, and also provides access to other
         necessary properties.
-
     weights : list of ints, optional
         The [Nx,Ny,Nz] distances (in number of pores) in each direction that
         should be correlated.
-
     strel : array_like, optional (in place of weights)
         The option allows full control over the spatial correlation pattern by
         specifying the structuring element to be used in the convolution.
@@ -49,7 +47,7 @@ def spatially_correlated(target, weights=None, strel=None):
 
     Returns
     -------
-    values : NumPy ndarray
+    values : ndarray
         Array containing pore seed values.
 
     Notes

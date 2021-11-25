@@ -8,19 +8,19 @@ def salinity(target, temperature='pore.temperature',
 
     Parameter
     ---------
-    target : OpenPNM Object
+    target : GenericPhase
         The object for which these values are being calculated.  This
         controls the length of the calculated array, and also provides
         access to other necessary thermofluid properties.
-    temperature : string
+    temperature : str
         The dictionary key containing the temperature values in Kelvin.
-    concentration : string
+    concentration : str
         The dictionary key containing the concentration values, in SI units of
         mol/m3.
 
     Returns
     -------
-    salinity : ND-array
+    salinity : ndarray
         The salinity in g of solute per kg of solution.
 
     Notes
@@ -57,14 +57,15 @@ def mole_weighted_average(target, prop):
         The object for which these values are being calculated.  This
         controls the length of the calculated array, and also provides
         access to other necessary thermofluid properties.
-    prop : string
+    prop : str
         The dictionary key to the property to be averaged.
 
     Returns
     -------
-    vals : ND-array
-        An ND-array containing the mole fraction weighted average value of the
+    vals : ndarray
+        An ndarray containing the mole fraction weighted average value of the
         specified property.
+
     """
     comps = target.components.values()
     element = prop.split('.')[0]
@@ -93,17 +94,17 @@ def fuller_diffusivity(target, molecular_weight='pore.molecular_weight',
         The object for which these values are being calculated.  This
         controls the length of the calculated array, and also provides
         access to other necessary thermofluid properties.
-    molecular_weight : string
+    molecular_weight : str
         Dictionary key containing the molecular weight of each species.  The
         default is 'pore.molecular_weight'
-    molar_diffusion_volume : string
+    molar_diffusion_volume : str
         Dictionary key containing the molar diffusion volume of each species.
         This is used by the Fuller correlation.  The default is
         'pore.molar_diffusion_volume'
-    temperature : string
+    temperature : str
         Dictionary key contain the temperature of the mixture.  The default
         is 'pore.temperature'
-    pressure : string
+    pressure : str
         Dictionary key contain the pressure of the mixture.  The default
         is 'pore.pressure'.
 
@@ -112,6 +113,7 @@ def fuller_diffusivity(target, molecular_weight='pore.molecular_weight',
     Dij : dict containing ND-arrys
         The dict contains one array for each component, containing the
         diffusion coefficient of that component at each location.
+
     """
     species_A, species_B = target.components.values()
     T = target[temperature]
@@ -145,17 +147,17 @@ def wilke_fuller_diffusivity(
         The object for which these values are being calculated.  This
         controls the length of the calculated array, and also provides
         access to other necessary thermofluid properties.
-    molecular_weight : string
+    molecular_weight : str
         Dictionary key containing the molecular weight of each species.  The
         default is 'pore.molecular_weight'
-    molar_diffusion_volume : string
+    molar_diffusion_volume : str
         Dictionary key containing the molar diffusion volume of each species.
         This is used by the Fuller correlation.  The default is
         'pore.molar_diffusion_volume'
-    temperature : string
+    temperature : str
         Dictionary key containing the temperature of the mixture.  The default
         is 'pore.temperature'
-    pressure : string
+    pressure : str
         Dictionary key containing the pressure of the mixture.  The default
         is 'pore.pressure'
 
@@ -170,6 +172,7 @@ def wilke_fuller_diffusivity(
     Fairbanks DF and CR Wilke, Diffusion Coefficients in Multicomponent
     Gas Mixtures. Industrial & Engineering Chemistry, 42(3), p471–475 (1950).
     `DOI: 10.1021/ie50483a022 <http://doi.org/10.1021/ie50483a022>`_
+
     """
     comps = list(target.components.values())
     values = {}

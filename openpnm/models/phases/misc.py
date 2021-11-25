@@ -8,20 +8,17 @@ def mix_and_match(target, prop, phases, occupancy):
 
     Parameters
     ----------
-    target : OpenPNM Object
+    target : GenericPhase
         The object which this model is associated with. This controls the
         length of the calculated array, and also provides access to other
         necessary properties.
-
-    prop : string
+    prop : str
         The dictionary key to the array containing the pore/throat property to
         be used in the calculation.
-
     phases : list
         List of OpenPNM phase objects over which the given `prop` is to be
         averaged out.
-
-    occupancy : string
+    occupancy : str
         The dictionary key to the array containing the occupancy associated
         with each of the given ``phases``.
 

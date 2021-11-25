@@ -12,17 +12,16 @@ def sphere(target, pore_diameter='pore.diameter'):
 
     Parameters
     ----------
-    target : OpenPNM Object
+    target : GenericGeometry
         The object which this model is associated with. This controls
         the length of the calculated array, and also provides access to other
         necessary geometric properties.
-
-    pore_diameter : string
+    pore_diameter : str
         The dictionary key of the pore diameter values
 
     Returns
     -------
-    value : NumPy ndarray
+    value : ndarray
         Array containing pore volume values.
 
     """
@@ -35,17 +34,16 @@ def cube(target, pore_diameter='pore.diameter'):
 
     Parameters
     ----------
-    target : OpenPNM Object
+    target : GenericGeometry
         The object which this model is associated with. This controls
         the length of the calculated array, and also provides access to other
         necessary geometric properties.
-
-    pore_diameter : string
+    pore_diameter : str
         The dictionary key of the pore diameter values
 
     Returns
     -------
-    value : NumPy ndarray
+    value : ndarray
         Array containing pore volume values.
 
     """
@@ -58,12 +56,11 @@ def circle(target, pore_diameter='pore.diameter'):
 
     Parameters
     ----------
-    target : OpenPNM Object
+    target : GenericGeometry
         The object which this model is associated with. This controls
         the length of the calculated array, and also provides access to other
         necessary geometric properties.
-
-    pore_diameter : string
+    pore_diameter : str
         The dictionary key of the pore diameter values
 
     """
@@ -76,12 +73,11 @@ def square(target, pore_diameter='pore.diameter'):
 
     Parameters
     ----------
-    target : OpenPNM Object
+    target : GenericGeometry
         The object which this model is associated with. This controls
         the length of the calculated array, and also provides access to other
         necessary geometric properties.
-
-    pore_diameter : string
+    pore_diameter : str
         The dictionary key of the pore diameter values
 
     """
@@ -97,20 +93,18 @@ def effective(target, pore_volume='pore.volume',
 
     Parameters
     ----------
-    target : OpenPNM Object
+    target : GenericGeometry
         The object which this model is associated with. This controls
         the length of the calculated array, and also provides access to other
         necessary geometric properties.
-
-    pore_volume : string
+    pore_volume : str
         The dictionary key of the pore volume values
-
-    throat_volume : string
+    throat_volume : str
         The dictionary key of the throat volume values
 
     Returns
     -------
-    value : NumPy ndarray
+    value : ndarray
         Array containing pore volume values.
 
     """

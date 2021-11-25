@@ -473,7 +473,7 @@ class GenericNetwork(ParamMixin, Base, ModelsMixin, LabelMixin):
 
         Notes
         -----
-        The returned list can be converted to an ND-array, which will
+        The returned list can be converted to an ndarray, which will
         convert the ``None`` values to ``nan``. These can then be found
         using ``numpy.isnan``.
 
@@ -811,7 +811,7 @@ class GenericNetwork(ParamMixin, Base, ModelsMixin, LabelMixin):
         # Remove inputs if necessary
         if include_input is False:
             Pn = Pn[~np.in1d(Pn, pores)]
-        # Convert list of lists to a list of nd-arrays
+        # Convert list of lists to a list of ndarrays
         if flatten is False:
             if len(Pn) == 0:  # Deal with no nearby neighbors
                 Pn = [np.array([], dtype=np.int64) for i in pores]

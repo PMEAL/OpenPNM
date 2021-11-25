@@ -14,20 +14,20 @@ def from_neighbor_throats(target, prop, mode='min', ignore_nans=True):
 
     Parameters
     ----------
-    target : OpenPNM Object
+    target : Base
         The object which this model is associated with. This controls the
         length of the calculated array, and also provides access to other
         necessary properties.
-    prop : string
+    prop : str
         The dictionary key of the array containing the throat property to be
         used in the calculation.
-    mode : string
+    mode : str
         Controls how the pore property is calculated.  Options are 'min',
         'max' and 'mean'.
 
     Returns
     -------
-    value : ND-array
+    value : ndarray
         Array containing customized values based on those of adjacent throats.
 
     """
@@ -67,14 +67,14 @@ def from_neighbor_pores(target, prop, mode='min', ignore_nans=True):
 
     Parameters
     ----------
-    target : OpenPNM Object
+    target : Base
         The object which this model is associated with. This controls the
         length of the calculated array, and also provides access to other
         necessary properties.
-    prop : string
+    prop : str
         The dictionary key to the array containing the pore property to be
         used in the calculation.
-    mode : string
+    mode : str
         Controls how the throat property is calculated.  Options are 'min',
         'max' and 'mean'.
     ignore_nans : boolean (default is ``True``)
@@ -82,7 +82,7 @@ def from_neighbor_pores(target, prop, mode='min', ignore_nans=True):
 
     Returns
     -------
-    value : ND-array
+    value : ndarray
         Array containing customized values based on those of adjacent pores.
 
     """

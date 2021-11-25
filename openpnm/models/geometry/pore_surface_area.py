@@ -29,7 +29,7 @@ def sphere(
 
     Returns
     -------
-    value : NumPy ndarray
+    value : ndarray
         Array containing pore surface area values.
 
     """
@@ -68,7 +68,7 @@ def circle(
 
     Returns
     -------
-    value : NumPy ndarray
+    value : ndarray
         Array containing pore surface area values.
 
     """
@@ -105,7 +105,7 @@ def cube(
 
     Returns
     -------
-    value : NumPy ndarray
+    value : ndarray
         Array containing pore surface area values.
 
     """
@@ -141,7 +141,7 @@ def square(
 
     Returns
     -------
-    value : NumPy ndarray
+    value : ndarray
         Array containing pore surface area values.
 
     """

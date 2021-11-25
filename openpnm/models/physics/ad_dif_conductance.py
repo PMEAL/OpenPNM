@@ -1,4 +1,4 @@
-r"""
+"""
 Pore-scale models for calculating the advective-diffusive conductance of
 conduits.
 """
@@ -16,7 +16,7 @@ def ad_dif(target,
     Calculates the advective-diffusive conductance of conduits in network.
 
     A conduit is defined as ( 1/2 pore - full throat - 1/2 pore ). See the
-    notes section.
+    Notes section.
 
     Parameters
     ----------
@@ -26,12 +26,12 @@ def ad_dif(target,
         access to other necessary properties.
     pore_pressure : str
         Dictionary key of the pore pressure values
-   throat_hydraulic_conductance : str
-       Dictionary key of the throat hydraulic conductance values
-   throat_diffusive_conductance : str
-       Dictionary key of the throat diffusive conductance values
-   s_scheme : str
-       Name of the space discretization scheme to use
+    throat_hydraulic_conductance : str
+        Dictionary key of the throat hydraulic conductance values
+    throat_diffusive_conductance : str
+        Dictionary key of the throat diffusive conductance values
+    s_scheme : str
+        Name of the space discretization scheme to use
 
     Returns
     -------

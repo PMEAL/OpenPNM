@@ -10,21 +10,19 @@ def cylinder(target, throat_diameter='throat.diameter',
 
     Parameters
     ----------
-    target : OpenPNM Object
+    target : GenericGeometry
         The object which this model is associated with. This controls the
         length of the calculated array, and also provides access to other
         necessary properties.
-
-    throat_diameter : string
-        Dictionary key to the throat diameter array.  Default is
+    throat_diameter : str
+        Dictionary key to the throat diameter array. Default is
         'throat.diameter'.
-
-    throat_length : string
-        Dictionary key to the throat length array.  Default is 'throat.length'.
+    throat_length : str
+        Dictionary key to the throat length array. Default is 'throat.length'.
 
     Returns
     -------
-    value : NumPy ndarray
+    value : ndarray
         Array containing throat surface area values.
 
     """
@@ -38,21 +36,19 @@ def cuboid(target, throat_diameter='throat.diameter',
 
     Parameters
     ----------
-    target : OpenPNM Object
+    target : GenericGeometry
         The object which this model is associated with. This controls the
         length of the calculated array, and also provides access to other
         necessary properties.
-
-    throat_diameter : string
+    throat_diameter : str
         Dictionary key to the throat diameter array.  Default is
         'throat.diameter'.
-
-    throat_length : string
+    throat_length : str
         Dictionary key to the throat length array.  Default is 'throat.length'.
 
     Returns
     -------
-    value : NumPy ndarray
+    value : ndarray
         Array containing throat surface area values.
 
     """
@@ -67,21 +63,19 @@ def extrusion(target, throat_perimeter='throat.perimeter',
 
     Parameters
     ----------
-    target : OpenPNM Object
+    target : GenericGeometry
         The object which this model is associated with. This controls the
         length of the calculated array, and also provides access to other
         necessary properties.
-
-    throat_perimeter : string
+    throat_perimeter : str
         Dictionary key to the throat perimeter array.  Default is
         'throat.perimeter'.
-
-    throat_length : string
+    throat_length : str
         Dictionary key to the throat length array.  Default is 'throat.length'.
 
     Returns
     -------
-    value : NumPy ndarray
+    value : ndarray
         Array containing throat surface area values.
 
     """
@@ -96,12 +90,11 @@ def rectangle(target, throat_length='throat.length'):
 
     Parameters
     ----------
-    target : OpenPNM Object
+    target : GenericGeometry
         The object which this model is associated with. This controls the
         length of the calculated array, and also provides access to other
         necessary properties.
-
-    throat_length : string
+    throat_length : str
         Dictionary key to the throat length array.  Default is 'throat.length'.
 
     """

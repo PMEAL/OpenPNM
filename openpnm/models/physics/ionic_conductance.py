@@ -103,7 +103,7 @@ def electroneutrality(target,
     if ions == []:
         raise Exception('List of ions must be provided')
 
-    # Fetch openpnm objects
+    # Fetch GenericPhysicss
     network = target.network
     domain = target._domain
     throats = domain.throats(target.name)

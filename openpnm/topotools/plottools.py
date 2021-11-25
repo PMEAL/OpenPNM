@@ -36,11 +36,11 @@ def plot_connections(network,
         plot.  This makes it possible to combine coordinates and connections,
         and to color throats differently for instance.
     size_by : array_like (optional)
-        An ND-array of throat values (e.g. alg['throat.rate']).  These
+        An ndarray of throat values (e.g. alg['throat.rate']).  These
         values are used to scale the ``linewidth``, so if the lines are too
         thin, then increase ``linewidth``.
     color_by : str or array_like (optional)
-        An ND-array of throat values (e.g. alg['throat.rate']).
+        An ndarray of throat values (e.g. alg['throat.rate']).
     cmap : str or cmap object (optional)
         The matplotlib colormap to use if specfying a throat property
         for ``color_by``
@@ -183,10 +183,10 @@ def plot_coordinates(network,
         This enables the plotting of multiple different sets of pores as
         well as throat connections from ``plot_connections``.
     size_by : str or array_like
-        An ND-array of pore values (e.g. alg['pore.concentration']). These
+        An ndarray of pore values (e.g. alg['pore.concentration']). These
         values are normalized by scaled by ``markersize``.
     color_by : str or array_like
-        An ND-array of pore values (e.g. alg['pore.concentration']).
+        An ndarray of pore values (e.g. alg['pore.concentration']).
     cmap : str or cmap object
         The matplotlib colormap to use if specfying a pore property
         for ``color_by``

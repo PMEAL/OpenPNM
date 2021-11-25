@@ -11,7 +11,7 @@ __all__ = [
     'normal',
     'generic_distribution',
     'match_histogram',
-    ]
+]
 
 
 def random(target, element, seed=None, num_range=[0, 1]):
@@ -20,23 +20,21 @@ def random(target, element, seed=None, num_range=[0, 1]):
 
     Parameters
     ----------
-    target : OpenPNM Object
+    target : Base
         The object which this model is associated with. This controls the
         length of the calculated array, and also provides access to other
         necessary properties.
-
     seed : int
         The starting seed value to send to Scipy's random number generator.
         The default is None, which means different distribution is returned
         each time the model is run.
-
     num_range : list
         A two element list indicating the low and high end of the returned
         numbers.
 
     Returns
     -------
-    values : NumPy ndarray
+    values : ndarray
         Array containing uniformly-distributed random numbers.
 
     """
@@ -55,31 +53,27 @@ def weibull(target, seeds, shape, scale, loc):
 
     Parameters
     ----------
-    target : OpenPNM Object
+    target : Base
         The object which this model is associated with. This controls the
         length of the calculated array, and also provides access to other
         necessary properties.
-
-    seeds : string, optional
+    seeds : str, optional
         The dictionary key on the Geometry object containing random seed values
         (between 0 and 1) to use in the statistical distribution.
-
     shape : float
         This controls the skewness of the distribution, with 'shape' < 1 giving
         values clustered on the low end of the range with a long tail, and
         'shape' > 1 giving a more symmetrical distribution.
-
     scale : float
         This controls the width of the distribution with most of values falling
         below this number.
-
     loc : float
         Applies an offset to the distribution such that the smallest values are
         above this number.
 
     Returns
     -------
-    values : NumPy ndarray
+    values : ndarray
         Array containing random numbers based on Weibull distribution.
 
     Examples
@@ -109,25 +103,22 @@ def normal(target, seeds, scale, loc):
 
     Parameters
     ----------
-    target : OpenPNM Object
+    target : Base
         The object with which this function as associated.  This argument
         is required to (1) set number of values to generate (geom.Np or
         geom.Nt) and (2) provide access to other necessary values
         (i.e. geom['pore.seed']).
-
-    seeds : string, optional
+    seeds : str, optional
         The dictionary key on the Geometry object containing random seed values
         (between 0 and 1) to use in the statistical distribution.
-
     scale : float
         The standard deviation of the Normal distribution
-
     loc : float
         The mean of the Normal distribution
 
     Returns
     -------
-    values : NumPy ndarray
+    values : ndarray
         Array containing normally distributed random numbers.
 
     Examples
@@ -159,22 +150,20 @@ def generic_distribution(target, seeds, func):
 
     Parameters
     ----------
-    target : OpenPNM Object
+    target : Base
         The object which this model is associated with. This controls the
         length of the calculated array, and also provides access to other
         necessary properties.
-
-    seeds : string, optional
+    seeds : str, optional
         The dictionary key on the Geometry object containing random seed values
         (between 0 and 1) to use in the statistical distribution.
-
     func : object
         An 'rv_frozen' object from the Scipy.stats library with all of the
         parameters pre-specified.
 
     Returns
     -------
-    values : NumPy ndarray
+    values : ndarray
         Array containing random numbers based on given ppf.
 
     Examples
@@ -214,7 +203,7 @@ def match_histogram(target, bin_centers, bin_heights, element='pore'):
 
     Parameters
     ----------
-    target : OpenPNM object
+    target : Base
         The object for which values are to be generated
     bin_centers : array_like
         The x-axis of the histogram, such as pore sizes

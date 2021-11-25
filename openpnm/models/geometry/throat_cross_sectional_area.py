@@ -9,17 +9,16 @@ def cylinder(target, throat_diameter='throat.diameter'):
 
     Parameters
     ----------
-    target : OpenPNM Object
+    target : GenericGeometry
         The object which this model is associated with. This controls the
         length of the calculated array, and also provides access to other
         necessary properties.
-
-    throat_diameter : string
+    throat_diameter : str
         Dictionary key of the throat diameter values
 
     Returns
     -------
-    value : NumPy ndarray
+    value : ndarray
         Array containing throat cross-sectional area values.
 
     """
@@ -34,17 +33,16 @@ def cuboid(target, throat_diameter='throat.diameter'):
 
     Parameters
     ----------
-    target : OpenPNM Object
+    target : GenericGeometry
         The object which this model is associated with. This controls the
         length of the calculated array, and also provides access to other
         necessary properties.
-
-    throat_diameter : string
+    throat_diameter : str
         Dictionary key of the throat diameter values
 
     Returns
     -------
-    value : NumPy ndarray
+    value : ndarray
         Array containing throat cross-sectional area values.
 
     """
@@ -59,12 +57,11 @@ def rectangle(target, throat_diameter='throat.diameter'):
 
     Parameters
     ----------
-    target : OpenPNM Object
+    target : GenericGeometry
         The object which this model is associated with. This controls the
         length of the calculated array, and also provides access to other
         necessary properties.
-
-    throat_diameter : string
+    throat_diameter : str
         Dictionary key of the throat diameter values
 
     """

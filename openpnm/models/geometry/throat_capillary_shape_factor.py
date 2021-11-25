@@ -14,20 +14,18 @@ def compactness(target, throat_perimeter='throat.perimeter',
 
     Parameters
     ----------
-    target : OpenPNM Object
+    target : GenericGeometry
         The object which this model is associated with. This controls the
         length of the calculated array, and also provides access to other
         necessary properties.
-
-    throat_perimeter : string
+    throat_perimeter : str
         The dictionary key of the array containing the throat perimeter values.
-
-    throat_area : string
+    throat_area : str
         The dictionary key of the array containing the throat area values.
 
     Returns
     -------
-    alpha : NumPy ndarray
+    alpha : ndarray
         Array containing throat compactness values.
 
     References
@@ -72,20 +70,18 @@ def mason_morrow(target, throat_perimeter='throat.perimeter',
 
     Parameters
     ----------
-    target : OpenPNM Object
+    target : GenericGeometry
         The object which this model is associated with. This controls the
         length of the calculated array, and also provides access to other
         necessary properties.
-
-    throat_perimeter : string
+    throat_perimeter : str
         The dictionary key of the array containing the throat perimeter values.
-
-    throat_area : string
+    throat_area : str
         The dictionary key of the array containing the throat area values.
 
     Returns
     -------
-    value : NumPy ndarray
+    value : ndarray
         Array containing throat shape factor values.
 
     References
@@ -113,23 +109,20 @@ def jenkins_rao(target, throat_perimeter='throat.perimeter',
 
     Parameters
     ----------
-    target : OpenPNM Object
+    target : GenericGeometry
         The object which this model is associated with. This controls the
         length of the calculated array, and also provides access to other
         necessary properties.
-
-    throat_perimeter : string
+    throat_perimeter : str
         The dictionary key of the array containing the throat perimeter values.
-
-    throat_area : string
+    throat_area : str
         The dictionary key of the array containing the throat area values.
-
-    throat_diameter : string
+    throat_diameter : str
         The dictionary key of the array containing the throat diameter values.
 
     Returns
     -------
-    value : NumPy ndarray
+    value : ndarray
         Array containing throat capillary pressure values.
 
     References
