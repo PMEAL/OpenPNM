@@ -738,7 +738,9 @@
                     <span class="n">filetype</span> <span class="o">=</span> <span class="n">temp</span><span class="p">[</span><span class="n">filetype</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;File type not given&#39;</span><span class="p">)</span>
-
+        <span class="n">temp</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;hdf&quot;</span><span class="p">:</span> <span class="s2">&quot;hdf5&quot;</span><span class="p">,</span> <span class="s2">&quot;xmf&quot;</span><span class="p">:</span> <span class="s2">&quot;xdmf&quot;</span><span class="p">,</span> <span class="s2">&quot;vtp&quot;</span><span class="p">:</span> <span class="s2">&quot;vtk&quot;</span><span class="p">,</span> <span class="s2">&quot;pkl&quot;</span><span class="p">:</span> <span class="s2">&quot;pickle&quot;</span><span class="p">}</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">filetype</span> <span class="ow">in</span> <span class="n">temp</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;File type is not supported&#39;</span><span class="p">)</span>
         <span class="c1"># Fetch correct io class, using case insensitive look-up</span>
         <span class="k">def</span> <span class="nf">igetattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
