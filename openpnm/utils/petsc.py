@@ -30,7 +30,7 @@ class PETScSparseLinearSolver(Base):
     for parallel computing.
 
     """
-    def __init__(self, A, b, settings={}):
+    def __init__(self, A, b, settings=None):
         r"""
         Initialize the sparse system of linear equations.
 

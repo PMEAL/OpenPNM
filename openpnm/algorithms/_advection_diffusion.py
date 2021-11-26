@@ -41,7 +41,7 @@ class AdvectionDiffusion(ReactiveTransport):
     A subclass of ReactiveTransport to simulate advection-diffusion
     """
 
-    def __init__(self, settings={}, **kwargs):
+    def __init__(self, settings=None, **kwargs):
         self.settings = SettingsAttr(AdvectionDiffusionSettings, settings)
         super().__init__(settings=self.settings, **kwargs)
 

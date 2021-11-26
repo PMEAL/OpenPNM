@@ -36,7 +36,7 @@ class GenericAlgorithm(Base, LegacyMixin):
 
     """
 
-    def __init__(self, settings={}, **kwargs):
+    def __init__(self, settings=None, **kwargs):
         self.settings = SettingsAttr(GenericAlgorithmSettings, settings)
         super().__init__(settings=self.settings, **kwargs)
 

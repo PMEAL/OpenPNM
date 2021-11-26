@@ -25,6 +25,6 @@ class TransientAdvectionDiffusion(TransientReactiveTransport,
     of pure diffusion and advection-diffusion problems.
     """
 
-    def __init__(self, phase, settings={}, **kwargs):
+    def __init__(self, phase, settings=None, **kwargs):
         self.settings = SettingsAttr(TransientAdvectionDiffusionSettings, settings)
         super().__init__(phase=phase, settings=self.settings, **kwargs)

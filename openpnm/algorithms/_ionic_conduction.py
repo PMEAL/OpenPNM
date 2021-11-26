@@ -39,7 +39,7 @@ class IonicConduction(ReactiveTransport):
         given, one is generated.
     """
 
-    def __init__(self, settings={}, **kwargs):
+    def __init__(self, settings=None, **kwargs):
         self.settings = SettingsAttr(IonicConductionSettings, settings)
         super().__init__(settings=self.settings, **kwargs)
 

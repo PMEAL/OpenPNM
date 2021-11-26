@@ -53,7 +53,7 @@ class BundleOfTubes(Project):
     """
     def __init__(self, shape, spacing=1.0, length=1.0,
                  psd_params={"distribution": "norm", "loc": None, "scale": None},
-                 name=None, settings={}, **kwargs):
+                 name=None, settings=None, **kwargs):
         import scipy.stats as spst
 
         super().__init__(name=name)

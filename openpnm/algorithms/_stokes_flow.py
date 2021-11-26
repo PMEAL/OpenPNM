@@ -19,6 +19,6 @@ class StokesFlow(ReactiveTransport):
     A subclass of GenericLinearTransport to simulate viscous flow.
     """
 
-    def __init__(self, settings={}, **kwargs):
+    def __init__(self, settings=None, **kwargs):
         self.settings = SettingsAttr(StokesFlowSettings, settings)
         super().__init__(settings=deepcopy(self.settings), **kwargs)

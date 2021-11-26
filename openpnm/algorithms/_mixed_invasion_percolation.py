@@ -73,7 +73,7 @@ class MixedInvasionPercolation(GenericAlgorithm):
 
     """
 
-    def __init__(self, settings={}, **kwargs):
+    def __init__(self, settings=None, **kwargs):
         self.settings = SettingsAttr(MixedIPSettings, settings)
         super().__init__(settings=self.settings, **kwargs)
 

@@ -40,7 +40,7 @@ class MercuryIntrusion(Porosimetry):
 
     """
 
-    def __init__(self, network, settings={}, **kwargs):
+    def __init__(self, network, settings=None, **kwargs):
         hg = Mercury(network=network)
         super().__init__(network=network, phase=hg, settings=self.settings, **kwargs)
         project = self.project

@@ -47,7 +47,7 @@ class GenericMixture(GenericPhase):
 
     """
 
-    def __init__(self, components=[], settings={}, **kwargs):
+    def __init__(self, components=[], settings=None, **kwargs):
         self.settings = SettingsAttr(GenericMixtureSettings, settings)
         super().__init__(settings=self.settings, **kwargs)
 

@@ -11,7 +11,7 @@ class PoreSpy(GenericIO):
     """
 
     @classmethod
-    def import_data(cls, filename, project=None, settings={}):
+    def import_data(cls, filename, project=None, settings=None):
         r"""
         Load a network extracted using the PoreSpy package
 

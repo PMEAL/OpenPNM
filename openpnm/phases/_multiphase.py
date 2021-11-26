@@ -55,7 +55,7 @@ class MultiPhase(GenericPhase):
 
     """
 
-    def __init__(self, phases=[], settings={}, **kwargs):
+    def __init__(self, phases=[], settings=None, **kwargs):
         self.settings = SettingsAttr(MultiPhaseSettings, settings)
         super().__init__(settings=self.settings, **kwargs)
 

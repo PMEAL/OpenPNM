@@ -49,7 +49,7 @@ class Porosimetry(OrdinaryPercolation):
 
     """
 
-    def __init__(self, phase, settings={}, **kwargs):
+    def __init__(self, phase, settings=None, **kwargs):
         self.settings = SettingsAttr(PorosimetrySettings, settings)
         super().__init__(phase=phase, settings=self.settings, **kwargs)
         # Use the reset method to initialize all arrays

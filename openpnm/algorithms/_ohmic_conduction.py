@@ -6,7 +6,15 @@ logger = logging.getLogger(__name__)
 __all__ = ['OhmicConduction']
 
 
+@docstr.dedent
 class OhmicConductionSettings:
+    r"""
+
+    Parameters
+    ----------
+    %(ReactiveTransportSettings.parameters)s
+
+    """
     quantity = 'pore.voltage'
     conductance = 'throat.electrical_conductance'
 
@@ -20,6 +28,6 @@ class OhmicConduction(ReactiveTransport):
 
     """
 
-    def __init__(self, settings={}, **kwargs):
+    def __init__(self, settings=None, **kwargs):
         self.settings = SettingsAttr(OhmicConductionSettings, settings)
         super().__init__(settings=self.settings, **kwargs)

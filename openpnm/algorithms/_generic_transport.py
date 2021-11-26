@@ -67,7 +67,7 @@ class GenericTransport(GenericAlgorithm):
         instance._pure_b = None
         return instance
 
-    def __init__(self, phase, settings={}, **kwargs):
+    def __init__(self, phase, settings=None, **kwargs):
         self.settings = SettingsAttr(GenericTransportSettings, settings)
         super().__init__(settings=self.settings, **kwargs)
         self.settings['phase'] = phase.name

@@ -82,7 +82,7 @@ class GenericNetwork(ParamMixin, Base, ModelsMixin, LabelMixin):
     stored for future use to save construction time.
 
     """
-    def __init__(self, conns=None, coords=None, settings={}, **kwargs):
+    def __init__(self, conns=None, coords=None, settings=None, **kwargs):
         self.settings = SettingsAttr(NetworkSettings, settings)
         super().__init__(settings=self.settings, **kwargs)
         self._am = {}

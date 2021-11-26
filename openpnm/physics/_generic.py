@@ -43,7 +43,7 @@ class GenericPhysics(ParamMixin, Subdomain, ModelsMixin):
     """
 
     def __init__(self, phase=None, geometry=None, pores=None, throats=None,
-                 settings={}, **kwargs):
+                 settings=None, **kwargs):
         self.settings = SettingsAttr(PhysicsSettings, settings)
         super().__init__(settings=self.settings, **kwargs)
 

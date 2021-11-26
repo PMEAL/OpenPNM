@@ -22,7 +22,7 @@ class TransientIonicConduction(TransientReactiveTransport,
     of pure diffusion and advection-diffusion problems.
     """
 
-    def __init__(self, phase, settings={}, **kwargs):
+    def __init__(self, phase, settings=None, **kwargs):
         self.settings = SettingsAttr(TransientIonicConductionSettings, settings)
         super().__init__(settings=self.settings, **kwargs)
         self.settings['phase'] = phase.name

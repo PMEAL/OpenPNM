@@ -18,7 +18,7 @@ class IdealGas(GenericMixture):
 
     """
 
-    def __init__(self, settings={}, **kwargs):
+    def __init__(self, settings=None, **kwargs):
         super().__init__(settings={'prefix': 'mix'}, **kwargs)
         self.settings._update(settings)
 

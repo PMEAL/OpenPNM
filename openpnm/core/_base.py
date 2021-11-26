@@ -64,7 +64,7 @@ class Base(dict):
         return instance
 
     def __init__(self, Np=0, Nt=0, network=None, name=None, project=None,
-                 settings={}):
+                 settings=None):
         super().__init__()
         self.settings = SettingsAttr(BaseSettings, settings)
 

@@ -107,7 +107,7 @@ class InvasionPercolation(GenericAlgorithm):
         ``plt.imshow(np.reshape(water['pore.occupancy'], newshape=S[S > 1]))``
 
     """
-    def __init__(self, phase, settings={}, **kwargs):
+    def __init__(self, phase, settings=None, **kwargs):
         self.settings = SettingsAttr(IPSettings, settings)
         super().__init__(settings=self.settings, **kwargs)
         self.settings['phase'] = phase.name

@@ -88,7 +88,7 @@ class GenericGeometry(ParamMixin, Subdomain, ModelsMixin):
 
     """
 
-    def __init__(self, pores=[], throats=[], settings={}, **kwargs):
+    def __init__(self, pores=[], throats=[], settings=None, **kwargs):
         self.settings = SettingsAttr(GeometrySettings, settings)
         super().__init__(settings=self.settings, **kwargs)
 

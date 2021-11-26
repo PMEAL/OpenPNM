@@ -37,7 +37,7 @@ class TransientReactiveTransport(ReactiveTransport):
 
     """
 
-    def __init__(self, phase, settings={}, **kwargs):
+    def __init__(self, phase, settings=None, **kwargs):
         self.settings = SettingsAttr(TransientReactiveTransportSettings, settings)
         super().__init__(phase=phase, settings=self.settings, **kwargs)
         self.settings['phase'] = phase.name
