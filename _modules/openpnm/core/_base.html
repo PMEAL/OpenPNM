@@ -424,10 +424,9 @@
         <span class="sd">&quot;&quot;&quot;Dictionary containing object settings.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_settings</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_settings</span> <span class="o">=</span> <span class="n">SettingsAttr</span><span class="p">()</span>
-        <span class="n">sets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_settings</span>
-        <span class="k">if</span> <span class="n">sets</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">sets</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_settings_docs</span>
-        <span class="k">return</span> <span class="n">sets</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_settings_docs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_settings</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="s1">&#39;__doc__&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_settings_docs</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_settings</span>
 
     <span class="k">def</span> <span class="nf">_del_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_settings</span> <span class="o">=</span> <span class="kc">None</span>
