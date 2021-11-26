@@ -7,7 +7,8 @@
 
    This documentation is under active development, and is not ready yet.
    We aim to release OpenPNM v3 by the end of 2021. This documentation,
-   therefore, does not reflect the latest
+   therefore, does not reflect the latest stable release on
+   PyPI/conda-forge (v2.8.2).
 
 .. image:: ./_static/images/openpnm_logo.png
    :name: banner
