@@ -6,9 +6,6 @@ logger = logging.getLogger(__name__)
 __all__ = ['OhmicConduction']
 
 
-@docstr.get_sections(base='OhmicConductionSettings',
-                     sections=['Parameters'])
-@docstr.dedent
 class OhmicConductionSettings:
     quantity = 'pore.voltage'
     conductance = 'throat.electrical_conductance'

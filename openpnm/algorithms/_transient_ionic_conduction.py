@@ -7,7 +7,6 @@ docstr = Docorator()
 __all__ = ['TransientIonicConduction']
 
 
-@docstr.dedent
 class TransientIonicConductionSettings:
     quantity = 'pore.potential'
     conductance = 'throat.ionic_conductance'
