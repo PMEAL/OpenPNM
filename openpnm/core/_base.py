@@ -249,10 +249,9 @@ class Base(dict):
         """Dictionary containing object settings."""
         if self._settings is None:
             self._settings = SettingsAttr()
-        sets = self._settings
-        if sets is not None:
-            sets.__doc__ = self._settings_docs
-        return sets
+        if self._settings_docs is not None:
+            self._settings.__dict__['__doc__'] = self._settings_docs
+        return self._settings
 
     def _del_settings(self):
         self._settings = None
