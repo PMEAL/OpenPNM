@@ -1,0 +1,8 @@
+:orphan:
+
+import_data
+=============================
+
+.. currentmodule:: openpnm.io
+
+.. automethod:: iMorph.import_data

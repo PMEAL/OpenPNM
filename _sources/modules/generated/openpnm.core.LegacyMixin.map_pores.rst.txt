@@ -1,8 +1,0 @@
-:orphan:
-
-map_pores
-==================================
-
-.. currentmodule:: openpnm.core
-
-.. automethod:: LegacyMixin.map_pores

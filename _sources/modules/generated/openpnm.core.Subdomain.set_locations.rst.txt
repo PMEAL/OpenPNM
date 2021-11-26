@@ -1,8 +1,0 @@
-:orphan:
-
-set_locations
-====================================
-
-.. currentmodule:: openpnm.core
-
-.. automethod:: Subdomain.set_locations

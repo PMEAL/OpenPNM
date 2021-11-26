@@ -1,0 +1,8 @@
+:orphan:
+
+open_paraview
+=================================
+
+.. currentmodule:: openpnm.io
+
+.. automethod:: ParaView.open_paraview

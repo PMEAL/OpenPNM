@@ -1,8 +1,0 @@
-:orphan:
-
-dependency_map
-======================================
-
-.. currentmodule:: openpnm.core
-
-.. automethod:: ModelsDict.dependency_map

@@ -1,0 +1,350 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>openpnm.io._pnm &#8212; OpenPNM 2.8.2 documentation</title>
+    
+  <link href="../../../_static/css/theme.css" rel="stylesheet">
+  <link href="../../../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/blank.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
+    
+  <link rel="preload" as="script" href="../../../_static/js/index.be7d3bbb2ef33a8344ce.js">
+
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/clipboard.min.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/custom.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+
+<a class="navbar-brand" href="https://www.openpnm.org">
+  <img src="../../../_static/openpnm_logo.png" class="logo" alt="logo">
+</a>
+
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class=" collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../user_guide/index.html">
+  User Guide
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../modules/index.html">
+  Module Reference
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../examples/examples.html">
+  Examples
+ </a>
+</li>
+
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/PMEAL/OpenPNM" rel="noopener" target="_blank" title="GitHub">
+            <span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://openpnm.substack.com/" rel="noopener" target="_blank" title="Substack">
+            <span><i class="fas fa-envelope-square"></i></span>
+            <label class="sr-only">Substack</label>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://twitter.com/OpenPNM" rel="noopener" target="_blank" title="Twitter">
+            <span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label>
+          </a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    
+  </div>
+</nav>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <h1>Source code for openpnm.io._pnm</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">json_tricks</span> <span class="k">as</span> <span class="nn">jsont</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">importlib</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">Workspace</span><span class="p">,</span> <span class="n">Project</span>
+<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">logging</span>
+<span class="kn">from</span> <span class="nn">openpnm.io</span> <span class="kn">import</span> <span class="n">GenericIO</span>
+<span class="kn">from</span> <span class="nn">h5py</span> <span class="kn">import</span> <span class="n">File</span> <span class="k">as</span> <span class="n">hdfFile</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">ws</span> <span class="o">=</span> <span class="n">Workspace</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="PNM"><a class="viewcode-back" href="../../../modules/generated/openpnm.io.PNM.html#openpnm.io.PNM">[docs]</a><span class="k">class</span> <span class="nc">PNM</span><span class="p">(</span><span class="n">GenericIO</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is the official way to save and load OpenPNM projects</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="PNM.save_project"><a class="viewcode-back" href="../../../modules/generated/openpnm.io.PNM.save_project.html#openpnm.io.PNM.save_project">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">save_project</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">project</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39;.pnm&#39;</span>
+
+        <span class="c1"># Make a directory using the given file name</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_parse_filename</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;pnm&#39;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">hdfFile</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">root</span><span class="p">:</span>
+            <span class="c1"># root = hdfFile(f, mode=&#39;w&#39;)</span>
+            <span class="n">root</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;version&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ws</span><span class="o">.</span><span class="n">version</span>
+            <span class="n">date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">today</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y %h </span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span><span class="p">)</span>
+            <span class="n">root</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;date saved&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">date</span>
+            <span class="n">root</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">name</span>
+            <span class="c1"># root.attrs[&#39;comments&#39;] = project.comments</span>
+            <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">project</span><span class="p">:</span>
+                <span class="n">found_attrs</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+                <span class="n">known_attrs</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="s1">&#39;settings&#39;</span><span class="p">,</span> <span class="s1">&#39;_models_dict&#39;</span><span class="p">,</span>
+                                   <span class="s1">&#39;_am&#39;</span><span class="p">,</span> <span class="s1">&#39;_im&#39;</span><span class="p">,</span>
+                                   <span class="s1">&#39;_spacing&#39;</span><span class="p">,</span> <span class="s1">&#39;_shape&#39;</span><span class="p">])</span>
+                <span class="n">foreign_attrs</span> <span class="o">=</span> <span class="n">found_attrs</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">known_attrs</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">foreign_attrs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">line_break</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="si">{</span><span class="s1">&#39;&#39;</span><span class="si">:</span><span class="s2">13</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> has the following attributes that will&quot;</span>
+                                    <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot; not be saved: </span><span class="si">{</span><span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">foreign_attrs</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                                    <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">line_break</span><span class="si">}</span><span class="s2">Consider using Pickle instead&quot;</span><span class="p">)</span>
+                <span class="n">item</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">arr</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>  <span class="c1"># Store data</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">item</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">arr</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">obj</span><span class="p">[</span><span class="n">arr</span><span class="p">],</span>
+                                            <span class="n">shape</span><span class="o">=</span><span class="n">obj</span><span class="p">[</span><span class="n">arr</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
+                                            <span class="n">compression</span><span class="o">=</span><span class="s2">&quot;gzip&quot;</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>  <span class="c1"># Deal with &#39;object&#39; arrays</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">arr</span> <span class="o">+</span> <span class="s1">&#39; is being converted to a string&#39;</span><span class="p">)</span>
+                        <span class="n">b</span> <span class="o">=</span> <span class="n">jsont</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">obj</span><span class="p">[</span><span class="n">arr</span><span class="p">])</span>
+                        <span class="n">c</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span>
+                        <span class="n">d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">void</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+                        <span class="n">item</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">arr</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">d</span><span class="p">)</span>
+                <span class="c1"># Store settings dict as metadata</span>
+                <span class="c1"># item.attrs[&#39;settings&#39;] = json.dumps(obj.settings)</span>
+                <span class="c1"># Store models dict as metadata</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s1">&#39;models&#39;</span><span class="p">):</span>
+                    <span class="n">obj_models</span> <span class="o">=</span> <span class="p">{}</span>
+                    <span class="n">model</span> <span class="o">=</span> <span class="kc">None</span>
+                    <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                        <span class="n">temp</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">models</span><span class="p">[</span><span class="n">model</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                                <span class="k">if</span> <span class="n">k</span> <span class="o">!=</span> <span class="s1">&#39;model&#39;</span><span class="p">}</span>
+                        <span class="k">if</span> <span class="s1">&#39;model&#39;</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">models</span><span class="p">[</span><span class="n">model</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                            <span class="n">a</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">models</span><span class="p">[</span><span class="n">model</span><span class="p">][</span><span class="s1">&#39;model&#39;</span><span class="p">]</span>
+                            <span class="n">temp</span><span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="vm">__module__</span> <span class="o">+</span> <span class="s1">&#39;|&#39;</span> <span class="o">+</span> \
+                                <span class="n">a</span><span class="o">.</span><span class="vm">__code__</span><span class="o">.</span><span class="n">co_name</span>
+                        <span class="n">obj_models</span><span class="p">[</span><span class="n">model</span><span class="p">]</span> <span class="o">=</span> <span class="n">temp</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">item</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;models&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">obj_models</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;The model </span><span class="si">{</span><span class="n">model</span><span class="si">}</span><span class="s1"> and its parameters&#39;</span>
+                                        <span class="o">+</span> <span class="s1">&#39; could not be written to file.&#39;</span><span class="p">)</span>
+                <span class="n">item</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;class&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PNM.load_project"><a class="viewcode-back" href="../../../modules/generated/openpnm.io.PNM.load_project.html#openpnm.io.PNM.load_project">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">load_project</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_parse_filename</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;pnm&#39;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">hdfFile</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">root</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Loading project from file &#39;</span> <span class="o">+</span> <span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>  <span class="c1"># Create an empty project with old name</span>
+                <span class="n">proj</span> <span class="o">=</span> <span class="n">Project</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">root</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">])</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Loading &#39;</span> <span class="o">+</span> <span class="n">proj</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>  <span class="c1"># Generate a new name if collision occurs</span>
+                <span class="n">proj</span> <span class="o">=</span> <span class="n">Project</span><span class="p">()</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;A project named &#39;</span> <span class="o">+</span> <span class="n">root</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+                               <span class="o">+</span> <span class="s1">&#39; already exists, renaming to &#39;</span> <span class="o">+</span> <span class="n">proj</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Created using OpenPNM version &#39;</span> <span class="o">+</span> <span class="n">root</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;version&#39;</span><span class="p">])</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Saved on &#39;</span> <span class="o">+</span> <span class="n">root</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;date saved&#39;</span><span class="p">])</span>
+            <span class="n">loglevel</span> <span class="o">=</span> <span class="n">ws</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;loglevel&#39;</span><span class="p">]</span>
+            <span class="n">ws</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;loglevel&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">50</span>
+            <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">root</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="k">if</span> <span class="s1">&#39;network&#39;</span> <span class="ow">in</span> <span class="n">root</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;class&#39;</span><span class="p">]:</span>
+                    <span class="n">proj</span><span class="p">,</span> <span class="n">obj</span> <span class="o">=</span> <span class="n">create_obj</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">proj</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">root</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="k">if</span> <span class="s1">&#39;network&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">root</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;class&#39;</span><span class="p">]:</span>
+                    <span class="n">proj</span><span class="p">,</span> <span class="n">obj</span> <span class="o">=</span> <span class="n">create_obj</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">proj</span><span class="p">)</span>
+            <span class="n">ws</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;loglevel&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">loglevel</span>
+        <span class="k">return</span> <span class="n">proj</span></div></div>
+
+
+<span class="k">def</span> <span class="nf">create_obj</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">proj</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reproduces an OpenPNM object, given the hdf5 file and name</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+    <span class="c1"># regenerate object as same class</span>
+    <span class="n">mro</span> <span class="o">=</span> <span class="n">root</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;class&#39;</span><span class="p">]</span>
+    <span class="n">mro</span> <span class="o">=</span> <span class="n">mro</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;&#39;&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">mro</span> <span class="o">=</span> <span class="n">mro</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+    <span class="n">mod</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">mro</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="n">clss</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="n">mro</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">obj</span> <span class="o">=</span> <span class="n">clss</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="o">=</span><span class="n">clss</span><span class="p">)</span>
+    <span class="n">obj</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="n">name</span>
+    <span class="c1"># Add data to obj</span>
+    <span class="k">for</span> <span class="n">arr</span> <span class="ow">in</span> <span class="n">root</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">root</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="n">arr</span><span class="p">])</span>
+        <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;|V&quot;</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">arr</span> <span class="o">+</span> <span class="s1">&#39; is being converted from string&#39;</span><span class="p">)</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">string_</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="n">jsont</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">arr</span><span class="p">:</span> <span class="n">a</span><span class="p">})</span>
+    <span class="c1"># Add settings to obj</span>
+    <span class="c1"># obj.settings._update(json.loads(root[name].attrs[&#39;settings&#39;]))</span>
+    <span class="c1"># Add models to obj</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s1">&#39;models&#39;</span><span class="p">):</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">root</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;models&#39;</span><span class="p">]))</span>
+        <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">md</span><span class="p">,</span> <span class="n">fn</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">models</span><span class="p">[</span><span class="n">m</span><span class="p">][</span><span class="s1">&#39;model&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">md</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">md</span><span class="p">)</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">obj</span><span class="o">.</span><span class="n">models</span><span class="p">[</span><span class="n">m</span><span class="p">][</span><span class="s1">&#39;model&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">md</span><span class="p">,</span> <span class="n">fn</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The function </span><span class="si">{</span><span class="n">fn</span><span class="si">}</span><span class="s2"> could not be loaded, adding&quot;</span>
+                                   <span class="o">+</span> <span class="s2">&quot; &#39;blank&#39; instead&quot;</span><span class="p">)</span>
+                    <span class="n">obj</span><span class="o">.</span><span class="n">models</span><span class="p">[</span><span class="n">m</span><span class="p">][</span><span class="s1">&#39;model&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">misc</span><span class="o">.</span><span class="n">basic_math</span><span class="o">.</span><span class="n">blank</span>
+            <span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The module </span><span class="si">{</span><span class="n">md</span><span class="si">}</span><span class="s2"> could not be loaded, adding&quot;</span>
+                               <span class="o">+</span> <span class="s2">&quot; &#39;blank&#39; instead&quot;</span><span class="p">)</span>
+                <span class="n">obj</span><span class="o">.</span><span class="n">models</span><span class="p">[</span><span class="n">m</span><span class="p">][</span><span class="s1">&#39;model&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">misc</span><span class="o">.</span><span class="n">basic_math</span><span class="o">.</span><span class="n">blank</span>
+    <span class="n">proj</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">proj</span><span class="p">,</span> <span class="n">obj</span>
+</pre></div>
+
+              </div>
+              
+              
+          </main>
+          
+
+      </div>
+    </div>
+  
+  <script src="../../../_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
+<footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2021, PMEAL.<br>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.3.0.<br>
+</p>
+    </div>
+    
+  </div>
+</footer>
+  </body>
+</html>

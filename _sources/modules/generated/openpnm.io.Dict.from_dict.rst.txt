@@ -1,0 +1,8 @@
+:orphan:
+
+from_dict
+=========================
+
+.. currentmodule:: openpnm.io
+
+.. automethod:: Dict.from_dict

@@ -1,0 +1,8 @@
+:orphan:
+
+load_object_from_file
+=======================================
+
+.. currentmodule:: openpnm.io
+
+.. automethod:: Pickle.load_object_from_file

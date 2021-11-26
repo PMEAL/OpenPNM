@@ -1,0 +1,52 @@
+﻿:noindex:
+
+.. automodule:: openpnm.io
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :nosignatures:
+      :toctree:
+
+   
+      COMSOL
+      CSV
+      Dict
+      GenericIO
+      HDF5
+      JSONGraphFormat
+      MARock
+      MAT
+      NetworkX
+      PNM
+      Pandas
+      ParaView
+      PerGeos
+      Pickle
+      PoreSpy
+      STL
+      Salome
+      Statoil
+      VTK
+      XDMF
+      iMorph
+   
+   
+
+   
+   
+   
+
+   
+   
+   

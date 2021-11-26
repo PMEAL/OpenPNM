@@ -1,0 +1,8 @@
+:orphan:
+
+import_data
+=============================
+
+.. currentmodule:: openpnm.io
+
+.. automethod:: MARock.import_data

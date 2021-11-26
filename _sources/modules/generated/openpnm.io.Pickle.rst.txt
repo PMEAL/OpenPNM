@@ -1,0 +1,28 @@
+Pickle
+=================
+
+.. currentmodule:: openpnm.io
+
+.. autoclass:: Pickle
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            Pickle.load_object_from_file
+            Pickle.load_project
+            Pickle.load_workspace
+            Pickle.save_object_to_file
+            Pickle.save_project
+            Pickle.save_workspace
+   
+   
+
+   
+   
+   

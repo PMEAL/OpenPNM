@@ -1,0 +1,8 @@
+:orphan:
+
+export_data
+==========================
+
+.. currentmodule:: openpnm.io
+
+.. automethod:: STL.export_data

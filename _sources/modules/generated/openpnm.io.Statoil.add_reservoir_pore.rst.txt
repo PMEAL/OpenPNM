@@ -1,0 +1,8 @@
+:orphan:
+
+add_reservoir_pore
+=====================================
+
+.. currentmodule:: openpnm.io
+
+.. automethod:: Statoil.add_reservoir_pore

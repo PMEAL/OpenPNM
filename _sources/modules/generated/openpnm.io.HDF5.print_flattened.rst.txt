@@ -1,0 +1,8 @@
+:orphan:
+
+print_flattened
+===============================
+
+.. currentmodule:: openpnm.io
+
+.. automethod:: HDF5.print_flattened

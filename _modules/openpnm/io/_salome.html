@@ -1,0 +1,352 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>openpnm.io._salome &#8212; OpenPNM 2.8.2 documentation</title>
+    
+  <link href="../../../_static/css/theme.css" rel="stylesheet">
+  <link href="../../../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/blank.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
+    
+  <link rel="preload" as="script" href="../../../_static/js/index.be7d3bbb2ef33a8344ce.js">
+
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/clipboard.min.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/custom.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+
+<a class="navbar-brand" href="https://www.openpnm.org">
+  <img src="../../../_static/openpnm_logo.png" class="logo" alt="logo">
+</a>
+
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class=" collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../user_guide/index.html">
+  User Guide
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../modules/index.html">
+  Module Reference
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../examples/examples.html">
+  Examples
+ </a>
+</li>
+
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/PMEAL/OpenPNM" rel="noopener" target="_blank" title="GitHub">
+            <span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://openpnm.substack.com/" rel="noopener" target="_blank" title="Substack">
+            <span><i class="fas fa-envelope-square"></i></span>
+            <label class="sr-only">Substack</label>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://twitter.com/OpenPNM" rel="noopener" target="_blank" title="Twitter">
+            <span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label>
+          </a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    
+  </div>
+</nav>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <h1>Source code for openpnm.io._salome</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">openpnm.io</span> <span class="kn">import</span> <span class="n">GenericIO</span>
+<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">logging</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Salome"><a class="viewcode-back" href="../../../modules/generated/openpnm.io.Salome.html#openpnm.io.Salome">[docs]</a><span class="k">class</span> <span class="nc">Salome</span><span class="p">(</span><span class="n">GenericIO</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Writes a Salome .py script to generate a geometry.</span>
+
+<span class="sd">    The exported .py file should be loaded from Salome with &quot;load script&quot;.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Visit salome-platform.org for more information.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_header</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">import numpy as np</span>
+<span class="s2">def pnm_2_salome(cylinder_head, cylinder_tail, cylinder_r,</span>
+<span class="s2">                 sphere_c, sphere_r, explicit=False):</span>
+<span class="s2">    import numpy as np</span>
+<span class="s2">    import math</span>
+<span class="s2">    import GEOM</span>
+<span class="s2">    import SALOMEDS</span>
+<span class="s2">    import salome</span>
+<span class="s2">    from salome.geom import geomBuilder</span>
+<span class="s2">    salome.salome_init()</span>
+<span class="s2">    geompy = geomBuilder.New()</span>
+<span class="s2">    O = geompy.MakeVertex(0, 0, 0)</span>
+<span class="s2">    OX = geompy.MakeVectorDXDYDZ(1, 0, 0)</span>
+<span class="s2">    OY = geompy.MakeVectorDXDYDZ(0, 1, 0)</span>
+<span class="s2">    OZ = geompy.MakeVectorDXDYDZ(0, 0, 1)</span>
+<span class="s2">    s = len(sphere_r)</span>
+<span class="s2">    c = len(cylinder_r)</span>
+<span class="s2">    vertex_id = 0</span>
+<span class="s2">    fuse_list = np.array([])</span>
+<span class="s2">    for i in range(s):</span>
+<span class="s2">        vertex_s = geompy.MakeVertex(sphere_c[i, 0], sphere_c[i, 1],</span>
+<span class="s2">                                     sphere_c[i, 2])</span>
+<span class="s2">        sphere = geompy.MakeSpherePntR(vertex_s, sphere_r[i])</span>
+<span class="s2">        if explicit:</span>
+<span class="s2">            geompy.addToStudy(vertex_s, &quot;Vertex_</span><span class="si">{}</span><span class="s2">&quot;.format(vertex_id))</span>
+<span class="s2">            geompy.addToStudy(sphere, &quot;Sphere_</span><span class="si">{}</span><span class="s2">&quot;.format(i))</span>
+<span class="s2">        vertex_id += 1</span>
+<span class="s2">        fuse_list = np.append(fuse_list, sphere)</span>
+<span class="s2">    for i in range(c):</span>
+<span class="s2">        vertex_c1 = geompy.MakeVertex(cylinder_head[i, 0], cylinder_head[i, 1],</span>
+<span class="s2">                                      cylinder_head[i, 2])</span>
+<span class="s2">        vertex_c2 = geompy.MakeVertex(cylinder_tail[i, 0], cylinder_tail[i, 1],</span>
+<span class="s2">                                      cylinder_tail[i, 2])</span>
+<span class="s2">        line = geompy.MakeLineTwoPnt(vertex_c1, vertex_c2)</span>
+<span class="s2">        length = abs(np.linalg.norm(cylinder_head[i] - cylinder_tail[i]))</span>
+<span class="s2">        cylinder = geompy.MakeCylinder(vertex_c1, line, cylinder_r[i], length)</span>
+<span class="s2">        if explicit:</span>
+<span class="s2">            geompy.addToStudy(vertex_c1, &quot;Vertex_</span><span class="si">{}</span><span class="s2">&quot;.format(vertex_id))</span>
+<span class="s2">        vertex_id += 1</span>
+<span class="s2">        if explicit:</span>
+<span class="s2">            geompy.addToStudy(vertex_c2, &quot;Vertex_</span><span class="si">{}</span><span class="s2">&quot;.format(vertex_id))</span>
+<span class="s2">        vertex_id += 1</span>
+<span class="s2">        if explicit:</span>
+<span class="s2">            geompy.addToStudy(line, &quot;Line_</span><span class="si">{}</span><span class="s2">&quot;.format(i))</span>
+<span class="s2">            geompy.addToStudy(cylinder, &quot;Cylinder_</span><span class="si">{}</span><span class="s2">&quot;.format(i))</span>
+<span class="s2">        fuse_list = np.append(fuse_list, cylinder)</span>
+<span class="s2">    fuse = geompy.MakeFuseList(list(fuse_list), True, True)</span>
+<span class="s2">    geompy.addToStudy(fuse, &#39;network&#39;)</span>
+<span class="s2">    geompy.addToStudy( O, &#39;O&#39; )</span>
+<span class="s2">    geompy.addToStudy( OX, &#39;OX&#39; )</span>
+<span class="s2">    geompy.addToStudy( OY, &#39;OY&#39; )</span>
+<span class="s2">    geompy.addToStudy( OZ, &#39;OZ&#39; )</span>
+<span class="s2">    if salome.sg.hasDesktop():</span>
+<span class="s2">        salome.sg.updateObjBrowser()</span>
+
+<span class="s2">    &quot;&quot;&quot;</span>
+    <span class="n">_footer</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">pnm_2_salome(cylinder_head, cylinder_tail, cylinder_r,</span>
+<span class="s2">             sphere_c, sphere_r, explicit=explicit)</span>
+
+<span class="s2">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Salome.export_data"><a class="viewcode-back" href="../../../modules/generated/openpnm.io.Salome.export_data.html#openpnm.io.Salome.export_data">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">export_data</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">network</span><span class="p">,</span> <span class="n">phases</span><span class="o">=</span><span class="p">[],</span> <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">explicit</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Saves the network data and writes a Salome .py instruction file.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        network : GenericNetwork</span>
+<span class="sd">            The network containing the desired data</span>
+<span class="sd">        phases : list[GenericPhase] (optional, default is None)</span>
+<span class="sd">            A list of phase objects whose data are to be included</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        This method only saves the data, not any of the pore-scale models</span>
+<span class="sd">        or other attributes. To save an actual OpenPNM Project use the</span>
+<span class="sd">        ``Workspace`` object.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">project</span><span class="p">,</span> <span class="n">network</span><span class="p">,</span> <span class="n">phases</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_parse_args</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">network</span><span class="p">,</span>
+                                                   <span class="n">phases</span><span class="o">=</span><span class="n">phases</span><span class="p">)</span>
+        <span class="n">net</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">explicit</span> <span class="o">=</span> <span class="n">explicit</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="o">+</span><span class="s1">&#39;.py&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_header</span><span class="o">+</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="n">x</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.endpoints.head&#39;</span><span class="p">]</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;cylinder_head = np.array([&#39;</span><span class="p">)</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">X</span><span class="o">=</span><span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">flatten</span><span class="p">()],</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%.18e</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;])</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;cylinder_head = np.reshape(cylinder_head, &#39;</span><span class="o">+</span><span class="n">s</span><span class="o">+</span><span class="s1">&#39;)</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="n">x</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.endpoints.tail&#39;</span><span class="p">]</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;cylinder_tail = np.array([&#39;</span><span class="p">)</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">X</span><span class="o">=</span><span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">flatten</span><span class="p">()],</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%.18e</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;])</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;cylinder_tail = np.reshape(cylinder_tail, &#39;</span><span class="o">+</span><span class="n">s</span><span class="o">+</span><span class="s1">&#39;)</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="n">x</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;cylinder_r = np.array([&#39;</span><span class="p">)</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">X</span><span class="o">=</span><span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">flatten</span><span class="p">()],</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%.18e</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;])</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;cylinder_r = np.reshape(cylinder_r, &#39;</span><span class="o">+</span><span class="n">s</span><span class="o">+</span><span class="s1">&#39;)</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="n">x</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s1">&#39;pore.coords&#39;</span><span class="p">]</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;sphere_c = np.array([&#39;</span><span class="p">)</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">X</span><span class="o">=</span><span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">flatten</span><span class="p">()],</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%.18e</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;])</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;sphere_c = np.reshape(sphere_c, &#39;</span><span class="o">+</span><span class="n">s</span><span class="o">+</span><span class="s1">&#39;)</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="n">x</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;sphere_r = np.array([&#39;</span><span class="p">)</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">X</span><span class="o">=</span><span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">flatten</span><span class="p">()],</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%.18e</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;])</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;sphere_r = np.reshape(sphere_r, &#39;</span><span class="o">+</span><span class="n">s</span><span class="o">+</span><span class="s1">&#39;)</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;explicit = &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">explicit</span><span class="p">))</span>
+
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_footer</span><span class="p">)</span>
+
+        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div></div>
+</pre></div>
+
+              </div>
+              
+              
+          </main>
+          
+
+      </div>
+    </div>
+  
+  <script src="../../../_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
+<footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2021, PMEAL.<br>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.3.0.<br>
+</p>
+    </div>
+    
+  </div>
+</footer>
+  </body>
+</html>

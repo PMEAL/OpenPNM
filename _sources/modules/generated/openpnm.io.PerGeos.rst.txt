@@ -1,0 +1,24 @@
+PerGeos
+==================
+
+.. currentmodule:: openpnm.io
+
+.. autoclass:: PerGeos
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            PerGeos.export_data
+            PerGeos.import_data
+   
+   
+
+   
+   
+   

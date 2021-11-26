@@ -1,0 +1,320 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>openpnm.io._stl &#8212; OpenPNM 2.8.2 documentation</title>
+    
+  <link href="../../../_static/css/theme.css" rel="stylesheet">
+  <link href="../../../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/blank.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
+    
+  <link rel="preload" as="script" href="../../../_static/js/index.be7d3bbb2ef33a8344ce.js">
+
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/clipboard.min.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/custom.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+
+<a class="navbar-brand" href="https://www.openpnm.org">
+  <img src="../../../_static/openpnm_logo.png" class="logo" alt="logo">
+</a>
+
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class=" collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../user_guide/index.html">
+  User Guide
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../modules/index.html">
+  Module Reference
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../examples/examples.html">
+  Examples
+ </a>
+</li>
+
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/PMEAL/OpenPNM" rel="noopener" target="_blank" title="GitHub">
+            <span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://openpnm.substack.com/" rel="noopener" target="_blank" title="Substack">
+            <span><i class="fas fa-envelope-square"></i></span>
+            <label class="sr-only">Substack</label>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://twitter.com/OpenPNM" rel="noopener" target="_blank" title="Twitter">
+            <span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label>
+          </a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    
+  </div>
+</nav>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <h1>Source code for openpnm.io._stl</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">_np</span>
+<span class="kn">from</span> <span class="nn">openpnm.io</span> <span class="kn">import</span> <span class="n">GenericIO</span>
+<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">logging</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="STL"><a class="viewcode-back" href="../../../modules/generated/openpnm.io.STL.html#openpnm.io.STL">[docs]</a><span class="k">class</span> <span class="nc">STL</span><span class="p">(</span><span class="n">GenericIO</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The STL Format is a Standard Triangle (or Tessellation) Language supported</span>
+<span class="sd">    by many CAD packages and used for 3D printing. Export to this format may be</span>
+<span class="sd">    slow since a 3D closed surface mesh is built.</span>
+<span class="sd">    Requires installation of &quot;netgen&quot;.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="STL.export_data"><a class="viewcode-back" href="../../../modules/generated/openpnm.io.STL.export_data.html#openpnm.io.STL.export_data">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">export_data</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">network</span><span class="p">,</span> <span class="n">phases</span><span class="o">=</span><span class="p">[],</span> <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">maxsize</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span>
+                    <span class="n">fileformat</span><span class="o">=</span><span class="s1">&#39;STL Format&#39;</span><span class="p">,</span> <span class="n">logger_level</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Saves (transient/steady-state) data from the given objects into the</span>
+<span class="sd">        specified file.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        network : GenericNetwork.</span>
+<span class="sd">            The network containing the desired data.</span>
+<span class="sd">        phases : list[GenericPhase] (place holder, default is None).</span>
+<span class="sd">            List of phases containing the desired data.</span>
+<span class="sd">        filename : str (optional).</span>
+<span class="sd">            The name of the file containing the data to export.</span>
+<span class="sd">        maxsize : a float or a string &quot;auto&quot; (optional).</span>
+<span class="sd">            The maximum size of the mesh elements allowed. &quot;auto&quot; corresponds</span>
+<span class="sd">            to an automatic determination based on pores and throats sizes. Any</span>
+<span class="sd">            float value will be used as a maximum size. Small values result in</span>
+<span class="sd">            finner meshes, but slower mesh calculations.</span>
+<span class="sd">        fileformat : str (optional).</span>
+<span class="sd">            Default is &quot;STL Format&quot; which corresponds to STL format. Other</span>
+<span class="sd">            formats such as Gmsh and Fluent are supported (see ngsolve.org).</span>
+<span class="sd">        logger_level : integer between 0 and 7 (optional).</span>
+<span class="sd">            Default is 0. The logger level set in netgen package.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        This method only saves the geometry of the network, not any of the</span>
+<span class="sd">        pore-scale models or other attributes. To save an actual OpenPNM</span>
+<span class="sd">        Project use the ``Workspace`` object.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">import</span> <span class="nn">netgen.csg</span> <span class="k">as</span> <span class="nn">csg</span>
+        <span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Module &quot;netgen.csg&quot; not found.&#39;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">netgen.meshing</span> <span class="kn">import</span> <span class="n">SetMessageImportance</span> <span class="k">as</span> <span class="n">log</span>
+            <span class="n">log</span><span class="p">(</span><span class="n">logger_level</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Module &quot;netgen.meshing&quot; not found. &#39;</span>
+                           <span class="o">+</span> <span class="s1">&#39;The &quot;logger_level&quot; ignored.&#39;</span><span class="p">)</span>
+
+        <span class="n">project</span><span class="p">,</span> <span class="n">network</span><span class="p">,</span> <span class="n">phases</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_parse_args</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">network</span><span class="p">,</span>
+                                                   <span class="n">phases</span><span class="o">=</span><span class="n">phases</span><span class="p">)</span>
+        <span class="n">network</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">filename</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">name</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_parse_filename</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">filename</span><span class="p">,</span> <span class="n">ext</span><span class="o">=</span><span class="s1">&#39;stl&#39;</span><span class="p">)</span>
+        <span class="c1"># Path is a pathlib object, so slice it up as needed</span>
+        <span class="n">fname_stl</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">name</span>
+
+        <span class="c1"># Correct connections where &#39;pore.diameter&#39; = &#39;throat.diameter&#39;</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">dp</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">][</span><span class="n">network</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">]]</span>
+        <span class="n">dt</span><span class="p">[</span><span class="n">dp</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">dt</span><span class="p">]</span> <span class="o">*=</span> <span class="mf">0.99</span>
+        <span class="n">dt</span><span class="p">[</span><span class="n">dp</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">dt</span><span class="p">]</span> <span class="o">*=</span> <span class="mf">0.99</span>
+
+        <span class="n">scale</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">network</span><span class="p">[</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">dt</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span>
+                    <span class="n">network</span><span class="p">[</span><span class="s1">&#39;throat.length&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+        <span class="k">if</span> <span class="n">maxsize</span> <span class="o">==</span> <span class="s1">&#39;auto&#39;</span><span class="p">:</span>
+            <span class="n">maxsize</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">network</span><span class="p">[</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">dt</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span>
+                          <span class="n">network</span><span class="p">[</span><span class="s1">&#39;throat.length&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">())</span>
+        <span class="n">geo</span> <span class="o">=</span> <span class="n">csg</span><span class="o">.</span><span class="n">CSGeometry</span><span class="p">()</span>
+
+        <span class="c1"># Define pores</span>
+        <span class="n">geometry</span> <span class="o">=</span> <span class="n">csg</span><span class="o">.</span><span class="n">Sphere</span><span class="p">(</span><span class="n">csg</span><span class="o">.</span><span class="n">Pnt</span><span class="p">(</span><span class="n">network</span><span class="p">[</span><span class="s1">&#39;pore.coords&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="n">scale</span><span class="p">,</span>
+                                      <span class="n">network</span><span class="p">[</span><span class="s1">&#39;pore.coords&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="n">scale</span><span class="p">,</span>
+                                      <span class="n">network</span><span class="p">[</span><span class="s1">&#39;pore.coords&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span><span class="o">/</span><span class="n">scale</span><span class="p">),</span>
+                              <span class="n">network</span><span class="p">[</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="n">scale</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">network</span><span class="o">.</span><span class="n">Np</span><span class="p">):</span>
+            <span class="n">pore</span> <span class="o">=</span> <span class="n">csg</span><span class="o">.</span><span class="n">Sphere</span><span class="p">(</span><span class="n">csg</span><span class="o">.</span><span class="n">Pnt</span><span class="p">(</span><span class="n">network</span><span class="p">[</span><span class="s1">&#39;pore.coords&#39;</span><span class="p">][</span><span class="n">p</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="n">scale</span><span class="p">,</span>
+                                      <span class="n">network</span><span class="p">[</span><span class="s1">&#39;pore.coords&#39;</span><span class="p">][</span><span class="n">p</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="n">scale</span><span class="p">,</span>
+                                      <span class="n">network</span><span class="p">[</span><span class="s1">&#39;pore.coords&#39;</span><span class="p">][</span><span class="n">p</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span><span class="o">/</span><span class="n">scale</span><span class="p">),</span>
+                              <span class="n">network</span><span class="p">[</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">][</span><span class="n">p</span><span class="p">]</span><span class="o">/</span><span class="n">scale</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+            <span class="n">geometry</span> <span class="o">+=</span> <span class="n">pore</span>
+
+        <span class="c1"># Define throats</span>
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">network</span><span class="o">.</span><span class="n">Nt</span><span class="p">):</span>
+            <span class="n">A</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="s1">&#39;throat.endpoints.tail&#39;</span><span class="p">][</span><span class="n">t</span><span class="p">,</span> <span class="p">:]</span><span class="o">/</span><span class="n">scale</span>
+            <span class="n">B</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="s1">&#39;throat.endpoints.head&#39;</span><span class="p">][</span><span class="n">t</span><span class="p">,</span> <span class="p">:]</span><span class="o">/</span><span class="n">scale</span>
+            <span class="n">V</span> <span class="o">=</span> <span class="p">(</span><span class="n">B</span><span class="o">-</span><span class="n">A</span><span class="p">)</span><span class="o">/</span><span class="n">_np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">B</span><span class="o">-</span><span class="n">A</span><span class="p">)</span>
+            <span class="n">plane1</span> <span class="o">=</span> <span class="n">csg</span><span class="o">.</span><span class="n">Plane</span><span class="p">(</span><span class="n">csg</span><span class="o">.</span><span class="n">Pnt</span><span class="p">(</span><span class="n">A</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">A</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">A</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span>
+                               <span class="n">csg</span><span class="o">.</span><span class="n">Vec</span><span class="p">(</span><span class="o">-</span><span class="n">V</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="o">-</span><span class="n">V</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="o">-</span><span class="n">V</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
+            <span class="n">plane2</span> <span class="o">=</span> <span class="n">csg</span><span class="o">.</span><span class="n">Plane</span><span class="p">(</span><span class="n">csg</span><span class="o">.</span><span class="n">Pnt</span><span class="p">(</span><span class="n">B</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">B</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">B</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span>
+                               <span class="n">csg</span><span class="o">.</span><span class="n">Vec</span><span class="p">(</span><span class="n">V</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">V</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">V</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
+            <span class="n">cylinder</span> <span class="o">=</span> <span class="n">csg</span><span class="o">.</span><span class="n">Cylinder</span><span class="p">(</span><span class="n">csg</span><span class="o">.</span><span class="n">Pnt</span><span class="p">(</span><span class="n">A</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">A</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">A</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span>
+                                    <span class="n">csg</span><span class="o">.</span><span class="n">Pnt</span><span class="p">(</span><span class="n">B</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">B</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">B</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span>
+                                    <span class="n">dt</span><span class="p">[</span><span class="n">t</span><span class="p">]</span><span class="o">/</span><span class="n">scale</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+            <span class="n">throat</span> <span class="o">=</span> <span class="n">cylinder</span> <span class="o">*</span> <span class="n">plane1</span> <span class="o">*</span> <span class="n">plane2</span>
+            <span class="n">geometry</span> <span class="o">+=</span> <span class="n">throat</span>
+
+        <span class="c1"># Add pore and throats to geometry, build mesh, rescale, and export</span>
+        <span class="n">geo</span><span class="o">.</span><span class="n">Add</span><span class="p">(</span><span class="n">geometry</span><span class="p">)</span>
+        <span class="n">mesh</span> <span class="o">=</span> <span class="n">geo</span><span class="o">.</span><span class="n">GenerateMesh</span><span class="p">(</span><span class="n">maxh</span><span class="o">=</span><span class="n">maxsize</span><span class="o">/</span><span class="n">scale</span><span class="p">)</span>
+        <span class="n">mesh</span><span class="o">.</span><span class="n">Scale</span><span class="p">(</span><span class="n">scale</span><span class="p">)</span>
+        <span class="n">mesh</span><span class="o">.</span><span class="n">Export</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">fname_stl</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="n">fileformat</span><span class="p">)</span></div></div>
+</pre></div>
+
+              </div>
+              
+              
+          </main>
+          
+
+      </div>
+    </div>
+  
+  <script src="../../../_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
+<footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2021, PMEAL.<br>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.3.0.<br>
+</p>
+    </div>
+    
+  </div>
+</footer>
+  </body>
+</html>

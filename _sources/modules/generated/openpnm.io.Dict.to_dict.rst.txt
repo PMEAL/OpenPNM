@@ -1,0 +1,8 @@
+:orphan:
+
+to_dict
+=======================
+
+.. currentmodule:: openpnm.io
+
+.. automethod:: Dict.to_dict

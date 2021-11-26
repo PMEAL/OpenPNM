@@ -1,0 +1,26 @@
+Dict
+===============
+
+.. currentmodule:: openpnm.io
+
+.. autoclass:: Dict
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            Dict.export_data
+            Dict.from_dict
+            Dict.import_data
+            Dict.to_dict
+   
+   
+
+   
+   
+   

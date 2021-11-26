@@ -1,0 +1,25 @@
+HDF5
+===============
+
+.. currentmodule:: openpnm.io
+
+.. autoclass:: HDF5
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            HDF5.export_data
+            HDF5.print_flattened
+            HDF5.print_levels
+   
+   
+
+   
+   
+   
