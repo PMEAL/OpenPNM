@@ -251,7 +251,10 @@ class Base(dict):
             self._settings = SettingsAttr()
         sets = self._settings
         if sets is not None:
-            sets.__doc__ = self._settings_docs
+            try:
+                sets.__doc__ = self._settings_docs
+            except TypeError:
+                pass
         return sets
 
     def _del_settings(self):

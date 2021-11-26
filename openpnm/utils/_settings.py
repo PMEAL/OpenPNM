@@ -1,10 +1,11 @@
 from copy import deepcopy
 from traits.api import HasTraits, Trait
-from openpnm.utils import PrintableDict
+from openpnm.utils import PrintableDict, logging
 from auto_all import start_all, end_all
 
-
+logger = logging.getLogger(__name__)
 start_all()
+
 
 class TypedMixin:
 
@@ -97,6 +98,8 @@ class SettingsAttr:
         if settings is None:
             return
         if isinstance(settings, dict):
+            logger.warn('Specifying settings via dicts is deprecated')
+            docs = False
             for k, v in settings.items():
                 if override:
                     super().__setattr__(k, v)
@@ -267,7 +270,7 @@ class SettingsAttr2:
         init.
 
         """
-        if hasattr(settings, 'items'): # Dictionary
+        if hasattr(settings, 'items'):  # Dictionary
             for k, v in settings.items():
                 setattr(self, k, v)
         elif hasattr(settings, 'visible_traits'):
@@ -295,5 +298,6 @@ class SettingsAttr2:
     @property
     def _attrs(self):
         return self.__dir__()
+
 
 end_all()
