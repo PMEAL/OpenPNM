@@ -1,16 +1,15 @@
 r"""
-==========================
-Core (:mod:`openpnm.core`)
-==========================
+Core
+====
 
 This module contains the main classes from which all other major objects
 (Network, Geometry, Physics, Phase, and Algorithm) derive.
 
 The Base class
-==============
+--------------
 
 The ``Base`` class is a ``dict`` that has added methods for indexing the pores
-and throats, applying labels, and managing the stored data.  All OpenPNM
+and throats, applying labels, and managing the stored data. All OpenPNM
 object inherit from ``Base`` so possess these methods.
 
 ----
@@ -30,7 +29,7 @@ and 'throat.geom1' into the Network dictionary, with ``True`` values indicating
 where ``geom1`` applies.
 
 The ModelsMixin class
-=====================
+---------------------
 
 `Mixins <https://en.wikipedia.org/wiki/Mixin>`_ are a useful feature of Python
 that allow a few methods to be added to a class that needs them. In OpenPNM,
@@ -43,7 +42,6 @@ attribute to each object.  This is a dictionary that stores the pore-scale
 models and their associated parameters.  When ``regenerate_models`` is called
 the function and all the given parameters are retrieved from this dictionary
 and run.
-
 
 """
 

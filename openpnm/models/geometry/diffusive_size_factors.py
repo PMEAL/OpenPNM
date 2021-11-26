@@ -1,4 +1,7 @@
 r"""
+Diffusive Size Factors
+......................
+
 The diffusive size factor is the geometrical part of the pre-factor in
 Fick's law:
 

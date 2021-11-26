@@ -1,4 +1,7 @@
 r"""
+Throat Vector
+.............
+
 """
 from transforms3d import _gohlketransforms as tr
 

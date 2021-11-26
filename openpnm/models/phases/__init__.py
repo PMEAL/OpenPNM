@@ -1,8 +1,6 @@
 r"""
-
-**openpnm.models.phases**
-
-----
+Phase Models
+------------
 
 This submodule contains models for calculating thermophysical properties of
 liquids, gases, and solids.

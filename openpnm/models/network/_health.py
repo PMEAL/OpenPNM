@@ -1,7 +1,11 @@
+r"""
+Health Checks
+-------------
+
+"""
 import numpy as np
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)
-
 
 __all__ = [
     'bidirectional_throats',
@@ -14,7 +18,7 @@ __all__ = [
     'reversed_throats',
     'looped_throats',
     'headless_throats',
-    ]
+]
 
 
 def cluster_number(target):
