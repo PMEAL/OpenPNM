@@ -1,6 +1,6 @@
 r"""
-Phase Models
-------------
+Phase
+-----
 
 This submodule contains models for calculating thermophysical properties of
 liquids, gases, and solids.

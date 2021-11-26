@@ -1,6 +1,6 @@
 r"""
-Miscellaneous Models
-^^^^^^^^^^^^^^^^^^^^
+Miscellaneous
+=============
 
 This submodule contains models for calculating general or generic values
 that are useful for all other pore-scale models, such as scaling values, or

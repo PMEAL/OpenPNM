@@ -80,7 +80,7 @@ def from_neighbor_pores(target, prop, mode='min', ignore_nans=True):
     mode : str
         Controls how the throat property is calculated.  Options are 'min',
         'max' and 'mean'.
-    ignore_nans : boolean (default is ``True``)
+    ignore_nans : bool (default is ``True``)
         If ``True`` the result will ignore ``nans`` in the neighbors
 
     Returns

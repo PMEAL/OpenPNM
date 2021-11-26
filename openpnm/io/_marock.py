@@ -48,7 +48,7 @@ class MARock(GenericIO):
             scale the voxel counts to actual dimension. It is recommended that
             this value be in SI units [m] to work well with OpenPNM.
 
-        project : OpenPNM Project object
+        project : Project
             A GenericNetwork is created and added to the specified Project.
             If no Project is supplied then one will be created and returned.
 

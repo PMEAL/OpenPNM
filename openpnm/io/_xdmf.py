@@ -7,12 +7,12 @@ logger = logging.getLogger(__name__)
 
 class XDMF(GenericIO):
     r"""
-    The eXtensible Data Model Format combines XML descriptors with HDF5 data
-    storage
-
+    The eXtensible Data Model Format combines XML descriptors with HDF5
+    data storage.
 
     For more information visit the webiste:
     `XDMF.org <http://www.xdmf.org/index.php/Main_Page>`_
+
     """
 
     _header = """<?xml version="1.0" ?>
@@ -21,21 +21,20 @@ class XDMF(GenericIO):
     @classmethod
     def export_data(cls, network, phases=[], filename=''):
         r"""
-        Saves (transient/steady-state) data from the given objects into the
-        specified file.
+        Saves (transient/steady-state) data from the given objects into
+        the specified file.
 
         Parameters
         ----------
         network : GenericNetwork
             The network containing the desired data
-
-        phases : list[GenericPhase]s (optional, default is none)
+        phases : list[GenericPhase] (optional, default is None)
             A list of phase objects whose data are to be included
 
         Notes
         -----
-        This method only saves the data, not any of the pore-scale models or
-        other attributes.
+        This method only saves the data, not any of the pore-scale models
+        or other attributes.
 
         """
         import h5py

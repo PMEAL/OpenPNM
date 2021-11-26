@@ -157,7 +157,7 @@ class VTK(GenericIO):
         filename : str (optional)
             The name of the file containing the data to import. The formatting
             of this file is outlined below.
-        project : OpenPNM Project object
+        project : Project
             A GenericNetwork is created and added to the specified Project.
             If no Project is supplied then one will be created and returned.
 

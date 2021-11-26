@@ -25,6 +25,7 @@ class Statoil(GenericIO):
     folder. The data is stored in columns with each corresponding to a
     specific property. Headers are not provided in the files, so one must
     refer to various theses and documents to interpret their meaning.
+
     """
 
     @classmethod
@@ -50,6 +51,7 @@ class Statoil(GenericIO):
             pores in the network, respectively.  This would be the case if
             the ``add_reservoir_pore`` function had been called prior to
             exporting.
+
         """
         if path is None:
             path = os.getcwd()
@@ -216,18 +218,17 @@ class Statoil(GenericIO):
         ----------
         path : str
             The full path to the folder containing the set of \'dat\' files.
-
         prefix : str
             The file name prefix on each file. The data files are stored
             as \<prefix\>_node1.dat.
-
         network : GenericNetwork
             If given then the data will be loaded on it and returned.  If not
             given, a Network will be created and returned.
 
         Returns
         -------
-        An OpenPNM Project containing a GenericNetwork holding all the data
+        Project
+            An OpenPNM Project containing a GenericNetwork holding all the data
 
         """
         net = {}
@@ -348,6 +349,7 @@ class Statoil(GenericIO):
             Controls the distance which the reservoir is offset from the given
             ``pores``.  The total displacement is found from the network
             dimension normal to given ``pores``, multiplied by ``offset``.
+
         """
 
         # Check if a label was given and fetch actual indices

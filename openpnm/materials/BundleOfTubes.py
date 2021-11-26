@@ -16,7 +16,7 @@ class BundleOfTubes(Project):
     r"""
     The materials class creats a network that matches the bundle-of-tubes model
 
-    An OpenPNM project object is returned that contain a network with a
+    An Project is returned that contain a network with a
     bundle-of-tubes topology, and geometry object with the necessary pore
     size information, and a phase object with pre-defined pore-scale physics
     models attached.  Note that this phase object does not have any actual

@@ -3,7 +3,7 @@ Pore-scale models for calculating the diffusive conductance of conduits.
 """
 import numpy as _np
 import scipy.constants as _const
-from openpnm.models.physics.utils import _poisson_conductance
+from openpnm.models.physics._utils import _poisson_conductance
 
 __all__ = [
     "generic_diffusive",

@@ -6,8 +6,14 @@ logger = logging.getLogger(__name__)
 
 class Salome(GenericIO):
     r"""
-    Write a Salome (salome-platform.org) py script to generate a geometry.
-    The exported py file should be loaded from Salome with "load script".
+    Writes a Salome .py script to generate a geometry.
+
+    The exported .py file should be loaded from Salome with "load script".
+
+    Notes
+    -----
+    Visit salome-platform.org for more information.
+
     """
     _header = """
 import numpy as np
@@ -81,15 +87,15 @@ pnm_2_salome(cylinder_head, cylinder_tail, cylinder_r,
         ----------
         network : GenericNetwork
             The network containing the desired data
-
-        phases : list[GenericPhase]s (optional, default is none)
+        phases : list[GenericPhase] (optional, default is None)
             A list of phase objects whose data are to be included
 
         Notes
         -----
-        This method only saves the data, not any of the pore-scale models or
-        other attributes.  To save an actual OpenPNM Project use the
-        ``Workspace`` object.\n
+        This method only saves the data, not any of the pore-scale models
+        or other attributes. To save an actual OpenPNM Project use the
+        ``Workspace`` object.
+
         """
         project, network, phases = cls._parse_args(network=network,
                                                    phases=phases)

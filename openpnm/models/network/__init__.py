@@ -1,6 +1,6 @@
 r"""
-Network Models
-==============
+Network
+=======
 
 This submodule contains models for calculating topological properties of
 networks

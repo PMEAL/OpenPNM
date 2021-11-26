@@ -19,7 +19,7 @@ Contents
    :maxdepth: 1
    :titlesonly:
 
-   core
+   io
 
 **TODO**
 

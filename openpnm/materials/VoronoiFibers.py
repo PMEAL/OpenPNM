@@ -47,7 +47,7 @@ class VoronoiFibers(Project):
         fiber radius to apply to Voronoi edges when calculating pore and throat
         sizes
 
-    resolution : boolean
+    resolution : bool
         Determines the size of each voxel in the image. Care should be made to
         appropriately set the resolution based on the fiber_radius and the
         shape of the domain so as to remain within memory constraints.

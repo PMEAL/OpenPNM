@@ -78,10 +78,10 @@ class LegacyMixin:
         pores : array_like
             The indices of the pores on the object specifiedin ``origin``
 
-        origin : OpenPNM Base object
+        origin : Base
             The object corresponding to the indices given in ``pores``
 
-        filtered : boolean (default is ``True``)
+        filtered : bool (default is ``True``)
             If ``True`` then a ndarray of indices is returned with missing
             indices removed, otherwise a named-tuple containing both the
             ``indices`` and a boolean ``mask`` with ``False`` indicating
@@ -400,7 +400,7 @@ class LabelMixin:
             **'xnor'** : Pores with *more than one* of the given labels are
             returned.
 
-        asmask : boolean
+        asmask : bool
             If ``True`` then a boolean array of length Np is returned with
             ``True`` values indicating the pores that satisfy the query.
 
@@ -481,7 +481,7 @@ class LabelMixin:
             **'xnor'** : Throats with *more than one* of the given labels are
             returned.
 
-        asmask : boolean
+        asmask : bool
             If ``True`` then a boolean array of length Nt is returned with
             ``True`` values indicating the throats that satisfy the query.
 

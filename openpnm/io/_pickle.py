@@ -16,7 +16,7 @@ class Pickle(GenericIO):
     -----
     The methods in this class use the ``pickle`` module from the standard
     library.  Aside from the security issues, these files can only be loaded
-    by the exact same OpenPNM version used to save them.  They are meant for
+    by the exact same OpenPNM version used to save them. They are meant for
     **temporary storage**.
 
     """
@@ -28,7 +28,7 @@ class Pickle(GenericIO):
 
         Parameters
         ----------
-        objs : OpenPNM Base object or list of objects
+        objs : Base or list of objects
             The object(s) to be saved
 
         """
@@ -51,13 +51,13 @@ class Pickle(GenericIO):
             The name of the file containing the object to open. Can be a
             relative or absolute path, and can be a string or path object such
             as that produced by ``pathlib``.
-        project : OpenPNM Project object
+        project : Project
             If not provided one will be created and returned by this function,
             otherwise the loaded object will be added to the given ``project``.
 
         Returns
         -------
-        project : OpenPNM Project
+        project : Project
             If no Project object is specified then one is created. A handle to
             the Project is returned.
 
@@ -75,14 +75,15 @@ class Pickle(GenericIO):
     @classmethod
     def save_project(cls, project, filename=''):
         r"""
-        Save an OpenPNM Project to a file on disk
+        Saves an OpenPNM Project to a file on disk
 
         Parameters
         ----------
-        project : OpenPNM Project
+        project : Project
             The project to save
         filename : str
             The filename to save the file
+
         """
         if filename == '':
             filename = project.name
@@ -96,12 +97,13 @@ class Pickle(GenericIO):
     @classmethod
     def save_workspace(cls, filename=''):
         r"""
-        Save the current Workspace to a file on disk
+        Saves the current Workspace to a file on disk
 
         Parameters
         ----------
         filename : str
             The filename to save the file
+
         """
         if filename == '':
             filename = 'workspace' + '_' + time.strftime('%Y%b%d_%H%M%p')
@@ -117,23 +119,24 @@ class Pickle(GenericIO):
     @classmethod
     def load_workspace(cls, filename, overwrite=False):
         r"""
-        Load a saved Workspace into the current one
+        Loads a saved Workspace into the current one
 
         Parameters
         ----------
         filename : str or path object
             The name of the file to load
-        overwrite : boolean
+        overwrite : bool
             A flag to indicate if the current Workspace should be
-            overwritten when loading the new one.  The default is ``False``,
+            overwritten when loading the new one. The default is ``False``,
             meaning the loaded file will be added to the existing data.  Note
             that in this case Project names may clash, in which case the
             newly loaded Projects are given new names.
 
         Returns
         -------
-        workspace : OpenPNM Workspace Object
+        workspace : Workspace
             A handle to the Workspace, with the newly loaded Projects added
+
         """
         fname = cls._parse_filename(filename=filename, ext='pkl')
         temp = {}  # Read file into temporary dict
@@ -165,7 +168,7 @@ class Pickle(GenericIO):
     @classmethod
     def load_project(cls, filename):
         r"""
-        Load a saved Project file into the current Workspace
+        Loads a saved Project file into the current Workspace
 
         Parameters
         ----------
@@ -174,8 +177,9 @@ class Pickle(GenericIO):
 
         Returns
         -------
-        project : OpenPNM Project
+        project : Project
             A handle to the loaded Project is returned.
+
         """
         filename = cls._parse_filename(filename=filename, ext='pkl')
         projname = filename.name.split('.')[0]

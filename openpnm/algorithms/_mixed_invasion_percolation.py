@@ -34,7 +34,7 @@ class MixedIPSettings:
     snap_off : str
         The dictionary key on the Phase object where the throat snap-off
         pressure values are stored.
-    invade_isolated_Ts : boolean
+    invade_isolated_Ts : bool
         If ``True``, isolated throats are invaded at the higher invasion
         pressure of their connected pores.
     late_pore_filling : str
@@ -111,7 +111,7 @@ class MixedInvasionPercolation(GenericAlgorithm):
             The dictionary key on the Phase object where the throat snap-off
             pressure values are stored.
 
-        invade_isolated_Ts : boolean
+        invade_isolated_Ts : bool
             If True, isolated throats are invaded at the higher invasion
             pressure of their connected pores.
 
@@ -237,7 +237,7 @@ class MixedInvasionPercolation(GenericAlgorithm):
             Locations where the defender can exit the network.  Any defender
             that does not have access to these sites will be trapped.
 
-        overwrite : boolean
+        overwrite : bool
             If ``True`` then all existing outlet locations will be removed and
             then the supplied locations will be added.  If ``False`` (default),
             then supplied locations are added to any already existing outlet
@@ -599,7 +599,7 @@ class MixedInvasionPercolation(GenericAlgorithm):
 
         Parameters
         ----------
-        partial : boolean
+        partial : bool
             Indicating whether partially filled network
 
         Notes
@@ -799,7 +799,7 @@ class MixedInvasionPercolation(GenericAlgorithm):
             The pores locations that are to be filled with invader at the
             beginning of the simulation.
 
-        overwrite : boolean
+        overwrite : bool
             If ``True`` then all existing inlet locations will be removed and
             then the supplied locations will be added.  If ``False``, then
             supplied locations are added to any already existing locations.

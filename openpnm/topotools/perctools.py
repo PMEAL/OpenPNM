@@ -96,7 +96,7 @@ def site_percolation(ij, occupied_sites):
         sites are both occupied they are part of the same cluster, as it
         the bond connecting them.
 
-    occupied_sites : boolean
+    occupied_sites : bool
         A list indicating whether sites are occupied or not
 
     Returns
@@ -141,7 +141,7 @@ def bond_percolation(ij, occupied_bonds):
         An N x 2 array of [site_A, site_B] connections.  A site is
         considered occupied if any of it's connecting bonds are occupied.
 
-    occupied_bonds: boolean
+    occupied_bonds: bool
         A list indicating whether a bond is occupied or not
 
     Returns

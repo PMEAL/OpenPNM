@@ -47,7 +47,7 @@ class iMorph(GenericIO):
         Returns
         -------
         project : list
-            An OpenPNM project object containing a network and a geometry
+            An Project containing a network and a geometry
             object.  The geometry-related data are automatically placed on the
             geometry object using the ``Imported`` geometry class.
         """

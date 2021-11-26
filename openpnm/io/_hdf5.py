@@ -29,7 +29,7 @@ class HDF5(GenericIO):
             An indication of whether 'pore' and/or 'throat' data are desired.
             The default is both.
 
-        interleave : boolean (default is ``True``)
+        interleave : bool (default is ``True``)
             When ``True`` (default) the data from all Geometry objects (and
             Physics objects if ``phases`` are given) is interleaved into
             a single array and stored as a network property (or Phase
@@ -37,7 +37,7 @@ class HDF5(GenericIO):
             object are stored under their own dictionary key, the structuring
             of which depends on the value of the ``flatten`` argument.
 
-        flatten : boolean (default is ``True``)
+        flatten : bool (default is ``True``)
             When ``True``, all objects are accessible from the top level
             of the dictionary.  When ``False`` objects are nested under their
             parent object.  If ``interleave`` is ``True`` this argument is

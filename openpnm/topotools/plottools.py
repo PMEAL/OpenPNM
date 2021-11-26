@@ -344,7 +344,7 @@ def plot_networkx(network,
     Parameters
     ----------
     network : GenericNetwork
-    plot_throats : boolean, optional
+    plot_throats : bool, optional
         Plots throats as well as pores, if True.
     labels : list, optional
         List of OpenPNM labels

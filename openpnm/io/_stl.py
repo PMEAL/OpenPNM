@@ -24,29 +24,25 @@ class STL(GenericIO):
         ----------
         network : GenericNetwork.
             The network containing the desired data.
-
-        phases : list[GenericPhase]s (place holder, default is none).
-
+        phases : list[GenericPhase] (place holder, default is None).
+            List of phases containing the desired data.
         filename : str (optional).
             The name of the file containing the data to export.
-
         maxsize : a float or a string "auto" (optional).
             The maximum size of the mesh elements allowed. "auto" corresponds
             to an automatic determination based on pores and throats sizes. Any
             float value will be used as a maximum size. Small values result in
             finner meshes, but slower mesh calculations.
-
         fileformat : str (optional).
             Default is "STL Format" which corresponds to STL format. Other
             formats such as Gmsh and Fluent are supported (see ngsolve.org).
-
         logger_level : integer between 0 and 7 (optional).
             Default is 0. The logger level set in netgen package.
 
         Notes
         -----
         This method only saves the geometry of the network, not any of the
-        pore-scale models or other attributes.  To save an actual OpenPNM
+        pore-scale models or other attributes. To save an actual OpenPNM
         Project use the ``Workspace`` object.
 
         """
@@ -71,7 +67,7 @@ class STL(GenericIO):
         # Path is a pathlib object, so slice it up as needed
         fname_stl = path.name
 
-        # correct connections where 'pore.diameter' = 'throat.diameter'
+        # Correct connections where 'pore.diameter' = 'throat.diameter'
         dt = network['throat.diameter'].copy()
         dp = network['pore.diameter'][network['throat.conns']]
         dt[dp[:, 0] == dt] *= 0.99
@@ -84,7 +80,7 @@ class STL(GenericIO):
                           network['throat.length'].min())
         geo = csg.CSGeometry()
 
-        # define pores
+        # Define pores
         geometry = csg.Sphere(csg.Pnt(network['pore.coords'][0, 0]/scale,
                                       network['pore.coords'][0, 1]/scale,
                                       network['pore.coords'][0, 2]/scale),
@@ -96,7 +92,7 @@ class STL(GenericIO):
                               network['pore.diameter'][p]/scale/2)
             geometry += pore
 
-        # define throats
+        # Define throats
         for t in range(network.Nt):
             A = network['throat.endpoints.tail'][t, :]/scale
             B = network['throat.endpoints.head'][t, :]/scale
@@ -111,7 +107,7 @@ class STL(GenericIO):
             throat = cylinder * plane1 * plane2
             geometry += throat
 
-        # add pore and throats to geometry, build mesh, rescale, and export
+        # Add pore and throats to geometry, build mesh, rescale, and export
         geo.Add(geometry)
         mesh = geo.GenerateMesh(maxh=maxsize/scale)
         mesh.Scale(scale)

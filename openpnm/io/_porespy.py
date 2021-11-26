@@ -21,9 +21,10 @@ class PoreSpy(GenericIO):
             Can either be a filename point to a pickled dictionary, or an
             actual dictionary.  The second option lets users avoid the
             step of saving the dictionary to a file
-        project : OpenPNM Project object
+        project : Project
             If given, the loaded network and geometry will be added to this
             project, otherwise a new one will be created.
+
         """
         # Parse the filename
         if isinstance(filename, dict):

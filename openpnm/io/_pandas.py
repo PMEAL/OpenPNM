@@ -38,7 +38,7 @@ class Pandas(GenericIO):
         phases : list[GenericPhase]s
             The data on each supplied phase will be added to DataFrame
 
-        join : boolean
+        join : bool
             If ``False`` (default), two DataFrames are returned with *pore*
             data in one, and *throat* data in the other.  If ``True`` the pore
             and throat data are combined into a single DataFrame.  This can be

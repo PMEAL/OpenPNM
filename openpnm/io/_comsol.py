@@ -4,8 +4,8 @@ from openpnm.io import GenericIO
 
 class COMSOL(GenericIO):
     r"""
-    Writes a file containing pores and throats of the network in a format that
-    can be opened in COMSOL.
+    Writes a file containing pores and throats of the network in a format
+    that can be opened in COMSOL.
 
     Notes
     -----

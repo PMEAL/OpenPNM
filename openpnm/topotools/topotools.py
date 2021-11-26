@@ -1353,7 +1353,7 @@ def generate_base_points(num_points, domain_size, density_map=None,
         When specifying a custom probabiliy map is it recommended to also set
         values outside the given domain to zero.  If not, then the correct
         shape will still be returned, but with too few points in it.
-    reflect : boolean
+    reflect : bool
         If ``True``, the the base points are generated as specified, the reflected
         about each face of the domain.  This essentially tricks the
         tessellation functions into creating smoothfaces at the

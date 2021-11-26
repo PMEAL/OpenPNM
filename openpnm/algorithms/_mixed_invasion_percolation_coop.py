@@ -83,7 +83,7 @@ class MixedInvasionPercolationCoop(MixedInvasionPercolation):
         snap_off : str
             The dictionary key on the Phase object where the throat snap-off
             pressure values are stored.
-        invade_isolated_Ts : boolean
+        invade_isolated_Ts : bool
             If True, isolated throats are invaded at the higher invasion
             pressure of their connected pores.
         late_pore_filling : str

@@ -1,7 +1,7 @@
 r"""
 Pore-scale models for calculating the electrical conductance of conduits.
 """
-from openpnm.models.physics.utils import _poisson_conductance
+from openpnm.models.physics._utils import _poisson_conductance
 
 __all__ = ["generic_electrical", "series_resistors"]
 

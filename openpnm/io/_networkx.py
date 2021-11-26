@@ -52,7 +52,7 @@ class NetworkX(GenericIO):
             gaps, i.e. ``G.nodes() = [0,1,3,4,5]`` is not allowed and should be
             mapped to ``G.nodes() = [0,1,2,3,4]``.
 
-        project : OpenPNM Project object
+        project : Project
             A GenericNetwork is created and added to the specified Project.
             If no Project is supplied then one will be created and returned.
 

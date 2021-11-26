@@ -108,7 +108,7 @@ class OrdinaryPercolation(GenericAlgorithm):
             Locations that are initially filled with invader, from which
             clusters grow and invade into the network
 
-        overwrite : boolean
+        overwrite : bool
             If ``True`` then all existing inlet locations will be removed and
             then the supplied locations will be added.  If ``False`` (default),
             then supplied locations are added to any already existing inlet
@@ -136,7 +136,7 @@ class OrdinaryPercolation(GenericAlgorithm):
             Locations where the defender can exit the network.  Any defender
             that does not have access to these sites will be trapped.
 
-        overwrite : boolean
+        overwrite : bool
             If ``True`` then all existing outlet locations will be removed and
             then the supplied locations will be added.  If ``False`` (default),
             then supplied locations are added to any already existing outlet
@@ -165,7 +165,7 @@ class OrdinaryPercolation(GenericAlgorithm):
             The throat locations that are to be filled with invader at the
             beginning of the simulation.
 
-        overwrite : boolean
+        overwrite : bool
             If ``True`` then all existing inlet locations will be removed and
             then the supplied locations will be added.  If ``False``, then
             supplied locations are added to any already existing locations.

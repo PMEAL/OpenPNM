@@ -22,14 +22,14 @@ def find_neighbor_sites(sites, am, flatten=True, include_input=False,
         sites *i* and *j* are connected, the matrix contains non-zero values
         at locations (i, j) and (j, i).
 
-    flatten : boolean
+    flatten : bool
         If ``True`` (default) the returned result is a compressed array of all
         neighbors, or a list of lists with each sub-list containing the
         neighbors for each input site.  Note that an *unflattened* list might
         be slow to generate since it is a Python ``list`` rather than a Numpy
         array.
 
-    include_input : boolean
+    include_input : bool
         If ``False`` (default) the input sites will be removed from the result.
 
     logic : str
@@ -133,7 +133,7 @@ def find_neighbor_bonds(sites, im=None, am=None, flatten=True, logic='or'):
         given.  Passing in ``am`` is faster, but does not allow for an
         unflattened list.
 
-    flatten : boolean (default is ``True``)
+    flatten : bool (default is ``True``)
         Indicates whether the returned result is a compressed array of all
         neighbors, or a list of lists with each sub-list containing the
         neighbors for each input site.  Note that an *unflattened* list might
@@ -248,7 +248,7 @@ def find_connected_sites(bonds, am, flatten=True, logic='or'):
         sites *i* and *j* are connected, the matrix contains non-zero values
         at locations (i, j) and (j, i).
 
-    flatten : boolean (default is ``True``)
+    flatten : bool (default is ``True``)
         Indicates whether the returned result is a compressed array of all
         neighbors, or a list of lists with each sub-list containing the
         neighbors for each input site.  Note that an *unflattened* list might
@@ -383,7 +383,7 @@ def find_complement(am, sites=None, bonds=None, asmask=False):
     bonds : array_like (optional)
         The set of bonds for which the complement is sought
 
-    asmask : boolean
+    asmask : bool
         If set to ``True`` the result is returned as a boolean mask of the
         correct length with ``True`` values indicate the complements.  The
         default is ``False`` which returns a list of indices instead.
@@ -592,18 +592,18 @@ def conns_to_am(conns, shape=None, force_triu=True, drop_diag=True,
         The shape of the array.  If none is given then it is inferred from the
         maximum value in ``conns`` array.
 
-    force_triu : boolean
+    force_triu : bool
         If True (default), then all connections are assumed undirected, and
         moved to the upper triangular portion of the array
 
-    drop_diag : boolean
+    drop_diag : bool
         If True (default), then connections from a site and itself are removed.
 
-    drop_dupes : boolean
+    drop_dupes : bool
         If True (default), then all pairs of sites sharing multiple connections
         are reduced to a single connection.
 
-    drop_negs : boolean
+    drop_negs : bool
         If True (default), then all connections with one or both ends pointing
         to a negative number are removed.
 

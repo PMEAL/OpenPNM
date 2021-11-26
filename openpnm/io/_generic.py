@@ -6,6 +6,7 @@ logger = logging.getLogger(__name__)
 
 
 class GenericIO:
+    """Brief description of GenericIO"""
 
     @classmethod
     def _convert_data(cls, project):
