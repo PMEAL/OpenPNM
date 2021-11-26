@@ -1,8 +1,0 @@
-:orphan:
-
-as_uri
-=======================================================
-
-.. currentmodule:: openpnm.models.phases.partition_coefficient
-
-.. automethod:: Path.as_uri

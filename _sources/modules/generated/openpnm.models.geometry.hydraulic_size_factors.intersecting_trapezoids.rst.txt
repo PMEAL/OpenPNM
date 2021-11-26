@@ -1,6 +1,0 @@
-intersecting\_trapezoids
-========================
-
-.. currentmodule:: openpnm.models.geometry.hydraulic_size_factors
-
-.. autofunction:: intersecting_trapezoids

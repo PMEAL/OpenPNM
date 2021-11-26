@@ -1,8 +1,0 @@
-:orphan:
-
-mean
-==========================================
-
-.. currentmodule:: openpnm.integrators
-
-.. automethod:: TransientSolution.mean

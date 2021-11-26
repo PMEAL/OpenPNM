@@ -1,6 +1,0 @@
-squares\_and\_rectangles
-========================
-
-.. currentmodule:: openpnm.models.geometry.diffusive_size_factors
-
-.. autofunction:: squares_and_rectangles

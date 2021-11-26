@@ -1,6 +1,0 @@
-polynomial
-==========
-
-.. currentmodule:: openpnm.models.misc
-
-.. autofunction:: polynomial

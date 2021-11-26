@@ -1,6 +1,0 @@
-merge\_networks
-===============
-
-.. currentmodule:: openpnm.topotools
-
-.. autofunction:: merge_networks

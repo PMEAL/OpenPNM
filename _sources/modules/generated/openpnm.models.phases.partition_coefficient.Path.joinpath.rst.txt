@@ -1,8 +1,0 @@
-:orphan:
-
-joinpath
-=========================================================
-
-.. currentmodule:: openpnm.models.phases.partition_coefficient
-
-.. automethod:: Path.joinpath

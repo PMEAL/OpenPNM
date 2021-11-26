@@ -1,8 +1,0 @@
-:orphan:
-
-cumsum
-===================================
-
-.. currentmodule:: openpnm.integrators
-
-.. automethod:: Solution.cumsum

@@ -1,8 +1,0 @@
-:orphan:
-
-diagonal
-=====================================
-
-.. currentmodule:: openpnm.integrators
-
-.. automethod:: Solution.diagonal

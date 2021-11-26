@@ -1,6 +1,0 @@
-plot\_vpython
-=============
-
-.. currentmodule:: openpnm.topotools
-
-.. autofunction:: plot_vpython

@@ -1,6 +1,0 @@
-weibull
-=======
-
-.. currentmodule:: openpnm.models.misc.statistical_distributions
-
-.. autofunction:: weibull

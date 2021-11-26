@@ -1,8 +1,0 @@
-:orphan:
-
-get_conduit_data
-=========================================
-
-.. currentmodule:: openpnm.network
-
-.. automethod:: Delaunay.get_conduit_data

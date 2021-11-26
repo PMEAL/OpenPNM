@@ -1,8 +1,0 @@
-:orphan:
-
-fromkeys
-============================================
-
-.. currentmodule:: openpnm.geometry
-
-.. automethod:: PyramidsAndCuboids.fromkeys

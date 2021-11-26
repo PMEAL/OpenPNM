@@ -1,8 +1,0 @@
-:orphan:
-
-create_incidence_matrix
-=============================================
-
-.. currentmodule:: openpnm.network
-
-.. automethod:: Cubic.create_incidence_matrix

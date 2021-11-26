@@ -1,6 +1,0 @@
-general\_toroidal
-=================
-
-.. currentmodule:: openpnm.models.physics.meniscus
-
-.. autofunction:: general_toroidal

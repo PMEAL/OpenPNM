@@ -1,6 +1,0 @@
-isolated\_pores
-===============
-
-.. currentmodule:: openpnm.models.network
-
-.. autofunction:: isolated_pores

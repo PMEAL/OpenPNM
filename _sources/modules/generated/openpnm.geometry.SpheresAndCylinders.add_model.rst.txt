@@ -1,8 +1,0 @@
-:orphan:
-
-add_model
-==============================================
-
-.. currentmodule:: openpnm.geometry
-
-.. automethod:: SpheresAndCylinders.add_model

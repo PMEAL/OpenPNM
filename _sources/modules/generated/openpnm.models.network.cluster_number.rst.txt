@@ -1,6 +1,0 @@
-cluster\_number
-===============
-
-.. currentmodule:: openpnm.models.network
-
-.. autofunction:: cluster_number

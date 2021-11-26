@@ -1,8 +1,0 @@
-:orphan:
-
-copy
-=========================================
-
-.. currentmodule:: openpnm.algorithms
-
-.. automethod:: FourierConduction.copy

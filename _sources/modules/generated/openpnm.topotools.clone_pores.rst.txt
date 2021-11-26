@@ -1,6 +1,0 @@
-clone\_pores
-============
-
-.. currentmodule:: openpnm.topotools
-
-.. autofunction:: clone_pores

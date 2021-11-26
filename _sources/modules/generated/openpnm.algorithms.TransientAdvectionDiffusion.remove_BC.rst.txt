@@ -1,8 +1,0 @@
-:orphan:
-
-remove_BC
-========================================================
-
-.. currentmodule:: openpnm.algorithms
-
-.. automethod:: TransientAdvectionDiffusion.remove_BC

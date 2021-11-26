@@ -1,8 +1,0 @@
-:orphan:
-
-lchmod
-=======================================================
-
-.. currentmodule:: openpnm.models.phases.partition_coefficient
-
-.. automethod:: Path.lchmod

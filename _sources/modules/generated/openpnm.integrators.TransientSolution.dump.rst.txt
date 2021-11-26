@@ -1,8 +1,0 @@
-:orphan:
-
-dump
-==========================================
-
-.. currentmodule:: openpnm.integrators
-
-.. automethod:: TransientSolution.dump

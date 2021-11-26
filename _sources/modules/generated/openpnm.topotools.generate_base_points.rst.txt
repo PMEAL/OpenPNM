@@ -1,6 +1,0 @@
-generate\_base\_points
-======================
-
-.. currentmodule:: openpnm.topotools
-
-.. autofunction:: generate_base_points

@@ -1,6 +1,0 @@
-count\_coincident\_pores
-========================
-
-.. currentmodule:: openpnm.models.network
-
-.. autofunction:: count_coincident_pores

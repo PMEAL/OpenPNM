@@ -1,8 +1,0 @@
-:orphan:
-
-setdefault
-================================================
-
-.. currentmodule:: openpnm.geometry
-
-.. automethod:: CirclesAndRectangles.setdefault

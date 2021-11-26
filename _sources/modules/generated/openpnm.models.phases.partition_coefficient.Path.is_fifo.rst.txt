@@ -1,8 +1,0 @@
-:orphan:
-
-is_fifo
-========================================================
-
-.. currentmodule:: openpnm.models.phases.partition_coefficient
-
-.. automethod:: Path.is_fifo

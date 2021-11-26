@@ -1,6 +1,0 @@
-find\_surface\_pores
-====================
-
-.. currentmodule:: openpnm.topotools
-
-.. autofunction:: find_surface_pores

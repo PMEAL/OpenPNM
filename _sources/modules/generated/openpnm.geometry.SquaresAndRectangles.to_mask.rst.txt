@@ -1,8 +1,0 @@
-:orphan:
-
-to_mask
-=============================================
-
-.. currentmodule:: openpnm.geometry
-
-.. automethod:: SquaresAndRectangles.to_mask

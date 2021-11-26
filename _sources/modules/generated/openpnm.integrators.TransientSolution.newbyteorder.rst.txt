@@ -1,8 +1,0 @@
-:orphan:
-
-newbyteorder
-==================================================
-
-.. currentmodule:: openpnm.integrators
-
-.. automethod:: TransientSolution.newbyteorder

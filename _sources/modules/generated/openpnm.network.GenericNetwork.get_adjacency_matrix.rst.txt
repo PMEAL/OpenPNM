@@ -1,8 +1,0 @@
-:orphan:
-
-get_adjacency_matrix
-===================================================
-
-.. currentmodule:: openpnm.network
-
-.. automethod:: GenericNetwork.get_adjacency_matrix

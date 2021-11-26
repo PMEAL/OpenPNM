@@ -1,8 +1,0 @@
-:orphan:
-
-num_pores
-===================================
-
-.. currentmodule:: openpnm.network
-
-.. automethod:: CubicDual.num_pores

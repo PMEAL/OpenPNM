@@ -1,8 +1,0 @@
-:orphan:
-
-get_incidence_matrix
-==============================================
-
-.. currentmodule:: openpnm.network
-
-.. automethod:: CubicDual.get_incidence_matrix

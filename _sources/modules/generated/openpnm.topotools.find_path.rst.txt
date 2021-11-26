@@ -1,6 +1,0 @@
-find\_path
-==========
-
-.. currentmodule:: openpnm.topotools
-
-.. autofunction:: find_path

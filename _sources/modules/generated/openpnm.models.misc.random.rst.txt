@@ -1,6 +1,0 @@
-random
-======
-
-.. currentmodule:: openpnm.models.misc
-
-.. autofunction:: random

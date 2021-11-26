@@ -1,8 +1,0 @@
-:orphan:
-
-argpartition
-==================================================
-
-.. currentmodule:: openpnm.integrators
-
-.. automethod:: TransientSolution.argpartition

@@ -1,6 +1,0 @@
-extend
-======
-
-.. currentmodule:: openpnm.topotools
-
-.. autofunction:: extend

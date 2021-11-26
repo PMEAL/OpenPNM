@@ -1,8 +1,0 @@
-:orphan:
-
-set_phase
-==================================
-
-.. currentmodule:: openpnm.physics
-
-.. automethod:: Standard.set_phase

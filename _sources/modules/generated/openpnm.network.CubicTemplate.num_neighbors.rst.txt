@@ -1,8 +1,0 @@
-:orphan:
-
-num_neighbors
-===========================================
-
-.. currentmodule:: openpnm.network
-
-.. automethod:: CubicTemplate.num_neighbors

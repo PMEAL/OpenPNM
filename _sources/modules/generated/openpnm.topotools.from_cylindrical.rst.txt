@@ -1,6 +1,0 @@
-from\_cylindrical
-=================
-
-.. currentmodule:: openpnm.topotools
-
-.. autofunction:: from_cylindrical

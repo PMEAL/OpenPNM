@@ -1,8 +1,0 @@
-:orphan:
-
-add_model
-========================================
-
-.. currentmodule:: openpnm.network
-
-.. automethod:: GenericNetwork.add_model

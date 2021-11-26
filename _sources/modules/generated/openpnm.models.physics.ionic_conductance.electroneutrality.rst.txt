@@ -1,6 +1,0 @@
-electroneutrality
-=================
-
-.. currentmodule:: openpnm.models.physics.ionic_conductance
-
-.. autofunction:: electroneutrality

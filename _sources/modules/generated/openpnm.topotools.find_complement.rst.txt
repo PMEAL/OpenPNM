@@ -1,6 +1,0 @@
-find\_complement
-================
-
-.. currentmodule:: openpnm.topotools
-
-.. autofunction:: find_complement

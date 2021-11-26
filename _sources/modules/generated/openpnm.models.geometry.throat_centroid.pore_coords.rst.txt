@@ -1,6 +1,0 @@
-pore\_coords
-============
-
-.. currentmodule:: openpnm.models.geometry.throat_centroid
-
-.. autofunction:: pore_coords

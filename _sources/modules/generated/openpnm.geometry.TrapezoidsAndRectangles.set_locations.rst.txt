@@ -1,8 +1,0 @@
-:orphan:
-
-set_locations
-======================================================
-
-.. currentmodule:: openpnm.geometry
-
-.. automethod:: TrapezoidsAndRectangles.set_locations

@@ -1,6 +1,0 @@
-purcell
-=======
-
-.. currentmodule:: openpnm.models.physics.meniscus
-
-.. autofunction:: purcell

@@ -1,8 +1,0 @@
-:orphan:
-
-set_value_BC
-================================================
-
-.. currentmodule:: openpnm.algorithms
-
-.. automethod:: FickianDiffusion.set_value_BC

@@ -1,8 +1,0 @@
-:orphan:
-
-set_variable_props
-================================================================
-
-.. currentmodule:: openpnm.algorithms
-
-.. automethod:: TransientReactiveTransport.set_variable_props

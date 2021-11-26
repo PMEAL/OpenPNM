@@ -1,6 +1,0 @@
-ideal\_gas
-==========
-
-.. currentmodule:: openpnm.models.phases.density
-
-.. autofunction:: ideal_gas

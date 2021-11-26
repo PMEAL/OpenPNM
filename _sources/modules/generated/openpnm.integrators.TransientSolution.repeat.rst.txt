@@ -1,8 +1,0 @@
-:orphan:
-
-repeat
-============================================
-
-.. currentmodule:: openpnm.integrators
-
-.. automethod:: TransientSolution.repeat

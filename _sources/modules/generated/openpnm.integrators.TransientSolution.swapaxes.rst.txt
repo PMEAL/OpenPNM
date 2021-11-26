@@ -1,8 +1,0 @@
-:orphan:
-
-swapaxes
-==============================================
-
-.. currentmodule:: openpnm.integrators
-
-.. automethod:: TransientSolution.swapaxes

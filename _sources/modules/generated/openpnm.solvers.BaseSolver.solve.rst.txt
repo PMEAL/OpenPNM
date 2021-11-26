@@ -1,8 +1,0 @@
-:orphan:
-
-solve
-================================
-
-.. currentmodule:: openpnm.solvers
-
-.. automethod:: BaseSolver.solve

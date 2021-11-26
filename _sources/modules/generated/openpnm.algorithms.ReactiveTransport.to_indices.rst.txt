@@ -1,8 +1,0 @@
-:orphan:
-
-to_indices
-===============================================
-
-.. currentmodule:: openpnm.algorithms
-
-.. automethod:: ReactiveTransport.to_indices

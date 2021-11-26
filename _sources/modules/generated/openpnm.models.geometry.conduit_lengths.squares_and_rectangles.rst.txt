@@ -1,6 +1,0 @@
-squares\_and\_rectangles
-========================
-
-.. currentmodule:: openpnm.models.geometry.conduit_lengths
-
-.. autofunction:: squares_and_rectangles

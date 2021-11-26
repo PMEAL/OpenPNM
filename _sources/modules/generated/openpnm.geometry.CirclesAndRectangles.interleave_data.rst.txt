@@ -1,8 +1,0 @@
-:orphan:
-
-interleave_data
-=====================================================
-
-.. currentmodule:: openpnm.geometry
-
-.. automethod:: CirclesAndRectangles.interleave_data

@@ -1,8 +1,0 @@
-:orphan:
-
-num_throats
-====================================
-
-.. currentmodule:: openpnm.physics
-
-.. automethod:: Standard.num_throats

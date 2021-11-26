@@ -1,6 +1,0 @@
-bond\_percolation
-=================
-
-.. currentmodule:: openpnm.topotools
-
-.. autofunction:: bond_percolation

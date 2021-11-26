@@ -1,8 +1,0 @@
-:orphan:
-
-add_model
-==================================
-
-.. currentmodule:: openpnm.physics
-
-.. automethod:: Standard.add_model

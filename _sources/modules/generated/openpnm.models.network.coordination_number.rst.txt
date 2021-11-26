@@ -1,6 +1,0 @@
-coordination\_number
-====================
-
-.. currentmodule:: openpnm.models.network
-
-.. autofunction:: coordination_number

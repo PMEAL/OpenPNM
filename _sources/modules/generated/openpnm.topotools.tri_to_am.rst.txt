@@ -1,6 +1,0 @@
-tri\_to\_am
-===========
-
-.. currentmodule:: openpnm.topotools
-
-.. autofunction:: tri_to_am

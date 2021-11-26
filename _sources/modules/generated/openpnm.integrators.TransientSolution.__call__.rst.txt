@@ -1,8 +1,0 @@
-:orphan:
-
-__call__
-==============================================
-
-.. currentmodule:: openpnm.integrators
-
-.. automethod:: TransientSolution.__call__

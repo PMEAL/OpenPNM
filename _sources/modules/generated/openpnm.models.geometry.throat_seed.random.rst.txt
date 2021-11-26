@@ -1,6 +1,0 @@
-random
-======
-
-.. currentmodule:: openpnm.models.geometry.throat_seed
-
-.. autofunction:: random

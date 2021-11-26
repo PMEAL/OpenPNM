@@ -1,8 +1,0 @@
-:orphan:
-
-set_label
-=====================================
-
-.. currentmodule:: openpnm.phases
-
-.. automethod:: GenericPhase.set_label

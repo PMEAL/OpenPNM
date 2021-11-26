@@ -1,8 +1,0 @@
-:orphan:
-
-argmin
-============================================
-
-.. currentmodule:: openpnm.integrators
-
-.. automethod:: TransientSolution.argmin

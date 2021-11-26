@@ -1,8 +1,0 @@
-:orphan:
-
-set_residual
-===================================================
-
-.. currentmodule:: openpnm.algorithms
-
-.. automethod:: OrdinaryPercolation.set_residual

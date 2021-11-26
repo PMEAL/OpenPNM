@@ -1,6 +1,0 @@
-find\_neighbor\_sites
-=====================
-
-.. currentmodule:: openpnm.topotools
-
-.. autofunction:: find_neighbor_sites

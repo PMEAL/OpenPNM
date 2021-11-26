@@ -1,6 +1,0 @@
-compactness
-===========
-
-.. currentmodule:: openpnm.models.geometry.throat_capillary_shape_factor
-
-.. autofunction:: compactness

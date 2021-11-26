@@ -1,8 +1,0 @@
-:orphan:
-
-interpolate
-=================================================
-
-.. currentmodule:: openpnm.integrators
-
-.. automethod:: TransientSolution.interpolate

@@ -1,8 +1,0 @@
-:orphan:
-
-read_text
-==========================================================
-
-.. currentmodule:: openpnm.models.phases.partition_coefficient
-
-.. automethod:: Path.read_text

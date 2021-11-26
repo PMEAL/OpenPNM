@@ -1,6 +1,0 @@
-equivalent\_diameter
-====================
-
-.. currentmodule:: openpnm.models.geometry.pore_size
-
-.. autofunction:: equivalent_diameter

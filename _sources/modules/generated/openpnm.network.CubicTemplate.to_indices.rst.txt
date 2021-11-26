@@ -1,8 +1,0 @@
-:orphan:
-
-to_indices
-========================================
-
-.. currentmodule:: openpnm.network
-
-.. automethod:: CubicTemplate.to_indices

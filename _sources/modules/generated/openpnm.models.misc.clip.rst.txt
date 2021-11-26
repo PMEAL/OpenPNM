@@ -1,6 +1,0 @@
-clip
-====
-
-.. currentmodule:: openpnm.models.misc
-
-.. autofunction:: clip

@@ -1,6 +1,0 @@
-square
-======
-
-.. currentmodule:: openpnm.models.geometry.pore_volume
-
-.. autofunction:: square

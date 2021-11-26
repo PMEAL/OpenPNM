@@ -1,8 +1,0 @@
-:orphan:
-
-values
-=========================================
-
-.. currentmodule:: openpnm.algorithms
-
-.. automethod:: OhmicConduction.values

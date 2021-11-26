@@ -1,6 +1,0 @@
-from\_neighbor\_throats
-=======================
-
-.. currentmodule:: openpnm.models.misc.neighbor_lookups
-
-.. autofunction:: from_neighbor_throats

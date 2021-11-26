@@ -1,8 +1,0 @@
-:orphan:
-
-trace
-==================================
-
-.. currentmodule:: openpnm.integrators
-
-.. automethod:: Solution.trace

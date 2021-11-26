@@ -1,8 +1,0 @@
-:orphan:
-
-set_inlets
-=================================================
-
-.. currentmodule:: openpnm.algorithms
-
-.. automethod:: InvasionPercolation.set_inlets

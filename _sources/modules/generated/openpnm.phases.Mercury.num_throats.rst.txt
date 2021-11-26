@@ -1,8 +1,0 @@
-:orphan:
-
-num_throats
-==================================
-
-.. currentmodule:: openpnm.phases
-
-.. automethod:: Mercury.num_throats

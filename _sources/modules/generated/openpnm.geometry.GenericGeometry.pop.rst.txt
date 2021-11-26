@@ -1,8 +1,0 @@
-:orphan:
-
-pop
-====================================
-
-.. currentmodule:: openpnm.geometry
-
-.. automethod:: GenericGeometry.pop

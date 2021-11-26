@@ -1,8 +1,0 @@
-:orphan:
-
-to_mask
-============================================
-
-.. currentmodule:: openpnm.algorithms
-
-.. automethod:: ReactiveTransport.to_mask

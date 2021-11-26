@@ -1,6 +1,0 @@
-ad\_dif
-=======
-
-.. currentmodule:: openpnm.models.physics.ad_dif_conductance
-
-.. autofunction:: ad_dif
