@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.geometry.PyramidsAndCuboids.project
+===========================================
+
+.. currentmodule:: openpnm.geometry
+
+attribute
+
+.. autoproperty:: openpnm.geometry.PyramidsAndCuboids.project
+

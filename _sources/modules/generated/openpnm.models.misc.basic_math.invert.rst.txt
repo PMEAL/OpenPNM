@@ -1,0 +1,6 @@
+invert
+======
+
+.. currentmodule:: openpnm.models.misc.basic_math
+
+.. autofunction:: invert

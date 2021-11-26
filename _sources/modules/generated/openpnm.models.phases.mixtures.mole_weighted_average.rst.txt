@@ -1,0 +1,6 @@
+mole\_weighted\_average
+=======================
+
+.. currentmodule:: openpnm.models.phases.mixtures
+
+.. autofunction:: mole_weighted_average

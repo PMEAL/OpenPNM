@@ -1,0 +1,8 @@
+:orphan:
+
+argsort
+=============================================
+
+.. currentmodule:: openpnm.integrators
+
+.. automethod:: TransientSolution.argsort

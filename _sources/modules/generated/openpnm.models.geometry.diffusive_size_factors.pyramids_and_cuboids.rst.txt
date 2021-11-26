@@ -1,0 +1,6 @@
+pyramids\_and\_cuboids
+======================
+
+.. currentmodule:: openpnm.models.geometry.diffusive_size_factors
+
+.. autofunction:: pyramids_and_cuboids

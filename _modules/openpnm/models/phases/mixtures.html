@@ -1,0 +1,415 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>openpnm.models.phases.mixtures &#8212; OpenPNM 2.8.2 documentation</title>
+    
+  <link href="../../../../_static/css/theme.css" rel="stylesheet">
+  <link href="../../../../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/css/blank.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css" />
+    
+  <link rel="preload" as="script" href="../../../../_static/js/index.be7d3bbb2ef33a8344ce.js">
+
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/clipboard.min.js"></script>
+    <script src="../../../../_static/copybutton.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../../_static/js/custom.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+
+<a class="navbar-brand" href="https://www.openpnm.org">
+  <img src="../../../../_static/openpnm_logo.png" class="logo" alt="logo">
+</a>
+
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class=" collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../../user_guide/index.html">
+  User Guide
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../../modules/index.html">
+  Module Reference
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../../examples/examples.html">
+  Examples
+ </a>
+</li>
+
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/PMEAL/OpenPNM" rel="noopener" target="_blank" title="GitHub">
+            <span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://openpnm.substack.com/" rel="noopener" target="_blank" title="Substack">
+            <span><i class="fas fa-envelope-square"></i></span>
+            <label class="sr-only">Substack</label>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://twitter.com/OpenPNM" rel="noopener" target="_blank" title="Twitter">
+            <span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label>
+          </a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../../../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    
+  </div>
+</nav>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <h1>Source code for openpnm.models.phases.mixtures</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+
+<div class="viewcode-block" id="salinity"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.phases.mixtures.salinity.html#openpnm.models.phases.mixtures.salinity">[docs]</a><span class="k">def</span> <span class="nf">salinity</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">,</span>
+             <span class="n">concentration</span><span class="o">=</span><span class="s1">&#39;pore.concentration&#39;</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the salinity in g salt per kg of solution from concentration</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    target : GenericPhase</span>
+<span class="sd">        The object for which these values are being calculated.  This</span>
+<span class="sd">        controls the length of the calculated array, and also provides</span>
+<span class="sd">        access to other necessary thermofluid properties.</span>
+<span class="sd">    temperature : str</span>
+<span class="sd">        The dictionary key containing the temperature values in Kelvin.</span>
+<span class="sd">    concentration : str</span>
+<span class="sd">        The dictionary key containing the concentration values, in SI units of</span>
+<span class="sd">        mol/m3.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    salinity : ndarray</span>
+<span class="sd">        The salinity in g of solute per kg of solution.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This model is useful for converting known concentration values (e.g.</span>
+<span class="sd">    calculated by a transport algorithm) into salinity values, which can then</span>
+<span class="sd">    be used for finding other physical properties of water which are available</span>
+<span class="sd">    as a function of salinity.</span>
+
+<span class="sd">    The salinity correlations are valid for salinity up to 160 g/kg, which</span>
+<span class="sd">    corresponds to a concentration of 0.05 mol/L (assuming NaCl is the only</span>
+<span class="sd">    solute)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">C</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">concentration</span><span class="p">]</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">temperature</span><span class="p">]</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="mf">8.73220929e+00</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="mf">6.00389629e+01</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.19083743e-01</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.77796042e+00</span>
+    <span class="n">e</span> <span class="o">=</span> <span class="mf">3.26987130e-04</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.09636011e-01</span>
+    <span class="n">g</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.83933426e-07</span>
+    <span class="n">S</span> <span class="o">=</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="o">*</span><span class="n">C</span> <span class="o">+</span> <span class="n">c</span><span class="o">*</span><span class="n">T</span> <span class="o">+</span> <span class="n">d</span><span class="o">*</span><span class="n">C</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">e</span><span class="o">*</span><span class="n">T</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">f</span><span class="o">*</span><span class="n">C</span><span class="o">**</span><span class="mi">3</span> <span class="o">+</span> <span class="n">g</span><span class="o">*</span><span class="n">T</span><span class="o">**</span><span class="mi">3</span>
+    <span class="k">return</span> <span class="n">S</span></div>
+
+
+<div class="viewcode-block" id="mole_weighted_average"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.phases.mixtures.mole_weighted_average.html#openpnm.models.phases.mixtures.mole_weighted_average">[docs]</a><span class="k">def</span> <span class="nf">mole_weighted_average</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">prop</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Brief explanation of &#39;mole_weighted_average&#39;</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    target : GenericMixture</span>
+<span class="sd">        The object for which these values are being calculated.  This</span>
+<span class="sd">        controls the length of the calculated array, and also provides</span>
+<span class="sd">        access to other necessary thermofluid properties.</span>
+<span class="sd">    prop : str</span>
+<span class="sd">        The dictionary key to the property to be averaged.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    vals : ndarray</span>
+<span class="sd">        An ndarray containing the mole fraction weighted average value of the</span>
+<span class="sd">        specified property.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">comps</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+    <span class="n">element</span> <span class="o">=</span> <span class="n">prop</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">comps</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">target</span><span class="o">.</span><span class="n">_count</span><span class="p">(</span><span class="n">element</span><span class="p">))</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">target</span><span class="o">.</span><span class="n">_count</span><span class="p">(</span><span class="n">element</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">comps</span><span class="p">:</span>
+            <span class="n">frac</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">element</span> <span class="o">+</span> <span class="s1">&#39;.mole_fraction.&#39;</span> <span class="o">+</span> <span class="n">item</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+            <span class="n">temp</span> <span class="o">=</span> <span class="n">item</span><span class="p">[</span><span class="n">prop</span><span class="p">]</span>
+            <span class="n">vals</span> <span class="o">+=</span> <span class="n">temp</span><span class="o">*</span><span class="n">frac</span>
+    <span class="k">return</span> <span class="n">vals</span></div>
+
+
+<div class="viewcode-block" id="fuller_diffusivity"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.phases.mixtures.fuller_diffusivity.html#openpnm.models.phases.mixtures.fuller_diffusivity">[docs]</a><span class="k">def</span> <span class="nf">fuller_diffusivity</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">molecular_weight</span><span class="o">=</span><span class="s1">&#39;pore.molecular_weight&#39;</span><span class="p">,</span>
+                       <span class="n">molar_diffusion_volume</span><span class="o">=</span><span class="s1">&#39;pore.molar_diffusion_volume&#39;</span><span class="p">,</span>
+                       <span class="n">temperature</span><span class="o">=</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">,</span>
+                       <span class="n">pressure</span><span class="o">=</span><span class="s1">&#39;pore.pressure&#39;</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Estimates the diffusion coeffient of both species in a binary gas</span>
+<span class="sd">    mixture using the Fuller correlation</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    target : GenericMixture</span>
+<span class="sd">        The object for which these values are being calculated.  This</span>
+<span class="sd">        controls the length of the calculated array, and also provides</span>
+<span class="sd">        access to other necessary thermofluid properties.</span>
+<span class="sd">    molecular_weight : str</span>
+<span class="sd">        Dictionary key containing the molecular weight of each species.  The</span>
+<span class="sd">        default is &#39;pore.molecular_weight&#39;</span>
+<span class="sd">    molar_diffusion_volume : str</span>
+<span class="sd">        Dictionary key containing the molar diffusion volume of each species.</span>
+<span class="sd">        This is used by the Fuller correlation.  The default is</span>
+<span class="sd">        &#39;pore.molar_diffusion_volume&#39;</span>
+<span class="sd">    temperature : str</span>
+<span class="sd">        Dictionary key contain the temperature of the mixture.  The default</span>
+<span class="sd">        is &#39;pore.temperature&#39;</span>
+<span class="sd">    pressure : str</span>
+<span class="sd">        Dictionary key contain the pressure of the mixture.  The default</span>
+<span class="sd">        is &#39;pore.pressure&#39;.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Dij : dict containing ND-arrys</span>
+<span class="sd">        The dict contains one array for each component, containing the</span>
+<span class="sd">        diffusion coefficient of that component at each location.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">species_A</span><span class="p">,</span> <span class="n">species_B</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">temperature</span><span class="p">]</span>
+    <span class="n">P</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">pressure</span><span class="p">]</span>
+    <span class="n">MA</span> <span class="o">=</span> <span class="n">species_A</span><span class="p">[</span><span class="n">molecular_weight</span><span class="p">]</span>
+    <span class="n">MB</span> <span class="o">=</span> <span class="n">species_B</span><span class="p">[</span><span class="n">molecular_weight</span><span class="p">]</span>
+    <span class="n">vA</span> <span class="o">=</span> <span class="n">species_A</span><span class="p">[</span><span class="n">molar_diffusion_volume</span><span class="p">]</span>
+    <span class="n">vB</span> <span class="o">=</span> <span class="n">species_B</span><span class="p">[</span><span class="n">molar_diffusion_volume</span><span class="p">]</span>
+    <span class="n">MAB</span> <span class="o">=</span> <span class="mf">1e3</span><span class="o">*</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="n">MA</span> <span class="o">+</span> <span class="mf">1.0</span><span class="o">/</span><span class="n">MB</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">P</span> <span class="o">=</span> <span class="n">P</span><span class="o">*</span><span class="mf">1e-5</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="mf">0.00143</span><span class="o">*</span><span class="n">T</span><span class="o">**</span><span class="mf">1.75</span><span class="o">/</span><span class="p">(</span><span class="n">P</span><span class="o">*</span><span class="p">(</span><span class="n">MAB</span><span class="o">**</span><span class="mf">0.5</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">vA</span><span class="o">**</span><span class="p">(</span><span class="mf">1.</span><span class="o">/</span><span class="mi">3</span><span class="p">)</span> <span class="o">+</span> <span class="n">vB</span><span class="o">**</span><span class="p">(</span><span class="mf">1.</span><span class="o">/</span><span class="mi">3</span><span class="p">))</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="mf">1e-4</span>
+    <span class="k">return</span> <span class="n">value</span></div>
+
+
+<div class="viewcode-block" id="wilke_fuller_diffusivity"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.phases.mixtures.wilke_fuller_diffusivity.html#openpnm.models.phases.mixtures.wilke_fuller_diffusivity">[docs]</a><span class="k">def</span> <span class="nf">wilke_fuller_diffusivity</span><span class="p">(</span>
+        <span class="n">target</span><span class="p">,</span>
+        <span class="n">molecular_weight</span><span class="o">=</span><span class="s1">&#39;pore.molecular_weight&#39;</span><span class="p">,</span>
+        <span class="n">molar_diffusion_volume</span><span class="o">=</span><span class="s1">&#39;pore.molar_diffusion_volume&#39;</span><span class="p">,</span>
+        <span class="n">temperature</span><span class="o">=</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">,</span>
+        <span class="n">pressure</span><span class="o">=</span><span class="s1">&#39;pore.pressure&#39;</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Estimates the diffusion coeffient of each species in a gas mixture</span>
+
+<span class="sd">    Uses the fuller equation to estimate binary diffusivity between pairs, then</span>
+<span class="sd">    uses the correction of Fairbanks and Wilke to account for the composition</span>
+<span class="sd">    of the gas mixture.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    target : GenericMixture</span>
+<span class="sd">        The object for which these values are being calculated.  This</span>
+<span class="sd">        controls the length of the calculated array, and also provides</span>
+<span class="sd">        access to other necessary thermofluid properties.</span>
+<span class="sd">    molecular_weight : str</span>
+<span class="sd">        Dictionary key containing the molecular weight of each species.  The</span>
+<span class="sd">        default is &#39;pore.molecular_weight&#39;</span>
+<span class="sd">    molar_diffusion_volume : str</span>
+<span class="sd">        Dictionary key containing the molar diffusion volume of each species.</span>
+<span class="sd">        This is used by the Fuller correlation.  The default is</span>
+<span class="sd">        &#39;pore.molar_diffusion_volume&#39;</span>
+<span class="sd">    temperature : str</span>
+<span class="sd">        Dictionary key containing the temperature of the mixture.  The default</span>
+<span class="sd">        is &#39;pore.temperature&#39;</span>
+<span class="sd">    pressure : str</span>
+<span class="sd">        Dictionary key containing the pressure of the mixture.  The default</span>
+<span class="sd">        is &#39;pore.pressure&#39;</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Dij : dict containing ND-arrys</span>
+<span class="sd">        The dict contains one array for each component, containing the</span>
+<span class="sd">        diffusion coefficient of that component at each location.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Fairbanks DF and CR Wilke, Diffusion Coefficients in Multicomponent</span>
+<span class="sd">    Gas Mixtures. Industrial &amp; Engineering Chemistry, 42(3), p471–475 (1950).</span>
+<span class="sd">    `DOI: 10.1021/ie50483a022 &lt;http://doi.org/10.1021/ie50483a022&gt;`_</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">comps</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">target</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+    <span class="n">values</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">comps</span><span class="p">)):</span>
+        <span class="n">A</span> <span class="o">=</span> <span class="n">comps</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">denom</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">comps</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="n">j</span><span class="p">:</span>
+                <span class="n">B</span> <span class="o">=</span> <span class="n">comps</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+                <span class="n">temp</span> <span class="o">=</span> <span class="n">MixDict</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">target</span><span class="p">,</span> <span class="n">components</span><span class="o">=</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">))</span>
+                <span class="n">D</span> <span class="o">=</span> <span class="n">fuller_diffusivity</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">temp</span><span class="p">,</span>
+                                       <span class="n">molecular_weight</span><span class="o">=</span><span class="n">molecular_weight</span><span class="p">,</span>
+                                       <span class="n">molar_diffusion_volume</span><span class="o">=</span><span class="n">molar_diffusion_volume</span><span class="p">,</span>
+                                       <span class="n">temperature</span><span class="o">=</span><span class="n">temperature</span><span class="p">,</span>
+                                       <span class="n">pressure</span><span class="o">=</span><span class="n">pressure</span><span class="p">)</span>
+                <span class="n">yB</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="s1">&#39;pore.mole_fraction.&#39;</span> <span class="o">+</span> <span class="n">B</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+                <span class="n">denom</span> <span class="o">+=</span> <span class="n">yB</span><span class="o">/</span><span class="n">D</span>
+        <span class="n">yA</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="s1">&#39;pore.mole_fraction.&#39;</span> <span class="o">+</span> <span class="n">A</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+        <span class="n">values</span><span class="p">[</span><span class="n">A</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">yA</span><span class="p">)</span><span class="o">/</span><span class="n">denom</span>
+    <span class="k">return</span> <span class="n">values</span></div>
+
+
+<div class="viewcode-block" id="MixDict"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.phases.mixtures.MixDict.html#openpnm.models.phases.mixtures.MixDict">[docs]</a><span class="k">class</span> <span class="nc">MixDict</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This utility dict is used to create a temporary mixture object containing</span>
+<span class="sd">    only two components of a mixture that has several.  This is necessary for</span>
+<span class="sd">    use of the fuller model for calculating binary diffusivities.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">components</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">components</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">components</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">item</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">item</span><span class="p">})</span></div>
+</pre></div>
+
+              </div>
+              
+              
+          </main>
+          
+
+      </div>
+    </div>
+  
+  <script src="../../../../_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
+<footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2021, PMEAL.<br>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.3.0.<br>
+</p>
+    </div>
+    
+  </div>
+</footer>
+  </body>
+</html>

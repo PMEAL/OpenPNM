@@ -1,0 +1,8 @@
+:orphan:
+
+nonzero
+====================================
+
+.. currentmodule:: openpnm.integrators
+
+.. automethod:: Solution.nonzero

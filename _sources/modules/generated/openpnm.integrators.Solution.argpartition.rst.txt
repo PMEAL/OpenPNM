@@ -1,0 +1,8 @@
+:orphan:
+
+argpartition
+=========================================
+
+.. currentmodule:: openpnm.integrators
+
+.. automethod:: Solution.argpartition

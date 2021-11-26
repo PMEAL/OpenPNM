@@ -1,0 +1,53 @@
+Base
+=================
+
+.. currentmodule:: openpnm.core
+
+.. autoclass:: Base
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            Base.clear
+            Base.copy
+            Base.fromkeys
+            Base.get
+            Base.get_conduit_data
+            Base.interleave_data
+            Base.interpolate_data
+            Base.items
+            Base.keys
+            Base.pop
+            Base.popitem
+            Base.props
+            Base.setdefault
+            Base.show_hist
+            Base.to_indices
+            Base.to_mask
+            Base.update
+            Base.values
+   
+   
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            Base.Np
+            Base.Nt
+            Base.Ps
+            Base.Ts
+            Base.name
+            Base.network
+            Base.project
+            Base.settings
+   
+   

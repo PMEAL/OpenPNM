@@ -1,0 +1,6 @@
+cuboid
+======
+
+.. currentmodule:: openpnm.models.geometry.throat_perimeter
+
+.. autofunction:: cuboid

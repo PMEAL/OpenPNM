@@ -1,0 +1,34 @@
+:noindex:
+
+.. automodule:: openpnm.models.geometry.throat_volume
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+   
+      cuboid
+      cylinder
+      extrusion
+      lens
+      pendular_ring
+      rectangle
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

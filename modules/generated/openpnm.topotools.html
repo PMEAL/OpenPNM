@@ -1,0 +1,716 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>TopoTools (openpnm.topotools) &#8212; OpenPNM 2.8.2 documentation</title>
+    
+  <link href="../../_static/css/theme.css" rel="stylesheet">
+  <link href="../../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/blank.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
+    
+  <link rel="preload" as="script" href="../../_static/js/index.be7d3bbb2ef33a8344ce.js">
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/custom.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+
+<a class="navbar-brand" href="https://www.openpnm.org">
+  <img src="../../_static/openpnm_logo.png" class="logo" alt="logo">
+</a>
+
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class=" collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../user_guide/index.html">
+  User Guide
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../index.html">
+  Module Reference
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../examples/examples.html">
+  Examples
+ </a>
+</li>
+
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/PMEAL/OpenPNM" rel="noopener" target="_blank" title="GitHub">
+            <span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://openpnm.substack.com/" rel="noopener" target="_blank" title="Substack">
+            <span><i class="fas fa-envelope-square"></i></span>
+            <label class="sr-only">Substack</label>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://twitter.com/OpenPNM" rel="noopener" target="_blank" title="Twitter">
+            <span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label>
+          </a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="openpnm.topotools.add_boundary_pores.html">
+   add_boundary_pores
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="openpnm.topotools.bond_percolation.html">
+   bond_percolation
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="openpnm.topotools.clone_pores.html">
+   clone_pores
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="openpnm.topotools.connect_pores.html">
+   connect_pores
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="openpnm.topotools.conns_to_am.html">
+   conns_to_am
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="openpnm.topotools.dimensionality.html">
+   dimensionality
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="openpnm.topotools.drop_sites.html">
+   drop_sites
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="openpnm.topotools.extend.html">
+   extend
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="openpnm.topotools.filter_pores_by_z.html">
+   filter_pores_by_z
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="openpnm.topotools.find_clusters.html">
+   find_clusters
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="openpnm.topotools.find_complement.html">
+   find_complement
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="openpnm.topotools.find_connected_sites.html">
+   find_connected_sites
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="openpnm.topotools.find_connecting_bonds.html">
+   find_connecting_bonds
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="openpnm.topotools.find_neighbor_bonds.html">
+   find_neighbor_bonds
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="openpnm.topotools.find_neighbor_sites.html">
+   find_neighbor_sites
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="openpnm.topotools.find_path.html">
+   find_path
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="openpnm.topotools.find_pore_to_pore_distance.html">
+   find_pore_to_pore_distance
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="openpnm.topotools.find_surface_pores.html">
+   find_surface_pores
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="openpnm.topotools.from_cylindrical.html">
+   from_cylindrical
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="openpnm.topotools.from_spherical.html">
+   from_spherical
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="openpnm.topotools.generate_base_points.html">
+   generate_base_points
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="openpnm.topotools.generate_voxel_image.html">
+   generate_voxel_image
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="openpnm.topotools.get_domain_area.html">
+   get_domain_area
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="openpnm.topotools.get_domain_length.html">
+   get_domain_length
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="openpnm.topotools.get_shape.html">
+   get_shape
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="openpnm.topotools.get_spacing.html">
+   get_spacing
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="openpnm.topotools.hull_centroid.html">
+   hull_centroid
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="openpnm.topotools.is_fully_connected.html">
+   is_fully_connected
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="openpnm.topotools.iscoplanar.html">
+   iscoplanar
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="openpnm.topotools.isoutside.html">
+   isoutside
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="openpnm.topotools.ispercolating.html">
+   ispercolating
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="openpnm.topotools.issymmetric.html">
+   issymmetric
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="openpnm.topotools.istriangular.html">
+   istriangular
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="openpnm.topotools.istril.html">
+   istril
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="openpnm.topotools.istriu.html">
+   istriu
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="openpnm.topotools.label_faces.html">
+   label_faces
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="openpnm.topotools.merge_networks.html">
+   merge_networks
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="openpnm.topotools.merge_pores.html">
+   merge_pores
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="openpnm.topotools.plot_connections.html">
+   plot_connections
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="openpnm.topotools.plot_coordinates.html">
+   plot_coordinates
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="openpnm.topotools.plot_network_jupyter.html">
+   plot_network_jupyter
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="openpnm.topotools.plot_networkx.html">
+   plot_networkx
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="openpnm.topotools.plot_tutorial.html">
+   plot_tutorial
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="openpnm.topotools.plot_vpython.html">
+   plot_vpython
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="openpnm.topotools.reflect_base_points.html">
+   reflect_base_points
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="openpnm.topotools.remove_isolated_clusters.html">
+   remove_isolated_clusters
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="openpnm.topotools.rotate_coords.html">
+   rotate_coords
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="openpnm.topotools.shear_coords.html">
+   shear_coords
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="openpnm.topotools.site_percolation.html">
+   site_percolation
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="openpnm.topotools.stitch.html">
+   stitch
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="openpnm.topotools.stitch_pores.html">
+   stitch_pores
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="openpnm.topotools.subdivide.html">
+   subdivide
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="openpnm.topotools.template_cylinder_annulus.html">
+   template_cylinder_annulus
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="openpnm.topotools.template_sphere_shell.html">
+   template_sphere_shell
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="openpnm.topotools.to_cylindrical.html">
+   to_cylindrical
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="openpnm.topotools.to_spherical.html">
+   to_spherical
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="openpnm.topotools.tri_to_am.html">
+   tri_to_am
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="openpnm.topotools.trim.html">
+   trim
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="openpnm.topotools.trim_occluded_throats.html">
+   trim_occluded_throats
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="openpnm.topotools.vor_to_am.html">
+   vor_to_am
+  </a>
+ </li>
+</ul>
+
+  </div>
+</nav>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+              
+              <div class="toc-item">
+                
+
+<nav id="bd-toc-nav">
+    
+</nav>
+              </div>
+              
+              <div class="toc-item">
+                
+              </div>
+              
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <span class="target" id="module-openpnm.topotools"></span><section id="topotools-openpnm-topotools">
+<h1>TopoTools (<a class="reference internal" href="#module-openpnm.topotools" title="openpnm.topotools"><code class="xref py py-mod docutils literal notranslate"><span class="pre">openpnm.topotools</span></code></a>)<a class="headerlink" href="#topotools-openpnm-topotools" title="Permalink to this headline">¶</a></h1>
+<p>This module contains a selection of functions that deal specifically with
+network topology.</p>
+<p class="rubric">Functions</p>
+<table class="longtable table autosummary">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="openpnm.topotools.add_boundary_pores.html#openpnm.topotools.add_boundary_pores" title="openpnm.topotools.add_boundary_pores"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_boundary_pores</span></code></a>(network, pores[, offset, ...])</p></td>
+<td><p>This method uses <code class="docutils literal notranslate"><span class="pre">clone_pores</span></code> to clone the input pores, then shifts them the specified amount and direction, then applies the given label.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="openpnm.topotools.bond_percolation.html#openpnm.topotools.bond_percolation" title="openpnm.topotools.bond_percolation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bond_percolation</span></code></a>(ij, occupied_bonds)</p></td>
+<td><p>Calculates the site and bond occupancy status for a bond percolation process given a list of occupied bonds.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="openpnm.topotools.clone_pores.html#openpnm.topotools.clone_pores" title="openpnm.topotools.clone_pores"><code class="xref py py-obj docutils literal notranslate"><span class="pre">clone_pores</span></code></a>(network, pores[, labels, mode])</p></td>
+<td><p>Clones the specified pores and adds them to the network</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="openpnm.topotools.connect_pores.html#openpnm.topotools.connect_pores" title="openpnm.topotools.connect_pores"><code class="xref py py-obj docutils literal notranslate"><span class="pre">connect_pores</span></code></a>(network, pores1, pores2[, ...])</p></td>
+<td><p>Returns the possible connections between two groups of pores, and optionally makes the connections.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="openpnm.topotools.conns_to_am.html#openpnm.topotools.conns_to_am" title="openpnm.topotools.conns_to_am"><code class="xref py py-obj docutils literal notranslate"><span class="pre">conns_to_am</span></code></a>(conns[, shape, force_triu, ...])</p></td>
+<td><p>Converts a list of connections into a Scipy sparse adjacency matrix</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="openpnm.topotools.dimensionality.html#openpnm.topotools.dimensionality" title="openpnm.topotools.dimensionality"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dimensionality</span></code></a>([network, coords])</p></td>
+<td><p>Checks the dimensionality of the network</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="openpnm.topotools.drop_sites.html#openpnm.topotools.drop_sites" title="openpnm.topotools.drop_sites"><code class="xref py py-obj docutils literal notranslate"><span class="pre">drop_sites</span></code></a>(am, sites)</p></td>
+<td><p>Update adjacency matrix after dropping sites</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="openpnm.topotools.extend.html#openpnm.topotools.extend" title="openpnm.topotools.extend"><code class="xref py py-obj docutils literal notranslate"><span class="pre">extend</span></code></a>(network[, coords, conns, labels])</p></td>
+<td><p>Add pores or throats to the network from a list of coords or conns.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="openpnm.topotools.filter_pores_by_z.html#openpnm.topotools.filter_pores_by_z" title="openpnm.topotools.filter_pores_by_z"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filter_pores_by_z</span></code></a>(network, pores[, z])</p></td>
+<td><p>Find pores with a given number of neighbors</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="openpnm.topotools.find_clusters.html#openpnm.topotools.find_clusters" title="openpnm.topotools.find_clusters"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_clusters</span></code></a>(network[, mask, t_labels])</p></td>
+<td><p>Identify connected clusters of pores in the network.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="openpnm.topotools.find_complement.html#openpnm.topotools.find_complement" title="openpnm.topotools.find_complement"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_complement</span></code></a>(am[, sites, bonds, asmask])</p></td>
+<td><p>Finds the complementary sites (or bonds) to a given set of inputs</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="openpnm.topotools.find_connected_sites.html#openpnm.topotools.find_connected_sites" title="openpnm.topotools.find_connected_sites"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_connected_sites</span></code></a>(bonds, am[, flatten, logic])</p></td>
+<td><p>Given an adjacency matrix, finds which sites are connected to the input bonds.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="openpnm.topotools.find_connecting_bonds.html#openpnm.topotools.find_connecting_bonds" title="openpnm.topotools.find_connecting_bonds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_connecting_bonds</span></code></a>(sites, am)</p></td>
+<td><p>Given pairs of sites, finds the bonds which connects each pair.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="openpnm.topotools.find_neighbor_bonds.html#openpnm.topotools.find_neighbor_bonds" title="openpnm.topotools.find_neighbor_bonds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_neighbor_bonds</span></code></a>(sites[, im, am, ...])</p></td>
+<td><p>Given an incidence matrix, finds all sites that are connected to the input sites.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="openpnm.topotools.find_neighbor_sites.html#openpnm.topotools.find_neighbor_sites" title="openpnm.topotools.find_neighbor_sites"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_neighbor_sites</span></code></a>(sites, am[, flatten, ...])</p></td>
+<td><p>Given a symmetric adjacency matrix, finds all sites that are connected to the input sites.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="openpnm.topotools.find_path.html#openpnm.topotools.find_path" title="openpnm.topotools.find_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_path</span></code></a>(network, pore_pairs[, weights])</p></td>
+<td><p>Find the shortest path between pairs of pores.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="openpnm.topotools.find_pore_to_pore_distance.html#openpnm.topotools.find_pore_to_pore_distance" title="openpnm.topotools.find_pore_to_pore_distance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_pore_to_pore_distance</span></code></a>(network[, ...])</p></td>
+<td><p>Find the distance between all pores on set 1 to each pore in set 2</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="openpnm.topotools.find_surface_pores.html#openpnm.topotools.find_surface_pores" title="openpnm.topotools.find_surface_pores"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_surface_pores</span></code></a>(network[, markers, label])</p></td>
+<td><p>Find the pores on the surface of the domain by performing a Delaunay triangulation between the network pores and some external <code class="docutils literal notranslate"><span class="pre">markers</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="openpnm.topotools.from_cylindrical.html#openpnm.topotools.from_cylindrical" title="openpnm.topotools.from_cylindrical"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_cylindrical</span></code></a>(r, theta, z)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="openpnm.topotools.from_spherical.html#openpnm.topotools.from_spherical" title="openpnm.topotools.from_spherical"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_spherical</span></code></a>(r, theta, phi)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="openpnm.topotools.generate_base_points.html#openpnm.topotools.generate_base_points" title="openpnm.topotools.generate_base_points"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_base_points</span></code></a>(num_points, domain_size)</p></td>
+<td><p>Generates a set of base points for passing into the Tessellation-based Network classes.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="openpnm.topotools.generate_voxel_image.html#openpnm.topotools.generate_voxel_image" title="openpnm.topotools.generate_voxel_image"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_voxel_image</span></code></a>(network[, pore_shape, ...])</p></td>
+<td><p>Generate a voxel image from an GenericNetwork</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="openpnm.topotools.get_domain_area.html#openpnm.topotools.get_domain_area" title="openpnm.topotools.get_domain_area"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_domain_area</span></code></a>(network[, inlets, outlets])</p></td>
+<td><p>Determine the cross sectional area relative to the inlets/outlets.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="openpnm.topotools.get_domain_length.html#openpnm.topotools.get_domain_length" title="openpnm.topotools.get_domain_length"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_domain_length</span></code></a>(network[, inlets, outlets])</p></td>
+<td><p>Determine the domain length relative to the inlets/outlets.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="openpnm.topotools.get_shape.html#openpnm.topotools.get_shape" title="openpnm.topotools.get_shape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_shape</span></code></a>(network)</p></td>
+<td><p>Determine the shape of each axis of a simple cubic network</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="openpnm.topotools.get_spacing.html#openpnm.topotools.get_spacing" title="openpnm.topotools.get_spacing"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_spacing</span></code></a>(network)</p></td>
+<td><p>Determine the spacing along each axis of a simple cubic network</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="openpnm.topotools.hull_centroid.html#openpnm.topotools.hull_centroid" title="openpnm.topotools.hull_centroid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hull_centroid</span></code></a>(points)</p></td>
+<td><p>Computes centroid of the convex hull enclosing the given coordinates.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="openpnm.topotools.is_fully_connected.html#openpnm.topotools.is_fully_connected" title="openpnm.topotools.is_fully_connected"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_fully_connected</span></code></a>(network[, pores_BC])</p></td>
+<td><p>Checks whether network is fully connected, i.e. not clustered.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="openpnm.topotools.iscoplanar.html#openpnm.topotools.iscoplanar" title="openpnm.topotools.iscoplanar"><code class="xref py py-obj docutils literal notranslate"><span class="pre">iscoplanar</span></code></a>(coords)</p></td>
+<td><p>Determines if given pores are coplanar with each other</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="openpnm.topotools.isoutside.html#openpnm.topotools.isoutside" title="openpnm.topotools.isoutside"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isoutside</span></code></a>(coords, shape)</p></td>
+<td><p>Identifies points that lie outside the specified shape</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="openpnm.topotools.ispercolating.html#openpnm.topotools.ispercolating" title="openpnm.topotools.ispercolating"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ispercolating</span></code></a>(am, inlets, outlets[, mode])</p></td>
+<td><p>Determines if a percolating clusters exists in the network spanning the given inlet and outlet sites</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="openpnm.topotools.issymmetric.html#openpnm.topotools.issymmetric" title="openpnm.topotools.issymmetric"><code class="xref py py-obj docutils literal notranslate"><span class="pre">issymmetric</span></code></a>(am)</p></td>
+<td><p>A method to check if a square matrix is symmetric Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if the sparse adjacency matrix is symmetric</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="openpnm.topotools.istriangular.html#openpnm.topotools.istriangular" title="openpnm.topotools.istriangular"><code class="xref py py-obj docutils literal notranslate"><span class="pre">istriangular</span></code></a>(am)</p></td>
+<td><p>Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if the sparse adjacency matrix is either upper or lower triangular</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="openpnm.topotools.istril.html#openpnm.topotools.istril" title="openpnm.topotools.istril"><code class="xref py py-obj docutils literal notranslate"><span class="pre">istril</span></code></a>(am)</p></td>
+<td><p>Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> is the sparse adjacency matrix is lower triangular</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="openpnm.topotools.istriu.html#openpnm.topotools.istriu" title="openpnm.topotools.istriu"><code class="xref py py-obj docutils literal notranslate"><span class="pre">istriu</span></code></a>(am)</p></td>
+<td><p>Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> is the sparse adjacency matrix is upper triangular</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="openpnm.topotools.label_faces.html#openpnm.topotools.label_faces" title="openpnm.topotools.label_faces"><code class="xref py py-obj docutils literal notranslate"><span class="pre">label_faces</span></code></a>(network[, tol, label])</p></td>
+<td><p>Finds pores on the surface of the network and labels them according to whether they are on the <em>top</em>, <em>bottom</em>, etc.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="openpnm.topotools.merge_networks.html#openpnm.topotools.merge_networks" title="openpnm.topotools.merge_networks"><code class="xref py py-obj docutils literal notranslate"><span class="pre">merge_networks</span></code></a>(network[, donor])</p></td>
+<td><p>Combine multiple networks into one</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="openpnm.topotools.merge_pores.html#openpnm.topotools.merge_pores" title="openpnm.topotools.merge_pores"><code class="xref py py-obj docutils literal notranslate"><span class="pre">merge_pores</span></code></a>(network, pores[, labels])</p></td>
+<td><p>Combines a selection of pores into a new single pore located at the centroid of the selected pores and connected to all of their neighbors.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="openpnm.topotools.plot_connections.html#openpnm.topotools.plot_connections" title="openpnm.topotools.plot_connections"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_connections</span></code></a>(network[, throats, ax, ...])</p></td>
+<td><p>Produce a 3D plot of the network topology.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="openpnm.topotools.plot_coordinates.html#openpnm.topotools.plot_coordinates" title="openpnm.topotools.plot_coordinates"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_coordinates</span></code></a>(network[, pores, ax, ...])</p></td>
+<td><p>Produce a 3D plot showing specified pore coordinates as markers.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="openpnm.topotools.plot_network_jupyter.html#openpnm.topotools.plot_network_jupyter" title="openpnm.topotools.plot_network_jupyter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_network_jupyter</span></code></a>(network[, node_color, ...])</p></td>
+<td><p>Visualize a network in 3D using Plotly.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="openpnm.topotools.plot_networkx.html#openpnm.topotools.plot_networkx" title="openpnm.topotools.plot_networkx"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_networkx</span></code></a>(network[, plot_throats, ...])</p></td>
+<td><p>Creates a pretty 2d plot for 2d OpenPNM networks.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="openpnm.topotools.plot_tutorial.html#openpnm.topotools.plot_tutorial" title="openpnm.topotools.plot_tutorial"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_tutorial</span></code></a>(network[, font_size, ...])</p></td>
+<td><p>Generate a network plot suitable for tutorials and explanations.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="openpnm.topotools.plot_vpython.html#openpnm.topotools.plot_vpython" title="openpnm.topotools.plot_vpython"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_vpython</span></code></a>(network[, Psize, Tsize, ...])</p></td>
+<td><p>Quickly visualize a network in 3D using VPython.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="openpnm.topotools.reflect_base_points.html#openpnm.topotools.reflect_base_points" title="openpnm.topotools.reflect_base_points"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reflect_base_points</span></code></a>(base_pts, domain_size)</p></td>
+<td><p>Helper function for relecting a set of points about the faces of a given domain.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="openpnm.topotools.remove_isolated_clusters.html#openpnm.topotools.remove_isolated_clusters" title="openpnm.topotools.remove_isolated_clusters"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_isolated_clusters</span></code></a>(labels, inlets)</p></td>
+<td><p>Finds cluster labels not attached to the inlets, and sets them to unoccupied (-1)</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="openpnm.topotools.rotate_coords.html#openpnm.topotools.rotate_coords" title="openpnm.topotools.rotate_coords"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotate_coords</span></code></a>(network[, a, b, c, R])</p></td>
+<td><p>Rotates coordinates a given amount about each axis</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="openpnm.topotools.shear_coords.html#openpnm.topotools.shear_coords" title="openpnm.topotools.shear_coords"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shear_coords</span></code></a>(network[, ay, az, bx, bz, cx, ...])</p></td>
+<td><p>Shears the coordinates a given amount about along axis</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="openpnm.topotools.site_percolation.html#openpnm.topotools.site_percolation" title="openpnm.topotools.site_percolation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">site_percolation</span></code></a>(ij, occupied_sites)</p></td>
+<td><p>Calculates the site and bond occupancy status for a site percolation process given a list of occupied sites.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="openpnm.topotools.stitch.html#openpnm.topotools.stitch" title="openpnm.topotools.stitch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stitch</span></code></a>(network, donor, P_network, P_donor[, ...])</p></td>
+<td><p>Stitches a second a network to the current network.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="openpnm.topotools.stitch_pores.html#openpnm.topotools.stitch_pores" title="openpnm.topotools.stitch_pores"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stitch_pores</span></code></a>(network, pores1, pores2[, mode])</p></td>
+<td><p>Stitches together pores in a network with disconnected clusters</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="openpnm.topotools.subdivide.html#openpnm.topotools.subdivide" title="openpnm.topotools.subdivide"><code class="xref py py-obj docutils literal notranslate"><span class="pre">subdivide</span></code></a>(network, pores, shape[, labels])</p></td>
+<td><p>It trim the pores and replace them by cubic networks with the sent shape.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="openpnm.topotools.template_cylinder_annulus.html#openpnm.topotools.template_cylinder_annulus" title="openpnm.topotools.template_cylinder_annulus"><code class="xref py py-obj docutils literal notranslate"><span class="pre">template_cylinder_annulus</span></code></a>(height, outer_radius)</p></td>
+<td><p>This method generates an image array of a disc-ring.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="openpnm.topotools.template_sphere_shell.html#openpnm.topotools.template_sphere_shell" title="openpnm.topotools.template_sphere_shell"><code class="xref py py-obj docutils literal notranslate"><span class="pre">template_sphere_shell</span></code></a>(outer_radius[, ...])</p></td>
+<td><p>This method generates an image array of a sphere-shell.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="openpnm.topotools.to_cylindrical.html#openpnm.topotools.to_cylindrical" title="openpnm.topotools.to_cylindrical"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_cylindrical</span></code></a>(X, Y, Z)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="openpnm.topotools.to_spherical.html#openpnm.topotools.to_spherical" title="openpnm.topotools.to_spherical"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_spherical</span></code></a>(X, Y, Z)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="openpnm.topotools.tri_to_am.html#openpnm.topotools.tri_to_am" title="openpnm.topotools.tri_to_am"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tri_to_am</span></code></a>(tri)</p></td>
+<td><p>Given a Delaunay Triangulation object from Scipy's <code class="docutils literal notranslate"><span class="pre">spatial</span></code> module, converts to a sparse adjacency matrix network representation.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="openpnm.topotools.trim.html#openpnm.topotools.trim" title="openpnm.topotools.trim"><code class="xref py py-obj docutils literal notranslate"><span class="pre">trim</span></code></a>(network[, pores, throats])</p></td>
+<td><p>Remove pores or throats from the network</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="openpnm.topotools.trim_occluded_throats.html#openpnm.topotools.trim_occluded_throats" title="openpnm.topotools.trim_occluded_throats"><code class="xref py py-obj docutils literal notranslate"><span class="pre">trim_occluded_throats</span></code></a>(network[, mask])</p></td>
+<td><p>Remove throats with zero area from the network and also remove pores that are isolated as a result</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="openpnm.topotools.vor_to_am.html#openpnm.topotools.vor_to_am" title="openpnm.topotools.vor_to_am"><code class="xref py py-obj docutils literal notranslate"><span class="pre">vor_to_am</span></code></a>(vor)</p></td>
+<td><p>Given a Voronoi tessellation object from Scipy's <code class="docutils literal notranslate"><span class="pre">spatial</span></code> module, converts to a sparse adjacency matrix network representation in COO format.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+
+
+              </div>
+              
+              
+          </main>
+          
+
+      </div>
+    </div>
+  
+  <script src="../../_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
+<footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2021, PMEAL.<br>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.3.0.<br>
+</p>
+    </div>
+    
+  </div>
+</footer>
+  </body>
+</html>

@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.core.Subdomain.name
+===========================
+
+.. currentmodule:: openpnm.core
+
+attribute
+
+.. autoproperty:: openpnm.core.Subdomain.name
+

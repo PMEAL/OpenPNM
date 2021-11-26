@@ -1,0 +1,81 @@
+CubicDual
+=========================
+
+.. currentmodule:: openpnm.network
+
+.. autoclass:: CubicDual
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            CubicDual.add_boundary_pores
+            CubicDual.add_model
+            CubicDual.check_network_health
+            CubicDual.clear
+            CubicDual.copy
+            CubicDual.create_adjacency_matrix
+            CubicDual.create_incidence_matrix
+            CubicDual.filter_by_label
+            CubicDual.find_connected_pores
+            CubicDual.find_connecting_throat
+            CubicDual.find_nearby_pores
+            CubicDual.find_neighbor_pores
+            CubicDual.find_neighbor_throats
+            CubicDual.fromkeys
+            CubicDual.get
+            CubicDual.get_adjacency_matrix
+            CubicDual.get_conduit_data
+            CubicDual.get_incidence_matrix
+            CubicDual.interleave_data
+            CubicDual.interpolate_data
+            CubicDual.items
+            CubicDual.keys
+            CubicDual.labels
+            CubicDual.num_neighbors
+            CubicDual.num_pores
+            CubicDual.num_throats
+            CubicDual.params
+            CubicDual.pop
+            CubicDual.popitem
+            CubicDual.pores
+            CubicDual.props
+            CubicDual.regenerate_models
+            CubicDual.remove_model
+            CubicDual.set_label
+            CubicDual.setdefault
+            CubicDual.show_hist
+            CubicDual.throats
+            CubicDual.to_indices
+            CubicDual.to_mask
+            CubicDual.update
+            CubicDual.values
+   
+   
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            CubicDual.Np
+            CubicDual.Nt
+            CubicDual.Ps
+            CubicDual.Ts
+            CubicDual.am
+            CubicDual.conns
+            CubicDual.coords
+            CubicDual.im
+            CubicDual.models
+            CubicDual.name
+            CubicDual.network
+            CubicDual.project
+            CubicDual.settings
+   
+   

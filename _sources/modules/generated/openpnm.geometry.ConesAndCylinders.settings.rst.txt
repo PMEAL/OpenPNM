@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.geometry.ConesAndCylinders.settings
+===========================================
+
+.. currentmodule:: openpnm.geometry
+
+attribute
+
+.. autoproperty:: openpnm.geometry.ConesAndCylinders.settings
+

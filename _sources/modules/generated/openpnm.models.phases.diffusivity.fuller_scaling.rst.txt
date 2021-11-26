@@ -1,0 +1,6 @@
+fuller\_scaling
+===============
+
+.. currentmodule:: openpnm.models.phases.diffusivity
+
+.. autofunction:: fuller_scaling

@@ -1,0 +1,8 @@
+:orphan:
+
+regenerate_models
+=========================================
+
+.. currentmodule:: openpnm.network
+
+.. automethod:: Gabriel.regenerate_models

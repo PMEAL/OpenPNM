@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.network.Bravais.Ts
+==========================
+
+.. currentmodule:: openpnm.network
+
+attribute
+
+.. autoproperty:: openpnm.network.Bravais.Ts
+

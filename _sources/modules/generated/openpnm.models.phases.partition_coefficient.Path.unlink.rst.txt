@@ -1,0 +1,8 @@
+:orphan:
+
+unlink
+=======================================================
+
+.. currentmodule:: openpnm.models.phases.partition_coefficient
+
+.. automethod:: Path.unlink

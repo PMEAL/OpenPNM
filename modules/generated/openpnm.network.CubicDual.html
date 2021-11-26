@@ -1,0 +1,2433 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>CubicDual &#8212; OpenPNM 2.8.2 documentation</title>
+    
+  <link href="../../_static/css/theme.css" rel="stylesheet">
+  <link href="../../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/blank.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
+    
+  <link rel="preload" as="script" href="../../_static/js/index.be7d3bbb2ef33a8344ce.js">
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/custom.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+
+<a class="navbar-brand" href="https://www.openpnm.org">
+  <img src="../../_static/openpnm_logo.png" class="logo" alt="logo">
+</a>
+
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class=" collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../user_guide/index.html">
+  User Guide
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../index.html">
+  Module Reference
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../examples/examples.html">
+  Examples
+ </a>
+</li>
+
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/PMEAL/OpenPNM" rel="noopener" target="_blank" title="GitHub">
+            <span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://openpnm.substack.com/" rel="noopener" target="_blank" title="Substack">
+            <span><i class="fas fa-envelope-square"></i></span>
+            <label class="sr-only">Substack</label>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://twitter.com/OpenPNM" rel="noopener" target="_blank" title="Twitter">
+            <span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label>
+          </a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="openpnm.network.Bravais.html">
+   Bravais
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Bravais.add_boundary_pores.html">
+     add_boundary_pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Bravais.add_model.html">
+     add_model
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Bravais.check_network_health.html">
+     check_network_health
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Bravais.clear.html">
+     clear
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Bravais.copy.html">
+     copy
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Bravais.create_adjacency_matrix.html">
+     create_adjacency_matrix
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Bravais.create_incidence_matrix.html">
+     create_incidence_matrix
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Bravais.filter_by_label.html">
+     filter_by_label
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Bravais.find_connected_pores.html">
+     find_connected_pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Bravais.find_connecting_throat.html">
+     find_connecting_throat
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Bravais.find_nearby_pores.html">
+     find_nearby_pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Bravais.find_neighbor_pores.html">
+     find_neighbor_pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Bravais.find_neighbor_throats.html">
+     find_neighbor_throats
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Bravais.fromkeys.html">
+     fromkeys
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Bravais.get.html">
+     get
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Bravais.get_adjacency_matrix.html">
+     get_adjacency_matrix
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Bravais.get_conduit_data.html">
+     get_conduit_data
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Bravais.get_incidence_matrix.html">
+     get_incidence_matrix
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Bravais.interleave_data.html">
+     interleave_data
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Bravais.interpolate_data.html">
+     interpolate_data
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Bravais.items.html">
+     items
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Bravais.keys.html">
+     keys
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Bravais.labels.html">
+     labels
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Bravais.num_neighbors.html">
+     num_neighbors
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Bravais.num_pores.html">
+     num_pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Bravais.num_throats.html">
+     num_throats
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Bravais.params.html">
+     params
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Bravais.pop.html">
+     pop
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Bravais.popitem.html">
+     popitem
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Bravais.pores.html">
+     pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Bravais.props.html">
+     props
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Bravais.regenerate_models.html">
+     regenerate_models
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Bravais.remove_model.html">
+     remove_model
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Bravais.set_label.html">
+     set_label
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Bravais.setdefault.html">
+     setdefault
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Bravais.show_hist.html">
+     show_hist
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Bravais.throats.html">
+     throats
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Bravais.to_indices.html">
+     to_indices
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Bravais.to_mask.html">
+     to_mask
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Bravais.update.html">
+     update
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Bravais.values.html">
+     values
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="openpnm.network.Cubic.html">
+   Cubic
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+  <label for="toctree-checkbox-2">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Cubic.add_boundary_pores.html">
+     add_boundary_pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Cubic.add_model.html">
+     add_model
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Cubic.check_network_health.html">
+     check_network_health
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Cubic.clear.html">
+     clear
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Cubic.copy.html">
+     copy
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Cubic.create_adjacency_matrix.html">
+     create_adjacency_matrix
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Cubic.create_incidence_matrix.html">
+     create_incidence_matrix
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Cubic.filter_by_label.html">
+     filter_by_label
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Cubic.find_connected_pores.html">
+     find_connected_pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Cubic.find_connecting_throat.html">
+     find_connecting_throat
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Cubic.find_nearby_pores.html">
+     find_nearby_pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Cubic.find_neighbor_pores.html">
+     find_neighbor_pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Cubic.find_neighbor_throats.html">
+     find_neighbor_throats
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Cubic.fromkeys.html">
+     fromkeys
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Cubic.get.html">
+     get
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Cubic.get_adjacency_matrix.html">
+     get_adjacency_matrix
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Cubic.get_conduit_data.html">
+     get_conduit_data
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Cubic.get_incidence_matrix.html">
+     get_incidence_matrix
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Cubic.interleave_data.html">
+     interleave_data
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Cubic.interpolate_data.html">
+     interpolate_data
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Cubic.items.html">
+     items
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Cubic.keys.html">
+     keys
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Cubic.labels.html">
+     labels
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Cubic.num_neighbors.html">
+     num_neighbors
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Cubic.num_pores.html">
+     num_pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Cubic.num_throats.html">
+     num_throats
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Cubic.params.html">
+     params
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Cubic.pop.html">
+     pop
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Cubic.popitem.html">
+     popitem
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Cubic.pores.html">
+     pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Cubic.props.html">
+     props
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Cubic.regenerate_models.html">
+     regenerate_models
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Cubic.remove_model.html">
+     remove_model
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Cubic.set_label.html">
+     set_label
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Cubic.setdefault.html">
+     setdefault
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Cubic.show_hist.html">
+     show_hist
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Cubic.throats.html">
+     throats
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Cubic.to_indices.html">
+     to_indices
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Cubic.to_mask.html">
+     to_mask
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Cubic.update.html">
+     update
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Cubic.values.html">
+     values
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 current active has-children">
+  <a class="current reference internal" href="#">
+   CubicDual
+  </a>
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
+  <label for="toctree-checkbox-3">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicDual.add_boundary_pores.html">
+     add_boundary_pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicDual.add_model.html">
+     add_model
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicDual.check_network_health.html">
+     check_network_health
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicDual.clear.html">
+     clear
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicDual.copy.html">
+     copy
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicDual.create_adjacency_matrix.html">
+     create_adjacency_matrix
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicDual.create_incidence_matrix.html">
+     create_incidence_matrix
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicDual.filter_by_label.html">
+     filter_by_label
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicDual.find_connected_pores.html">
+     find_connected_pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicDual.find_connecting_throat.html">
+     find_connecting_throat
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicDual.find_nearby_pores.html">
+     find_nearby_pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicDual.find_neighbor_pores.html">
+     find_neighbor_pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicDual.find_neighbor_throats.html">
+     find_neighbor_throats
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicDual.fromkeys.html">
+     fromkeys
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicDual.get.html">
+     get
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicDual.get_adjacency_matrix.html">
+     get_adjacency_matrix
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicDual.get_conduit_data.html">
+     get_conduit_data
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicDual.get_incidence_matrix.html">
+     get_incidence_matrix
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicDual.interleave_data.html">
+     interleave_data
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicDual.interpolate_data.html">
+     interpolate_data
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicDual.items.html">
+     items
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicDual.keys.html">
+     keys
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicDual.labels.html">
+     labels
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicDual.num_neighbors.html">
+     num_neighbors
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicDual.num_pores.html">
+     num_pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicDual.num_throats.html">
+     num_throats
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicDual.params.html">
+     params
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicDual.pop.html">
+     pop
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicDual.popitem.html">
+     popitem
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicDual.pores.html">
+     pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicDual.props.html">
+     props
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicDual.regenerate_models.html">
+     regenerate_models
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicDual.remove_model.html">
+     remove_model
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicDual.set_label.html">
+     set_label
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicDual.setdefault.html">
+     setdefault
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicDual.show_hist.html">
+     show_hist
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicDual.throats.html">
+     throats
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicDual.to_indices.html">
+     to_indices
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicDual.to_mask.html">
+     to_mask
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicDual.update.html">
+     update
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicDual.values.html">
+     values
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="openpnm.network.CubicTemplate.html">
+   CubicTemplate
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
+  <label for="toctree-checkbox-4">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicTemplate.add_boundary_pores.html">
+     add_boundary_pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicTemplate.add_model.html">
+     add_model
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicTemplate.check_network_health.html">
+     check_network_health
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicTemplate.clear.html">
+     clear
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicTemplate.copy.html">
+     copy
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicTemplate.create_adjacency_matrix.html">
+     create_adjacency_matrix
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicTemplate.create_incidence_matrix.html">
+     create_incidence_matrix
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicTemplate.filter_by_label.html">
+     filter_by_label
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicTemplate.find_connected_pores.html">
+     find_connected_pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicTemplate.find_connecting_throat.html">
+     find_connecting_throat
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicTemplate.find_nearby_pores.html">
+     find_nearby_pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicTemplate.find_neighbor_pores.html">
+     find_neighbor_pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicTemplate.find_neighbor_throats.html">
+     find_neighbor_throats
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicTemplate.fromkeys.html">
+     fromkeys
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicTemplate.get.html">
+     get
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicTemplate.get_adjacency_matrix.html">
+     get_adjacency_matrix
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicTemplate.get_conduit_data.html">
+     get_conduit_data
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicTemplate.get_incidence_matrix.html">
+     get_incidence_matrix
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicTemplate.interleave_data.html">
+     interleave_data
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicTemplate.interpolate_data.html">
+     interpolate_data
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicTemplate.items.html">
+     items
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicTemplate.keys.html">
+     keys
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicTemplate.labels.html">
+     labels
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicTemplate.num_neighbors.html">
+     num_neighbors
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicTemplate.num_pores.html">
+     num_pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicTemplate.num_throats.html">
+     num_throats
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicTemplate.params.html">
+     params
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicTemplate.pop.html">
+     pop
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicTemplate.popitem.html">
+     popitem
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicTemplate.pores.html">
+     pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicTemplate.props.html">
+     props
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicTemplate.regenerate_models.html">
+     regenerate_models
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicTemplate.remove_model.html">
+     remove_model
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicTemplate.set_label.html">
+     set_label
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicTemplate.setdefault.html">
+     setdefault
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicTemplate.show_hist.html">
+     show_hist
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicTemplate.throats.html">
+     throats
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicTemplate.to_indices.html">
+     to_indices
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicTemplate.to_mask.html">
+     to_mask
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicTemplate.update.html">
+     update
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.CubicTemplate.values.html">
+     values
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="openpnm.network.Delaunay.html">
+   Delaunay
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/>
+  <label for="toctree-checkbox-5">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Delaunay.add_boundary_pores.html">
+     add_boundary_pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Delaunay.add_model.html">
+     add_model
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Delaunay.check_network_health.html">
+     check_network_health
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Delaunay.clear.html">
+     clear
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Delaunay.copy.html">
+     copy
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Delaunay.create_adjacency_matrix.html">
+     create_adjacency_matrix
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Delaunay.create_incidence_matrix.html">
+     create_incidence_matrix
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Delaunay.filter_by_label.html">
+     filter_by_label
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Delaunay.find_connected_pores.html">
+     find_connected_pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Delaunay.find_connecting_throat.html">
+     find_connecting_throat
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Delaunay.find_nearby_pores.html">
+     find_nearby_pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Delaunay.find_neighbor_pores.html">
+     find_neighbor_pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Delaunay.find_neighbor_throats.html">
+     find_neighbor_throats
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Delaunay.find_pore_hulls.html">
+     find_pore_hulls
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Delaunay.find_throat_facets.html">
+     find_throat_facets
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Delaunay.fromkeys.html">
+     fromkeys
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Delaunay.get.html">
+     get
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Delaunay.get_adjacency_matrix.html">
+     get_adjacency_matrix
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Delaunay.get_conduit_data.html">
+     get_conduit_data
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Delaunay.get_incidence_matrix.html">
+     get_incidence_matrix
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Delaunay.interleave_data.html">
+     interleave_data
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Delaunay.interpolate_data.html">
+     interpolate_data
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Delaunay.items.html">
+     items
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Delaunay.keys.html">
+     keys
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Delaunay.labels.html">
+     labels
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Delaunay.num_neighbors.html">
+     num_neighbors
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Delaunay.num_pores.html">
+     num_pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Delaunay.num_throats.html">
+     num_throats
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Delaunay.params.html">
+     params
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Delaunay.pop.html">
+     pop
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Delaunay.popitem.html">
+     popitem
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Delaunay.pores.html">
+     pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Delaunay.props.html">
+     props
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Delaunay.regenerate_models.html">
+     regenerate_models
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Delaunay.remove_model.html">
+     remove_model
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Delaunay.set_label.html">
+     set_label
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Delaunay.setdefault.html">
+     setdefault
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Delaunay.show_hist.html">
+     show_hist
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Delaunay.throats.html">
+     throats
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Delaunay.to_indices.html">
+     to_indices
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Delaunay.to_mask.html">
+     to_mask
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Delaunay.update.html">
+     update
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Delaunay.values.html">
+     values
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="openpnm.network.DelaunayVoronoiDual.html">
+   DelaunayVoronoiDual
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/>
+  <label for="toctree-checkbox-6">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.DelaunayVoronoiDual.add_boundary_pores.html">
+     add_boundary_pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.DelaunayVoronoiDual.add_model.html">
+     add_model
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.DelaunayVoronoiDual.check_network_health.html">
+     check_network_health
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.DelaunayVoronoiDual.clear.html">
+     clear
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.DelaunayVoronoiDual.copy.html">
+     copy
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.DelaunayVoronoiDual.create_adjacency_matrix.html">
+     create_adjacency_matrix
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.DelaunayVoronoiDual.create_incidence_matrix.html">
+     create_incidence_matrix
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.DelaunayVoronoiDual.filter_by_label.html">
+     filter_by_label
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.DelaunayVoronoiDual.find_connected_pores.html">
+     find_connected_pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.DelaunayVoronoiDual.find_connecting_throat.html">
+     find_connecting_throat
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.DelaunayVoronoiDual.find_nearby_pores.html">
+     find_nearby_pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.DelaunayVoronoiDual.find_neighbor_pores.html">
+     find_neighbor_pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.DelaunayVoronoiDual.find_neighbor_throats.html">
+     find_neighbor_throats
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.DelaunayVoronoiDual.find_pore_hulls.html">
+     find_pore_hulls
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.DelaunayVoronoiDual.find_throat_facets.html">
+     find_throat_facets
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.DelaunayVoronoiDual.fromkeys.html">
+     fromkeys
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.DelaunayVoronoiDual.get.html">
+     get
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.DelaunayVoronoiDual.get_adjacency_matrix.html">
+     get_adjacency_matrix
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.DelaunayVoronoiDual.get_conduit_data.html">
+     get_conduit_data
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.DelaunayVoronoiDual.get_incidence_matrix.html">
+     get_incidence_matrix
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.DelaunayVoronoiDual.interleave_data.html">
+     interleave_data
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.DelaunayVoronoiDual.interpolate_data.html">
+     interpolate_data
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.DelaunayVoronoiDual.items.html">
+     items
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.DelaunayVoronoiDual.keys.html">
+     keys
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.DelaunayVoronoiDual.labels.html">
+     labels
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.DelaunayVoronoiDual.num_neighbors.html">
+     num_neighbors
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.DelaunayVoronoiDual.num_pores.html">
+     num_pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.DelaunayVoronoiDual.num_throats.html">
+     num_throats
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.DelaunayVoronoiDual.params.html">
+     params
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.DelaunayVoronoiDual.pop.html">
+     pop
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.DelaunayVoronoiDual.popitem.html">
+     popitem
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.DelaunayVoronoiDual.pores.html">
+     pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.DelaunayVoronoiDual.props.html">
+     props
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.DelaunayVoronoiDual.regenerate_models.html">
+     regenerate_models
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.DelaunayVoronoiDual.remove_model.html">
+     remove_model
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.DelaunayVoronoiDual.set_label.html">
+     set_label
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.DelaunayVoronoiDual.setdefault.html">
+     setdefault
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.DelaunayVoronoiDual.show_hist.html">
+     show_hist
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.DelaunayVoronoiDual.throats.html">
+     throats
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.DelaunayVoronoiDual.to_indices.html">
+     to_indices
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.DelaunayVoronoiDual.to_mask.html">
+     to_mask
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.DelaunayVoronoiDual.update.html">
+     update
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.DelaunayVoronoiDual.values.html">
+     values
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="openpnm.network.Gabriel.html">
+   Gabriel
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
+  <label for="toctree-checkbox-7">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Gabriel.add_boundary_pores.html">
+     add_boundary_pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Gabriel.add_model.html">
+     add_model
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Gabriel.check_network_health.html">
+     check_network_health
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Gabriel.clear.html">
+     clear
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Gabriel.copy.html">
+     copy
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Gabriel.create_adjacency_matrix.html">
+     create_adjacency_matrix
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Gabriel.create_incidence_matrix.html">
+     create_incidence_matrix
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Gabriel.filter_by_label.html">
+     filter_by_label
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Gabriel.find_connected_pores.html">
+     find_connected_pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Gabriel.find_connecting_throat.html">
+     find_connecting_throat
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Gabriel.find_nearby_pores.html">
+     find_nearby_pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Gabriel.find_neighbor_pores.html">
+     find_neighbor_pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Gabriel.find_neighbor_throats.html">
+     find_neighbor_throats
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Gabriel.find_pore_hulls.html">
+     find_pore_hulls
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Gabriel.find_throat_facets.html">
+     find_throat_facets
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Gabriel.fromkeys.html">
+     fromkeys
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Gabriel.get.html">
+     get
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Gabriel.get_adjacency_matrix.html">
+     get_adjacency_matrix
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Gabriel.get_conduit_data.html">
+     get_conduit_data
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Gabriel.get_incidence_matrix.html">
+     get_incidence_matrix
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Gabriel.interleave_data.html">
+     interleave_data
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Gabriel.interpolate_data.html">
+     interpolate_data
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Gabriel.items.html">
+     items
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Gabriel.keys.html">
+     keys
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Gabriel.labels.html">
+     labels
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Gabriel.num_neighbors.html">
+     num_neighbors
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Gabriel.num_pores.html">
+     num_pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Gabriel.num_throats.html">
+     num_throats
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Gabriel.params.html">
+     params
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Gabriel.pop.html">
+     pop
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Gabriel.popitem.html">
+     popitem
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Gabriel.pores.html">
+     pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Gabriel.props.html">
+     props
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Gabriel.regenerate_models.html">
+     regenerate_models
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Gabriel.remove_model.html">
+     remove_model
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Gabriel.set_label.html">
+     set_label
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Gabriel.setdefault.html">
+     setdefault
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Gabriel.show_hist.html">
+     show_hist
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Gabriel.throats.html">
+     throats
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Gabriel.to_indices.html">
+     to_indices
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Gabriel.to_mask.html">
+     to_mask
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Gabriel.update.html">
+     update
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Gabriel.values.html">
+     values
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="openpnm.network.GenericNetwork.html">
+   GenericNetwork
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/>
+  <label for="toctree-checkbox-8">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.GenericNetwork.add_model.html">
+     add_model
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.GenericNetwork.check_network_health.html">
+     check_network_health
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.GenericNetwork.clear.html">
+     clear
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.GenericNetwork.copy.html">
+     copy
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.GenericNetwork.create_adjacency_matrix.html">
+     create_adjacency_matrix
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.GenericNetwork.create_incidence_matrix.html">
+     create_incidence_matrix
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.GenericNetwork.filter_by_label.html">
+     filter_by_label
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.GenericNetwork.find_connected_pores.html">
+     find_connected_pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.GenericNetwork.find_connecting_throat.html">
+     find_connecting_throat
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.GenericNetwork.find_nearby_pores.html">
+     find_nearby_pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.GenericNetwork.find_neighbor_pores.html">
+     find_neighbor_pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.GenericNetwork.find_neighbor_throats.html">
+     find_neighbor_throats
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.GenericNetwork.fromkeys.html">
+     fromkeys
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.GenericNetwork.get.html">
+     get
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.GenericNetwork.get_adjacency_matrix.html">
+     get_adjacency_matrix
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.GenericNetwork.get_conduit_data.html">
+     get_conduit_data
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.GenericNetwork.get_incidence_matrix.html">
+     get_incidence_matrix
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.GenericNetwork.interleave_data.html">
+     interleave_data
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.GenericNetwork.interpolate_data.html">
+     interpolate_data
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.GenericNetwork.items.html">
+     items
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.GenericNetwork.keys.html">
+     keys
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.GenericNetwork.labels.html">
+     labels
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.GenericNetwork.num_neighbors.html">
+     num_neighbors
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.GenericNetwork.num_pores.html">
+     num_pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.GenericNetwork.num_throats.html">
+     num_throats
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.GenericNetwork.params.html">
+     params
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.GenericNetwork.pop.html">
+     pop
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.GenericNetwork.popitem.html">
+     popitem
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.GenericNetwork.pores.html">
+     pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.GenericNetwork.props.html">
+     props
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.GenericNetwork.regenerate_models.html">
+     regenerate_models
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.GenericNetwork.remove_model.html">
+     remove_model
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.GenericNetwork.set_label.html">
+     set_label
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.GenericNetwork.setdefault.html">
+     setdefault
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.GenericNetwork.show_hist.html">
+     show_hist
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.GenericNetwork.throats.html">
+     throats
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.GenericNetwork.to_indices.html">
+     to_indices
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.GenericNetwork.to_mask.html">
+     to_mask
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.GenericNetwork.update.html">
+     update
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.GenericNetwork.values.html">
+     values
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="openpnm.network.Voronoi.html">
+   Voronoi
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/>
+  <label for="toctree-checkbox-9">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Voronoi.add_boundary_pores.html">
+     add_boundary_pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Voronoi.add_model.html">
+     add_model
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Voronoi.check_network_health.html">
+     check_network_health
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Voronoi.clear.html">
+     clear
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Voronoi.copy.html">
+     copy
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Voronoi.create_adjacency_matrix.html">
+     create_adjacency_matrix
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Voronoi.create_incidence_matrix.html">
+     create_incidence_matrix
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Voronoi.filter_by_label.html">
+     filter_by_label
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Voronoi.find_connected_pores.html">
+     find_connected_pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Voronoi.find_connecting_throat.html">
+     find_connecting_throat
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Voronoi.find_nearby_pores.html">
+     find_nearby_pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Voronoi.find_neighbor_pores.html">
+     find_neighbor_pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Voronoi.find_neighbor_throats.html">
+     find_neighbor_throats
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Voronoi.find_pore_hulls.html">
+     find_pore_hulls
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Voronoi.find_throat_facets.html">
+     find_throat_facets
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Voronoi.fromkeys.html">
+     fromkeys
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Voronoi.get.html">
+     get
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Voronoi.get_adjacency_matrix.html">
+     get_adjacency_matrix
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Voronoi.get_conduit_data.html">
+     get_conduit_data
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Voronoi.get_incidence_matrix.html">
+     get_incidence_matrix
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Voronoi.interleave_data.html">
+     interleave_data
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Voronoi.interpolate_data.html">
+     interpolate_data
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Voronoi.items.html">
+     items
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Voronoi.keys.html">
+     keys
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Voronoi.labels.html">
+     labels
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Voronoi.num_neighbors.html">
+     num_neighbors
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Voronoi.num_pores.html">
+     num_pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Voronoi.num_throats.html">
+     num_throats
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Voronoi.params.html">
+     params
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Voronoi.pop.html">
+     pop
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Voronoi.popitem.html">
+     popitem
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Voronoi.pores.html">
+     pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Voronoi.props.html">
+     props
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Voronoi.regenerate_models.html">
+     regenerate_models
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Voronoi.remove_model.html">
+     remove_model
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Voronoi.set_label.html">
+     set_label
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Voronoi.setdefault.html">
+     setdefault
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Voronoi.show_hist.html">
+     show_hist
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Voronoi.throats.html">
+     throats
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Voronoi.to_indices.html">
+     to_indices
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Voronoi.to_mask.html">
+     to_mask
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Voronoi.update.html">
+     update
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.network.Voronoi.values.html">
+     values
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+  </div>
+</nav>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+              
+              <div class="toc-item">
+                
+
+<nav id="bd-toc-nav">
+    
+</nav>
+              </div>
+              
+              <div class="toc-item">
+                
+              </div>
+              
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <section id="cubicdual">
+<h1>CubicDual<a class="headerlink" href="#cubicdual" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="openpnm.network.CubicDual">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">openpnm.network.</span></span><span class="sig-name descname"><span class="pre">CubicDual</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/network/_cubic_dual.html#CubicDual"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.network.CubicDual" title="Permalink to this definition">¶</a></dt>
+<dd><p>Body centered cubic lattice plus face centered nodes on the surfaces</p>
+<p>This network is essentially a <em>‘bcc’</em> lattice, <em>except</em> that the
+seconary network (body-centered pores) has pores on each face of the
+domain, which breaks the body-centric arranagement. This allows
+boundary conditions to be applied to the seconary network for
+transport simuations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>shape</strong> (<em>list</em><em>[</em><em>int</em><em>]</em>) – The size and shape of the primary cubic network in terms of the
+number of pores in each direction. Secondary nodes will be added
+at centers of each unit cell.</p></li>
+<li><p><strong>spacing</strong> (<em>list</em><em>[</em><em>float</em><em>]</em>) – The distance between pores of the primary network in each of the
+principal directions</p></li>
+<li><p><strong>label_1</strong> (<em>str</em>) – The label to apply to the primary cubic lattices, which defaults
+to ‘primary’</p></li>
+<li><p><strong>label_2</strong> (<em>str</em>) – The label to apply to the secondary cubic lattices, which defaults
+to ‘seconary’</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – An optional name for the object to help identify it. If not given,
+one will be generated.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="openpnm.network.Bravais.html#openpnm.network.Bravais" title="openpnm.network.Bravais"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Bravais</span></code></a></p>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">CubicDual</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span><span class="o">.</span><span class="n">num_pores</span><span class="p">(</span><span class="s1">&#39;pore.primary&#39;</span><span class="p">)</span>  <span class="c1"># Normal cubic network is present</span>
+<span class="go">27</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span><span class="o">.</span><span class="n">Np</span>  <span class="c1"># But more pores are present from seconary network</span>
+<span class="go">59</span>
+</pre></div>
+</div>
+<p>And it can be plotted for quick visualization using:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">op</span><span class="o">.</span><span class="n">topotools</span><span class="o">.</span><span class="n">plot_connections</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span>
+<span class="gp">... </span>                              <span class="n">throats</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">throats</span><span class="p">(</span><span class="s1">&#39;primary&#39;</span><span class="p">),</span>
+<span class="gp">... </span>                              <span class="n">color</span><span class="o">=</span><span class="s1">&#39;g&#39;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">op</span><span class="o">.</span><span class="n">topotools</span><span class="o">.</span><span class="n">plot_connections</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span>
+<span class="gp">... </span>                              <span class="n">throats</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">throats</span><span class="p">(</span><span class="s1">&#39;secondary&#39;</span><span class="p">),</span>
+<span class="gp">... </span>                              <span class="n">color</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">op</span><span class="o">.</span><span class="n">topotools</span><span class="o">.</span><span class="n">plot_coordinates</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+</pre></div>
+</div>
+<figure class="align-default">
+<img alt="../../_images/openpnm-network-CubicDual-1.svg" class="plot-directive" src="../../_images/openpnm-network-CubicDual-1.svg" /></figure>
+<p>For larger networks and more control over presentation use <a class="reference external" href="http://www.paraview.org">Paraview</a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Attributes</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference internal" href="openpnm.network.CubicDual.Np.html#openpnm.network.CubicDual.Np" title="openpnm.network.CubicDual.Np"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Np</span></code></a></dt><dd><p>A shortcut to query the total number of pores on the object</p>
+</dd>
+<dt><a class="reference internal" href="openpnm.network.CubicDual.Nt.html#openpnm.network.CubicDual.Nt" title="openpnm.network.CubicDual.Nt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Nt</span></code></a></dt><dd><p>A shortcut to query the total number of throats on the object</p>
+</dd>
+<dt><a class="reference internal" href="openpnm.network.CubicDual.Ps.html#openpnm.network.CubicDual.Ps" title="openpnm.network.CubicDual.Ps"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Ps</span></code></a></dt><dd><p>A shortcut to get a list of all pores on the object</p>
+</dd>
+<dt><a class="reference internal" href="openpnm.network.CubicDual.Ts.html#openpnm.network.CubicDual.Ts" title="openpnm.network.CubicDual.Ts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Ts</span></code></a></dt><dd><p>A shortcut to get a list of all throats on the object</p>
+</dd>
+<dt><a class="reference internal" href="openpnm.network.CubicDual.am.html#openpnm.network.CubicDual.am" title="openpnm.network.CubicDual.am"><code class="xref py py-obj docutils literal notranslate"><span class="pre">am</span></code></a></dt><dd><p>Adjacency matrix in the specified sparse format, with throat IDs indicating the non-zero values.</p>
+</dd>
+<dt><a class="reference internal" href="openpnm.network.CubicDual.conns.html#openpnm.network.CubicDual.conns" title="openpnm.network.CubicDual.conns"><code class="xref py py-obj docutils literal notranslate"><span class="pre">conns</span></code></a></dt><dd><p>Returns the connectivity matrix of the network.</p>
+</dd>
+<dt><a class="reference internal" href="openpnm.network.CubicDual.coords.html#openpnm.network.CubicDual.coords" title="openpnm.network.CubicDual.coords"><code class="xref py py-obj docutils literal notranslate"><span class="pre">coords</span></code></a></dt><dd><p>Returns the list of pore coordinates of the network.</p>
+</dd>
+<dt><a class="reference internal" href="openpnm.network.CubicDual.im.html#openpnm.network.CubicDual.im" title="openpnm.network.CubicDual.im"><code class="xref py py-obj docutils literal notranslate"><span class="pre">im</span></code></a></dt><dd><p>Incidence matrix in the specified sparse format, with pore IDs indicating the non-zero values.</p>
+</dd>
+<dt><a class="reference internal" href="openpnm.network.CubicDual.models.html#openpnm.network.CubicDual.models" title="openpnm.network.CubicDual.models"><code class="xref py py-obj docutils literal notranslate"><span class="pre">models</span></code></a></dt><dd><p>List of available models on the objects</p>
+</dd>
+<dt><a class="reference internal" href="openpnm.network.CubicDual.name.html#openpnm.network.CubicDual.name" title="openpnm.network.CubicDual.name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">name</span></code></a></dt><dd><p>String representing the name of the object</p>
+</dd>
+<dt><a class="reference internal" href="openpnm.network.CubicDual.network.html#openpnm.network.CubicDual.network" title="openpnm.network.CubicDual.network"><code class="xref py py-obj docutils literal notranslate"><span class="pre">network</span></code></a></dt><dd><p>A shortcut to get a handle to the associated network.</p>
+</dd>
+<dt><a class="reference internal" href="openpnm.network.CubicDual.project.html#openpnm.network.CubicDual.project" title="openpnm.network.CubicDual.project"><code class="xref py py-obj docutils literal notranslate"><span class="pre">project</span></code></a></dt><dd><p>A shortcut to get a handle to the associated project.</p>
+</dd>
+<dt><a class="reference internal" href="openpnm.network.CubicDual.settings.html#openpnm.network.CubicDual.settings" title="openpnm.network.CubicDual.settings"><code class="xref py py-obj docutils literal notranslate"><span class="pre">settings</span></code></a></dt><dd><p>Dictionary containing object settings.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="longtable table autosummary">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="openpnm.network.CubicDual.add_boundary_pores.html#openpnm.network.CubicDual.add_boundary_pores" title="openpnm.network.CubicDual.add_boundary_pores"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_boundary_pores</span></code></a>([labels, spacing])</p></td>
+<td><p>Add boundary pores to the specified faces of the network</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="openpnm.network.CubicDual.add_model.html#openpnm.network.CubicDual.add_model" title="openpnm.network.CubicDual.add_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_model</span></code></a>(propname, model[, regen_mode])</p></td>
+<td><p>Adds a new model to the models dictionary.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="openpnm.network.CubicDual.check_network_health.html#openpnm.network.CubicDual.check_network_health" title="openpnm.network.CubicDual.check_network_health"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_network_health</span></code></a>()</p></td>
+<td><p>This method check the network topological health.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="openpnm.network.CubicDual.clear.html#openpnm.network.CubicDual.clear" title="openpnm.network.CubicDual.clear"><code class="xref py py-obj docutils literal notranslate"><span class="pre">clear</span></code></a>([element, mode])</p></td>
+<td><p>A subclassed version of the standard dict's clear method.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="openpnm.network.CubicDual.copy.html#openpnm.network.CubicDual.copy" title="openpnm.network.CubicDual.copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="openpnm.network.CubicDual.create_adjacency_matrix.html#openpnm.network.CubicDual.create_adjacency_matrix" title="openpnm.network.CubicDual.create_adjacency_matrix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_adjacency_matrix</span></code></a>([weights, fmt, ...])</p></td>
+<td><p>Generates a weighted adjacency matrix in the desired sparse format</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="openpnm.network.CubicDual.create_incidence_matrix.html#openpnm.network.CubicDual.create_incidence_matrix" title="openpnm.network.CubicDual.create_incidence_matrix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_incidence_matrix</span></code></a>([weights, fmt, ...])</p></td>
+<td><p>Creates a weighted incidence matrix in the desired sparse format</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="openpnm.network.CubicDual.filter_by_label.html#openpnm.network.CubicDual.filter_by_label" title="openpnm.network.CubicDual.filter_by_label"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filter_by_label</span></code></a>([pores, throats, labels, mode])</p></td>
+<td><p>Returns which of the supplied pores (or throats) has the specified label(s)</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="openpnm.network.CubicDual.find_connected_pores.html#openpnm.network.CubicDual.find_connected_pores" title="openpnm.network.CubicDual.find_connected_pores"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_connected_pores</span></code></a>([throats, flatten, mode])</p></td>
+<td><p>Return a list of pores connected to the given list of throats</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="openpnm.network.CubicDual.find_connecting_throat.html#openpnm.network.CubicDual.find_connecting_throat" title="openpnm.network.CubicDual.find_connecting_throat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_connecting_throat</span></code></a>(P1, P2)</p></td>
+<td><p>Return the throat index connecting pairs of pores.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="openpnm.network.CubicDual.find_nearby_pores.html#openpnm.network.CubicDual.find_nearby_pores" title="openpnm.network.CubicDual.find_nearby_pores"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_nearby_pores</span></code></a>(pores, r[, flatten, ...])</p></td>
+<td><p>Find all pores within a given radial distance of the input pore(s) regardless of whether or not they are toplogically connected.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="openpnm.network.CubicDual.find_neighbor_pores.html#openpnm.network.CubicDual.find_neighbor_pores" title="openpnm.network.CubicDual.find_neighbor_pores"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_neighbor_pores</span></code></a>(pores[, mode, flatten, ...])</p></td>
+<td><p>Returns a list of pores that are direct neighbors to the given pore(s)</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="openpnm.network.CubicDual.find_neighbor_throats.html#openpnm.network.CubicDual.find_neighbor_throats" title="openpnm.network.CubicDual.find_neighbor_throats"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_neighbor_throats</span></code></a>(pores[, mode, flatten])</p></td>
+<td><p>Returns a list of throats neighboring the given pore(s)</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="openpnm.network.CubicDual.fromkeys.html#openpnm.network.CubicDual.fromkeys" title="openpnm.network.CubicDual.fromkeys"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fromkeys</span></code></a>(iterable[, value])</p></td>
+<td><p>Create a new dictionary with keys from iterable and values set to value.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="openpnm.network.CubicDual.get.html#openpnm.network.CubicDual.get" title="openpnm.network.CubicDual.get"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get</span></code></a>(key[, default])</p></td>
+<td><p>Return the value for key if key is in the dictionary, else default.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="openpnm.network.CubicDual.get_adjacency_matrix.html#openpnm.network.CubicDual.get_adjacency_matrix" title="openpnm.network.CubicDual.get_adjacency_matrix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_adjacency_matrix</span></code></a>([fmt])</p></td>
+<td><p>Adjacency matrix in the specified sparse format, with throat IDs indicating the non-zero values.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="openpnm.network.CubicDual.get_conduit_data.html#openpnm.network.CubicDual.get_conduit_data" title="openpnm.network.CubicDual.get_conduit_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_conduit_data</span></code></a>(prop[, mode])</p></td>
+<td><p>Combines requested data into a single 3-column array.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="openpnm.network.CubicDual.get_incidence_matrix.html#openpnm.network.CubicDual.get_incidence_matrix" title="openpnm.network.CubicDual.get_incidence_matrix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_incidence_matrix</span></code></a>([fmt])</p></td>
+<td><p>Incidence matrix in the specified sparse format, with pore IDs indicating the non-zero values.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="openpnm.network.CubicDual.interleave_data.html#openpnm.network.CubicDual.interleave_data" title="openpnm.network.CubicDual.interleave_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">interleave_data</span></code></a>(prop)</p></td>
+<td><p>Retrieves requested property from associated objects, to produce a full Np or Nt length array.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="openpnm.network.CubicDual.interpolate_data.html#openpnm.network.CubicDual.interpolate_data" title="openpnm.network.CubicDual.interpolate_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">interpolate_data</span></code></a>(propname[, mode])</p></td>
+<td><p>Determines a pore (or throat) property as the average of it's neighboring throats (or pores)</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="openpnm.network.CubicDual.items.html#openpnm.network.CubicDual.items" title="openpnm.network.CubicDual.items"><code class="xref py py-obj docutils literal notranslate"><span class="pre">items</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="openpnm.network.CubicDual.keys.html#openpnm.network.CubicDual.keys" title="openpnm.network.CubicDual.keys"><code class="xref py py-obj docutils literal notranslate"><span class="pre">keys</span></code></a>([element, mode, deep])</p></td>
+<td><p>This subclass works exactly like <code class="docutils literal notranslate"><span class="pre">keys</span></code> when no arguments are passed, but optionally accepts an <code class="docutils literal notranslate"><span class="pre">element</span></code> and a <code class="docutils literal notranslate"><span class="pre">mode</span></code>, which filters the output to only the requested keys.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="openpnm.network.CubicDual.labels.html#openpnm.network.CubicDual.labels" title="openpnm.network.CubicDual.labels"><code class="xref py py-obj docutils literal notranslate"><span class="pre">labels</span></code></a>([pores, throats, element, mode])</p></td>
+<td><p>Returns a list of labels present on the object</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="openpnm.network.CubicDual.num_neighbors.html#openpnm.network.CubicDual.num_neighbors" title="openpnm.network.CubicDual.num_neighbors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">num_neighbors</span></code></a>(pores[, mode, flatten])</p></td>
+<td><p>Returns the number of neigbhoring pores for each given input pore</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="openpnm.network.CubicDual.num_pores.html#openpnm.network.CubicDual.num_pores" title="openpnm.network.CubicDual.num_pores"><code class="xref py py-obj docutils literal notranslate"><span class="pre">num_pores</span></code></a>([labels, mode])</p></td>
+<td><p>Returns the number of pores of the specified labels</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="openpnm.network.CubicDual.num_throats.html#openpnm.network.CubicDual.num_throats" title="openpnm.network.CubicDual.num_throats"><code class="xref py py-obj docutils literal notranslate"><span class="pre">num_throats</span></code></a>([labels, mode])</p></td>
+<td><p>Return the number of throats of the specified labels</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="openpnm.network.CubicDual.params.html#openpnm.network.CubicDual.params" title="openpnm.network.CubicDual.params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">params</span></code></a>()</p></td>
+<td><p>Return parameter names and values in a dictionary</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="openpnm.network.CubicDual.pop.html#openpnm.network.CubicDual.pop" title="openpnm.network.CubicDual.pop"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pop</span></code></a>(k[,d])</p></td>
+<td><p>If key is not found, d is returned if given, otherwise KeyError is raised</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="openpnm.network.CubicDual.popitem.html#openpnm.network.CubicDual.popitem" title="openpnm.network.CubicDual.popitem"><code class="xref py py-obj docutils literal notranslate"><span class="pre">popitem</span></code></a>(/)</p></td>
+<td><p>Remove and return a (key, value) pair as a 2-tuple.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="openpnm.network.CubicDual.pores.html#openpnm.network.CubicDual.pores" title="openpnm.network.CubicDual.pores"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pores</span></code></a>([labels, mode, asmask, to_global])</p></td>
+<td><p>Returns pore indicies where given labels exist, according to the logic specified by the <code class="docutils literal notranslate"><span class="pre">mode</span></code> argument.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="openpnm.network.CubicDual.props.html#openpnm.network.CubicDual.props" title="openpnm.network.CubicDual.props"><code class="xref py py-obj docutils literal notranslate"><span class="pre">props</span></code></a>([element, mode, deep])</p></td>
+<td><p>Returns a list containing the names of all defined pore or throat properties.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="openpnm.network.CubicDual.regenerate_models.html#openpnm.network.CubicDual.regenerate_models" title="openpnm.network.CubicDual.regenerate_models"><code class="xref py py-obj docutils literal notranslate"><span class="pre">regenerate_models</span></code></a>([propnames, exclude, deep])</p></td>
+<td><p>Re-runs the specified model or models.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="openpnm.network.CubicDual.remove_model.html#openpnm.network.CubicDual.remove_model" title="openpnm.network.CubicDual.remove_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_model</span></code></a>([propname, mode])</p></td>
+<td><p>Removes model and data from object.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="openpnm.network.CubicDual.set_label.html#openpnm.network.CubicDual.set_label" title="openpnm.network.CubicDual.set_label"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_label</span></code></a>(label[, pores, throats, mode])</p></td>
+<td><p>Creates or updates a label array</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="openpnm.network.CubicDual.setdefault.html#openpnm.network.CubicDual.setdefault" title="openpnm.network.CubicDual.setdefault"><code class="xref py py-obj docutils literal notranslate"><span class="pre">setdefault</span></code></a>(key[, default])</p></td>
+<td><p>Insert key with a value of default if key is not in the dictionary.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="openpnm.network.CubicDual.show_hist.html#openpnm.network.CubicDual.show_hist" title="openpnm.network.CubicDual.show_hist"><code class="xref py py-obj docutils literal notranslate"><span class="pre">show_hist</span></code></a>([props, bins, fontsize])</p></td>
+<td><p>Shows a quick plot of key property distributions.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="openpnm.network.CubicDual.throats.html#openpnm.network.CubicDual.throats" title="openpnm.network.CubicDual.throats"><code class="xref py py-obj docutils literal notranslate"><span class="pre">throats</span></code></a>([labels, mode, asmask, to_global])</p></td>
+<td><p>Returns throat locations where given labels exist, according to the logic specified by the <code class="docutils literal notranslate"><span class="pre">mode</span></code> argument.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="openpnm.network.CubicDual.to_indices.html#openpnm.network.CubicDual.to_indices" title="openpnm.network.CubicDual.to_indices"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_indices</span></code></a>(mask)</p></td>
+<td><p>Converts a boolean mask to a list of pore or throat indices.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="openpnm.network.CubicDual.to_mask.html#openpnm.network.CubicDual.to_mask" title="openpnm.network.CubicDual.to_mask"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_mask</span></code></a>([pores, throats])</p></td>
+<td><p>Convert a list of pore or throat indices into a boolean mask of the correct length.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="openpnm.network.CubicDual.update.html#openpnm.network.CubicDual.update" title="openpnm.network.CubicDual.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>([E, ]**F)</p></td>
+<td><p>If E is present and has a .keys() method, then does:  for k in E: D[k] = E[k] If E is present and lacks a .keys() method, then does:  for k, v in E: D[k] = v In either case, this is followed by: for k in F:  D[k] = F[k]</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="openpnm.network.CubicDual.values.html#openpnm.network.CubicDual.values" title="openpnm.network.CubicDual.values"><code class="xref py py-obj docutils literal notranslate"><span class="pre">values</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</section>
+
+
+              </div>
+              
+              
+          </main>
+          
+
+      </div>
+    </div>
+  
+  <script src="../../_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
+<footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2021, PMEAL.<br>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.3.0.<br>
+</p>
+    </div>
+    
+  </div>
+</footer>
+  </body>
+</html>

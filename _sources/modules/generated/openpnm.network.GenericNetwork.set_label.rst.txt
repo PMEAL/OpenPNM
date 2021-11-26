@@ -1,0 +1,8 @@
+:orphan:
+
+set_label
+========================================
+
+.. currentmodule:: openpnm.network
+
+.. automethod:: GenericNetwork.set_label

@@ -1,0 +1,8 @@
+:orphan:
+
+clip
+=================================
+
+.. currentmodule:: openpnm.integrators
+
+.. automethod:: Solution.clip

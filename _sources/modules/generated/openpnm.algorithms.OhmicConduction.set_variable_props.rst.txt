@@ -1,0 +1,8 @@
+:orphan:
+
+set_variable_props
+=====================================================
+
+.. currentmodule:: openpnm.algorithms
+
+.. automethod:: OhmicConduction.set_variable_props

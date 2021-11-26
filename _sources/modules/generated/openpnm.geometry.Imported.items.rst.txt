@@ -1,0 +1,8 @@
+:orphan:
+
+items
+===============================
+
+.. currentmodule:: openpnm.geometry
+
+.. automethod:: Imported.items

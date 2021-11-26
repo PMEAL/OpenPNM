@@ -1,0 +1,371 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>openpnm.models.phases.surface_tension &#8212; OpenPNM 2.8.2 documentation</title>
+    
+  <link href="../../../../_static/css/theme.css" rel="stylesheet">
+  <link href="../../../../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/css/blank.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css" />
+    
+  <link rel="preload" as="script" href="../../../../_static/js/index.be7d3bbb2ef33a8344ce.js">
+
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/clipboard.min.js"></script>
+    <script src="../../../../_static/copybutton.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../../_static/js/custom.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+
+<a class="navbar-brand" href="https://www.openpnm.org">
+  <img src="../../../../_static/openpnm_logo.png" class="logo" alt="logo">
+</a>
+
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class=" collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../../user_guide/index.html">
+  User Guide
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../../modules/index.html">
+  Module Reference
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../../examples/examples.html">
+  Examples
+ </a>
+</li>
+
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/PMEAL/OpenPNM" rel="noopener" target="_blank" title="GitHub">
+            <span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://openpnm.substack.com/" rel="noopener" target="_blank" title="Substack">
+            <span><i class="fas fa-envelope-square"></i></span>
+            <label class="sr-only">Substack</label>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://twitter.com/OpenPNM" rel="noopener" target="_blank" title="Twitter">
+            <span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label>
+          </a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../../../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    
+  </div>
+</nav>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <h1>Source code for openpnm.models.phases.surface_tension</h1><div class="highlight"><pre>
+<span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">scipy</span> <span class="k">as</span> <span class="nn">sp</span>
+
+
+<div class="viewcode-block" id="water"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.phases.surface_tension.water.html#openpnm.models.phases.surface_tension.water">[docs]</a><span class="k">def</span> <span class="nf">water</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">,</span> <span class="n">salinity</span><span class="o">=</span><span class="s1">&#39;pore.salinity&#39;</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates surface tension of pure water or seawater at atmospheric</span>
+<span class="sd">    pressure using Eq. (28) given by Sharqawy et al. Values at</span>
+<span class="sd">    temperature higher than the normal boiling temperature are calculated at</span>
+<span class="sd">    the saturation pressure.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    target : GenericPhase</span>
+<span class="sd">        The object for which these values are being calculated. This</span>
+<span class="sd">        controls the length of the calculated array, and also provides</span>
+<span class="sd">        access to other necessary thermofluid properties.</span>
+<span class="sd">    temperature : str</span>
+<span class="sd">        The dictionary key containing the temperature values. Temperature must</span>
+<span class="sd">        be in Kelvin for this emperical equation to work</span>
+<span class="sd">    salinity : str</span>
+<span class="sd">        The dictionary key containing the salinity values. Salinity must be</span>
+<span class="sd">        expressed in g of salt per kg of solution (ppt).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    value : ndarray</span>
+<span class="sd">        Array containing surface tension of seawater in [N/m]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    T must be in K, and S in g of salt per kg of phase, or ppt (parts per</span>
+<span class="sd">    thousand)</span>
+<span class="sd">    VALIDITY: 273 &lt; T &lt; 313 K; 0 &lt; S &lt; 40 g/kg;</span>
+<span class="sd">    ACCURACY: 0.2 %</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Sharqawy M. H., Lienhard J. H., and Zubair, S. M., Desalination and</span>
+<span class="sd">    Water Treatment, 2010.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">temperature</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">salinity</span> <span class="ow">in</span> <span class="n">target</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">S</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">salinity</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">S</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">sigma_w</span> <span class="o">=</span> <span class="mf">0.2358</span><span class="o">*</span><span class="p">((</span><span class="mi">1</span><span class="o">-</span><span class="p">(</span><span class="n">T</span><span class="o">/</span><span class="mf">647.096</span><span class="p">))</span><span class="o">**</span><span class="mf">1.256</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="mf">0.625</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="p">(</span><span class="n">T</span><span class="o">/</span><span class="mf">647.096</span><span class="p">)))</span>
+    <span class="n">a1</span> <span class="o">=</span> <span class="mf">2.2637334337E-04</span>
+    <span class="n">a2</span> <span class="o">=</span> <span class="mf">9.4579521377E-03</span>
+    <span class="n">a3</span> <span class="o">=</span> <span class="mf">3.3104954843E-02</span>
+    <span class="n">TC</span> <span class="o">=</span> <span class="n">T</span><span class="o">-</span><span class="mf">273.15</span>
+    <span class="n">sigma_sw</span> <span class="o">=</span> <span class="n">sigma_w</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="p">(</span><span class="n">a1</span><span class="o">*</span><span class="n">TC</span><span class="o">+</span><span class="n">a2</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">a3</span><span class="o">*</span><span class="n">S</span><span class="p">))</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="n">sigma_sw</span>
+    <span class="k">return</span> <span class="n">value</span></div>
+
+
+<div class="viewcode-block" id="eotvos"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.phases.surface_tension.eotvos.html#openpnm.models.phases.surface_tension.eotvos">[docs]</a><span class="k">def</span> <span class="nf">eotvos</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">,</span>
+           <span class="n">critical_temperature</span><span class="o">=</span><span class="s1">&#39;pore.critical_temperature&#39;</span><span class="p">,</span>
+           <span class="n">molar_density</span><span class="o">=</span><span class="s1">&#39;pore.molar_density&#39;</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Missing description</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    target : GenericPhase</span>
+<span class="sd">        The object for which these values are being calculated.  This</span>
+<span class="sd">        controls the length of the calculated array, and also provides</span>
+<span class="sd">        access to other necessary thermofluid properties.</span>
+<span class="sd">    k : float</span>
+<span class="sd">        Constant parameter specific to fluid</span>
+<span class="sd">    temperature : str</span>
+<span class="sd">        The dictionary key containing the temperature values (K)</span>
+<span class="sd">    critical_temperature : str</span>
+<span class="sd">        The dictionary key containing the critical temperature values (K)</span>
+<span class="sd">    molar_density : str</span>
+<span class="sd">        The dictionary key containing the molar density values (K)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    value : ndarray</span>
+<span class="sd">        Array containing surface tension values [N/m]</span>
+
+<span class="sd">    TODO: Needs description, and improve definition of k</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">Tc</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">critical_temperature</span><span class="p">]</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">temperature</span><span class="p">]</span>
+    <span class="n">Vm</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="n">target</span><span class="p">[</span><span class="n">molar_density</span><span class="p">]</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="n">k</span><span class="o">*</span><span class="p">(</span><span class="n">Tc</span><span class="o">-</span><span class="n">T</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">Vm</span><span class="o">**</span><span class="p">(</span><span class="mi">2</span><span class="o">/</span><span class="mi">3</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">value</span></div>
+
+
+<div class="viewcode-block" id="guggenheim_katayama"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.phases.surface_tension.guggenheim_katayama.html#openpnm.models.phases.surface_tension.guggenheim_katayama">[docs]</a><span class="k">def</span> <span class="nf">guggenheim_katayama</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">K2</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">,</span>
+                        <span class="n">critical_temperature</span><span class="o">=</span><span class="s1">&#39;pore.critical_temperature&#39;</span><span class="p">,</span>
+                        <span class="n">critical_pressure</span><span class="o">=</span><span class="s1">&#39;pore.critical_pressure&#39;</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Missing description</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    target : GenericPhase</span>
+<span class="sd">        The object for which these values are being calculated.  This</span>
+<span class="sd">        controls the length of the calculated array, and also provides</span>
+<span class="sd">        access to other necessary thermofluid properties.</span>
+<span class="sd">    K2 : scalar</span>
+<span class="sd">        Fluid specific constant</span>
+<span class="sd">    n : scalar</span>
+<span class="sd">        Fluid specific constant</span>
+<span class="sd">    temperature : str</span>
+<span class="sd">        The dictionary key containing the temperature values (K)</span>
+<span class="sd">    critical_temperature : str</span>
+<span class="sd">        The dictionary key containing the critical temperature values (K)</span>
+<span class="sd">    critical_pressure : str</span>
+<span class="sd">        The dictionary key containing the critical pressure values (K)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    value : ndarray</span>
+<span class="sd">        Array containing surface tension values [N/m]</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">temperature</span><span class="p">]</span>
+    <span class="n">Pc</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">critical_pressure</span><span class="p">]</span>
+    <span class="n">Tc</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">critical_temperature</span><span class="p">]</span>
+    <span class="n">sigma_o</span> <span class="o">=</span> <span class="n">K2</span><span class="o">*</span><span class="n">Tc</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">)</span><span class="o">*</span><span class="n">Pc</span><span class="o">**</span><span class="p">(</span><span class="mi">2</span><span class="o">/</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="n">sigma_o</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">T</span><span class="o">/</span><span class="n">Tc</span><span class="p">)</span><span class="o">**</span><span class="n">n</span>
+    <span class="k">return</span> <span class="n">value</span></div>
+
+
+<div class="viewcode-block" id="brock_bird_scaling"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.phases.surface_tension.brock_bird_scaling.html#openpnm.models.phases.surface_tension.brock_bird_scaling">[docs]</a><span class="k">def</span> <span class="nf">brock_bird_scaling</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">sigma_o</span><span class="p">,</span> <span class="n">To</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">,</span>
+                       <span class="n">critical_temperature</span><span class="o">=</span><span class="s1">&#39;pore.critical_temperature&#39;</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Uses Brock_Bird model to adjust surface tension from it&#39;s value at a given</span>
+<span class="sd">    reference temperature to temperature of interest</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    target : GenericPhase</span>
+<span class="sd">        The object for which these values are being calculated.  This</span>
+<span class="sd">        controls the length of the calculated array, and also provides</span>
+<span class="sd">        access to other necessary thermofluid properties.</span>
+<span class="sd">    To : float</span>
+<span class="sd">        Reference temperature (K)</span>
+<span class="sd">    sigma_o : float</span>
+<span class="sd">        Surface tension at reference temperature (N/m)</span>
+<span class="sd">    temperature : str</span>
+<span class="sd">        The dictionary key containing the temperature values (K)</span>
+<span class="sd">    critical_temperature : str</span>
+<span class="sd">        The dictionary key containing the critical temperature values (K)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    value : ndarray</span>
+<span class="sd">        Array containing surface tension values scaled to the temperature [N/m]</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">Tc</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">critical_temperature</span><span class="p">]</span>
+    <span class="n">Ti</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">temperature</span><span class="p">]</span>
+    <span class="n">Tro</span> <span class="o">=</span> <span class="n">To</span><span class="o">/</span><span class="n">Tc</span>
+    <span class="n">Tri</span> <span class="o">=</span> <span class="n">Ti</span><span class="o">/</span><span class="n">Tc</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="n">sigma_o</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">Tri</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mi">11</span><span class="o">/</span><span class="mi">9</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">Tro</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mi">11</span><span class="o">/</span><span class="mi">9</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">value</span></div>
+</pre></div>
+
+              </div>
+              
+              
+          </main>
+          
+
+      </div>
+    </div>
+  
+  <script src="../../../../_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
+<footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2021, PMEAL.<br>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.3.0.<br>
+</p>
+    </div>
+    
+  </div>
+</footer>
+  </body>
+</html>

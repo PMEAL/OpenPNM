@@ -1,0 +1,6 @@
+shear\_coords
+=============
+
+.. currentmodule:: openpnm.topotools
+
+.. autofunction:: shear_coords

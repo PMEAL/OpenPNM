@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.network.Cubic.network
+=============================
+
+.. currentmodule:: openpnm.network
+
+attribute
+
+.. autoproperty:: openpnm.network.Cubic.network
+

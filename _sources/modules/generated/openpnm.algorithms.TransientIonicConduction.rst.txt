@@ -1,0 +1,70 @@
+TransientIonicConduction
+===========================================
+
+.. currentmodule:: openpnm.algorithms
+
+.. autoclass:: TransientIonicConduction
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            TransientIonicConduction.clear
+            TransientIonicConduction.copy
+            TransientIonicConduction.fromkeys
+            TransientIonicConduction.get
+            TransientIonicConduction.get_conduit_data
+            TransientIonicConduction.interleave_data
+            TransientIonicConduction.interpolate_data
+            TransientIonicConduction.items
+            TransientIonicConduction.keys
+            TransientIonicConduction.map_pores
+            TransientIonicConduction.map_throats
+            TransientIonicConduction.pop
+            TransientIonicConduction.popitem
+            TransientIonicConduction.props
+            TransientIonicConduction.rate
+            TransientIonicConduction.remove_BC
+            TransientIonicConduction.remove_source
+            TransientIonicConduction.reset
+            TransientIonicConduction.results
+            TransientIonicConduction.run
+            TransientIonicConduction.set_rate_BC
+            TransientIonicConduction.set_source
+            TransientIonicConduction.set_value_BC
+            TransientIonicConduction.set_variable_props
+            TransientIonicConduction.setdefault
+            TransientIonicConduction.show_hist
+            TransientIonicConduction.to_indices
+            TransientIonicConduction.to_mask
+            TransientIonicConduction.toindices
+            TransientIonicConduction.tomask
+            TransientIonicConduction.update
+            TransientIonicConduction.values
+   
+   
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            TransientIonicConduction.A
+            TransientIonicConduction.Np
+            TransientIonicConduction.Nt
+            TransientIonicConduction.Ps
+            TransientIonicConduction.Ts
+            TransientIonicConduction.b
+            TransientIonicConduction.name
+            TransientIonicConduction.network
+            TransientIonicConduction.project
+            TransientIonicConduction.settings
+            TransientIonicConduction.x
+   
+   

@@ -1,0 +1,1829 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>keys &#8212; OpenPNM 2.8.2 documentation</title>
+    
+  <link href="../../_static/css/theme.css" rel="stylesheet">
+  <link href="../../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/blank.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
+    
+  <link rel="preload" as="script" href="../../_static/js/index.be7d3bbb2ef33a8344ce.js">
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/custom.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+
+<a class="navbar-brand" href="https://www.openpnm.org">
+  <img src="../../_static/openpnm_logo.png" class="logo" alt="logo">
+</a>
+
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class=" collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../user_guide/index.html">
+  User Guide
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../index.html">
+  Module Reference
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../examples/examples.html">
+  Examples
+ </a>
+</li>
+
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/PMEAL/OpenPNM" rel="noopener" target="_blank" title="GitHub">
+            <span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://openpnm.substack.com/" rel="noopener" target="_blank" title="Substack">
+            <span><i class="fas fa-envelope-square"></i></span>
+            <label class="sr-only">Substack</label>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://twitter.com/OpenPNM" rel="noopener" target="_blank" title="Twitter">
+            <span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label>
+          </a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="openpnm.geometry.CirclesAndRectangles.html">
+   CirclesAndRectangles
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.CirclesAndRectangles.add_model.html">
+     add_model
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.CirclesAndRectangles.clear.html">
+     clear
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.CirclesAndRectangles.copy.html">
+     copy
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.CirclesAndRectangles.filter_by_label.html">
+     filter_by_label
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.CirclesAndRectangles.fromkeys.html">
+     fromkeys
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.CirclesAndRectangles.get.html">
+     get
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.CirclesAndRectangles.get_conduit_data.html">
+     get_conduit_data
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.CirclesAndRectangles.interleave_data.html">
+     interleave_data
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.CirclesAndRectangles.interpolate_data.html">
+     interpolate_data
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.CirclesAndRectangles.items.html">
+     items
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.CirclesAndRectangles.keys.html">
+     keys
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.CirclesAndRectangles.labels.html">
+     labels
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.CirclesAndRectangles.num_pores.html">
+     num_pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.CirclesAndRectangles.num_throats.html">
+     num_throats
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.CirclesAndRectangles.params.html">
+     params
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.CirclesAndRectangles.pop.html">
+     pop
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.CirclesAndRectangles.popitem.html">
+     popitem
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.CirclesAndRectangles.pores.html">
+     pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.CirclesAndRectangles.props.html">
+     props
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.CirclesAndRectangles.regenerate_models.html">
+     regenerate_models
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.CirclesAndRectangles.remove_model.html">
+     remove_model
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.CirclesAndRectangles.set_label.html">
+     set_label
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.CirclesAndRectangles.set_locations.html">
+     set_locations
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.CirclesAndRectangles.setdefault.html">
+     setdefault
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.CirclesAndRectangles.show_hist.html">
+     show_hist
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.CirclesAndRectangles.throats.html">
+     throats
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.CirclesAndRectangles.to_global.html">
+     to_global
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.CirclesAndRectangles.to_indices.html">
+     to_indices
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.CirclesAndRectangles.to_local.html">
+     to_local
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.CirclesAndRectangles.to_mask.html">
+     to_mask
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.CirclesAndRectangles.update.html">
+     update
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.CirclesAndRectangles.values.html">
+     values
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="openpnm.geometry.ConesAndCylinders.html">
+   ConesAndCylinders
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+  <label for="toctree-checkbox-2">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.ConesAndCylinders.add_model.html">
+     add_model
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.ConesAndCylinders.clear.html">
+     clear
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.ConesAndCylinders.copy.html">
+     copy
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.ConesAndCylinders.filter_by_label.html">
+     filter_by_label
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.ConesAndCylinders.fromkeys.html">
+     fromkeys
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.ConesAndCylinders.get.html">
+     get
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.ConesAndCylinders.get_conduit_data.html">
+     get_conduit_data
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.ConesAndCylinders.interleave_data.html">
+     interleave_data
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.ConesAndCylinders.interpolate_data.html">
+     interpolate_data
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.ConesAndCylinders.items.html">
+     items
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.ConesAndCylinders.keys.html">
+     keys
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.ConesAndCylinders.labels.html">
+     labels
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.ConesAndCylinders.num_pores.html">
+     num_pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.ConesAndCylinders.num_throats.html">
+     num_throats
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.ConesAndCylinders.params.html">
+     params
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.ConesAndCylinders.pop.html">
+     pop
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.ConesAndCylinders.popitem.html">
+     popitem
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.ConesAndCylinders.pores.html">
+     pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.ConesAndCylinders.props.html">
+     props
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.ConesAndCylinders.regenerate_models.html">
+     regenerate_models
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.ConesAndCylinders.remove_model.html">
+     remove_model
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.ConesAndCylinders.set_label.html">
+     set_label
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.ConesAndCylinders.set_locations.html">
+     set_locations
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.ConesAndCylinders.setdefault.html">
+     setdefault
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.ConesAndCylinders.show_hist.html">
+     show_hist
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.ConesAndCylinders.throats.html">
+     throats
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.ConesAndCylinders.to_global.html">
+     to_global
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.ConesAndCylinders.to_indices.html">
+     to_indices
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.ConesAndCylinders.to_local.html">
+     to_local
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.ConesAndCylinders.to_mask.html">
+     to_mask
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.ConesAndCylinders.update.html">
+     update
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.ConesAndCylinders.values.html">
+     values
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="openpnm.geometry.CubesAndCuboids.html">
+   CubesAndCuboids
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
+  <label for="toctree-checkbox-3">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.CubesAndCuboids.add_model.html">
+     add_model
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.CubesAndCuboids.clear.html">
+     clear
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.CubesAndCuboids.copy.html">
+     copy
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.CubesAndCuboids.filter_by_label.html">
+     filter_by_label
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.CubesAndCuboids.fromkeys.html">
+     fromkeys
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.CubesAndCuboids.get.html">
+     get
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.CubesAndCuboids.get_conduit_data.html">
+     get_conduit_data
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.CubesAndCuboids.interleave_data.html">
+     interleave_data
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.CubesAndCuboids.interpolate_data.html">
+     interpolate_data
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.CubesAndCuboids.items.html">
+     items
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.CubesAndCuboids.keys.html">
+     keys
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.CubesAndCuboids.labels.html">
+     labels
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.CubesAndCuboids.num_pores.html">
+     num_pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.CubesAndCuboids.num_throats.html">
+     num_throats
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.CubesAndCuboids.params.html">
+     params
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.CubesAndCuboids.pop.html">
+     pop
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.CubesAndCuboids.popitem.html">
+     popitem
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.CubesAndCuboids.pores.html">
+     pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.CubesAndCuboids.props.html">
+     props
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.CubesAndCuboids.regenerate_models.html">
+     regenerate_models
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.CubesAndCuboids.remove_model.html">
+     remove_model
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.CubesAndCuboids.set_label.html">
+     set_label
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.CubesAndCuboids.set_locations.html">
+     set_locations
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.CubesAndCuboids.setdefault.html">
+     setdefault
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.CubesAndCuboids.show_hist.html">
+     show_hist
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.CubesAndCuboids.throats.html">
+     throats
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.CubesAndCuboids.to_global.html">
+     to_global
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.CubesAndCuboids.to_indices.html">
+     to_indices
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.CubesAndCuboids.to_local.html">
+     to_local
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.CubesAndCuboids.to_mask.html">
+     to_mask
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.CubesAndCuboids.update.html">
+     update
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.CubesAndCuboids.values.html">
+     values
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="openpnm.geometry.GenericGeometry.html">
+   GenericGeometry
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
+  <label for="toctree-checkbox-4">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.GenericGeometry.add_model.html">
+     add_model
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.GenericGeometry.clear.html">
+     clear
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.GenericGeometry.copy.html">
+     copy
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.GenericGeometry.filter_by_label.html">
+     filter_by_label
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.GenericGeometry.fromkeys.html">
+     fromkeys
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.GenericGeometry.get.html">
+     get
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.GenericGeometry.get_conduit_data.html">
+     get_conduit_data
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.GenericGeometry.interleave_data.html">
+     interleave_data
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.GenericGeometry.interpolate_data.html">
+     interpolate_data
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.GenericGeometry.items.html">
+     items
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.GenericGeometry.keys.html">
+     keys
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.GenericGeometry.labels.html">
+     labels
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.GenericGeometry.num_pores.html">
+     num_pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.GenericGeometry.num_throats.html">
+     num_throats
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.GenericGeometry.params.html">
+     params
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.GenericGeometry.pop.html">
+     pop
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.GenericGeometry.popitem.html">
+     popitem
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.GenericGeometry.pores.html">
+     pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.GenericGeometry.props.html">
+     props
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.GenericGeometry.regenerate_models.html">
+     regenerate_models
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.GenericGeometry.remove_model.html">
+     remove_model
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.GenericGeometry.set_label.html">
+     set_label
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.GenericGeometry.set_locations.html">
+     set_locations
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.GenericGeometry.setdefault.html">
+     setdefault
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.GenericGeometry.show_hist.html">
+     show_hist
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.GenericGeometry.throats.html">
+     throats
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.GenericGeometry.to_global.html">
+     to_global
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.GenericGeometry.to_indices.html">
+     to_indices
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.GenericGeometry.to_local.html">
+     to_local
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.GenericGeometry.to_mask.html">
+     to_mask
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.GenericGeometry.update.html">
+     update
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.GenericGeometry.values.html">
+     values
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="openpnm.geometry.Imported.html">
+   Imported
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/>
+  <label for="toctree-checkbox-5">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.Imported.add_model.html">
+     add_model
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.Imported.clear.html">
+     clear
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.Imported.copy.html">
+     copy
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.Imported.filter_by_label.html">
+     filter_by_label
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.Imported.fromkeys.html">
+     fromkeys
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.Imported.get.html">
+     get
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.Imported.get_conduit_data.html">
+     get_conduit_data
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.Imported.interleave_data.html">
+     interleave_data
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.Imported.interpolate_data.html">
+     interpolate_data
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.Imported.items.html">
+     items
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.Imported.keys.html">
+     keys
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.Imported.labels.html">
+     labels
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.Imported.num_pores.html">
+     num_pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.Imported.num_throats.html">
+     num_throats
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.Imported.params.html">
+     params
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.Imported.pop.html">
+     pop
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.Imported.popitem.html">
+     popitem
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.Imported.pores.html">
+     pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.Imported.props.html">
+     props
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.Imported.regenerate_models.html">
+     regenerate_models
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.Imported.remove_model.html">
+     remove_model
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.Imported.set_label.html">
+     set_label
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.Imported.set_locations.html">
+     set_locations
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.Imported.setdefault.html">
+     setdefault
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.Imported.show_hist.html">
+     show_hist
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.Imported.throats.html">
+     throats
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.Imported.to_global.html">
+     to_global
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.Imported.to_indices.html">
+     to_indices
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.Imported.to_local.html">
+     to_local
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.Imported.to_mask.html">
+     to_mask
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.Imported.update.html">
+     update
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.Imported.values.html">
+     values
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 current active has-children">
+  <a class="reference internal" href="openpnm.geometry.PyramidsAndCuboids.html">
+   PyramidsAndCuboids
+  </a>
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/>
+  <label for="toctree-checkbox-6">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul class="current">
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.PyramidsAndCuboids.add_model.html">
+     add_model
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.PyramidsAndCuboids.clear.html">
+     clear
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.PyramidsAndCuboids.copy.html">
+     copy
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.PyramidsAndCuboids.filter_by_label.html">
+     filter_by_label
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.PyramidsAndCuboids.fromkeys.html">
+     fromkeys
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.PyramidsAndCuboids.get.html">
+     get
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.PyramidsAndCuboids.get_conduit_data.html">
+     get_conduit_data
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.PyramidsAndCuboids.interleave_data.html">
+     interleave_data
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.PyramidsAndCuboids.interpolate_data.html">
+     interpolate_data
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.PyramidsAndCuboids.items.html">
+     items
+    </a>
+   </li>
+   <li class="toctree-l2 current active">
+    <a class="current reference internal" href="#">
+     keys
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.PyramidsAndCuboids.labels.html">
+     labels
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.PyramidsAndCuboids.num_pores.html">
+     num_pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.PyramidsAndCuboids.num_throats.html">
+     num_throats
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.PyramidsAndCuboids.params.html">
+     params
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.PyramidsAndCuboids.pop.html">
+     pop
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.PyramidsAndCuboids.popitem.html">
+     popitem
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.PyramidsAndCuboids.pores.html">
+     pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.PyramidsAndCuboids.props.html">
+     props
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.PyramidsAndCuboids.regenerate_models.html">
+     regenerate_models
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.PyramidsAndCuboids.remove_model.html">
+     remove_model
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.PyramidsAndCuboids.set_label.html">
+     set_label
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.PyramidsAndCuboids.set_locations.html">
+     set_locations
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.PyramidsAndCuboids.setdefault.html">
+     setdefault
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.PyramidsAndCuboids.show_hist.html">
+     show_hist
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.PyramidsAndCuboids.throats.html">
+     throats
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.PyramidsAndCuboids.to_global.html">
+     to_global
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.PyramidsAndCuboids.to_indices.html">
+     to_indices
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.PyramidsAndCuboids.to_local.html">
+     to_local
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.PyramidsAndCuboids.to_mask.html">
+     to_mask
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.PyramidsAndCuboids.update.html">
+     update
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.PyramidsAndCuboids.values.html">
+     values
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="openpnm.geometry.SpheresAndCylinders.html">
+   SpheresAndCylinders
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
+  <label for="toctree-checkbox-7">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.SpheresAndCylinders.add_model.html">
+     add_model
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.SpheresAndCylinders.clear.html">
+     clear
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.SpheresAndCylinders.copy.html">
+     copy
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.SpheresAndCylinders.filter_by_label.html">
+     filter_by_label
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.SpheresAndCylinders.fromkeys.html">
+     fromkeys
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.SpheresAndCylinders.get.html">
+     get
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.SpheresAndCylinders.get_conduit_data.html">
+     get_conduit_data
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.SpheresAndCylinders.interleave_data.html">
+     interleave_data
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.SpheresAndCylinders.interpolate_data.html">
+     interpolate_data
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.SpheresAndCylinders.items.html">
+     items
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.SpheresAndCylinders.keys.html">
+     keys
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.SpheresAndCylinders.labels.html">
+     labels
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.SpheresAndCylinders.num_pores.html">
+     num_pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.SpheresAndCylinders.num_throats.html">
+     num_throats
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.SpheresAndCylinders.params.html">
+     params
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.SpheresAndCylinders.pop.html">
+     pop
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.SpheresAndCylinders.popitem.html">
+     popitem
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.SpheresAndCylinders.pores.html">
+     pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.SpheresAndCylinders.props.html">
+     props
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.SpheresAndCylinders.regenerate_models.html">
+     regenerate_models
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.SpheresAndCylinders.remove_model.html">
+     remove_model
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.SpheresAndCylinders.set_label.html">
+     set_label
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.SpheresAndCylinders.set_locations.html">
+     set_locations
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.SpheresAndCylinders.setdefault.html">
+     setdefault
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.SpheresAndCylinders.show_hist.html">
+     show_hist
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.SpheresAndCylinders.throats.html">
+     throats
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.SpheresAndCylinders.to_global.html">
+     to_global
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.SpheresAndCylinders.to_indices.html">
+     to_indices
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.SpheresAndCylinders.to_local.html">
+     to_local
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.SpheresAndCylinders.to_mask.html">
+     to_mask
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.SpheresAndCylinders.update.html">
+     update
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.SpheresAndCylinders.values.html">
+     values
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="openpnm.geometry.SquaresAndRectangles.html">
+   SquaresAndRectangles
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/>
+  <label for="toctree-checkbox-8">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.SquaresAndRectangles.add_model.html">
+     add_model
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.SquaresAndRectangles.clear.html">
+     clear
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.SquaresAndRectangles.copy.html">
+     copy
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.SquaresAndRectangles.filter_by_label.html">
+     filter_by_label
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.SquaresAndRectangles.fromkeys.html">
+     fromkeys
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.SquaresAndRectangles.get.html">
+     get
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.SquaresAndRectangles.get_conduit_data.html">
+     get_conduit_data
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.SquaresAndRectangles.interleave_data.html">
+     interleave_data
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.SquaresAndRectangles.interpolate_data.html">
+     interpolate_data
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.SquaresAndRectangles.items.html">
+     items
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.SquaresAndRectangles.keys.html">
+     keys
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.SquaresAndRectangles.labels.html">
+     labels
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.SquaresAndRectangles.num_pores.html">
+     num_pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.SquaresAndRectangles.num_throats.html">
+     num_throats
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.SquaresAndRectangles.params.html">
+     params
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.SquaresAndRectangles.pop.html">
+     pop
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.SquaresAndRectangles.popitem.html">
+     popitem
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.SquaresAndRectangles.pores.html">
+     pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.SquaresAndRectangles.props.html">
+     props
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.SquaresAndRectangles.regenerate_models.html">
+     regenerate_models
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.SquaresAndRectangles.remove_model.html">
+     remove_model
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.SquaresAndRectangles.set_label.html">
+     set_label
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.SquaresAndRectangles.set_locations.html">
+     set_locations
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.SquaresAndRectangles.setdefault.html">
+     setdefault
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.SquaresAndRectangles.show_hist.html">
+     show_hist
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.SquaresAndRectangles.throats.html">
+     throats
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.SquaresAndRectangles.to_global.html">
+     to_global
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.SquaresAndRectangles.to_indices.html">
+     to_indices
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.SquaresAndRectangles.to_local.html">
+     to_local
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.SquaresAndRectangles.to_mask.html">
+     to_mask
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.SquaresAndRectangles.update.html">
+     update
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.SquaresAndRectangles.values.html">
+     values
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="openpnm.geometry.TrapezoidsAndRectangles.html">
+   TrapezoidsAndRectangles
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/>
+  <label for="toctree-checkbox-9">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.TrapezoidsAndRectangles.add_model.html">
+     add_model
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.TrapezoidsAndRectangles.clear.html">
+     clear
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.TrapezoidsAndRectangles.copy.html">
+     copy
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.TrapezoidsAndRectangles.filter_by_label.html">
+     filter_by_label
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.TrapezoidsAndRectangles.fromkeys.html">
+     fromkeys
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.TrapezoidsAndRectangles.get.html">
+     get
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.TrapezoidsAndRectangles.get_conduit_data.html">
+     get_conduit_data
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.TrapezoidsAndRectangles.interleave_data.html">
+     interleave_data
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.TrapezoidsAndRectangles.interpolate_data.html">
+     interpolate_data
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.TrapezoidsAndRectangles.items.html">
+     items
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.TrapezoidsAndRectangles.keys.html">
+     keys
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.TrapezoidsAndRectangles.labels.html">
+     labels
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.TrapezoidsAndRectangles.num_pores.html">
+     num_pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.TrapezoidsAndRectangles.num_throats.html">
+     num_throats
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.TrapezoidsAndRectangles.params.html">
+     params
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.TrapezoidsAndRectangles.pop.html">
+     pop
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.TrapezoidsAndRectangles.popitem.html">
+     popitem
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.TrapezoidsAndRectangles.pores.html">
+     pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.TrapezoidsAndRectangles.props.html">
+     props
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.TrapezoidsAndRectangles.regenerate_models.html">
+     regenerate_models
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.TrapezoidsAndRectangles.remove_model.html">
+     remove_model
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.TrapezoidsAndRectangles.set_label.html">
+     set_label
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.TrapezoidsAndRectangles.set_locations.html">
+     set_locations
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.TrapezoidsAndRectangles.setdefault.html">
+     setdefault
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.TrapezoidsAndRectangles.show_hist.html">
+     show_hist
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.TrapezoidsAndRectangles.throats.html">
+     throats
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.TrapezoidsAndRectangles.to_global.html">
+     to_global
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.TrapezoidsAndRectangles.to_indices.html">
+     to_indices
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.TrapezoidsAndRectangles.to_local.html">
+     to_local
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.TrapezoidsAndRectangles.to_mask.html">
+     to_mask
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.TrapezoidsAndRectangles.update.html">
+     update
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.geometry.TrapezoidsAndRectangles.values.html">
+     values
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+  </div>
+</nav>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+              
+              <div class="toc-item">
+                
+
+<nav id="bd-toc-nav">
+    
+</nav>
+              </div>
+              
+              <div class="toc-item">
+                
+              </div>
+              
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <section id="keys">
+<h1>keys<a class="headerlink" href="#keys" title="Permalink to this headline">¶</a></h1>
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.geometry.PyramidsAndCuboids.keys">
+<span class="sig-prename descclassname"><span class="pre">PyramidsAndCuboids.</span></span><span class="sig-name descname"><span class="pre">keys</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openpnm.geometry.PyramidsAndCuboids.keys" title="Permalink to this definition">¶</a></dt>
+<dd><p>This subclass works exactly like <code class="docutils literal notranslate"><span class="pre">keys</span></code> when no arguments are passed,
+but optionally accepts an <code class="docutils literal notranslate"><span class="pre">element</span></code> and a <code class="docutils literal notranslate"><span class="pre">mode</span></code>, which filters
+the output to only the requested keys.</p>
+<p>The default behavior is exactly equivalent to the normal <code class="docutils literal notranslate"><span class="pre">keys</span></code>
+method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>element</strong> (<em>str</em>) – Can be either ‘pore’ or ‘throat’, which limits the returned list of
+keys to only ‘pore’ or ‘throat’ keys.  If neither is given, then
+both are assumed.</p></li>
+<li><p><strong>mode</strong> (<em>str</em><em>, </em><em>optional</em>) – <p>Controls which keys are returned. Options are:</p>
+<blockquote>
+<div><dl class="simple">
+<dt><strong>’labels’</strong></dt><dd><p>Limits the returned list of keys to only ‘labels’
+(boolean arrays)</p>
+</dd>
+<dt><strong>’props’</strong></dt><dd><p>Limits he return list of keys to only ‘props’
+(numerical arrays).</p>
+</dd>
+<dt><strong>’all’</strong></dt><dd><p>Returns both ‘labels’ and ‘props’. This is equivalent
+to sending a list of both ‘labels’ and ‘props’.</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>If no mode is specified then the normal KeysView object is
+returned.</p>
+</p></li>
+<li><p><strong>deep</strong> (<em>bool</em>) – If set to <code class="docutils literal notranslate"><span class="pre">True</span></code> then the keys on all associated subdomain
+objects are returned as well.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="openpnm.geometry.PyramidsAndCuboids.props.html#openpnm.geometry.PyramidsAndCuboids.props" title="openpnm.geometry.PyramidsAndCuboids.props"><code class="xref py py-obj docutils literal notranslate"><span class="pre">props</span></code></a>, <a class="reference internal" href="openpnm.geometry.PyramidsAndCuboids.labels.html#openpnm.geometry.PyramidsAndCuboids.labels" title="openpnm.geometry.PyramidsAndCuboids.labels"><code class="xref py py-obj docutils literal notranslate"><span class="pre">labels</span></code></a></p>
+</div>
+<p class="rubric">Notes</p>
+<p>This subclass can be used to get dictionary keys of specific
+kinds of data.  It’s use augments <code class="docutils literal notranslate"><span class="pre">props</span></code> and <code class="docutils literal notranslate"><span class="pre">labels</span></code> by
+returning a list containing both types, but possibly limited by
+element type (‘pores’ or ‘throats’.)</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">([</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span><span class="o">.</span><span class="n">keys</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s1">&#39;props&#39;</span><span class="p">)</span>  <span class="c1"># Get all props</span>
+<span class="go">[&#39;pore.coords&#39;, &#39;throat.conns&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span><span class="o">.</span><span class="n">keys</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s1">&#39;props&#39;</span><span class="p">,</span> <span class="n">element</span><span class="o">=</span><span class="s1">&#39;pore&#39;</span><span class="p">)</span>  <span class="c1"># Get only pore props</span>
+<span class="go">[&#39;pore.coords&#39;]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+
+
+              </div>
+              
+              
+          </main>
+          
+
+      </div>
+    </div>
+  
+  <script src="../../_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
+<footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2021, PMEAL.<br>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.3.0.<br>
+</p>
+    </div>
+    
+  </div>
+</footer>
+  </body>
+</html>

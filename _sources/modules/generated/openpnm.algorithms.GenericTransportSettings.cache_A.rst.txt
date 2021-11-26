@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.algorithms.GenericTransportSettings.cache\_A
+====================================================
+
+.. currentmodule:: openpnm.algorithms
+
+attribute
+
+.. autoattribute:: openpnm.algorithms.GenericTransportSettings.cache_A
+

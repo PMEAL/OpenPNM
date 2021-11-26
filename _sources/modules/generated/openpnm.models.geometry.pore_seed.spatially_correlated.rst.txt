@@ -1,0 +1,6 @@
+spatially\_correlated
+=====================
+
+.. currentmodule:: openpnm.models.geometry.pore_seed
+
+.. autofunction:: spatially_correlated

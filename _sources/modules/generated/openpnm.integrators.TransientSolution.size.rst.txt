@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.integrators.TransientSolution.size
+==========================================
+
+.. currentmodule:: openpnm.integrators
+
+attribute
+
+.. autoattribute:: openpnm.integrators.TransientSolution.size
+

@@ -1,0 +1,8 @@
+:orphan:
+
+astype
+===================================
+
+.. currentmodule:: openpnm.integrators
+
+.. automethod:: Solution.astype

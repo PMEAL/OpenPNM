@@ -1,0 +1,6 @@
+ransohoff\_snap\_off
+====================
+
+.. currentmodule:: openpnm.models.physics.capillary_pressure
+
+.. autofunction:: ransohoff_snap_off

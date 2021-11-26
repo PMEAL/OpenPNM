@@ -1,0 +1,8 @@
+:orphan:
+
+interpolate_data
+=========================================
+
+.. currentmodule:: openpnm.physics
+
+.. automethod:: Standard.interpolate_data

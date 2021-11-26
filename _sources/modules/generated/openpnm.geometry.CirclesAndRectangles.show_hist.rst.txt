@@ -1,0 +1,8 @@
+:orphan:
+
+show_hist
+===============================================
+
+.. currentmodule:: openpnm.geometry
+
+.. automethod:: CirclesAndRectangles.show_hist

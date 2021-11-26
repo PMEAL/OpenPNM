@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.network.DelaunayVoronoiDual.Ts
+======================================
+
+.. currentmodule:: openpnm.network
+
+attribute
+
+.. autoproperty:: openpnm.network.DelaunayVoronoiDual.Ts
+

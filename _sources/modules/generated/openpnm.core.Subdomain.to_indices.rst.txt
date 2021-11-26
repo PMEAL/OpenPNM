@@ -1,0 +1,8 @@
+:orphan:
+
+to_indices
+=================================
+
+.. currentmodule:: openpnm.core
+
+.. automethod:: Subdomain.to_indices

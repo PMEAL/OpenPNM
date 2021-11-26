@@ -1,0 +1,8 @@
+:orphan:
+
+copy
+==========================
+
+.. currentmodule:: openpnm.physics
+
+.. automethod:: Basic.copy

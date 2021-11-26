@@ -1,0 +1,6 @@
+taylor\_aris\_diffusion
+=======================
+
+.. currentmodule:: openpnm.models.physics.diffusive_conductance
+
+.. autofunction:: taylor_aris_diffusion

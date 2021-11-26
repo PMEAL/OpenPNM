@@ -1,0 +1,8 @@
+:orphan:
+
+write_bytes
+============================================================
+
+.. currentmodule:: openpnm.models.phases.partition_coefficient
+
+.. automethod:: Path.write_bytes

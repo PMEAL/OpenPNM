@@ -1,0 +1,30 @@
+:noindex:
+
+.. automodule:: openpnm.models.physics.thermal_conductance
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+   
+      generic_thermal
+      series_resistors
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

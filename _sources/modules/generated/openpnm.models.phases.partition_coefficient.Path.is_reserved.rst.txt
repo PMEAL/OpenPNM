@@ -1,0 +1,8 @@
+:orphan:
+
+is_reserved
+============================================================
+
+.. currentmodule:: openpnm.models.phases.partition_coefficient
+
+.. automethod:: Path.is_reserved

@@ -1,0 +1,6 @@
+ctc
+===
+
+.. currentmodule:: openpnm.models.geometry.throat_length
+
+.. autofunction:: ctc

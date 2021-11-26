@@ -1,0 +1,33 @@
+﻿:noindex:
+
+.. automodule:: openpnm.physics
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :nosignatures:
+      :toctree:
+
+   
+      Basic
+      GenericPhysics
+      Standard
+   
+   
+
+   
+   
+   
+
+
+

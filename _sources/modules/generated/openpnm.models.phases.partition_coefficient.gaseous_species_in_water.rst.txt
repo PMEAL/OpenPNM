@@ -1,0 +1,6 @@
+gaseous\_species\_in\_water
+===========================
+
+.. currentmodule:: openpnm.models.phases.partition_coefficient
+
+.. autofunction:: gaseous_species_in_water

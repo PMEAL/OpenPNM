@@ -1,0 +1,6 @@
+rotate\_coords
+==============
+
+.. currentmodule:: openpnm.topotools
+
+.. autofunction:: rotate_coords

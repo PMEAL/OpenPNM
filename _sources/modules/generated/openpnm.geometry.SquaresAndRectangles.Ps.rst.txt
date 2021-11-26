@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.geometry.SquaresAndRectangles.Ps
+========================================
+
+.. currentmodule:: openpnm.geometry
+
+attribute
+
+.. autoproperty:: openpnm.geometry.SquaresAndRectangles.Ps
+

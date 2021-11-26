@@ -1,0 +1,8 @@
+:orphan:
+
+map_pores
+================================================
+
+.. currentmodule:: openpnm.algorithms
+
+.. automethod:: InvasionPercolation.map_pores

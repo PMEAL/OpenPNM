@@ -1,0 +1,8 @@
+:orphan:
+
+find_throat_facets
+==========================================
+
+.. currentmodule:: openpnm.network
+
+.. automethod:: Gabriel.find_throat_facets

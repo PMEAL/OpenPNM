@@ -1,0 +1,29 @@
+:noindex:
+
+.. automodule:: openpnm.models.phases.electrical_conductivity
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+   
+      percolating_continua
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

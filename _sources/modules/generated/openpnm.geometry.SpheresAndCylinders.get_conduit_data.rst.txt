@@ -1,0 +1,8 @@
+:orphan:
+
+get_conduit_data
+=====================================================
+
+.. currentmodule:: openpnm.geometry
+
+.. automethod:: SpheresAndCylinders.get_conduit_data

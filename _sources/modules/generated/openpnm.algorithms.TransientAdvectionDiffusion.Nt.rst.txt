@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.algorithms.TransientAdvectionDiffusion.Nt
+=================================================
+
+.. currentmodule:: openpnm.algorithms
+
+attribute
+
+.. autoproperty:: openpnm.algorithms.TransientAdvectionDiffusion.Nt
+

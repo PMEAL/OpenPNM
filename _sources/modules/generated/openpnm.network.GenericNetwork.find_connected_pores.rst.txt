@@ -1,0 +1,8 @@
+:orphan:
+
+find_connected_pores
+===================================================
+
+.. currentmodule:: openpnm.network
+
+.. automethod:: GenericNetwork.find_connected_pores

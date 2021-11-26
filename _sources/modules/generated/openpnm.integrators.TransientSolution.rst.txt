@@ -1,0 +1,99 @@
+TransientSolution
+=====================================
+
+.. currentmodule:: openpnm.integrators
+
+.. autoclass:: TransientSolution
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            TransientSolution.__call__
+            TransientSolution.all
+            TransientSolution.any
+            TransientSolution.argmax
+            TransientSolution.argmin
+            TransientSolution.argpartition
+            TransientSolution.argsort
+            TransientSolution.astype
+            TransientSolution.byteswap
+            TransientSolution.choose
+            TransientSolution.clip
+            TransientSolution.compress
+            TransientSolution.conj
+            TransientSolution.conjugate
+            TransientSolution.copy
+            TransientSolution.cumprod
+            TransientSolution.cumsum
+            TransientSolution.diagonal
+            TransientSolution.dot
+            TransientSolution.dump
+            TransientSolution.dumps
+            TransientSolution.fill
+            TransientSolution.flatten
+            TransientSolution.getfield
+            TransientSolution.interpolate
+            TransientSolution.item
+            TransientSolution.itemset
+            TransientSolution.max
+            TransientSolution.mean
+            TransientSolution.min
+            TransientSolution.newbyteorder
+            TransientSolution.nonzero
+            TransientSolution.partition
+            TransientSolution.prod
+            TransientSolution.ptp
+            TransientSolution.put
+            TransientSolution.ravel
+            TransientSolution.repeat
+            TransientSolution.reshape
+            TransientSolution.resize
+            TransientSolution.round
+            TransientSolution.searchsorted
+            TransientSolution.setfield
+            TransientSolution.setflags
+            TransientSolution.sort
+            TransientSolution.squeeze
+            TransientSolution.std
+            TransientSolution.sum
+            TransientSolution.swapaxes
+            TransientSolution.take
+            TransientSolution.tobytes
+            TransientSolution.tofile
+            TransientSolution.tolist
+            TransientSolution.tostring
+            TransientSolution.trace
+            TransientSolution.transpose
+            TransientSolution.var
+            TransientSolution.view
+   
+   
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            TransientSolution.T
+            TransientSolution.base
+            TransientSolution.ctypes
+            TransientSolution.data
+            TransientSolution.dtype
+            TransientSolution.flat
+            TransientSolution.imag
+            TransientSolution.itemsize
+            TransientSolution.nbytes
+            TransientSolution.ndim
+            TransientSolution.real
+            TransientSolution.shape
+            TransientSolution.size
+            TransientSolution.strides
+   
+   

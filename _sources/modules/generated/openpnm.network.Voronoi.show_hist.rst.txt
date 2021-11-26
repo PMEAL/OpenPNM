@@ -1,0 +1,8 @@
+:orphan:
+
+show_hist
+=================================
+
+.. currentmodule:: openpnm.network
+
+.. automethod:: Voronoi.show_hist

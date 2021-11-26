@@ -1,0 +1,6 @@
+ncylinders\_in\_series
+======================
+
+.. currentmodule:: openpnm.models.geometry.diffusive_size_factors
+
+.. autofunction:: ncylinders_in_series

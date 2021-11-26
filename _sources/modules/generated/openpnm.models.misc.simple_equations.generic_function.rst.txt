@@ -1,0 +1,6 @@
+generic\_function
+=================
+
+.. currentmodule:: openpnm.models.misc.simple_equations
+
+.. autofunction:: generic_function

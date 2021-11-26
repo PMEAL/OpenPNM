@@ -1,0 +1,6 @@
+stitch
+======
+
+.. currentmodule:: openpnm.topotools
+
+.. autofunction:: stitch

@@ -1,0 +1,6 @@
+gabriel
+=======
+
+.. currentmodule:: openpnm.topotools.generators
+
+.. autofunction:: gabriel

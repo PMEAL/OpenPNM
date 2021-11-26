@@ -1,0 +1,8 @@
+:orphan:
+
+show_hist
+================================
+
+.. currentmodule:: openpnm.phases
+
+.. automethod:: Mercury.show_hist

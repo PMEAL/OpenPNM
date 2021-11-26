@@ -1,0 +1,6 @@
+match\_histogram
+================
+
+.. currentmodule:: openpnm.models.misc.statistical_distributions
+
+.. autofunction:: match_histogram

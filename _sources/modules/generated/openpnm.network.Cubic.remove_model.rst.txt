@@ -1,0 +1,8 @@
+:orphan:
+
+remove_model
+==================================
+
+.. currentmodule:: openpnm.network
+
+.. automethod:: Cubic.remove_model

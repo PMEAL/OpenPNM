@@ -1,0 +1,6 @@
+is\_fully\_connected
+====================
+
+.. currentmodule:: openpnm.topotools
+
+.. autofunction:: is_fully_connected

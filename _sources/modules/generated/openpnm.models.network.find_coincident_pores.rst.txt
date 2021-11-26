@@ -1,0 +1,6 @@
+find\_coincident\_pores
+=======================
+
+.. currentmodule:: openpnm.models.network
+
+.. autofunction:: find_coincident_pores

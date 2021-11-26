@@ -1,0 +1,8 @@
+:orphan:
+
+num_pores
+================================
+
+.. currentmodule:: openpnm.phases
+
+.. automethod:: Mercury.num_pores

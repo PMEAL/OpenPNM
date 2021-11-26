@@ -1,0 +1,6 @@
+chapman\_enskog
+===============
+
+.. currentmodule:: openpnm.models.phases.diffusivity
+
+.. autofunction:: chapman_enskog

@@ -1,0 +1,8 @@
+:orphan:
+
+exists
+=======================================================
+
+.. currentmodule:: openpnm.models.phases.partition_coefficient
+
+.. automethod:: Path.exists

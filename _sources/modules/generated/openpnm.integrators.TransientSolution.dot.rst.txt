@@ -1,0 +1,8 @@
+:orphan:
+
+dot
+=========================================
+
+.. currentmodule:: openpnm.integrators
+
+.. automethod:: TransientSolution.dot

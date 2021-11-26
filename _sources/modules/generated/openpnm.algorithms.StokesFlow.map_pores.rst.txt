@@ -1,0 +1,8 @@
+:orphan:
+
+map_pores
+=======================================
+
+.. currentmodule:: openpnm.algorithms
+
+.. automethod:: StokesFlow.map_pores

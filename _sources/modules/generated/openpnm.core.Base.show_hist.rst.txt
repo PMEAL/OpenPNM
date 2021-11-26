@@ -1,0 +1,8 @@
+:orphan:
+
+show_hist
+===========================
+
+.. currentmodule:: openpnm.core
+
+.. automethod:: Base.show_hist

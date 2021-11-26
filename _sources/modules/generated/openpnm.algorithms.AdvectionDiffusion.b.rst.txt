@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.algorithms.AdvectionDiffusion.b
+=======================================
+
+.. currentmodule:: openpnm.algorithms
+
+attribute
+
+.. autoproperty:: openpnm.algorithms.AdvectionDiffusion.b
+

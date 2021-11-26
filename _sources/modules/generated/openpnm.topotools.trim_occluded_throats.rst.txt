@@ -1,0 +1,6 @@
+trim\_occluded\_throats
+=======================
+
+.. currentmodule:: openpnm.topotools
+
+.. autofunction:: trim_occluded_throats

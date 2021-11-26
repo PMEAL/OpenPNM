@@ -1,0 +1,8 @@
+:orphan:
+
+searchsorted
+=========================================
+
+.. currentmodule:: openpnm.integrators
+
+.. automethod:: Solution.searchsorted

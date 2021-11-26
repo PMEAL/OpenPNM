@@ -1,0 +1,8 @@
+:orphan:
+
+interleave_data
+========================================
+
+.. currentmodule:: openpnm.physics
+
+.. automethod:: Standard.interleave_data

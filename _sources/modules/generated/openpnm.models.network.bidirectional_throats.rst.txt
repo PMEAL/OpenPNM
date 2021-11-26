@@ -1,0 +1,6 @@
+bidirectional\_throats
+======================
+
+.. currentmodule:: openpnm.models.network
+
+.. autofunction:: bidirectional_throats

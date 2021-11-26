@@ -1,0 +1,29 @@
+:noindex:
+
+.. automodule:: openpnm.models.physics.ad_dif_mig_conductance
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+   
+      ad_dif_mig
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

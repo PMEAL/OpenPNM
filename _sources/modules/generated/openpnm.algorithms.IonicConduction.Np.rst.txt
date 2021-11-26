@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.algorithms.IonicConduction.Np
+=====================================
+
+.. currentmodule:: openpnm.algorithms
+
+attribute
+
+.. autoproperty:: openpnm.algorithms.IonicConduction.Np
+

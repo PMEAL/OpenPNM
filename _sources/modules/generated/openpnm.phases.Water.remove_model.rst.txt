@@ -1,0 +1,8 @@
+:orphan:
+
+remove_model
+=================================
+
+.. currentmodule:: openpnm.phases
+
+.. automethod:: Water.remove_model

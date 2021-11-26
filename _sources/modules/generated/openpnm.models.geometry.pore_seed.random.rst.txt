@@ -1,0 +1,6 @@
+random
+======
+
+.. currentmodule:: openpnm.models.geometry.pore_seed
+
+.. autofunction:: random

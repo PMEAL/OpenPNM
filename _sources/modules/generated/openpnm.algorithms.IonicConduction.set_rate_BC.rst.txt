@@ -1,0 +1,8 @@
+:orphan:
+
+set_rate_BC
+==============================================
+
+.. currentmodule:: openpnm.algorithms
+
+.. automethod:: IonicConduction.set_rate_BC

@@ -1,0 +1,6 @@
+plot\_connections
+=================
+
+.. currentmodule:: openpnm.topotools
+
+.. autofunction:: plot_connections

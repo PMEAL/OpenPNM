@@ -1,0 +1,878 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>openpnm.topotools.graphtools &#8212; OpenPNM 2.8.2 documentation</title>
+    
+  <link href="../../../_static/css/theme.css" rel="stylesheet">
+  <link href="../../../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/blank.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
+    
+  <link rel="preload" as="script" href="../../../_static/js/index.be7d3bbb2ef33a8344ce.js">
+
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/clipboard.min.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/custom.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+
+<a class="navbar-brand" href="https://www.openpnm.org">
+  <img src="../../../_static/openpnm_logo.png" class="logo" alt="logo">
+</a>
+
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class=" collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../user_guide/index.html">
+  User Guide
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../modules/index.html">
+  Module Reference
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../examples/examples.html">
+  Examples
+ </a>
+</li>
+
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/PMEAL/OpenPNM" rel="noopener" target="_blank" title="GitHub">
+            <span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://openpnm.substack.com/" rel="noopener" target="_blank" title="Substack">
+            <span><i class="fas fa-envelope-square"></i></span>
+            <label class="sr-only">Substack</label>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://twitter.com/OpenPNM" rel="noopener" target="_blank" title="Twitter">
+            <span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label>
+          </a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    
+  </div>
+</nav>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <h1>Source code for openpnm.topotools.graphtools</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">scipy.sparse</span> <span class="k">as</span> <span class="nn">sprs</span>
+<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">logging</span><span class="p">,</span> <span class="n">Workspace</span>
+<span class="kn">from</span> <span class="nn">auto_all</span> <span class="kn">import</span> <span class="n">start_all</span><span class="p">,</span> <span class="n">end_all</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">ws</span> <span class="o">=</span> <span class="n">Workspace</span><span class="p">()</span>
+
+
+<span class="n">start_all</span><span class="p">()</span>
+
+<div class="viewcode-block" id="find_neighbor_sites"><a class="viewcode-back" href="../../../modules/generated/openpnm.topotools.find_neighbor_sites.html#openpnm.topotools.find_neighbor_sites">[docs]</a><span class="k">def</span> <span class="nf">find_neighbor_sites</span><span class="p">(</span><span class="n">sites</span><span class="p">,</span> <span class="n">am</span><span class="p">,</span> <span class="n">flatten</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">include_input</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                        <span class="n">logic</span><span class="o">=</span><span class="s1">&#39;or&#39;</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Given a symmetric adjacency matrix, finds all sites that are connected</span>
+<span class="sd">    to the input sites.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    am : scipy.sparse matrix</span>
+<span class="sd">        The adjacency matrix of the network.  Must be symmetrical such that if</span>
+<span class="sd">        sites *i* and *j* are connected, the matrix contains non-zero values</span>
+<span class="sd">        at locations (i, j) and (j, i).</span>
+
+<span class="sd">    flatten : boolean</span>
+<span class="sd">        If ``True`` (default) the returned result is a compressed array of all</span>
+<span class="sd">        neighbors, or a list of lists with each sub-list containing the</span>
+<span class="sd">        neighbors for each input site.  Note that an *unflattened* list might</span>
+<span class="sd">        be slow to generate since it is a Python ``list`` rather than a Numpy</span>
+<span class="sd">        array.</span>
+
+<span class="sd">    include_input : boolean</span>
+<span class="sd">        If ``False`` (default) the input sites will be removed from the result.</span>
+
+<span class="sd">    logic : str</span>
+<span class="sd">        Specifies logic to filter the resulting list.  Options are:</span>
+
+<span class="sd">        **&#39;or&#39;** : (default) All neighbors of the input sites.  This is also</span>
+<span class="sd">        known as the &#39;union&#39; in set theory or &#39;any&#39; in boolean logic.  Both</span>
+<span class="sd">        keywords are accepted and treated as &#39;or&#39;.</span>
+
+<span class="sd">        **&#39;xor&#39;** : Only neighbors of one and only one input site.  This is</span>
+<span class="sd">        useful for finding the sites that are not shared by any of the input</span>
+<span class="sd">        sites.  &#39;exclusive_or&#39; is also accepted.</span>
+
+<span class="sd">        **&#39;xnor&#39;** : Neighbors that are shared by two or more input sites. This</span>
+<span class="sd">        is equivalent to finding all neighbors with &#39;or&#39;, minus those found</span>
+<span class="sd">        with &#39;xor&#39;, and is useful for finding neighbors that the inputs have</span>
+<span class="sd">        in common.  &#39;nxor&#39; is also accepted.</span>
+
+<span class="sd">        **&#39;and&#39;** : Only neighbors shared by all input sites.  This is also</span>
+<span class="sd">        known as &#39;intersection&#39; in set theory and (somtimes) as &#39;all&#39; in</span>
+<span class="sd">        boolean logic.  Both keywords are accepted and treated as &#39;and&#39;.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    An array containing the neighboring sites filtered by the given logic.  If</span>
+<span class="sd">    ``flatten`` is ``False`` then the result is a list of lists containing the</span>
+<span class="sd">    neighbors of each input site.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    find_complement</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The ``logic`` options are applied to neighboring sites only, thus it is not</span>
+<span class="sd">    possible to obtain sites that are part of the global set but not neighbors.</span>
+<span class="sd">    This is because (a) the list global sites might be very large, and (b) it</span>
+<span class="sd">    is not possible to return a list of neighbors for each input site if global</span>
+<span class="sd">    sites are considered.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">am</span><span class="o">.</span><span class="n">format</span> <span class="o">!=</span> <span class="s1">&#39;lil&#39;</span><span class="p">:</span>
+        <span class="n">am</span> <span class="o">=</span> <span class="n">am</span><span class="o">.</span><span class="n">tolil</span><span class="p">(</span><span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">sites</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">sites</span><span class="p">,</span> <span class="n">ndmin</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sites</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[]</span>
+    <span class="n">am_coo</span> <span class="o">=</span> <span class="n">am</span><span class="o">.</span><span class="n">tocoo</span><span class="p">()</span>
+    <span class="n">n_sites</span> <span class="o">=</span> <span class="n">am</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">rows</span> <span class="o">=</span> <span class="n">am</span><span class="o">.</span><span class="n">rows</span><span class="p">[</span><span class="n">sites</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[]</span>
+    <span class="n">neighbors</span> <span class="o">=</span> <span class="n">am_coo</span><span class="o">.</span><span class="n">col</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">in1d</span><span class="p">(</span><span class="n">am_coo</span><span class="o">.</span><span class="n">row</span><span class="p">,</span> <span class="n">sites</span><span class="p">)]</span>
+    <span class="k">if</span> <span class="n">logic</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;or&#39;</span><span class="p">,</span> <span class="s1">&#39;union&#39;</span><span class="p">,</span> <span class="s1">&#39;any&#39;</span><span class="p">]:</span>
+        <span class="n">neighbors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">neighbors</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">logic</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;xor&#39;</span><span class="p">,</span> <span class="s1">&#39;exclusive_or&#39;</span><span class="p">]:</span>
+        <span class="n">neighbors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">bincount</span><span class="p">(</span><span class="n">neighbors</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">logic</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;xnor&#39;</span><span class="p">,</span> <span class="s1">&#39;nxor&#39;</span><span class="p">]:</span>
+        <span class="n">neighbors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">bincount</span><span class="p">(</span><span class="n">neighbors</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">logic</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;and&#39;</span><span class="p">,</span> <span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="s1">&#39;intersection&#39;</span><span class="p">]:</span>
+        <span class="n">neighbors</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">neighbors</span><span class="p">)</span>
+        <span class="p">[</span><span class="n">neighbors</span><span class="o">.</span><span class="n">intersection_update</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">]</span>
+        <span class="n">neighbors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">neighbors</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="n">ndmin</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Specified logic is not implemented&#39;</span><span class="p">)</span>
+    <span class="c1"># Deal with removing inputs or not</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">n_sites</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+    <span class="n">mask</span><span class="p">[</span><span class="n">neighbors</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">include_input</span><span class="p">:</span>
+        <span class="n">mask</span><span class="p">[</span><span class="n">sites</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="c1"># Finally flatten or not</span>
+    <span class="k">if</span> <span class="n">flatten</span><span class="p">:</span>
+        <span class="n">neighbors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">mask</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">neighbors</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">rows</span><span class="p">)):</span>
+                <span class="n">vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">rows</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+                <span class="n">rows</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">vals</span><span class="p">[</span><span class="n">mask</span><span class="p">[</span><span class="n">vals</span><span class="p">]]</span>
+            <span class="n">neighbors</span> <span class="o">=</span> <span class="n">rows</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">neighbors</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sites</span><span class="p">))]</span>
+    <span class="k">return</span> <span class="n">neighbors</span></div>
+
+
+<div class="viewcode-block" id="find_neighbor_bonds"><a class="viewcode-back" href="../../../modules/generated/openpnm.topotools.find_neighbor_bonds.html#openpnm.topotools.find_neighbor_bonds">[docs]</a><span class="k">def</span> <span class="nf">find_neighbor_bonds</span><span class="p">(</span><span class="n">sites</span><span class="p">,</span> <span class="n">im</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">am</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">flatten</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">logic</span><span class="o">=</span><span class="s1">&#39;or&#39;</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Given an incidence matrix, finds all sites that are connected to the</span>
+<span class="sd">    input sites.</span>
+
+<span class="sd">    This function accepts either an incidence or adjacency matrix.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    im : scipy.sparse matrix</span>
+<span class="sd">        The incidence matrix of the network.  Must be shaped as (N-sites,</span>
+<span class="sd">        N-bonds), with non-zeros indicating which sites are connected. Either</span>
+<span class="sd">        ``am`` or ``im`` must be given.  Passing in ``im`` is slower, but more</span>
+<span class="sd">        powerful as it allows for an unflattened list of neighbors.</span>
+
+<span class="sd">    am : scipy.sparse matrix (optional)</span>
+<span class="sd">        The adjacency matrix of the network. Either ``am`` or ``im`` must be</span>
+<span class="sd">        given.  Passing in ``am`` is faster, but does not allow for an</span>
+<span class="sd">        unflattened list.</span>
+
+<span class="sd">    flatten : boolean (default is ``True``)</span>
+<span class="sd">        Indicates whether the returned result is a compressed array of all</span>
+<span class="sd">        neighbors, or a list of lists with each sub-list containing the</span>
+<span class="sd">        neighbors for each input site.  Note that an *unflattened* list might</span>
+<span class="sd">        be slow to generate since it is a Python ``list`` rather than a Numpy</span>
+<span class="sd">        array.</span>
+
+<span class="sd">    logic : str</span>
+<span class="sd">        Specifies logic to filter the resulting list.  Options are:</span>
+
+<span class="sd">        **&#39;or&#39;** : (default) All neighbors of the input sites.  This is also</span>
+<span class="sd">        known as the &#39;union&#39; in set theory or &#39;any&#39; in boolean logic.  Both</span>
+<span class="sd">        keywords are accepted and treated as &#39;or&#39;.</span>
+
+<span class="sd">        **&#39;xor&#39;** : Only neighbors of one and only one input site.  This is</span>
+<span class="sd">        useful for finding the sites that are not shared by any of the input</span>
+<span class="sd">        sites.  &#39;exclusive_or&#39; is also accepted&#39;.</span>
+
+<span class="sd">        **&#39;xnor&#39;** : Neighbors that are shared by two or more input sites. This</span>
+<span class="sd">        is equivalent to finding all neighbors with &#39;or&#39;, minus those found</span>
+<span class="sd">        with &#39;xor&#39;, and is useful for finding neighbors that the inputs have</span>
+<span class="sd">        in common.  &#39;nxor&#39; is also accepted.</span>
+
+<span class="sd">        **&#39;and&#39;** : Only neighbors shared by all input sites.  This is also</span>
+<span class="sd">        known as &#39;intersection&#39; in set theory and (somtimes) as &#39;all&#39; in</span>
+<span class="sd">        boolean logic.  Both keywords are accepted and treated as &#39;and&#39;.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    An array containing the neighboring bonds filtered by the given logic.  If</span>
+<span class="sd">    ``flatten`` is ``False`` then the result is a list of lists containing the</span>
+<span class="sd">    neighbors of each given input site.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    find_complement</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The ``logic`` options are applied to neighboring bonds only, thus it is not</span>
+<span class="sd">    possible to obtain bonds that are part of the global set but not neighbors.</span>
+<span class="sd">    This is because (a) the list of global bonds might be very large, and</span>
+<span class="sd">    (b) it is not possible to return a list of neighbors for each input site</span>
+<span class="sd">    if global sites are considered.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">im</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">im</span><span class="o">.</span><span class="n">format</span> <span class="o">!=</span> <span class="s1">&#39;lil&#39;</span><span class="p">:</span>
+            <span class="n">im</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">tolil</span><span class="p">(</span><span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">rows</span> <span class="o">=</span> <span class="p">[</span><span class="n">im</span><span class="o">.</span><span class="n">rows</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">sites</span><span class="p">,</span> <span class="n">ndmin</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+        <span class="n">neighbors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+        <span class="n">n_bonds</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">nnz</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">logic</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;or&#39;</span><span class="p">,</span> <span class="s1">&#39;union&#39;</span><span class="p">,</span> <span class="s1">&#39;any&#39;</span><span class="p">]:</span>
+            <span class="n">neighbors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">neighbors</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">logic</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;xor&#39;</span><span class="p">,</span> <span class="s1">&#39;exclusive_or&#39;</span><span class="p">]:</span>
+            <span class="n">neighbors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">bincount</span><span class="p">(</span><span class="n">neighbors</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="n">logic</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;xnor&#39;</span><span class="p">,</span> <span class="s1">&#39;shared&#39;</span><span class="p">]:</span>
+            <span class="n">neighbors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">bincount</span><span class="p">(</span><span class="n">neighbors</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="n">logic</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;and&#39;</span><span class="p">,</span> <span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="s1">&#39;intersection&#39;</span><span class="p">]:</span>
+            <span class="n">neighbors</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">neighbors</span><span class="p">)</span>
+            <span class="p">[</span><span class="n">neighbors</span><span class="o">.</span><span class="n">intersection_update</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">]</span>
+            <span class="n">neighbors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">neighbors</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">ndmin</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Specified logic is not implemented&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">flatten</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">):</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">neighbors</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
+                <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">n_bonds</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+                <span class="n">mask</span><span class="p">[</span><span class="n">neighbors</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">rows</span><span class="p">)):</span>
+                    <span class="n">vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">rows</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+                    <span class="n">rows</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">vals</span><span class="p">[</span><span class="n">mask</span><span class="p">[</span><span class="n">vals</span><span class="p">]]</span>
+                <span class="n">neighbors</span> <span class="o">=</span> <span class="n">rows</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">neighbors</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sites</span><span class="p">))]</span>
+        <span class="k">return</span> <span class="n">neighbors</span>
+    <span class="k">elif</span> <span class="n">am</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">am</span><span class="o">.</span><span class="n">format</span> <span class="o">!=</span> <span class="s1">&#39;coo&#39;</span><span class="p">:</span>
+            <span class="n">am</span> <span class="o">=</span> <span class="n">am</span><span class="o">.</span><span class="n">tocoo</span><span class="p">(</span><span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">istriu</span><span class="p">(</span><span class="n">am</span><span class="p">):</span>
+            <span class="n">am</span> <span class="o">=</span> <span class="n">sprs</span><span class="o">.</span><span class="n">triu</span><span class="p">(</span><span class="n">am</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">flatten</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;flatten cannot be used with an adjacency matrix&#39;</span><span class="p">)</span>
+        <span class="n">Ps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">am</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+        <span class="n">Ps</span><span class="p">[</span><span class="n">sites</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">conns</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">am</span><span class="o">.</span><span class="n">row</span><span class="p">,</span> <span class="n">am</span><span class="o">.</span><span class="n">col</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
+        <span class="k">if</span> <span class="n">logic</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;or&#39;</span><span class="p">,</span> <span class="s1">&#39;union&#39;</span><span class="p">,</span> <span class="s1">&#39;any&#39;</span><span class="p">]:</span>
+            <span class="n">neighbors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">Ps</span><span class="p">[</span><span class="n">conns</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">logic</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;xor&#39;</span><span class="p">,</span> <span class="s1">&#39;exclusive_or&#39;</span><span class="p">]:</span>
+            <span class="n">neighbors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">Ps</span><span class="p">[</span><span class="n">conns</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+        <span class="k">elif</span> <span class="n">logic</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;xnor&#39;</span><span class="p">,</span> <span class="s1">&#39;shared&#39;</span><span class="p">]:</span>
+            <span class="n">neighbors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">Ps</span><span class="p">[</span><span class="n">conns</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">logic</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;and&#39;</span><span class="p">,</span> <span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="s1">&#39;intersection&#39;</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Specified logic is not implemented&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Specified logic is not implemented&#39;</span><span class="p">)</span>
+        <span class="n">neighbors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">neighbors</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">neighbors</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Either the incidence or the adjacency matrix must be specified&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="find_connected_sites"><a class="viewcode-back" href="../../../modules/generated/openpnm.topotools.find_connected_sites.html#openpnm.topotools.find_connected_sites">[docs]</a><span class="k">def</span> <span class="nf">find_connected_sites</span><span class="p">(</span><span class="n">bonds</span><span class="p">,</span> <span class="n">am</span><span class="p">,</span> <span class="n">flatten</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">logic</span><span class="o">=</span><span class="s1">&#39;or&#39;</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Given an adjacency matrix, finds which sites are connected to the input</span>
+<span class="sd">    bonds.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    am : scipy.sparse matrix</span>
+<span class="sd">        The adjacency matrix of the network.  Must be symmetrical such that if</span>
+<span class="sd">        sites *i* and *j* are connected, the matrix contains non-zero values</span>
+<span class="sd">        at locations (i, j) and (j, i).</span>
+
+<span class="sd">    flatten : boolean (default is ``True``)</span>
+<span class="sd">        Indicates whether the returned result is a compressed array of all</span>
+<span class="sd">        neighbors, or a list of lists with each sub-list containing the</span>
+<span class="sd">        neighbors for each input site.  Note that an *unflattened* list might</span>
+<span class="sd">        be slow to generate since it is a Python ``list`` rather than a Numpy</span>
+<span class="sd">        array.</span>
+
+<span class="sd">    logic : str</span>
+<span class="sd">        Specifies logic to filter the resulting list.  Options are:</span>
+
+<span class="sd">        **&#39;or&#39;** : (default) All neighbors of the input bonds.  This is also</span>
+<span class="sd">        known as the &#39;union&#39; in set theory or (sometimes) &#39;any&#39; in boolean</span>
+<span class="sd">        logic.  Both keywords are accepted and treated as &#39;or&#39;.</span>
+
+<span class="sd">        **&#39;xor&#39;** : Only neighbors of one and only one input bond.  This is</span>
+<span class="sd">        useful for finding the sites that are not shared by any of the input</span>
+<span class="sd">        bonds.  &#39;exclusive_or&#39; is also accepted.</span>
+
+<span class="sd">        **&#39;xnor&#39;** : Neighbors that are shared by two or more input bonds. This</span>
+<span class="sd">        is equivalent to finding all neighbors with &#39;or&#39;, minus those found</span>
+<span class="sd">        with &#39;xor&#39;, and is useful for finding neighbors that the inputs have</span>
+<span class="sd">        in common.  &#39;nxor&#39; is also accepted.</span>
+
+<span class="sd">        **&#39;and&#39;** : Only neighbors shared by all input bonds.  This is also</span>
+<span class="sd">        known as &#39;intersection&#39; in set theory and (somtimes) as &#39;all&#39; in</span>
+<span class="sd">        boolean logic.  Both keywords are accepted and treated as &#39;and&#39;.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    An array containing the connected sites, filtered by the given logic.  If</span>
+<span class="sd">    ``flatten`` is ``False`` then the result is a list of lists containing the</span>
+<span class="sd">    neighbors of each given input bond.  In this latter case, sites that</span>
+<span class="sd">    have been removed by the given logic are indicated by ``nans``, thus the</span>
+<span class="sd">    array is of type ``float`` and is not suitable for indexing.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    find_complement</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">am</span><span class="o">.</span><span class="n">format</span> <span class="o">!=</span> <span class="s1">&#39;coo&#39;</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Adjacency matrix must be in COO format&#39;</span><span class="p">)</span>
+    <span class="n">bonds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">bonds</span><span class="p">,</span> <span class="n">ndmin</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">bonds</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[]</span>
+    <span class="c1"># This function only uses the upper triangular portion, so make sure it</span>
+    <span class="c1"># is sorted properly first</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">istriu</span><span class="p">(</span><span class="n">am</span><span class="p">):</span>
+        <span class="n">am</span> <span class="o">=</span> <span class="n">sprs</span><span class="o">.</span><span class="n">triu</span><span class="p">(</span><span class="n">am</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">neighbors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">am</span><span class="o">.</span><span class="n">row</span><span class="p">[</span><span class="n">bonds</span><span class="p">],</span> <span class="n">am</span><span class="o">.</span><span class="n">col</span><span class="p">[</span><span class="n">bonds</span><span class="p">]))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">neighbors</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+        <span class="n">n_sites</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span><span class="n">neighbors</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">logic</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;or&#39;</span><span class="p">,</span> <span class="s1">&#39;union&#39;</span><span class="p">,</span> <span class="s1">&#39;any&#39;</span><span class="p">]:</span>
+        <span class="n">neighbors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">neighbors</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">logic</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;xor&#39;</span><span class="p">,</span> <span class="s1">&#39;exclusive_or&#39;</span><span class="p">]:</span>
+        <span class="n">neighbors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">bincount</span><span class="p">(</span><span class="n">neighbors</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">logic</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;xnor&#39;</span><span class="p">]:</span>
+        <span class="n">neighbors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">bincount</span><span class="p">(</span><span class="n">neighbors</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">logic</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;and&#39;</span><span class="p">,</span> <span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="s1">&#39;intersection&#39;</span><span class="p">]:</span>
+        <span class="n">temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">am</span><span class="o">.</span><span class="n">row</span><span class="p">[</span><span class="n">bonds</span><span class="p">],</span> <span class="n">am</span><span class="o">.</span><span class="n">col</span><span class="p">[</span><span class="n">bonds</span><span class="p">]))</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="n">temp</span> <span class="o">=</span> <span class="p">[</span><span class="nb">set</span><span class="p">(</span><span class="n">pair</span><span class="p">)</span> <span class="k">for</span> <span class="n">pair</span> <span class="ow">in</span> <span class="n">temp</span><span class="p">]</span>
+        <span class="n">neighbors</span> <span class="o">=</span> <span class="n">temp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="p">[</span><span class="n">neighbors</span><span class="o">.</span><span class="n">intersection_update</span><span class="p">(</span><span class="n">pair</span><span class="p">)</span> <span class="k">for</span> <span class="n">pair</span> <span class="ow">in</span> <span class="n">temp</span><span class="p">[</span><span class="mi">1</span><span class="p">:]]</span>
+        <span class="n">neighbors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">neighbors</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="n">ndmin</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Specified logic is not implemented&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">flatten</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">neighbors</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">n_sites</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+            <span class="n">mask</span><span class="p">[</span><span class="n">neighbors</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">am</span><span class="o">.</span><span class="n">row</span><span class="p">[</span><span class="n">bonds</span><span class="p">],</span> <span class="n">am</span><span class="o">.</span><span class="n">col</span><span class="p">[</span><span class="n">bonds</span><span class="p">]))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+            <span class="n">temp</span><span class="p">[</span><span class="o">~</span><span class="n">mask</span><span class="p">[</span><span class="n">temp</span><span class="p">]]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="n">inds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">temp</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">inds</span><span class="p">):</span>
+                <span class="n">temp</span> <span class="o">=</span> <span class="n">temp</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+                <span class="n">temp</span><span class="p">[</span><span class="n">inds</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+            <span class="n">temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="n">temp</span><span class="p">,</span> <span class="n">newshape</span><span class="o">=</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">bonds</span><span class="p">),</span> <span class="mi">2</span><span class="p">],</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;F&#39;</span><span class="p">)</span>
+            <span class="n">neighbors</span> <span class="o">=</span> <span class="n">temp</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">neighbors</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">bonds</span><span class="p">))]</span>
+    <span class="k">return</span> <span class="n">neighbors</span></div>
+
+
+<div class="viewcode-block" id="find_connecting_bonds"><a class="viewcode-back" href="../../../modules/generated/openpnm.topotools.find_connecting_bonds.html#openpnm.topotools.find_connecting_bonds">[docs]</a><span class="k">def</span> <span class="nf">find_connecting_bonds</span><span class="p">(</span><span class="n">sites</span><span class="p">,</span> <span class="n">am</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Given pairs of sites, finds the bonds which connects each pair.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    sites : array_like</span>
+<span class="sd">        A 2-column vector containing pairs of site indices on each row.</span>
+
+<span class="sd">    am : scipy.sparse matrix</span>
+<span class="sd">        The adjacency matrix of the network.  Must be symmetrical such that if</span>
+<span class="sd">        sites *i* and *j* are connected, the matrix contains non-zero values</span>
+<span class="sd">        at locations (i, j) and (j, i).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Returns a list the same length as P1 (and P2) with each element</span>
+<span class="sd">    containing the throat number that connects the corresponding pores,</span>
+<span class="sd">    or `None`` if pores are not connected.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The returned list can be converted to an ndarray, which will convert</span>
+<span class="sd">    the ``None`` values to ``nan``.  These can then be found using</span>
+<span class="sd">    ``numpy.isnan``.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">am</span><span class="o">.</span><span class="n">format</span> <span class="o">!=</span> <span class="s1">&#39;dok&#39;</span><span class="p">:</span>
+        <span class="n">am</span> <span class="o">=</span> <span class="n">am</span><span class="o">.</span><span class="n">todok</span><span class="p">(</span><span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">sites</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">sites</span><span class="p">,</span> <span class="n">ndmin</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">sites</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[]</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">sites</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">sites</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]))</span>
+    <span class="n">neighbors</span> <span class="o">=</span> <span class="p">[</span><span class="n">am</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">z</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="kc">None</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">z</span><span class="p">))]</span>
+    <span class="k">return</span> <span class="n">neighbors</span></div>
+
+
+<div class="viewcode-block" id="find_complement"><a class="viewcode-back" href="../../../modules/generated/openpnm.topotools.find_complement.html#openpnm.topotools.find_complement">[docs]</a><span class="k">def</span> <span class="nf">find_complement</span><span class="p">(</span><span class="n">am</span><span class="p">,</span> <span class="n">sites</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bonds</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">asmask</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Finds the complementary sites (or bonds) to a given set of inputs</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    am : scipy.sparse matrix</span>
+<span class="sd">        The adjacency matrix of the network.</span>
+
+<span class="sd">    sites : array_like (optional)</span>
+<span class="sd">        The set of sites for which the complement is sought</span>
+
+<span class="sd">    bonds : array_like (optional)</span>
+<span class="sd">        The set of bonds for which the complement is sought</span>
+
+<span class="sd">    asmask : boolean</span>
+<span class="sd">        If set to ``True`` the result is returned as a boolean mask of the</span>
+<span class="sd">        correct length with ``True`` values indicate the complements.  The</span>
+<span class="sd">        default is ``False`` which returns a list of indices instead.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    An array containing indices of the sites (or bonds) that are not part of</span>
+<span class="sd">    the input list.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Either ``sites`` or ``bonds`` must be specified</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">sites</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">bonds</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="n">inds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">sites</span><span class="p">)</span>
+        <span class="n">N</span> <span class="o">=</span> <span class="n">am</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="p">(</span><span class="n">bonds</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">sites</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="n">inds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">bonds</span><span class="p">)</span>
+        <span class="n">N</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">am</span><span class="o">.</span><span class="n">nnz</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="p">(</span><span class="n">bonds</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">sites</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Only one of sites or bonds can be specified&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Either sites or bonds must be specified&#39;</span><span class="p">)</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">N</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+    <span class="n">mask</span><span class="p">[</span><span class="n">inds</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="n">asmask</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">mask</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">N</span><span class="p">)[</span><span class="n">mask</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="istriu"><a class="viewcode-back" href="../../../modules/generated/openpnm.topotools.istriu.html#openpnm.topotools.istriu">[docs]</a><span class="k">def</span> <span class="nf">istriu</span><span class="p">(</span><span class="n">am</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns ``True`` is the sparse adjacency matrix is upper triangular</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">am</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">am</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Matrix is not square, triangularity is irrelevant&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="n">am</span><span class="o">.</span><span class="n">format</span> <span class="o">!=</span> <span class="s1">&#39;coo&#39;</span><span class="p">:</span>
+        <span class="n">am</span> <span class="o">=</span> <span class="n">am</span><span class="o">.</span><span class="n">tocoo</span><span class="p">(</span><span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">am</span><span class="o">.</span><span class="n">row</span> <span class="o">&lt;=</span> <span class="n">am</span><span class="o">.</span><span class="n">col</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="istril"><a class="viewcode-back" href="../../../modules/generated/openpnm.topotools.istril.html#openpnm.topotools.istril">[docs]</a><span class="k">def</span> <span class="nf">istril</span><span class="p">(</span><span class="n">am</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns ``True`` is the sparse adjacency matrix is lower triangular</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">am</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">am</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Matrix is not square, triangularity is irrelevant&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="n">am</span><span class="o">.</span><span class="n">format</span> <span class="o">!=</span> <span class="s1">&#39;coo&#39;</span><span class="p">:</span>
+        <span class="n">am</span> <span class="o">=</span> <span class="n">am</span><span class="o">.</span><span class="n">tocoo</span><span class="p">(</span><span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">am</span><span class="o">.</span><span class="n">row</span> <span class="o">&gt;=</span> <span class="n">am</span><span class="o">.</span><span class="n">col</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="istriangular"><a class="viewcode-back" href="../../../modules/generated/openpnm.topotools.istriangular.html#openpnm.topotools.istriangular">[docs]</a><span class="k">def</span> <span class="nf">istriangular</span><span class="p">(</span><span class="n">am</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns ``True`` if the sparse adjacency matrix is either upper or lower</span>
+<span class="sd">    triangular</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">am</span><span class="o">.</span><span class="n">format</span> <span class="o">!=</span> <span class="s1">&#39;coo&#39;</span><span class="p">:</span>
+        <span class="n">am</span> <span class="o">=</span> <span class="n">am</span><span class="o">.</span><span class="n">tocoo</span><span class="p">(</span><span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">istril</span><span class="p">(</span><span class="n">am</span><span class="p">)</span> <span class="ow">or</span> <span class="n">istriu</span><span class="p">(</span><span class="n">am</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="issymmetric"><a class="viewcode-back" href="../../../modules/generated/openpnm.topotools.issymmetric.html#openpnm.topotools.issymmetric">[docs]</a><span class="k">def</span> <span class="nf">issymmetric</span><span class="p">(</span><span class="n">am</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A method to check if a square matrix is symmetric</span>
+<span class="sd">    Returns ``True`` if the sparse adjacency matrix is symmetric</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">am</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">am</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Matrix is not square, symmetrical is irrelevant&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="n">am</span><span class="o">.</span><span class="n">format</span> <span class="o">!=</span> <span class="s1">&#39;coo&#39;</span><span class="p">:</span>
+        <span class="n">am</span> <span class="o">=</span> <span class="n">am</span><span class="o">.</span><span class="n">tocoo</span><span class="p">(</span><span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">istril</span><span class="p">(</span><span class="n">am</span><span class="p">)</span> <span class="ow">or</span> <span class="n">istriu</span><span class="p">(</span><span class="n">am</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="c1"># Compare am with its transpose, element wise</span>
+    <span class="n">sym</span> <span class="o">=</span> <span class="p">((</span><span class="n">am</span> <span class="o">!=</span> <span class="n">am</span><span class="o">.</span><span class="n">T</span><span class="p">)</span><span class="o">.</span><span class="n">size</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
+    <span class="k">return</span> <span class="n">sym</span></div>
+
+
+<span class="k">def</span> <span class="nf">_am_to_im</span><span class="p">(</span><span class="n">am</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert an adjacency matrix into an incidence matrix</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">am</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">am</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Adjacency matrices must be square&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">am</span><span class="o">.</span><span class="n">format</span> <span class="o">!=</span> <span class="s1">&#39;coo&#39;</span><span class="p">:</span>
+        <span class="n">am</span> <span class="o">=</span> <span class="n">am</span><span class="o">.</span><span class="n">tocoo</span><span class="p">(</span><span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">conn</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">am</span><span class="o">.</span><span class="n">row</span><span class="p">,</span> <span class="n">am</span><span class="o">.</span><span class="n">col</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">row</span> <span class="o">=</span> <span class="n">conn</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">am</span><span class="o">.</span><span class="n">data</span>
+    <span class="n">col</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">am</span><span class="o">.</span><span class="n">data</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">istriangular</span><span class="p">(</span><span class="n">am</span><span class="p">):</span>
+        <span class="n">row</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">conn</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+        <span class="n">col</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">col</span><span class="p">,</span> <span class="n">col</span><span class="p">)</span>
+    <span class="n">im</span> <span class="o">=</span> <span class="n">sprs</span><span class="o">.</span><span class="n">coo</span><span class="o">.</span><span class="n">coo_matrix</span><span class="p">((</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">)),</span> <span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">col</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">im</span>
+
+
+<span class="k">def</span> <span class="nf">_im_to_am</span><span class="p">(</span><span class="n">im</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert an incidence matrix into an adjacency matrix</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Warning: Received matrix is square which is unlikely&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Warning: Received matrix has more sites than bonds&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">im</span><span class="o">.</span><span class="n">format</span> <span class="o">!=</span> <span class="s1">&#39;coo&#39;</span><span class="p">:</span>
+        <span class="n">im</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">tocoo</span><span class="p">(</span><span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="tri_to_am"><a class="viewcode-back" href="../../../modules/generated/openpnm.topotools.tri_to_am.html#openpnm.topotools.tri_to_am">[docs]</a><span class="k">def</span> <span class="nf">tri_to_am</span><span class="p">(</span><span class="n">tri</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Given a Delaunay Triangulation object from Scipy&#39;s ``spatial`` module,</span>
+<span class="sd">    converts to a sparse adjacency matrix network representation.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    tri : Delaunay Triangulation Object</span>
+<span class="sd">        This object is produced by ``scipy.spatial.Delaunay``</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    A sparse adjacency matrix in COO format.  The network is undirected</span>
+<span class="sd">    and unweighted, so the adjacency matrix is upper-triangular and all the</span>
+<span class="sd">    weights are set to 1.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Create an empty list-of-list matrix</span>
+    <span class="n">lil</span> <span class="o">=</span> <span class="n">sprs</span><span class="o">.</span><span class="n">lil_matrix</span><span class="p">((</span><span class="n">tri</span><span class="o">.</span><span class="n">npoints</span><span class="p">,</span> <span class="n">tri</span><span class="o">.</span><span class="n">npoints</span><span class="p">))</span>
+    <span class="c1"># Scan through Delaunay triangulation to retrieve pairs</span>
+    <span class="n">indices</span><span class="p">,</span> <span class="n">indptr</span> <span class="o">=</span> <span class="n">tri</span><span class="o">.</span><span class="n">vertex_neighbor_vertices</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">tri</span><span class="o">.</span><span class="n">npoints</span><span class="p">):</span>
+        <span class="n">lil</span><span class="o">.</span><span class="n">rows</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">indptr</span><span class="p">[</span><span class="n">indices</span><span class="p">[</span><span class="n">k</span><span class="p">]:</span><span class="n">indices</span><span class="p">[</span><span class="n">k</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+    <span class="c1"># Convert to coo format</span>
+    <span class="n">lil</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">lil</span><span class="o">.</span><span class="n">rows</span>  <span class="c1"># Just a dummy array to make things work properly</span>
+    <span class="n">coo</span> <span class="o">=</span> <span class="n">lil</span><span class="o">.</span><span class="n">tocoo</span><span class="p">()</span>
+    <span class="c1"># Set weights to 1&#39;s</span>
+    <span class="n">coo</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">coo</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+    <span class="c1"># Remove diagonal, and convert to csr remove duplicates</span>
+    <span class="n">am</span> <span class="o">=</span> <span class="n">sprs</span><span class="o">.</span><span class="n">triu</span><span class="p">(</span><span class="n">A</span><span class="o">=</span><span class="n">coo</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;csr&#39;</span><span class="p">)</span>
+    <span class="c1"># The convert back to COO and return</span>
+    <span class="n">am</span> <span class="o">=</span> <span class="n">am</span><span class="o">.</span><span class="n">tocoo</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">am</span></div>
+
+
+<div class="viewcode-block" id="vor_to_am"><a class="viewcode-back" href="../../../modules/generated/openpnm.topotools.vor_to_am.html#openpnm.topotools.vor_to_am">[docs]</a><span class="k">def</span> <span class="nf">vor_to_am</span><span class="p">(</span><span class="n">vor</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Given a Voronoi tessellation object from Scipy&#39;s ``spatial`` module,</span>
+<span class="sd">    converts to a sparse adjacency matrix network representation in COO format.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    vor : Voronoi Tessellation object</span>
+<span class="sd">        This object is produced by ``scipy.spatial.Voronoi``</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    A sparse adjacency matrix in COO format.  The network is undirected</span>
+<span class="sd">    and unweighted, so the adjacency matrix is upper-triangular and all the</span>
+<span class="sd">    weights are set to 1.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Create adjacency matrix in lil format for quick matrix construction</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="n">vor</span><span class="o">.</span><span class="n">vertices</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">rc</span> <span class="o">=</span> <span class="p">[[],</span> <span class="p">[]]</span>
+    <span class="k">for</span> <span class="n">ij</span> <span class="ow">in</span> <span class="n">vor</span><span class="o">.</span><span class="n">ridge_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">row</span> <span class="o">=</span> <span class="n">vor</span><span class="o">.</span><span class="n">ridge_dict</span><span class="p">[</span><span class="n">ij</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="c1"># Make sure voronoi cell closes upon itself</span>
+        <span class="n">row</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="c1"># Add connections to rc list</span>
+        <span class="n">rc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">row</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">rc</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+    <span class="n">rc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">rc</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+    <span class="c1"># Make adj mat upper triangular</span>
+    <span class="n">rc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">rc</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="c1"># Remove any pairs with ends at infinity (-1)</span>
+    <span class="n">keep</span> <span class="o">=</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">rc</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">rc</span> <span class="o">=</span> <span class="n">rc</span><span class="p">[</span><span class="n">keep</span><span class="p">]</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">rc</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span>
+    <span class="c1"># Build adj mat in COO format</span>
+    <span class="n">M</span> <span class="o">=</span> <span class="n">N</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span><span class="n">rc</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="n">am</span> <span class="o">=</span> <span class="n">sprs</span><span class="o">.</span><span class="n">coo_matrix</span><span class="p">((</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="n">rc</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">rc</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])),</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">N</span><span class="p">))</span>
+    <span class="c1"># Remove diagonal, and convert to csr remove duplicates</span>
+    <span class="n">am</span> <span class="o">=</span> <span class="n">sprs</span><span class="o">.</span><span class="n">triu</span><span class="p">(</span><span class="n">A</span><span class="o">=</span><span class="n">am</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;csr&#39;</span><span class="p">)</span>
+    <span class="c1"># The convert back to COO and return</span>
+    <span class="n">am</span> <span class="o">=</span> <span class="n">am</span><span class="o">.</span><span class="n">tocoo</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">am</span></div>
+
+
+<div class="viewcode-block" id="conns_to_am"><a class="viewcode-back" href="../../../modules/generated/openpnm.topotools.conns_to_am.html#openpnm.topotools.conns_to_am">[docs]</a><span class="k">def</span> <span class="nf">conns_to_am</span><span class="p">(</span><span class="n">conns</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">force_triu</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">drop_diag</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">drop_dupes</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">drop_negs</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Converts a list of connections into a Scipy sparse adjacency matrix</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    conns : array_like, N x 2</span>
+<span class="sd">        The list of site-to-site connections</span>
+
+<span class="sd">    shape : list, optional</span>
+<span class="sd">        The shape of the array.  If none is given then it is inferred from the</span>
+<span class="sd">        maximum value in ``conns`` array.</span>
+
+<span class="sd">    force_triu : boolean</span>
+<span class="sd">        If True (default), then all connections are assumed undirected, and</span>
+<span class="sd">        moved to the upper triangular portion of the array</span>
+
+<span class="sd">    drop_diag : boolean</span>
+<span class="sd">        If True (default), then connections from a site and itself are removed.</span>
+
+<span class="sd">    drop_dupes : boolean</span>
+<span class="sd">        If True (default), then all pairs of sites sharing multiple connections</span>
+<span class="sd">        are reduced to a single connection.</span>
+
+<span class="sd">    drop_negs : boolean</span>
+<span class="sd">        If True (default), then all connections with one or both ends pointing</span>
+<span class="sd">        to a negative number are removed.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">force_triu</span><span class="p">:</span>  <span class="c1"># Sort connections to [low, high]</span>
+        <span class="n">conns</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">conns</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">drop_negs</span><span class="p">:</span>  <span class="c1"># Remove connections to -1</span>
+        <span class="n">keep</span> <span class="o">=</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">conns</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">conns</span> <span class="o">=</span> <span class="n">conns</span><span class="p">[</span><span class="n">keep</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">drop_diag</span><span class="p">:</span>  <span class="c1"># Remove connections of [self, self]</span>
+        <span class="n">keep</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">conns</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">conns</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">conns</span> <span class="o">=</span> <span class="n">conns</span><span class="p">[</span><span class="n">keep</span><span class="p">]</span>
+    <span class="c1"># Now convert to actual sparse array in COO format</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">conns</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">shape</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">N</span> <span class="o">=</span> <span class="n">conns</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
+    <span class="n">am</span> <span class="o">=</span> <span class="n">sprs</span><span class="o">.</span><span class="n">coo_matrix</span><span class="p">((</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="n">conns</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">conns</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])),</span> <span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">drop_dupes</span><span class="p">:</span>  <span class="c1"># Convert to csr and back too coo</span>
+        <span class="n">am</span> <span class="o">=</span> <span class="n">am</span><span class="o">.</span><span class="n">tocsr</span><span class="p">()</span>
+        <span class="n">am</span> <span class="o">=</span> <span class="n">am</span><span class="o">.</span><span class="n">tocoo</span><span class="p">()</span>
+    <span class="c1"># Perform one last check on adjacency matrix</span>
+    <span class="n">missing</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">bincount</span><span class="p">(</span><span class="n">conns</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">missing</span><span class="p">)</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">am</span><span class="o">.</span><span class="n">col</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">&lt;</span> <span class="p">(</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)):</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Some nodes are not connected to any bonds&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">am</span></div>
+
+
+<div class="viewcode-block" id="drop_sites"><a class="viewcode-back" href="../../../modules/generated/openpnm.topotools.drop_sites.html#openpnm.topotools.drop_sites">[docs]</a><span class="k">def</span> <span class="nf">drop_sites</span><span class="p">(</span><span class="n">am</span><span class="p">,</span> <span class="n">sites</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Update adjacency matrix after dropping sites</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    am : scipy.sparse matrix</span>
+<span class="sd">        The adjacency matrix of the network in COO format.</span>
+<span class="sd">    sites : array_like</span>
+<span class="sd">        A list of which sites to drop.  Can either be integer indices or a</span>
+<span class="sd">        boolean mask with ``True`` indicating which sites to drop.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    am : ndarray</span>
+<span class="sd">        An updated adjacency matrix with sites and headless bonds removed,</span>
+<span class="sd">        and site indices updated accordingly</span>
+<span class="sd">    dropped_bonds : ndarray</span>
+<span class="sd">        A boolean array with ``True`` values indicating which bonds</span>
+<span class="sd">        were rendered headless. This can be used to drop invalid bonds</span>
+<span class="sd">        from other arrays (i.e. array = array[~dropped_bonds]).</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">scipy.sparse</span> <span class="k">as</span> <span class="nn">sprs</span>
+    <span class="n">sites</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">sites</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">sites</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="n">inds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">sites</span><span class="p">)</span>
+        <span class="n">sites</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">am</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+        <span class="n">sites</span><span class="p">[</span><span class="n">inds</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">site_mask</span> <span class="o">=</span> <span class="o">~</span><span class="n">sites</span>
+    <span class="n">conns</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">am</span><span class="o">.</span><span class="n">row</span><span class="p">,</span> <span class="n">am</span><span class="o">.</span><span class="n">col</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">site_id</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">site_mask</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="n">bond_mask</span> <span class="o">=</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">site_mask</span><span class="p">[</span><span class="n">conns</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">conns</span> <span class="o">=</span> <span class="n">site_id</span><span class="p">[</span><span class="n">conns</span><span class="p">[</span><span class="o">~</span><span class="n">bond_mask</span><span class="p">]]</span>
+    <span class="n">am</span> <span class="o">=</span> <span class="n">sprs</span><span class="o">.</span><span class="n">coo_matrix</span><span class="p">((</span><span class="n">am</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="o">~</span><span class="n">bond_mask</span><span class="p">],</span> <span class="p">(</span><span class="n">conns</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">conns</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])))</span>
+    <span class="k">return</span> <span class="n">am</span><span class="p">,</span> <span class="n">bond_mask</span></div>
+
+<span class="n">end_all</span><span class="p">()</span>
+</pre></div>
+
+              </div>
+              
+              
+          </main>
+          
+
+      </div>
+    </div>
+  
+  <script src="../../../_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
+<footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2021, PMEAL.<br>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.3.0.<br>
+</p>
+    </div>
+    
+  </div>
+</footer>
+  </body>
+</html>

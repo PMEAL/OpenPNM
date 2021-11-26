@@ -1,0 +1,8 @@
+:orphan:
+
+map_throats
+====================================
+
+.. currentmodule:: openpnm.core
+
+.. automethod:: LegacyMixin.map_throats

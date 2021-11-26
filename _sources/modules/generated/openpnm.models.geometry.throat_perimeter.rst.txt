@@ -1,0 +1,31 @@
+:noindex:
+
+.. automodule:: openpnm.models.geometry.throat_perimeter
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+   
+      cuboid
+      cylinder
+      rectangle
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

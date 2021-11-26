@@ -1,0 +1,8 @@
+:orphan:
+
+set_rate_BC
+==============================================
+
+.. currentmodule:: openpnm.algorithms
+
+.. automethod:: OhmicConduction.set_rate_BC

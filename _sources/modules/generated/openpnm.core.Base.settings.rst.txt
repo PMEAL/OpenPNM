@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.core.Base.settings
+==========================
+
+.. currentmodule:: openpnm.core
+
+attribute
+
+.. autoproperty:: openpnm.core.Base.settings
+

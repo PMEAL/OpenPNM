@@ -1,0 +1,8 @@
+:orphan:
+
+tomask
+======================================================
+
+.. currentmodule:: openpnm.algorithms
+
+.. automethod:: MixedInvasionPercolationCoop.tomask

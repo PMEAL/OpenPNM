@@ -1,0 +1,6 @@
+template\_sphere\_shell
+=======================
+
+.. currentmodule:: openpnm.topotools
+
+.. autofunction:: template_sphere_shell

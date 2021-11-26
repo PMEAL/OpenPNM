@@ -1,0 +1,362 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Installation &#8212; OpenPNM 2.8.2 documentation</title>
+    
+  <link href="../_static/css/theme.css" rel="stylesheet">
+  <link href="../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/blank.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css" />
+    
+  <link rel="preload" as="script" href="../_static/js/index.be7d3bbb2ef33a8344ce.js">
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/custom.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Basic Usage" href="basic_usage.html" />
+    <link rel="prev" title="User Guide" href="index.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+
+<a class="navbar-brand" href="https://www.openpnm.org">
+  <img src="../_static/openpnm_logo.png" class="logo" alt="logo">
+</a>
+
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class=" collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="index.html">
+  User Guide
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../modules/index.html">
+  Module Reference
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../examples/examples.html">
+  Examples
+ </a>
+</li>
+
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/PMEAL/OpenPNM" rel="noopener" target="_blank" title="GitHub">
+            <span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://openpnm.substack.com/" rel="noopener" target="_blank" title="Substack">
+            <span><i class="fas fa-envelope-square"></i></span>
+            <label class="sr-only">Substack</label>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://twitter.com/OpenPNM" rel="noopener" target="_blank" title="Twitter">
+            <span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label>
+          </a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   Installation
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="basic_usage.html">
+   Basic Usage
+  </a>
+ </li>
+</ul>
+
+  </div>
+</nav>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+              
+              <div class="toc-item">
+                
+<div class="tocsection onthispage pt-5 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
+
+<nav id="bd-toc-nav">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#installing-the-dev-version">
+   Installing the dev version
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#the-easy-way">
+     The easy way
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#the-hard-but-correct-way">
+     The hard (but correct) way
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#where-s-my-conda-prompt">
+   Where’s my
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     conda
+    </span>
+   </code>
+   prompt?
+  </a>
+ </li>
+</ul>
+
+</nav>
+              </div>
+              
+              <div class="toc-item">
+                
+              </div>
+              
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <section id="installation">
+<span id="id1"></span><h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<p>OpenPNM depends heavily on the SciPy Stack. The best way to get a fully
+functional environment is the <a class="reference external" href="https://www.anaconda.com/products/individual#Downloads">Anaconda
+distribution</a>.
+Be sure to get the Python 3.7+ version.</p>
+<p>Once you’ve installed <em>Anaconda</em> you can then install <code class="docutils literal notranslate"><span class="pre">openpnm</span></code>. It is
+available on <a class="reference external" href="https://anaconda.org/conda-forge/openpnm">conda-forge</a>
+and can be installed by typing the following at the <em>conda</em> prompt:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ conda install -c conda-forge openpnm
+</pre></div>
+</div>
+<p>It’s possible to use <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">openpnm</span></code>, but this will not result
+in a full installation and some features won’t work (e.g., outputing to
+paraview).</p>
+<section id="installing-the-dev-version">
+<h2>Installing the dev version<a class="headerlink" href="#installing-the-dev-version" title="Permalink to this headline">¶</a></h2>
+<p>We frequently publish new releases every couple of months, but if you
+still want to use the latest features available on the <cite>dev</cite> branch,
+(but not yet officially released), you have two options:</p>
+<section id="the-easy-way">
+<h3>The easy way<a class="headerlink" href="#the-easy-way" title="Permalink to this headline">¶</a></h3>
+<p>If you’re looking for an easy way to install the development version of
+<code class="docutils literal notranslate"><span class="pre">openpnm</span></code> and use the latest features, you can install it using:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip install git+https://github.com/PMEAL/OpenPNM.git@dev
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This approach is not recommended if you are a OpenPNM contributor or
+want to frequently get new updates as they roll in. If you insist on
+using this approach, to get the latest version at any point, you
+need to first uninstall your OpenPNM and then rerun the command above.</p>
+</div>
+</section>
+<section id="the-hard-but-correct-way">
+<h3>The hard (but correct) way<a class="headerlink" href="#the-hard-but-correct-way" title="Permalink to this headline">¶</a></h3>
+<p>If you are a OpenPNM contributor or want to easily get the new updates as
+they roll in, you need to properly clone our repo and install it locally.
+It’s not as difficult as it sounds, just follow these steps:</p>
+<p>Open up the terminal/cmd and <code class="docutils literal notranslate"><span class="pre">cd</span></code> to the directory you want to clone <code class="docutils literal notranslate"><span class="pre">openpnm</span></code>.</p>
+<p>Clone the repo somewhere in your disk using:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git clone https://github.com/PMEAL/OpenPNM
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">cd</span></code> to the root folder of <code class="docutils literal notranslate"><span class="pre">openpnm</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ cd OpenPNM
+</pre></div>
+</div>
+<p>Install <code class="docutils literal notranslate"><span class="pre">openpnm</span></code> dependencies:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ conda install --file=requirements/conda_requirements.txt
+$ pip install -r requirements/pip_requirements.txt
+</pre></div>
+</div>
+<p>Install <code class="docutils literal notranslate"><span class="pre">openpnm</span></code> in “editable” mode:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip install --no-deps -e .
+</pre></div>
+</div>
+<p>Voila! You can now use the latest features available on the <code class="docutils literal notranslate"><span class="pre">dev</span></code> branch. To
+keep your “local” <code class="docutils literal notranslate"><span class="pre">openpnm</span></code> installation up to date, every now and then, <code class="docutils literal notranslate"><span class="pre">cd</span></code>
+to the root folder of <code class="docutils literal notranslate"><span class="pre">openpnm</span></code> and pull the latest changes:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git pull
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>For the development version of <code class="docutils literal notranslate"><span class="pre">openpnm</span></code> to work, you need to first remove
+the <code class="docutils literal notranslate"><span class="pre">openpnm</span></code> that you’ve previously installed using <code class="docutils literal notranslate"><span class="pre">pip</span></code> or <code class="docutils literal notranslate"><span class="pre">conda</span></code>.</p>
+</div>
+</section>
+</section>
+<section id="where-s-my-conda-prompt">
+<h2>Where’s my <code class="docutils literal notranslate"><span class="pre">conda</span></code> prompt?<a class="headerlink" href="#where-s-my-conda-prompt" title="Permalink to this headline">¶</a></h2>
+<p>All the commands in this page need to be typed in the <code class="docutils literal notranslate"><span class="pre">conda</span></code> prompt.</p>
+<div class="tabbed-set docutils">
+<input checked="checked" id="f68bee9a-10ee-44d2-a9c3-77d15c9dea9d" name="6be8f62a-6a38-4f1a-b55b-4ef4fe110e0e" type="radio">
+</input><label class="tabbed-label" for="f68bee9a-10ee-44d2-a9c3-77d15c9dea9d">
+Windows</label><div class="tabbed-content docutils">
+<p>On Windows you should have a shortcut to the “Anaconda prompt” in the
+Anaconda program group in the start menu. This will open a Windows
+command console with access to the Python features added by <em>conda</em>,
+such as installing things via <code class="docutils literal notranslate"><span class="pre">conda</span></code>.</p>
+</div>
+<input id="510e30ef-0c71-4a0d-a027-593e352245ce" name="6be8f62a-6a38-4f1a-b55b-4ef4fe110e0e" type="radio">
+</input><label class="tabbed-label" for="510e30ef-0c71-4a0d-a027-593e352245ce">
+Mac and Linux</label><div class="tabbed-content docutils">
+<p>On Mac or Linux, you need to open a normal terminal window, then type
+<code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">activate</span> <span class="pre">env</span></code> where you replace <code class="docutils literal notranslate"><span class="pre">env</span></code> with the name of
+the environment you want to install OpenPNM. If you don’t know what this
+means, then use <code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">activate</span> <span class="pre">base</span></code>, which will install OpenPNM in
+the base environment which is the default.</p>
+</div>
+</div>
+</section>
+</section>
+
+
+              </div>
+              
+              
+          </main>
+          
+
+      </div>
+    </div>
+  
+  <script src="../_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
+<footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2021, PMEAL.<br>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.3.0.<br>
+</p>
+    </div>
+    
+  </div>
+</footer>
+  </body>
+</html>

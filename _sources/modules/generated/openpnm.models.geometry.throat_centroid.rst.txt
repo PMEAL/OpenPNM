@@ -1,0 +1,29 @@
+:noindex:
+
+.. automodule:: openpnm.models.geometry.throat_centroid
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+   
+      pore_coords
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

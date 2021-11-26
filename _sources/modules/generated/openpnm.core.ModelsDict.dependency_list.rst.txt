@@ -1,0 +1,8 @@
+:orphan:
+
+dependency_list
+=======================================
+
+.. currentmodule:: openpnm.core
+
+.. automethod:: ModelsDict.dependency_list

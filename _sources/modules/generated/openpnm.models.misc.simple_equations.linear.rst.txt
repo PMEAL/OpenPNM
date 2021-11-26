@@ -1,0 +1,6 @@
+linear
+======
+
+.. currentmodule:: openpnm.models.misc.simple_equations
+
+.. autofunction:: linear

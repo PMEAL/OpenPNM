@@ -1,0 +1,6 @@
+extrusion
+=========
+
+.. currentmodule:: openpnm.models.geometry.throat_volume
+
+.. autofunction:: extrusion

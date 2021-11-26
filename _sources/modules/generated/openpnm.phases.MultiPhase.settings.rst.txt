@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.phases.MultiPhase.settings
+==================================
+
+.. currentmodule:: openpnm.phases
+
+attribute
+
+.. autoproperty:: openpnm.phases.MultiPhase.settings
+

@@ -1,0 +1,8 @@
+:orphan:
+
+set_variable_props
+=================================================================
+
+.. currentmodule:: openpnm.algorithms
+
+.. automethod:: TransientAdvectionDiffusion.set_variable_props

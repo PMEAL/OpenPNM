@@ -1,0 +1,8 @@
+:orphan:
+
+dependency_graph
+========================================
+
+.. currentmodule:: openpnm.core
+
+.. automethod:: ModelsDict.dependency_graph

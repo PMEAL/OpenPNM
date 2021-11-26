@@ -1,0 +1,8 @@
+:orphan:
+
+fromkeys
+===============================
+
+.. currentmodule:: openpnm.core
+
+.. automethod:: Subdomain.fromkeys

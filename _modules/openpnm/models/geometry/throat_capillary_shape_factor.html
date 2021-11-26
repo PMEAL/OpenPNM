@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>openpnm.models.geometry.throat_capillary_shape_factor &#8212; OpenPNM  documentation</title>
+    <title>openpnm.models.geometry.throat_capillary_shape_factor &#8212; OpenPNM 2.8.2 documentation</title>
     
   <link href="../../../../_static/css/theme.css" rel="stylesheet">
   <link href="../../../../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
@@ -25,6 +25,10 @@
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/css/blank.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css" />
     
   <link rel="preload" as="script" href="../../../../_static/js/index.be7d3bbb2ef33a8344ce.js">
 
@@ -75,18 +79,14 @@
       <div class="navbar-center-item">
         <ul id="navbar-main-elements" class="navbar-nav">
     <li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="../../../../userguide/index.html">
-  <strong>
-   User Guide
-  </strong>
+ <a class="reference internal nav-link" href="../../../../user_guide/index.html">
+  User Guide
  </a>
 </li>
 
 <li class="toctree-l1 nav-item">
  <a class="reference internal nav-link" href="../../../../modules/index.html">
-  <strong>
-   Module Reference
-  </strong>
+  Module Reference
  </a>
 </li>
 
@@ -127,7 +127,7 @@
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="https://twitter.com/OpenPnm" rel="noopener" target="_blank" title="Twitter">
+          <a class="nav-link" href="https://twitter.com/OpenPNM" rel="noopener" target="_blank" title="Twitter">
             <span><i class="fab fa-twitter-square"></i></span>
             <label class="sr-only">Twitter</label>
           </a>
@@ -178,7 +178,7 @@
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">_np</span>
 
 
-<div class="viewcode-block" id="compactness"><a class="viewcode-back" href="../../../../modules/models/geometry.html#openpnm.models.geometry.throat_capillary_shape_factor.compactness">[docs]</a><span class="k">def</span> <span class="nf">compactness</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">throat_perimeter</span><span class="o">=</span><span class="s1">&#39;throat.perimeter&#39;</span><span class="p">,</span>
+<div class="viewcode-block" id="compactness"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.throat_capillary_shape_factor.compactness.html#openpnm.models.geometry.throat_capillary_shape_factor.compactness">[docs]</a><span class="k">def</span> <span class="nf">compactness</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">throat_perimeter</span><span class="o">=</span><span class="s1">&#39;throat.perimeter&#39;</span><span class="p">,</span>
                 <span class="n">throat_area</span><span class="o">=</span><span class="s1">&#39;throat.area&#39;</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Mortensen et al. have shown that the Hagen-Poiseuille hydraluic resistance</span>
@@ -189,20 +189,18 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : OpenPNM Object</span>
+<span class="sd">    target : GenericGeometry</span>
 <span class="sd">        The object which this model is associated with. This controls the</span>
 <span class="sd">        length of the calculated array, and also provides access to other</span>
 <span class="sd">        necessary properties.</span>
-
-<span class="sd">    throat_perimeter : string</span>
+<span class="sd">    throat_perimeter : str</span>
 <span class="sd">        The dictionary key of the array containing the throat perimeter values.</span>
-
-<span class="sd">    throat_area : string</span>
+<span class="sd">    throat_area : str</span>
 <span class="sd">        The dictionary key of the array containing the throat area values.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    alpha : NumPy ndarray</span>
+<span class="sd">    alpha : ndarray</span>
 <span class="sd">        Array containing throat compactness values.</span>
 
 <span class="sd">    References</span>
@@ -239,7 +237,7 @@
     <span class="k">return</span> <span class="n">alpha</span></div>
 
 
-<div class="viewcode-block" id="mason_morrow"><a class="viewcode-back" href="../../../../modules/models/geometry.html#openpnm.models.geometry.throat_capillary_shape_factor.mason_morrow">[docs]</a><span class="k">def</span> <span class="nf">mason_morrow</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">throat_perimeter</span><span class="o">=</span><span class="s1">&#39;throat.perimeter&#39;</span><span class="p">,</span>
+<div class="viewcode-block" id="mason_morrow"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.throat_capillary_shape_factor.mason_morrow.html#openpnm.models.geometry.throat_capillary_shape_factor.mason_morrow">[docs]</a><span class="k">def</span> <span class="nf">mason_morrow</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">throat_perimeter</span><span class="o">=</span><span class="s1">&#39;throat.perimeter&#39;</span><span class="p">,</span>
                  <span class="n">throat_area</span><span class="o">=</span><span class="s1">&#39;throat.area&#39;</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Mason and Morrow relate the capillary pressure to the shaped factor in a</span>
@@ -247,20 +245,18 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : OpenPNM Object</span>
+<span class="sd">    target : GenericGeometry</span>
 <span class="sd">        The object which this model is associated with. This controls the</span>
 <span class="sd">        length of the calculated array, and also provides access to other</span>
 <span class="sd">        necessary properties.</span>
-
-<span class="sd">    throat_perimeter : string</span>
+<span class="sd">    throat_perimeter : str</span>
 <span class="sd">        The dictionary key of the array containing the throat perimeter values.</span>
-
-<span class="sd">    throat_area : string</span>
+<span class="sd">    throat_area : str</span>
 <span class="sd">        The dictionary key of the array containing the throat area values.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    value : NumPy ndarray</span>
+<span class="sd">    value : ndarray</span>
 <span class="sd">        Array containing throat shape factor values.</span>
 
 <span class="sd">    References</span>
@@ -279,7 +275,7 @@
     <span class="k">return</span> <span class="n">value</span></div>
 
 
-<div class="viewcode-block" id="jenkins_rao"><a class="viewcode-back" href="../../../../modules/models/geometry.html#openpnm.models.geometry.throat_capillary_shape_factor.jenkins_rao">[docs]</a><span class="k">def</span> <span class="nf">jenkins_rao</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">throat_perimeter</span><span class="o">=</span><span class="s1">&#39;throat.perimeter&#39;</span><span class="p">,</span>
+<div class="viewcode-block" id="jenkins_rao"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.throat_capillary_shape_factor.jenkins_rao.html#openpnm.models.geometry.throat_capillary_shape_factor.jenkins_rao">[docs]</a><span class="k">def</span> <span class="nf">jenkins_rao</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">throat_perimeter</span><span class="o">=</span><span class="s1">&#39;throat.perimeter&#39;</span><span class="p">,</span>
                 <span class="n">throat_area</span><span class="o">=</span><span class="s1">&#39;throat.area&#39;</span><span class="p">,</span>
                 <span class="n">throat_diameter</span><span class="o">=</span><span class="s1">&#39;throat.indiameter&#39;</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -288,23 +284,20 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : OpenPNM Object</span>
+<span class="sd">    target : GenericGeometry</span>
 <span class="sd">        The object which this model is associated with. This controls the</span>
 <span class="sd">        length of the calculated array, and also provides access to other</span>
 <span class="sd">        necessary properties.</span>
-
-<span class="sd">    throat_perimeter : string</span>
+<span class="sd">    throat_perimeter : str</span>
 <span class="sd">        The dictionary key of the array containing the throat perimeter values.</span>
-
-<span class="sd">    throat_area : string</span>
+<span class="sd">    throat_area : str</span>
 <span class="sd">        The dictionary key of the array containing the throat area values.</span>
-
-<span class="sd">    throat_diameter : string</span>
+<span class="sd">    throat_diameter : str</span>
 <span class="sd">        The dictionary key of the array containing the throat diameter values.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    value : NumPy ndarray</span>
+<span class="sd">    value : ndarray</span>
 <span class="sd">        Array containing throat capillary pressure values.</span>
 
 <span class="sd">    References</span>
@@ -336,7 +329,7 @@
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2021 OpenPNM Team.<br>
+    &copy; Copyright 2021, PMEAL.<br>
 </p>
     </div>
     

@@ -1,0 +1,6 @@
+pore\_to\_pore\_distance
+========================
+
+.. currentmodule:: openpnm.models.network
+
+.. autofunction:: pore_to_pore_distance

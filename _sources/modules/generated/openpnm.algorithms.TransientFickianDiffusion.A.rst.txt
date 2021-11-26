@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.algorithms.TransientFickianDiffusion.A
+==============================================
+
+.. currentmodule:: openpnm.algorithms
+
+attribute
+
+.. autoproperty:: openpnm.algorithms.TransientFickianDiffusion.A
+

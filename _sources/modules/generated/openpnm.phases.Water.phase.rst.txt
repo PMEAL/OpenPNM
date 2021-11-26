@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.phases.Water.phase
+==========================
+
+.. currentmodule:: openpnm.phases
+
+attribute
+
+.. autoproperty:: openpnm.phases.Water.phase
+

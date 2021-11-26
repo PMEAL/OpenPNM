@@ -1,0 +1,8 @@
+:orphan:
+
+to_indices
+=======================================================
+
+.. currentmodule:: openpnm.algorithms
+
+.. automethod:: TransientFickianDiffusion.to_indices

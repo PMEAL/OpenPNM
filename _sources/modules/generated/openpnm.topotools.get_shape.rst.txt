@@ -1,0 +1,6 @@
+get\_shape
+==========
+
+.. currentmodule:: openpnm.topotools
+
+.. autofunction:: get_shape

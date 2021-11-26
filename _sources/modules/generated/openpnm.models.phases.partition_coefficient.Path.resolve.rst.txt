@@ -1,0 +1,8 @@
+:orphan:
+
+resolve
+========================================================
+
+.. currentmodule:: openpnm.models.phases.partition_coefficient
+
+.. automethod:: Path.resolve

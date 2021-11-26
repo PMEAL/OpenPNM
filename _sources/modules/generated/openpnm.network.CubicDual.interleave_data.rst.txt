@@ -1,0 +1,8 @@
+:orphan:
+
+interleave_data
+=========================================
+
+.. currentmodule:: openpnm.network
+
+.. automethod:: CubicDual.interleave_data

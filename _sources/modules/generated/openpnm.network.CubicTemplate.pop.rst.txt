@@ -1,0 +1,8 @@
+:orphan:
+
+pop
+=================================
+
+.. currentmodule:: openpnm.network
+
+.. automethod:: CubicTemplate.pop

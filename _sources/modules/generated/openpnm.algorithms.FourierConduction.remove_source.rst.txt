@@ -1,0 +1,8 @@
+:orphan:
+
+remove_source
+==================================================
+
+.. currentmodule:: openpnm.algorithms
+
+.. automethod:: FourierConduction.remove_source

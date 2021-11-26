@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.geometry.CirclesAndRectangles.models
+============================================
+
+.. currentmodule:: openpnm.geometry
+
+attribute
+
+.. autoproperty:: openpnm.geometry.CirclesAndRectangles.models
+

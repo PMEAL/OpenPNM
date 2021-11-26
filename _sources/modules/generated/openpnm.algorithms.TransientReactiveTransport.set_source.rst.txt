@@ -1,0 +1,8 @@
+:orphan:
+
+set_source
+========================================================
+
+.. currentmodule:: openpnm.algorithms
+
+.. automethod:: TransientReactiveTransport.set_source

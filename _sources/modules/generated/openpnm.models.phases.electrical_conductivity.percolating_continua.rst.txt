@@ -1,0 +1,6 @@
+percolating\_continua
+=====================
+
+.. currentmodule:: openpnm.models.phases.electrical_conductivity
+
+.. autofunction:: percolating_continua

@@ -1,0 +1,8 @@
+:orphan:
+
+sort
+=================================
+
+.. currentmodule:: openpnm.integrators
+
+.. automethod:: Solution.sort

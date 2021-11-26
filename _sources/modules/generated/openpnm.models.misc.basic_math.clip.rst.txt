@@ -1,0 +1,6 @@
+clip
+====
+
+.. currentmodule:: openpnm.models.misc.basic_math
+
+.. autofunction:: clip

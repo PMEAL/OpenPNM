@@ -1,0 +1,833 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>pores &#8212; OpenPNM 2.8.2 documentation</title>
+    
+  <link href="../../_static/css/theme.css" rel="stylesheet">
+  <link href="../../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/blank.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
+    
+  <link rel="preload" as="script" href="../../_static/js/index.be7d3bbb2ef33a8344ce.js">
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/custom.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+
+<a class="navbar-brand" href="https://www.openpnm.org">
+  <img src="../../_static/openpnm_logo.png" class="logo" alt="logo">
+</a>
+
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class=" collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../user_guide/index.html">
+  User Guide
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../index.html">
+  Module Reference
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../examples/examples.html">
+  Examples
+ </a>
+</li>
+
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/PMEAL/OpenPNM" rel="noopener" target="_blank" title="GitHub">
+            <span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://openpnm.substack.com/" rel="noopener" target="_blank" title="Substack">
+            <span><i class="fas fa-envelope-square"></i></span>
+            <label class="sr-only">Substack</label>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://twitter.com/OpenPNM" rel="noopener" target="_blank" title="Twitter">
+            <span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label>
+          </a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l1 current active has-children">
+  <a class="reference internal" href="openpnm.physics.Basic.html">
+   Basic
+  </a>
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul class="current">
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.Basic.add_model.html">
+     add_model
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.Basic.clear.html">
+     clear
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.Basic.copy.html">
+     copy
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.Basic.filter_by_label.html">
+     filter_by_label
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.Basic.fromkeys.html">
+     fromkeys
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.Basic.get.html">
+     get
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.Basic.get_conduit_data.html">
+     get_conduit_data
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.Basic.interleave_data.html">
+     interleave_data
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.Basic.interpolate_data.html">
+     interpolate_data
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.Basic.items.html">
+     items
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.Basic.keys.html">
+     keys
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.Basic.labels.html">
+     labels
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.Basic.num_pores.html">
+     num_pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.Basic.num_throats.html">
+     num_throats
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.Basic.params.html">
+     params
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.Basic.pop.html">
+     pop
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.Basic.popitem.html">
+     popitem
+    </a>
+   </li>
+   <li class="toctree-l2 current active">
+    <a class="current reference internal" href="#">
+     pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.Basic.props.html">
+     props
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.Basic.regenerate_models.html">
+     regenerate_models
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.Basic.remove_model.html">
+     remove_model
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.Basic.set_geometry.html">
+     set_geometry
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.Basic.set_label.html">
+     set_label
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.Basic.set_locations.html">
+     set_locations
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.Basic.set_phase.html">
+     set_phase
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.Basic.setdefault.html">
+     setdefault
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.Basic.show_hist.html">
+     show_hist
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.Basic.throats.html">
+     throats
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.Basic.to_global.html">
+     to_global
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.Basic.to_indices.html">
+     to_indices
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.Basic.to_local.html">
+     to_local
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.Basic.to_mask.html">
+     to_mask
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.Basic.update.html">
+     update
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.Basic.values.html">
+     values
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="openpnm.physics.GenericPhysics.html">
+   GenericPhysics
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+  <label for="toctree-checkbox-2">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.GenericPhysics.add_model.html">
+     add_model
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.GenericPhysics.clear.html">
+     clear
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.GenericPhysics.copy.html">
+     copy
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.GenericPhysics.filter_by_label.html">
+     filter_by_label
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.GenericPhysics.fromkeys.html">
+     fromkeys
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.GenericPhysics.get.html">
+     get
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.GenericPhysics.get_conduit_data.html">
+     get_conduit_data
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.GenericPhysics.interleave_data.html">
+     interleave_data
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.GenericPhysics.interpolate_data.html">
+     interpolate_data
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.GenericPhysics.items.html">
+     items
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.GenericPhysics.keys.html">
+     keys
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.GenericPhysics.labels.html">
+     labels
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.GenericPhysics.num_pores.html">
+     num_pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.GenericPhysics.num_throats.html">
+     num_throats
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.GenericPhysics.params.html">
+     params
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.GenericPhysics.pop.html">
+     pop
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.GenericPhysics.popitem.html">
+     popitem
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.GenericPhysics.pores.html">
+     pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.GenericPhysics.props.html">
+     props
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.GenericPhysics.regenerate_models.html">
+     regenerate_models
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.GenericPhysics.remove_model.html">
+     remove_model
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.GenericPhysics.set_geometry.html">
+     set_geometry
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.GenericPhysics.set_label.html">
+     set_label
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.GenericPhysics.set_locations.html">
+     set_locations
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.GenericPhysics.set_phase.html">
+     set_phase
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.GenericPhysics.setdefault.html">
+     setdefault
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.GenericPhysics.show_hist.html">
+     show_hist
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.GenericPhysics.throats.html">
+     throats
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.GenericPhysics.to_global.html">
+     to_global
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.GenericPhysics.to_indices.html">
+     to_indices
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.GenericPhysics.to_local.html">
+     to_local
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.GenericPhysics.to_mask.html">
+     to_mask
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.GenericPhysics.update.html">
+     update
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.GenericPhysics.values.html">
+     values
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="openpnm.physics.Standard.html">
+   Standard
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
+  <label for="toctree-checkbox-3">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.Standard.add_model.html">
+     add_model
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.Standard.clear.html">
+     clear
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.Standard.copy.html">
+     copy
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.Standard.filter_by_label.html">
+     filter_by_label
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.Standard.fromkeys.html">
+     fromkeys
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.Standard.get.html">
+     get
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.Standard.get_conduit_data.html">
+     get_conduit_data
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.Standard.interleave_data.html">
+     interleave_data
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.Standard.interpolate_data.html">
+     interpolate_data
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.Standard.items.html">
+     items
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.Standard.keys.html">
+     keys
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.Standard.labels.html">
+     labels
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.Standard.num_pores.html">
+     num_pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.Standard.num_throats.html">
+     num_throats
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.Standard.params.html">
+     params
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.Standard.pop.html">
+     pop
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.Standard.popitem.html">
+     popitem
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.Standard.pores.html">
+     pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.Standard.props.html">
+     props
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.Standard.regenerate_models.html">
+     regenerate_models
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.Standard.remove_model.html">
+     remove_model
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.Standard.set_geometry.html">
+     set_geometry
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.Standard.set_label.html">
+     set_label
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.Standard.set_locations.html">
+     set_locations
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.Standard.set_phase.html">
+     set_phase
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.Standard.setdefault.html">
+     setdefault
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.Standard.show_hist.html">
+     show_hist
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.Standard.throats.html">
+     throats
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.Standard.to_global.html">
+     to_global
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.Standard.to_indices.html">
+     to_indices
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.Standard.to_local.html">
+     to_local
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.Standard.to_mask.html">
+     to_mask
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.Standard.update.html">
+     update
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.physics.Standard.values.html">
+     values
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+  </div>
+</nav>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+              
+              <div class="toc-item">
+                
+
+<nav id="bd-toc-nav">
+    
+</nav>
+              </div>
+              
+              <div class="toc-item">
+                
+              </div>
+              
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <section id="pores">
+<h1>pores<a class="headerlink" href="#pores" title="Permalink to this headline">¶</a></h1>
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.physics.Basic.pores">
+<span class="sig-prename descclassname"><span class="pre">Basic.</span></span><span class="sig-name descname"><span class="pre">pores</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'or'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">asmask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_global</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openpnm.physics.Basic.pores" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns pore indicies where given labels exist, according to the logic
+specified by the <code class="docutils literal notranslate"><span class="pre">mode</span></code> argument.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>labels</strong> (<em>str</em><em> or </em><em>list</em><em>[</em><em>str</em><em>]</em>) – The label(s) whose pores locations are requested.  This argument
+also accepts ‘*’ for wildcard searches.</p></li>
+<li><p><strong>mode</strong> (<em>str</em>) – <p>Specifies how the query should be performed.  The options are:</p>
+<p><strong>’or’, ‘union’, ‘any’</strong> : (default) Pores with <em>one or more</em> of
+the given labels are returned.</p>
+<p><strong>’and’, ‘intersection’, ‘all’</strong> : Pores with <em>all</em> of the given
+labels are returned.</p>
+<p><strong>’xor’, ‘exclusive_or’</strong> : Pores with <em>only one</em> of the given
+labels are returned.</p>
+<p><strong>’nor’, ‘none’, ‘not’</strong> : Pores with <em>none</em> of the given labels
+are returned.</p>
+<p><strong>’nand’</strong> : Pores with <em>not all</em> of the given labels are
+returned.</p>
+<p><strong>’xnor’</strong> : Pores with <em>more than one</em> of the given labels are
+returned.</p>
+</p></li>
+<li><p><strong>asmask</strong> (<em>boolean</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> then a boolean array of length Np is returned with
+<code class="docutils literal notranslate"><span class="pre">True</span></code> values indicating the pores that satisfy the query.</p></li>
+<li><p><strong>to_global</strong> (<em>bool</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the returned indices will be indexed relative to the
+full domain.  This only has an effect when the calling object
+is a Subdomain.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>A Numpy array containing pore indices filtered by the logic specified</em></p></li>
+<li><p>in <code class="docutils literal notranslate"><span class="pre">mode</span></code>.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="openpnm.physics.Basic.throats.html#openpnm.physics.Basic.throats" title="openpnm.physics.Basic.throats"><code class="xref py py-obj docutils literal notranslate"><span class="pre">throats</span></code></a></p>
+</div>
+<p class="rubric">Notes</p>
+<p>Technically, <em>nand</em> and <em>xnor</em> should also return pores with <em>none</em> of
+the labels but these are not included.  This makes the returned list
+more useful.</p>
+<p>To perform more complex or compound queries, you can opt to receive
+the result a a boolean mask (<code class="docutils literal notranslate"><span class="pre">asmask=True</span></code>), then manipulate the
+arrays manually.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Ps</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;top&#39;</span><span class="p">,</span> <span class="s1">&#39;back&#39;</span><span class="p">],</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;union&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Ps</span><span class="p">[:</span><span class="mi">5</span><span class="p">]</span>  <span class="c1"># Look at first 5 pore indices</span>
+<span class="go">array([ 4,  9, 14, 19, 20])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;top&#39;</span><span class="p">,</span> <span class="s1">&#39;back&#39;</span><span class="p">],</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;xnor&#39;</span><span class="p">)</span>
+<span class="go">array([ 24,  49,  74,  99, 124])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+
+
+              </div>
+              
+              
+          </main>
+          
+
+      </div>
+    </div>
+  
+  <script src="../../_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
+<footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2021, PMEAL.<br>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.3.0.<br>
+</p>
+    </div>
+    
+  </div>
+</footer>
+  </body>
+</html>

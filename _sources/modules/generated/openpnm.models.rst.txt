@@ -1,0 +1,34 @@
+﻿:noindex:
+
+.. automodule:: openpnm.models
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+
+.. rubric:: Modules
+
+.. autosummary::
+   :toctree:
+   :recursive:
+
+   openpnm.models.geometry
+   openpnm.models.misc
+   openpnm.models.network
+   openpnm.models.phases
+   openpnm.models.physics
+

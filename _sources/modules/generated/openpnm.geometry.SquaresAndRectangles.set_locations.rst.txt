@@ -1,0 +1,8 @@
+:orphan:
+
+set_locations
+===================================================
+
+.. currentmodule:: openpnm.geometry
+
+.. automethod:: SquaresAndRectangles.set_locations

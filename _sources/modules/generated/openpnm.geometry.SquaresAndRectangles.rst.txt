@@ -1,0 +1,69 @@
+SquaresAndRectangles
+=====================================
+
+.. currentmodule:: openpnm.geometry
+
+.. autoclass:: SquaresAndRectangles
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            SquaresAndRectangles.add_model
+            SquaresAndRectangles.clear
+            SquaresAndRectangles.copy
+            SquaresAndRectangles.filter_by_label
+            SquaresAndRectangles.fromkeys
+            SquaresAndRectangles.get
+            SquaresAndRectangles.get_conduit_data
+            SquaresAndRectangles.interleave_data
+            SquaresAndRectangles.interpolate_data
+            SquaresAndRectangles.items
+            SquaresAndRectangles.keys
+            SquaresAndRectangles.labels
+            SquaresAndRectangles.num_pores
+            SquaresAndRectangles.num_throats
+            SquaresAndRectangles.params
+            SquaresAndRectangles.pop
+            SquaresAndRectangles.popitem
+            SquaresAndRectangles.pores
+            SquaresAndRectangles.props
+            SquaresAndRectangles.regenerate_models
+            SquaresAndRectangles.remove_model
+            SquaresAndRectangles.set_label
+            SquaresAndRectangles.set_locations
+            SquaresAndRectangles.setdefault
+            SquaresAndRectangles.show_hist
+            SquaresAndRectangles.throats
+            SquaresAndRectangles.to_global
+            SquaresAndRectangles.to_indices
+            SquaresAndRectangles.to_local
+            SquaresAndRectangles.to_mask
+            SquaresAndRectangles.update
+            SquaresAndRectangles.values
+   
+   
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            SquaresAndRectangles.Np
+            SquaresAndRectangles.Nt
+            SquaresAndRectangles.Ps
+            SquaresAndRectangles.Ts
+            SquaresAndRectangles.models
+            SquaresAndRectangles.name
+            SquaresAndRectangles.network
+            SquaresAndRectangles.physics
+            SquaresAndRectangles.project
+            SquaresAndRectangles.settings
+   
+   

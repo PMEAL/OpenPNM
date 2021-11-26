@@ -1,0 +1,8 @@
+:orphan:
+
+items
+=============================
+
+.. currentmodule:: openpnm.network
+
+.. automethod:: Bravais.items

@@ -1,0 +1,8 @@
+:orphan:
+
+set_outflow_BC
+=============================================================
+
+.. currentmodule:: openpnm.algorithms
+
+.. automethod:: TransientAdvectionDiffusion.set_outflow_BC

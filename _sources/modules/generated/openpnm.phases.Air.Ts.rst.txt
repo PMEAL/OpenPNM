@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.phases.Air.Ts
+=====================
+
+.. currentmodule:: openpnm.phases
+
+attribute
+
+.. autoproperty:: openpnm.phases.Air.Ts
+

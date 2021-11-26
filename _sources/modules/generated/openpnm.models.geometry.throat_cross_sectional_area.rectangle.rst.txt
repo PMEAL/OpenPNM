@@ -1,0 +1,6 @@
+rectangle
+=========
+
+.. currentmodule:: openpnm.models.geometry.throat_cross_sectional_area
+
+.. autofunction:: rectangle

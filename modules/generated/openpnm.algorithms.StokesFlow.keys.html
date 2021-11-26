@@ -1,0 +1,3834 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>keys &#8212; OpenPNM 2.8.2 documentation</title>
+    
+  <link href="../../_static/css/theme.css" rel="stylesheet">
+  <link href="../../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/blank.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
+    
+  <link rel="preload" as="script" href="../../_static/js/index.be7d3bbb2ef33a8344ce.js">
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/custom.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="map_pores" href="openpnm.algorithms.StokesFlow.map_pores.html" />
+    <link rel="prev" title="items" href="openpnm.algorithms.StokesFlow.items.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+
+<a class="navbar-brand" href="https://www.openpnm.org">
+  <img src="../../_static/openpnm_logo.png" class="logo" alt="logo">
+</a>
+
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class=" collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../user_guide/index.html">
+  User Guide
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="../index.html">
+  Module Reference
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../examples/examples.html">
+  Examples
+ </a>
+</li>
+
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/PMEAL/OpenPNM" rel="noopener" target="_blank" title="GitHub">
+            <span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://openpnm.substack.com/" rel="noopener" target="_blank" title="Substack">
+            <span><i class="fas fa-envelope-square"></i></span>
+            <label class="sr-only">Substack</label>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://twitter.com/OpenPNM" rel="noopener" target="_blank" title="Twitter">
+            <span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label>
+          </a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="openpnm.core.html">
+   Core (
+   <code class="xref py py-mod docutils literal notranslate">
+    <span class="pre">
+     openpnm.core
+    </span>
+   </code>
+   )
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="openpnm.core.Base.html">
+     Base
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+    <label for="toctree-checkbox-2">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.Base.clear.html">
+       clear
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.Base.copy.html">
+       copy
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.Base.fromkeys.html">
+       fromkeys
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.Base.get.html">
+       get
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.Base.get_conduit_data.html">
+       get_conduit_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.Base.interleave_data.html">
+       interleave_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.Base.interpolate_data.html">
+       interpolate_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.Base.items.html">
+       items
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.Base.keys.html">
+       keys
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.Base.pop.html">
+       pop
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.Base.popitem.html">
+       popitem
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.Base.props.html">
+       props
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.Base.setdefault.html">
+       setdefault
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.Base.show_hist.html">
+       show_hist
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.Base.to_indices.html">
+       to_indices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.Base.to_mask.html">
+       to_mask
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.Base.update.html">
+       update
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.Base.values.html">
+       values
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="openpnm.core.LabelMixin.html">
+     LabelMixin
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
+    <label for="toctree-checkbox-3">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.LabelMixin.filter_by_label.html">
+       filter_by_label
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.LabelMixin.labels.html">
+       labels
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.LabelMixin.num_pores.html">
+       num_pores
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.LabelMixin.num_throats.html">
+       num_throats
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.LabelMixin.pores.html">
+       pores
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.LabelMixin.set_label.html">
+       set_label
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.LabelMixin.throats.html">
+       throats
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="openpnm.core.LegacyMixin.html">
+     LegacyMixin
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
+    <label for="toctree-checkbox-4">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.LegacyMixin.map_pores.html">
+       map_pores
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.LegacyMixin.map_throats.html">
+       map_throats
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.LegacyMixin.toindices.html">
+       toindices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.LegacyMixin.tomask.html">
+       tomask
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="openpnm.core.ModelsDict.html">
+     ModelsDict
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/>
+    <label for="toctree-checkbox-5">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.ModelsDict.clear.html">
+       clear
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.ModelsDict.copy.html">
+       copy
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.ModelsDict.dependency_graph.html">
+       dependency_graph
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.ModelsDict.dependency_list.html">
+       dependency_list
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.ModelsDict.dependency_map.html">
+       dependency_map
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.ModelsDict.fromkeys.html">
+       fromkeys
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.ModelsDict.get.html">
+       get
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.ModelsDict.items.html">
+       items
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.ModelsDict.keys.html">
+       keys
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.ModelsDict.move_to_end.html">
+       move_to_end
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.ModelsDict.pop.html">
+       pop
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.ModelsDict.popitem.html">
+       popitem
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.ModelsDict.setdefault.html">
+       setdefault
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.ModelsDict.update.html">
+       update
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.ModelsDict.values.html">
+       values
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="openpnm.core.ModelsMixin.html">
+     ModelsMixin
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/>
+    <label for="toctree-checkbox-6">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.ModelsMixin.add_model.html">
+       add_model
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.ModelsMixin.regenerate_models.html">
+       regenerate_models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.ModelsMixin.remove_model.html">
+       remove_model
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="openpnm.core.ParamMixin.html">
+     ParamMixin
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
+    <label for="toctree-checkbox-7">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.ParamMixin.params.html">
+       params
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="openpnm.core.Subdomain.html">
+     Subdomain
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/>
+    <label for="toctree-checkbox-8">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.Subdomain.clear.html">
+       clear
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.Subdomain.copy.html">
+       copy
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.Subdomain.filter_by_label.html">
+       filter_by_label
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.Subdomain.fromkeys.html">
+       fromkeys
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.Subdomain.get.html">
+       get
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.Subdomain.get_conduit_data.html">
+       get_conduit_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.Subdomain.interleave_data.html">
+       interleave_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.Subdomain.interpolate_data.html">
+       interpolate_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.Subdomain.items.html">
+       items
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.Subdomain.keys.html">
+       keys
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.Subdomain.labels.html">
+       labels
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.Subdomain.num_pores.html">
+       num_pores
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.Subdomain.num_throats.html">
+       num_throats
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.Subdomain.pop.html">
+       pop
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.Subdomain.popitem.html">
+       popitem
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.Subdomain.pores.html">
+       pores
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.Subdomain.props.html">
+       props
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.Subdomain.set_label.html">
+       set_label
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.Subdomain.set_locations.html">
+       set_locations
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.Subdomain.setdefault.html">
+       setdefault
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.Subdomain.show_hist.html">
+       show_hist
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.Subdomain.throats.html">
+       throats
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.Subdomain.to_global.html">
+       to_global
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.Subdomain.to_indices.html">
+       to_indices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.Subdomain.to_local.html">
+       to_local
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.Subdomain.to_mask.html">
+       to_mask
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.Subdomain.update.html">
+       update
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.Subdomain.values.html">
+       values
+      </a>
+     </li>
+    </ul>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 current active has-children">
+  <a class="reference internal" href="openpnm.algorithms.html">
+   Algorithms (
+   <code class="xref py py-mod docutils literal notranslate">
+    <span class="pre">
+     openpnm.algorithms
+    </span>
+   </code>
+   )
+  </a>
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/>
+  <label for="toctree-checkbox-9">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul class="current">
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="openpnm.algorithms.AdvectionDiffusion.html">
+     AdvectionDiffusion
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/>
+    <label for="toctree-checkbox-10">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.AdvectionDiffusion.clear.html">
+       clear
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.AdvectionDiffusion.copy.html">
+       copy
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.AdvectionDiffusion.fromkeys.html">
+       fromkeys
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.AdvectionDiffusion.get.html">
+       get
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.AdvectionDiffusion.get_conduit_data.html">
+       get_conduit_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.AdvectionDiffusion.interleave_data.html">
+       interleave_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.AdvectionDiffusion.interpolate_data.html">
+       interpolate_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.AdvectionDiffusion.items.html">
+       items
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.AdvectionDiffusion.keys.html">
+       keys
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.AdvectionDiffusion.map_pores.html">
+       map_pores
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.AdvectionDiffusion.map_throats.html">
+       map_throats
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.AdvectionDiffusion.pop.html">
+       pop
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.AdvectionDiffusion.popitem.html">
+       popitem
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.AdvectionDiffusion.props.html">
+       props
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.AdvectionDiffusion.rate.html">
+       rate
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.AdvectionDiffusion.remove_BC.html">
+       remove_BC
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.AdvectionDiffusion.remove_source.html">
+       remove_source
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.AdvectionDiffusion.reset.html">
+       reset
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.AdvectionDiffusion.results.html">
+       results
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.AdvectionDiffusion.run.html">
+       run
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.AdvectionDiffusion.set_outflow_BC.html">
+       set_outflow_BC
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.AdvectionDiffusion.set_rate_BC.html">
+       set_rate_BC
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.AdvectionDiffusion.set_source.html">
+       set_source
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.AdvectionDiffusion.set_value_BC.html">
+       set_value_BC
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.AdvectionDiffusion.set_variable_props.html">
+       set_variable_props
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.AdvectionDiffusion.setdefault.html">
+       setdefault
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.AdvectionDiffusion.show_hist.html">
+       show_hist
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.AdvectionDiffusion.to_indices.html">
+       to_indices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.AdvectionDiffusion.to_mask.html">
+       to_mask
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.AdvectionDiffusion.toindices.html">
+       toindices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.AdvectionDiffusion.tomask.html">
+       tomask
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.AdvectionDiffusion.update.html">
+       update
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.AdvectionDiffusion.values.html">
+       values
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="openpnm.algorithms.FickianDiffusion.html">
+     FickianDiffusion
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/>
+    <label for="toctree-checkbox-11">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.FickianDiffusion.clear.html">
+       clear
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.FickianDiffusion.copy.html">
+       copy
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.FickianDiffusion.fromkeys.html">
+       fromkeys
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.FickianDiffusion.get.html">
+       get
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.FickianDiffusion.get_conduit_data.html">
+       get_conduit_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.FickianDiffusion.interleave_data.html">
+       interleave_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.FickianDiffusion.interpolate_data.html">
+       interpolate_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.FickianDiffusion.items.html">
+       items
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.FickianDiffusion.keys.html">
+       keys
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.FickianDiffusion.map_pores.html">
+       map_pores
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.FickianDiffusion.map_throats.html">
+       map_throats
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.FickianDiffusion.pop.html">
+       pop
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.FickianDiffusion.popitem.html">
+       popitem
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.FickianDiffusion.props.html">
+       props
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.FickianDiffusion.rate.html">
+       rate
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.FickianDiffusion.remove_BC.html">
+       remove_BC
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.FickianDiffusion.remove_source.html">
+       remove_source
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.FickianDiffusion.reset.html">
+       reset
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.FickianDiffusion.results.html">
+       results
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.FickianDiffusion.run.html">
+       run
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.FickianDiffusion.set_rate_BC.html">
+       set_rate_BC
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.FickianDiffusion.set_source.html">
+       set_source
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.FickianDiffusion.set_value_BC.html">
+       set_value_BC
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.FickianDiffusion.set_variable_props.html">
+       set_variable_props
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.FickianDiffusion.setdefault.html">
+       setdefault
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.FickianDiffusion.show_hist.html">
+       show_hist
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.FickianDiffusion.to_indices.html">
+       to_indices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.FickianDiffusion.to_mask.html">
+       to_mask
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.FickianDiffusion.toindices.html">
+       toindices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.FickianDiffusion.tomask.html">
+       tomask
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.FickianDiffusion.update.html">
+       update
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.FickianDiffusion.values.html">
+       values
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="openpnm.algorithms.FourierConduction.html">
+     FourierConduction
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/>
+    <label for="toctree-checkbox-12">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.FourierConduction.clear.html">
+       clear
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.FourierConduction.copy.html">
+       copy
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.FourierConduction.fromkeys.html">
+       fromkeys
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.FourierConduction.get.html">
+       get
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.FourierConduction.get_conduit_data.html">
+       get_conduit_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.FourierConduction.interleave_data.html">
+       interleave_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.FourierConduction.interpolate_data.html">
+       interpolate_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.FourierConduction.items.html">
+       items
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.FourierConduction.keys.html">
+       keys
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.FourierConduction.map_pores.html">
+       map_pores
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.FourierConduction.map_throats.html">
+       map_throats
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.FourierConduction.pop.html">
+       pop
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.FourierConduction.popitem.html">
+       popitem
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.FourierConduction.props.html">
+       props
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.FourierConduction.rate.html">
+       rate
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.FourierConduction.remove_BC.html">
+       remove_BC
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.FourierConduction.remove_source.html">
+       remove_source
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.FourierConduction.reset.html">
+       reset
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.FourierConduction.results.html">
+       results
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.FourierConduction.run.html">
+       run
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.FourierConduction.set_rate_BC.html">
+       set_rate_BC
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.FourierConduction.set_source.html">
+       set_source
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.FourierConduction.set_value_BC.html">
+       set_value_BC
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.FourierConduction.set_variable_props.html">
+       set_variable_props
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.FourierConduction.setdefault.html">
+       setdefault
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.FourierConduction.show_hist.html">
+       show_hist
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.FourierConduction.to_indices.html">
+       to_indices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.FourierConduction.to_mask.html">
+       to_mask
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.FourierConduction.toindices.html">
+       toindices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.FourierConduction.tomask.html">
+       tomask
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.FourierConduction.update.html">
+       update
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.FourierConduction.values.html">
+       values
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="openpnm.algorithms.GenericAlgorithm.html">
+     GenericAlgorithm
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/>
+    <label for="toctree-checkbox-13">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.GenericAlgorithm.clear.html">
+       clear
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.GenericAlgorithm.copy.html">
+       copy
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.GenericAlgorithm.fromkeys.html">
+       fromkeys
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.GenericAlgorithm.get.html">
+       get
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.GenericAlgorithm.get_conduit_data.html">
+       get_conduit_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.GenericAlgorithm.interleave_data.html">
+       interleave_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.GenericAlgorithm.interpolate_data.html">
+       interpolate_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.GenericAlgorithm.items.html">
+       items
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.GenericAlgorithm.keys.html">
+       keys
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.GenericAlgorithm.map_pores.html">
+       map_pores
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.GenericAlgorithm.map_throats.html">
+       map_throats
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.GenericAlgorithm.pop.html">
+       pop
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.GenericAlgorithm.popitem.html">
+       popitem
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.GenericAlgorithm.props.html">
+       props
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.GenericAlgorithm.setdefault.html">
+       setdefault
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.GenericAlgorithm.show_hist.html">
+       show_hist
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.GenericAlgorithm.to_indices.html">
+       to_indices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.GenericAlgorithm.to_mask.html">
+       to_mask
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.GenericAlgorithm.toindices.html">
+       toindices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.GenericAlgorithm.tomask.html">
+       tomask
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.GenericAlgorithm.update.html">
+       update
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.GenericAlgorithm.values.html">
+       values
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="openpnm.algorithms.GenericTransport.html">
+     GenericTransport
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/>
+    <label for="toctree-checkbox-14">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.GenericTransport.clear.html">
+       clear
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.GenericTransport.copy.html">
+       copy
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.GenericTransport.fromkeys.html">
+       fromkeys
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.GenericTransport.get.html">
+       get
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.GenericTransport.get_conduit_data.html">
+       get_conduit_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.GenericTransport.interleave_data.html">
+       interleave_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.GenericTransport.interpolate_data.html">
+       interpolate_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.GenericTransport.items.html">
+       items
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.GenericTransport.keys.html">
+       keys
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.GenericTransport.map_pores.html">
+       map_pores
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.GenericTransport.map_throats.html">
+       map_throats
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.GenericTransport.pop.html">
+       pop
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.GenericTransport.popitem.html">
+       popitem
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.GenericTransport.props.html">
+       props
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.GenericTransport.rate.html">
+       rate
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.GenericTransport.remove_BC.html">
+       remove_BC
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.GenericTransport.reset.html">
+       reset
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.GenericTransport.results.html">
+       results
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.GenericTransport.run.html">
+       run
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.GenericTransport.set_rate_BC.html">
+       set_rate_BC
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.GenericTransport.set_value_BC.html">
+       set_value_BC
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.GenericTransport.set_variable_props.html">
+       set_variable_props
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.GenericTransport.setdefault.html">
+       setdefault
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.GenericTransport.show_hist.html">
+       show_hist
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.GenericTransport.to_indices.html">
+       to_indices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.GenericTransport.to_mask.html">
+       to_mask
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.GenericTransport.toindices.html">
+       toindices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.GenericTransport.tomask.html">
+       tomask
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.GenericTransport.update.html">
+       update
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.GenericTransport.values.html">
+       values
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.algorithms.GenericTransportSettings.html">
+     GenericTransportSettings
+    </a>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="openpnm.algorithms.InvasionPercolation.html">
+     InvasionPercolation
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/>
+    <label for="toctree-checkbox-15">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.InvasionPercolation.apply_trapping.html">
+       apply_trapping
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.InvasionPercolation.clear.html">
+       clear
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.InvasionPercolation.copy.html">
+       copy
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.InvasionPercolation.fromkeys.html">
+       fromkeys
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.InvasionPercolation.get.html">
+       get
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.InvasionPercolation.get_conduit_data.html">
+       get_conduit_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.InvasionPercolation.get_intrusion_data.html">
+       get_intrusion_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.InvasionPercolation.interleave_data.html">
+       interleave_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.InvasionPercolation.interpolate_data.html">
+       interpolate_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.InvasionPercolation.items.html">
+       items
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.InvasionPercolation.keys.html">
+       keys
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.InvasionPercolation.map_pores.html">
+       map_pores
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.InvasionPercolation.map_throats.html">
+       map_throats
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.InvasionPercolation.plot_intrusion_curve.html">
+       plot_intrusion_curve
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.InvasionPercolation.pop.html">
+       pop
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.InvasionPercolation.popitem.html">
+       popitem
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.InvasionPercolation.props.html">
+       props
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.InvasionPercolation.results.html">
+       results
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.InvasionPercolation.run.html">
+       run
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.InvasionPercolation.set_inlets.html">
+       set_inlets
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.InvasionPercolation.setdefault.html">
+       setdefault
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.InvasionPercolation.show_hist.html">
+       show_hist
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.InvasionPercolation.to_indices.html">
+       to_indices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.InvasionPercolation.to_mask.html">
+       to_mask
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.InvasionPercolation.toindices.html">
+       toindices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.InvasionPercolation.tomask.html">
+       tomask
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.InvasionPercolation.update.html">
+       update
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.InvasionPercolation.values.html">
+       values
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="openpnm.algorithms.IonicConduction.html">
+     IonicConduction
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/>
+    <label for="toctree-checkbox-16">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.IonicConduction.clear.html">
+       clear
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.IonicConduction.copy.html">
+       copy
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.IonicConduction.fromkeys.html">
+       fromkeys
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.IonicConduction.get.html">
+       get
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.IonicConduction.get_conduit_data.html">
+       get_conduit_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.IonicConduction.interleave_data.html">
+       interleave_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.IonicConduction.interpolate_data.html">
+       interpolate_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.IonicConduction.items.html">
+       items
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.IonicConduction.keys.html">
+       keys
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.IonicConduction.map_pores.html">
+       map_pores
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.IonicConduction.map_throats.html">
+       map_throats
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.IonicConduction.pop.html">
+       pop
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.IonicConduction.popitem.html">
+       popitem
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.IonicConduction.props.html">
+       props
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.IonicConduction.rate.html">
+       rate
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.IonicConduction.remove_BC.html">
+       remove_BC
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.IonicConduction.remove_source.html">
+       remove_source
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.IonicConduction.reset.html">
+       reset
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.IonicConduction.results.html">
+       results
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.IonicConduction.run.html">
+       run
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.IonicConduction.set_rate_BC.html">
+       set_rate_BC
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.IonicConduction.set_source.html">
+       set_source
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.IonicConduction.set_value_BC.html">
+       set_value_BC
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.IonicConduction.set_variable_props.html">
+       set_variable_props
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.IonicConduction.setdefault.html">
+       setdefault
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.IonicConduction.show_hist.html">
+       show_hist
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.IonicConduction.to_indices.html">
+       to_indices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.IonicConduction.to_mask.html">
+       to_mask
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.IonicConduction.toindices.html">
+       toindices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.IonicConduction.tomask.html">
+       tomask
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.IonicConduction.update.html">
+       update
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.IonicConduction.values.html">
+       values
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="openpnm.algorithms.MixedInvasionPercolation.html">
+     MixedInvasionPercolation
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/>
+    <label for="toctree-checkbox-17">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.MixedInvasionPercolation.apply_flow.html">
+       apply_flow
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.MixedInvasionPercolation.apply_trapping.html">
+       apply_trapping
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.MixedInvasionPercolation.clear.html">
+       clear
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.MixedInvasionPercolation.copy.html">
+       copy
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.MixedInvasionPercolation.fromkeys.html">
+       fromkeys
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.MixedInvasionPercolation.get.html">
+       get
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.MixedInvasionPercolation.get_conduit_data.html">
+       get_conduit_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.MixedInvasionPercolation.get_intrusion_data.html">
+       get_intrusion_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.MixedInvasionPercolation.interleave_data.html">
+       interleave_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.MixedInvasionPercolation.interpolate_data.html">
+       interpolate_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.MixedInvasionPercolation.items.html">
+       items
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.MixedInvasionPercolation.keys.html">
+       keys
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.MixedInvasionPercolation.map_pores.html">
+       map_pores
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.MixedInvasionPercolation.map_throats.html">
+       map_throats
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.MixedInvasionPercolation.plot_intrusion_curve.html">
+       plot_intrusion_curve
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.MixedInvasionPercolation.pop.html">
+       pop
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.MixedInvasionPercolation.popitem.html">
+       popitem
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.MixedInvasionPercolation.props.html">
+       props
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.MixedInvasionPercolation.reset.html">
+       reset
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.MixedInvasionPercolation.results.html">
+       results
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.MixedInvasionPercolation.run.html">
+       run
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.MixedInvasionPercolation.set_inlets.html">
+       set_inlets
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.MixedInvasionPercolation.set_outlets.html">
+       set_outlets
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.MixedInvasionPercolation.set_residual.html">
+       set_residual
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.MixedInvasionPercolation.setdefault.html">
+       setdefault
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.MixedInvasionPercolation.setup.html">
+       setup
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.MixedInvasionPercolation.show_hist.html">
+       show_hist
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.MixedInvasionPercolation.to_indices.html">
+       to_indices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.MixedInvasionPercolation.to_mask.html">
+       to_mask
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.MixedInvasionPercolation.toindices.html">
+       toindices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.MixedInvasionPercolation.tomask.html">
+       tomask
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.MixedInvasionPercolation.update.html">
+       update
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.MixedInvasionPercolation.values.html">
+       values
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="openpnm.algorithms.MixedInvasionPercolationCoop.html">
+     MixedInvasionPercolationCoop
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/>
+    <label for="toctree-checkbox-18">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.MixedInvasionPercolationCoop.apply_flow.html">
+       apply_flow
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.MixedInvasionPercolationCoop.apply_trapping.html">
+       apply_trapping
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.MixedInvasionPercolationCoop.clear.html">
+       clear
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.MixedInvasionPercolationCoop.copy.html">
+       copy
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.MixedInvasionPercolationCoop.fromkeys.html">
+       fromkeys
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.MixedInvasionPercolationCoop.get.html">
+       get
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.MixedInvasionPercolationCoop.get_conduit_data.html">
+       get_conduit_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.MixedInvasionPercolationCoop.get_intrusion_data.html">
+       get_intrusion_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.MixedInvasionPercolationCoop.interleave_data.html">
+       interleave_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.MixedInvasionPercolationCoop.interpolate_data.html">
+       interpolate_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.MixedInvasionPercolationCoop.items.html">
+       items
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.MixedInvasionPercolationCoop.keys.html">
+       keys
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.MixedInvasionPercolationCoop.map_pores.html">
+       map_pores
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.MixedInvasionPercolationCoop.map_throats.html">
+       map_throats
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.MixedInvasionPercolationCoop.plot_intrusion_curve.html">
+       plot_intrusion_curve
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.MixedInvasionPercolationCoop.pop.html">
+       pop
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.MixedInvasionPercolationCoop.popitem.html">
+       popitem
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.MixedInvasionPercolationCoop.props.html">
+       props
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.MixedInvasionPercolationCoop.reset.html">
+       reset
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.MixedInvasionPercolationCoop.results.html">
+       results
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.MixedInvasionPercolationCoop.run.html">
+       run
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.MixedInvasionPercolationCoop.set_inlets.html">
+       set_inlets
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.MixedInvasionPercolationCoop.set_outlets.html">
+       set_outlets
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.MixedInvasionPercolationCoop.set_residual.html">
+       set_residual
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.MixedInvasionPercolationCoop.setdefault.html">
+       setdefault
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.MixedInvasionPercolationCoop.setup.html">
+       setup
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.MixedInvasionPercolationCoop.setup_coop_filling.html">
+       setup_coop_filling
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.MixedInvasionPercolationCoop.show_hist.html">
+       show_hist
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.MixedInvasionPercolationCoop.to_indices.html">
+       to_indices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.MixedInvasionPercolationCoop.to_mask.html">
+       to_mask
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.MixedInvasionPercolationCoop.toindices.html">
+       toindices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.MixedInvasionPercolationCoop.tomask.html">
+       tomask
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.MixedInvasionPercolationCoop.trilaterate_v.html">
+       trilaterate_v
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.MixedInvasionPercolationCoop.update.html">
+       update
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.MixedInvasionPercolationCoop.values.html">
+       values
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="openpnm.algorithms.OhmicConduction.html">
+     OhmicConduction
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" type="checkbox"/>
+    <label for="toctree-checkbox-19">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.OhmicConduction.clear.html">
+       clear
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.OhmicConduction.copy.html">
+       copy
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.OhmicConduction.fromkeys.html">
+       fromkeys
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.OhmicConduction.get.html">
+       get
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.OhmicConduction.get_conduit_data.html">
+       get_conduit_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.OhmicConduction.interleave_data.html">
+       interleave_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.OhmicConduction.interpolate_data.html">
+       interpolate_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.OhmicConduction.items.html">
+       items
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.OhmicConduction.keys.html">
+       keys
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.OhmicConduction.map_pores.html">
+       map_pores
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.OhmicConduction.map_throats.html">
+       map_throats
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.OhmicConduction.pop.html">
+       pop
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.OhmicConduction.popitem.html">
+       popitem
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.OhmicConduction.props.html">
+       props
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.OhmicConduction.rate.html">
+       rate
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.OhmicConduction.remove_BC.html">
+       remove_BC
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.OhmicConduction.remove_source.html">
+       remove_source
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.OhmicConduction.reset.html">
+       reset
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.OhmicConduction.results.html">
+       results
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.OhmicConduction.run.html">
+       run
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.OhmicConduction.set_rate_BC.html">
+       set_rate_BC
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.OhmicConduction.set_source.html">
+       set_source
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.OhmicConduction.set_value_BC.html">
+       set_value_BC
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.OhmicConduction.set_variable_props.html">
+       set_variable_props
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.OhmicConduction.setdefault.html">
+       setdefault
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.OhmicConduction.show_hist.html">
+       show_hist
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.OhmicConduction.to_indices.html">
+       to_indices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.OhmicConduction.to_mask.html">
+       to_mask
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.OhmicConduction.toindices.html">
+       toindices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.OhmicConduction.tomask.html">
+       tomask
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.OhmicConduction.update.html">
+       update
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.OhmicConduction.values.html">
+       values
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="openpnm.algorithms.OrdinaryPercolation.html">
+     OrdinaryPercolation
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" type="checkbox"/>
+    <label for="toctree-checkbox-20">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.OrdinaryPercolation.clear.html">
+       clear
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.OrdinaryPercolation.copy.html">
+       copy
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.OrdinaryPercolation.fromkeys.html">
+       fromkeys
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.OrdinaryPercolation.get.html">
+       get
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.OrdinaryPercolation.get_conduit_data.html">
+       get_conduit_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.OrdinaryPercolation.get_intrusion_data.html">
+       get_intrusion_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.OrdinaryPercolation.get_percolation_threshold.html">
+       get_percolation_threshold
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.OrdinaryPercolation.interleave_data.html">
+       interleave_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.OrdinaryPercolation.interpolate_data.html">
+       interpolate_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.OrdinaryPercolation.is_percolating.html">
+       is_percolating
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.OrdinaryPercolation.items.html">
+       items
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.OrdinaryPercolation.keys.html">
+       keys
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.OrdinaryPercolation.map_pores.html">
+       map_pores
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.OrdinaryPercolation.map_throats.html">
+       map_throats
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.OrdinaryPercolation.plot_intrusion_curve.html">
+       plot_intrusion_curve
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.OrdinaryPercolation.pop.html">
+       pop
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.OrdinaryPercolation.popitem.html">
+       popitem
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.OrdinaryPercolation.props.html">
+       props
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.OrdinaryPercolation.reset.html">
+       reset
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.OrdinaryPercolation.results.html">
+       results
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.OrdinaryPercolation.run.html">
+       run
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.OrdinaryPercolation.set_inlets.html">
+       set_inlets
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.OrdinaryPercolation.set_outlets.html">
+       set_outlets
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.OrdinaryPercolation.set_residual.html">
+       set_residual
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.OrdinaryPercolation.setdefault.html">
+       setdefault
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.OrdinaryPercolation.show_hist.html">
+       show_hist
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.OrdinaryPercolation.to_indices.html">
+       to_indices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.OrdinaryPercolation.to_mask.html">
+       to_mask
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.OrdinaryPercolation.toindices.html">
+       toindices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.OrdinaryPercolation.tomask.html">
+       tomask
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.OrdinaryPercolation.update.html">
+       update
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.OrdinaryPercolation.values.html">
+       values
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="openpnm.algorithms.Porosimetry.html">
+     Porosimetry
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" type="checkbox"/>
+    <label for="toctree-checkbox-21">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.Porosimetry.clear.html">
+       clear
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.Porosimetry.copy.html">
+       copy
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.Porosimetry.fromkeys.html">
+       fromkeys
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.Porosimetry.get.html">
+       get
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.Porosimetry.get_conduit_data.html">
+       get_conduit_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.Porosimetry.get_intrusion_data.html">
+       get_intrusion_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.Porosimetry.get_percolation_threshold.html">
+       get_percolation_threshold
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.Porosimetry.interleave_data.html">
+       interleave_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.Porosimetry.interpolate_data.html">
+       interpolate_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.Porosimetry.is_percolating.html">
+       is_percolating
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.Porosimetry.items.html">
+       items
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.Porosimetry.keys.html">
+       keys
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.Porosimetry.map_pores.html">
+       map_pores
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.Porosimetry.map_throats.html">
+       map_throats
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.Porosimetry.plot_intrusion_curve.html">
+       plot_intrusion_curve
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.Porosimetry.pop.html">
+       pop
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.Porosimetry.popitem.html">
+       popitem
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.Porosimetry.props.html">
+       props
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.Porosimetry.reset.html">
+       reset
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.Porosimetry.run.html">
+       run
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.Porosimetry.set_inlets.html">
+       set_inlets
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.Porosimetry.set_outlets.html">
+       set_outlets
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.Porosimetry.set_partial_filling.html">
+       set_partial_filling
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.Porosimetry.set_residual.html">
+       set_residual
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.Porosimetry.setdefault.html">
+       setdefault
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.Porosimetry.show_hist.html">
+       show_hist
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.Porosimetry.to_indices.html">
+       to_indices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.Porosimetry.to_mask.html">
+       to_mask
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.Porosimetry.toindices.html">
+       toindices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.Porosimetry.tomask.html">
+       tomask
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.Porosimetry.update.html">
+       update
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.Porosimetry.values.html">
+       values
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="openpnm.algorithms.ReactiveTransport.html">
+     ReactiveTransport
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/>
+    <label for="toctree-checkbox-22">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.ReactiveTransport.clear.html">
+       clear
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.ReactiveTransport.copy.html">
+       copy
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.ReactiveTransport.fromkeys.html">
+       fromkeys
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.ReactiveTransport.get.html">
+       get
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.ReactiveTransport.get_conduit_data.html">
+       get_conduit_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.ReactiveTransport.interleave_data.html">
+       interleave_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.ReactiveTransport.interpolate_data.html">
+       interpolate_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.ReactiveTransport.items.html">
+       items
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.ReactiveTransport.keys.html">
+       keys
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.ReactiveTransport.map_pores.html">
+       map_pores
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.ReactiveTransport.map_throats.html">
+       map_throats
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.ReactiveTransport.pop.html">
+       pop
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.ReactiveTransport.popitem.html">
+       popitem
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.ReactiveTransport.props.html">
+       props
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.ReactiveTransport.rate.html">
+       rate
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.ReactiveTransport.remove_BC.html">
+       remove_BC
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.ReactiveTransport.remove_source.html">
+       remove_source
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.ReactiveTransport.reset.html">
+       reset
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.ReactiveTransport.results.html">
+       results
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.ReactiveTransport.run.html">
+       run
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.ReactiveTransport.set_rate_BC.html">
+       set_rate_BC
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.ReactiveTransport.set_source.html">
+       set_source
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.ReactiveTransport.set_value_BC.html">
+       set_value_BC
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.ReactiveTransport.set_variable_props.html">
+       set_variable_props
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.ReactiveTransport.setdefault.html">
+       setdefault
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.ReactiveTransport.show_hist.html">
+       show_hist
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.ReactiveTransport.to_indices.html">
+       to_indices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.ReactiveTransport.to_mask.html">
+       to_mask
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.ReactiveTransport.toindices.html">
+       toindices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.ReactiveTransport.tomask.html">
+       tomask
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.ReactiveTransport.update.html">
+       update
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.ReactiveTransport.values.html">
+       values
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 current active has-children">
+    <a class="reference internal" href="openpnm.algorithms.StokesFlow.html">
+     StokesFlow
+    </a>
+    <input checked="" class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" type="checkbox"/>
+    <label for="toctree-checkbox-23">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul class="current">
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.StokesFlow.clear.html">
+       clear
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.StokesFlow.copy.html">
+       copy
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.StokesFlow.fromkeys.html">
+       fromkeys
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.StokesFlow.get.html">
+       get
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.StokesFlow.get_conduit_data.html">
+       get_conduit_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.StokesFlow.interleave_data.html">
+       interleave_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.StokesFlow.interpolate_data.html">
+       interpolate_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.StokesFlow.items.html">
+       items
+      </a>
+     </li>
+     <li class="toctree-l3 current active">
+      <a class="current reference internal" href="#">
+       keys
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.StokesFlow.map_pores.html">
+       map_pores
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.StokesFlow.map_throats.html">
+       map_throats
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.StokesFlow.pop.html">
+       pop
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.StokesFlow.popitem.html">
+       popitem
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.StokesFlow.props.html">
+       props
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.StokesFlow.rate.html">
+       rate
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.StokesFlow.remove_BC.html">
+       remove_BC
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.StokesFlow.remove_source.html">
+       remove_source
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.StokesFlow.reset.html">
+       reset
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.StokesFlow.results.html">
+       results
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.StokesFlow.run.html">
+       run
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.StokesFlow.set_rate_BC.html">
+       set_rate_BC
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.StokesFlow.set_source.html">
+       set_source
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.StokesFlow.set_value_BC.html">
+       set_value_BC
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.StokesFlow.set_variable_props.html">
+       set_variable_props
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.StokesFlow.setdefault.html">
+       setdefault
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.StokesFlow.show_hist.html">
+       show_hist
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.StokesFlow.to_indices.html">
+       to_indices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.StokesFlow.to_mask.html">
+       to_mask
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.StokesFlow.toindices.html">
+       toindices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.StokesFlow.tomask.html">
+       tomask
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.StokesFlow.update.html">
+       update
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.StokesFlow.values.html">
+       values
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="openpnm.algorithms.TransientAdvectionDiffusion.html">
+     TransientAdvectionDiffusion
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/>
+    <label for="toctree-checkbox-24">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientAdvectionDiffusion.clear.html">
+       clear
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientAdvectionDiffusion.copy.html">
+       copy
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientAdvectionDiffusion.fromkeys.html">
+       fromkeys
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientAdvectionDiffusion.get.html">
+       get
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientAdvectionDiffusion.get_conduit_data.html">
+       get_conduit_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientAdvectionDiffusion.interleave_data.html">
+       interleave_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientAdvectionDiffusion.interpolate_data.html">
+       interpolate_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientAdvectionDiffusion.items.html">
+       items
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientAdvectionDiffusion.keys.html">
+       keys
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientAdvectionDiffusion.map_pores.html">
+       map_pores
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientAdvectionDiffusion.map_throats.html">
+       map_throats
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientAdvectionDiffusion.pop.html">
+       pop
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientAdvectionDiffusion.popitem.html">
+       popitem
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientAdvectionDiffusion.props.html">
+       props
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientAdvectionDiffusion.rate.html">
+       rate
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientAdvectionDiffusion.remove_BC.html">
+       remove_BC
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientAdvectionDiffusion.remove_source.html">
+       remove_source
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientAdvectionDiffusion.reset.html">
+       reset
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientAdvectionDiffusion.results.html">
+       results
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientAdvectionDiffusion.run.html">
+       run
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientAdvectionDiffusion.set_outflow_BC.html">
+       set_outflow_BC
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientAdvectionDiffusion.set_rate_BC.html">
+       set_rate_BC
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientAdvectionDiffusion.set_source.html">
+       set_source
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientAdvectionDiffusion.set_value_BC.html">
+       set_value_BC
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientAdvectionDiffusion.set_variable_props.html">
+       set_variable_props
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientAdvectionDiffusion.setdefault.html">
+       setdefault
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientAdvectionDiffusion.show_hist.html">
+       show_hist
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientAdvectionDiffusion.to_indices.html">
+       to_indices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientAdvectionDiffusion.to_mask.html">
+       to_mask
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientAdvectionDiffusion.toindices.html">
+       toindices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientAdvectionDiffusion.tomask.html">
+       tomask
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientAdvectionDiffusion.update.html">
+       update
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientAdvectionDiffusion.values.html">
+       values
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="openpnm.algorithms.TransientFickianDiffusion.html">
+     TransientFickianDiffusion
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" type="checkbox"/>
+    <label for="toctree-checkbox-25">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientFickianDiffusion.clear.html">
+       clear
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientFickianDiffusion.copy.html">
+       copy
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientFickianDiffusion.fromkeys.html">
+       fromkeys
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientFickianDiffusion.get.html">
+       get
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientFickianDiffusion.get_conduit_data.html">
+       get_conduit_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientFickianDiffusion.interleave_data.html">
+       interleave_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientFickianDiffusion.interpolate_data.html">
+       interpolate_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientFickianDiffusion.items.html">
+       items
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientFickianDiffusion.keys.html">
+       keys
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientFickianDiffusion.map_pores.html">
+       map_pores
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientFickianDiffusion.map_throats.html">
+       map_throats
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientFickianDiffusion.pop.html">
+       pop
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientFickianDiffusion.popitem.html">
+       popitem
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientFickianDiffusion.props.html">
+       props
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientFickianDiffusion.rate.html">
+       rate
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientFickianDiffusion.remove_BC.html">
+       remove_BC
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientFickianDiffusion.remove_source.html">
+       remove_source
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientFickianDiffusion.reset.html">
+       reset
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientFickianDiffusion.results.html">
+       results
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientFickianDiffusion.run.html">
+       run
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientFickianDiffusion.set_rate_BC.html">
+       set_rate_BC
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientFickianDiffusion.set_source.html">
+       set_source
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientFickianDiffusion.set_value_BC.html">
+       set_value_BC
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientFickianDiffusion.set_variable_props.html">
+       set_variable_props
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientFickianDiffusion.setdefault.html">
+       setdefault
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientFickianDiffusion.show_hist.html">
+       show_hist
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientFickianDiffusion.to_indices.html">
+       to_indices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientFickianDiffusion.to_mask.html">
+       to_mask
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientFickianDiffusion.toindices.html">
+       toindices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientFickianDiffusion.tomask.html">
+       tomask
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientFickianDiffusion.update.html">
+       update
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientFickianDiffusion.values.html">
+       values
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="openpnm.algorithms.TransientIonicConduction.html">
+     TransientIonicConduction
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" type="checkbox"/>
+    <label for="toctree-checkbox-26">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientIonicConduction.clear.html">
+       clear
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientIonicConduction.copy.html">
+       copy
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientIonicConduction.fromkeys.html">
+       fromkeys
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientIonicConduction.get.html">
+       get
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientIonicConduction.get_conduit_data.html">
+       get_conduit_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientIonicConduction.interleave_data.html">
+       interleave_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientIonicConduction.interpolate_data.html">
+       interpolate_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientIonicConduction.items.html">
+       items
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientIonicConduction.keys.html">
+       keys
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientIonicConduction.map_pores.html">
+       map_pores
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientIonicConduction.map_throats.html">
+       map_throats
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientIonicConduction.pop.html">
+       pop
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientIonicConduction.popitem.html">
+       popitem
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientIonicConduction.props.html">
+       props
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientIonicConduction.rate.html">
+       rate
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientIonicConduction.remove_BC.html">
+       remove_BC
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientIonicConduction.remove_source.html">
+       remove_source
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientIonicConduction.reset.html">
+       reset
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientIonicConduction.results.html">
+       results
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientIonicConduction.run.html">
+       run
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientIonicConduction.set_rate_BC.html">
+       set_rate_BC
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientIonicConduction.set_source.html">
+       set_source
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientIonicConduction.set_value_BC.html">
+       set_value_BC
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientIonicConduction.set_variable_props.html">
+       set_variable_props
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientIonicConduction.setdefault.html">
+       setdefault
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientIonicConduction.show_hist.html">
+       show_hist
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientIonicConduction.to_indices.html">
+       to_indices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientIonicConduction.to_mask.html">
+       to_mask
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientIonicConduction.toindices.html">
+       toindices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientIonicConduction.tomask.html">
+       tomask
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientIonicConduction.update.html">
+       update
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientIonicConduction.values.html">
+       values
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="openpnm.algorithms.TransientReactiveTransport.html">
+     TransientReactiveTransport
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" type="checkbox"/>
+    <label for="toctree-checkbox-27">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientReactiveTransport.clear.html">
+       clear
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientReactiveTransport.copy.html">
+       copy
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientReactiveTransport.fromkeys.html">
+       fromkeys
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientReactiveTransport.get.html">
+       get
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientReactiveTransport.get_conduit_data.html">
+       get_conduit_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientReactiveTransport.interleave_data.html">
+       interleave_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientReactiveTransport.interpolate_data.html">
+       interpolate_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientReactiveTransport.items.html">
+       items
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientReactiveTransport.keys.html">
+       keys
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientReactiveTransport.map_pores.html">
+       map_pores
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientReactiveTransport.map_throats.html">
+       map_throats
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientReactiveTransport.pop.html">
+       pop
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientReactiveTransport.popitem.html">
+       popitem
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientReactiveTransport.props.html">
+       props
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientReactiveTransport.rate.html">
+       rate
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientReactiveTransport.remove_BC.html">
+       remove_BC
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientReactiveTransport.remove_source.html">
+       remove_source
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientReactiveTransport.reset.html">
+       reset
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientReactiveTransport.results.html">
+       results
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientReactiveTransport.run.html">
+       run
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientReactiveTransport.set_rate_BC.html">
+       set_rate_BC
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientReactiveTransport.set_source.html">
+       set_source
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientReactiveTransport.set_value_BC.html">
+       set_value_BC
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientReactiveTransport.set_variable_props.html">
+       set_variable_props
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientReactiveTransport.setdefault.html">
+       setdefault
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientReactiveTransport.show_hist.html">
+       show_hist
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientReactiveTransport.to_indices.html">
+       to_indices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientReactiveTransport.to_mask.html">
+       to_mask
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientReactiveTransport.toindices.html">
+       toindices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientReactiveTransport.tomask.html">
+       tomask
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientReactiveTransport.update.html">
+       update
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientReactiveTransport.values.html">
+       values
+      </a>
+     </li>
+    </ul>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+  </div>
+</nav>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+              
+              <div class="toc-item">
+                
+
+<nav id="bd-toc-nav">
+    
+</nav>
+              </div>
+              
+              <div class="toc-item">
+                
+              </div>
+              
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <section id="keys">
+<h1>keys<a class="headerlink" href="#keys" title="Permalink to this headline">¶</a></h1>
+<dl class="py method">
+<dt class="sig sig-object py" id="openpnm.algorithms.StokesFlow.keys">
+<span class="sig-prename descclassname"><span class="pre">StokesFlow.</span></span><span class="sig-name descname"><span class="pre">keys</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openpnm.algorithms.StokesFlow.keys" title="Permalink to this definition">¶</a></dt>
+<dd><p>This subclass works exactly like <code class="docutils literal notranslate"><span class="pre">keys</span></code> when no arguments are passed,
+but optionally accepts an <code class="docutils literal notranslate"><span class="pre">element</span></code> and a <code class="docutils literal notranslate"><span class="pre">mode</span></code>, which filters
+the output to only the requested keys.</p>
+<p>The default behavior is exactly equivalent to the normal <code class="docutils literal notranslate"><span class="pre">keys</span></code>
+method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>element</strong> (<em>str</em>) – Can be either ‘pore’ or ‘throat’, which limits the returned list of
+keys to only ‘pore’ or ‘throat’ keys.  If neither is given, then
+both are assumed.</p></li>
+<li><p><strong>mode</strong> (<em>str</em><em>, </em><em>optional</em>) – <p>Controls which keys are returned. Options are:</p>
+<blockquote>
+<div><dl class="simple">
+<dt><strong>’labels’</strong></dt><dd><p>Limits the returned list of keys to only ‘labels’
+(boolean arrays)</p>
+</dd>
+<dt><strong>’props’</strong></dt><dd><p>Limits he return list of keys to only ‘props’
+(numerical arrays).</p>
+</dd>
+<dt><strong>’all’</strong></dt><dd><p>Returns both ‘labels’ and ‘props’. This is equivalent
+to sending a list of both ‘labels’ and ‘props’.</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>If no mode is specified then the normal KeysView object is
+returned.</p>
+</p></li>
+<li><p><strong>deep</strong> (<em>bool</em>) – If set to <code class="docutils literal notranslate"><span class="pre">True</span></code> then the keys on all associated subdomain
+objects are returned as well.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="openpnm.algorithms.StokesFlow.props.html#openpnm.algorithms.StokesFlow.props" title="openpnm.algorithms.StokesFlow.props"><code class="xref py py-obj docutils literal notranslate"><span class="pre">props</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">labels</span></code></p>
+</div>
+<p class="rubric">Notes</p>
+<p>This subclass can be used to get dictionary keys of specific
+kinds of data.  It’s use augments <code class="docutils literal notranslate"><span class="pre">props</span></code> and <code class="docutils literal notranslate"><span class="pre">labels</span></code> by
+returning a list containing both types, but possibly limited by
+element type (‘pores’ or ‘throats’.)</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">([</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span><span class="o">.</span><span class="n">keys</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s1">&#39;props&#39;</span><span class="p">)</span>  <span class="c1"># Get all props</span>
+<span class="go">[&#39;pore.coords&#39;, &#39;throat.conns&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span><span class="o">.</span><span class="n">keys</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s1">&#39;props&#39;</span><span class="p">,</span> <span class="n">element</span><span class="o">=</span><span class="s1">&#39;pore&#39;</span><span class="p">)</span>  <span class="c1"># Get only pore props</span>
+<span class="go">[&#39;pore.coords&#39;]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+
+
+              </div>
+              
+              
+          </main>
+          
+
+      </div>
+    </div>
+  
+  <script src="../../_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
+<footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2021, PMEAL.<br>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.3.0.<br>
+</p>
+    </div>
+    
+  </div>
+</footer>
+  </body>
+</html>

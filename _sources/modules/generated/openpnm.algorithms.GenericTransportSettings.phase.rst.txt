@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.algorithms.GenericTransportSettings.phase
+=================================================
+
+.. currentmodule:: openpnm.algorithms
+
+attribute
+
+.. autoattribute:: openpnm.algorithms.GenericTransportSettings.phase
+

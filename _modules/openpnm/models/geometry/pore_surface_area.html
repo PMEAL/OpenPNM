@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>openpnm.models.geometry.pore_surface_area &#8212; OpenPNM  documentation</title>
+    <title>openpnm.models.geometry.pore_surface_area &#8212; OpenPNM 2.8.2 documentation</title>
     
   <link href="../../../../_static/css/theme.css" rel="stylesheet">
   <link href="../../../../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
@@ -25,6 +25,10 @@
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/css/blank.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css" />
     
   <link rel="preload" as="script" href="../../../../_static/js/index.be7d3bbb2ef33a8344ce.js">
 
@@ -75,18 +79,14 @@
       <div class="navbar-center-item">
         <ul id="navbar-main-elements" class="navbar-nav">
     <li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="../../../../userguide/index.html">
-  <strong>
-   User Guide
-  </strong>
+ <a class="reference internal nav-link" href="../../../../user_guide/index.html">
+  User Guide
  </a>
 </li>
 
 <li class="toctree-l1 nav-item">
  <a class="reference internal nav-link" href="../../../../modules/index.html">
-  <strong>
-   Module Reference
-  </strong>
+  Module Reference
  </a>
 </li>
 
@@ -127,7 +127,7 @@
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="https://twitter.com/OpenPnm" rel="noopener" target="_blank" title="Twitter">
+          <a class="nav-link" href="https://twitter.com/OpenPNM" rel="noopener" target="_blank" title="Twitter">
             <span><i class="fab fa-twitter-square"></i></span>
             <label class="sr-only">Twitter</label>
           </a>
@@ -178,7 +178,7 @@
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">_np</span>
 
 
-<div class="viewcode-block" id="sphere"><a class="viewcode-back" href="../../../../modules/models/geometry.html#openpnm.models.geometry.pore_surface_area.sphere">[docs]</a><span class="k">def</span> <span class="nf">sphere</span><span class="p">(</span>
+<div class="viewcode-block" id="sphere"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.pore_surface_area.sphere.html#openpnm.models.geometry.pore_surface_area.sphere">[docs]</a><span class="k">def</span> <span class="nf">sphere</span><span class="p">(</span>
     <span class="n">target</span><span class="p">,</span>
     <span class="n">pore_diameter</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">,</span>
     <span class="n">throat_cross_sectional_area</span><span class="o">=</span><span class="s1">&#39;throat.cross_sectional_area&#39;</span>
@@ -204,7 +204,7 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    value : NumPy ndarray</span>
+<span class="sd">    value : ndarray</span>
 <span class="sd">        Array containing pore surface area values.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -217,7 +217,7 @@
     <span class="k">return</span> <span class="n">value</span></div>
 
 
-<div class="viewcode-block" id="circle"><a class="viewcode-back" href="../../../../modules/models/geometry.html#openpnm.models.geometry.pore_surface_area.circle">[docs]</a><span class="k">def</span> <span class="nf">circle</span><span class="p">(</span>
+<div class="viewcode-block" id="circle"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.pore_surface_area.circle.html#openpnm.models.geometry.pore_surface_area.circle">[docs]</a><span class="k">def</span> <span class="nf">circle</span><span class="p">(</span>
     <span class="n">target</span><span class="p">,</span>
     <span class="n">pore_diameter</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">,</span>
     <span class="n">throat_cross_sectional_area</span><span class="o">=</span><span class="s1">&#39;throat.cross_sectional_area&#39;</span>
@@ -243,7 +243,7 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    value : NumPy ndarray</span>
+<span class="sd">    value : ndarray</span>
 <span class="sd">        Array containing pore surface area values.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -256,7 +256,7 @@
     <span class="k">return</span> <span class="n">value</span></div>
 
 
-<div class="viewcode-block" id="cube"><a class="viewcode-back" href="../../../../modules/models/geometry.html#openpnm.models.geometry.pore_surface_area.cube">[docs]</a><span class="k">def</span> <span class="nf">cube</span><span class="p">(</span>
+<div class="viewcode-block" id="cube"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.pore_surface_area.cube.html#openpnm.models.geometry.pore_surface_area.cube">[docs]</a><span class="k">def</span> <span class="nf">cube</span><span class="p">(</span>
     <span class="n">target</span><span class="p">,</span>
     <span class="n">pore_diameter</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">,</span>
     <span class="n">throat_cross_sectional_area</span><span class="o">=</span><span class="s1">&#39;throat.cross_sectional_area&#39;</span>
@@ -271,7 +271,7 @@
 <span class="sd">        The Geometry object for which these values are being calculated.</span>
 <span class="sd">        This controls the length of the calculated array, and also</span>
 <span class="sd">        provides access to other necessary thermofluid properties.</span>
-<span class="sd">    pore_diameter : string</span>
+<span class="sd">    pore_diameter : str</span>
 <span class="sd">        The dictionary key to the pore diameter array.</span>
 <span class="sd">    throat_cross_sectional_area : str</span>
 <span class="sd">        The dictionary key to the throat cross sectional area array.</span>
@@ -280,7 +280,7 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    value : NumPy ndarray</span>
+<span class="sd">    value : ndarray</span>
 <span class="sd">        Array containing pore surface area values.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -292,7 +292,7 @@
     <span class="k">return</span> <span class="n">value</span></div>
 
 
-<div class="viewcode-block" id="square"><a class="viewcode-back" href="../../../../modules/models/geometry.html#openpnm.models.geometry.pore_surface_area.square">[docs]</a><span class="k">def</span> <span class="nf">square</span><span class="p">(</span>
+<div class="viewcode-block" id="square"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.pore_surface_area.square.html#openpnm.models.geometry.pore_surface_area.square">[docs]</a><span class="k">def</span> <span class="nf">square</span><span class="p">(</span>
     <span class="n">target</span><span class="p">,</span>
     <span class="n">pore_diameter</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">,</span>
     <span class="n">throat_cross_sectional_area</span><span class="o">=</span><span class="s1">&#39;throat.cross_sectional_area&#39;</span>
@@ -316,7 +316,7 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    value : NumPy ndarray</span>
+<span class="sd">    value : ndarray</span>
 <span class="sd">        Array containing pore surface area values.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -343,7 +343,7 @@
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2021 OpenPNM Team.<br>
+    &copy; Copyright 2021, PMEAL.<br>
 </p>
     </div>
     

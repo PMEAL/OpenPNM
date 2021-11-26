@@ -1,0 +1,8 @@
+:orphan:
+
+num_throats
+===============================================
+
+.. currentmodule:: openpnm.geometry
+
+.. automethod:: PyramidsAndCuboids.num_throats

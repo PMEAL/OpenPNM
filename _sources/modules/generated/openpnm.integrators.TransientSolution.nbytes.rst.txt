@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.integrators.TransientSolution.nbytes
+============================================
+
+.. currentmodule:: openpnm.integrators
+
+attribute
+
+.. autoattribute:: openpnm.integrators.TransientSolution.nbytes
+

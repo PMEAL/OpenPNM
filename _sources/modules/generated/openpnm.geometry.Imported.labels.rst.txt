@@ -1,0 +1,8 @@
+:orphan:
+
+labels
+================================
+
+.. currentmodule:: openpnm.geometry
+
+.. automethod:: Imported.labels
