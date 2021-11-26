@@ -2,7 +2,7 @@ import openpnm as op
 import pytest
 import py
 import os
-from openpnm.io.Pandas import Pandas
+from openpnm.io import Pandas
 
 
 class PandasTest:
