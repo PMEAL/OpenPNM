@@ -96,8 +96,12 @@ class SettingsAttr:
     def _update(self, settings, docs=False, override=False):
         if settings is None:
             return
-        if hasattr(settings, 'items'):  # Dictionary
-            raise Exception('Specifying settings via dicts is not supported')
+        if isinstance(settings, dict):
+            for k, v in settings.items():
+                if override:
+                    super().__setattr__(k, v)
+                else:
+                    setattr(self, k, v)
         else:  # Dataclass
             attrs = [i for i in dir(settings) if not i.startswith('_')]
             for k in attrs:
