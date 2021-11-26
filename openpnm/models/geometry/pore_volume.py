@@ -1,5 +1,9 @@
 r"""
+Pore Volume
+...........
+
 These models calculate pore volumes depending on the specified shape
+
 """
 
 import numpy as np

@@ -1,3 +1,8 @@
+r"""
+Conduit Lengths
+...............
+
+"""
 import numpy as _np
 from ._misc import _get_conduit_diameters
 from .throat_length import ctc as _ctc

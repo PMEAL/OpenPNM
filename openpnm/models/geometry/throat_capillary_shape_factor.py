@@ -1,4 +1,7 @@
 r"""
+Throat Capillary Shape Factor
+.............................
+
 """
 import numpy as _np
 

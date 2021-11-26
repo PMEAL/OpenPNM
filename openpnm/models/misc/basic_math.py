@@ -1,4 +1,7 @@
 r"""
+Basic Math
+==========
+
 """
 import numpy as np
 from openpnm.utils import logging

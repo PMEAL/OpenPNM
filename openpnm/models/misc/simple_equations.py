@@ -1,4 +1,7 @@
-r""""
+r"""
+Simple Equations
+================
+
 """
 import numpy as np
 from openpnm.utils import logging

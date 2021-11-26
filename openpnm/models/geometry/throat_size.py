@@ -1,4 +1,7 @@
 r"""
+Throat Size
+...........
+
 """
 from openpnm.models import misc as _misc
 import numpy as _np

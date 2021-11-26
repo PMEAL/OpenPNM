@@ -1,7 +1,11 @@
 r"""
+Pore Seed
+.........
+
 Pore seed models are use to calculate random numbers for each pore, which can
 subsequently be used in statistical distributions to calculate actual pore
 sizes.
+
 """
 import numpy as _np
 import scipy as _sp

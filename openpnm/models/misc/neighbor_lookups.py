@@ -1,4 +1,7 @@
 r"""
+Neighbor Lookups
+================
+
 """
 import numpy as np
 from openpnm.utils import logging

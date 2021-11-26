@@ -1,4 +1,7 @@
 r"""
+Hydraulic Size Factors
+......................
+
 The hydraulic size factor is the geometrical part of the pre-factor in
 Stoke's flow:
 
