@@ -27,7 +27,7 @@
       .. autosummary::
          :toctree:
          {% for item in all_attributes %}
-            {%- if not item.startswith('_') and item not in ['flags']%}
+            {%- if not item.startswith('_') and item not in ['flags'] %}
             {{ name }}.{{ item }}
             {%- endif -%}
          {%- endfor %}

@@ -59,6 +59,7 @@ templates_path = ['_templates']
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = ['_build']
 
+numpydoc_show_inherited_class_members = True
 
 #------------------------------------------------------------------------#
 # Matplotlib plot_directive options                                      #
