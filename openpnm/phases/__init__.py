@@ -1,31 +1,27 @@
 r"""
-
-**openpnm.phases**
-
-----
+==============================
+Phases (:mod:`openpnm.phases`)
+==============================
 
 This module contains the GenericPhase class, plus several subclasses which
 are preconfigured to have the properties of specific fluids
 
-----
-
-**The GenericPhase Class**
+The GenericPhase Class
+======================
 
 The ``GenericPhase`` class is a direct child of the ``Base`` class, so contains
 the usual methods such as find pore indices based on labels.  It does, however,
 also inherit from ``ModelsMixin`` so has methods for add, removing and
 regenerating models.
 
-----
-
-**Library of Preconfigured Phase Classes**
+Library of Preconfigured Phase Classes
+======================================
 
 OpenPNM include a few Phase subclasses that contain a suite of pre-configured
 models that predict the thermophysical properties of certain common phases.
 
-----
-
-**Customizing a GenericPhase Instance**
+Customizing a GenericPhase Instance
+===================================
 
 The ``GenericPhase`` class has no pore-scale models attached, so is a blank
 slate for creating custom Phases.  The following code snippet illustrates how
@@ -66,8 +62,8 @@ to all the other calculated pore-scale properties, call the
 37752.0
 
 """
-from .GenericPhase import GenericPhase
-from .Air import Air
-from .Water import Water
-from .Mercury import Mercury
-from .MultiPhase import MultiPhase
+from ._generic import GenericPhase
+from ._air import Air
+from ._water import Water
+from ._mercury import Mercury
+from ._multiphase import MultiPhase

@@ -1,3 +1,8 @@
+r"""
+Conduit Lengths
+...............
+
+"""
 import numpy as _np
 from openpnm.utils import Docorator
 
@@ -192,9 +197,9 @@ def pyramids_and_cuboids(
     %(models.geometry.conduit_lengths.returns)s
 
     """
-    return cones_and_cylinders(
-        target, pore_diameter=pore_diameter, throat_diameter=throat_diameter
-    )
+    return cones_and_cylinders(target,
+                               pore_diameter=pore_diameter,
+                               throat_diameter=throat_diameter)
 
 
 @docstr.dedent
@@ -262,14 +267,13 @@ def squares_and_rectangles(
     symmetry.
 
     """
-    return cubes_and_cuboids(
-        target, pore_diameter=pore_diameter, throat_diameter=throat_diameter
-    )
+    return cubes_and_cuboids(target,
+                             pore_diameter=pore_diameter,
+                             throat_diameter=throat_diameter)
 
 
 # Dealing with errors and exceptions
 def _raise_incompatible_data():
     raise Exception(
         "'spheres_and_cylinders' can only be applied when throat diameter is"
-        " smaller than that of adjacent pores."
-    )
+        " smaller than that of adjacent pores.")

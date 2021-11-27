@@ -31,12 +31,12 @@ class GenericMixtureSettings:
 class GenericMixture(GenericPhase):
     r"""
     Creates Phase object that represents a multicomponent mixture system
-    consisting of a given list of OpenPNM Phase objects as components.
+    consisting of a given list of GenericPhases as components.
 
     Parameters
     ----------
     %(GenericPhase.parameters)s
-    components : list of OpenPNM Phase objects
+    components : list[GenericPhase]s
         A list of all components that constitute this mixture
 
     Notes
@@ -47,7 +47,7 @@ class GenericMixture(GenericPhase):
 
     """
 
-    def __init__(self, components=[], settings={}, **kwargs):
+    def __init__(self, components=[], settings=None, **kwargs):
         self.settings = SettingsAttr(GenericMixtureSettings, settings)
         super().__init__(settings=self.settings, **kwargs)
 
@@ -216,7 +216,7 @@ class GenericMixture(GenericPhase):
 
         Parameters
         ----------
-        component : OpenPNM Phase object or name
+        component : GenericPhase or name
             The phase object of the component whose concentration is being
             specified
         values : array_like
@@ -244,7 +244,7 @@ class GenericMixture(GenericPhase):
 
         Parameters
         ----------
-        components : OpenPNM Phase object or name string
+        components : GenericPhase or name string
             The phase whose mole fraction is being specified
         values : array_like
             The mole fraction of the given ``component `` in each pore.  This
@@ -304,10 +304,10 @@ class GenericMixture(GenericPhase):
 
         Parameters
         ----------
-        component : OpenPNM Phase object
+        component : GenericPhase
             The phase object of the component to add.  Can also be a list
             of phases to add more than one at a time.
-        mode : string {'add', 'remove'}
+        mode : str {'add', 'remove'}
             Indicates whether to add or remove the give component(s)
 
         """

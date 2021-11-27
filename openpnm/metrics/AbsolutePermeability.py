@@ -40,14 +40,14 @@ class AbsolutePermeability(GenericTransportMetrics):
     r"""
     This class calculates the absolute permeability of the domain
     using Stokes flow.
-    
+
     .. math::
 
         K = \frac{Q L }{\Delta P A \mu}
 
     """
 
-    def __init__(self, settings={}, **kwargs):
+    def __init__(self, settings=None, **kwargs):
         self.settings = SettingsAttr(AbsolutePermeabilitySettings, settings)
         super().__init__(settings=self.settings, **kwargs)
 

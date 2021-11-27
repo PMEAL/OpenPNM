@@ -354,14 +354,14 @@ class ProjectTest:
         except PermissionError:
             print('Could not delete ' + name + '.net')
 
-    def test_load_object_from_fixture(self):
-        path = Path(os.path.realpath(__file__),
-                    '../../../fixtures/OpenPNM-Objects')
-        filename = Path(path.resolve(), 'net_01.net')
-        new_proj = self.ws.new_project()
-        new_proj.load_object(filename)
-        assert len(new_proj) == 1
-        assert new_proj.network._isa('network')
+    # def test_load_object_from_fixture(self):
+    #     path = Path(os.path.realpath(__file__),
+    #                 '../../../fixtures/OpenPNM-Objects')
+    #     filename = Path(path.resolve(), 'net_01.net')
+    #     new_proj = self.ws.new_project()
+    #     new_proj.load_object(filename)
+    #     assert len(new_proj) == 1
+    #     assert new_proj.network._isa('network')
 
     def test_export_data(self):
         fname = 'export_data_tests'

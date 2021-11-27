@@ -16,13 +16,13 @@ class SpeciesByName(GenericSpecies):
 
     Parameters
     ----------
-    network : OpenPNM Network object
+    network : GenericNetwork
         The network to which this phase object will be attached.
     species : str
         The name of the species to generate.  This is used to lookup tabulated
         constants in the ``chemicals`` package, which attempts to find a match. For
         instance, 'water', 'Water', and 'H2O' all work.
-    name : string, optional
+    name : str, optional
         The name of the phase.  This is useful to keep track of the objects
         throughout the simulation.  The name must be unique to the project.
         If no name is given, one is generated.

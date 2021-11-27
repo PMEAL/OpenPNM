@@ -1,17 +1,10 @@
 import numpy as np
 import openpnm as op
 from tqdm import tqdm
+from auto_all import start_all, end_all
 
 
-__all__ = [
-    'plot_tutorial',
-    'plot_connections',
-    'plot_coordinates',
-    'plot_networkx',
-    'plot_network_jupyter',
-    'generate_voxel_image',
-]
-
+start_all()
 
 def plot_connections(network,
                      throats=None,
@@ -43,11 +36,11 @@ def plot_connections(network,
         plot.  This makes it possible to combine coordinates and connections,
         and to color throats differently for instance.
     size_by : array_like (optional)
-        An ND-array of throat values (e.g. alg['throat.rate']).  These
+        An ndarray of throat values (e.g. alg['throat.rate']).  These
         values are used to scale the ``linewidth``, so if the lines are too
         thin, then increase ``linewidth``.
     color_by : str or array_like (optional)
-        An ND-array of throat values (e.g. alg['throat.rate']).
+        An ndarray of throat values (e.g. alg['throat.rate']).
     cmap : str or cmap object (optional)
         The matplotlib colormap to use if specfying a throat property
         for ``color_by``
@@ -179,7 +172,7 @@ def plot_coordinates(network,
 
     Parameters
     ----------
-    network : OpenPNM Network Object
+    network : GenericNetwork
         The network whose topological connections to plot.
     pores : array_like (optional)
         The list of pores to plot if only a sub-sample is desired. This is
@@ -190,10 +183,10 @@ def plot_coordinates(network,
         This enables the plotting of multiple different sets of pores as
         well as throat connections from ``plot_connections``.
     size_by : str or array_like
-        An ND-array of pore values (e.g. alg['pore.concentration']). These
+        An ndarray of pore values (e.g. alg['pore.concentration']). These
         values are normalized by scaled by ``markersize``.
     color_by : str or array_like
-        An ND-array of pore values (e.g. alg['pore.concentration']).
+        An ndarray of pore values (e.g. alg['pore.concentration']).
     cmap : str or cmap object
         The matplotlib colormap to use if specfying a pore property
         for ``color_by``
@@ -351,7 +344,7 @@ def plot_networkx(network,
     Parameters
     ----------
     network : GenericNetwork
-    plot_throats : boolean, optional
+    plot_throats : bool, optional
         Plots throats as well as pores, if True.
     labels : list, optional
         List of OpenPNM labels
@@ -632,7 +625,7 @@ def plot_network_jupyter(network,
 
     Parameters
     ----------
-    network : OpenPNM Network object
+    network : GenericNetwork
         The network to visualize
     node_color : ndarray
         An array of values used for coloring the pores. If not given, the
@@ -844,7 +837,7 @@ def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200):
 def generate_voxel_image(network, pore_shape="sphere", throat_shape="cylinder",
                          max_dim=None, rtol=0.1):
     r"""
-    Generate a voxel image from an OpenPNM network object
+    Generate a voxel image from an GenericNetwork
 
     Parameters
     ----------
@@ -892,3 +885,4 @@ def generate_voxel_image(network, pore_shape="sphere", throat_shape="cylinder",
         max_dim = int(max_dim * 1.25)
     return im
 
+end_all()

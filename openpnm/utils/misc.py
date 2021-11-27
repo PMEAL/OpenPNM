@@ -10,28 +10,13 @@ import time as _time
 from collections import OrderedDict
 from docrep import DocstringProcessor
 from IPython.core.magics.execution import _format_time
+from auto_all import start_all, end_all
 
-__all__ = [
-    "Docorator",
-    "PrintableDict",
-    "PrintableList",
-    "NestedDict",
-    "SubDict",
-    "SettingsDict",
-    "GenericSettings",
-    "HealthDict",
-    "flat_list",
-    "sanitize_dict",
-    "unique_list",
-    "tic", "toc",
-    "is_symmetric",
-    "is_valid_propname",
-    "prettify_logger_message",
-    "remove_prop_deep",
-]
 
+start_all()
 
 class Docorator(DocstringProcessor):
+    """Brief explanation of 'Docorator'"""
 
     __instance__ = None
 
@@ -56,10 +41,10 @@ class Docorator(DocstringProcessor):
 
 class PrintableList(list):
     r"""
-    Simple subclass of ``list`` that has nice printing.  Only works flat lists.
+    Simple subclass of ``list`` that has nice printing. Only works flat lists.
 
-    Example
-    -------
+    Examples
+    --------
     >>> from openpnm.utils import PrintableList
     >>> temp = ['item1', 'item2', 'item3']
     >>> print(PrintableList(temp))
@@ -91,8 +76,8 @@ class PrintableDict(OrderedDict):
     r"""
     Simple subclass of ``dict`` that has nicer printing.
 
-    Example
-    -------
+    Examples
+    --------
     >>> from openpnm.utils import PrintableDict
     >>> from numpy import array as arr
     >>> d = {'item1': 1, 'item2': '1', 'item3': [1, 1], 'item4': arr([1, 1])}
@@ -135,9 +120,9 @@ class PrintableDict(OrderedDict):
 
 class SettingsDict(PrintableDict):
     r"""
-    The SettingsDict implements the __missing__ magic method, which returns
-    None instead of KeyError.  This is useful for checking the value of a
-    settings without first ensuring it exists.
+    The SettingsDict implements the __missing__ magic method, which
+    returns None instead of KeyError. This is useful for checking the
+    value of a settings without first ensuring it exists.
 
     Examples
     --------
@@ -178,6 +163,7 @@ class SettingsDict(PrintableDict):
 
 
 class GenericSettings:
+    """Brief explanation of 'GenericSettings'"""
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for item in dir(self):
@@ -186,6 +172,7 @@ class GenericSettings:
 
 
 class SubDict(dict):
+    """Brief explanation of 'SubDict'"""
     def __getitem__(self, key):
         for item in self.keys():
             if item.endswith('.' + key):
@@ -194,6 +181,8 @@ class SubDict(dict):
 
 
 class NestedDict(dict):
+    """Brief explanation of 'NestedDict'"""
+
     def __init__(self, mapping={}, delimiter="/"):
         super().__init__()
         self.delimiter = delimiter
@@ -257,11 +246,11 @@ class NestedDict(dict):
 
 class HealthDict(PrintableDict):
     r"""
-    This class adds a 'health' check to a standard dictionary.  This check
-    looks into the dict values, and considers empty lists as healthy and all
-    else as unhealthy.  If one or more entries is 'unhealthy' the health method
-    returns False.
+    This class adds a 'health' check to a standard dictionary.
 
+    This check looks into the dict values, and considers empty lists as
+    healthy and all else as unhealthy.  If one or more entries is
+    'unhealthy' the health method returns False.
     """
 
     def __init__(self, **kwargs):
@@ -302,9 +291,9 @@ def toc(quiet=False):
 
     Parameters
     ----------
-    quiet : Boolean
-        If False (default) then a message is output to the console.  If True
-        the message is not displayed and the elapsed time is returned.
+    quiet : bool, default is False
+        If False then a message is output to the console. If
+        True the message is not displayed and the elapsed time is returned.
 
     See Also
     --------
@@ -345,8 +334,8 @@ def unique_list(input_list):
 
 def flat_list(input_list):
     r"""
-    Given a list of nested lists of arbitrary depth, returns a single level or
-    'flat' list.
+    Given a list of nested lists of arbitrary depth, returns a single
+    level or 'flat' list.
     """
     x = input_list
     if isinstance(x, list):
@@ -371,8 +360,7 @@ def sanitize_dict(input_dict):
 
 
 def methods_to_table(obj):
-    r"""
-    """
+    """Brief explanation of 'methods_to_table'"""
     parent = obj.__class__.__mro__[1]
     temp = inspect.getmembers(parent, predicate=inspect.isroutine)
     parent_funcs = [i[0] for i in temp if not i[0].startswith("_")]
@@ -406,12 +394,11 @@ def models_to_table(obj, params=True):
 
     Parameters
     ----------
-    obj : OpenPNM object
+    obj : Base
         Any object that has a ``models`` attribute
-
-    params : boolean
+    params : bool
         Indicates whether or not to include a list of parameter
-        values in the table.  Set to False for just a list of models, and
+        values in the table. Set to False for just a list of models, and
         True for a more verbose table with all parameter values.
 
     """
@@ -464,12 +451,13 @@ def catch_module_not_found(function):
 
 def ignore_warnings(warning=RuntimeWarning):
     r"""
-    Decorator for catching warnings. Useful in pore-scale models where nans
-    are inevitable, and numpy gets annoying by throwing lots of RuntimeWarnings.
+    Decorator for catching warnings. Useful in pore-scale models where
+    nans are inevitable, and numpy gets annoying by throwing lots of
+    RuntimeWarnings.
 
     Parameters
     ----------
-    warning : Python Warning object
+    warning : Warning
         Python warning type that you want to temporarily ignore
 
     Examples
@@ -507,12 +495,11 @@ def is_symmetric(a, rtol=1e-10):
 
     Parameters
     ----------
-    a : ndarray, sparse matrix
+    a : ndarray or sparse matrix
         Object to check for being a symmetric matrix.
-
     rtol : float
-        Relative tolerance with respect to the smallest entry in ``a`` that
-        is used to determine if ``a`` is symmetric.
+        Relative tolerance with respect to the smallest entry in ``a``
+        that is used to determine if ``a`` is symmetric.
 
     Returns
     -------
@@ -536,7 +523,7 @@ def is_symmetric(a, rtol=1e-10):
 
 def is_valid_propname(propname):
     r"""
-    Check if ``propname`` is a valid OpenPNM propname, i.e. starts with
+    Checks if ``propname`` is a valid OpenPNM propname, i.e. starts with
     'pore.' or 'throat.'
 
     Parameters
@@ -564,9 +551,7 @@ def is_valid_propname(propname):
 
 
 def prettify_logger_message(msg):
-    r"""
-    Prettifies logger messages by breaking them up into multi lines
-    """
+    """Prettifies logger messages by breaking them up into multi lines"""
     from textwrap import wrap
     linewidth = 75 - 13
     indent = "\n" + " " * 13
@@ -575,8 +560,10 @@ def prettify_logger_message(msg):
 
 
 def remove_prop_deep(obj, propname):
-    r"""Hierarchically deletes the given propname and its children"""
+    """Hierarchically deletes the given propname and its children"""
     for k in list(obj.keys()):
         obj._parse_element(propname)
         if k.startswith(propname):
             del obj[k]
+
+end_all()

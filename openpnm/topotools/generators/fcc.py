@@ -24,7 +24,7 @@ def fcc(shape, spacing=1, mode='kdtree'):
     spacing : array_like or float
         The size of a unit cell in each direction. If an scalar is given it is
         applied in all 3 directions.
-    mode : string
+    mode : str
         Dictate how neighbors are found.  Options are:
 
         'kdtree'
@@ -93,6 +93,7 @@ def fcc(shape, spacing=1, mode='kdtree'):
 
 if __name__ == '__main__':
     import openpnm as op
+    import matplotlib.pyplot as plt
     net = fcc([3, 3, 3], 1, mode='tri')
     net['pore.coords'] = net.pop('vert.coords')
     net['throat.conns'] = net.pop('edge.conns')
@@ -100,5 +101,6 @@ if __name__ == '__main__':
     pn.update(net)
     pn['pore.all'] = np.ones((np.shape(pn.coords)[0]), dtype=bool)
     pn['throat.all'] = np.ones((np.shape(pn.conns)[0]), dtype=bool)
-    fig = op.topotools.plot_connections(pn)
-    fig = op.topotools.plot_coordinates(pn, ax=fig)
+    fig, ax = plt.subplots()
+    op.topotools.plot_connections(pn, ax=ax)
+    op.topotools.plot_coordinates(pn, ax=ax)

@@ -24,7 +24,7 @@ def antoine(target, A, B, C, temperature='pore.temperature'):
 
     Returns
     -------
-    value : NumPy ndarray
+    value : ndarray
         Array containing vapor pressure values [Pa]
 
     References

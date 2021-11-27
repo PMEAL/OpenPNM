@@ -1,3 +1,8 @@
+r"""
+Throat Seed
+...........
+
+"""
 from openpnm.models import misc as _misc
 
 

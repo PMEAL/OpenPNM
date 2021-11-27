@@ -13,13 +13,14 @@ class MercuryIntrusion(Porosimetry):
     A ready-made Mercury Intrusion Porosimetry algorithm
 
     This class accepts a pre-existing Project, including a Network and any
-    associated Geometries, then internally creates a new Mercury Phase object
-    and a new Physics for each Geometry associated with the Network.  Finally,
-    the Washburn capillary pressure model is added to each Physics object (
-    or to the Mercury object if there are no Geometries defined).
+    associated Geometries, then internally creates a new Mercury Phase
+    object and a new Physics for each Geometry associated with the
+    Network. Finally, the Washburn capillary pressure model is added to
+    each Physics object (or to the Mercury object if there are no
+    Geometries defined).
 
-    The results can be plotted using `plot_intrusion_data`, and numerical data
-    can be obtained with `get_intrusion_data`.
+    The results can be plotted using `plot_intrusion_data`, and numerical
+    data can be obtained with `get_intrusion_data`.
 
     Examples
     --------
@@ -36,9 +37,10 @@ class MercuryIntrusion(Porosimetry):
 
     >>> mip.pc_data = [10000, 20000, 30000]
     >>> mip.snwp_data = [0, 0.5, 0.9]
+
     """
 
-    def __init__(self, network, settings={}, **kwargs):
+    def __init__(self, network, settings=None, **kwargs):
         hg = Mercury(network=network)
         super().__init__(network=network, phase=hg, settings=self.settings, **kwargs)
         project = self.project
@@ -74,7 +76,7 @@ class MercuryIntrusion(Porosimetry):
     pc_data = property(fget=_get_pc_data, fset=_set_pc_data)
 
     def plot_intrusion_curve(self, ax=None, num_markers=25):
-        r""""""
+        """Brief explanation of 'plot_intrusion_curve'"""
         import matplotlib.pyplot as plt
 
         super().plot_intrusion_curve(ax=ax)

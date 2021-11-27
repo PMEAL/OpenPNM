@@ -1,12 +1,10 @@
 r"""
-
-**openpnm.topotools**
-
-----
+====================================
+TopoTools (:mod:`openpnm.topotools`)
+====================================
 
 This module contains a selection of functions that deal specifically with
 network topology.
-
 
 """
 

@@ -47,7 +47,7 @@ class VoronoiFibers(Project):
         fiber radius to apply to Voronoi edges when calculating pore and throat
         sizes
 
-    resolution : boolean
+    resolution : bool
         Determines the size of each voxel in the image. Care should be made to
         appropriately set the resolution based on the fiber_radius and the
         shape of the domain so as to remain within memory constraints.
@@ -160,7 +160,7 @@ class DelaunayGeometry(GenericGeometry):
 
     Parameters
     ----------
-    name : string
+    name : str
         A unique name for the network
     """
 
@@ -1062,7 +1062,7 @@ class DelaunayGeometry(GenericGeometry):
         face1 : list or array containing pore indices for a face to include in
             calculations.
 
-        parm : string
+        parm : str
             Determines what information is returned:
                 volume, area (_xy, _xz, _yz), length (_x, _y, _z), minmax.
             Default volume.
@@ -1135,7 +1135,7 @@ class VoronoiGeometry(GenericGeometry):
 
     Parameters
     ----------
-    name : string
+    name : str
         A unique name for the network
     """
 

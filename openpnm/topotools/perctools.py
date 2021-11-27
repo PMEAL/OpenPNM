@@ -2,19 +2,12 @@ import numpy as np
 import scipy.sparse as sprs
 from scipy.sparse import csgraph
 from openpnm.utils import PrintableDict, logging, Workspace
+from auto_all import start_all, end_all
 logger = logging.getLogger(__name__)
 ws = Workspace()
 
 
-__all__ = [
-    'ispercolating',
-    'remove_isolated_clusters',
-    'site_percolation',
-    'bond_percolation',
-    'find_clusters',
-    'find_path',
-    ]
-
+start_all()
 
 def ispercolating(am, inlets, outlets, mode='site'):
     r"""
@@ -33,7 +26,7 @@ def ispercolating(am, inlets, outlets, mode='site'):
     outlets : array_like
         An array of indices indicating which sites are part of the outlets
 
-    mode : string
+    mode : str
         Indicates which type of percolation to apply, either `'site'` or
         `'bond'`
 
@@ -103,7 +96,7 @@ def site_percolation(ij, occupied_sites):
         sites are both occupied they are part of the same cluster, as it
         the bond connecting them.
 
-    occupied_sites : boolean
+    occupied_sites : bool
         A list indicating whether sites are occupied or not
 
     Returns
@@ -148,7 +141,7 @@ def bond_percolation(ij, occupied_bonds):
         An N x 2 array of [site_A, site_B] connections.  A site is
         considered occupied if any of it's connecting bonds are occupied.
 
-    occupied_bonds: boolean
+    occupied_bonds: bool
         A list indicating whether a bond is occupied or not
 
     Returns
@@ -197,7 +190,7 @@ def find_clusters(network, mask=[], t_labels=False):
 
     Parameters
     ----------
-    network : OpenPNM Network Object
+    network : GenericNetwork
         The network
 
     mask : array_like, boolean
@@ -298,7 +291,7 @@ def find_path(network, pore_pairs, weights=None):
 
     Parameters
     ----------
-    network : OpenPNM Network Object
+    network : GenericNetwork
         The Network object on which the search should be performed
 
     pore_pairs : array_like
@@ -357,3 +350,5 @@ def find_path(network, pore_pairs, weights=None):
     pdict = PrintableDict
     dict_ = pdict(**{'pores': pores, 'throats': throats})
     return dict_
+
+end_all()

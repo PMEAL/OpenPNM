@@ -2,6 +2,7 @@ ipympl
 jupyterlab_widgets
 nbsphinx
 nbsphinx-link
+numpydoc
 pandoc
 pydata-sphinx-theme
 sphinx

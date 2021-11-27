@@ -1,3 +1,8 @@
+r"""
+Pore Cross Sectional Area
+.........................
+
+"""
 from numpy import pi as _pi
 from openpnm.utils import Docorator
 

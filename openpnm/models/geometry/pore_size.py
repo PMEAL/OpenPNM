@@ -85,7 +85,7 @@ def largest_sphere(target, fixed_diameter='pore.fixed_diameter', iters=5):
     This model looks into all pores in the network when finding the diameter.
     This means that when multiple Geometry objects are defined, it will
     consider the diameter of pores on adjacent Geometries. If no diameters
-    have been assigned to these neighboring pores it will assume 0.  If
+    have been assigned to these neighboring pores it will assume 0. If
     diameter value are assigned to the neighboring pores AFTER this model is
     run, the pores may overlap.  This can be remedied by running this model
     again.

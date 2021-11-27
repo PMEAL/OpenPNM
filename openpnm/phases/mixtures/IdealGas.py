@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 class IdealGas(GenericMixture):
     r"""
     Creates Mixture object that represents a ideal gas system
-    consisting of a given list of OpenPNM Phase objects as components.
+    consisting of a given list of GenericPhases as components.
 
     Parameters
     ----------
@@ -18,7 +18,7 @@ class IdealGas(GenericMixture):
 
     """
 
-    def __init__(self, settings={}, **kwargs):
+    def __init__(self, settings=None, **kwargs):
         super().__init__(settings={'prefix': 'mix'}, **kwargs)
         self.settings._update(settings)
 

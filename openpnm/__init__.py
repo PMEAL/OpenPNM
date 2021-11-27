@@ -1,6 +1,7 @@
 r"""
-
-**OpenPNM**
+=======
+OpenPNM
+=======
 
 OpenPNM is a package for performing pore network simulations of transport in
 porous materials.

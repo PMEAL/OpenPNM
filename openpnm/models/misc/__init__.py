@@ -1,8 +1,6 @@
 r"""
-
-**openpnm.models.misc**
-
-----
+Miscellaneous
+=============
 
 This submodule contains models for calculating general or generic values
 that are useful for all other pore-scale models, such as scaling values, or
@@ -26,4 +24,4 @@ _docstr.params['models.misc.seeds'] = \
 from .statistical_distributions import *
 from .simple_equations import *
 from .basic_math import *
-from .neighbor_lookups import from_neighbor_throats, from_neighbor_pores
+from .neighbor_lookups import *

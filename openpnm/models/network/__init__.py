@@ -1,8 +1,6 @@
 r"""
-
-**openpnm.models.network**
-
-----
+Network
+=======
 
 This submodule contains models for calculating topological properties of
 networks

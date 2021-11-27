@@ -11,7 +11,7 @@ __all__ = [
     'normal',
     'generic_distribution',
     'match_histogram',
-    ]
+]
 
 
 @docstr.get_sections(base='models.misc.stats',
@@ -49,11 +49,20 @@ def weibull(target, seeds, shape, scale, loc):
     be used to find suitable values of 'shape', 'scale'` and 'loc'.  Note that
     'shape' is represented by 'c' in the actual function call.
 
-    >>> import scipy
     >>> import numpy
+    >>> import scipy.stats
     >>> func = scipy.stats.weibull_min(c=1.5, scale=0.0001, loc=0)
     >>> import matplotlib.pyplot as plt
-    >>> fig = plt.hist(func.ppf(q=numpy.random.rand(10000)), bins=50)
+    >>> plt.hist(func.ppf(q=numpy.random.rand(10000)), bins=50)
+
+    .. plot::
+
+       import numpy
+       import scipy.stats
+       func = scipy.stats.weibull_min(c=1.5, scale=0.0001, loc=0)
+       import matplotlib.pyplot as plt
+       plt.hist(func.ppf(q=numpy.random.rand(10000)), bins=50)
+       plt.show()
 
     """
     seeds = target[seeds]
@@ -88,11 +97,20 @@ def normal(target, seeds, mean=None, stddev=None, scale=None, loc=None):
     which uses the 'norm' method of the scipy.stats module.  This can
     be used to find suitable values of 'scale' and 'loc'.
 
-    >>> import scipy
     >>> import numpy
+    >>> import scipy.stats
     >>> func = scipy.stats.norm(scale=.0001, loc=0.001)
     >>> import matplotlib.pyplot as plt
-    >>> fig = plt.hist(func.ppf(q=numpy.random.rand(10000)), bins=50)
+    >>> plt.hist(func.ppf(q=numpy.random.rand(10000)), bins=50)
+
+    .. plot::
+
+       import numpy
+       import scipy.stats
+       func = scipy.stats.norm(scale=.0001, loc=0.001)
+       import matplotlib.pyplot as plt
+       fig = plt.hist(func.ppf(q=numpy.random.rand(10000)), bins=50)
+       plt.show()
 
     """
     scale = stddev if stddev is not None else scale
@@ -126,8 +144,8 @@ def generic_distribution(target, seeds, func):
     The following code illustrates the process of obtaining a 'frozen' Scipy
     stats object and adding it as a model:
 
-    >>> import scipy
     >>> import numpy
+    >>> import scipy.stats
     >>> import openpnm as op
     >>> pn = op.network.Cubic(shape=[3, 3, 3])
     >>> geo = op.geometry.GenericGeometry(network=pn, pores=pn.Ps, throats=pn.Ts)
@@ -144,7 +162,25 @@ def generic_distribution(target, seeds, func):
 
 
     >>> import matplotlib.pyplot as plt
-    >>> fig = plt.hist(stats_obj.ppf(q=numpy.random.rand(1000)), bins=50)
+    >>> plt.hist(stats_obj.ppf(q=numpy.random.rand(1000)), bins=50)
+
+    .. plot::
+
+       import numpy
+       import scipy.stats
+       import openpnm as op
+       import matplotlib.pyplot as plt
+       pn = op.network.Cubic(shape=[3, 3, 3])
+       geo = op.geometry.GenericGeometry(network=pn, pores=pn.Ps, throats=pn.Ts)
+       geo.add_model(propname='pore.seed',
+                       model=op.models.geometry.pore_seed.random)
+       stats_obj = scipy.stats.weibull_min(c=2, scale=.0001, loc=0)
+       geo.add_model(propname='pore.size',
+                       model=op.models.geometry.pore_size.generic_distribution,
+                       seeds='pore.seed',
+                       func=stats_obj)
+       plt.hist(stats_obj.ppf(q=numpy.random.rand(1000)), bins=50)
+       plt.show()
 
     """
     seeds = target[seeds]

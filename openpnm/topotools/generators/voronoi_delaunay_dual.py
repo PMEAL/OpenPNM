@@ -16,7 +16,7 @@ def voronoi_delaunay_dual(points, shape, crop=False):
         of that size is generated.
     shape : array_like
         The size of the domain in which the points lie
-    crop : boolean, optional (default is ``False``)
+    crop : bool, optional (default is ``False``)
         If ``True`` then all points lying beyond the given domain shape will
         be removed
 
