@@ -1,19 +1,22 @@
-r"""
-Pore-scale models for calculating the diffusive conductance of conduits.
-"""
 import numpy as _np
 import scipy.constants as _const
+from openpnm.utils import Docorator
 from openpnm.models.physics._utils import _poisson_conductance
 
+
+docstr = Docorator()
 __all__ = [
     "generic_diffusive",
     "ordinary_diffusion",
     "mixed_diffusion",
     "taylor_aris_diffusion",
-    "multiphase_diffusion"
+    "multiphase_diffusion",
 ]
 
 
+@docstr.get_sections(base='models.physics.diffusive_conductance',
+                     sections=['Returns'])
+@docstr.dedent
 def generic_diffusive(target,
                       pore_diffusivity="pore.diffusivity",
                       throat_diffusivity="throat.diffusivity",
@@ -25,20 +28,16 @@ def generic_diffusive(target,
 
     Parameters
     ----------
-    target : GenericPhysics
-        Physics object with which this model is associated.
-    pore_diffusivity : str
-        Dictionary key of the pore diffusivity values.
-    throat_diffusivity : str
-        Dictionary key of the throat diffusivity values.
+    %(models.target.parameters)s
+    %(models.phys.pore_diffusivity.parameters)s
+    %(models.phys.throat_diffusivity.parameters)s
     size_factors: str
-        Dictionary key of the conduit diffusive size factors' values.
+        Dictionary key of the conduit diffusive size factors' values
 
     Returns
     -------
-    ndarray
-        Array containing diffusive conductance values for conduits in the
-        geometry attached to the given physics object.
+    g_diffusive : ndarray
+        A numpy ndarray containing diffusive conductance values for conduits
 
     """
     return _poisson_conductance(target=target,
@@ -47,6 +46,7 @@ def generic_diffusive(target,
                                 size_factors=size_factors)
 
 
+@docstr.dedent
 def ordinary_diffusion(target,
                        pore_diffusivity="pore.diffusivity",
                        throat_diffusivity="throat.diffusivity",
@@ -58,20 +58,15 @@ def ordinary_diffusion(target,
 
     Parameters
     ----------
-    target : GenericPhysics
-        Physics object with which this model is associated.
-    pore_diffusivity : str
-        Dictionary key of the pore diffusivity values.
-    throat_diffusivity : str
-        Dictionary key of the throat diffusivity values.
+    %(models.target.parameters)s
+    %(models.phys.pore_diffusivity.parameters)s
+    %(models.phys.throat_diffusivity.parameters)s
     size_factors: str
         Dictionary key of the conduit diffusive size factors' values.
 
     Returns
     -------
-    ndarray
-        Array containing diffusive conductance values for conduits in the
-        geometry attached to the given physics object.
+    %(models.physics.diffusive_conductance.returns)s
 
     """
     return _poisson_conductance(target=target,
@@ -79,7 +74,7 @@ def ordinary_diffusion(target,
                                 throat_conductivity=throat_diffusivity,
                                 size_factors=size_factors)
 
-
+@docstr.dedent
 def mixed_diffusion(target,
                     pore_diameter="pore.diameter",
                     throat_diameter="throat.diameter",
@@ -98,20 +93,13 @@ def mixed_diffusion(target,
 
     Parameters
     ----------
-    target : GenericPhysics
-        Physics object with which this model is associated.
-    pore_diameter : str
-        Dictionary key of the pore diameter values.
-    throat_diameter : str
-        Dictionary key of the throat diameter values.
-    pore_diffusivity : str
-        Dictionary key of the pore diffusivity values.
-    throat_diffusivity : str
-        Dictionary key of the throat diffusivity values.
-    pore_temperature : str
-        Dictionary key of the pore temperature values.
-    throat_temperature : str
-        Dictionary key of the throat temperature values.
+    %(models.target.parameters)s
+    %(models.geometry.Pdia)s
+    %(models.geometery.Tdia)s
+    %(models.phys.pore_diffusivity.parameters)s
+    %(models.phys.throat_diffusivity.parameters)s
+    %(models.phys.pore_temperature.parameters)s
+    %(models.phys.throat_temperature.parameters)s
     molecular_weigth : str
         Dictionary key of the pore molecular weight values.
     size_factors: str
@@ -119,9 +107,7 @@ def mixed_diffusion(target,
 
     Returns
     -------
-    ndarray
-        Array containing diffusive conductance values for conduits in the
-        geometry attached to the given physics object.
+    %(models.physics.diffusive_conductance.returns)s
 
     Notes
     -----
@@ -160,6 +146,7 @@ def mixed_diffusion(target,
                                 size_factors=size_factors)
 
 
+@docstr.dedent
 def taylor_aris_diffusion(target,
                           pore_area="pore.area",
                           throat_area="throat.area",
@@ -176,18 +163,12 @@ def taylor_aris_diffusion(target,
 
     Parameters
     ----------
-    target : GenericPhysics
-        Physics object with which this model is associated.
-    pore_area : str
-        Dictionary key of the pore area values.
-    throat_area : str
-        Dictionary key of the throat area values.
-    pore_diffusivity : str
-        Dictionary key of the pore diffusivity values.
-    throat_diffusivity : str
-        Dictionary key of the throat diffusivity values.
-    pore_pressure : str
-        Dictionary key of the pore pressure values.
+    %(models.target.parameters)s
+    %(models.geometry.Parea)s
+    %(models.geometry.Tarea)s
+    %(models.phys.pore_diffusivity.parameters)s
+    %(models.phys.throat_diffusivity.parameters)s
+    %(models.phys.pore_pressure.parameters)s
     throat_hydraulic_conductance : str
         Dictionary key of the throat hydraulic_conductance values.
     size_factors: str
@@ -195,9 +176,7 @@ def taylor_aris_diffusion(target,
 
     Returns
     -------
-    ndarray
-        Array containing diffusive conductance values for conduits in the
-        geometry attached to the given physics object.
+    %(models.physics.diffusive_conductance.returns)s
 
     Notes
     -----
@@ -237,6 +216,7 @@ def taylor_aris_diffusion(target,
     return Dt * (1 + Pet**2 / 192) * F[throats]
 
 
+@docstr.dedent
 def multiphase_diffusion(target,
                          pore_diffusivity="pore.diffusivity",
                          throat_diffusivity="throat.diffusivity",
@@ -247,20 +227,15 @@ def multiphase_diffusion(target,
 
     Parameters
     ----------
-    target : GenericPhysics
-        Physics object with which this model is associated.
-    pore_diffusivity : str
-        Dictionary key of the pore diffusivity values.
-    throat_diffusivity : str
-        Dictionary key of the throat diffusivity values.
+    %(models.target.parameters)s
+    %(models.phys.pore_diffusivity.parameters)s
+    %(models.phys.throat_diffusivity.parameters)s
     size_factors: str
         Dictionary key of the conduit size factors' values.
 
     Returns
     -------
-    ndarray
-        Array containing diffusive conductance values for conduits in the
-        geometry attached to the given physics object.
+    %(models.physics.diffusive_conductance.returns)s
 
     Notes
     -----

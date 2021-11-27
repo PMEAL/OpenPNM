@@ -1,14 +1,20 @@
-r"""
-Pore-scale models for calculating ionic conductance of conduits.
-"""
 import numpy as _np
-from openpnm.utils import logging
+from openpnm.utils import logging, Docorator
 from openpnm.models.physics._utils import _poisson_conductance
-logger = logging.getLogger(__name__)
+from matplotlib.docstring import Substitution
 
+
+text = Substitution(dict_text='The name of the dictionary key on ``target`` ' +
+                              'holding the array with values of ')
+docstr = Docorator()
+logger = logging.getLogger(__name__)
 __all__ = ["poisson", "electroneutrality"]
 
 
+@text
+@docstr.get_sections(base='models.physics.ionic_conductance',
+                     sections=['Returns'])
+@docstr.dedent
 def poisson(target,
             pore_permittivity='pore.permittivity',
             throat_permittivity='throat.permittivity',
@@ -20,20 +26,18 @@ def poisson(target,
 
     Parameters
     ----------
-    target : GenericPhysics
-        Physics object with which this model is associated.
+    %(models.target.parameters)s
     pore_permittivity : str
-        Dictionary key of the pore permittivity values.
+        %(dict_text)s pore permittivity
     throat_permittivity : str
-        Dictionary key of the throat permittivity values.
+        %(dict_text)s throat permittivity
     size_factors: str
-        Dictionary key of the conduit size factors' values.
+        %(dict_text)s conduit size factors'
 
     Returns
     -------
-    g : ndarray
-        Array containing ionic conductance values for conduits in the
-        geometry attached to the given physics object.
+    g_ionic : ndarray
+        A numpy ndarray containing diffusive conductance values for conduits
 
     Notes
     -----
@@ -49,6 +53,7 @@ def poisson(target,
     return tmp * epsilon0
 
 
+@docstr.dedent
 def electroneutrality(target,
                       pore_diffusivity='pore.diffusivity',
                       throat_diffusivity='throat.diffusivity',
@@ -67,26 +72,21 @@ def electroneutrality(target,
 
     Parameters
     ----------
-    target : GenericPhysics
-        Physics object with which this model is associated.
-    pore_diffusivity : str
-        Dictionary key of the pore diffusivity values
-    throat_diffusivity : str
-        Dictionary key of the throat diffusivity values
+    %(models.target.parameters)s
+    %(models.physics.pore_diffusivity.parameters)s
+    %(models.physics.throat_diffusivity.parameters)s
+    %(models.physics.pore_temperature.parameters)s
+    %(models.physics.throat_temperature.parameters)s
     size_factors: str
-        Dictionary key of the conduit size factors' values.
-    pore_volume : str
-        Dictionary key of the pore volume values
-    pore_temperature : str
-        Dictionary key of the pore temperature values
+        %(dict_text)s conduit size factors
     throat_temperature : str
-        Dictionary key of the throat temperature values
+        %(dict_text)s throat temperature
     pore_valence : str
-       Dictionary key of the pore ionic species valence values
+        %(dict_text)s ionic valence values
     throat_valence : str
-       Dictionary key of the throat ionic species valence values
+        %(dict_text)s ionic species valence
     pore_concentration : str
-       Dictionary key of the pore ionic species concentration values
+        %(dict_text)s ionic species pore concentration
 
     Returns
     -------

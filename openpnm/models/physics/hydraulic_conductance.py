@@ -1,8 +1,8 @@
-r"""
-Pore-scale models for calculating hydraulic conductance of conduits.
-"""
 import numpy as _np
+from openpnm.utils import Docorator
 
+
+docstr = Docorator()
 __all__ = [
     "generic_hydraulic",
     "hagen_poiseuille",
@@ -11,6 +11,9 @@ __all__ = [
 ]
 
 
+@docstr.get_sections(base='models.physics.hydraulic_conductance',
+                     sections=['Returns'])
+@docstr.dedent
 def generic_hydraulic(target,
                       pore_viscosity='pore.viscosity',
                       throat_viscosity='throat.viscosity',
@@ -18,24 +21,18 @@ def generic_hydraulic(target,
     r"""
     Calculates the hydraulic conductance of conduits in network.
 
-    A conduit is defined as (1/2 pore - full throat - 1/2 pore).
-
     Parameters
     ----------
-    target : GenericPhysics
-        Physics object with which this model is associated.
-    pore_viscosity : str
-        Dictionary key of the pore viscosity values.
-    throat_viscosity : str
-        Dictionary key of the throat viscosity values.
+    %(models.target.parameters)s
+    %(models.phys.pore_viscosity.parameters)s
+    %(models.phys.throat_viscosity.parameters)s
     size_factors: str
         Dictionary key of the conduit hydraulic size factors' values.
 
     Returns
     -------
-    ndarray
-        Array containing hydraulic conductance values for conduits in the
-        geometry attached to the given physics object.
+    g_hydraulic : ndarray
+        A numpy ndarray containing hydraulic conductance values for conduits
 
     """
     network = target.network
@@ -67,20 +64,15 @@ def hagen_poiseuille(
 
     Parameters
     ----------
-    target : GenericPhysics
-        Physics object with which this model is associated.
-    pore_viscosity : str
-        Dictionary key of the pore viscosity values.
-    throat_viscosity : str
-        Dictionary key of the throat viscosity values.
+    %(models.target.parameters)s
+    %(models.phys.pore_viscosity.parameters)s
+    %(models.phys.throat_viscosity.parameters)s
     size_factors: str
         Dictionary key of the conduit size factors' values.
 
     Returns
     -------
-    g : ndarray
-        Array containing hydraulic conductance values for conduits in the
-        geometry attached to the given physics object.
+    %(models.physics.hydraulic_conductance.returns)s
 
     Notes
     -----
@@ -118,8 +110,9 @@ def hagen_poiseuille_power_law(
 
     Parameters
     ----------
-    target : GenericPhysics
-        Physics object with which this model is associated.
+    %(models.target.parameters)s
+    %(models.phys.pore_viscosity.parameters)s
+    %(models.phys.throat_viscosity.parameters)s
     pore_area : str
         Dictionary key of the pore area values.
     throat_area : str
@@ -128,10 +121,6 @@ def hagen_poiseuille_power_law(
         Dictionary key of the pore minimum viscosity values.
     throat_viscosity_min : str
         Dictionary key of the throat minimum viscosity values.
-    pore_viscosity_max : str
-        Dictionary key of the pore maximum viscosity values.
-    throat_viscosity_max : str
-        Dictionary key of the throat maximum viscosity values.
     conduit_lengths : str
         Dictionary key of the conduit lengths' values.
     size_factors: str
@@ -149,9 +138,7 @@ def hagen_poiseuille_power_law(
 
     Returns
     -------
-    g : ndarray
-        Array containing hydraulic conductance values for conduits in the
-        geometry attached to the given physics object.
+    %(models.physics.hydraulic_conductance.returns)s
 
     Notes
     -----
@@ -229,12 +216,9 @@ def valvatne_blunt(
 
     Parameters
     ----------
-    target : GenericPhysics
-        Physics object with which this model is associated.
-    pore_viscosity : str
-        Dictionary key of the pore viscosity values.
-    throat_viscosity : str
-        Dictionary key of the throat viscosity values.
+    %(models.target.parameters)s
+    %(models.phys.pore_viscosity.parameters)s
+    %(models.phys.throat_viscosity.parameters)s
     pore_shape_factor : str
         Dictionary key of the pore geometric shape factor values.
     throat_shape_factor : str
@@ -266,9 +250,7 @@ def valvatne_blunt(
 
     Returns
     -------
-    g : ndarray
-        Array containing hydraulic conductance values for conduits in the
-        geometry attached to the given physics object.
+    %(models.physics.hydraulic_conductance.returns)s
 
     References
     ----------

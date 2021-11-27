@@ -15,7 +15,7 @@ _docstr.params['models.phase.T'] = \
             Name of the dictionary key on ``target`` where the array containing
             temperature values is stored"""
 _docstr.params['models.phase.P'] = \
-    r"""temperature : str
+    r"""pressure : str
             Name of the dictionary key on ``target`` where the array containing
             pressure values is stored"""
 _docstr.params['models.phase.SI_note'] = \

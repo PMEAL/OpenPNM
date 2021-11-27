@@ -1,12 +1,12 @@
-"""
-Pore-scale models for calculating the advective-diffusive conductance of
-conduits.
-"""
 import numpy as _np
+from openpnm.utils import Docorator
 
+
+docstr = Docorator()
 __all__ = ["ad_dif"]
 
 
+@docstr.dedent
 def ad_dif(target,
            pore_pressure='pore.pressure',
            throat_hydraulic_conductance='throat.hydraulic_conductance',
@@ -20,12 +20,8 @@ def ad_dif(target,
 
     Parameters
     ----------
-    target : GenericPhysics
-        The Physics object which this model is associated with. This
-        controls the length of the calculated array, and also provides
-        access to other necessary properties.
-    pore_pressure : str
-        Dictionary key of the pore pressure values
+    %(models.target.parameters)s
+    %(models.physics.P)s
     throat_hydraulic_conductance : str
         Dictionary key of the throat hydraulic conductance values
     throat_diffusive_conductance : str

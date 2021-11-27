@@ -1,11 +1,14 @@
-r"""
-Pore-scale models for calculating the thermal conductance of conduits.
-"""
 from openpnm.models.physics._utils import _poisson_conductance
+from openpnm.utils import Docorator
 
+
+docstr = Docorator()
 __all__ = ["generic_thermal", "series_resistors"]
 
 
+@docstr.get_sections(base=['models.physics.thermal_conductance'],
+                     sections=['Returns'])
+@docstr.dedent
 def generic_thermal(target,
                     pore_conductivity='pore.thermal_conductivity',
                     throat_conductivity='throat.thermal_conductivity',
@@ -16,10 +19,7 @@ def generic_thermal(target,
 
     Parameters
     ----------
-    target : GenericPhysics
-        The object which this model is associated with. This controls the
-        length of the calculated array, and also provides access to other
-        necessary properties.
+    %(models.target.parameters)s
     pore_conductivity : str
         Dictionary key of the pore thermal conductivity values
     throat_conductivity : str
@@ -29,9 +29,8 @@ def generic_thermal(target,
 
     Returns
     -------
-    g : ndarray
-        Array containing thermal conductance values for conduits in the
-        geometry attached to the given physics object.
+    g_therm : ndarray
+        A numpy ndarray containing thermal conductance values
 
     Notes
     -----
@@ -45,6 +44,7 @@ def generic_thermal(target,
                                 size_factors=size_factors)
 
 
+@docstr.dedent
 def series_resistors(target,
                      pore_thermal_conductivity='pore.thermal_conductivity',
                      throat_thermal_conductivity='throat.thermal_conductivity',
@@ -55,10 +55,7 @@ def series_resistors(target,
 
     Parameters
     ----------
-    target : GenericPhysics
-        The object which this model is associated with. This controls the
-        length of the calculated array, and also provides access to other
-        necessary properties.
+    %(models.target.parameters)s
     pore_conductivity : str
         Dictionary key of the pore thermal conductivity values
     throat_conductivity : str
@@ -68,9 +65,7 @@ def series_resistors(target,
 
     Returns
     -------
-    g : ndarray
-        Array containing thermal conductance values for conduits in the
-        geometry attached to the given physics object.
+    %(models.physics.thermal_conductance.returns)s
 
     Notes
     -----

@@ -1,109 +1,16 @@
-"""
-Pore-scale models related to the meniscus calculations.
-"""
-
-import logging
 import numpy as np
 from openpnm.models.physics.capillary_pressure import _get_key_props
-logger = logging.getLogger(__name__)
+from openpnm.utils import logging, Docorator
 
+
+docstr = Docorator()
+logger = logging.getLogger(__name__)
 __all__ = ["purcell", "sinusoidal", "general_toroidal"]
 
 
-def purcell(target,
-            mode='max',
-            target_Pc=None,
-            num_points=1e3,
-            r_toroid=5e-6,
-            throat_diameter='throat.diameter',
-            touch_length='throat.touch_length',
-            surface_tension='pore.surface_tension',
-            contact_angle='pore.contact_angle'):
-    r"""
-    Wrapper for the general toroidal model to implement the Purcell
-    equation for a torus with cylindrical profile and toroidal radius
-    r_toroid.
-
-    Notes
-    -----
-    This approach accounts for the converging-diverging nature of many
-    throat types. Advancing the meniscus beyond the apex of the toroid
-    requires an increase in capillary pressure beyond that for a
-    cylindical tube of the same radius. The details of this equation are
-    described by Mason and Morrow [1], and explored by Gostick [2] in the
-    context of a pore network model.
-
-    References
-    ----------
-    [1] Missing reference
-    [2] Missing reference
-
-    """
-    target['throat.scale_a'] = r_toroid
-    target['throat.scale_b'] = r_toroid
-    output = general_toroidal(target=target,
-                              mode=mode,
-                              profile_equation='elliptical',
-                              target_Pc=target_Pc,
-                              num_points=num_points,
-                              throat_diameter=throat_diameter,
-                              touch_length=touch_length,
-                              surface_tension=surface_tension,
-                              contact_angle=contact_angle)
-    return output
-
-
-def sinusoidal(target,
-               mode='max',
-               target_Pc=None,
-               num_points=1e3,
-               r_toroid=5e-6,
-               throat_diameter='throat.diameter',
-               pore_diameter='pore.diameter',
-               touch_length='throat.touch_length',
-               surface_tension='pore.surface_tension',
-               contact_angle='pore.contact_angle'):
-    r"""
-    Wrapper for the toroidal model to implement a sinusoidal profile.
-
-    The quarter-wavelength is equal to toroidal radius r_toroid.
-    The amplitude is equal to the toroidal radius multiplied by the ratio
-    of the throat radius and average connecting pore radius.
-
-    Notes
-    -----
-    The capillary pressure equation for a sinusoidal throat is extended
-    from the Washburn equation as [1]_:
-
-    .. math::
-        P_c = -\frac{2\sigma(cos(\alpha + \theta))}{r(x)}
-
-    where alpha is:
-
-    .. math::
-        \alpha = arctan(\frac{dr}{dx})
-
-    References
-    ----------
-    .. [1] A. Forner-Cuenca et. al, Advanced Water Management in PEFCs:
-        Diffusion Layers with Patterned Wettability.
-        J. ECS. 163, 9, F1038-F1048 (2016).
-
-    """
-    target['throat.scale_a'] = r_toroid
-    target['throat.scale_b'] = r_toroid
-    output = general_toroidal(target=target,
-                              mode=mode,
-                              profile_equation='sinusoidal',
-                              target_Pc=target_Pc,
-                              num_points=num_points,
-                              throat_diameter=throat_diameter,
-                              touch_length=touch_length,
-                              surface_tension=surface_tension,
-                              contact_angle=contact_angle)
-    return output
-
-
+@docstr.get_sections(base='models.physics.meniscus',
+                     sections=['Returns'])
+@docstr.dedent
 def general_toroidal(target,
                      profile_equation='elliptical',
                      mode='max',
@@ -120,19 +27,20 @@ def general_toroidal(target,
 
     Parameters
     ----------
-    target : GenericPhysics
-        The object for which these values are being calculated. This
-        controls the length of the calculated array, and also provides
-        access to other necessary thermofluid properties.
+    %(models.target.parameters)s
     profile_equation : str, default is 'elliptical'
-        options elliptical, sinusoidal.
+        options ``'elliptical'``, `''sinusoidal'``.
     mode : str, default is 'max'
         Determines what information to send back. Options are:
-            'max'
-                The maximum capillary pressure along the throat axis
-            'touch'
-                the maximum capillary pressure a meniscus can sustain
-                before touching a solid feature
+
+            ======== =========================================================
+            Mode     Description
+            ======== =========================================================
+            'max'    The maximum capillary pressure along the throat axis
+            'touch'  The maximum capillary pressure a meniscus can sustain
+                     before touching a solid feature
+            ======== =========================================================
+
     target_Pc : float
         The target capillary pressure to return data for when mode is 'men'
     num_points : float (Default 100)
@@ -157,6 +65,26 @@ def general_toroidal(target,
     contact_angle : str
         The dictionary key containing the contact angle values to be used. If
         a pore property is given, it is interpolated to a throat list.
+
+    Returns
+    -------
+    dict
+        A dictionary containing the following entries:
+
+        ============ =========================================================
+        Item         Description
+        ============ =========================================================
+        'pos'        xpos
+        'rx'         rx(xpos, fa, fb, throatRad)
+        'alpha'      fill_angle(xpos, fa, fb, throatRad)
+        'alpha_min'  fill_angle(xmin, fa, fb, throatRad)
+        'alpha_max'  fill_angle(xmax, fa, fb, throatRad)
+        'c2x'        c2x(xpos, fa, fb, throatRad, contact)
+        'gamma'      cap_angle(xpos, fa, fb, throatRad, contact)
+        'radius'     rad_curve(xpos, fa, fb, throatRad, contact)
+        'center'     (xpos - men_data['c2x'])
+        'men_max'
+        ============ =========================================================
 
     """
     from sympy import symbols, lambdify
@@ -251,10 +179,13 @@ def general_toroidal(target,
         # Return the pressure at which a touch happens
         Pc_touch = Pc(x_touch, fa, fb, throatRad, contact, surface_tension)
         return Pc_touch
-    elif target_Pc is None:
-        logger.error(msg='Please supply a target capillary pressure'
-                     + ' when mode is "men", default to 1.0e-6')
-        target_Pc = 1.0e-6
+    elif (mode == 'men') :
+        if target_Pc is None:
+            logger.error(msg='Please supply a target capillary pressure'
+                         + ' when mode is "men", defaulting to 1.0e-6')
+            target_Pc = 1.0e-6
+    else:
+        raise Exception('Unrecognized mode')
     if np.abs(target_Pc) < 1.0e-6:
         logger.error(msg='Please supply a target capillary pressure'
                      + ' with absolute value greater than 1.0e-6,'
@@ -294,3 +225,98 @@ def general_toroidal(target,
 
     logger.info(mode+' calculated for Pc: '+str(target_Pc))
     return men_data
+
+
+def sinusoidal(target,
+               mode='max',
+               target_Pc=None,
+               num_points=1e3,
+               r_toroid=5e-6,
+               throat_diameter='throat.diameter',
+               pore_diameter='pore.diameter',
+               touch_length='throat.touch_length',
+               surface_tension='pore.surface_tension',
+               contact_angle='pore.contact_angle'):
+    r"""
+    Wrapper for the toroidal model to implement a sinusoidal profile.
+
+    The quarter-wavelength is equal to toroidal radius r_toroid.
+    The amplitude is equal to the toroidal radius multiplied by the ratio
+    of the throat radius and average connecting pore radius.
+
+    Notes
+    -----
+    The capillary pressure equation for a sinusoidal throat is extended
+    from the Washburn equation as [1]_:
+
+    .. math::
+        P_c = -\frac{2\sigma(cos(\alpha + \theta))}{r(x)}
+
+    where alpha is:
+
+    .. math::
+        \alpha = arctan(\frac{dr}{dx})
+
+    References
+    ----------
+    .. [1] A. Forner-Cuenca et. al, Advanced Water Management in PEFCs:
+        Diffusion Layers with Patterned Wettability.
+        J. ECS. 163, 9, F1038-F1048 (2016).
+
+    """
+    target['throat.scale_a'] = r_toroid
+    target['throat.scale_b'] = r_toroid
+    output = general_toroidal(target=target,
+                              mode=mode,
+                              profile_equation='sinusoidal',
+                              target_Pc=target_Pc,
+                              num_points=num_points,
+                              throat_diameter=throat_diameter,
+                              touch_length=touch_length,
+                              surface_tension=surface_tension,
+                              contact_angle=contact_angle)
+    return output
+
+
+@docstr.dedent
+def purcell(target,
+            mode='max',
+            target_Pc=None,
+            num_points=1e3,
+            r_toroid=5e-6,
+            throat_diameter='throat.diameter',
+            touch_length='throat.touch_length',
+            surface_tension='pore.surface_tension',
+            contact_angle='pore.contact_angle'):
+    r"""
+    Wrapper for the general toroidal model to implement the Purcell
+    equation for a torus with cylindrical profile and toroidal radius
+    r_toroid.
+
+    Notes
+    -----
+    This approach accounts for the converging-diverging nature of many
+    throat types. Advancing the meniscus beyond the apex of the toroid
+    requires an increase in capillary pressure beyond that for a
+    cylindical tube of the same radius. The details of this equation are
+    described by Mason and Morrow [1], and explored by Gostick [2] in the
+    context of a pore network model.
+
+    References
+    ----------
+    [1] Missing reference
+    [2] Missing reference
+
+    """
+    target['throat.scale_a'] = r_toroid
+    target['throat.scale_b'] = r_toroid
+    output = general_toroidal(target=target,
+                              mode=mode,
+                              profile_equation='elliptical',
+                              target_Pc=target_Pc,
+                              num_points=num_points,
+                              throat_diameter=throat_diameter,
+                              touch_length=touch_length,
+                              surface_tension=surface_tension,
+                              contact_angle=contact_angle)
+    return output
