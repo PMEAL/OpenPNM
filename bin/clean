@@ -1,8 +1,0 @@
-import os
-from git import Repo
-from pathlib import Path
-
-path = Path(os.path.realpath(__file__), '../../').resolve()
-repo = Repo(str(path))
-git = repo.git
-git.clean('-fdX')
