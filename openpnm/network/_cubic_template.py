@@ -37,24 +37,18 @@ class CubicTemplate(Cubic):
 
     Examples
     --------
-    >>> import openpnm as op
-    >>> im = op.topotools.template_cylinder_annulus(10, 15, 10)
-    >>> pn = op.network.CubicTemplate(template=im)
-
-    And it can be plotted for quick visualization using:
-
-    >>> import matplotlib.pyplot as plt
-    >>> fig, ax = plt.subplots()
-    >>> op.topotools.plot_connections(network=pn, ax=ax)
-
     .. plot::
 
        import openpnm as op
        import matplotlib.pyplot as plt
+
        im = op.topotools.template_cylinder_annulus(10, 15, 10)
        pn = op.network.CubicTemplate(template=im)
+
+       # It can be plotted for quick visualization using
        fig, ax = plt.subplots(figsize=(5, 5))
        op.topotools.plot_connections(network=pn, ax=ax, linewidth=0.5)
+
        plt.show()
 
     For larger networks and more control over presentation use `Paraview

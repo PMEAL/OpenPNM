@@ -373,7 +373,7 @@ class GenericTransport(GenericAlgorithm):
 
     @property
     def A(self):
-        """The coefficients matrix (as in Ax = b)"""
+        """The coefficients matrix, A (in Ax = b)"""
         if self._A is None:
             self._build_A()
         return self._A
@@ -384,6 +384,7 @@ class GenericTransport(GenericAlgorithm):
 
     @property
     def b(self):
+        """The right-hand-side (RHS) vector, b (in Ax = b)"""
         if self._b is None:
             self._build_b()
         return self._b

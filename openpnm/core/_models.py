@@ -84,31 +84,17 @@ class ModelsDict(PrintableDict):
         To visualize the dependencies, the following NetworkX function and
         settings is helpful:
 
-        >>> import openpnm as op
-        >>> net = op.network.Cubic(shape=[3, 3, 3])
-        >>> geo = op.geometry.SpheresAndCylinders(network=net,
-        ...                                pores=net.Ps,
-        ...                                throats=net.Ts)
-        >>> dtree = geo.models.dependency_graph()
-        >>> import networkx as nx
-        >>> nx.draw_spectral(dtree,
-        ...                  arrowsize=50,
-        ...                  font_size=32,
-        ...                  with_labels=True,
-        ...                  node_size=2000,
-        ...                  width=3.0,
-        ...                  edge_color='lightgrey',
-        ...                  font_weight='bold')
-
         .. plot::
 
            import networkx as nx
            import openpnm as op
            import matplotlib.pyplot as plt
+
            net = op.network.Cubic(shape=[3, 3, 3])
            geo = op.geometry.SpheresAndCylinders(network=net,
                                                  pores=net.Ps,
                                                  throats=net.Ts)
+
            dtree = geo.models.dependency_graph()
            nx.draw_spectral(dtree,
                             arrowsize=50,
@@ -118,6 +104,7 @@ class ModelsDict(PrintableDict):
                             width=3.0,
                             edge_color='lightgrey',
                             font_weight='bold')
+
            plt.show()
 
         """

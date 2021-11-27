@@ -44,30 +44,20 @@ class CubicDual(GenericNetwork):
 
     Examples
     --------
-    >>> import openpnm as op
-    >>> import matplotlib.pyplot as plt
-    >>> pn = op.network.CubicDual(shape=[3, 3, 3])
-    >>> pn.num_pores('pore.primary')  # Normal cubic network is present
-    27
-    >>> pn.Np  # But more pores are present from seconary network
-    59
-
-    And it can be plotted for quick visualization using:
-
-    >>> fig, ax = plt.subplots()
-    >>> op.topotools.plot_connections(network=pn,
-    ...                               throats=pn.throats('primary'),
-    ...                               color='g', ax=ax)
-    >>> op.topotools.plot_connections(network=pn,
-    ...                               throats=pn.throats('secondary'),
-    ...                               color='b', ax=ax)
-    >>> op.topotools.plot_coordinates(network=pn, c='r', s=25, ax=ax)
-
     .. plot::
 
        import openpnm as op
        import matplotlib.pyplot as plt
+
        pn = op.network.CubicDual(shape=[3, 3, 3])
+
+       # Check the number of primary pores (normal cubic network)
+       print(pn.num_pores('pore.primary'))
+
+       # But more pores are present from seconary network
+       print(pn.Np)
+
+       # And it can be plotted for quick visualization using
        fig, ax = plt.subplots(figsize=(5, 5))
        op.topotools.plot_connections(network=pn,
                                      throats=pn.throats('primary'),
@@ -76,6 +66,7 @@ class CubicDual(GenericNetwork):
                                      throats=pn.throats('secondary'),
                                      color='b', ax=ax)
        op.topotools.plot_coordinates(network=pn, c='r', s=25, ax=ax)
+
        plt.show()
 
     For larger networks and more control over presentation use `Paraview

@@ -69,46 +69,39 @@ class Bravais(GenericNetwork):
 
     Examples
     --------
-    >>> import openpnm as op
-    >>> sc = op.network.Bravais(shape=[3, 3, 3], mode='sc')
-    >>> bcc = op.network.Bravais(shape=[3, 3, 3], mode='bcc')
-    >>> fcc = op.network.Bravais(shape=[3, 3, 3], mode='fcc')
-    >>> sc.Np, bcc.Np, fcc.Np
-    (27, 35, 63)
-
-    Since these three networks all have the same domain size, it is clear
-    that both 'bcc' and 'fcc' have more pores per unit volume.  This is
-    particularly helpful for modeling higher porosity materials.
-
-    They all have the same number corner sites, which corresponds to the
-    [3, 3, 3] shape that was specified:
-
-    >>> sc.num_pores('corner*'), bcc.num_pores('cor*'), fcc.num_pores('cor*')
-    (27, 27, 27)
-
-    Visualization of these three networks can be done quickly using the
-    functions in topotools. Firstly, merge them all into a single network
-    for convenience:
-
-    >>> bcc['pore.coords'][:, 0] += 3
-    >>> fcc['pore.coords'][:, 0] += 6
-    >>> import matplotlib.pyplot as plt
-    >>> op.topotools.merge_networks(sc, [bcc, fcc])
-    >>> fig, ax = plt.subplots()
-    >>> op.topotools.plot_connections(sc, ax=ax)
-
     .. plot::
 
        import openpnm as op
        import matplotlib.pyplot as plt
+
        sc = op.network.Bravais(shape=[3, 3, 3], mode='sc')
        bcc = op.network.Bravais(shape=[3, 3, 3], mode='bcc')
        fcc = op.network.Bravais(shape=[3, 3, 3], mode='fcc')
+
+       # Since these three networks all have the same domain size, it is clear
+       # that both 'bcc' and 'fcc' have more pores per unit volume. This is
+       # particularly helpful for modeling higher porosity materials.
+       print(sc.Np, bcc.Np, fcc.Np)
+
+       # They all have the same number corner sites, which corresponds to the
+       # [3, 3, 3] shape that was specified
+       print(sc.num_pores('corner*'),
+             bcc.num_pores('corner*'),
+             fcc.num_pores('corner*'))
+
+       # Shift 'bcc' and 'fcc' networks by 3 and 6 units, respectively, so
+       # we can visualize them side by side in a single figure
        bcc['pore.coords'][:, 0] += 3
        fcc['pore.coords'][:, 0] += 6
+
+       # Visualization of these three networks can be done quickly using the
+       # functions in topotools. Firstly, merge them all into a single network
+       # for convenience
        op.topotools.merge_networks(sc, [bcc, fcc])
+
        fig, ax = plt.subplots(figsize=(6, 6))
        op.topotools.plot_connections(sc, ax=ax)
+
        plt.show()
 
     For larger networks and more control over presentation use `Paraview

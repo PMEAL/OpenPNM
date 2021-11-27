@@ -42,31 +42,23 @@ class Delaunay(DelaunayVoronoiDual):
 
     Examples
     --------
-    >>> import numpy as np
-    >>> import openpnm as op
-
-    Supplying custom specified points:
-
-    >>> pts = np.random.rand(200, 3)
-    >>> gn = op.network.Delaunay(points=pts, shape=[1, 1, 1])
-    >>> gn.Np
-    200
-
-    Which can be quickly visualized using:
-
-    >>> fig, ax = plt.subplots()
-    >>> op.topotools.plot_connections(network=gn, ax=ax)
-
     .. plot::
 
         import numpy as np
         import openpnm as op
         import matplotlib.pyplot as plt
 
+        # Supplying custom specified points
         pts = np.random.rand(200, 3)
         gn = op.network.Delaunay(points=pts, shape=[1, 1, 1])
+
+        # Check the number of pores in 'gn'
+        print(gn.Np)
+
+        # Which can be quickly visualized using
         fig, ax = plt.subplots(figsize=(5, 5))
         op.topotools.plot_connections(network=gn, ax=ax)
+
         plt.show()
 
     Upon visualization it can be seen that this network is not very cubic.
@@ -74,26 +66,23 @@ class Delaunay(DelaunayVoronoiDual):
     domain. Points can be generated that lie outside the domain ``shape``
     and they will be automatically trimmed.
 
-    >>> pts = np.random.rand(300, 3)*1.2 - 0.1  # Must have more points for same density
-    >>> gn = op.network.Delaunay(points=pts, shape=[1, 1, 1])
-    >>> gn.Np < 300  # Confirm base points have been trimmed
-    True
-
-    And visualizing:
-
-    >>> fig, ax = plt.subplots()
-    >>> op.topotools.plot_connections(network=gn, ax=ax)
-
     .. plot::
 
         import numpy as np
         import openpnm as op
         import matplotlib.pyplot as plt
 
-        pts = np.random.rand(300, 3)*1.2 - 0.1  # Must have more points for same density
+        # Must have more points for same density
+        pts = np.random.rand(300, 3)*1.2 - 0.1
         gn = op.network.Delaunay(points=pts, shape=[1, 1, 1])
+
+        # Confirm base points have been trimmed
+        print(gn.Np < 300)
+
+        # And visualizing
         fig, ax = plt.subplots(figsize=(5, 5))
         op.topotools.plot_connections(network=gn, ax=ax)
+
         plt.show()
 
     If a domain with random base points but flat faces is needed use

@@ -26,15 +26,12 @@ window.onload = function () {
 
     // $(".toctree-l3").hide()
 
-    // List of methods exclusive to Python's dict and list
+    // List of methods exclusive to Python's dict and list + numpy's ndarray
     exclude = [
         'append', 'clear', 'copy', 'count', 'extend', 'fromkeys', 'get',
         'index', 'insert', 'items', 'keys', 'pop', 'popitem', 'remove',
-        'reverse', 'setdefault', 'sort', 'update', 'values'
-    ]
-    // List of methods exclusive to numpy's ndaray
-    exclude = exclude.concat(
-        ['all', 'any', 'argmax', 'argmin', 'argpartition', 'argsort',
+        'reverse', 'setdefault', 'sort', 'update', 'values',
+        'all', 'any', 'argmax', 'argmin', 'argpartition', 'argsort',
         'astype', 'base', 'byteswap', 'choose', 'clip', 'compress', 'conj',
         'conjugate', 'copy', 'ctypes', 'cumprod', 'cumsum', 'data',
         'diagonal', 'dot', 'dtype', 'dump', 'dumps', 'fill', 'flags', 'flat',
@@ -44,8 +41,8 @@ window.onload = function () {
         'reshape', 'resize', 'round', 'searchsorted', 'setfield', 'setflags',
         'shape', 'size', 'sort', 'squeeze', 'std', 'strides', 'sum',
         'swapaxes', 'take', 'tobytes', 'tofile', 'tolist', 'tostring',
-        'trace', 'transpose', 'var', 'view', '__call__']
-    )
+        'trace', 'transpose', 'var', 'view', '__call__'
+    ]
 
     // Hide methods exclusive to dict and list from tables/toctree
     for (let i = 0; i < exclude.length; i++) {
@@ -65,10 +62,10 @@ window.onload = function () {
         // row.css("background-color", "red")
 
         // 2. Deal w/ toctree
-        tmp = $(".toctree-l3")
+        tmp = $(".toctree-l3 a")
         tmp = tmp.filter(
             function() {
-                return $(this).text().startsWith(exclude[i]);
+                return $(this).text().trim().startsWith(exclude[i]);
             }
         )
         // Hide that row

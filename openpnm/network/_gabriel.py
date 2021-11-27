@@ -41,33 +41,26 @@ class Gabriel(Delaunay):
 
     Examples
     --------
-    >>> import openpnm as op
-    >>> import matplotlib.pyplot as plt
-    >>> pts = np.random.rand(100, 3) * [1, 1, 0]  # Set z-axis to 0
-    >>> gn = op.network.Gabriel(shape=[1, 1, 0], points=pts)
-    >>> dn = op.network.Delaunay(shape=[1, 1, 0], points=pts)
-
-    Now compare them side by side:
-
-    >>> gn['pore.coords'] += [1, 0, 0]
-    >>> op.topotools.merge_networks(dn, gn)
-    >>> fig, ax = plt.subplots()
-    >>> op.topotools.plot_connections(dn, ax=ax)
-    >>> op.topotools.plot_coordinates(dn, c='r', s=100, ax=ax)
-
     .. plot::
 
        import openpnm as op
        import matplotlib.pyplot as plt
+
        pts = np.random.rand(100, 3) * [1, 1, 0]  # Set z-axis to 0
        gn = op.network.Gabriel(shape=[1, 1, 0], points=pts)
        dn = op.network.Delaunay(shape=[1, 1, 0], points=pts)
+
+       # Now compare them side by side
        gn['pore.coords'] += [1, 0, 0]
        op.topotools.merge_networks(dn, gn)
+
+       # Visualization
        fig, ax = plt.subplots(figsize=(6, 3))
        op.topotools.plot_connections(dn, ax=ax)
        op.topotools.plot_coordinates(dn, c='r', s=100, ax=ax)
+
        plt.axis("off")
+       plt.show()
 
     """
 
