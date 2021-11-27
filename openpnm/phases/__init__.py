@@ -1,13 +1,12 @@
 r"""
-==============================
-Phases (:mod:`openpnm.phases`)
-==============================
+Phases
+======
 
 This module contains the GenericPhase class, plus several subclasses which
 are preconfigured to have the properties of specific fluids
 
 The GenericPhase Class
-======================
+----------------------
 
 The ``GenericPhase`` class is a direct child of the ``Base`` class, so contains
 the usual methods such as find pore indices based on labels.  It does, however,
@@ -15,13 +14,13 @@ also inherit from ``ModelsMixin`` so has methods for add, removing and
 regenerating models.
 
 Library of Preconfigured Phase Classes
-======================================
+--------------------------------------
 
 OpenPNM include a few Phase subclasses that contain a suite of pre-configured
 models that predict the thermophysical properties of certain common phases.
 
 Customizing a GenericPhase Instance
-===================================
+-----------------------------------
 
 The ``GenericPhase`` class has no pore-scale models attached, so is a blank
 slate for creating custom Phases.  The following code snippet illustrates how

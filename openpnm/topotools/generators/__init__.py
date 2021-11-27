@@ -1,7 +1,6 @@
 r"""
-================================================
-Generators (:mod:`openpnm.topotools.generators`)
-================================================
+Generators
+==========
 
 This module contains a selection of functions that deal specifically with
 generating sufficient information that can be turned into an openpnm network.

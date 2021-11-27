@@ -47,22 +47,30 @@ window.onload = function () {
         'trace', 'transpose', 'var', 'view', '__call__']
     )
 
-    // Hide methods exclusive to dict and list from tables
+    // Hide methods exclusive to dict and list from tables/toctree
     for (let i = 0; i < exclude.length; i++) {
-        // Search through first column of the table for "exclude[i]("
-        tmp = $("tr").find(`td:first:contains(${exclude[i]}()`)
+        // 1. Deal w/ tables
+        // Search through first column of the table for "exclude[i]"
+        tmp = $("tr").find("td:first")
+        tmp = tmp.filter(
+            function() {
+                return $(this).text().startsWith(exclude[i]);
+            }
+        )
         // Find the row(s) containing the returned query
         row = tmp.closest('tr')
         // Hide that row
         row.hide()
         // Comment the line above and uncomment the next for DEBUGGING
         // row.css("background-color", "red")
-    }
 
-    // Hide methods exclusive to dict and list from toctree
-    for (let i = 0; i < exclude.length; i++) {
-        // Search through toctree for "exclude[i]"
-        tmp = $(`.toctree-l3:contains(${exclude[i]})`)
+        // 2. Deal w/ toctree
+        tmp = $(".toctree-l3")
+        tmp = tmp.filter(
+            function() {
+                return $(this).text().startsWith(exclude[i]);
+            }
+        )
         // Hide that row
         tmp.hide()
         // Comment the line above and uncomment the next for DEBUGGING
@@ -76,7 +84,12 @@ window.onload = function () {
     ]
     for (let i = 0; i < exclude_attrs.length; i++) {
         // Search through toctree for "exclude_attrs[i]"
-        tmp = $(`dt:contains(${exclude_attrs[i]})`)
+        tmp = $("dt")
+        tmp = tmp.filter(
+            function() {
+                return $(this).text().startsWith(exclude_attrs[i]);
+            }
+        )
         // Hide that element
         tmp.hide()
         // Hide attr's description (2nd column)

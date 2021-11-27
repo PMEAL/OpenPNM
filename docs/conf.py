@@ -68,7 +68,7 @@ plot_pre_code = """
 import numpy as np
 np.random.seed(123)
 """
-plot_include_source = False
+plot_include_source = True
 plot_formats = [('svg', 200), 'pdf']
 plot_html_show_formats = False
 plot_html_show_source_link = False
@@ -97,7 +97,6 @@ plot_rcparams = {
 
 import matplotlib.pyplot as plt
 plt.ioff()
-
 
 #------------------------------------------------------------------------#
 # HTML/theme options                                                     #

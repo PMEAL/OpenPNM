@@ -1,7 +1,6 @@
 r"""
-================================
-Solvers (:mod:`openpnm.solvers`)
-================================
+Solvers
+=======
 
 The ``solvers`` module contains wrapper classes for sparse matrix solvers.
 

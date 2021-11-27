@@ -19,6 +19,17 @@ Contents
    :maxdepth: 1
    :titlesonly:
 
+   core
+   network
+   geometry
+   phases
+   physics
+   models
+   solvers
+   integrators
+   algorithms
+   topotools
+   generators
    io
 
 **TODO**

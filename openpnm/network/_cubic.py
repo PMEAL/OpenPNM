@@ -50,28 +50,17 @@ class Cubic(GenericNetwork):
 
     Examples
     --------
-    >>> import openpnm as op
-    >>> import matplotlib.pyplot as plt
-    >>> pn = op.network.Cubic(shape=[5, 5, 5], spacing=[1, 1, 1])
-    >>> pn.Np
-    125
-
-    And it can be plotted for quick visualization using:
-
-    >>> import matplotlib as mpl
-    >>> mpl.use('Agg')
-    >>> fig, ax = plt.subplots()
-    >>> op.topotools.plot_connections(network=pn, ax=ax)
-    >>> op.topotools.plot_coordinates(network=pn, c='r', s=75, ax=ax)
-
     .. plot::
 
        import openpnm as op
        import matplotlib.pyplot as plt
+
        pn = op.network.Cubic(shape=[5, 5, 5], spacing=[1, 1, 1])
+
        fig, ax = plt.subplots(figsize=(5, 5))
        op.topotools.plot_connections(network=pn, ax=ax)
        op.topotools.plot_coordinates(network=pn, c='r', s=75, ax=ax)
+
        plt.show()
 
     For larger networks and more control over presentation use `Paraview
