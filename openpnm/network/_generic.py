@@ -870,5 +870,3 @@ class GenericNetwork(ParamMixin, Base, ModelsMixin, LabelMixin):
 
         """
         return self.project.check_network_health()
-
-end_all()

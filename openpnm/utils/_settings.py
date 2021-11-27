@@ -3,6 +3,7 @@ from traits.api import HasTraits, Trait
 from openpnm.utils import PrintableDict, logging
 from auto_all import start_all, end_all
 
+
 logger = logging.getLogger(__name__)
 start_all()
 

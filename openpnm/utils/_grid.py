@@ -4,6 +4,7 @@ from auto_all import start_all, end_all
 
 start_all()
 
+
 class Tableist:
     """Brief explanation of Tableist"""
 

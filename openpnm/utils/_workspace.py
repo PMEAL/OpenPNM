@@ -2,10 +2,11 @@ import openpnm
 import numpy as np
 from openpnm.utils import SettingsDict, logging
 from auto_all import start_all, end_all
+
+
 logger = logging.getLogger(__name__)
-
-
 start_all()
+
 
 class SettingsDict(SettingsDict):
     """Brief explanation of 'SettingsDict'"""

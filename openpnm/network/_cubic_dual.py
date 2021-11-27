@@ -3,11 +3,12 @@ from openpnm.network import GenericNetwork, Cubic
 from openpnm import topotools
 from openpnm.utils import logging, Workspace
 from auto_all import start_all, end_all
+
+
 logger = logging.getLogger(__name__)
 ws = Workspace()
-
-
 start_all()
+
 
 class CubicDual(GenericNetwork):
     r"""

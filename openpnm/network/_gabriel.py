@@ -4,10 +4,11 @@ from openpnm.network import Delaunay
 from openpnm.topotools import trim
 from openpnm.utils import logging
 from auto_all import start_all, end_all
+
+
 logger = logging.getLogger(__name__)
-
-
 start_all()
+
 
 class Gabriel(Delaunay):
     r"""

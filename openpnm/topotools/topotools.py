@@ -6,11 +6,12 @@ from scipy.spatial import cKDTree
 from scipy.sparse import csgraph
 from scipy.spatial import ConvexHull
 from openpnm.utils import logging, Workspace, prettify_logger_message
+
+
 logger = logging.getLogger(__name__)
 ws = Workspace()
-
-
 start_all()
+
 
 def isoutside(coords, shape):
     r"""

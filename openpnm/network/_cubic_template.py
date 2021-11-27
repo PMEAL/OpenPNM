@@ -3,10 +3,11 @@ from openpnm.network import Cubic
 from openpnm import topotools
 from openpnm.utils import logging
 from auto_all import start_all, end_all
+
+
 logger = logging.getLogger(__name__)
-
-
 start_all()
+
 
 class CubicTemplate(Cubic):
     r"""
