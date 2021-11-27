@@ -1,0 +1,6 @@
+series\_resistors
+=================
+
+.. currentmodule:: openpnm.models.physics.thermal_conductance
+
+.. autofunction:: series_resistors

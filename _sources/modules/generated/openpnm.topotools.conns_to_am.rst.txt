@@ -1,0 +1,6 @@
+conns\_to\_am
+=============
+
+.. currentmodule:: openpnm.topotools
+
+.. autofunction:: conns_to_am

@@ -1,0 +1,40 @@
+﻿:noindex:
+
+.. automodule:: openpnm.geometry
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :nosignatures:
+      :toctree:
+
+   
+      CirclesAndRectangles
+      ConesAndCylinders
+      CubesAndCuboids
+      GenericGeometry
+      Imported
+      PyramidsAndCuboids
+      SpheresAndCylinders
+      SquaresAndRectangles
+      TrapezoidsAndRectangles
+   
+   
+
+   
+   
+   
+
+   
+   
+   

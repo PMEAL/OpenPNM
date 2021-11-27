@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.algorithms.ReactiveTransport.network
+============================================
+
+.. currentmodule:: openpnm.algorithms
+
+attribute
+
+.. autoproperty:: openpnm.algorithms.ReactiveTransport.network
+

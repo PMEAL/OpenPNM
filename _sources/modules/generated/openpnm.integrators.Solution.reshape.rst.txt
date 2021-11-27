@@ -1,0 +1,8 @@
+:orphan:
+
+reshape
+====================================
+
+.. currentmodule:: openpnm.integrators
+
+.. automethod:: Solution.reshape

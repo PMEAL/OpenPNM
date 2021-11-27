@@ -1,0 +1,8 @@
+:orphan:
+
+setup_coop_filling
+==================================================================
+
+.. currentmodule:: openpnm.algorithms
+
+.. automethod:: MixedInvasionPercolationCoop.setup_coop_filling

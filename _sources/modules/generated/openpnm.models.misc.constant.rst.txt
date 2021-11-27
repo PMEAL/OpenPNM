@@ -1,0 +1,6 @@
+constant
+========
+
+.. currentmodule:: openpnm.models.misc
+
+.. autofunction:: constant

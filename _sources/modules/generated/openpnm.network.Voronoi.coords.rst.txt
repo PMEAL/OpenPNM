@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.network.Voronoi.coords
+==============================
+
+.. currentmodule:: openpnm.network
+
+attribute
+
+.. autoproperty:: openpnm.network.Voronoi.coords
+

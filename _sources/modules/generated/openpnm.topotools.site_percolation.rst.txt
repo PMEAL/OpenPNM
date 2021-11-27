@@ -1,0 +1,6 @@
+site\_percolation
+=================
+
+.. currentmodule:: openpnm.topotools
+
+.. autofunction:: site_percolation

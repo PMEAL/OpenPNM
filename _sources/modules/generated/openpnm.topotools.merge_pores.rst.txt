@@ -1,0 +1,6 @@
+merge\_pores
+============
+
+.. currentmodule:: openpnm.topotools
+
+.. autofunction:: merge_pores

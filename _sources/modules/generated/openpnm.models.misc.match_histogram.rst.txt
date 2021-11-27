@@ -1,0 +1,6 @@
+match\_histogram
+================
+
+.. currentmodule:: openpnm.models.misc
+
+.. autofunction:: match_histogram

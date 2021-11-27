@@ -1,0 +1,8 @@
+:orphan:
+
+set_geometry
+===========================================
+
+.. currentmodule:: openpnm.physics
+
+.. automethod:: GenericPhysics.set_geometry

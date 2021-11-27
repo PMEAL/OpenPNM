@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.algorithms.FickianDiffusion.Ps
+======================================
+
+.. currentmodule:: openpnm.algorithms
+
+attribute
+
+.. autoproperty:: openpnm.algorithms.FickianDiffusion.Ps
+

@@ -1,0 +1,85 @@
+Delaunay
+========================
+
+.. currentmodule:: openpnm.network
+
+.. autoclass:: Delaunay
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            Delaunay.add_boundary_pores
+            Delaunay.add_model
+            Delaunay.check_network_health
+            Delaunay.clear
+            Delaunay.copy
+            Delaunay.create_adjacency_matrix
+            Delaunay.create_incidence_matrix
+            Delaunay.filter_by_label
+            Delaunay.find_connected_pores
+            Delaunay.find_connecting_throat
+            Delaunay.find_nearby_pores
+            Delaunay.find_neighbor_pores
+            Delaunay.find_neighbor_throats
+            Delaunay.find_pore_hulls
+            Delaunay.find_throat_facets
+            Delaunay.fromkeys
+            Delaunay.get
+            Delaunay.get_adjacency_matrix
+            Delaunay.get_conduit_data
+            Delaunay.get_incidence_matrix
+            Delaunay.interleave_data
+            Delaunay.interpolate_data
+            Delaunay.items
+            Delaunay.keys
+            Delaunay.labels
+            Delaunay.num_neighbors
+            Delaunay.num_pores
+            Delaunay.num_throats
+            Delaunay.params
+            Delaunay.pop
+            Delaunay.popitem
+            Delaunay.pores
+            Delaunay.props
+            Delaunay.regenerate_models
+            Delaunay.remove_model
+            Delaunay.set_label
+            Delaunay.setdefault
+            Delaunay.show_hist
+            Delaunay.throats
+            Delaunay.to_indices
+            Delaunay.to_mask
+            Delaunay.update
+            Delaunay.values
+   
+   
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            Delaunay.Np
+            Delaunay.Nt
+            Delaunay.Ps
+            Delaunay.Ts
+            Delaunay.am
+            Delaunay.conns
+            Delaunay.coords
+            Delaunay.im
+            Delaunay.models
+            Delaunay.name
+            Delaunay.network
+            Delaunay.project
+            Delaunay.settings
+            Delaunay.tri
+            Delaunay.vor
+   
+   

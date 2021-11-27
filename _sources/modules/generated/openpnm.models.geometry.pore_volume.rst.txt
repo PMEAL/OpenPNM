@@ -1,0 +1,34 @@
+:noindex:
+
+.. automodule:: openpnm.models.geometry.pore_volume
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+   
+      circle
+      cube
+      effective
+      sphere
+      square
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   

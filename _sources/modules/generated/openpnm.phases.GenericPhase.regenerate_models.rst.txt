@@ -1,0 +1,8 @@
+:orphan:
+
+regenerate_models
+=============================================
+
+.. currentmodule:: openpnm.phases
+
+.. automethod:: GenericPhase.regenerate_models

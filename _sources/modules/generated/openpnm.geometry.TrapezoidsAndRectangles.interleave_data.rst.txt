@@ -1,0 +1,8 @@
+:orphan:
+
+interleave_data
+========================================================
+
+.. currentmodule:: openpnm.geometry
+
+.. automethod:: TrapezoidsAndRectangles.interleave_data

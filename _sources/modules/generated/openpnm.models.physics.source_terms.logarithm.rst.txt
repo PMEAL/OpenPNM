@@ -1,0 +1,6 @@
+logarithm
+=========
+
+.. currentmodule:: openpnm.models.physics.source_terms
+
+.. autofunction:: logarithm

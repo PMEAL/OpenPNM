@@ -1,0 +1,8 @@
+:orphan:
+
+num_throats
+===============================================
+
+.. currentmodule:: openpnm.network
+
+.. automethod:: DelaunayVoronoiDual.num_throats

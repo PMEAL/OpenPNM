@@ -1,0 +1,6 @@
+stitch\_pores
+=============
+
+.. currentmodule:: openpnm.topotools
+
+.. autofunction:: stitch_pores

@@ -1,0 +1,6 @@
+spheres\_and\_cylinders
+=======================
+
+.. currentmodule:: openpnm.models.geometry.hydraulic_size_factors
+
+.. autofunction:: spheres_and_cylinders

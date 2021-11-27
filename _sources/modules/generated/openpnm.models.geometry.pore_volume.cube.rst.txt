@@ -1,0 +1,6 @@
+cube
+====
+
+.. currentmodule:: openpnm.models.geometry.pore_volume
+
+.. autofunction:: cube

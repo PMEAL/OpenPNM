@@ -1,0 +1,6 @@
+voronoi
+=======
+
+.. currentmodule:: openpnm.topotools.generators
+
+.. autofunction:: voronoi

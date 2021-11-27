@@ -1,0 +1,6 @@
+weibull
+=======
+
+.. currentmodule:: openpnm.models.geometry.throat_size
+
+.. autofunction:: weibull

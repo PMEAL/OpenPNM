@@ -1,0 +1,72 @@
+GenericPhysics
+==============================
+
+.. currentmodule:: openpnm.physics
+
+.. autoclass:: GenericPhysics
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            GenericPhysics.add_model
+            GenericPhysics.clear
+            GenericPhysics.copy
+            GenericPhysics.filter_by_label
+            GenericPhysics.fromkeys
+            GenericPhysics.get
+            GenericPhysics.get_conduit_data
+            GenericPhysics.interleave_data
+            GenericPhysics.interpolate_data
+            GenericPhysics.items
+            GenericPhysics.keys
+            GenericPhysics.labels
+            GenericPhysics.num_pores
+            GenericPhysics.num_throats
+            GenericPhysics.params
+            GenericPhysics.pop
+            GenericPhysics.popitem
+            GenericPhysics.pores
+            GenericPhysics.props
+            GenericPhysics.regenerate_models
+            GenericPhysics.remove_model
+            GenericPhysics.set_geometry
+            GenericPhysics.set_label
+            GenericPhysics.set_locations
+            GenericPhysics.set_phase
+            GenericPhysics.setdefault
+            GenericPhysics.show_hist
+            GenericPhysics.throats
+            GenericPhysics.to_global
+            GenericPhysics.to_indices
+            GenericPhysics.to_local
+            GenericPhysics.to_mask
+            GenericPhysics.update
+            GenericPhysics.values
+   
+   
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            GenericPhysics.Np
+            GenericPhysics.Nt
+            GenericPhysics.Ps
+            GenericPhysics.Ts
+            GenericPhysics.geometry
+            GenericPhysics.models
+            GenericPhysics.name
+            GenericPhysics.network
+            GenericPhysics.phase
+            GenericPhysics.project
+            GenericPhysics.settings
+   
+   

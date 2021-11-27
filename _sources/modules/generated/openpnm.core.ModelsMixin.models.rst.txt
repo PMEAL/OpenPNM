@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.core.ModelsMixin.models
+===============================
+
+.. currentmodule:: openpnm.core
+
+attribute
+
+.. autoproperty:: openpnm.core.ModelsMixin.models
+

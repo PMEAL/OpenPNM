@@ -1,0 +1,6 @@
+dimensionality
+==============
+
+.. currentmodule:: openpnm.topotools
+
+.. autofunction:: dimensionality

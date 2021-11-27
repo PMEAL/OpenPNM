@@ -1,0 +1,8 @@
+:orphan:
+
+read_bytes
+===========================================================
+
+.. currentmodule:: openpnm.models.phases.partition_coefficient
+
+.. automethod:: Path.read_bytes

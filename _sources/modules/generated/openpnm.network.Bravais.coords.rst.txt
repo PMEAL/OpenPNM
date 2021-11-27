@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.network.Bravais.coords
+==============================
+
+.. currentmodule:: openpnm.network
+
+attribute
+
+.. autoproperty:: openpnm.network.Bravais.coords
+

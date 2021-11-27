@@ -1,0 +1,69 @@
+GenericGeometry
+================================
+
+.. currentmodule:: openpnm.geometry
+
+.. autoclass:: GenericGeometry
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            GenericGeometry.add_model
+            GenericGeometry.clear
+            GenericGeometry.copy
+            GenericGeometry.filter_by_label
+            GenericGeometry.fromkeys
+            GenericGeometry.get
+            GenericGeometry.get_conduit_data
+            GenericGeometry.interleave_data
+            GenericGeometry.interpolate_data
+            GenericGeometry.items
+            GenericGeometry.keys
+            GenericGeometry.labels
+            GenericGeometry.num_pores
+            GenericGeometry.num_throats
+            GenericGeometry.params
+            GenericGeometry.pop
+            GenericGeometry.popitem
+            GenericGeometry.pores
+            GenericGeometry.props
+            GenericGeometry.regenerate_models
+            GenericGeometry.remove_model
+            GenericGeometry.set_label
+            GenericGeometry.set_locations
+            GenericGeometry.setdefault
+            GenericGeometry.show_hist
+            GenericGeometry.throats
+            GenericGeometry.to_global
+            GenericGeometry.to_indices
+            GenericGeometry.to_local
+            GenericGeometry.to_mask
+            GenericGeometry.update
+            GenericGeometry.values
+   
+   
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            GenericGeometry.Np
+            GenericGeometry.Nt
+            GenericGeometry.Ps
+            GenericGeometry.Ts
+            GenericGeometry.models
+            GenericGeometry.name
+            GenericGeometry.network
+            GenericGeometry.physics
+            GenericGeometry.project
+            GenericGeometry.settings
+   
+   

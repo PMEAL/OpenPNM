@@ -1,0 +1,8 @@
+:orphan:
+
+remove_model
+====================================
+
+.. currentmodule:: openpnm.network
+
+.. automethod:: Voronoi.remove_model

@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.geometry.Imported.Nt
+============================
+
+.. currentmodule:: openpnm.geometry
+
+attribute
+
+.. autoproperty:: openpnm.geometry.Imported.Nt
+

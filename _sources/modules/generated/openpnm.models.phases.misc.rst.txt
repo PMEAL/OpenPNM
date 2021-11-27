@@ -1,0 +1,30 @@
+:noindex:
+
+.. automodule:: openpnm.models.phases.misc
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+   
+      mix_and_match
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   

@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.phases.Mercury.Ts
+=========================
+
+.. currentmodule:: openpnm.phases
+
+attribute
+
+.. autoproperty:: openpnm.phases.Mercury.Ts
+

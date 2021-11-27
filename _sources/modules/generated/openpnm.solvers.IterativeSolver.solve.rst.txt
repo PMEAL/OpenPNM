@@ -1,0 +1,8 @@
+:orphan:
+
+solve
+=====================================
+
+.. currentmodule:: openpnm.solvers
+
+.. automethod:: IterativeSolver.solve

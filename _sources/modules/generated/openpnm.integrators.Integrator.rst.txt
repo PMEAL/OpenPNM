@@ -1,0 +1,22 @@
+Integrator
+==============================
+
+.. currentmodule:: openpnm.integrators
+
+.. autoclass:: Integrator
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+   
+   
+
+   
+   
+   

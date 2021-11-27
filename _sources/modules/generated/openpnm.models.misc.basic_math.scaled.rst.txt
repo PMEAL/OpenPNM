@@ -1,0 +1,6 @@
+scaled
+======
+
+.. currentmodule:: openpnm.models.misc.basic_math
+
+.. autofunction:: scaled

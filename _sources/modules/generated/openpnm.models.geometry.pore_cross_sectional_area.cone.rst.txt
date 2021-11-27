@@ -1,0 +1,6 @@
+cone
+====
+
+.. currentmodule:: openpnm.models.geometry.pore_cross_sectional_area
+
+.. autofunction:: cone

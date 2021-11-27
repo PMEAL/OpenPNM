@@ -1,0 +1,6 @@
+bcc
+===
+
+.. currentmodule:: openpnm.topotools.generators
+
+.. autofunction:: bcc

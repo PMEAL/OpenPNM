@@ -1,0 +1,6 @@
+reversed\_throats
+=================
+
+.. currentmodule:: openpnm.models.network
+
+.. autofunction:: reversed_throats

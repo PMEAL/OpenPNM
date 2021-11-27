@@ -1,0 +1,8 @@
+:orphan:
+
+find_nearby_pores
+===========================================
+
+.. currentmodule:: openpnm.network
+
+.. automethod:: CubicDual.find_nearby_pores

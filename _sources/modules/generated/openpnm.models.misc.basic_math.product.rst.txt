@@ -1,0 +1,6 @@
+product
+=======
+
+.. currentmodule:: openpnm.models.misc.basic_math
+
+.. autofunction:: product

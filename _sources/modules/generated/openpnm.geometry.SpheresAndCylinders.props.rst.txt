@@ -1,0 +1,8 @@
+:orphan:
+
+props
+==========================================
+
+.. currentmodule:: openpnm.geometry
+
+.. automethod:: SpheresAndCylinders.props

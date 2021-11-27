@@ -1,0 +1,8 @@
+:orphan:
+
+params
+=======================================
+
+.. currentmodule:: openpnm.geometry
+
+.. automethod:: GenericGeometry.params

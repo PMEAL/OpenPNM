@@ -1,0 +1,6 @@
+from\_neighbor\_throats
+=======================
+
+.. currentmodule:: openpnm.models.geometry.pore_size
+
+.. autofunction:: from_neighbor_throats

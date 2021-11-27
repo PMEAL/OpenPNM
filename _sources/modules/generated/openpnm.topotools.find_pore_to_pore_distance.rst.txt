@@ -1,0 +1,6 @@
+find\_pore\_to\_pore\_distance
+==============================
+
+.. currentmodule:: openpnm.topotools
+
+.. autofunction:: find_pore_to_pore_distance

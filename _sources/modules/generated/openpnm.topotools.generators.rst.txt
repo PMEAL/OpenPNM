@@ -1,0 +1,37 @@
+﻿:noindex:
+
+.. automodule:: openpnm.topotools.generators
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+   
+      bcc
+      cubic
+      cubic_template
+      delaunay
+      fcc
+      gabriel
+      voronoi
+      voronoi_delaunay_dual
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   

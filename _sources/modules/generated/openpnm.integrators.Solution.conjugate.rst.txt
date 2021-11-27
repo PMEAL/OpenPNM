@@ -1,0 +1,8 @@
+:orphan:
+
+conjugate
+======================================
+
+.. currentmodule:: openpnm.integrators
+
+.. automethod:: Solution.conjugate

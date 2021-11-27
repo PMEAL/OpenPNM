@@ -1,0 +1,6 @@
+sphere
+======
+
+.. currentmodule:: openpnm.models.geometry.pore_surface_area
+
+.. autofunction:: sphere

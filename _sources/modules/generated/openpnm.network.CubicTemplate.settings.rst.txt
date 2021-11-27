@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.network.CubicTemplate.settings
+======================================
+
+.. currentmodule:: openpnm.network
+
+attribute
+
+.. autoproperty:: openpnm.network.CubicTemplate.settings
+

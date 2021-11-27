@@ -1,0 +1,8 @@
+:orphan:
+
+check_network_health
+============================================
+
+.. currentmodule:: openpnm.network
+
+.. automethod:: Gabriel.check_network_health

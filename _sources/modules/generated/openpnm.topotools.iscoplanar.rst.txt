@@ -1,0 +1,6 @@
+iscoplanar
+==========
+
+.. currentmodule:: openpnm.topotools
+
+.. autofunction:: iscoplanar

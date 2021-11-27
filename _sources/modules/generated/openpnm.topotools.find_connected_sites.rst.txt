@@ -1,0 +1,6 @@
+find\_connected\_sites
+======================
+
+.. currentmodule:: openpnm.topotools
+
+.. autofunction:: find_connected_sites

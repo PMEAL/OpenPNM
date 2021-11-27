@@ -1,0 +1,8 @@
+:orphan:
+
+std
+================================
+
+.. currentmodule:: openpnm.integrators
+
+.. automethod:: Solution.std

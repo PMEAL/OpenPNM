@@ -1,0 +1,8 @@
+:orphan:
+
+interleave_data
+================================================
+
+.. currentmodule:: openpnm.geometry
+
+.. automethod:: CubesAndCuboids.interleave_data

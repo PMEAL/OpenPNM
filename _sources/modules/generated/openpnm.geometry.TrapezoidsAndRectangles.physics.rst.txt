@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.geometry.TrapezoidsAndRectangles.physics
+================================================
+
+.. currentmodule:: openpnm.geometry
+
+attribute
+
+.. autoproperty:: openpnm.geometry.TrapezoidsAndRectangles.physics
+

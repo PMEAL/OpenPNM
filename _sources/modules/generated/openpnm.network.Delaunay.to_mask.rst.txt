@@ -1,0 +1,8 @@
+:orphan:
+
+to_mask
+================================
+
+.. currentmodule:: openpnm.network
+
+.. automethod:: Delaunay.to_mask

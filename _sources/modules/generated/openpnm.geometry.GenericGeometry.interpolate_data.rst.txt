@@ -1,0 +1,8 @@
+:orphan:
+
+interpolate_data
+=================================================
+
+.. currentmodule:: openpnm.geometry
+
+.. automethod:: GenericGeometry.interpolate_data

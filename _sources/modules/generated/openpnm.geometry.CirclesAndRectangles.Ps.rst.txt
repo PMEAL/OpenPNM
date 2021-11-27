@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.geometry.CirclesAndRectangles.Ps
+========================================
+
+.. currentmodule:: openpnm.geometry
+
+attribute
+
+.. autoproperty:: openpnm.geometry.CirclesAndRectangles.Ps
+

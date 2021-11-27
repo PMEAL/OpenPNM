@@ -1,0 +1,8 @@
+:orphan:
+
+filter_by_label
+=============================================
+
+.. currentmodule:: openpnm.network
+
+.. automethod:: CubicTemplate.filter_by_label

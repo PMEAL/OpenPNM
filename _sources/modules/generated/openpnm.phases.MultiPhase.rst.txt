@@ -1,0 +1,71 @@
+MultiPhase
+=========================
+
+.. currentmodule:: openpnm.phases
+
+.. autoclass:: MultiPhase
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            MultiPhase.add_model
+            MultiPhase.add_phases
+            MultiPhase.clear
+            MultiPhase.copy
+            MultiPhase.filter_by_label
+            MultiPhase.fromkeys
+            MultiPhase.get
+            MultiPhase.get_conduit_data
+            MultiPhase.interleave_data
+            MultiPhase.interpolate_data
+            MultiPhase.items
+            MultiPhase.keys
+            MultiPhase.labels
+            MultiPhase.num_pores
+            MultiPhase.num_throats
+            MultiPhase.params
+            MultiPhase.pop
+            MultiPhase.popitem
+            MultiPhase.pores
+            MultiPhase.props
+            MultiPhase.regenerate_models
+            MultiPhase.remove_model
+            MultiPhase.set_binary_partition_coef
+            MultiPhase.set_label
+            MultiPhase.set_occupancy
+            MultiPhase.setdefault
+            MultiPhase.show_hist
+            MultiPhase.throats
+            MultiPhase.to_indices
+            MultiPhase.to_mask
+            MultiPhase.update
+            MultiPhase.values
+   
+   
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            MultiPhase.Np
+            MultiPhase.Nt
+            MultiPhase.Ps
+            MultiPhase.Ts
+            MultiPhase.models
+            MultiPhase.name
+            MultiPhase.network
+            MultiPhase.phase
+            MultiPhase.phases
+            MultiPhase.physics
+            MultiPhase.project
+            MultiPhase.settings
+   
+   

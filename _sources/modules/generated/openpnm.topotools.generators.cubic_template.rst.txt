@@ -1,0 +1,6 @@
+cubic\_template
+===============
+
+.. currentmodule:: openpnm.topotools.generators
+
+.. autofunction:: cubic_template

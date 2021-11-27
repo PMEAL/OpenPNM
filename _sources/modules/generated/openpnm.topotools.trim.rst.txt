@@ -1,0 +1,6 @@
+trim
+====
+
+.. currentmodule:: openpnm.topotools
+
+.. autofunction:: trim

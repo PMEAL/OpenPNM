@@ -1,0 +1,70 @@
+FourierConduction
+====================================
+
+.. currentmodule:: openpnm.algorithms
+
+.. autoclass:: FourierConduction
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            FourierConduction.clear
+            FourierConduction.copy
+            FourierConduction.fromkeys
+            FourierConduction.get
+            FourierConduction.get_conduit_data
+            FourierConduction.interleave_data
+            FourierConduction.interpolate_data
+            FourierConduction.items
+            FourierConduction.keys
+            FourierConduction.map_pores
+            FourierConduction.map_throats
+            FourierConduction.pop
+            FourierConduction.popitem
+            FourierConduction.props
+            FourierConduction.rate
+            FourierConduction.remove_BC
+            FourierConduction.remove_source
+            FourierConduction.reset
+            FourierConduction.results
+            FourierConduction.run
+            FourierConduction.set_rate_BC
+            FourierConduction.set_source
+            FourierConduction.set_value_BC
+            FourierConduction.set_variable_props
+            FourierConduction.setdefault
+            FourierConduction.show_hist
+            FourierConduction.to_indices
+            FourierConduction.to_mask
+            FourierConduction.toindices
+            FourierConduction.tomask
+            FourierConduction.update
+            FourierConduction.values
+   
+   
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            FourierConduction.A
+            FourierConduction.Np
+            FourierConduction.Nt
+            FourierConduction.Ps
+            FourierConduction.Ts
+            FourierConduction.b
+            FourierConduction.name
+            FourierConduction.network
+            FourierConduction.project
+            FourierConduction.settings
+            FourierConduction.x
+   
+   

@@ -1,0 +1,8 @@
+:orphan:
+
+interleave_data
+====================================================
+
+.. currentmodule:: openpnm.algorithms
+
+.. automethod:: FourierConduction.interleave_data

@@ -1,0 +1,6 @@
+sinusoidal
+==========
+
+.. currentmodule:: openpnm.models.physics.meniscus
+
+.. autofunction:: sinusoidal

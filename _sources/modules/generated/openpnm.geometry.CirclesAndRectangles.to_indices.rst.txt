@@ -1,0 +1,8 @@
+:orphan:
+
+to_indices
+================================================
+
+.. currentmodule:: openpnm.geometry
+
+.. automethod:: CirclesAndRectangles.to_indices

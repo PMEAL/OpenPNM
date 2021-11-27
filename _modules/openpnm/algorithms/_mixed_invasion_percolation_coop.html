@@ -1,0 +1,794 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>openpnm.algorithms._mixed_invasion_percolation_coop &#8212; OpenPNM 2.8.2 documentation</title>
+    
+  <link href="../../../_static/css/theme.css" rel="stylesheet">
+  <link href="../../../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/blank.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
+    
+  <link rel="preload" as="script" href="../../../_static/js/index.be7d3bbb2ef33a8344ce.js">
+
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/clipboard.min.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/custom.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+
+<a class="navbar-brand" href="https://www.openpnm.org">
+  <img src="../../../_static/openpnm_logo.png" class="logo" alt="logo">
+</a>
+
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class=" collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../user_guide/index.html">
+  User Guide
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../modules/index.html">
+  Module Reference
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../examples/examples.html">
+  Examples
+ </a>
+</li>
+
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/PMEAL/OpenPNM" rel="noopener" target="_blank" title="GitHub">
+            <span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://openpnm.substack.com/" rel="noopener" target="_blank" title="Substack">
+            <span><i class="fas fa-envelope-square"></i></span>
+            <label class="sr-only">Substack</label>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://twitter.com/OpenPNM" rel="noopener" target="_blank" title="Twitter">
+            <span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label>
+          </a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    
+  </div>
+</nav>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <h1>Source code for openpnm.algorithms._mixed_invasion_percolation_coop</h1><div class="highlight"><pre>
+<span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">============================</span>
+<span class="sd">MixedInvasionPercolationCoop</span>
+<span class="sd">============================</span>
+<span class="sd">IP allowing pores and throats to invade separately with added cooperative</span>
+<span class="sd">filling algorithms.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">heapq</span> <span class="k">as</span> <span class="nn">hq</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy.sparse</span> <span class="kn">import</span> <span class="n">coo_matrix</span><span class="p">,</span> <span class="n">dok_matrix</span>
+<span class="kn">from</span> <span class="nn">openpnm.algorithms</span> <span class="kn">import</span> <span class="n">MixedInvasionPercolation</span>
+<span class="kn">from</span> <span class="nn">transforms3d._gohlketransforms</span> <span class="kn">import</span> <span class="n">angle_between_vectors</span>
+<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">logging</span><span class="p">,</span> <span class="n">SettingsAttr</span><span class="p">,</span> <span class="n">Docorator</span>
+<span class="n">docstr</span> <span class="o">=</span> <span class="n">Docorator</span><span class="p">()</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;MixedInvasionPercolationCoop&#39;</span><span class="p">]</span>
+
+
+<span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+<span class="k">class</span> <span class="nc">MixedIPCoopSettings</span><span class="p">:</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    %(MixedIPSettings.parameters)s</span>
+<span class="sd">    cooperative_pore_filling : str</span>
+<span class="sd">        The name of the model used to determine the meniscus properties</span>
+<span class="sd">        required for assessing cooperative pore filling.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cooperative_pore_filling</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="MixedInvasionPercolationCoop"><a class="viewcode-back" href="../../../modules/generated/openpnm.algorithms.MixedInvasionPercolationCoop.html#openpnm.algorithms.MixedInvasionPercolationCoop">[docs]</a><span class="k">class</span> <span class="nc">MixedInvasionPercolationCoop</span><span class="p">(</span><span class="n">MixedInvasionPercolation</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An implemetation of invasion percolation which can invade bonds, sites or a</span>
+<span class="sd">    mixture of both. Inlets can be treated as individual injection points that</span>
+<span class="sd">    share a common pressure or have their own and progess independently.</span>
+<span class="sd">    Inlets can also be single pores or clusters.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    network : GenericNetwork</span>
+<span class="sd">        The Network upon which the invasion should occur.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span> <span class="o">=</span> <span class="n">SettingsAttr</span><span class="p">(</span><span class="n">MixedIPCoopSettings</span><span class="p">,</span> <span class="n">settings</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">settings</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+<div class="viewcode-block" id="MixedInvasionPercolationCoop.setup"><a class="viewcode-back" href="../../../modules/generated/openpnm.algorithms.MixedInvasionPercolationCoop.setup.html#openpnm.algorithms.MixedInvasionPercolationCoop.setup">[docs]</a>    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">phase</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">pore_entry_pressure</span><span class="o">=</span><span class="s2">&quot;pore.entry_pressure&quot;</span><span class="p">,</span>
+        <span class="n">throat_entry_pressure</span><span class="o">=</span><span class="s2">&quot;throat.entry_pressure&quot;</span><span class="p">,</span>
+        <span class="n">snap_off</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">invade_isolated_Ts</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">late_pore_filling</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">late_throat_filling</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">cooperative_pore_filling</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Used to specify necessary arguments to the simulation.  This method is</span>
+<span class="sd">        useful for resetting the algorithm or applying more explicit control.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        phase : GenericPhase</span>
+<span class="sd">            The Phase object containing the physical properties of the invading</span>
+<span class="sd">            fluid.</span>
+<span class="sd">        pore_entry_pressure : str</span>
+<span class="sd">            The dictionary key on the Phase object where the pore entry</span>
+<span class="sd">            pressure values are stored.  The default is</span>
+<span class="sd">            &#39;pore.entry_pressure&#39;.</span>
+<span class="sd">        throat_entry_pressure : str</span>
+<span class="sd">            The dictionary key on the Phase object where the throat entry</span>
+<span class="sd">            pressure values are stored.  The default is</span>
+<span class="sd">            &#39;throat.entry_pressure&#39;.</span>
+<span class="sd">        snap_off : str</span>
+<span class="sd">            The dictionary key on the Phase object where the throat snap-off</span>
+<span class="sd">            pressure values are stored.</span>
+<span class="sd">        invade_isolated_Ts : bool</span>
+<span class="sd">            If True, isolated throats are invaded at the higher invasion</span>
+<span class="sd">            pressure of their connected pores.</span>
+<span class="sd">        late_pore_filling : str</span>
+<span class="sd">            The name of the model used to determine late pore filling as</span>
+<span class="sd">            a function of applied pressure.</span>
+<span class="sd">        late_throat_filling : str</span>
+<span class="sd">            The name of the model used to determine late throat filling as</span>
+<span class="sd">            a function of applied pressure.</span>
+<span class="sd">        cooperative_pore_filling : str</span>
+<span class="sd">            The name of the model used to determine the meniscus properties</span>
+<span class="sd">            required for assessing cooperative pore filling.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">phase</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;phase&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">phase</span><span class="o">.</span><span class="n">name</span>
+        <span class="k">if</span> <span class="n">throat_entry_pressure</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;throat_entry_pressure&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">throat_entry_pressure</span>
+            <span class="n">phase</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">phase</span><span class="p">]</span>
+        <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;throat.entry_pressure&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;throat_entry_pressure&quot;</span><span class="p">]]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s2">&quot;throat.entry_pressure&quot;</span><span class="p">]))</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_bidirectional</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_bidirectional</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">pore_entry_pressure</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;pore_entry_pressure&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pore_entry_pressure</span>
+            <span class="n">phase</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">phase</span><span class="p">]</span>
+        <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;pore.entry_pressure&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;pore_entry_pressure&quot;</span><span class="p">]]</span>
+        <span class="k">if</span> <span class="n">snap_off</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;snap_off&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">snap_off</span>
+        <span class="k">if</span> <span class="n">invade_isolated_Ts</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;invade_isolated_Ts&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">invade_isolated_Ts</span>
+        <span class="k">if</span> <span class="n">late_pore_filling</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;late_pore_filling&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">late_pore_filling</span>
+        <span class="k">if</span> <span class="n">late_throat_filling</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;late_throat_filling&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">late_throat_filling</span>
+        <span class="k">if</span> <span class="n">cooperative_pore_filling</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;cooperative_pore_filling&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cooperative_pore_filling</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="nf">_max_pressure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">phase</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">phase</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;throat_entry_pressure&quot;</span><span class="p">]:</span>
+            <span class="n">max_tPc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">phase</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;throat_entry_pressure&quot;</span><span class="p">]])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">max_tPc</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;pore_entry_pressure&quot;</span><span class="p">]:</span>
+            <span class="n">max_pPc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">phase</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;pore_entry_pressure&quot;</span><span class="p">]])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">max_pPc</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">([</span><span class="n">max_tPc</span><span class="p">,</span> <span class="n">max_pPc</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">_my_dot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">a</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">b</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">a</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">b</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">a</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="n">b</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span>
+
+<div class="viewcode-block" id="MixedInvasionPercolationCoop.trilaterate_v"><a class="viewcode-back" href="../../../modules/generated/openpnm.algorithms.MixedInvasionPercolationCoop.trilaterate_v.html#openpnm.algorithms.MixedInvasionPercolationCoop.trilaterate_v">[docs]</a>    <span class="k">def</span> <span class="nf">trilaterate_v</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">P1</span><span class="p">,</span> <span class="n">P2</span><span class="p">,</span> <span class="n">P3</span><span class="p">,</span> <span class="n">r1</span><span class="p">,</span> <span class="n">r2</span><span class="p">,</span> <span class="n">r3</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Find whether 3 spheres intersect</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">temp1</span> <span class="o">=</span> <span class="n">P2</span> <span class="o">-</span> <span class="n">P1</span>
+        <span class="n">e_x</span> <span class="o">=</span> <span class="n">temp1</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">temp1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
+        <span class="n">temp2</span> <span class="o">=</span> <span class="n">P3</span> <span class="o">-</span> <span class="n">P1</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_my_dot</span><span class="p">(</span><span class="n">e_x</span><span class="p">,</span> <span class="n">temp2</span><span class="p">)[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
+        <span class="n">temp3</span> <span class="o">=</span> <span class="n">temp2</span> <span class="o">-</span> <span class="n">i</span> <span class="o">*</span> <span class="n">e_x</span>
+        <span class="n">e_y</span> <span class="o">=</span> <span class="n">temp3</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">temp3</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">P2</span> <span class="o">-</span> <span class="n">P1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
+        <span class="n">j</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_my_dot</span><span class="p">(</span><span class="n">e_y</span><span class="p">,</span> <span class="n">temp2</span><span class="p">)[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="p">(</span><span class="n">r1</span> <span class="o">*</span> <span class="n">r1</span> <span class="o">-</span> <span class="n">r2</span> <span class="o">*</span> <span class="n">r2</span> <span class="o">+</span> <span class="n">d</span> <span class="o">*</span> <span class="n">d</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">d</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="p">(</span><span class="n">r1</span> <span class="o">*</span> <span class="n">r1</span> <span class="o">-</span> <span class="n">r3</span> <span class="o">*</span> <span class="n">r3</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">i</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="p">(</span><span class="n">i</span> <span class="o">*</span> <span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">j</span> <span class="o">*</span> <span class="n">j</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">j</span><span class="p">)</span>
+        <span class="n">temp4</span> <span class="o">=</span> <span class="n">r1</span> <span class="o">*</span> <span class="n">r1</span> <span class="o">-</span> <span class="n">x</span> <span class="o">*</span> <span class="n">x</span> <span class="o">-</span> <span class="n">y</span> <span class="o">*</span> <span class="n">y</span>
+        <span class="k">return</span> <span class="n">temp4</span> <span class="o">&gt;=</span> <span class="mi">0</span></div>
+
+    <span class="k">def</span> <span class="nf">_get_throat_pairs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate an array of pores with all connected throats and pairs of</span>
+<span class="sd">        throats that connect to the same pore</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">network</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">network</span>
+        <span class="c1"># Collect all throat pairs sharing a pore as list of lists</span>
+        <span class="n">neighbor_Ts</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">find_neighbor_throats</span><span class="p">(</span>
+            <span class="n">pores</span><span class="o">=</span><span class="n">network</span><span class="o">.</span><span class="n">pores</span><span class="p">(),</span> <span class="n">flatten</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
+        <span class="c1"># Pores associated to throat</span>
+        <span class="n">Ps</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># Throats connected to each pore</span>
+        <span class="n">Ts</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># Pairs of throats sharing a pore</span>
+        <span class="n">T1</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">T2</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="c1"># Build lookup pair index arrays for each coordination number up to the</span>
+        <span class="c1"># Maximum coordination max_c</span>
+        <span class="n">max_c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span><span class="n">network</span><span class="o">.</span><span class="n">num_neighbors</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">network</span><span class="o">.</span><span class="n">Ps</span><span class="p">,</span> <span class="n">flatten</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+        <span class="n">pair_T1</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">pair_T2</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Building throat pair matrices&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">num_t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_c</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">temp1</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">temp2</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">t1</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_t</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="k">for</span> <span class="n">t2</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_t</span><span class="p">)[</span><span class="n">t1</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:]:</span>
+                    <span class="n">temp1</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t1</span><span class="p">)</span>
+                    <span class="n">temp2</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t2</span><span class="p">)</span>
+            <span class="n">pair_T1</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">temp1</span><span class="p">))</span>
+            <span class="n">pair_T2</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">temp2</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">p</span><span class="p">,</span> <span class="n">nTs</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">neighbor_Ts</span><span class="p">):</span>
+            <span class="n">num_t</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">nTs</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_t</span><span class="p">):</span>
+                <span class="n">Ps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+                <span class="n">Ts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nTs</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="c1"># Pair indices into Ts</span>
+            <span class="n">tempt1</span> <span class="o">=</span> <span class="n">pair_T1</span><span class="p">[</span><span class="n">num_t</span><span class="p">]</span> <span class="o">+</span> <span class="n">start</span>
+            <span class="n">tempt2</span> <span class="o">=</span> <span class="n">pair_T2</span><span class="p">[</span><span class="n">num_t</span><span class="p">]</span> <span class="o">+</span> <span class="n">start</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tempt1</span><span class="p">)):</span>
+                <span class="n">T1</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tempt1</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                <span class="n">T2</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tempt2</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">start</span> <span class="o">+=</span> <span class="n">num_t</span>
+        <span class="c1"># Nt * 2 long</span>
+        <span class="n">Ps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">Ps</span><span class="p">)</span>
+        <span class="n">Ts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">Ts</span><span class="p">)</span>
+        <span class="c1"># indices into the above arrays based on throat pairs</span>
+        <span class="n">T1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">T1</span><span class="p">)</span>
+        <span class="n">T2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">T2</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">Ps</span><span class="p">,</span> <span class="n">Ts</span><span class="p">,</span> <span class="n">T1</span><span class="p">,</span> <span class="n">T2</span>
+
+    <span class="k">def</span> <span class="nf">_apply_cen_to_throats</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p_cen</span><span class="p">,</span> <span class="n">t_cen</span><span class="p">,</span> <span class="n">t_norm</span><span class="p">,</span> <span class="n">men_cen</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Take the pore center and throat center and work out which way</span>
+<span class="sd">        the throat normal is pointing relative to the vector between centers.</span>
+<span class="sd">        Offset the meniscus center along the throat vector in the correct</span>
+<span class="sd">        direction</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">p_cen</span> <span class="o">-</span> <span class="n">t_cen</span>
+        <span class="n">sign</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">v</span> <span class="o">*</span> <span class="n">t_norm</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">c3</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">men_cen</span> <span class="o">*</span> <span class="n">sign</span><span class="p">,</span> <span class="n">men_cen</span> <span class="o">*</span> <span class="n">sign</span><span class="p">,</span> <span class="n">men_cen</span> <span class="o">*</span> <span class="n">sign</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
+        <span class="n">coords</span> <span class="o">=</span> <span class="n">t_cen</span> <span class="o">+</span> <span class="n">c3</span> <span class="o">*</span> <span class="n">t_norm</span>
+        <span class="k">return</span> <span class="n">coords</span>
+
+    <span class="k">def</span> <span class="nf">_transform_point_normal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">point</span><span class="p">,</span> <span class="n">normal</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Transforms point normal plane definition to parametric form</span>
+<span class="sd">        Ax + By +Cz + D = 0</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="n">a</span>
+            <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
+                <span class="n">normal</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">normal</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">normal</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">],</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">_my_dot</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">normal</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_plane_intersect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Brief description of &#39;_plane_intersect&#39;</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        a, b : 4-tuples/lists</span>
+<span class="sd">            Ax + By +Cz + D = 0 where A, B, C, D in order</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        ndarray</span>
+<span class="sd">            Two points on line of intersection (see https://bit.ly/2LkBEyc)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">a_vec</span><span class="p">,</span> <span class="n">b_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">a</span><span class="p">[:</span><span class="mi">3</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">b</span><span class="p">[:</span><span class="mi">3</span><span class="p">])</span>
+        <span class="n">aXb_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span><span class="n">a_vec</span><span class="p">,</span> <span class="n">b_vec</span><span class="p">)</span>
+        <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">a_vec</span><span class="p">,</span> <span class="n">b_vec</span><span class="p">,</span> <span class="n">aXb_vec</span><span class="p">])</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="n">a</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="o">-</span><span class="n">b</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="mf">0.0</span><span class="p">])</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">det</span><span class="p">(</span><span class="n">A</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">p_inter</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+            <span class="k">return</span> <span class="n">p_inter</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">(</span><span class="n">p_inter</span> <span class="o">+</span> <span class="n">aXb_vec</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_t</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">r</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Equation of line passing through points p and q parameterized by t</span>
+<span class="sd">        https://bit.ly/2EpQ6DD</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">p</span> <span class="o">-</span> <span class="n">q</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">r</span> <span class="o">-</span> <span class="n">q</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_distance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">r</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Shortest distance between line passing through p and q and point r</span>
+<span class="sd">        https://bit.ly/2EpQ6DD</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_t</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">p</span> <span class="o">-</span> <span class="n">q</span><span class="p">)</span> <span class="o">+</span> <span class="n">q</span> <span class="o">-</span> <span class="n">r</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_pair_permutations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+        <span class="n">perms</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)):</span>
+                <span class="n">perms</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="o">+</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">perms</span>
+
+    <span class="k">def</span> <span class="nf">_perpendicular_vector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">v_ref</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">v_ref</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">v_ref</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_throat_pair_angle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">,</span> <span class="n">pore</span><span class="p">,</span> <span class="n">network</span><span class="p">):</span>
+        <span class="n">conn1</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="s2">&quot;throat.conns&quot;</span><span class="p">][</span><span class="n">t1</span><span class="p">]</span>
+        <span class="n">conn2</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="s2">&quot;throat.conns&quot;</span><span class="p">][</span><span class="n">t2</span><span class="p">]</span>
+        <span class="n">lookup</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">pore</span><span class="p">,</span> <span class="n">pore</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
+        <span class="n">p1</span> <span class="o">=</span> <span class="n">conn1</span><span class="p">[</span><span class="n">conn1</span> <span class="o">!=</span> <span class="n">lookup</span><span class="p">]</span>
+        <span class="n">p2</span> <span class="o">=</span> <span class="n">conn2</span><span class="p">[</span><span class="n">conn2</span> <span class="o">!=</span> <span class="n">lookup</span><span class="p">]</span>
+        <span class="n">v1</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="s2">&quot;pore.coords&quot;</span><span class="p">][</span><span class="n">pore</span><span class="p">]</span> <span class="o">-</span> <span class="n">network</span><span class="p">[</span><span class="s2">&quot;pore.coords&quot;</span><span class="p">][</span><span class="n">p1</span><span class="p">]</span>
+        <span class="n">v2</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="s2">&quot;pore.coords&quot;</span><span class="p">][</span><span class="n">pore</span><span class="p">]</span> <span class="o">-</span> <span class="n">network</span><span class="p">[</span><span class="s2">&quot;pore.coords&quot;</span><span class="p">][</span><span class="n">p2</span><span class="p">]</span>
+        <span class="n">v_ref</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_perpendicular_vector</span><span class="p">(</span><span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">)</span>
+        <span class="n">v1_perp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_perpendicular_vector</span><span class="p">(</span><span class="n">v1</span><span class="p">,</span> <span class="n">v_ref</span><span class="p">)</span>
+        <span class="n">v2_perp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_perpendicular_vector</span><span class="p">(</span><span class="n">v2</span><span class="p">,</span> <span class="n">v_ref</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">angle_between_vectors</span><span class="p">(</span><span class="n">v1_perp</span><span class="p">,</span> <span class="n">v2_perp</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<div class="viewcode-block" id="MixedInvasionPercolationCoop.setup_coop_filling"><a class="viewcode-back" href="../../../modules/generated/openpnm.algorithms.MixedInvasionPercolationCoop.setup_coop_filling.html#openpnm.algorithms.MixedInvasionPercolationCoop.setup_coop_filling">[docs]</a>    <span class="k">def</span> <span class="nf">setup_coop_filling</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inv_points</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Populate the coop filling throat-throat pair matrix</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setup_coop_filling_creep</span><span class="p">(</span><span class="n">inv_points</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setup_coop_filling_bulge</span><span class="p">(</span><span class="n">inv_points</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_setup_coop_filling_creep</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inv_points</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This coop filling model iterates through the invasion pressures set by</span>
+<span class="sd">        the inv_points variable and calls the meniscus model whose dictionary</span>
+<span class="sd">        key must be given in the algorithm&#39;s setup.</span>
+
+<span class="sd">        The meniscus model supplies the position of the meniscus inside each</span>
+<span class="sd">        throat as if there were a meniscus in every throat for a given pressure</span>
+<span class="sd">        The contact line of the meniscus traces a circle around the inner</span>
+<span class="sd">        surface of the throat which is assumed to be toroidal.</span>
+
+<span class="sd">        The contact circle lies on a plane that is defined by the throat&#39;s</span>
+<span class="sd">        normal vector which runs along the axis of symmetry of the torus.</span>
+<span class="sd">        For every pore, every connecting throat is compared with each of it&#39;s</span>
+<span class="sd">        neighboring throats connected to the same pore. If the planes intersect</span>
+<span class="sd">        then the meniscus contact circles may eventually touch if they can</span>
+<span class="sd">        advance enough. For highly wetting fluid the contact point may be</span>
+<span class="sd">        advanced well into the throat whilst still being at negative capillary</span>
+<span class="sd">        pressure.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="n">net</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">network</span>
+        <span class="n">phase</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">phase</span><span class="p">]</span>
+        <span class="n">all_phys</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">find_physics</span><span class="p">(</span><span class="n">phase</span><span class="o">=</span><span class="n">phase</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">inv_points</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">inv_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.01</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_pressure</span><span class="p">()</span>
+        <span class="c1"># Throat centroids</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">t_centroids</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s2">&quot;throat.centroid&quot;</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">t_centroids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">net</span><span class="p">[</span><span class="s2">&quot;pore.coords&quot;</span><span class="p">][</span><span class="n">net</span><span class="p">[</span><span class="s2">&quot;throat.conns&quot;</span><span class="p">]],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="c1"># Throat normal vector</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">t_norms</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s2">&quot;throat.normal&quot;</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">t_norms</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">net</span><span class="p">[</span><span class="s2">&quot;pore.coords&quot;</span><span class="p">][</span><span class="n">net</span><span class="p">[</span><span class="s2">&quot;throat.conns&quot;</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">]]</span>
+                <span class="o">-</span> <span class="n">net</span><span class="p">[</span><span class="s2">&quot;pore.coords&quot;</span><span class="p">][</span><span class="n">net</span><span class="p">[</span><span class="s2">&quot;throat.conns&quot;</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">]]</span>
+            <span class="p">)</span>
+        <span class="n">cpf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;cooperative_pore_filling&quot;</span><span class="p">]</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">all_phys</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">models</span><span class="p">[</span><span class="n">cpf</span><span class="p">]</span>
+        <span class="c1"># Throat Diameter and fiber radius</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">t_rad</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="n">model</span><span class="p">[</span><span class="s2">&quot;throat_diameter&quot;</span><span class="p">]]</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">model</span><span class="p">[</span><span class="s2">&quot;r_toroid&quot;</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">t_rad</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s2">&quot;throat.diameter&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span>
+        <span class="c1"># Equations of throat planes at the center of each throat</span>
+        <span class="n">planes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transform_point_normal</span><span class="p">(</span><span class="n">t_centroids</span><span class="p">,</span> <span class="n">t_norms</span><span class="p">)</span>
+        <span class="n">Nt</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">Nt</span>
+        <span class="n">adj_mat</span> <span class="o">=</span> <span class="n">dok_matrix</span><span class="p">((</span><span class="n">Nt</span><span class="p">,</span> <span class="n">Nt</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+        <span class="c1"># Run through and build the throat-throat pair adjacency matrix</span>
+        <span class="c1"># If planes of throats intersect then meniscii in throats may also</span>
+        <span class="c1"># Intersect at a given pressure.</span>
+        <span class="k">for</span> <span class="n">pore</span> <span class="ow">in</span> <span class="n">net</span><span class="o">.</span><span class="n">Ps</span><span class="p">:</span>
+            <span class="n">ts</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">find_neighbor_throats</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pore</span><span class="p">)</span>
+            <span class="n">perms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pair_permutations</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ts</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">perm</span> <span class="ow">in</span> <span class="n">perms</span><span class="p">:</span>
+                <span class="n">ta</span><span class="p">,</span> <span class="n">tb</span> <span class="o">=</span> <span class="n">ts</span><span class="p">[</span><span class="n">perm</span><span class="p">]</span>
+                <span class="n">p</span><span class="p">,</span> <span class="n">q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plane_intersect</span><span class="p">(</span><span class="n">planes</span><span class="p">[</span><span class="n">ta</span><span class="p">],</span> <span class="n">planes</span><span class="p">[</span><span class="n">tb</span><span class="p">])</span>
+                <span class="k">if</span> <span class="n">p</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">d1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_distance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">t_centroids</span><span class="p">[</span><span class="n">ta</span><span class="p">])</span>
+                    <span class="n">d2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_distance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">t_centroids</span><span class="p">[</span><span class="n">tb</span><span class="p">])</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">t_rad</span><span class="p">[</span><span class="n">ta</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">d1</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">t_rad</span><span class="p">[</span><span class="n">tb</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">d2</span><span class="p">):</span>
+                        <span class="n">adj_mat</span><span class="p">[</span><span class="n">ta</span><span class="p">,</span> <span class="n">tb</span><span class="p">]</span> <span class="o">=</span> <span class="n">pore</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="c1"># Meniscus Filling Angle</span>
+        <span class="n">tfill_angle</span> <span class="o">=</span> <span class="n">cpf</span> <span class="o">+</span> <span class="s2">&quot;.alpha&quot;</span>
+        <span class="c1"># Capillary pressure adjacency maxtrix</span>
+        <span class="n">pairs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="nb">list</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">adj_mat</span><span class="o">.</span><span class="n">keys</span><span class="p">()])</span>
+        <span class="n">pores</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="n">adj_mat</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">adj_mat</span><span class="o">.</span><span class="n">keys</span><span class="p">()])</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tt_Pc</span> <span class="o">=</span> <span class="n">adj_mat</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">tocsr</span><span class="p">()</span>
+        <span class="c1"># Initialize the pressure matrix with nans</span>
+        <span class="c1"># This is used to check for the first intersection pressure and</span>
+        <span class="c1"># Prevent overwriting</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tt_Pc</span><span class="p">[</span><span class="n">pairs</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">pairs</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+        <span class="n">angles</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_throat_pair_angle</span><span class="p">(</span><span class="n">pairs</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">pairs</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">pores</span><span class="p">,</span> <span class="n">net</span><span class="p">)</span>
+        <span class="n">T1</span> <span class="o">=</span> <span class="n">pairs</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="n">T2</span> <span class="o">=</span> <span class="n">pairs</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="n">hits</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">Pc</span> <span class="ow">in</span> <span class="n">inv_points</span><span class="p">:</span>
+            <span class="c1"># Don&#39;t use zero as can get strange numbers in menisci data</span>
+            <span class="k">if</span> <span class="n">Pc</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">:</span>
+                <span class="n">Pc</span> <span class="o">=</span> <span class="mf">1e-6</span>
+            <span class="c1"># regenerate model with new target Pc</span>
+            <span class="k">for</span> <span class="n">phys</span> <span class="ow">in</span> <span class="n">all_phys</span><span class="p">:</span>
+                <span class="n">phys</span><span class="o">.</span><span class="n">models</span><span class="p">[</span><span class="n">cpf</span><span class="p">][</span><span class="s2">&quot;target_Pc&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Pc</span>
+                <span class="n">phys</span><span class="o">.</span><span class="n">regenerate_models</span><span class="p">(</span><span class="n">propnames</span><span class="o">=</span><span class="n">cpf</span><span class="p">)</span>
+            <span class="c1"># check whether this throat pair already has a coop value</span>
+            <span class="n">check_nans</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tt_Pc</span><span class="p">[</span><span class="n">T1</span><span class="p">,</span> <span class="n">T2</span><span class="p">])</span><span class="o">.</span><span class="n">tolist</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">fill_angle_sum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">phase</span><span class="p">[</span><span class="n">tfill_angle</span><span class="p">][</span><span class="n">pairs</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">coalescence</span> <span class="o">=</span> <span class="n">fill_angle_sum</span> <span class="o">&gt;=</span> <span class="n">angles</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="n">check_nans</span> <span class="o">*</span> <span class="n">coalescence</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">mask</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">tt_Pc</span><span class="p">[</span><span class="n">T1</span><span class="p">[</span><span class="n">mask</span><span class="p">],</span> <span class="n">T2</span><span class="p">[</span><span class="n">mask</span><span class="p">]]</span> <span class="o">=</span> <span class="n">Pc</span>
+                <span class="n">hits</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Pc</span><span class="p">)</span>
+        <span class="c1"># Change to lil for single throat lookups</span>
+        <span class="c1">#        self.tt_Pc = self.tt_Pc.tolil()</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="s2">&quot;Coop filling finished in &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">around</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot; s&quot;</span>
+        <span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Coop Hits&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">hits</span><span class="p">)))</span>
+
+    <span class="k">def</span> <span class="nf">_setup_coop_filling_bulge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inv_points</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Evaluates the cooperative pore filling condition that the combined</span>
+<span class="sd">        filling angle in next neighbor throats cannot exceed the geometric</span>
+<span class="sd">        angle between their throat planes.</span>
+
+<span class="sd">        This is used when the invading fluid has access to multiple throats</span>
+<span class="sd">        connected to a pore</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        inv_points : array_like</span>
+<span class="sd">            The invasion pressures at which to assess coopertive pore filling.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">net</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">network</span>
+        <span class="n">phase</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">phase</span><span class="p">]</span>
+        <span class="n">all_phys</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">find_physics</span><span class="p">(</span><span class="n">phase</span><span class="o">=</span><span class="n">phase</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">inv_points</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">inv_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.01</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_pressure</span><span class="p">()</span>
+
+        <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="n">cpf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;cooperative_pore_filling&quot;</span><span class="p">]</span>
+        <span class="n">tfill_angle</span> <span class="o">=</span> <span class="n">cpf</span> <span class="o">+</span> <span class="s2">&quot;.alpha&quot;</span>
+        <span class="n">tmen_rad</span> <span class="o">=</span> <span class="n">cpf</span> <span class="o">+</span> <span class="s2">&quot;.radius&quot;</span>
+        <span class="n">tmen_cen</span> <span class="o">=</span> <span class="n">cpf</span> <span class="o">+</span> <span class="s2">&quot;.center&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># The following properties will all be there for Voronoi</span>
+            <span class="n">p_centroids</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s2">&quot;pore.centroid&quot;</span><span class="p">]</span>
+            <span class="n">t_centroids</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s2">&quot;throat.centroid&quot;</span><span class="p">]</span>
+            <span class="n">p_rad</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s2">&quot;pore.indiameter&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span>
+            <span class="n">t_norms</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s2">&quot;throat.normal&quot;</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="c1"># Chances are this isn&#39;t Voronoi so calculate or replace all</span>
+            <span class="n">p_centroids</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s2">&quot;pore.coords&quot;</span><span class="p">]</span>
+            <span class="n">temp</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s2">&quot;pore.coords&quot;</span><span class="p">][</span><span class="n">net</span><span class="p">[</span><span class="s2">&quot;throat.conns&quot;</span><span class="p">]]</span>
+            <span class="n">t_centroids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">temp</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">p_rad</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s2">&quot;pore.diameter&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span>
+            <span class="n">t_norms</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s2">&quot;throat.normal&quot;</span><span class="p">]</span>
+
+        <span class="n">Ps</span><span class="p">,</span> <span class="n">Ts</span><span class="p">,</span> <span class="n">T1</span><span class="p">,</span> <span class="n">T2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_throat_pairs</span><span class="p">()</span>
+        <span class="c1"># Network indices for the pairs</span>
+        <span class="n">pps</span> <span class="o">=</span> <span class="n">Ps</span><span class="p">[</span><span class="n">T1</span><span class="p">]</span>
+        <span class="n">pt1</span> <span class="o">=</span> <span class="n">Ts</span><span class="p">[</span><span class="n">T1</span><span class="p">]</span>
+        <span class="n">pt2</span> <span class="o">=</span> <span class="n">Ts</span><span class="p">[</span><span class="n">T2</span><span class="p">]</span>
+        <span class="c1"># Arrays to get upper and lower triangular for reference to later</span>
+        <span class="c1"># When checking for phase presence one throat at a time - need to</span>
+        <span class="c1"># Check all throat pairs</span>
+        <span class="n">T_all_t1</span> <span class="o">=</span> <span class="n">Ts</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">T1</span><span class="p">,</span> <span class="n">T2</span><span class="p">))]</span>
+        <span class="c1"># T_all_t2 = Ts[np.concatenate((T2, T1))]</span>
+        <span class="c1"># Throat-Throat cooperative filling pressure</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">T_all_t1</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+        <span class="c1"># coo --&gt; useful for building matrix</span>
+        <span class="c1"># coo = coo_matrix(</span>
+        <span class="c1">#     (data, (T_all_t1, T_all_t2)), shape=(len(T_all_t1), len(T_all_t2))</span>
+        <span class="c1"># )</span>
+        <span class="c1"># csr --&gt; for indexing into entire matrix when populating with</span>
+        <span class="c1"># actual coop filling values</span>
+        <span class="c1">#        self.tt_Pc = coo.tocsr()</span>
+        <span class="c1"># Pair pore center and radius</span>
+        <span class="n">pp_cen</span> <span class="o">=</span> <span class="n">p_centroids</span><span class="p">[</span><span class="n">pps</span><span class="p">]</span>
+        <span class="n">pp_rad</span> <span class="o">=</span> <span class="n">p_rad</span><span class="p">[</span><span class="n">pps</span><span class="p">]</span>
+        <span class="c1"># Make sure throat normals are unit vector</span>
+        <span class="n">unit</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">t_norms</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">t_norms</span> <span class="o">/=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">unit</span><span class="p">,</span> <span class="n">unit</span><span class="p">,</span> <span class="n">unit</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
+
+        <span class="k">for</span> <span class="n">Pc</span> <span class="ow">in</span> <span class="n">inv_points</span><span class="p">:</span>
+            <span class="c1"># regenerate model with new target Pc</span>
+            <span class="k">for</span> <span class="n">phys</span> <span class="ow">in</span> <span class="n">all_phys</span><span class="p">:</span>
+                <span class="n">phys</span><span class="o">.</span><span class="n">models</span><span class="p">[</span><span class="n">cpf</span><span class="p">][</span><span class="s2">&quot;target_Pc&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Pc</span>
+                <span class="n">phys</span><span class="o">.</span><span class="n">regenerate_models</span><span class="p">(</span><span class="n">propnames</span><span class="o">=</span><span class="n">cpf</span><span class="p">)</span>
+            <span class="n">men_cen_dist</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">tmen_cen</span><span class="p">]</span>
+            <span class="c1"># Work out meniscii coord for each direction along the throat</span>
+            <span class="n">men_cen_coord</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_cen_to_throats</span><span class="p">(</span>
+                <span class="n">p_centroids</span><span class="p">[</span><span class="n">Ps</span><span class="p">],</span> <span class="n">t_centroids</span><span class="p">[</span><span class="n">Ts</span><span class="p">],</span> <span class="n">t_norms</span><span class="p">[</span><span class="n">Ts</span><span class="p">],</span> <span class="n">men_cen_dist</span><span class="p">[</span><span class="n">Ts</span><span class="p">]</span>
+            <span class="p">)</span>
+            <span class="c1"># Pair centers</span>
+            <span class="n">pc1</span> <span class="o">=</span> <span class="n">men_cen_coord</span><span class="p">[</span><span class="n">T1</span><span class="p">]</span>
+            <span class="n">pc2</span> <span class="o">=</span> <span class="n">men_cen_coord</span><span class="p">[</span><span class="n">T2</span><span class="p">]</span>
+            <span class="c1"># Center to center vector between neighboring meniscii</span>
+            <span class="n">c2c</span> <span class="o">=</span> <span class="n">pc1</span> <span class="o">-</span> <span class="n">pc2</span>
+            <span class="n">dist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">c2c</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="c1"># Pair meniscii radii</span>
+            <span class="n">pr1</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">tmen_rad</span><span class="p">][</span><span class="n">pt1</span><span class="p">]</span>
+            <span class="n">pr2</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">tmen_rad</span><span class="p">][</span><span class="n">pt2</span><span class="p">]</span>
+            <span class="c1"># nans may exist if pressure is outside the range</span>
+            <span class="c1"># set these to zero to be ignored by next step without</span>
+            <span class="c1"># causing RuntimeWarning</span>
+            <span class="n">pr1</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">pr1</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">pr2</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">pr2</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="c1"># Negative mensicii radii means positive pressure</span>
+            <span class="c1"># Assume meniscii only interact when bulging into pore</span>
+            <span class="n">check_neg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">pr1</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">,</span> <span class="n">pr2</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="c1"># simple initial distance check on sphere rads</span>
+            <span class="n">check_rads</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">pr1</span> <span class="o">+</span> <span class="n">pr2</span><span class="p">))</span> <span class="o">&gt;=</span> <span class="n">dist</span>
+            <span class="c1"># check whether the filling angle is ok at this Pc</span>
+            <span class="n">check_alpha_T1</span> <span class="o">=</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">phase</span><span class="p">[</span><span class="n">tfill_angle</span><span class="p">][</span><span class="n">pt1</span><span class="p">])</span>
+            <span class="n">check_alpha_T2</span> <span class="o">=</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">phase</span><span class="p">[</span><span class="n">tfill_angle</span><span class="p">][</span><span class="n">pt2</span><span class="p">])</span>
+            <span class="n">check_alpha</span> <span class="o">=</span> <span class="n">check_alpha_T1</span> <span class="o">*</span> <span class="n">check_alpha_T2</span>
+            <span class="c1"># check whether this throat pair already has a coop value</span>
+            <span class="n">check_nans</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tt_Pc</span><span class="p">[</span><span class="n">pt1</span><span class="p">,</span> <span class="n">pt2</span><span class="p">])</span><span class="o">.</span><span class="n">tolist</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="n">check_neg</span> <span class="o">*</span> <span class="n">check_alpha</span> <span class="o">*</span> <span class="n">check_nans</span> <span class="o">*</span> <span class="n">check_rads</span>
+            <span class="c1"># if all checks pass</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">mask</span><span class="p">):</span>
+                <span class="c1"># Check if intersecting circle lies within pore</span>
+                <span class="n">inter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trilaterate_v</span><span class="p">(</span>
+                    <span class="n">P1</span><span class="o">=</span><span class="n">pc1</span><span class="p">[</span><span class="n">mask</span><span class="p">],</span>
+                    <span class="n">P2</span><span class="o">=</span><span class="n">pc2</span><span class="p">[</span><span class="n">mask</span><span class="p">],</span>
+                    <span class="n">P3</span><span class="o">=</span><span class="n">pp_cen</span><span class="p">[</span><span class="n">mask</span><span class="p">],</span>
+                    <span class="n">r1</span><span class="o">=</span><span class="n">pr1</span><span class="p">[</span><span class="n">mask</span><span class="p">][:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">],</span>
+                    <span class="n">r2</span><span class="o">=</span><span class="n">pr2</span><span class="p">[</span><span class="n">mask</span><span class="p">][:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">],</span>
+                    <span class="n">r3</span><span class="o">=</span><span class="n">pp_rad</span><span class="p">[</span><span class="n">mask</span><span class="p">][:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">],</span>
+                <span class="p">)</span>
+                <span class="n">inter</span> <span class="o">=</span> <span class="n">inter</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">inter</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">tt_Pc</span><span class="p">[</span><span class="n">pt1</span><span class="p">[</span><span class="n">mask</span><span class="p">][</span><span class="n">inter</span><span class="p">],</span> <span class="n">pt2</span><span class="p">[</span><span class="n">mask</span><span class="p">][</span><span class="n">inter</span><span class="p">]]</span> <span class="o">=</span> <span class="n">Pc</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">tt_Pc</span><span class="p">[</span><span class="n">pt2</span><span class="p">[</span><span class="n">mask</span><span class="p">][</span><span class="n">inter</span><span class="p">],</span> <span class="n">pt1</span><span class="p">[</span><span class="n">mask</span><span class="p">][</span><span class="n">inter</span><span class="p">]]</span> <span class="o">=</span> <span class="n">Pc</span>
+            <span class="c1"># Save meniscii data for each throat into each connecting pore</span>
+            <span class="n">men_data</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">men_data</span><span class="p">[</span><span class="s2">&quot;Ps&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Ps</span>
+            <span class="n">men_data</span><span class="p">[</span><span class="s2">&quot;Ts&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Ts</span>
+            <span class="n">men_data</span><span class="p">[</span><span class="s2">&quot;cen&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">men_cen_coord</span>
+            <span class="n">men_data</span><span class="p">[</span><span class="s2">&quot;rad&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">tmen_rad</span><span class="p">][</span><span class="n">Ts</span><span class="p">]</span>
+
+        <span class="c1"># Change to lil for single throat lookups</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tt_Pc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tt_Pc</span><span class="o">.</span><span class="n">tolil</span><span class="p">()</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="s2">&quot;Coop filling finished in &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">around</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot; s&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_check_coop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pore</span><span class="p">,</span> <span class="n">queue</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Method run in loop after every pore invasion. All connecting throats</span>
+<span class="sd">        are now given access to the invading phase. Two throats with access to</span>
+<span class="sd">        the invading phase can cooperatively fill any pores that they are both</span>
+<span class="sd">        connected to, common pores.</span>
+
+<span class="sd">        The invasion of theses throats connected to the common pore is handled</span>
+<span class="sd">        elsewhere.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">net</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">network</span>
+        <span class="n">t_inv</span> <span class="o">=</span> <span class="s2">&quot;throat.invasion_sequence&quot;</span>
+        <span class="n">p_inv</span> <span class="o">=</span> <span class="s2">&quot;pore.invasion_sequence&quot;</span>
+        <span class="k">for</span> <span class="n">throat</span> <span class="ow">in</span> <span class="n">net</span><span class="o">.</span><span class="n">find_neighbor_throats</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pore</span><span class="p">):</span>
+            <span class="c1"># A pore has just been invaded, all it&#39;s throats now have</span>
+            <span class="c1"># An interface residing inside them</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="p">[</span><span class="n">t_inv</span><span class="p">][</span><span class="n">throat</span><span class="p">]</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                <span class="c1"># If the throat is not the invading throat that gave access</span>
+                <span class="c1"># to this pore, get the pores that this throat connects with</span>
+                <span class="n">a</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">net</span><span class="p">[</span><span class="s2">&quot;throat.conns&quot;</span><span class="p">][</span><span class="n">throat</span><span class="p">])</span>
+                <span class="c1"># Get a list of pre-calculated coop filling pressures for all</span>
+                <span class="c1"># Throats this throat can coop fill with</span>
+                <span class="n">ts_Pc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tt_Pc</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">throat</span><span class="p">]</span>
+                <span class="c1"># Network indices of throats that can act as filling pairs</span>
+                <span class="n">ts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tt_Pc</span><span class="o">.</span><span class="n">rows</span><span class="p">[</span><span class="n">throat</span><span class="p">]</span>
+                <span class="c1"># If there are any potential coop filling throats</span>
+                <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">ts_Pc</span><span class="p">)):</span>
+                    <span class="n">ts_Pc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">ts_Pc</span><span class="p">)</span>
+                    <span class="n">ts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">ts</span><span class="p">)</span>
+                    <span class="n">ts</span> <span class="o">=</span> <span class="n">ts</span><span class="p">[</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">ts_Pc</span><span class="p">)]</span>
+                    <span class="n">ts_Pc</span> <span class="o">=</span> <span class="n">ts_Pc</span><span class="p">[</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">ts_Pc</span><span class="p">)]</span>
+                    <span class="c1"># For each throat find the common pore and the uncommon</span>
+                    <span class="c1"># pores</span>
+                    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">ts</span><span class="p">):</span>
+                        <span class="c1"># Find common pore (cP) and uncommon pores (uPs)</span>
+                        <span class="n">b</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">net</span><span class="p">[</span><span class="s2">&quot;throat.conns&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">])</span>
+                        <span class="n">cP</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">b</span><span class="p">))</span>
+                        <span class="n">uPs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">symmetric_difference</span><span class="p">(</span><span class="n">b</span><span class="p">))</span>
+                        <span class="c1"># If the common pore is not invaded but the others are</span>
+                        <span class="c1"># The potential coop filling event can now happen</span>
+                        <span class="c1"># Add the coop pressure to the queue</span>
+                        <span class="k">if</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">p_inv</span><span class="p">][</span><span class="n">uPs</span><span class="p">]</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">p_inv</span><span class="p">][</span><span class="n">cP</span><span class="p">]</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+                            <span class="c1"># Coop pore filling fills the common pore</span>
+                            <span class="c1"># The throats that gave access are not invaded now</span>
+                            <span class="c1"># However, isolated throats between invaded pores</span>
+                            <span class="c1"># Are taken care of elsewhere...</span>
+                            <span class="n">hq</span><span class="o">.</span><span class="n">heappush</span><span class="p">(</span><span class="n">queue</span><span class="p">,</span> <span class="p">[</span><span class="n">ts_Pc</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="nb">list</span><span class="p">(</span><span class="n">cP</span><span class="p">),</span> <span class="s2">&quot;pore&quot;</span><span class="p">])</span></div>
+</pre></div>
+
+              </div>
+              
+              
+          </main>
+          
+
+      </div>
+    </div>
+  
+  <script src="../../../_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
+<footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2021, PMEAL.<br>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.3.0.<br>
+</p>
+    </div>
+    
+  </div>
+</footer>
+  </body>
+</html>

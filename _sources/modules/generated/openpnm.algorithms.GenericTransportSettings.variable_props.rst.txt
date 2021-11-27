@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.algorithms.GenericTransportSettings.variable\_props
+===========================================================
+
+.. currentmodule:: openpnm.algorithms
+
+attribute
+
+.. autoattribute:: openpnm.algorithms.GenericTransportSettings.variable_props
+

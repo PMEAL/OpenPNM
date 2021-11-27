@@ -1,0 +1,34 @@
+:noindex:
+
+.. automodule:: openpnm.models.misc.statistical_distributions
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+   
+      generic_distribution
+      match_histogram
+      normal
+      random
+      weibull
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   

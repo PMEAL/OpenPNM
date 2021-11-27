@@ -1,0 +1,69 @@
+TrapezoidsAndRectangles
+========================================
+
+.. currentmodule:: openpnm.geometry
+
+.. autoclass:: TrapezoidsAndRectangles
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            TrapezoidsAndRectangles.add_model
+            TrapezoidsAndRectangles.clear
+            TrapezoidsAndRectangles.copy
+            TrapezoidsAndRectangles.filter_by_label
+            TrapezoidsAndRectangles.fromkeys
+            TrapezoidsAndRectangles.get
+            TrapezoidsAndRectangles.get_conduit_data
+            TrapezoidsAndRectangles.interleave_data
+            TrapezoidsAndRectangles.interpolate_data
+            TrapezoidsAndRectangles.items
+            TrapezoidsAndRectangles.keys
+            TrapezoidsAndRectangles.labels
+            TrapezoidsAndRectangles.num_pores
+            TrapezoidsAndRectangles.num_throats
+            TrapezoidsAndRectangles.params
+            TrapezoidsAndRectangles.pop
+            TrapezoidsAndRectangles.popitem
+            TrapezoidsAndRectangles.pores
+            TrapezoidsAndRectangles.props
+            TrapezoidsAndRectangles.regenerate_models
+            TrapezoidsAndRectangles.remove_model
+            TrapezoidsAndRectangles.set_label
+            TrapezoidsAndRectangles.set_locations
+            TrapezoidsAndRectangles.setdefault
+            TrapezoidsAndRectangles.show_hist
+            TrapezoidsAndRectangles.throats
+            TrapezoidsAndRectangles.to_global
+            TrapezoidsAndRectangles.to_indices
+            TrapezoidsAndRectangles.to_local
+            TrapezoidsAndRectangles.to_mask
+            TrapezoidsAndRectangles.update
+            TrapezoidsAndRectangles.values
+   
+   
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            TrapezoidsAndRectangles.Np
+            TrapezoidsAndRectangles.Nt
+            TrapezoidsAndRectangles.Ps
+            TrapezoidsAndRectangles.Ts
+            TrapezoidsAndRectangles.models
+            TrapezoidsAndRectangles.name
+            TrapezoidsAndRectangles.network
+            TrapezoidsAndRectangles.physics
+            TrapezoidsAndRectangles.project
+            TrapezoidsAndRectangles.settings
+   
+   

@@ -1,0 +1,8 @@
+:orphan:
+
+max
+================================
+
+.. currentmodule:: openpnm.integrators
+
+.. automethod:: Solution.max

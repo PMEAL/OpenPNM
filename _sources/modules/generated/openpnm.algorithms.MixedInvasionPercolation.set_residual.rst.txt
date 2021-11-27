@@ -1,0 +1,8 @@
+:orphan:
+
+set_residual
+========================================================
+
+.. currentmodule:: openpnm.algorithms
+
+.. automethod:: MixedInvasionPercolation.set_residual

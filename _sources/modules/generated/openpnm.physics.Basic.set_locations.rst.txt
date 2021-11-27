@@ -1,0 +1,8 @@
+:orphan:
+
+set_locations
+===================================
+
+.. currentmodule:: openpnm.physics
+
+.. automethod:: Basic.set_locations

@@ -1,0 +1,6 @@
+eotvos
+======
+
+.. currentmodule:: openpnm.models.phases.surface_tension
+
+.. autofunction:: eotvos

@@ -1,0 +1,8 @@
+:orphan:
+
+find_connecting_throat
+===============================================
+
+.. currentmodule:: openpnm.network
+
+.. automethod:: Delaunay.find_connecting_throat

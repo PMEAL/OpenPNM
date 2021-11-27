@@ -1,0 +1,8 @@
+:orphan:
+
+remove_source
+=========================================================
+
+.. currentmodule:: openpnm.algorithms
+
+.. automethod:: TransientIonicConduction.remove_source

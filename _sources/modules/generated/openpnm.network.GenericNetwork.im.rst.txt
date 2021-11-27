@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.network.GenericNetwork.im
+=================================
+
+.. currentmodule:: openpnm.network
+
+attribute
+
+.. autoproperty:: openpnm.network.GenericNetwork.im
+

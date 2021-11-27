@@ -1,0 +1,8 @@
+:orphan:
+
+params
+===============================
+
+.. currentmodule:: openpnm.physics
+
+.. automethod:: Standard.params

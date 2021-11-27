@@ -1,0 +1,38 @@
+﻿:noindex:
+
+.. automodule:: openpnm.core
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :nosignatures:
+      :toctree:
+
+   
+      Base
+      LabelMixin
+      LegacyMixin
+      ModelsDict
+      ModelsMixin
+      ParamMixin
+      Subdomain
+   
+   
+
+   
+   
+   
+
+   
+   
+   

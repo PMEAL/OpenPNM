@@ -1,0 +1,8 @@
+:orphan:
+
+transpose
+===============================================
+
+.. currentmodule:: openpnm.integrators
+
+.. automethod:: TransientSolution.transpose

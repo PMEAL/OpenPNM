@@ -1,0 +1,660 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>openpnm.phases._multiphase &#8212; OpenPNM 2.8.2 documentation</title>
+    
+  <link href="../../../_static/css/theme.css" rel="stylesheet">
+  <link href="../../../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/blank.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
+    
+  <link rel="preload" as="script" href="../../../_static/js/index.be7d3bbb2ef33a8344ce.js">
+
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/clipboard.min.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/custom.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+
+<a class="navbar-brand" href="https://www.openpnm.org">
+  <img src="../../../_static/openpnm_logo.png" class="logo" alt="logo">
+</a>
+
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class=" collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../user_guide/index.html">
+  User Guide
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../modules/index.html">
+  Module Reference
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../examples/examples.html">
+  Examples
+ </a>
+</li>
+
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/PMEAL/OpenPNM" rel="noopener" target="_blank" title="GitHub">
+            <span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://openpnm.substack.com/" rel="noopener" target="_blank" title="Substack">
+            <span><i class="fas fa-envelope-square"></i></span>
+            <label class="sr-only">Substack</label>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://twitter.com/OpenPNM" rel="noopener" target="_blank" title="Twitter">
+            <span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label>
+          </a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    
+  </div>
+</nav>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <h1>Source code for openpnm.phases._multiphase</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">openpnm.models.misc</span> <span class="k">as</span> <span class="nn">misc</span>
+<span class="kn">from</span> <span class="nn">openpnm.phases</span> <span class="kn">import</span> <span class="n">GenericPhase</span> <span class="k">as</span> <span class="n">GenericPhase</span>
+<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">logging</span><span class="p">,</span> <span class="n">SettingsAttr</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">MultiPhaseSettings</span><span class="p">:</span>
+    <span class="n">phases</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">throat_occupancy</span> <span class="o">=</span> <span class="s1">&#39;manual&#39;</span>
+    <span class="n">partition_coef_prefix</span> <span class="o">=</span> <span class="s1">&#39;throat.partition_coef&#39;</span>
+
+
+<div class="viewcode-block" id="MultiPhase"><a class="viewcode-back" href="../../../modules/generated/openpnm.phases.MultiPhase.html#openpnm.phases.MultiPhase">[docs]</a><span class="k">class</span> <span class="nc">MultiPhase</span><span class="p">(</span><span class="n">GenericPhase</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates Phase object that represents a multiphase system consisting of</span>
+<span class="sd">    a given list of GenericPhases.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    network : GenericNetwork</span>
+<span class="sd">        The network to which this phase object will be attached.</span>
+<span class="sd">    name : str, optional</span>
+<span class="sd">        The name of the phase. This is useful to keep track of the objects</span>
+<span class="sd">        throughout the simulation. The name must be unique to the project.</span>
+<span class="sd">        If no name is given, one is generated.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import scipy as sp</span>
+<span class="sd">    &gt;&gt;&gt; import openpnm as op</span>
+<span class="sd">    &gt;&gt;&gt; from openpnm.phases import Air, Water, MultiPhase</span>
+
+<span class="sd">    &gt;&gt;&gt; net = op.network.Cubic(shape=[5, 5, 5])</span>
+<span class="sd">    &gt;&gt;&gt; air = Air(network=net, name=&#39;air&#39;)  # Create two pure phases</span>
+<span class="sd">    &gt;&gt;&gt; water = Water(network=net, name=&#39;water&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; mphase = MultiPhase(network=net, phases=[air, water], name=&#39;multi&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; Ps = net[&#39;pore.coords&#39;][:, 0] &lt; 3  # Pick some pores to be air filled</span>
+<span class="sd">    &gt;&gt;&gt; Ts = net.find_neighbor_throats(pores=Ps)  # Find neighboring throats</span>
+<span class="sd">    &gt;&gt;&gt; Ts = net.to_mask(throats=Ts)  # Convert throat indices to mask</span>
+<span class="sd">    &gt;&gt;&gt; mphase.set_occupancy(phase=air, Pvals=Ps, Tvals=Ts)  # Assign occupancies</span>
+<span class="sd">    &gt;&gt;&gt; mphase.set_occupancy(phase=water, Pvals=~Ps, Tvals=~Ts)</span>
+
+<span class="sd">    Air and water have uniform viscosity values throughout, so the</span>
+<span class="sd">    peak-to-peak distance is 0, while the mixture phase has the viscosity</span>
+<span class="sd">    of air in some locations and water in others, hence a heterogenous</span>
+<span class="sd">    viscosity array:</span>
+
+<span class="sd">    &gt;&gt;&gt; np.ptp(water[&#39;pore.viscosity&#39;]) == 0.</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; np.ptp(air[&#39;pore.viscosity&#39;]) == 0.</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; np.ptp(mphase[&#39;pore.viscosity&#39;]) == 0.</span>
+<span class="sd">    False</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phases</span><span class="o">=</span><span class="p">[],</span> <span class="n">settings</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span> <span class="o">=</span> <span class="n">SettingsAttr</span><span class="p">(</span><span class="n">MultiPhaseSettings</span><span class="p">,</span> <span class="n">settings</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">settings</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.occupancy.all&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Np</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.occupancy.all&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Nt</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+
+        <span class="c1"># Pressure/temperature must come from constituent phases</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;pore.pressure&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="c1"># Add a dummy model for assembling the global parition</span>
+        <span class="c1"># coefficients array. The dummy model only accepts &#39;target&#39; and</span>
+        <span class="c1"># kwargs. When a binary partition coefficient is added to the</span>
+        <span class="c1"># MultiPhase, we manually append the binary partition coefficient</span>
+        <span class="c1"># propname as a keyword argument to this dummy model, so that our</span>
+        <span class="c1"># dependency handler is notified of this dependency!</span>
+        <span class="n">partition_coef_global</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;partition_coef_prefix&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;.all&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="n">partition_coef_global</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">_dummy</span><span class="p">)</span>
+
+        <span class="c1"># Add supplied phases to phases dict and initialize occupancy to 0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_phases</span><span class="p">(</span><span class="n">phases</span><span class="p">)</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;MultiPhase is a beta feature. Functionality may change!&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">vals</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__getitem__</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">vals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interleave_data</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">vals</span>
+
+    <span class="k">def</span> <span class="nf">_get_phases</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">phases</span> <span class="o">=</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="p">[</span><span class="n">item</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="p">[</span><span class="n">item</span><span class="p">]</span>
+                  <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;phases&#39;</span><span class="p">]}</span>
+        <span class="k">return</span> <span class="n">phases</span>
+
+    <span class="n">phases</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">fget</span><span class="o">=</span><span class="n">_get_phases</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_update_occupancy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Updates &#39;occupancy.all&#39; by summing up all occupancies&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;pore&quot;</span><span class="p">,</span> <span class="s2">&quot;throat&quot;</span><span class="p">]:</span>
+            <span class="n">dict_</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">elem</span><span class="si">}</span><span class="s2">.occupancy&quot;</span><span class="p">]</span>
+            <span class="n">dict_</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">elem</span><span class="si">}</span><span class="s2">.occupancy.all&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">elem</span><span class="si">}</span><span class="s2">.occupancy.all&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">dict_</span><span class="o">.</span><span class="n">values</span><span class="p">()),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<div class="viewcode-block" id="MultiPhase.add_phases"><a class="viewcode-back" href="../../../modules/generated/openpnm.phases.MultiPhase.add_phases.html#openpnm.phases.MultiPhase.add_phases">[docs]</a>    <span class="k">def</span> <span class="nf">add_phases</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phases</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds supplied phases to the MultiPhase object and initializes</span>
+<span class="sd">        occupancy to 0. It does not return a value.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        phases : List[GenericPhase]</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">phases</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">phases</span><span class="p">,</span> <span class="n">ndmin</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">phase</span> <span class="ow">in</span> <span class="n">phases</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">phase</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;phases&#39;</span><span class="p">]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;phases&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">phase</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+                <span class="bp">self</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;pore.occupancy.</span><span class="si">{</span><span class="n">phase</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.</span>
+                <span class="bp">self</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;throat.occupancy.</span><span class="si">{</span><span class="n">phase</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.</span></div>
+
+<div class="viewcode-block" id="MultiPhase.set_binary_partition_coef"><a class="viewcode-back" href="../../../modules/generated/openpnm.phases.MultiPhase.set_binary_partition_coef.html#openpnm.phases.MultiPhase.set_binary_partition_coef">[docs]</a>    <span class="k">def</span> <span class="nf">set_binary_partition_coef</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phases</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets binary partition coefficient as defined by the interface</span>
+<span class="sd">        concentration ratio of phase 1 to phase 2.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        phases : List[GenericPhase]</span>
+<span class="sd">            List of the two phases for which the binary partition</span>
+<span class="sd">            coefficient model is being added.</span>
+<span class="sd">        model : OpenPNM model</span>
+<span class="sd">            Model for calculating the binary partition coefficient.</span>
+<span class="sd">        kwargs : dict</span>
+<span class="sd">            Keyword arguments to be passed to the ``model``.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import openpnm as op</span>
+<span class="sd">        &gt;&gt;&gt; from openpnm.phases import Air, Water, MultiPhase</span>
+<span class="sd">        &gt;&gt;&gt; from openpnm.models.misc import constant</span>
+
+<span class="sd">        &gt;&gt;&gt; net = op.network.Cubic(shape=[5, 5, 5])</span>
+<span class="sd">        &gt;&gt;&gt; air = Air(network=net, name=&#39;air&#39;)  # Create two pure phases</span>
+<span class="sd">        &gt;&gt;&gt; water = Water(network=net, name=&#39;water&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; mphase = MultiPhase(network=net, phases=[air, water], name=&#39;multi&#39;)</span>
+
+<span class="sd">        Now, assign some pores to air and the rest to water</span>
+
+<span class="sd">        &gt;&gt;&gt; Ps = net[&#39;pore.coords&#39;][:, 0] &lt; 3  # Pick some pores to be air filled</span>
+<span class="sd">        &gt;&gt;&gt; Ts = net.find_neighbor_throats(pores=Ps)  # Find neighboring throats</span>
+<span class="sd">        &gt;&gt;&gt; Ts = net.to_mask(throats=Ts)  # Convert throat indices to mask</span>
+<span class="sd">        &gt;&gt;&gt; mphase.set_occupancy(phase=air, Pvals=Ps, Tvals=Ts)  # Assign occupancies</span>
+<span class="sd">        &gt;&gt;&gt; mphase.set_occupancy(phase=water, Pvals=~Ps, Tvals=~Ts)</span>
+
+<span class="sd">        Now, add an interface model for binary partition coefficient</span>
+
+<span class="sd">        &gt;&gt;&gt; mphase.set_binary_partition_coef(phases=[air, water],</span>
+<span class="sd">        ...                                  model=constant,</span>
+<span class="sd">        ...                                  value=0.5)</span>
+
+<span class="sd">        Now, verify that K12 for interface throats is 0.5</span>
+
+<span class="sd">        &gt;&gt;&gt; Ts_interface = net.find_neighbor_throats(Ps, mode=&quot;xor&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; K12_interface = mphase[&quot;throat.partition_coef.all&quot;][Ts_interface]</span>
+<span class="sd">        &gt;&gt;&gt; assert K12_interface.mean() == 0.5</span>
+
+<span class="sd">        Finally, verify that K12 for non-interface throats is 1.</span>
+
+<span class="sd">        &gt;&gt;&gt; Ts_rest = ~ np.isin(net.Ts, Ts_interface)</span>
+<span class="sd">        &gt;&gt;&gt; K12_rest = mphase[&quot;throat.partition_coef.all&quot;][Ts_rest]</span>
+<span class="sd">        &gt;&gt;&gt; assert K12_rest.mean() == 1.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">phases</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;&#39;phases&#39; must contain exactly two elements!&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Add partition coefficient interface model to the MultiPhase</span>
+        <span class="n">propname_prefix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;partition_coef_prefix&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_interface_prop</span><span class="p">(</span><span class="n">propname_prefix</span><span class="p">,</span> <span class="n">phases</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c1"># Update global partition coef. model&#39;s args (for dependency handling)</span>
+        <span class="n">partition_coef_global</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;partition_coef_prefix&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;.all&quot;</span>
+        <span class="n">K_global_model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">models</span><span class="p">[</span><span class="n">partition_coef_global</span><span class="p">]</span>
+        <span class="c1"># Append binary partition coefficient propname to model args</span>
+        <span class="n">propname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_format_interface_prop</span><span class="p">(</span><span class="n">propname_prefix</span><span class="p">,</span> <span class="n">phases</span><span class="p">)</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;K_</span><span class="si">{</span><span class="n">phases</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">phases</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">K_global_model</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">propname</span>
+
+        <span class="c1"># Regenerate &#39;throat.parition_coef.all&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">regenerate_models</span><span class="p">(</span><span class="n">partition_coef_global</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_add_interface_prop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">propname</span><span class="p">,</span> <span class="n">phases</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Helper method used to add interface models to the ``MultiPhase``</span>
+<span class="sd">        object by augmenting.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        For convenience and as an OpenPNM convention, the ``propname`` is</span>
+<span class="sd">        augmented as outlined by the following example.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        Let&#39;s say the two phases corresponding to the interface model are</span>
+<span class="sd">        named: &#39;air&#39; and &#39;water&#39;, and the interface propname to be added</span>
+<span class="sd">        is &#39;throat.foo&#39;. After augmentation, &#39;throat.foo.air:water&#39; will</span>
+<span class="sd">        be the propname that&#39;s stored on the ``MultiPhase`` object.</span>
+
+<span class="sd">        Note that because of this convention, the order of the phases that</span>
+<span class="sd">        are passed to this method is important.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Add &quot;throat&quot; keyword to the begining of propname if no identifier is found</span>
+        <span class="k">if</span> <span class="n">propname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;pore&quot;</span><span class="p">,</span> <span class="s2">&quot;throat&quot;</span><span class="p">]:</span>
+            <span class="n">propname</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;throat.</span><span class="si">{</span><span class="n">propname</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="c1"># Check propname is throat property</span>
+        <span class="k">if</span> <span class="n">propname</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;pore&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;&#39;propname&#39; must be a throat property&quot;</span><span class="p">)</span>
+        <span class="c1"># Add model to Multiphase</span>
+        <span class="n">propname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_format_interface_prop</span><span class="p">(</span><span class="n">propname</span><span class="p">,</span> <span class="n">phases</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_format_interface_prop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">propname</span><span class="p">,</span> <span class="n">phases</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns formatted interface propname.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        propname : str</span>
+<span class="sd">            Dictionary key of the interface property.</span>
+<span class="sd">        phases : List[GenericPhase]</span>
+<span class="sd">            List of two phases that together form the interface property.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import openpnm as op</span>
+<span class="sd">        &gt;&gt;&gt; net = op.network.Cubic(shape=[5, 5, 5])</span>
+<span class="sd">        &gt;&gt;&gt; air = op.phases.Air(network=net, name=&#39;air&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; water = op.phases.Water(network=net, name=&#39;water&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; mphase = op.phases.MultiPhase(network=net, phases=[air, water])</span>
+<span class="sd">        &gt;&gt;&gt; mphase._format_interface_prop(propname=&quot;throat.foo&quot;, phases=[air, water])</span>
+<span class="sd">        &#39;throat.foo.air:water&#39;</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">prefix</span> <span class="o">=</span> <span class="n">propname</span>
+        <span class="n">suffix</span> <span class="o">=</span> <span class="s2">&quot;:&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">phase</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">phase</span> <span class="ow">in</span> <span class="n">phases</span><span class="p">)</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">suffix</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_get_phases_names</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">formatted_propname</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Retrieves phases&#39; names from a formatted propname&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">formatted_propname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_assemble_partition_coef_global</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Updates the global partition coefficient array&quot;&quot;&quot;</span>
+        <span class="n">conns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">conns</span>
+        <span class="n">partition_coef_models</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">prefix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;partition_coef_prefix&quot;</span><span class="p">]</span>
+        <span class="n">K_global</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Nt</span><span class="p">)</span>
+        <span class="n">partition_coef_global</span> <span class="o">=</span> <span class="n">prefix</span> <span class="o">+</span> <span class="s2">&quot;.all&quot;</span>
+
+        <span class="c1"># Find all binary partition coefficient models</span>
+        <span class="k">for</span> <span class="n">model_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">model_key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">prefix</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">model_key</span> <span class="o">!=</span> <span class="n">partition_coef_global</span><span class="p">:</span>
+                    <span class="n">partition_coef_models</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">model_key</span><span class="p">)</span>
+
+        <span class="c1"># Modify the global partition coefficient for each phase pair</span>
+        <span class="k">for</span> <span class="n">propname</span> <span class="ow">in</span> <span class="n">partition_coef_models</span><span class="p">:</span>
+            <span class="n">K12</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">propname</span><span class="p">]</span>
+            <span class="n">phases_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_phases_names</span><span class="p">(</span><span class="n">propname</span><span class="p">)</span>
+            <span class="n">S1</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;pore.occupancy.</span><span class="si">{</span><span class="n">phases_names</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">][</span><span class="n">conns</span><span class="p">]</span>
+            <span class="n">S2</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;pore.occupancy.</span><span class="si">{</span><span class="n">phases_names</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">][</span><span class="n">conns</span><span class="p">]</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">S1</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">S2</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])</span> <span class="o">==</span> <span class="mf">2.</span>
+            <span class="n">K_global</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">K12</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">S2</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">S1</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])</span> <span class="o">==</span> <span class="mf">2.</span>
+            <span class="n">K_global</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">K12</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">K_global</span>
+
+<div class="viewcode-block" id="MultiPhase.interleave_data"><a class="viewcode-back" href="../../../modules/generated/openpnm.phases.MultiPhase.interleave_data.html#openpnm.phases.MultiPhase.interleave_data">[docs]</a>    <span class="k">def</span> <span class="nf">interleave_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prop</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gathers property values from component phases to build a single</span>
+<span class="sd">        array.</span>
+
+<span class="sd">        If the requested ``prop`` is not on this MultiPhase, then a search</span>
+<span class="sd">        is conducted on all associated phase objects, and values from each</span>
+<span class="sd">        are assembled into a single array.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        prop : str</span>
+<span class="sd">            The property to be retrieved.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        ndarray</span>
+<span class="sd">            An array containing the specified property retrieved from each</span>
+<span class="sd">            component phase and assembled based on the specified mixing</span>
+<span class="sd">            rule.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">element</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_element</span><span class="p">(</span><span class="n">prop</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_count</span><span class="p">(</span><span class="n">element</span><span class="o">=</span><span class="n">element</span><span class="p">)],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="c1"># Retrieve property from constituent phases (weight = occupancy)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">phase</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">phases</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                <span class="n">vals</span> <span class="o">+=</span> <span class="n">phase</span><span class="p">[</span><span class="n">prop</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">element</span><span class="si">}</span><span class="s2">.occupancy.</span><span class="si">{</span><span class="n">phase</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
+        <span class="c1"># Otherwise - if not found - retrieve from super class</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">vals</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">interleave_data</span><span class="p">(</span><span class="n">prop</span><span class="p">)</span>
+
+        <span class="c1"># Check for consistency of occupancy values (i.e. add up to 1)</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">element</span><span class="si">}</span><span class="s2">.occupancy.all&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="mf">1.0</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_update_occupancy</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">element</span><span class="si">}</span><span class="s2">.occupancy.all&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="mf">1.0</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Occupancy doesn&#39;t add to unity in all </span><span class="si">{</span><span class="n">element</span><span class="si">}</span><span class="s2">s&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">vals</span></div>
+
+<div class="viewcode-block" id="MultiPhase.regenerate_models"><a class="viewcode-back" href="../../../modules/generated/openpnm.phases.MultiPhase.regenerate_models.html#openpnm.phases.MultiPhase.regenerate_models">[docs]</a>    <span class="k">def</span> <span class="nf">regenerate_models</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">propnames</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="p">[],</span> <span class="n">deep</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Regenerate models associated with the Multiphase object</span>
+
+<span class="sd">        This method works by first regenerating the models associated with</span>
+<span class="sd">        the constituent phases, and then regenerating Multiphase models.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        propnames : List[str] or str</span>
+<span class="sd">            The list of property names to be regenerated. If None are</span>
+<span class="sd">            given then ALL models are re-run (except for those whose</span>
+<span class="sd">            ``regen_mode`` is &#39;constant&#39;).</span>
+<span class="sd">        exclude : List[str]</span>
+<span class="sd">            Since the default behavior is to run ALL models, this can be</span>
+<span class="sd">            used to exclude specific models. It may be more convenient to</span>
+<span class="sd">            supply as list of 2 models to exclude than to specify 8 models</span>
+<span class="sd">            to include.</span>
+<span class="sd">        deep : bool</span>
+<span class="sd">            Specifies whether or not to regenerate models on all</span>
+<span class="sd">            associated objects. For instance, if ``True``, then all</span>
+<span class="sd">            Physics models will be regenerated when method is called on</span>
+<span class="sd">            the corresponding Phase. The default is ``False``. The method</span>
+<span class="sd">            does not work in reverse, so regenerating models on a Physics</span>
+<span class="sd">            will not update a Phase.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Regenerate models associated with phases within MultiPhase object</span>
+        <span class="k">for</span> <span class="n">phase</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">phases</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">phase</span><span class="o">.</span><span class="n">regenerate_models</span><span class="p">(</span><span class="n">propnames</span><span class="o">=</span><span class="n">propnames</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="n">exclude</span><span class="p">,</span> <span class="n">deep</span><span class="o">=</span><span class="n">deep</span><span class="p">)</span>
+        <span class="c1"># Regenerate models specific to MultiPhase object</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">regenerate_models</span><span class="p">(</span><span class="n">propnames</span><span class="o">=</span><span class="n">propnames</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="n">exclude</span><span class="p">,</span> <span class="n">deep</span><span class="o">=</span><span class="n">deep</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_set_automatic_throat_occupancy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;mean&quot;</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Automatically interpolates throat occupancy based on that in</span>
+<span class="sd">        adjacent pores. This method doesn&#39;t return any value.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        mode : str</span>
+<span class="sd">            Interpolation method, ex. &#39;mean&#39; sets the throat occupancy as</span>
+<span class="sd">            the average of that in adjacent pores, while &#39;min&#39; sets it to</span>
+<span class="sd">            the minimum of the two. Options are &#39;mean&#39;, &#39;min&#39;, and &#39;max&#39;.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;throat_occupancy&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;automatic&#39;</span>
+        <span class="k">for</span> <span class="n">phase</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">phases</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span>
+                <span class="n">propname</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;throat.occupancy.</span><span class="si">{</span><span class="n">phase</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">model</span><span class="o">=</span><span class="n">misc</span><span class="o">.</span><span class="n">from_neighbor_pores</span><span class="p">,</span>
+                <span class="n">prop</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;pore.occupancy.</span><span class="si">{</span><span class="n">phase</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">mode</span><span class="o">=</span><span class="n">mode</span>
+            <span class="p">)</span>
+
+<div class="viewcode-block" id="MultiPhase.set_occupancy"><a class="viewcode-back" href="../../../modules/generated/openpnm.phases.MultiPhase.set_occupancy.html#openpnm.phases.MultiPhase.set_occupancy">[docs]</a>    <span class="k">def</span> <span class="nf">set_occupancy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">Pvals</span><span class="o">=</span><span class="p">[],</span> <span class="n">Tvals</span><span class="o">=</span><span class="p">[],</span> <span class="n">pores</span><span class="o">=</span><span class="p">[],</span> <span class="n">throats</span><span class="o">=</span><span class="p">[]):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Specifies occupancy of a phase in each pore and/or throat. This</span>
+<span class="sd">        method doesn&#39;t return any value.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        phase : GenericPhase</span>
+<span class="sd">            The phase whose occupancy is being specified.</span>
+<span class="sd">        Pvals : array_like</span>
+<span class="sd">            The volume fraction of ``phase`` in each pore. This array must</span>
+<span class="sd">            be Np-long, except when ``pores`` is also specified, where in</span>
+<span class="sd">            that case they must be of equal length. If a scalar is</span>
+<span class="sd">            received, it is applied to all the pores. If nothing is passed,</span>
+<span class="sd">            ``Pvals=1.0`` will be assumed.</span>
+<span class="sd">        Tvals : array_like</span>
+<span class="sd">            The volume fraction of ``phase`` in each throat. This array</span>
+<span class="sd">            must be Nt-long, except when ``throats`` is also specified,</span>
+<span class="sd">            where in that case they must be of equal length. If a scalar</span>
+<span class="sd">            is received it is applied to all the throats. If nothing is</span>
+<span class="sd">            passed, ``Tvals=1.0`` will be assumed.</span>
+<span class="sd">        pores : array_like</span>
+<span class="sd">            The location of pores whose occupancy is to be set.</span>
+<span class="sd">        throats : array_like</span>
+<span class="sd">            The location of throats whose occupancy is to be set.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># TODO: pores/throats could also be masks</span>
+
+        <span class="n">Pvals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">Pvals</span><span class="p">,</span> <span class="n">ndmin</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">Tvals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">Tvals</span><span class="p">,</span> <span class="n">ndmin</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">pores</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">pores</span><span class="p">,</span> <span class="n">ndmin</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">throats</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">throats</span><span class="p">,</span> <span class="n">ndmin</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># Check for size consistency of the arguments</span>
+        <span class="k">if</span> <span class="n">Pvals</span><span class="o">.</span><span class="n">size</span> <span class="ow">and</span> <span class="n">pores</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">Pvals</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">pores</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">Pvals</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">pores</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Pvals and pores must be the same size.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">Tvals</span><span class="o">.</span><span class="n">size</span> <span class="ow">and</span> <span class="n">throats</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">Tvals</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">throats</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">Tvals</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">throats</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Tvals and throats must be the same size.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Check if the passed phase is already part of MultiPhase object</span>
+        <span class="k">if</span> <span class="n">phase</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">phase</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> doesn&#39;t belong to this project&quot;</span><span class="p">)</span>
+        <span class="c1"># Add the passed phase to MultiPhase object if not found</span>
+        <span class="k">if</span> <span class="n">phase</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;phases&#39;</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_phases</span><span class="p">(</span><span class="n">phase</span><span class="p">)</span>
+
+        <span class="c1"># Check for value consistency of the arguments</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">Pvals</span> <span class="o">&gt;</span> <span class="mf">1.0</span><span class="p">)</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">Pvals</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s1">&#39;Received Pvals contain volume fractions outside &#39;</span>
+                            <span class="o">+</span> <span class="s1">&#39;the range of 0 to 1&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">Tvals</span> <span class="o">&gt;</span> <span class="mf">1.0</span><span class="p">)</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">Tvals</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s1">&#39;Received Tvals contain volume fractions outside &#39;</span>
+                            <span class="o">+</span> <span class="s1">&#39;the range of 0 to 1&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">Pvals</span><span class="o">.</span><span class="n">size</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">pores</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+            <span class="n">pores</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pores</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">Tvals</span><span class="o">.</span><span class="n">size</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">throats</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+            <span class="n">throats</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">throats</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">pores</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+            <span class="n">Pvals</span> <span class="o">=</span> <span class="n">Pvals</span> <span class="k">if</span> <span class="n">Pvals</span><span class="o">.</span><span class="n">size</span> <span class="k">else</span> <span class="mf">1.0</span>
+            <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.occupancy.&#39;</span> <span class="o">+</span> <span class="n">phase</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="n">pores</span><span class="p">]</span> <span class="o">=</span> <span class="n">Pvals</span>
+        <span class="k">if</span> <span class="n">throats</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+            <span class="n">Tvals</span> <span class="o">=</span> <span class="n">Tvals</span> <span class="k">if</span> <span class="n">Tvals</span><span class="o">.</span><span class="n">size</span> <span class="k">else</span> <span class="mf">1.0</span>
+            <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.occupancy.&#39;</span> <span class="o">+</span> <span class="n">phase</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="n">throats</span><span class="p">]</span> <span class="o">=</span> <span class="n">Tvals</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;throat_occupancy&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;automatic&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">regenerate_models</span><span class="p">(</span><span class="n">propnames</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;throat.occupancy.</span><span class="si">{</span><span class="n">phase</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_occupancy</span><span class="p">()</span></div></div>
+
+
+<span class="k">def</span> <span class="nf">_dummy</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Dummy model to store propnames as kwargs for dependency handling&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">target</span><span class="o">.</span><span class="n">_assemble_partition_coef_global</span><span class="p">()</span>
+</pre></div>
+
+              </div>
+              
+              
+          </main>
+          
+
+      </div>
+    </div>
+  
+  <script src="../../../_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
+<footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2021, PMEAL.<br>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.3.0.<br>
+</p>
+    </div>
+    
+  </div>
+</footer>
+  </body>
+</html>

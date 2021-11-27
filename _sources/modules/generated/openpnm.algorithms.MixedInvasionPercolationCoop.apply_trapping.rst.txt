@@ -1,0 +1,8 @@
+:orphan:
+
+apply_trapping
+==============================================================
+
+.. currentmodule:: openpnm.algorithms
+
+.. automethod:: MixedInvasionPercolationCoop.apply_trapping

@@ -1,0 +1,6 @@
+filter\_pores\_by\_z
+====================
+
+.. currentmodule:: openpnm.topotools
+
+.. autofunction:: filter_pores_by_z

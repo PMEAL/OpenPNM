@@ -1,0 +1,8 @@
+:orphan:
+
+newbyteorder
+=========================================
+
+.. currentmodule:: openpnm.integrators
+
+.. automethod:: Solution.newbyteorder

@@ -1,0 +1,31 @@
+:noindex:
+
+.. automodule:: openpnm.models.physics.electrical_conductance
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+   
+      generic_electrical
+      series_resistors
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   

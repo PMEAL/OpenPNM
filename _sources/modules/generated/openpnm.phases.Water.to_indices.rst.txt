@@ -1,0 +1,8 @@
+:orphan:
+
+to_indices
+===============================
+
+.. currentmodule:: openpnm.phases
+
+.. automethod:: Water.to_indices

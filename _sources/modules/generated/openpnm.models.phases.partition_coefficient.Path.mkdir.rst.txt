@@ -1,0 +1,8 @@
+:orphan:
+
+mkdir
+======================================================
+
+.. currentmodule:: openpnm.models.phases.partition_coefficient
+
+.. automethod:: Path.mkdir

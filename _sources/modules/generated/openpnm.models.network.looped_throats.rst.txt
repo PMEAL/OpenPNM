@@ -1,0 +1,6 @@
+looped\_throats
+===============
+
+.. currentmodule:: openpnm.models.network
+
+.. autofunction:: looped_throats

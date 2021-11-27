@@ -1,0 +1,40 @@
+:noindex:
+
+.. automodule:: openpnm.models.geometry.diffusive_size_factors
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+   
+      circles_and_rectangles
+      cones_and_cylinders
+      cubes_and_cuboids
+      intersecting_cones
+      intersecting_pyramids
+      intersecting_trapezoids
+      ncylinders_in_series
+      pyramids_and_cuboids
+      spheres_and_cylinders
+      squares_and_rectangles
+      trapezoids_and_rectangles
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   

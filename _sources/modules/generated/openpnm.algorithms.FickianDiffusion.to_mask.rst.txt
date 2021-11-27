@@ -1,0 +1,8 @@
+:orphan:
+
+to_mask
+===========================================
+
+.. currentmodule:: openpnm.algorithms
+
+.. automethod:: FickianDiffusion.to_mask

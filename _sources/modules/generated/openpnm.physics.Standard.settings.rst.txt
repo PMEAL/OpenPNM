@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.physics.Standard.settings
+=================================
+
+.. currentmodule:: openpnm.physics
+
+attribute
+
+.. autoproperty:: openpnm.physics.Standard.settings
+

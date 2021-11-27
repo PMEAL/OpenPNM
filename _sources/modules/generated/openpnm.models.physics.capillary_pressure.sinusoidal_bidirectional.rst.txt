@@ -1,0 +1,6 @@
+sinusoidal\_bidirectional
+=========================
+
+.. currentmodule:: openpnm.models.physics.capillary_pressure
+
+.. autofunction:: sinusoidal_bidirectional

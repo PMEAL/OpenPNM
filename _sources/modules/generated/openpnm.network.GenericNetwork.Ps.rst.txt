@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.network.GenericNetwork.Ps
+=================================
+
+.. currentmodule:: openpnm.network
+
+attribute
+
+.. autoproperty:: openpnm.network.GenericNetwork.Ps
+
