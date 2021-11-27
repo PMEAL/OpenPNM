@@ -209,6 +209,7 @@
 <span class="sd">        The dictionary key for the pore volume array</span>
 <span class="sd">    throat_volume : str</span>
 <span class="sd">        The dictionary key for the throat volume array</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">phase</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
     <span class="n">access_limited</span> <span class="o">=</span> <span class="kc">True</span>
@@ -228,7 +229,7 @@
 <span class="sd">    network : GenericNetwork</span>
 <span class="sd">        The Network upon which this simulation should be run</span>
 <span class="sd">    name : str, optional</span>
-<span class="sd">        An identifying name for the object.  If none is given then one is</span>
+<span class="sd">        An identifying name for the object. If none is given then one is</span>
 <span class="sd">        generated.</span>
 
 <span class="sd">    Notes</span>
@@ -245,7 +246,7 @@
 <span class="sd">    &lt;https://en.wikipedia.org/wiki/Percolation_theory&gt;`_</span>
 
 <span class="sd">    If the simulation is repeated for increasing threshold values until the</span>
-<span class="sd">    entire domain is invaded, then a percoaltion curve is obtained.  The</span>
+<span class="sd">    entire domain is invaded, then a percoaltion curve is obtained. The</span>
 <span class="sd">    threshold at which each site and bond was invaded is recorded, so it is</span>
 <span class="sd">    possible to find invading configurations easily using Boolean logic.</span>
 
@@ -275,17 +276,16 @@
 
 <div class="viewcode-block" id="OrdinaryPercolation.set_inlets"><a class="viewcode-back" href="../../../modules/generated/openpnm.algorithms.OrdinaryPercolation.set_inlets.html#openpnm.algorithms.OrdinaryPercolation.set_inlets">[docs]</a>    <span class="k">def</span> <span class="nf">set_inlets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="p">[],</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Set the locations from which the invader enters the network</span>
+<span class="sd">        Sets the locations from which the invader enters the network</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        pores : array_like</span>
 <span class="sd">            Locations that are initially filled with invader, from which</span>
 <span class="sd">            clusters grow and invade into the network</span>
-
 <span class="sd">        overwrite : bool</span>
 <span class="sd">            If ``True`` then all existing inlet locations will be removed and</span>
-<span class="sd">            then the supplied locations will be added.  If ``False`` (default),</span>
+<span class="sd">            then the supplied locations will be added. If ``False`` (default),</span>
 <span class="sd">            then supplied locations are added to any already existing inlet</span>
 <span class="sd">            locations.</span>
 
@@ -301,7 +301,7 @@
 
 <div class="viewcode-block" id="OrdinaryPercolation.set_outlets"><a class="viewcode-back" href="../../../modules/generated/openpnm.algorithms.OrdinaryPercolation.set_outlets.html#openpnm.algorithms.OrdinaryPercolation.set_outlets">[docs]</a>    <span class="k">def</span> <span class="nf">set_outlets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="p">[],</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Set the locations through which defender exits the network.</span>
+<span class="sd">        Sets the locations through which defender exits the network.</span>
 
 <span class="sd">        This is only necessary for calculating the percolation threshold.</span>
 
@@ -310,7 +310,6 @@
 <span class="sd">        pores : array_like</span>
 <span class="sd">            Locations where the defender can exit the network.  Any defender</span>
 <span class="sd">            that does not have access to these sites will be trapped.</span>
-
 <span class="sd">        overwrite : bool</span>
 <span class="sd">            If ``True`` then all existing outlet locations will be removed and</span>
 <span class="sd">            then the supplied locations will be added.  If ``False`` (default),</span>
@@ -423,19 +422,17 @@
 <span class="sd">            points spaced between the lowest and highest values of</span>
 <span class="sd">            throat entry pressures using logarithmic spacing.  To specify low</span>
 <span class="sd">            and high pressure points use the ``start`` and ``stop`` arguments.</span>
-
 <span class="sd">        start : int</span>
 <span class="sd">            The optional starting point to use when generating pressure points.</span>
 <span class="sd">            If not given the half the lowest capillary entry pressure in the</span>
 <span class="sd">            network is used.</span>
-
 <span class="sd">        stop : int</span>
 <span class="sd">            The optional stopping point to use when generating pressure points.</span>
 <span class="sd">            If not given, then twice the highest capillary entry pressure in</span>
 <span class="sd">            the network is used.</span>
 
-<span class="sd">        Note</span>
-<span class="sd">        ----</span>
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
 <span class="sd">        The inlet sites are set to invaded to start the simulation.  This means</span>
 <span class="sd">        that if &#39;internal&#39; pores are used as inlets the capillary pressure</span>
 <span class="sd">        curve will begin at a non-zero invading phase saturation.  To avoid</span>
@@ -630,7 +627,7 @@
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.3.0.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.3.1.<br>
 </p>
     </div>
     
