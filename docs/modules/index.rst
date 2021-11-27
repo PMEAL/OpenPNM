@@ -31,8 +31,3 @@ Contents
    topotools
    generators
    io
-
-**TODO**
-
-- also document overloaded methods in Base and other places
-- maybe unify ..plot directive and actual example snippets

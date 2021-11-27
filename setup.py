@@ -73,6 +73,8 @@ setup(
         'openpnm.materials',
     ],
     install_requires=[
+        'attr',
+        'auto_all'
         'chemicals',
         'docrep>=0.3',
         'flatdict',
@@ -94,7 +96,6 @@ setup(
         'tqdm',
         'transforms3d',
         'traits',
-        'attr',
     ],
     author='OpenPNM Team',
     author_email='jgostick@uwaterloo.ca',

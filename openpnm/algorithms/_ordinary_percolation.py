@@ -34,6 +34,7 @@ class OrdinaryPercolationSettings:
         The dictionary key for the pore volume array
     throat_volume : str
         The dictionary key for the throat volume array
+
     """
     phase = ''
     access_limited = True
@@ -53,7 +54,7 @@ class OrdinaryPercolation(GenericAlgorithm):
     network : GenericNetwork
         The Network upon which this simulation should be run
     name : str, optional
-        An identifying name for the object.  If none is given then one is
+        An identifying name for the object. If none is given then one is
         generated.
 
     Notes
@@ -70,7 +71,7 @@ class OrdinaryPercolation(GenericAlgorithm):
     <https://en.wikipedia.org/wiki/Percolation_theory>`_
 
     If the simulation is repeated for increasing threshold values until the
-    entire domain is invaded, then a percoaltion curve is obtained.  The
+    entire domain is invaded, then a percoaltion curve is obtained. The
     threshold at which each site and bond was invaded is recorded, so it is
     possible to find invading configurations easily using Boolean logic.
 
@@ -100,17 +101,16 @@ class OrdinaryPercolation(GenericAlgorithm):
 
     def set_inlets(self, pores=[], overwrite=False):
         r"""
-        Set the locations from which the invader enters the network
+        Sets the locations from which the invader enters the network
 
         Parameters
         ----------
         pores : array_like
             Locations that are initially filled with invader, from which
             clusters grow and invade into the network
-
         overwrite : bool
             If ``True`` then all existing inlet locations will be removed and
-            then the supplied locations will be added.  If ``False`` (default),
+            then the supplied locations will be added. If ``False`` (default),
             then supplied locations are added to any already existing inlet
             locations.
 
@@ -126,7 +126,7 @@ class OrdinaryPercolation(GenericAlgorithm):
 
     def set_outlets(self, pores=[], overwrite=False):
         r"""
-        Set the locations through which defender exits the network.
+        Sets the locations through which defender exits the network.
 
         This is only necessary for calculating the percolation threshold.
 
@@ -135,7 +135,6 @@ class OrdinaryPercolation(GenericAlgorithm):
         pores : array_like
             Locations where the defender can exit the network.  Any defender
             that does not have access to these sites will be trapped.
-
         overwrite : bool
             If ``True`` then all existing outlet locations will be removed and
             then the supplied locations will be added.  If ``False`` (default),
@@ -248,19 +247,17 @@ class OrdinaryPercolation(GenericAlgorithm):
             points spaced between the lowest and highest values of
             throat entry pressures using logarithmic spacing.  To specify low
             and high pressure points use the ``start`` and ``stop`` arguments.
-
         start : int
             The optional starting point to use when generating pressure points.
             If not given the half the lowest capillary entry pressure in the
             network is used.
-
         stop : int
             The optional stopping point to use when generating pressure points.
             If not given, then twice the highest capillary entry pressure in
             the network is used.
 
-        Note
-        ----
+        Notes
+        -----
         The inlet sites are set to invaded to start the simulation.  This means
         that if 'internal' pores are used as inlets the capillary pressure
         curve will begin at a non-zero invading phase saturation.  To avoid
