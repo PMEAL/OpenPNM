@@ -7,6 +7,7 @@
 
 import os
 import sys
+from datetime import datetime
 
 sys.path.insert(0, os.path.abspath('.'))
 sys.path.insert(0, os.path.abspath('../'))
@@ -17,7 +18,7 @@ sys.path.insert(0, os.path.abspath('../../'))
 #------------------------------------------------------------------------#
 
 project = 'OpenPNM'
-copyright = '2021, PMEAL'
+copyright = f'{datetime.now().year}, PMEAL'
 author = 'OpenPNM Dev Team'
 
 # The full version, including alpha/beta/rc tags
@@ -60,6 +61,27 @@ templates_path = ['_templates']
 exclude_patterns = ['_build']
 
 numpydoc_show_inherited_class_members = True
+
+members_to_exclude = [
+    'append', 'clear', 'copy', 'count', 'extend', 'fromkeys', 'get',
+    'index', 'insert', 'items', 'keys', 'pop', 'popitem', 'remove',
+    'reverse', 'setdefault', 'sort', 'update', 'values',
+    'all', 'any', 'argmax', 'argmin', 'argpartition', 'argsort',
+    'astype', 'base', 'byteswap', 'choose', 'clip', 'compress', 'conj',
+    'conjugate', 'copy', 'ctypes', 'cumprod', 'cumsum', 'data',
+    'diagonal', 'dot', 'dtype', 'dump', 'dumps', 'fill', 'flags', 'flat',
+    'flatten', 'getfield', 'imag', 'item', 'itemset', 'itemsize', 'max',
+    'mean', 'min', 'nbytes', 'ndim', 'newbyteorder', 'nonzero',
+    'partition', 'prod', 'ptp', 'put', 'ravel', 'real', 'repeat',
+    'reshape', 'resize', 'round', 'searchsorted', 'setfield', 'setflags',
+    'shape', 'size', 'sort', 'squeeze', 'std', 'strides', 'sum',
+    'swapaxes', 'take', 'tobytes', 'tofile', 'tolist', 'tostring',
+    'trace', 'transpose', 'var', 'view'
+]
+
+autodoc_default_options = {
+    'exclude-members': ", ".join(members_to_exclude)
+}
 
 #------------------------------------------------------------------------#
 # Matplotlib plot_directive options                                      #

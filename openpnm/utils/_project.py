@@ -1,9 +1,10 @@
+import logging
 import time
 import uuid
 import openpnm
 import numpy as np
 from copy import deepcopy
-from openpnm.utils import HealthDict, Workspace, logging
+from openpnm.utils import HealthDict, Workspace
 from ._grid import Tableist
 from auto_all import start_all, end_all
 logger = logging.getLogger(__name__)

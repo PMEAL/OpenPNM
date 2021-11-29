@@ -1,5 +1,5 @@
 // We don't want the sidebar to include list of examples, that's just
-// much. This simple script tries to select those items and hide them.
+// too much. This simple script tries to select those items and hide them.
 // "aside" selects sidebar elements, and "href" narrows it down to the
 // list of examples. This is a workaround, not a permanent fix.
 
@@ -25,6 +25,8 @@ window.onload = function () {
     // selected.html("&#8594; " + selected.text())
 
     // $(".toctree-l3").hide()
+
+    /* This is being done properly via conf.py, no longer needed
 
     // List of methods exclusive to Python's dict and list + numpy's ndarray
     exclude = [
@@ -92,6 +94,8 @@ window.onload = function () {
         // Hide attr's description (2nd column)
         tmp.next("dd").hide()
     }
+
+    */
 
     // Change h1 font to monospace if inside Module Reference
     tmp = $("a:contains('Module Reference')")[0]
