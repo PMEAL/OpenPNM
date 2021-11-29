@@ -1,0 +1,8 @@
+:orphan:
+
+trait_items_event
+============================================
+
+.. currentmodule:: openpnm.utils
+
+.. automethod:: SettingsData.trait_items_event

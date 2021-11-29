@@ -1,0 +1,8 @@
+:orphan:
+
+intersection
+===================================
+
+.. currentmodule:: openpnm.utils
+
+.. automethod:: TypedSet.intersection

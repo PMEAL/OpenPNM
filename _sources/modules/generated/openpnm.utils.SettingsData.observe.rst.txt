@@ -1,0 +1,8 @@
+:orphan:
+
+observe
+==================================
+
+.. currentmodule:: openpnm.utils
+
+.. automethod:: SettingsData.observe

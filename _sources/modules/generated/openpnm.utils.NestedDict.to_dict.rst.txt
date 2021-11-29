@@ -1,0 +1,8 @@
+:orphan:
+
+to_dict
+================================
+
+.. currentmodule:: openpnm.utils
+
+.. automethod:: NestedDict.to_dict

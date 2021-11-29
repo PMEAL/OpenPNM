@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.utils.Workspace.version
+===============================
+
+.. currentmodule:: openpnm.utils
+
+attribute
+
+.. autoproperty:: openpnm.utils.Workspace.version
+

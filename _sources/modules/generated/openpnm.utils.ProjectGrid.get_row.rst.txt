@@ -1,0 +1,8 @@
+:orphan:
+
+get_row
+=================================
+
+.. currentmodule:: openpnm.utils
+
+.. automethod:: ProjectGrid.get_row

@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.utils.SettingsData.wrappers
+===================================
+
+.. currentmodule:: openpnm.utils
+
+attribute
+
+.. autoattribute:: openpnm.utils.SettingsData.wrappers
+

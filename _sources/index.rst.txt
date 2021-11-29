@@ -28,7 +28,7 @@ simulations.
    :hidden:
    :maxdepth: 0
 
-   user_guide/index
+   user_guide/installation
    modules/index
    examples/examples
 

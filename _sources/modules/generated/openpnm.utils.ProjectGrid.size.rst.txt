@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.utils.ProjectGrid.size
+==============================
+
+.. currentmodule:: openpnm.utils
+
+attribute
+
+.. autoproperty:: openpnm.utils.ProjectGrid.size
+

@@ -1,0 +1,22 @@
+SettingsAttr2
+===========================
+
+.. currentmodule:: openpnm.utils
+
+.. autoclass:: SettingsAttr2
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+   
+   
+
+   
+   
+   

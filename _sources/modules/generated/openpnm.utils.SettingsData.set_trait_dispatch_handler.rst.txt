@@ -1,0 +1,8 @@
+:orphan:
+
+set_trait_dispatch_handler
+=====================================================
+
+.. currentmodule:: openpnm.utils
+
+.. automethod:: SettingsData.set_trait_dispatch_handler

@@ -1,0 +1,8 @@
+:orphan:
+
+find_geometry
+===================================
+
+.. currentmodule:: openpnm.utils
+
+.. automethod:: Project.find_geometry

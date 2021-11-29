@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.utils.ProjectGrid.nnz
+=============================
+
+.. currentmodule:: openpnm.utils
+
+attribute
+
+.. autoproperty:: openpnm.utils.ProjectGrid.nnz
+

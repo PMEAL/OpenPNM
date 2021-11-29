@@ -1,0 +1,33 @@
+SubDict
+=====================
+
+.. currentmodule:: openpnm.utils
+
+.. autoclass:: SubDict
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            SubDict.clear
+            SubDict.copy
+            SubDict.fromkeys
+            SubDict.get
+            SubDict.items
+            SubDict.keys
+            SubDict.pop
+            SubDict.popitem
+            SubDict.setdefault
+            SubDict.update
+            SubDict.values
+   
+   
+
+   
+   
+   

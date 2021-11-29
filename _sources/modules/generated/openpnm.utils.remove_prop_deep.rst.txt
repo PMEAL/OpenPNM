@@ -1,0 +1,6 @@
+remove\_prop\_deep
+==================
+
+.. currentmodule:: openpnm.utils
+
+.. autofunction:: remove_prop_deep

@@ -19,6 +19,7 @@ Contents
    :maxdepth: 1
    :titlesonly:
 
+   utils
    core
    network
    geometry
