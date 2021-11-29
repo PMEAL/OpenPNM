@@ -74,7 +74,7 @@ setup(
     ],
     install_requires=[
         'attr',
-        'auto_all'
+        'auto_all',
         'chemicals',
         'docrep>=0.3',
         'flatdict',
