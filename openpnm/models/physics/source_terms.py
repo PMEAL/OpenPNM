@@ -725,7 +725,7 @@ def butler_volmer_voltage(
 
     Returns
     -------
-    dict
+    rate_info : dict
         Dictionary containing the following key/value pairs:
 
         - rate : The value of the source term function at the given X.

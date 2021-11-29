@@ -430,7 +430,6 @@ def ncylinders_in_series(
     Computes diffusive size factors for conduits of spheres and cylinders
     with the spheres approximated as N cylinders in series.
 
-
     Parameters
     ----------
     %(models.geometry.diffusive_size_factor.parameters)s

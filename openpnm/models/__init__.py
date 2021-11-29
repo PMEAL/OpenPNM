@@ -6,7 +6,16 @@ Models
 
 
 # %% The following bits are to initialize some boilerplate docstrings
+from openpnm.utils import Docorator
 from matplotlib.docstring import Substitution
+
+
+_docstr = Docorator()
+_docstr.params['models.target.parameters'] = \
+r"""target : OpenPNM Base object
+            Object with which this model is associated. This controls
+            the length of the calculated array, and also provides access
+            to other necessary properties."""
 
 
 _doctxt = Substitution(

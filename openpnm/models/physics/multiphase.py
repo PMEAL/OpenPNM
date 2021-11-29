@@ -86,7 +86,7 @@ def late_filling(target, pressure='pore.pressure',
     Parameters
     ----------
     pressure : str
-        %(dict_blurb) capillary pressure in the non-wetting phase (Pc > 0).
+        %(dict_blurb)s capillary pressure in the non-wetting phase (Pc > 0).
     Pc_star : str
         %(dict_blurb)s minimum pressure required to create an interface
         within the pore body or throat.  Typically this would be calculated

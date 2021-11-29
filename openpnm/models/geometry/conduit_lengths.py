@@ -1,8 +1,3 @@
-r"""
-Conduit Lengths
-...............
-
-"""
 import numpy as _np
 from openpnm.utils import Docorator
 
@@ -142,8 +137,6 @@ def trapezoids_and_rectangles(
     Calculates conduit lengths in the network assuming pores are
     trapezoids and throats are rectangles.
 
-    A conduit is defined as ( 1/2 pore - full throat - 1/2 pore ).
-
     Parameters
     ----------
     %(models.geometry.conduit_lengths.parameters)s
@@ -186,8 +179,6 @@ def pyramids_and_cuboids(
     Calculates conduit lengths in the network assuming pores are truncated
     pyramids and throats are cuboids.
 
-    A conduit is defined as ( 1/2 pore - full throat - 1/2 pore ).
-
     Parameters
     ----------
     %(models.geometry.conduit_lengths.parameters)s
@@ -211,8 +202,6 @@ def cubes_and_cuboids(
     r"""
     Calculates conduit lengths in the network assuming pores are cubes
     and throats are cuboids.
-
-    A conduit is defined as ( 1/2 pore - full throat - 1/2 pore ).
 
     Parameters
     ----------
@@ -250,8 +239,6 @@ def squares_and_rectangles(
     r"""
     Calculates conduit lengths in the network assuming pores are squares
     and throats are rectangles.
-
-    A conduit is defined as ( 1/2 pore - full throat - 1/2 pore ).
 
     Parameters
     ----------
