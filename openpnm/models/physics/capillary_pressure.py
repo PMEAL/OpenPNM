@@ -1,11 +1,11 @@
 import numpy as _np
 from transforms3d import _gohlketransforms as tr
 from openpnm.models import physics as pm
-from openpnm.utils import logging, Docorator
+from openpnm.models import _doctxt
+from openpnm.utils import logging
 
 
 logger = logging.getLogger(__name__)
-docstr = Docorator()
 __all__ = [
     "washburn",
     "purcell",
@@ -15,9 +15,7 @@ __all__ = [
 ]
 
 
-@docstr.get_sections(base='models.physics.capillary_pressure',
-                     sections=['Returns'])
-@docstr.dedent
+@_doctxt
 def washburn(target,
              surface_tension="pore.surface_tension",
              contact_angle="pore.contact_angle",
@@ -28,20 +26,19 @@ def washburn(target,
 
     Parameters
     ----------
-    %(models.target.parameters)s
+    %(target_blurb)s
     surface_tension : str
-        The dictionary key containing the surface tension values to be used. If
-        a pore property is given, it is interpolated to a throat list.
+        %(dict_blurb)s surface tension. If a pore property is given, it is
+        interpolated to a throat list.
     contact_angle : str
-        The dictionary key containing the contact angle values to be used. If
-        a pore property is given, it is interpolated to a throat list.
+        %(dict_blurb)s contact angle. If a pore property is given, it is
+        interpolated to a throat list.
     diameter : str
-        The dictionary key containing the diameter values to be used.
+        %(dict_blurb)s throat diameter
 
     Returns
     -------
-    capillary_pressures : ndarray
-        A numpy ndarray containing capillary entry pressure values
+    %(return_arr)s capillary entry pressure
 
     Notes
     -----
@@ -72,7 +69,7 @@ def washburn(target,
     return value
 
 
-@docstr.dedent
+@_doctxt
 def purcell(target,
             r_toroid,
             surface_tension="pore.surface_tension",
@@ -84,21 +81,21 @@ def purcell(target,
 
     Parameters
     ----------
-    %(models.target.parameters)s
+    %(target_blurb)s
     r_toroid : float or array_like
         The radius of the toroid surrounding the pore
     surface_tension : str
-        The dictionary key containing the surface tension values to be used.
-        If a pore property is given, it is interpolated to a throat list.
+        %(dict_blurb)s surface tension. If a pore property is given, it is
+        interpolated to a throat list.
     contact_angle : str
-        The dictionary key containing the contact angle values to be used.
-        If a pore property is given, it is interpolated to a throat list.
+        %(dict_blurb)s contact angle. If a pore property is given, it is
+        interpolated to a throat list.
     diameter : str
-        The dictionary key containing the throat diameter values to be used.
+        %(dict_blurb)s throat diameter
 
     Returns
     -------
-    %(models.physics.capillary_pressure.returns)s
+    %(return_arr)s capillary entry pressure
 
     Notes
     -----
@@ -143,7 +140,7 @@ def purcell(target,
     return value
 
 
-@docstr.dedent
+@_doctxt
 def ransohoff_snap_off(target,
                        shape_factor=2.0,
                        wavelength=5e-6,
@@ -161,32 +158,27 @@ def ransohoff_snap_off(target,
 
     Parameters
     ----------
-    %(models.target.parameters)s
+    %(target_blurb)s
     shape_factor : float
-        constant dependent on the shape of throat cross-section
-        1.75 - 2.0, see Ref
+        A constant dependent on the shape of throat cross-section
+        1.75 - 2.0, see Ref [1]
     wavelength : float or array like
         The transverse interfacial radius of curvature at the neck
         (fiber radius in fibrous media)
     require_pair : bool
         Controls whether snap-off requires a pair of arc meniscii to occur.
     surface_tension : str
-        The dictionary key containing the surface tension values to be used.
-        If a pore property is given, it is interpolated to a throat list.
+        %(dict_blurb)s surface tension. If a pore property is given, it is
+        interpolated to a throat list.
     contact_angle : str
-        The dictionary key containing the contact angle values to be used.
-        If a pore property is given, it is interpolated to a throat list.
+        %(dict_blurb)s contact angle. If a pore property is given, it is
+        interpolated to a throat list.
     diameter : str
-        The dictionary key containing the throat diameter values to be used.
+        %(dict_blurb)s throat diameter
 
     Returns
     -------
-    %(models.physics.capillary_pressure.returns)s
-
-    Notes
-    -----
-    This equation should be used to calculate the snap off capillary pressure
-    in fribrous media
+    %(return_arr)s capillary entry pressure
 
     References
     ----------
@@ -253,10 +245,10 @@ def ransohoff_snap_off(target,
     return value
 
 
-@docstr.dedent
+@_doctxt
 def purcell_bidirectional(target,
                           r_toroid=5e-6,
-                          num_points=1e3,
+                          num_points=1000,
                           surface_tension="pore.surface_tension",
                           contact_angle="pore.contact_angle",
                           throat_diameter="throat.diameter",
@@ -272,24 +264,26 @@ def purcell_bidirectional(target,
 
     Parameters
     ----------
-    %(models.target.parameters)s
+    %(target_blurb)s
     r_toroid : float or array_like
         The radius of the toroid surrounding the pore
     num_points : float, default 100
         The number of divisions to make along the profile length to assess the
         meniscus properties in order to find the touch length.
     surface_tension : str
-        The dictionary key containing the surface tension values to be used.
-        If a pore property is given, it is interpolated to a throat list.
+        %(dict_blurb)s surface tension. If a pore property is given, it is
+        interpolated to a throat list.
     contact_angle : str
-        The dictionary key containing the contact angle values to be used.
-        If a pore property is given, it is interpolated to a throat list.
-    %(models.geometry.Pdia)s
-    %(models.geometry.Tdia)s
+        %(dict_blurb)s contact angle. If a pore property is given, it is
+    interpolated to a throat list.
+    throat_diameter : str
+        %(dict_blurb)s throat diameter
+    pore_diameter : str
+        %(dict_blurb)s pore diameter
 
     Returns
     -------
-    %(models.physics.capillary_pressure.returns)s
+    %(return_arr)s capillary entry pressure
 
     """
     network = target.project.network
@@ -315,7 +309,7 @@ def purcell_bidirectional(target,
     return _np.vstack((values[0], values[1])).T
 
 
-@docstr.dedent
+@_doctxt
 def sinusoidal_bidirectional(target,
                              r_toroid=5e-6,
                              num_points=1e3,
@@ -335,24 +329,26 @@ def sinusoidal_bidirectional(target,
 
     Parameters
     ----------
-    %(models.target.parameters)s
+    %(target_blurb)s
     r_toroid : float or array_like
         The radius of the toroid surrounding the pore
     num_points : float, default 100
         The number of divisions to make along the profile length to assess the
         meniscus properties in order to find the touch length.
     surface_tension : str
-        The dictionary key containing the surface tension values to be used.
-        If a pore property is given, it is interpolated to a throat list.
+        %(dict_blurb)s surface tension. If a pore property is given, it is
+        interpolated to a throat list.
     contact_angle : str
-        The dictionary key containing the contact angle values to be used.
-        If a pore property is given, it is interpolated to a throat list.
-    %(models.geometry.Pdia)s
-    %(models.geometry.Tdia)s
+        %(dict_blurb)s contact angle. If a pore property is given, it is
+        interpolated to a throat list.
+    throat_diameter : str
+        %(dict_blurb)s throat diameter
+    pore_diameter : str
+        %(dict_blurb)s pore diameter
 
     Returns
     -------
-    %(models.physics.capillary_pressure.returns)s
+    %(return_arr)s capillary entry pressure
 
     """
     network = target.project.network

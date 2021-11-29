@@ -1,74 +1,73 @@
 import numpy as np
 from openpnm.models.physics.capillary_pressure import _get_key_props
-from openpnm.utils import logging, Docorator
+from openpnm.utils import logging
 
 
-docstr = Docorator()
 logger = logging.getLogger(__name__)
 __all__ = ["purcell", "sinusoidal", "general_toroidal"]
 
 
-@docstr.get_sections(base='models.physics.meniscus',
-                     sections=['Returns'])
-@docstr.dedent
-def general_toroidal(target,
-                     profile_equation='elliptical',
-                     mode='max',
-                     target_Pc=None,
-                     num_points=1e3,
-                     throat_scale_a='throat.scale_a',
-                     throat_scale_b='throat.scale_b',
-                     throat_diameter='throat.diameter',
-                     touch_length='throat.touch_length',
-                     surface_tension='pore.surface_tension',
-                     contact_angle='pore.contact_angle'):
+def general_toroidal(
+    target,
+    profile_equation='elliptical',
+    mode='max',
+    target_Pc=None,
+    num_points=1000,
+    throat_scale_a='throat.scale_a',
+    throat_scale_b='throat.scale_b',
+    throat_diameter='throat.diameter',
+    touch_length='throat.touch_length',
+    surface_tension='pore.surface_tension',
+    contact_angle='pore.contact_angle'
+):
     r"""
     The general model for meniscus properties inside a toroidal throat
 
     Parameters
     ----------
-    %(models.target.parameters)s
-    profile_equation : str, default is 'elliptical'
-        options ``'elliptical'``, `''sinusoidal'``.
-    mode : str, default is 'max'
+    %(target_blurb)s
+    profile_equation : str
+        Options are 'elliptical' (default), 'sinusoidal'.
+    mode : str
         Determines what information to send back. Options are:
 
             ======== =========================================================
             Mode     Description
             ======== =========================================================
-            'max'    The maximum capillary pressure along the throat axis
+            'max'    (default) The maximum capillary pressure along the throat
+                     axis
             'touch'  The maximum capillary pressure a meniscus can sustain
                      before touching a solid feature
             ======== =========================================================
 
     target_Pc : float
         The target capillary pressure to return data for when mode is 'men'
-    num_points : float (Default 100)
+    num_points : float
         The number of divisions to make along the profile length to assess the
         meniscus properties in order to find target pressures, touch lengths,
-        minima and maxima.
+        minima and maxima. The default is 1000.
     throat_scale_a : str
-        The dictionary key containing the scale factor for adjusting the
-        profile along the throat axis (x).
+        %(dict_blurb)s scale factor for adjusting the profile along the
+        throat axis (x).
     throat_scale_b : str
-        The dictionary key containing the scale factor for adjusting the
-        profile perpendicular to the throat axis (y).
+        %(dict_blurb)s scale factor for adjusting the profile perpendicular
+        to the throat axis (y).
     throat_diameter : str
-        The dictionary key containing the throat diameter values to be used.
+        %(dict_blurb)s throat diameter values to be used.
     touch_length : str
-        The dictionary key containing the maximum length that a meniscus can
+        %(dict_blurb)s maximum length that a meniscus can
         protrude into the connecting pore before touching a solid feature and
         therfore invading
     surface_tension : str
-        The dictionary key containing the surface tension values to be used. If
-        a pore property is given, it is interpolated to a throat list.
+        %(dict_blurb)s surface tension values to be used. If a pore property
+        is given, it is interpolated to a throat list.
     contact_angle : str
-        The dictionary key containing the contact angle values to be used. If
-        a pore property is given, it is interpolated to a throat list.
+        %(dict_blurb)s contact angle values to be used. If a pore property
+        is given, it is interpolated to a throat list.
 
     Returns
     -------
-    dict
+    values : dict
         A dictionary containing the following entries:
 
         ============ =========================================================
@@ -83,7 +82,7 @@ def general_toroidal(target,
         'gamma'      cap_angle(xpos, fa, fb, throatRad, contact)
         'radius'     rad_curve(xpos, fa, fb, throatRad, contact)
         'center'     (xpos - men_data['c2x'])
-        'men_max'
+        'men_max'    ??
         ============ =========================================================
 
     """
@@ -227,16 +226,18 @@ def general_toroidal(target,
     return men_data
 
 
-def sinusoidal(target,
-               mode='max',
-               target_Pc=None,
-               num_points=1e3,
-               r_toroid=5e-6,
-               throat_diameter='throat.diameter',
-               pore_diameter='pore.diameter',
-               touch_length='throat.touch_length',
-               surface_tension='pore.surface_tension',
-               contact_angle='pore.contact_angle'):
+def sinusoidal(
+    target,
+    mode='max',
+    target_Pc=None,
+    num_points=1e3,
+    r_toroid=5e-6,
+    throat_diameter='throat.diameter',
+    pore_diameter='pore.diameter',
+    touch_length='throat.touch_length',
+    surface_tension='pore.surface_tension',
+    contact_angle='pore.contact_angle'
+):
     r"""
     Wrapper for the toroidal model to implement a sinusoidal profile.
 
@@ -250,11 +251,13 @@ def sinusoidal(target,
     from the Washburn equation as [1]_:
 
     .. math::
+
         P_c = -\frac{2\sigma(cos(\alpha + \theta))}{r(x)}
 
     where alpha is:
 
     .. math::
+
         \alpha = arctan(\frac{dr}{dx})
 
     References
@@ -278,16 +281,17 @@ def sinusoidal(target,
     return output
 
 
-@docstr.dedent
-def purcell(target,
-            mode='max',
-            target_Pc=None,
-            num_points=1e3,
-            r_toroid=5e-6,
-            throat_diameter='throat.diameter',
-            touch_length='throat.touch_length',
-            surface_tension='pore.surface_tension',
-            contact_angle='pore.contact_angle'):
+def purcell(
+    target,
+    mode='max',
+    target_Pc=None,
+    num_points=1e3,
+    r_toroid=5e-6,
+    throat_diameter='throat.diameter',
+    touch_length='throat.touch_length',
+    surface_tension='pore.surface_tension',
+    contact_angle='pore.contact_angle'
+):
     r"""
     Wrapper for the general toroidal model to implement the Purcell
     equation for a torus with cylindrical profile and toroidal radius

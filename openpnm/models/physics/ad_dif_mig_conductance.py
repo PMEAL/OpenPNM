@@ -1,8 +1,5 @@
-r"""
-Pore-scale models for calculating the advective-diffusive-migrative
-conductance of conduits.
-"""
 import numpy as _np
+
 
 __all__ = ["ad_dif_mig"]
 
@@ -19,29 +16,25 @@ def ad_dif_mig(target,
                s_scheme="powerlaw"):
     r"""
     Calculate the advective-diffusive-migrative conductance of conduits
-    in network, where a conduit is ( 1/2 pore - full throat - 1/2 pore ).
-    See the notes section.
+    in network
 
     Parameters
     ----------
-    target : GenericPhysics
-        The object which this model is associated with. This controls the
-        length of the calculated array, and also provides access to other
-        necessary properties.
+    %(target_blurb)s
     pore_pressure : str
-        Dictionary key of the pore pressure values
+        %(dict_blurb)s pore pressure
     pore_potential : str
-        Dictionary key of the pore potential values
+        %(dict_blurb)s pore potential
     throat_hydraulic_conductance : str
-        Dictionary key of the throat hydraulic conductance values
+        %(dict_blurb)s hydraulic conductance
     throat_diffusive_conductance : str
-        Dictionary key of the throat diffusive conductance values
+        %(dict_blurb)s diffusive conductance
     throat_valence : str
-        Dictionary key of the throat ionic species valence values
+        %(dict_blurb)s throat ionic species valence
     pore_temperature : str
-        Dictionary key of the pore temperature values
+        %(dict_blurb)s pore temperature
     throat_temperature : str
-        Dictionary key of the throat temperature values
+        %(dict_blurb)s throat temperature
     ion : str
         Name of the ionic species
     s_scheme : str
@@ -49,15 +42,10 @@ def ad_dif_mig(target,
 
     Returns
     -------
-    g : ndarray
-        Array containing advective-diffusive-migrative conductance values for
-        conduits in the geometry attached to the given physics object.
+    %(return_arr)s advection-diffusion-migration conductance
 
     Notes
     -----
-    This function requires that all the necessary phase properties already
-    be calculated.
-
     This function calculates the specified property for the *entire*
     network then extracts the values for the appropriate throats at the end.
 

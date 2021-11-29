@@ -1,8 +1,7 @@
-r"""
-Pore-scale models to be used as source term (e.g. reaction) in algorithms.
-"""
 import numpy as _np
 import scipy as _sp
+from openpnm.models import _doctxt
+
 
 __all__ = [
     "charge_conservation",
@@ -19,6 +18,7 @@ __all__ = [
 ]
 
 
+@_doctxt
 def charge_conservation(target, phase, p_alg, e_alg, assumption):
     r"""
     Applies the source term on the charge conservation equation when solving
@@ -26,34 +26,37 @@ def charge_conservation(target, phase, p_alg, e_alg, assumption):
 
     Parameters
     ----------
-    phase : GenericPhysics
-            The phase on which the charge conservation equation is applied.
+    %(target_blurb)s
     p_alg : GenericAlgorithm
-            The algorithm used to enforce charge conservation.
-    e_alg : list[GenericAlgorithm]
-            The list of algorithms used to solve for transport of different
-            ionic species of the mixture phase.
+        The algorithm used to enforce charge conservation.
+    e_alg : list
+        The list of algorithms used to solve for transport of different
+        ionic species of the mixture phase.
     assumption : str
-            A str correponding to the assumption adopted to enforce charge
-            conservation.
+        The assumption adopted to enforce charge conservation. Options are:
+
+        ================= ====================================================
+        Options           Description
+        ================= ====================================================
+        poisson           ?
+        electroneutrality ?
+        laplace           ?
+        ================= ====================================================
 
     Returns
     -------
-    A dictionary containing the following three items:
+    rate_info : dict
+        A dictionary containing the following three items:
 
-        'rate'
-            The value of the source term function for the given list
-            of algortihms under the provided assumption.
-        'S1'
-            A placeholder (zeros array).
-        'S2'
-            The value of the source term function for the given list of
-            algortihms under the provided assumption (same as 'rate').
-
-    Notes
-    -----
-    Three assumptions are supported; "poisson", "electroneutrality" and
-    "laplace".
+        ======= ==============================================================
+        Item    Description
+        ======= ==============================================================
+        rate    The value of the source term function for the given list
+                of algortihms under the provided assumption.
+        S1      A placeholder (zeros array)
+        S2      The value of the source term function for the given list of
+                algortihms under the provided assumption (same as 'rate').
+        ======= ==============================================================
 
     """
     assumption = assumption.lower()
@@ -94,6 +97,7 @@ def charge_conservation(target, phase, p_alg, e_alg, assumption):
     return values
 
 
+@_doctxt
 def standard_kinetics(target, X, prefactor, exponent):
     r"""
     Calculates the rate, as well as slope and intercept of the following
@@ -104,29 +108,26 @@ def standard_kinetics(target, X, prefactor, exponent):
 
     Parameters
     ----------
-    target : GenericPhysics
-        The physics where the result will be applied.
+    %(target_blurb)s
     X : str
-        The dictionary key on the target object containing the the quantity
-        of interest
-    prefactor, exponent : str
-        The dictionary keys on the target object containing the coefficients
-        values to be used in the source term model
-    quantity : str
-        The dictionary key on the target object containing the the quantity
-        of interest
+        %(dict_blurb)s quantity of interest
+    prefactor : str
+        %(dict_blurb)s the prefactor to be used in the source term model
+    exponent : str
+        %(dict_blurb)s the exponent to be used in the source term model
 
     Returns
     -------
-    dict
+    rate_info : dict
         A dictionary containing the following three items:
 
-            'rate'
-                The value of the source term function at the given X.
-            'S1'
-                The slope of the source term function at the given X.
-            'S2'
-                The intercept of the source term function at the given X.
+        ======= ==============================================================
+        Item    Description
+        ======= ==============================================================
+        rate    The value of the source term function at the given X.
+        S1      The slope of the source term function at the given X.
+        S2      The intercept of the source term function at the given X.
+        ======= ==============================================================
 
     Notes
     -----
@@ -160,6 +161,7 @@ def _parse_args(target, key, default):
     return val
 
 
+@_doctxt
 def linear(target, X, A1='', A2=''):
     r"""
     Calculates the rate, as well as slope and intercept of the following
@@ -170,8 +172,7 @@ def linear(target, X, A1='', A2=''):
 
     Parameters
     ----------
-    target : GenericPhysics
-        The physics where the result will be applied.
+    %(target_blurb)s
     X : str
         The dictionary key on the target object containing the the quantity
         of interest
@@ -211,6 +212,7 @@ def linear(target, X, A1='', A2=''):
     return values
 
 
+@_doctxt
 def power_law(target, X, A1='', A2='', A3=''):
     r"""
     Calculates the rate, as well as slope and intercept of the following
@@ -221,8 +223,7 @@ def power_law(target, X, A1='', A2='', A3=''):
 
     Parameters
     ----------
-    target : GenericPhysics
-        The physics where the result will be applied.
+    %(target_blurb)s
     X : str
         The dictionary key on the target object containing the the quantity
         of interest
@@ -263,6 +264,7 @@ def power_law(target, X, A1='', A2='', A3=''):
     return values
 
 
+@_doctxt
 def exponential(target, X, A1='', A2='', A3='', A4='', A5='', A6=''):
     r"""
     Calculates the rate, as well as slope and intercept of the following
@@ -273,8 +275,7 @@ def exponential(target, X, A1='', A2='', A3='', A4='', A5='', A6=''):
 
     Parameters
     ----------
-    target : GenericPhysics
-        The physics where the result will be applied.
+    %(target_blurb)s
     X : str
         The dictionary key on the target object containing the the quantity
         of interest
@@ -318,6 +319,7 @@ def exponential(target, X, A1='', A2='', A3='', A4='', A5='', A6=''):
     return values
 
 
+@_doctxt
 def natural_exponential(target, X, A1='', A2='', A3='', A4='', A5=''):
     r"""
     Calculates the rate, as well as slope and intercept of the following
@@ -328,8 +330,7 @@ def natural_exponential(target, X, A1='', A2='', A3='', A4='', A5=''):
 
     Parameters
     ----------
-    target : GenericPhysics
-        The physics where the result will be applied.
+    %(target_blurb)s
     X : str
         The dictionary key on the target object containing the the quantity
         of interest
@@ -372,6 +373,7 @@ def natural_exponential(target, X, A1='', A2='', A3='', A4='', A5=''):
     return values
 
 
+@_doctxt
 def logarithm(target, X, A1='', A2='', A3='', A4='', A5='', A6=''):
     r"""
     Calculates the rate, as well as slope and intercept of the following
@@ -382,8 +384,7 @@ def logarithm(target, X, A1='', A2='', A3='', A4='', A5='', A6=''):
 
     Parameters
     ----------
-    target : GenericPhysics
-        The physics where the result will be applied.
+    %(target_blurb)s
     X : str
         The dictionary key on the target object containing the the quantity
         of interest
@@ -428,6 +429,7 @@ def logarithm(target, X, A1='', A2='', A3='', A4='', A5='', A6=''):
     return values
 
 
+@_doctxt
 def natural_logarithm(target, X, A1='', A2='', A3='', A4='', A5=''):
     r"""
     Calculates the rate, as well as slope and intercept of the following
@@ -438,8 +440,7 @@ def natural_logarithm(target, X, A1='', A2='', A3='', A4='', A5=''):
 
     Parameters
     ----------
-    target : GenericPhysics
-        The physics where the result will be applied.
+    %(target_blurb)s
     X : str
         The dictionary key on the target object containing the the quantity
         of interest
@@ -497,6 +498,7 @@ def _build_func(eq, **args):
     return EQ, S1, S2
 
 
+@_doctxt
 def general_symbolic(target, eqn, x, **kwargs):
     r"""
     A general function to interpret a sympy equation and evaluate the linear
@@ -504,8 +506,7 @@ def general_symbolic(target, eqn, x, **kwargs):
 
     Parameters
     ----------
-    target : GenericPhysics
-        The physics where the result will be applied.
+    %(target_blurb)s
     eqn : str
         The str representation of the equation to use.  This will be
         passed to sympy's ``sympify`` function to make a *live* sympy object.
@@ -557,6 +558,7 @@ def general_symbolic(target, eqn, x, **kwargs):
     return values
 
 
+@_doctxt
 def butler_volmer_conc(
     target, X, z, j0, c_ref, alpha_anode, alpha_cathode,
     reaction_order=1,
@@ -571,31 +573,9 @@ def butler_volmer_conc(
     model based on **concentration** to be used in mass transfer
     algorithms.
 
-        .. math::
-            r = j_0 A_{rxn} (\frac{ X }{ c_{ref} }) ^ {\nu}
-            \Big(
-                \exp(  \frac{\alpha_a z F}{RT} \eta )
-              - \exp( -\frac{\alpha_c z F}{RT} \eta )
-            \Big)
-
-    where:
-
-        .. math::
-            \eta = V_s - V_{\ell} - V_{oc}
-
-    where ``V_s`` is the solid voltage, ``V_l`` is the electrolyte voltage,
-    and ``V_oc`` is the open-circuit voltage.
-
-    The slope and intercept provide a linearized source term equation
-    about the current value of X as follow:
-
-        .. math::
-            rate = S_{1} X + S_{2}
-
     Parameters
     ----------
-    target : GenericPhysics
-        The Physics object where the result will be applied.
+    %(target_blurb)s
     X : str
         The dictionary key of the quantity of interest (i.e. main variable
         to be solved; in this case, concentration).
@@ -645,6 +625,27 @@ def butler_volmer_conc(
     [C/s]. Therefore, the two rates will differ by z * F, where z is the
     number of electrons transferred and F is the Faraday's constant.
 
+    .. math::
+        r = j_0 A_{rxn} (\frac{ X }{ c_{ref} }) ^ {\nu}
+        \Big(
+            \exp(  \frac{\alpha_a z F}{RT} \eta )
+          - \exp( -\frac{\alpha_c z F}{RT} \eta )
+        \Big)
+
+    where:
+
+    .. math::
+        \eta = V_s - V_{\ell} - V_{oc}
+
+    where ``V_s`` is the solid voltage, ``V_l`` is the electrolyte voltage,
+    and ``V_oc`` is the open-circuit voltage.
+
+    The slope and intercept provide a linearized source term equation
+    about the current value of X as follow:
+
+    .. math::
+        rate = S_{1} X + S_{2}
+
     """
     network = target.project.network
     domain = target._domain
@@ -689,27 +690,6 @@ def butler_volmer_voltage(
     r"""
     Calculates the rate, slope and intercept of the Butler-Volmer kinetic model
     based on **voltage** to be used in electron conduction algorithms.
-
-        .. math::
-            r = j_0 A_{rxn} (\frac{ c }{ c_{ref} }) ^ {\nu}
-            \Big(
-                \exp(  \frac{\alpha_a z F}{RT} \eta )
-              - \exp( -\frac{\alpha_c z F}{RT} \eta )
-            \Big)
-
-    where:
-
-        .. math::
-            \eta = V_s - X - V_{oc}
-
-    where ``V_s`` is the solid voltage, ``X`` is the electrolyte voltage,
-    and ``V_oc`` is the open-circuit voltage.
-
-    The slope and intercept provide a linearized source term equation
-    about the current value of X as follow:
-
-        .. math::
-            rate = S_{1} X + S_{2}
 
     Parameters
     ----------
@@ -765,6 +745,27 @@ def butler_volmer_voltage(
     [mol/s] whereas that generated by butler_volmer_voltage has the units
     [C/s]. Therefore, the two rates will differ by z * F, where z is the
     number of electrons transferred and F is the Faraday's constant.
+
+    .. math::
+        r = j_0 A_{rxn} (\frac{ c }{ c_{ref} }) ^ {\nu}
+        \Big(
+            \exp(  \frac{\alpha_a z F}{RT} \eta )
+          - \exp( -\frac{\alpha_c z F}{RT} \eta )
+        \Big)
+
+    where:
+
+    .. math::
+        \eta = V_s - X - V_{oc}
+
+    where ``V_s`` is the solid voltage, ``X`` is the electrolyte voltage,
+    and ``V_oc`` is the open-circuit voltage.
+
+    The slope and intercept provide a linearized source term equation
+    about the current value of X as follow:
+
+    .. math::
+        rate = S_{1} X + S_{2}
 
     """
     network = target.project.network

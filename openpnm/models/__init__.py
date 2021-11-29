@@ -5,14 +5,23 @@ Models
 """
 
 
-# %% The following bits are to initialize some boilerplate docstrings for docrep
-from openpnm.utils import Docorator as _doc
-_docstr = _doc()
-_docstr.params['models.target.parameters'] = \
+# %% The following bits are to initialize some boilerplate docstrings
+from matplotlib.docstring import Substitution
+
+
+_doctxt = Substitution(
+    dict_blurb=\
+        r"""Name of the dictionary key on ``target`` pointing to the
+        array containing values of """,
+    target_blurb=\
     r"""target : OpenPNM Base object
             Object with which this model is associated. This controls
-            the length of the calculated array, and also provides access to
-            other necessary properties."""
+            the length of the calculated array, and also provides access
+            to other necessary properties.""",
+    return_arr=\
+    r"""values : ndarray
+            A numpy ndarray containing the computed values of """,
+    )
 
 
 # %%
