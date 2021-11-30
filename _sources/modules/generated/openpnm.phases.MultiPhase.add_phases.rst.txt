@@ -1,8 +1,0 @@
-:orphan:
-
-add_phases
-====================================
-
-.. currentmodule:: openpnm.phases
-
-.. automethod:: MultiPhase.add_phases

@@ -1,8 +1,0 @@
-:orphan:
-
-close_project
-=====================================
-
-.. currentmodule:: openpnm.utils
-
-.. automethod:: Workspace.close_project

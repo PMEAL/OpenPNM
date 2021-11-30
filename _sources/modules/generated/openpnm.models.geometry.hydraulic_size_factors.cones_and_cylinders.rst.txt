@@ -1,6 +1,0 @@
-cones\_and\_cylinders
-=====================
-
-.. currentmodule:: openpnm.models.geometry.hydraulic_size_factors
-
-.. autofunction:: cones_and_cylinders

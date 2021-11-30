@@ -1,6 +1,0 @@
-get\_domain\_area
-=================
-
-.. currentmodule:: openpnm.topotools
-
-.. autofunction:: get_domain_area

@@ -1,8 +1,0 @@
-:orphan:
-
-cumprod
-====================================
-
-.. currentmodule:: openpnm.integrators
-
-.. automethod:: Solution.cumprod

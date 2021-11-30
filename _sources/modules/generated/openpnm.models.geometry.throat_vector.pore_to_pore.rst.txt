@@ -1,6 +1,0 @@
-pore\_to\_pore
-==============
-
-.. currentmodule:: openpnm.models.geometry.throat_vector
-
-.. autofunction:: pore_to_pore

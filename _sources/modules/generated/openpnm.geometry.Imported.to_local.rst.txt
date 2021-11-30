@@ -1,8 +1,0 @@
-:orphan:
-
-to_local
-==================================
-
-.. currentmodule:: openpnm.geometry
-
-.. automethod:: Imported.to_local

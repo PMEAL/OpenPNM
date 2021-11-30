@@ -1,6 +1,0 @@
-pendular\_ring
-==============
-
-.. currentmodule:: openpnm.models.geometry.throat_volume
-
-.. autofunction:: pendular_ring

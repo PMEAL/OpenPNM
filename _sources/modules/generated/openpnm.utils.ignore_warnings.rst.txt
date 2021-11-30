@@ -1,6 +1,0 @@
-ignore\_warnings
-================
-
-.. currentmodule:: openpnm.utils
-
-.. autofunction:: ignore_warnings

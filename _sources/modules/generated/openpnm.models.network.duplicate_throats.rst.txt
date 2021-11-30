@@ -1,6 +1,0 @@
-duplicate\_throats
-==================
-
-.. currentmodule:: openpnm.models.network
-
-.. autofunction:: duplicate_throats

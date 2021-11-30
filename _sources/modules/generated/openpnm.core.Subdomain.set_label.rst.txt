@@ -1,8 +1,0 @@
-:orphan:
-
-set_label
-================================
-
-.. currentmodule:: openpnm.core
-
-.. automethod:: Subdomain.set_label

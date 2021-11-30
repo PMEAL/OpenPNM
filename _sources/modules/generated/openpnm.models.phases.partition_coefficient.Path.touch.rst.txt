@@ -1,8 +1,0 @@
-:orphan:
-
-touch
-======================================================
-
-.. currentmodule:: openpnm.models.phases.partition_coefficient
-
-.. automethod:: Path.touch

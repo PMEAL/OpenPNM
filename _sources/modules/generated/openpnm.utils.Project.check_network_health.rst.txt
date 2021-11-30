@@ -1,8 +1,0 @@
-:orphan:
-
-check_network_health
-==========================================
-
-.. currentmodule:: openpnm.utils
-
-.. automethod:: Project.check_network_health

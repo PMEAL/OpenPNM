@@ -1,8 +1,0 @@
-:orphan:
-
-discard
-==============================
-
-.. currentmodule:: openpnm.utils
-
-.. automethod:: TypedSet.discard

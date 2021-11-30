@@ -1,8 +1,0 @@
-:orphan:
-
-remove_trait_listener
-================================================
-
-.. currentmodule:: openpnm.utils
-
-.. automethod:: SettingsData.remove_trait_listener

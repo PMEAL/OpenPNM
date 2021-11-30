@@ -1,8 +1,0 @@
-:orphan:
-
-show_hist
-=================================
-
-.. currentmodule:: openpnm.network
-
-.. automethod:: Gabriel.show_hist

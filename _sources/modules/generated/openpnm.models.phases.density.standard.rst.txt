@@ -1,6 +1,0 @@
-standard
-========
-
-.. currentmodule:: openpnm.models.phases.density
-
-.. autofunction:: standard

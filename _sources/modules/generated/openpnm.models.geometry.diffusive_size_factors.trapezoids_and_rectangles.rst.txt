@@ -1,6 +1,0 @@
-trapezoids\_and\_rectangles
-===========================
-
-.. currentmodule:: openpnm.models.geometry.diffusive_size_factors
-
-.. autofunction:: trapezoids_and_rectangles

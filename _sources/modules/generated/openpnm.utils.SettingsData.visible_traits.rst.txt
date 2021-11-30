@@ -1,8 +1,0 @@
-:orphan:
-
-visible_traits
-=========================================
-
-.. currentmodule:: openpnm.utils
-
-.. automethod:: SettingsData.visible_traits

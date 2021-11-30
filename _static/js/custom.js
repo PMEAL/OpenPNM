@@ -1,5 +1,5 @@
 // We don't want the sidebar to include list of examples, that's just
-// too much. This simple script tries to select those items and hide them.
+// much. This simple script tries to select those items and hide them.
 // "aside" selects sidebar elements, and "href" narrows it down to the
 // list of examples. This is a workaround, not a permanent fix.
 
@@ -26,14 +26,15 @@ window.onload = function () {
 
     // $(".toctree-l3").hide()
 
-    /* This is being done properly via conf.py, no longer needed
-
-    // List of methods exclusive to Python's dict and list + numpy's ndarray
+    // List of methods exclusive to Python's dict and list
     exclude = [
         'append', 'clear', 'copy', 'count', 'extend', 'fromkeys', 'get',
         'index', 'insert', 'items', 'keys', 'pop', 'popitem', 'remove',
-        'reverse', 'setdefault', 'sort', 'update', 'values',
-        'all', 'any', 'argmax', 'argmin', 'argpartition', 'argsort',
+        'reverse', 'setdefault', 'sort', 'update', 'values'
+    ]
+    // List of methods exclusive to numpy's ndaray
+    exclude = exclude.concat(
+        ['all', 'any', 'argmax', 'argmin', 'argpartition', 'argsort',
         'astype', 'base', 'byteswap', 'choose', 'clip', 'compress', 'conj',
         'conjugate', 'copy', 'ctypes', 'cumprod', 'cumsum', 'data',
         'diagonal', 'dot', 'dtype', 'dump', 'dumps', 'fill', 'flags', 'flat',
@@ -43,33 +44,25 @@ window.onload = function () {
         'reshape', 'resize', 'round', 'searchsorted', 'setfield', 'setflags',
         'shape', 'size', 'sort', 'squeeze', 'std', 'strides', 'sum',
         'swapaxes', 'take', 'tobytes', 'tofile', 'tolist', 'tostring',
-        'trace', 'transpose', 'var', 'view', '__call__'
-    ]
+        'trace', 'transpose', 'var', 'view', '__call__']
+    )
 
-    // Hide methods exclusive to dict and list from tables/toctree
+    // Hide methods exclusive to dict and list from tables
     for (let i = 0; i < exclude.length; i++) {
-        // 1. Deal w/ tables
-        // Search through first column of the table for "exclude[i]"
-        tmp = $("tr").find("td:first")
-        tmp = tmp.filter(
-            function() {
-                return $(this).text().startsWith(exclude[i]);
-            }
-        )
+        // Search through first column of the table for "exclude[i]("
+        tmp = $("tr").find(`td:first:contains(${exclude[i]}()`)
         // Find the row(s) containing the returned query
         row = tmp.closest('tr')
         // Hide that row
         row.hide()
         // Comment the line above and uncomment the next for DEBUGGING
         // row.css("background-color", "red")
+    }
 
-        // 2. Deal w/ toctree
-        tmp = $(".toctree-l3 a")
-        tmp = tmp.filter(
-            function() {
-                return $(this).text().trim().startsWith(exclude[i]);
-            }
-        )
+    // Hide methods exclusive to dict and list from toctree
+    for (let i = 0; i < exclude.length; i++) {
+        // Search through toctree for "exclude[i]"
+        tmp = $(`.toctree-l3:contains(${exclude[i]})`)
         // Hide that row
         tmp.hide()
         // Comment the line above and uncomment the next for DEBUGGING
@@ -83,19 +76,12 @@ window.onload = function () {
     ]
     for (let i = 0; i < exclude_attrs.length; i++) {
         // Search through toctree for "exclude_attrs[i]"
-        tmp = $("dt")
-        tmp = tmp.filter(
-            function() {
-                return $(this).text().startsWith(exclude_attrs[i]);
-            }
-        )
+        tmp = $(`dt:contains(${exclude_attrs[i]})`)
         // Hide that element
         tmp.hide()
         // Hide attr's description (2nd column)
         tmp.next("dd").hide()
     }
-
-    */
 
     // Change h1 font to monospace if inside Module Reference
     tmp = $("a:contains('Module Reference')")[0]

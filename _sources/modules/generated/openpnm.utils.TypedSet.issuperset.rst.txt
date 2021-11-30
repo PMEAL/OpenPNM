@@ -1,8 +1,0 @@
-:orphan:
-
-issuperset
-=================================
-
-.. currentmodule:: openpnm.utils
-
-.. automethod:: TypedSet.issuperset

@@ -1,8 +1,0 @@
-:orphan:
-
-setdefault
-===================================
-
-.. currentmodule:: openpnm.network
-
-.. automethod:: Delaunay.setdefault

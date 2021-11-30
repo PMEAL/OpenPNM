@@ -1,8 +1,0 @@
-:orphan:
-
-on_trait_change
-==========================================
-
-.. currentmodule:: openpnm.utils
-
-.. automethod:: SettingsData.on_trait_change

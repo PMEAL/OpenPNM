@@ -1,6 +1,0 @@
-random
-======
-
-.. currentmodule:: openpnm.models.geometry.pore_size
-
-.. autofunction:: random

@@ -1,6 +1,0 @@
-connect\_pores
-==============
-
-.. currentmodule:: openpnm.topotools
-
-.. autofunction:: connect_pores

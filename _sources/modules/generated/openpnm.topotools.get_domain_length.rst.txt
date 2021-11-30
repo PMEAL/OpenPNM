@@ -1,6 +1,0 @@
-get\_domain\_length
-===================
-
-.. currentmodule:: openpnm.topotools
-
-.. autofunction:: get_domain_length

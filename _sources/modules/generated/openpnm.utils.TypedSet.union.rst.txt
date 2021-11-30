@@ -1,8 +1,0 @@
-:orphan:
-
-union
-============================
-
-.. currentmodule:: openpnm.utils
-
-.. automethod:: TypedSet.union

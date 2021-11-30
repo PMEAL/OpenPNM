@@ -1,8 +1,0 @@
-:orphan:
-
-clear
-===========================================
-
-.. currentmodule:: openpnm.geometry
-
-.. automethod:: SquaresAndRectangles.clear

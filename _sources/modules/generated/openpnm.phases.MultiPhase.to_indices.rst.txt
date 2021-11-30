@@ -1,8 +1,0 @@
-:orphan:
-
-to_indices
-====================================
-
-.. currentmodule:: openpnm.phases
-
-.. automethod:: MultiPhase.to_indices

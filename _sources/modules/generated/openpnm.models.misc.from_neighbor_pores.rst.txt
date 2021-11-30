@@ -1,6 +1,0 @@
-from\_neighbor\_pores
-=====================
-
-.. currentmodule:: openpnm.models.misc
-
-.. autofunction:: from_neighbor_pores

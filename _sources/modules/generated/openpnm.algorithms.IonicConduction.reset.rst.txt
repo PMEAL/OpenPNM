@@ -1,8 +1,0 @@
-:orphan:
-
-reset
-========================================
-
-.. currentmodule:: openpnm.algorithms
-
-.. automethod:: IonicConduction.reset

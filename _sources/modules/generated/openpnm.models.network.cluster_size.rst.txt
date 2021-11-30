@@ -1,6 +1,0 @@
-cluster\_size
-=============
-
-.. currentmodule:: openpnm.models.network
-
-.. autofunction:: cluster_size

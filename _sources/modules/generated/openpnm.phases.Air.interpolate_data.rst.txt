@@ -1,8 +1,0 @@
-:orphan:
-
-interpolate_data
-===================================
-
-.. currentmodule:: openpnm.phases
-
-.. automethod:: Air.interpolate_data

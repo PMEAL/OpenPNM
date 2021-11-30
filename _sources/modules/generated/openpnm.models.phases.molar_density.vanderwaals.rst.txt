@@ -1,6 +1,0 @@
-vanderwaals
-===========
-
-.. currentmodule:: openpnm.models.phases.molar_density
-
-.. autofunction:: vanderwaals

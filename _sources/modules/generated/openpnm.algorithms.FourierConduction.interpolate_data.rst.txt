@@ -1,8 +1,0 @@
-:orphan:
-
-interpolate_data
-=====================================================
-
-.. currentmodule:: openpnm.algorithms
-
-.. automethod:: FourierConduction.interpolate_data

@@ -1,8 +1,0 @@
-:orphan:
-
-algorithms
-================================
-
-.. currentmodule:: openpnm.utils
-
-.. automethod:: Project.algorithms

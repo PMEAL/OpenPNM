@@ -1,6 +1,0 @@
-from\_neighbor\_pores
-=====================
-
-.. currentmodule:: openpnm.models.geometry.throat_seed
-
-.. autofunction:: from_neighbor_pores

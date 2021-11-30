@@ -1,8 +1,0 @@
-:orphan:
-
-throats
-================================================
-
-.. currentmodule:: openpnm.geometry
-
-.. automethod:: TrapezoidsAndRectangles.throats

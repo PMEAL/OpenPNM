@@ -1,6 +1,0 @@
-unique\_list
-============
-
-.. currentmodule:: openpnm.utils
-
-.. autofunction:: unique_list

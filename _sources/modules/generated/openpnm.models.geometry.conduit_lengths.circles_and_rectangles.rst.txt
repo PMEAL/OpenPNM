@@ -1,6 +1,0 @@
-circles\_and\_rectangles
-========================
-
-.. currentmodule:: openpnm.models.geometry.conduit_lengths
-
-.. autofunction:: circles_and_rectangles

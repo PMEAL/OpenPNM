@@ -1,8 +1,0 @@
-:orphan:
-
-filter_by_label
-========================================
-
-.. currentmodule:: openpnm.network
-
-.. automethod:: Delaunay.filter_by_label

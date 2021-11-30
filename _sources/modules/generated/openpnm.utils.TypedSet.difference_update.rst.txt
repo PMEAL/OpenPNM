@@ -1,8 +1,0 @@
-:orphan:
-
-difference_update
-========================================
-
-.. currentmodule:: openpnm.utils
-
-.. automethod:: TypedSet.difference_update

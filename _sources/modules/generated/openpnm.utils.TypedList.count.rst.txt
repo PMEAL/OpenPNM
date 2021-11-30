@@ -1,8 +1,0 @@
-:orphan:
-
-count
-=============================
-
-.. currentmodule:: openpnm.utils
-
-.. automethod:: TypedList.count

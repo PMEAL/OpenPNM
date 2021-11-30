@@ -1,8 +1,0 @@
-:orphan:
-
-extend
-============================
-
-.. currentmodule:: openpnm.utils
-
-.. automethod:: Project.extend

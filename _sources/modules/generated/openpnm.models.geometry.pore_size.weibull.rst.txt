@@ -1,6 +1,0 @@
-weibull
-=======
-
-.. currentmodule:: openpnm.models.geometry.pore_size
-
-.. autofunction:: weibull

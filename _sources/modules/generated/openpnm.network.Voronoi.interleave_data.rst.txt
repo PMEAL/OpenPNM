@@ -1,8 +1,0 @@
-:orphan:
-
-interleave_data
-=======================================
-
-.. currentmodule:: openpnm.network
-
-.. automethod:: Voronoi.interleave_data

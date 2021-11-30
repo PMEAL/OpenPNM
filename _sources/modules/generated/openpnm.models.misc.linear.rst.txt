@@ -1,6 +1,0 @@
-linear
-======
-
-.. currentmodule:: openpnm.models.misc
-
-.. autofunction:: linear

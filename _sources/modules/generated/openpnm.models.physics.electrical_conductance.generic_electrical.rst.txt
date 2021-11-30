@@ -1,6 +1,0 @@
-generic\_electrical
-===================
-
-.. currentmodule:: openpnm.models.physics.electrical_conductance
-
-.. autofunction:: generic_electrical

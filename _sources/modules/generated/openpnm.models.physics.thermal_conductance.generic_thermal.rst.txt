@@ -1,6 +1,0 @@
-generic\_thermal
-================
-
-.. currentmodule:: openpnm.models.physics.thermal_conductance
-
-.. autofunction:: generic_thermal

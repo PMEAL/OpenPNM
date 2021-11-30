@@ -1,8 +1,0 @@
-:orphan:
-
-traits_inited
-========================================
-
-.. currentmodule:: openpnm.utils
-
-.. automethod:: SettingsData.traits_inited

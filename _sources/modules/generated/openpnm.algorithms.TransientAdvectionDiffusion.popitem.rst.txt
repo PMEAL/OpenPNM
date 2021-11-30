@@ -1,8 +1,0 @@
-:orphan:
-
-popitem
-======================================================
-
-.. currentmodule:: openpnm.algorithms
-
-.. automethod:: TransientAdvectionDiffusion.popitem

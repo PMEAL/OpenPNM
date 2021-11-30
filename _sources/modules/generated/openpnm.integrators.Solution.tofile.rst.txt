@@ -1,8 +1,0 @@
-:orphan:
-
-tofile
-===================================
-
-.. currentmodule:: openpnm.integrators
-
-.. automethod:: Solution.tofile

@@ -1,8 +1,0 @@
-:orphan:
-
-popitem
-==============================
-
-.. currentmodule:: openpnm.core
-
-.. automethod:: Subdomain.popitem

@@ -1,8 +1,0 @@
-:orphan:
-
-tobytes
-=============================================
-
-.. currentmodule:: openpnm.integrators
-
-.. automethod:: TransientSolution.tobytes

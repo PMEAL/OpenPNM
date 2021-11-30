@@ -1,6 +1,0 @@
-template\_cylinder\_annulus
-===========================
-
-.. currentmodule:: openpnm.topotools
-
-.. autofunction:: template_cylinder_annulus

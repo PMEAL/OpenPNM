@@ -1,8 +1,0 @@
-:orphan:
-
-purge_object
-==================================
-
-.. currentmodule:: openpnm.utils
-
-.. automethod:: Project.purge_object

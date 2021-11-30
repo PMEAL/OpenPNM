@@ -1,6 +1,0 @@
-series\_resistors
-=================
-
-.. currentmodule:: openpnm.models.physics.electrical_conductance
-
-.. autofunction:: series_resistors

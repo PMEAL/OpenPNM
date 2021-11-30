@@ -1,8 +1,0 @@
-:orphan:
-
-symmetric_difference
-===========================================
-
-.. currentmodule:: openpnm.utils
-
-.. automethod:: TypedSet.symmetric_difference

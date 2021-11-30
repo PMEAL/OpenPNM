@@ -1,6 +1,0 @@
-circles\_and\_rectangles
-========================
-
-.. currentmodule:: openpnm.models.geometry.diffusive_size_factors
-
-.. autofunction:: circles_and_rectangles

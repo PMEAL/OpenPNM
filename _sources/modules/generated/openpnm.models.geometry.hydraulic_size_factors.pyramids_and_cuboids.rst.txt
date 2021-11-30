@@ -1,6 +1,0 @@
-pyramids\_and\_cuboids
-======================
-
-.. currentmodule:: openpnm.models.geometry.hydraulic_size_factors
-
-.. autofunction:: pyramids_and_cuboids

@@ -1,6 +1,0 @@
-drop\_sites
-===========
-
-.. currentmodule:: openpnm.topotools
-
-.. autofunction:: drop_sites

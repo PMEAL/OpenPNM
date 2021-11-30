@@ -1,8 +1,0 @@
-:orphan:
-
-show_hist
-================================================
-
-.. currentmodule:: openpnm.algorithms
-
-.. automethod:: OrdinaryPercolation.show_hist

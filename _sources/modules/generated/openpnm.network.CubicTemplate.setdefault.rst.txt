@@ -1,8 +1,0 @@
-:orphan:
-
-setdefault
-========================================
-
-.. currentmodule:: openpnm.network
-
-.. automethod:: CubicTemplate.setdefault

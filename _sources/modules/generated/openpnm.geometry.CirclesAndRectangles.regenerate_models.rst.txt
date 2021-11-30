@@ -1,8 +1,0 @@
-:orphan:
-
-regenerate_models
-=======================================================
-
-.. currentmodule:: openpnm.geometry
-
-.. automethod:: CirclesAndRectangles.regenerate_models

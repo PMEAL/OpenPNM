@@ -1,6 +1,0 @@
-poisson
-=======
-
-.. currentmodule:: openpnm.models.physics.ionic_conductance
-
-.. autofunction:: poisson

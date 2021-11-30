@@ -1,6 +1,0 @@
-trapezoids\_and\_rectangles
-===========================
-
-.. currentmodule:: openpnm.models.geometry.throat_length
-
-.. autofunction:: trapezoids_and_rectangles

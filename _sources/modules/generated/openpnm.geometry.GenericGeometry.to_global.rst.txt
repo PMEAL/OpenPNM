@@ -1,8 +1,0 @@
-:orphan:
-
-to_global
-==========================================
-
-.. currentmodule:: openpnm.geometry
-
-.. automethod:: GenericGeometry.to_global

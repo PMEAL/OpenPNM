@@ -1,8 +1,0 @@
-:orphan:
-
-clear
-===============================
-
-.. currentmodule:: openpnm.phases
-
-.. automethod:: MultiPhase.clear

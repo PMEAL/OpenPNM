@@ -1,6 +1,0 @@
-hull\_centroid
-==============
-
-.. currentmodule:: openpnm.topotools
-
-.. autofunction:: hull_centroid

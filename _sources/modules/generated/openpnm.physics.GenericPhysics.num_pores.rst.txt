@@ -1,8 +1,0 @@
-:orphan:
-
-num_pores
-========================================
-
-.. currentmodule:: openpnm.physics
-
-.. automethod:: GenericPhysics.num_pores

@@ -1,8 +1,0 @@
-:orphan:
-
-get_full_descriptionf
-=============================================
-
-.. currentmodule:: openpnm.utils
-
-.. automethod:: Docorator.get_full_descriptionf

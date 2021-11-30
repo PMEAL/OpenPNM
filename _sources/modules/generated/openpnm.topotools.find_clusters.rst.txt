@@ -1,6 +1,0 @@
-find\_clusters
-==============
-
-.. currentmodule:: openpnm.topotools
-
-.. autofunction:: find_clusters

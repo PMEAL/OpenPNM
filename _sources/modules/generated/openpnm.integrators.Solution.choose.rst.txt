@@ -1,8 +1,0 @@
-:orphan:
-
-choose
-===================================
-
-.. currentmodule:: openpnm.integrators
-
-.. automethod:: Solution.choose

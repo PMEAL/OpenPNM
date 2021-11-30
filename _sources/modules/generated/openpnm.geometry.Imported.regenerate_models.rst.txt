@@ -1,8 +1,0 @@
-:orphan:
-
-regenerate_models
-===========================================
-
-.. currentmodule:: openpnm.geometry
-
-.. automethod:: Imported.regenerate_models

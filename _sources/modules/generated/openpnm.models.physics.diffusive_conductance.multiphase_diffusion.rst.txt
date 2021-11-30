@@ -1,6 +1,0 @@
-multiphase\_diffusion
-=====================
-
-.. currentmodule:: openpnm.models.physics.diffusive_conductance
-
-.. autofunction:: multiphase_diffusion

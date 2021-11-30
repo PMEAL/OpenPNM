@@ -1,8 +1,0 @@
-:orphan:
-
-set_locations
-============================================
-
-.. currentmodule:: openpnm.physics
-
-.. automethod:: GenericPhysics.set_locations

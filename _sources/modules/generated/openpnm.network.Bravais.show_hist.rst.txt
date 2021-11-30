@@ -1,8 +1,0 @@
-:orphan:
-
-show_hist
-=================================
-
-.. currentmodule:: openpnm.network
-
-.. automethod:: Bravais.show_hist

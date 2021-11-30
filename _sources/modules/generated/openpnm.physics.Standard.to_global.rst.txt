@@ -1,8 +1,0 @@
-:orphan:
-
-to_global
-==================================
-
-.. currentmodule:: openpnm.physics
-
-.. automethod:: Standard.to_global

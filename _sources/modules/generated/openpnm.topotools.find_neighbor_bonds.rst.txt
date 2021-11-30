@@ -1,6 +1,0 @@
-find\_neighbor\_bonds
-=====================
-
-.. currentmodule:: openpnm.topotools
-
-.. autofunction:: find_neighbor_bonds

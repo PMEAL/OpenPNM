@@ -1,8 +1,0 @@
-:orphan:
-
-append
-==============================
-
-.. currentmodule:: openpnm.utils
-
-.. automethod:: TypedList.append

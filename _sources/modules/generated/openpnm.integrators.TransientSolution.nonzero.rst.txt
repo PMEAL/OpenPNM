@@ -1,8 +1,0 @@
-:orphan:
-
-nonzero
-=============================================
-
-.. currentmodule:: openpnm.integrators
-
-.. automethod:: TransientSolution.nonzero

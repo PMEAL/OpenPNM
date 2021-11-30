@@ -1,8 +1,0 @@
-:orphan:
-
-update
-=================================
-
-.. currentmodule:: openpnm.utils
-
-.. automethod:: SettingsDict.update

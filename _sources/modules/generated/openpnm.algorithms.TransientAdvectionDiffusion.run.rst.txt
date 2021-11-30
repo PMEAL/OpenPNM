@@ -1,8 +1,0 @@
-:orphan:
-
-run
-==================================================
-
-.. currentmodule:: openpnm.algorithms
-
-.. automethod:: TransientAdvectionDiffusion.run

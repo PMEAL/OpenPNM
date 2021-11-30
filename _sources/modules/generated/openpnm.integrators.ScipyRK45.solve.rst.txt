@@ -1,8 +1,0 @@
-:orphan:
-
-solve
-===================================
-
-.. currentmodule:: openpnm.integrators
-
-.. automethod:: ScipyRK45.solve

@@ -1,8 +1,0 @@
-:orphan:
-
-getfield
-=====================================
-
-.. currentmodule:: openpnm.integrators
-
-.. automethod:: Solution.getfield

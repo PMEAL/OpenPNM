@@ -1,6 +1,0 @@
-add\_boundary\_pores
-====================
-
-.. currentmodule:: openpnm.topotools
-
-.. autofunction:: add_boundary_pores

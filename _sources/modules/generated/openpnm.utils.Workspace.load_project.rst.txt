@@ -1,8 +1,0 @@
-:orphan:
-
-load_project
-====================================
-
-.. currentmodule:: openpnm.utils
-
-.. automethod:: Workspace.load_project

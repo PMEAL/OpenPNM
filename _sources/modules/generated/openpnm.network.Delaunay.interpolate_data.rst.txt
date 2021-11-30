@@ -1,8 +1,0 @@
-:orphan:
-
-interpolate_data
-=========================================
-
-.. currentmodule:: openpnm.network
-
-.. automethod:: Delaunay.interpolate_data

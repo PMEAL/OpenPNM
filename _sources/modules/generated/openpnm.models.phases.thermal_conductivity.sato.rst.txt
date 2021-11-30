@@ -1,6 +1,0 @@
-sato
-====
-
-.. currentmodule:: openpnm.models.phases.thermal_conductivity
-
-.. autofunction:: sato

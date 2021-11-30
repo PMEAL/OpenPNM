@@ -1,8 +1,0 @@
-:orphan:
-
-to_indices
-===========================================
-
-.. currentmodule:: openpnm.geometry
-
-.. automethod:: GenericGeometry.to_indices

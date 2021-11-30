@@ -1,6 +1,0 @@
-istriangular
-============
-
-.. currentmodule:: openpnm.topotools
-
-.. autofunction:: istriangular

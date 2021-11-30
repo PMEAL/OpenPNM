@@ -1,6 +1,0 @@
-intersecting\_pyramids
-======================
-
-.. currentmodule:: openpnm.models.geometry.hydraulic_size_factors
-
-.. autofunction:: intersecting_pyramids

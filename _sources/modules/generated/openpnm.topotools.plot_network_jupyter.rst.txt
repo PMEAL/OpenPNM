@@ -1,6 +1,0 @@
-plot\_network\_jupyter
-======================
-
-.. currentmodule:: openpnm.topotools
-
-.. autofunction:: plot_network_jupyter

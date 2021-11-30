@@ -1,8 +1,0 @@
-:orphan:
-
-get_sections
-====================================
-
-.. currentmodule:: openpnm.utils
-
-.. automethod:: Docorator.get_sections

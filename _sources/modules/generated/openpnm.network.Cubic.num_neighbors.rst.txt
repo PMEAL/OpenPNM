@@ -1,8 +1,0 @@
-:orphan:
-
-num_neighbors
-===================================
-
-.. currentmodule:: openpnm.network
-
-.. automethod:: Cubic.num_neighbors

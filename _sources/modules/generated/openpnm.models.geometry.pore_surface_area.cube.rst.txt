@@ -1,6 +1,0 @@
-cube
-====
-
-.. currentmodule:: openpnm.models.geometry.pore_surface_area
-
-.. autofunction:: cube

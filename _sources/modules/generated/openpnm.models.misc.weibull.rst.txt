@@ -1,6 +1,0 @@
-weibull
-=======
-
-.. currentmodule:: openpnm.models.misc
-
-.. autofunction:: weibull

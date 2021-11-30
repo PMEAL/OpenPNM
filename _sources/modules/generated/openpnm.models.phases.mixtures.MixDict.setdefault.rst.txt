@@ -1,8 +1,0 @@
-:orphan:
-
-setdefault
-=================================================
-
-.. currentmodule:: openpnm.models.phases.mixtures
-
-.. automethod:: MixDict.setdefault

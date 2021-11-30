@@ -1,6 +1,0 @@
-reflect\_base\_points
-=====================
-
-.. currentmodule:: openpnm.topotools
-
-.. autofunction:: reflect_base_points

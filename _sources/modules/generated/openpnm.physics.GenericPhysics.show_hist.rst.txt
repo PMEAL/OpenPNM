@@ -1,8 +1,0 @@
-:orphan:
-
-show_hist
-========================================
-
-.. currentmodule:: openpnm.physics
-
-.. automethod:: GenericPhysics.show_hist

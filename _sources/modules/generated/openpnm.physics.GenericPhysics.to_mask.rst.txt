@@ -1,8 +1,0 @@
-:orphan:
-
-to_mask
-======================================
-
-.. currentmodule:: openpnm.physics
-
-.. automethod:: GenericPhysics.to_mask

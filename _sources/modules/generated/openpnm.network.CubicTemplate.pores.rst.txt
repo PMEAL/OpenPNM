@@ -1,8 +1,0 @@
-:orphan:
-
-pores
-===================================
-
-.. currentmodule:: openpnm.network
-
-.. automethod:: CubicTemplate.pores

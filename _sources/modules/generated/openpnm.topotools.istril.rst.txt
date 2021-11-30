@@ -1,6 +1,0 @@
-istril
-======
-
-.. currentmodule:: openpnm.topotools
-
-.. autofunction:: istril

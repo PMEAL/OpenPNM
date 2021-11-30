@@ -1,8 +1,0 @@
-:orphan:
-
-find_connecting_throat
-================================================
-
-.. currentmodule:: openpnm.network
-
-.. automethod:: CubicDual.find_connecting_throat

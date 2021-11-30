@@ -1,8 +1,0 @@
-:orphan:
-
-get_conduit_data
-==============================================================
-
-.. currentmodule:: openpnm.algorithms
-
-.. automethod:: TransientReactiveTransport.get_conduit_data

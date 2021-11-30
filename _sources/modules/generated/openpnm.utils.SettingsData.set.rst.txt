@@ -1,8 +1,0 @@
-:orphan:
-
-set
-==============================
-
-.. currentmodule:: openpnm.utils
-
-.. automethod:: SettingsData.set

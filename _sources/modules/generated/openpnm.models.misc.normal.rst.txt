@@ -1,6 +1,0 @@
-normal
-======
-
-.. currentmodule:: openpnm.models.misc
-
-.. autofunction:: normal

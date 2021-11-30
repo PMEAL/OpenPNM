@@ -1,8 +1,0 @@
-:orphan:
-
-isdisjoint
-=================================
-
-.. currentmodule:: openpnm.utils
-
-.. automethod:: TypedSet.isdisjoint

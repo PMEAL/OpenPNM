@@ -1,6 +1,0 @@
-plot\_networkx
-==============
-
-.. currentmodule:: openpnm.topotools
-
-.. autofunction:: plot_networkx

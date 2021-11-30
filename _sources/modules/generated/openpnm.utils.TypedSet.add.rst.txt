@@ -1,8 +1,0 @@
-:orphan:
-
-add
-==========================
-
-.. currentmodule:: openpnm.utils
-
-.. automethod:: TypedSet.add

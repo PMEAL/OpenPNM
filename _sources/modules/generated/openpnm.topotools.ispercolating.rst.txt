@@ -1,6 +1,0 @@
-ispercolating
-=============
-
-.. currentmodule:: openpnm.topotools
-
-.. autofunction:: ispercolating

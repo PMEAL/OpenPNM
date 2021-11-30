@@ -1,6 +1,0 @@
-mason\_morrow
-=============
-
-.. currentmodule:: openpnm.models.geometry.throat_capillary_shape_factor
-
-.. autofunction:: mason_morrow

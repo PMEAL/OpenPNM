@@ -1,8 +1,0 @@
-:orphan:
-
-remove_model
-================================================
-
-.. currentmodule:: openpnm.network
-
-.. automethod:: DelaunayVoronoiDual.remove_model

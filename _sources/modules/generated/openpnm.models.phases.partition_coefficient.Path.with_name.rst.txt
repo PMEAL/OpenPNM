@@ -1,8 +1,0 @@
-:orphan:
-
-with_name
-==========================================================
-
-.. currentmodule:: openpnm.models.phases.partition_coefficient
-
-.. automethod:: Path.with_name

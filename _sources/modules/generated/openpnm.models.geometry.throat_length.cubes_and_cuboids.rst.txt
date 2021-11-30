@@ -1,6 +1,0 @@
-cubes\_and\_cuboids
-===================
-
-.. currentmodule:: openpnm.models.geometry.throat_length
-
-.. autofunction:: cubes_and_cuboids

@@ -1,8 +1,0 @@
-:orphan:
-
-popitem
-========================================
-
-.. currentmodule:: openpnm.geometry
-
-.. automethod:: CubesAndCuboids.popitem

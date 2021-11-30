@@ -1,6 +1,0 @@
-issymmetric
-===========
-
-.. currentmodule:: openpnm.topotools
-
-.. autofunction:: issymmetric

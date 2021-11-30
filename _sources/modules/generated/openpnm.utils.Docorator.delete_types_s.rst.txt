@@ -1,8 +1,0 @@
-:orphan:
-
-delete_types_s
-======================================
-
-.. currentmodule:: openpnm.utils
-
-.. automethod:: Docorator.delete_types_s

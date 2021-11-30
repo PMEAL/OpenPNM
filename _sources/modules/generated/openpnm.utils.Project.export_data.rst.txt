@@ -1,8 +1,0 @@
-:orphan:
-
-export_data
-=================================
-
-.. currentmodule:: openpnm.utils
-
-.. automethod:: Project.export_data

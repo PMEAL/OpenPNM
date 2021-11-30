@@ -1,6 +1,0 @@
-jenkins\_rao
-============
-
-.. currentmodule:: openpnm.models.geometry.throat_capillary_shape_factor
-
-.. autofunction:: jenkins_rao

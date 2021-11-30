@@ -1,8 +1,0 @@
-:orphan:
-
-map_pores
-========================================================
-
-.. currentmodule:: openpnm.algorithms
-
-.. automethod:: TransientAdvectionDiffusion.map_pores

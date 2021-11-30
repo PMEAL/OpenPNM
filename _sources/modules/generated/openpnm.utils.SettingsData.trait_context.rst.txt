@@ -1,8 +1,0 @@
-:orphan:
-
-trait_context
-========================================
-
-.. currentmodule:: openpnm.utils
-
-.. automethod:: SettingsData.trait_context

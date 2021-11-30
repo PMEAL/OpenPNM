@@ -1,8 +1,0 @@
-:orphan:
-
-tolist
-===================================
-
-.. currentmodule:: openpnm.integrators
-
-.. automethod:: Solution.tolist

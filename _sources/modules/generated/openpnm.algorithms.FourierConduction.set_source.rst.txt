@@ -1,8 +1,0 @@
-:orphan:
-
-set_source
-===============================================
-
-.. currentmodule:: openpnm.algorithms
-
-.. automethod:: FourierConduction.set_source
