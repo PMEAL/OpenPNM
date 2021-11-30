@@ -12,16 +12,16 @@ from matplotlib.docstring import Substitution
 
 _docstr = Docorator()
 _docstr.params['models.target.parameters'] = \
-r"""target : OpenPNM Base object
-            Object with which this model is associated. This controls
-            the length of the calculated array, and also provides access
-            to other necessary properties."""
+    r"""target : OpenPNM Base object
+                Object with which this model is associated. This controls
+                the length of the calculated array, and also provides access
+                to other necessary properties."""
 
 
 _doctxt = Substitution(
     dict_blurb=\
-        r"""Name of the dictionary key on ``target`` pointing to the
-        array containing values of """,
+    r"""Name of the dictionary key on ``target`` pointing to the
+    array containing values of """,
     target_blurb=\
     r"""target : OpenPNM Base object
             Object with which this model is associated. This controls
@@ -34,8 +34,6 @@ _doctxt = Substitution(
 
 
 # %%
-
-
 __all__ = [
     'misc',
     'network',
