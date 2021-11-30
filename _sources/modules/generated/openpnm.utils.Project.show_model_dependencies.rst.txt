@@ -1,0 +1,8 @@
+:orphan:
+
+show_model_dependencies
+=============================================
+
+.. currentmodule:: openpnm.utils
+
+.. automethod:: Project.show_model_dependencies

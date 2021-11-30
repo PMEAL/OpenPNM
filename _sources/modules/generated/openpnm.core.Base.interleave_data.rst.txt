@@ -1,0 +1,8 @@
+:orphan:
+
+interleave_data
+=================================
+
+.. currentmodule:: openpnm.core
+
+.. automethod:: Base.interleave_data

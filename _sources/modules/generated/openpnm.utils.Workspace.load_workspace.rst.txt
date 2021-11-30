@@ -1,0 +1,8 @@
+:orphan:
+
+load_workspace
+======================================
+
+.. currentmodule:: openpnm.utils
+
+.. automethod:: Workspace.load_workspace

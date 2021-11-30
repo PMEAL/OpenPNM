@@ -1,0 +1,8 @@
+:orphan:
+
+new_project
+===================================
+
+.. currentmodule:: openpnm.utils
+
+.. automethod:: Workspace.new_project

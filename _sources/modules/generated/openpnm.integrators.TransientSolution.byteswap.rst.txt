@@ -1,0 +1,8 @@
+:orphan:
+
+byteswap
+==============================================
+
+.. currentmodule:: openpnm.integrators
+
+.. automethod:: TransientSolution.byteswap

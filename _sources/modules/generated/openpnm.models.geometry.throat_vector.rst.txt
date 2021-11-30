@@ -1,0 +1,39 @@
+:noindex:
+
+.. automodule:: openpnm.models.geometry.throat_vector
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+   
+      pore_to_pore
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :nosignatures:
+      :toctree:
+
+   
+      Docorator
+   
+   
+
+   
+   
+   
+
+   
+   
+   

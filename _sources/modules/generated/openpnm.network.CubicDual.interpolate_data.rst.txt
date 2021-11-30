@@ -1,0 +1,8 @@
+:orphan:
+
+interpolate_data
+==========================================
+
+.. currentmodule:: openpnm.network
+
+.. automethod:: CubicDual.interpolate_data

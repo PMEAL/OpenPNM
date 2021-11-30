@@ -1,0 +1,8 @@
+:orphan:
+
+is_mount
+=========================================================
+
+.. currentmodule:: openpnm.models.phases.partition_coefficient
+
+.. automethod:: Path.is_mount

@@ -1,0 +1,8 @@
+:orphan:
+
+keep_types
+========================================================
+
+.. currentmodule:: openpnm.models.phases.molar_density
+
+.. automethod:: Docorator.keep_types

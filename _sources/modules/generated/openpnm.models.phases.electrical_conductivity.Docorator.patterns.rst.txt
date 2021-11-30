@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.models.phases.electrical\_conductivity.Docorator.patterns
+=================================================================
+
+.. currentmodule:: openpnm.models.phases.electrical_conductivity
+
+attribute
+
+.. autoattribute:: openpnm.models.phases.electrical_conductivity.Docorator.patterns
+

@@ -1,0 +1,8 @@
+:orphan:
+
+keep_params
+=============================================================
+
+.. currentmodule:: openpnm.models.geometry.conduit_lengths
+
+.. automethod:: Docorator.keep_params

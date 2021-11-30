@@ -1,0 +1,8 @@
+:orphan:
+
+dedents
+=====================================================
+
+.. currentmodule:: openpnm.models.phases.molar_density
+
+.. automethod:: Docorator.dedents

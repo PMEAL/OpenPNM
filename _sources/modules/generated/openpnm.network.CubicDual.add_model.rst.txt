@@ -1,0 +1,8 @@
+:orphan:
+
+add_model
+===================================
+
+.. currentmodule:: openpnm.network
+
+.. automethod:: CubicDual.add_model

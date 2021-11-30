@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.models.phases.thermal\_conductivity.Docorator.patterns
+==============================================================
+
+.. currentmodule:: openpnm.models.phases.thermal_conductivity
+
+attribute
+
+.. autoattribute:: openpnm.models.phases.thermal_conductivity.Docorator.patterns
+

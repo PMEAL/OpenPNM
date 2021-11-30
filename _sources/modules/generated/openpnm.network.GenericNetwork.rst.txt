@@ -1,0 +1,80 @@
+GenericNetwork
+==============================
+
+.. currentmodule:: openpnm.network
+
+.. autoclass:: GenericNetwork
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            GenericNetwork.add_model
+            GenericNetwork.check_network_health
+            GenericNetwork.clear
+            GenericNetwork.copy
+            GenericNetwork.create_adjacency_matrix
+            GenericNetwork.create_incidence_matrix
+            GenericNetwork.filter_by_label
+            GenericNetwork.find_connected_pores
+            GenericNetwork.find_connecting_throat
+            GenericNetwork.find_nearby_pores
+            GenericNetwork.find_neighbor_pores
+            GenericNetwork.find_neighbor_throats
+            GenericNetwork.fromkeys
+            GenericNetwork.get
+            GenericNetwork.get_adjacency_matrix
+            GenericNetwork.get_conduit_data
+            GenericNetwork.get_incidence_matrix
+            GenericNetwork.interleave_data
+            GenericNetwork.interpolate_data
+            GenericNetwork.items
+            GenericNetwork.keys
+            GenericNetwork.labels
+            GenericNetwork.num_neighbors
+            GenericNetwork.num_pores
+            GenericNetwork.num_throats
+            GenericNetwork.params
+            GenericNetwork.pop
+            GenericNetwork.popitem
+            GenericNetwork.pores
+            GenericNetwork.props
+            GenericNetwork.regenerate_models
+            GenericNetwork.remove_model
+            GenericNetwork.set_label
+            GenericNetwork.setdefault
+            GenericNetwork.show_hist
+            GenericNetwork.throats
+            GenericNetwork.to_indices
+            GenericNetwork.to_mask
+            GenericNetwork.update
+            GenericNetwork.values
+   
+   
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            GenericNetwork.Np
+            GenericNetwork.Nt
+            GenericNetwork.Ps
+            GenericNetwork.Ts
+            GenericNetwork.am
+            GenericNetwork.conns
+            GenericNetwork.coords
+            GenericNetwork.im
+            GenericNetwork.models
+            GenericNetwork.name
+            GenericNetwork.network
+            GenericNetwork.project
+            GenericNetwork.settings
+   
+   

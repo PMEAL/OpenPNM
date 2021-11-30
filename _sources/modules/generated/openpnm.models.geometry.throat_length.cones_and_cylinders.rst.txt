@@ -1,0 +1,6 @@
+cones\_and\_cylinders
+=====================
+
+.. currentmodule:: openpnm.models.geometry.throat_length
+
+.. autofunction:: cones_and_cylinders

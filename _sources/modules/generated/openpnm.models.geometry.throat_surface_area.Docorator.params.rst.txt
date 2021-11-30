@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.models.geometry.throat\_surface\_area.Docorator.params
+==============================================================
+
+.. currentmodule:: openpnm.models.geometry.throat_surface_area
+
+attribute
+
+.. autoattribute:: openpnm.models.geometry.throat_surface_area.Docorator.params
+

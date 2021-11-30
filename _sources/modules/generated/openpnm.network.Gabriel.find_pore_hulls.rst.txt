@@ -1,0 +1,8 @@
+:orphan:
+
+find_pore_hulls
+=======================================
+
+.. currentmodule:: openpnm.network
+
+.. automethod:: Gabriel.find_pore_hulls

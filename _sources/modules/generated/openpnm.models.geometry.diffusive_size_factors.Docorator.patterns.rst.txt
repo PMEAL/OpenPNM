@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.models.geometry.diffusive\_size\_factors.Docorator.patterns
+===================================================================
+
+.. currentmodule:: openpnm.models.geometry.diffusive_size_factors
+
+attribute
+
+.. autoattribute:: openpnm.models.geometry.diffusive_size_factors.Docorator.patterns
+

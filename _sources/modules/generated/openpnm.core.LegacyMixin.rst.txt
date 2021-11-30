@@ -1,0 +1,26 @@
+LegacyMixin
+========================
+
+.. currentmodule:: openpnm.core
+
+.. autoclass:: LegacyMixin
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            LegacyMixin.map_pores
+            LegacyMixin.map_throats
+            LegacyMixin.toindices
+            LegacyMixin.tomask
+   
+   
+
+   
+   
+   

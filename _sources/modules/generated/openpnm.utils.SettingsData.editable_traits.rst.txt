@@ -1,0 +1,8 @@
+:orphan:
+
+editable_traits
+==========================================
+
+.. currentmodule:: openpnm.utils
+
+.. automethod:: SettingsData.editable_traits

@@ -1,0 +1,8 @@
+:orphan:
+
+delete_types_s
+=======================================================
+
+.. currentmodule:: openpnm.models.phases.mixtures
+
+.. automethod:: Docorator.delete_types_s

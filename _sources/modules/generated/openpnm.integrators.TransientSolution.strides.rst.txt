@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.integrators.TransientSolution.strides
+=============================================
+
+.. currentmodule:: openpnm.integrators
+
+attribute
+
+.. autoattribute:: openpnm.integrators.TransientSolution.strides
+

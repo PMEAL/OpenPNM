@@ -1,0 +1,8 @@
+:orphan:
+
+with_indent
+===================================================================
+
+.. currentmodule:: openpnm.models.misc.statistical_distributions
+
+.. automethod:: Docorator.with_indent

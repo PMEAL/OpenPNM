@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.algorithms.GenericAlgorithm.settings
+============================================
+
+.. currentmodule:: openpnm.algorithms
+
+attribute
+
+.. autoproperty:: openpnm.algorithms.GenericAlgorithm.settings
+

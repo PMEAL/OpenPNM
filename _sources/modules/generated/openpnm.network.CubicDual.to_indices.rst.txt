@@ -1,0 +1,8 @@
+:orphan:
+
+to_indices
+====================================
+
+.. currentmodule:: openpnm.network
+
+.. automethod:: CubicDual.to_indices

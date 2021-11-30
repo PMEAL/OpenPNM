@@ -1,0 +1,8 @@
+:orphan:
+
+print_traits
+=======================================
+
+.. currentmodule:: openpnm.utils
+
+.. automethod:: SettingsData.print_traits

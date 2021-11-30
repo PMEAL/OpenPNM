@@ -1,0 +1,8 @@
+:orphan:
+
+issubset
+===============================
+
+.. currentmodule:: openpnm.utils
+
+.. automethod:: TypedSet.issubset

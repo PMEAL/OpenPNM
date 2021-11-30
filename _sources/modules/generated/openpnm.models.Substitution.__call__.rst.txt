@@ -1,0 +1,8 @@
+:orphan:
+
+__call__
+====================================
+
+.. currentmodule:: openpnm.models
+
+.. automethod:: Substitution.__call__

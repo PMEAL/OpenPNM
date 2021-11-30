@@ -1,0 +1,8 @@
+:orphan:
+
+dedents
+============================================
+
+.. currentmodule:: openpnm.models.phases.misc
+
+.. automethod:: Docorator.dedents

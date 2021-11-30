@@ -1,0 +1,8 @@
+:orphan:
+
+show_hist
+==================================
+
+.. currentmodule:: openpnm.physics
+
+.. automethod:: Standard.show_hist

@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.algorithms.TransientReactiveTransport.Nt
+================================================
+
+.. currentmodule:: openpnm.algorithms
+
+attribute
+
+.. autoproperty:: openpnm.algorithms.TransientReactiveTransport.Nt
+

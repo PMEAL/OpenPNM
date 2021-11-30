@@ -1,0 +1,8 @@
+:orphan:
+
+col
+=============================
+
+.. currentmodule:: openpnm.utils
+
+.. automethod:: ProjectGrid.col

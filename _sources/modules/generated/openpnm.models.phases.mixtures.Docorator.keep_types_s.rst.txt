@@ -1,0 +1,8 @@
+:orphan:
+
+keep_types_s
+=====================================================
+
+.. currentmodule:: openpnm.models.phases.mixtures
+
+.. automethod:: Docorator.keep_types_s

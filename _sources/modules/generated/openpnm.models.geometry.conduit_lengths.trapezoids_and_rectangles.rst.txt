@@ -1,0 +1,6 @@
+trapezoids\_and\_rectangles
+===========================
+
+.. currentmodule:: openpnm.models.geometry.conduit_lengths
+
+.. autofunction:: trapezoids_and_rectangles

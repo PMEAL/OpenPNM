@@ -1,0 +1,8 @@
+:orphan:
+
+add_trait_listener
+=============================================
+
+.. currentmodule:: openpnm.utils
+
+.. automethod:: SettingsData.add_trait_listener

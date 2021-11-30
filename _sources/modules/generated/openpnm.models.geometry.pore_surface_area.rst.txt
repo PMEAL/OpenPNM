@@ -1,0 +1,42 @@
+:noindex:
+
+.. automodule:: openpnm.models.geometry.pore_surface_area
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+   
+      circle
+      cube
+      sphere
+      square
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :nosignatures:
+      :toctree:
+
+   
+      Docorator
+   
+   
+
+   
+   
+   
+
+   
+   
+   

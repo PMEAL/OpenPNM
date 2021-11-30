@@ -1,0 +1,8 @@
+:orphan:
+
+remove_model
+=====================================
+
+.. currentmodule:: openpnm.physics
+
+.. automethod:: Standard.remove_model

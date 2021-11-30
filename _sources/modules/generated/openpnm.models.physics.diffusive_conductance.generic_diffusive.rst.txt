@@ -1,0 +1,6 @@
+generic\_diffusive
+==================
+
+.. currentmodule:: openpnm.models.physics.diffusive_conductance
+
+.. autofunction:: generic_diffusive

@@ -1,0 +1,8 @@
+:orphan:
+
+keep_types
+===================================================================
+
+.. currentmodule:: openpnm.models.geometry.hydraulic_size_factors
+
+.. automethod:: Docorator.keep_types

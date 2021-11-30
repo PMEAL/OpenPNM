@@ -1,0 +1,8 @@
+:orphan:
+
+set_outlets
+=======================================================
+
+.. currentmodule:: openpnm.algorithms
+
+.. automethod:: MixedInvasionPercolation.set_outlets

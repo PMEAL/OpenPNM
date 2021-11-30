@@ -1,0 +1,72 @@
+Basic
+=====================
+
+.. currentmodule:: openpnm.physics
+
+.. autoclass:: Basic
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            Basic.add_model
+            Basic.clear
+            Basic.copy
+            Basic.filter_by_label
+            Basic.fromkeys
+            Basic.get
+            Basic.get_conduit_data
+            Basic.interleave_data
+            Basic.interpolate_data
+            Basic.items
+            Basic.keys
+            Basic.labels
+            Basic.num_pores
+            Basic.num_throats
+            Basic.params
+            Basic.pop
+            Basic.popitem
+            Basic.pores
+            Basic.props
+            Basic.regenerate_models
+            Basic.remove_model
+            Basic.set_geometry
+            Basic.set_label
+            Basic.set_locations
+            Basic.set_phase
+            Basic.setdefault
+            Basic.show_hist
+            Basic.throats
+            Basic.to_global
+            Basic.to_indices
+            Basic.to_local
+            Basic.to_mask
+            Basic.update
+            Basic.values
+   
+   
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            Basic.Np
+            Basic.Nt
+            Basic.Ps
+            Basic.Ts
+            Basic.geometry
+            Basic.models
+            Basic.name
+            Basic.network
+            Basic.phase
+            Basic.project
+            Basic.settings
+   
+   

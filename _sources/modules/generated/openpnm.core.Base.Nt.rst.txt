@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.core.Base.Nt
+====================
+
+.. currentmodule:: openpnm.core
+
+attribute
+
+.. autoproperty:: openpnm.core.Base.Nt
+

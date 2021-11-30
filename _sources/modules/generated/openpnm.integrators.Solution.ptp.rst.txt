@@ -1,0 +1,8 @@
+:orphan:
+
+ptp
+================================
+
+.. currentmodule:: openpnm.integrators
+
+.. automethod:: Solution.ptp

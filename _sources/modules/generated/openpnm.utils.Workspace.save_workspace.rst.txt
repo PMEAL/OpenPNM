@@ -1,0 +1,8 @@
+:orphan:
+
+save_workspace
+======================================
+
+.. currentmodule:: openpnm.utils
+
+.. automethod:: Workspace.save_workspace

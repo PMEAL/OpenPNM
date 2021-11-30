@@ -1,0 +1,6 @@
+istriu
+======
+
+.. currentmodule:: openpnm.topotools
+
+.. autofunction:: istriu

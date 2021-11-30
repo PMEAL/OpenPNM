@@ -1,0 +1,72 @@
+Standard
+========================
+
+.. currentmodule:: openpnm.physics
+
+.. autoclass:: Standard
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            Standard.add_model
+            Standard.clear
+            Standard.copy
+            Standard.filter_by_label
+            Standard.fromkeys
+            Standard.get
+            Standard.get_conduit_data
+            Standard.interleave_data
+            Standard.interpolate_data
+            Standard.items
+            Standard.keys
+            Standard.labels
+            Standard.num_pores
+            Standard.num_throats
+            Standard.params
+            Standard.pop
+            Standard.popitem
+            Standard.pores
+            Standard.props
+            Standard.regenerate_models
+            Standard.remove_model
+            Standard.set_geometry
+            Standard.set_label
+            Standard.set_locations
+            Standard.set_phase
+            Standard.setdefault
+            Standard.show_hist
+            Standard.throats
+            Standard.to_global
+            Standard.to_indices
+            Standard.to_local
+            Standard.to_mask
+            Standard.update
+            Standard.values
+   
+   
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            Standard.Np
+            Standard.Nt
+            Standard.Ps
+            Standard.Ts
+            Standard.geometry
+            Standard.models
+            Standard.name
+            Standard.network
+            Standard.phase
+            Standard.project
+            Standard.settings
+   
+   

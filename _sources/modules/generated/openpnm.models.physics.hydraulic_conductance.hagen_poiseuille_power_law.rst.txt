@@ -1,0 +1,6 @@
+hagen\_poiseuille\_power\_law
+=============================
+
+.. currentmodule:: openpnm.models.physics.hydraulic_conductance
+
+.. autofunction:: hagen_poiseuille_power_law

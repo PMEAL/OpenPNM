@@ -1,0 +1,8 @@
+:orphan:
+
+results
+=======================================================
+
+.. currentmodule:: openpnm.algorithms
+
+.. automethod:: MixedInvasionPercolationCoop.results

@@ -1,0 +1,8 @@
+:orphan:
+
+toindices
+================================================
+
+.. currentmodule:: openpnm.algorithms
+
+.. automethod:: OrdinaryPercolation.toindices

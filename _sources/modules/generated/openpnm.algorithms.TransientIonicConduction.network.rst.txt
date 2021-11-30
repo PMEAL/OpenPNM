@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.algorithms.TransientIonicConduction.network
+===================================================
+
+.. currentmodule:: openpnm.algorithms
+
+attribute
+
+.. autoproperty:: openpnm.algorithms.TransientIonicConduction.network
+

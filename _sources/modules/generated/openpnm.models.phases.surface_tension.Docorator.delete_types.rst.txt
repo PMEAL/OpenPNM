@@ -1,0 +1,8 @@
+:orphan:
+
+delete_types
+============================================================
+
+.. currentmodule:: openpnm.models.phases.surface_tension
+
+.. automethod:: Docorator.delete_types

@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.utils.HealthDict.health
+===============================
+
+.. currentmodule:: openpnm.utils
+
+attribute
+
+.. autoproperty:: openpnm.utils.HealthDict.health
+

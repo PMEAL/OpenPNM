@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.algorithms.Porosimetry.Np
+=================================
+
+.. currentmodule:: openpnm.algorithms
+
+attribute
+
+.. autoproperty:: openpnm.algorithms.Porosimetry.Np
+

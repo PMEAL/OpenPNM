@@ -1,0 +1,8 @@
+:orphan:
+
+run
+========================================
+
+.. currentmodule:: openpnm.algorithms
+
+.. automethod:: FourierConduction.run

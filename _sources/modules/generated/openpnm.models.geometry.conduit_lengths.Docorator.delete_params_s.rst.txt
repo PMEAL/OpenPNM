@@ -1,0 +1,8 @@
+:orphan:
+
+delete_params_s
+=================================================================
+
+.. currentmodule:: openpnm.models.geometry.conduit_lengths
+
+.. automethod:: Docorator.delete_params_s

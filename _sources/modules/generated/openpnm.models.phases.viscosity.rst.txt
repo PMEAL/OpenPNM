@@ -1,0 +1,32 @@
+:noindex:
+
+.. automodule:: openpnm.models.phases.viscosity
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+   
+      chung
+      reynolds
+      water
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   

@@ -1,0 +1,8 @@
+:orphan:
+
+find_phase
+================================
+
+.. currentmodule:: openpnm.utils
+
+.. automethod:: Project.find_phase

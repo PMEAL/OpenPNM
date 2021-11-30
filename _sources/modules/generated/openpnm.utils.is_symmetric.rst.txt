@@ -1,0 +1,6 @@
+is\_symmetric
+=============
+
+.. currentmodule:: openpnm.utils
+
+.. autofunction:: is_symmetric

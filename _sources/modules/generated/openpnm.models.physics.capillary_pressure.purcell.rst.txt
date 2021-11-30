@@ -1,0 +1,6 @@
+purcell
+=======
+
+.. currentmodule:: openpnm.models.physics.capillary_pressure
+
+.. autofunction:: purcell

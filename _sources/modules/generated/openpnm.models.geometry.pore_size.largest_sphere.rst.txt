@@ -1,0 +1,6 @@
+largest\_sphere
+===============
+
+.. currentmodule:: openpnm.models.geometry.pore_size
+
+.. autofunction:: largest_sphere

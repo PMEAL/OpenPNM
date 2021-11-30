@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.algorithms.FourierConduction.Ps
+=======================================
+
+.. currentmodule:: openpnm.algorithms
+
+attribute
+
+.. autoproperty:: openpnm.algorithms.FourierConduction.Ps
+

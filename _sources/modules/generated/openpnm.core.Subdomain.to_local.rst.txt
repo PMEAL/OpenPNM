@@ -1,0 +1,8 @@
+:orphan:
+
+to_local
+===============================
+
+.. currentmodule:: openpnm.core
+
+.. automethod:: Subdomain.to_local

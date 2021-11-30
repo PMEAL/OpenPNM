@@ -1,0 +1,8 @@
+:orphan:
+
+map_throats
+=======================================================
+
+.. currentmodule:: openpnm.algorithms
+
+.. automethod:: MixedInvasionPercolation.map_throats

@@ -1,0 +1,32 @@
+:noindex:
+
+.. automodule:: openpnm.models.physics.meniscus
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+   
+      general_toroidal
+      purcell
+      sinusoidal
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   

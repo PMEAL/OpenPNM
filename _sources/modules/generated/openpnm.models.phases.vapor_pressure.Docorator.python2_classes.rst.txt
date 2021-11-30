@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.models.phases.vapor\_pressure.Docorator.python2\_classes
+================================================================
+
+.. currentmodule:: openpnm.models.phases.vapor_pressure
+
+attribute
+
+.. autoattribute:: openpnm.models.phases.vapor_pressure.Docorator.python2_classes
+

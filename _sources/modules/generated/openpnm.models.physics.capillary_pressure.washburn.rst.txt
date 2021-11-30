@@ -1,0 +1,6 @@
+washburn
+========
+
+.. currentmodule:: openpnm.models.physics.capillary_pressure
+
+.. autofunction:: washburn

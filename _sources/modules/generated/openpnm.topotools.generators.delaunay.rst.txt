@@ -1,0 +1,6 @@
+delaunay
+========
+
+.. currentmodule:: openpnm.topotools.generators
+
+.. autofunction:: delaunay

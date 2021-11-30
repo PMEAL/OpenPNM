@@ -1,0 +1,8 @@
+:orphan:
+
+dedent
+==============================================================
+
+.. currentmodule:: openpnm.models.phases.electrical_conductivity
+
+.. automethod:: Docorator.dedent

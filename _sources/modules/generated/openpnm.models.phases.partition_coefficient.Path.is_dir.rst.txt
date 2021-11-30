@@ -1,0 +1,8 @@
+:orphan:
+
+is_dir
+=======================================================
+
+.. currentmodule:: openpnm.models.phases.partition_coefficient
+
+.. automethod:: Path.is_dir

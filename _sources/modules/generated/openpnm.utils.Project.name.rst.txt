@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.utils.Project.name
+==========================
+
+.. currentmodule:: openpnm.utils
+
+attribute
+
+.. autoproperty:: openpnm.utils.Project.name
+

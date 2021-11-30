@@ -1,0 +1,8 @@
+:orphan:
+
+physics
+=============================
+
+.. currentmodule:: openpnm.utils
+
+.. automethod:: Project.physics

@@ -1,0 +1,8 @@
+:orphan:
+
+__call__
+==========================================================
+
+.. currentmodule:: openpnm.models.geometry.throat_centroid
+
+.. automethod:: Docorator.__call__

@@ -1,0 +1,8 @@
+:orphan:
+
+save_docstring
+=======================================================
+
+.. currentmodule:: openpnm.models.phases.mixtures
+
+.. automethod:: Docorator.save_docstring

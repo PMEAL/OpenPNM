@@ -1,0 +1,6 @@
+cubes\_and\_cuboids
+===================
+
+.. currentmodule:: openpnm.models.geometry.conduit_lengths
+
+.. autofunction:: cubes_and_cuboids

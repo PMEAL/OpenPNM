@@ -1,0 +1,8 @@
+:orphan:
+
+plot_intrusion_curve
+================================================================
+
+.. currentmodule:: openpnm.algorithms
+
+.. automethod:: MixedInvasionPercolation.plot_intrusion_curve

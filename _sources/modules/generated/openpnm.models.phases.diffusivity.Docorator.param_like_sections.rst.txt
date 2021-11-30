@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.models.phases.diffusivity.Docorator.param\_like\_sections
+=================================================================
+
+.. currentmodule:: openpnm.models.phases.diffusivity
+
+attribute
+
+.. autoattribute:: openpnm.models.phases.diffusivity.Docorator.param_like_sections
+

@@ -1,0 +1,8 @@
+:orphan:
+
+get_full_descriptionf
+=================================================================
+
+.. currentmodule:: openpnm.models.geometry.pore_size
+
+.. automethod:: Docorator.get_full_descriptionf

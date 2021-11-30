@@ -1,0 +1,6 @@
+generic\_distribution
+=====================
+
+.. currentmodule:: openpnm.models.misc.statistical_distributions
+
+.. autofunction:: generic_distribution

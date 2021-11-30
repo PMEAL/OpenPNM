@@ -1,0 +1,6 @@
+fcc
+===
+
+.. currentmodule:: openpnm.topotools.generators
+
+.. autofunction:: fcc

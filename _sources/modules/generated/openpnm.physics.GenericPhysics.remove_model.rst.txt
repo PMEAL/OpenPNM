@@ -1,0 +1,8 @@
+:orphan:
+
+remove_model
+===========================================
+
+.. currentmodule:: openpnm.physics
+
+.. automethod:: GenericPhysics.remove_model

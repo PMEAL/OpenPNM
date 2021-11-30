@@ -1,0 +1,8 @@
+:orphan:
+
+set_label
+===============================================
+
+.. currentmodule:: openpnm.geometry
+
+.. automethod:: CirclesAndRectangles.set_label

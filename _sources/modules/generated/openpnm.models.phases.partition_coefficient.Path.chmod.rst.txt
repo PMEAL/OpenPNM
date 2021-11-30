@@ -1,0 +1,8 @@
+:orphan:
+
+chmod
+======================================================
+
+.. currentmodule:: openpnm.models.phases.partition_coefficient
+
+.. automethod:: Path.chmod

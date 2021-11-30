@@ -1,0 +1,6 @@
+normalize
+=========
+
+.. currentmodule:: openpnm.models.misc
+
+.. autofunction:: normalize

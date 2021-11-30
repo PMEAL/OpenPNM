@@ -1,0 +1,49 @@
+ProjectGrid
+=========================
+
+.. currentmodule:: openpnm.utils
+
+.. autoclass:: ProjectGrid
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            ProjectGrid.add_col
+            ProjectGrid.add_row
+            ProjectGrid.col
+            ProjectGrid.drop_col
+            ProjectGrid.drop_row
+            ProjectGrid.geometries
+            ProjectGrid.get_col
+            ProjectGrid.get_row
+            ProjectGrid.phases
+            ProjectGrid.row
+            ProjectGrid.set_col
+            ProjectGrid.set_row
+            ProjectGrid.set_row_and_col
+   
+   
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            ProjectGrid.blank
+            ProjectGrid.header
+            ProjectGrid.index
+            ProjectGrid.ncols
+            ProjectGrid.nnz
+            ProjectGrid.nrows
+            ProjectGrid.shape
+            ProjectGrid.size
+            ProjectGrid.style
+   
+   

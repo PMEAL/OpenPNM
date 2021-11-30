@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.models.geometry.pore\_volume.Docorator.param\_like\_sections
+====================================================================
+
+.. currentmodule:: openpnm.models.geometry.pore_volume
+
+attribute
+
+.. autoattribute:: openpnm.models.geometry.pore_volume.Docorator.param_like_sections
+

@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.physics.GenericPhysics.models
+=====================================
+
+.. currentmodule:: openpnm.physics
+
+attribute
+
+.. autoproperty:: openpnm.physics.GenericPhysics.models
+

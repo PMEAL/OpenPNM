@@ -1,0 +1,41 @@
+:noindex:
+
+.. automodule:: openpnm.models.geometry.throat_capillary_shape_factor
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+   
+      compactness
+      jenkins_rao
+      mason_morrow
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :nosignatures:
+      :toctree:
+
+   
+      Docorator
+   
+   
+
+   
+   
+   
+
+   
+   
+   

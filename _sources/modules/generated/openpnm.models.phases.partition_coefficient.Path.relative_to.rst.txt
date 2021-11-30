@@ -1,0 +1,8 @@
+:orphan:
+
+relative_to
+============================================================
+
+.. currentmodule:: openpnm.models.phases.partition_coefficient
+
+.. automethod:: Path.relative_to

@@ -1,0 +1,6 @@
+intersecting\_cones
+===================
+
+.. currentmodule:: openpnm.models.geometry.diffusive_size_factors
+
+.. autofunction:: intersecting_cones

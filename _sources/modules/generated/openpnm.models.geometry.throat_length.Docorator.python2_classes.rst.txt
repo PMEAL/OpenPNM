@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.models.geometry.throat\_length.Docorator.python2\_classes
+=================================================================
+
+.. currentmodule:: openpnm.models.geometry.throat_length
+
+attribute
+
+.. autoattribute:: openpnm.models.geometry.throat_length.Docorator.python2_classes
+

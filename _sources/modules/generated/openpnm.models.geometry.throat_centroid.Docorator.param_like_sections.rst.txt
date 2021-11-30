@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.models.geometry.throat\_centroid.Docorator.param\_like\_sections
+========================================================================
+
+.. currentmodule:: openpnm.models.geometry.throat_centroid
+
+attribute
+
+.. autoattribute:: openpnm.models.geometry.throat_centroid.Docorator.param_like_sections
+

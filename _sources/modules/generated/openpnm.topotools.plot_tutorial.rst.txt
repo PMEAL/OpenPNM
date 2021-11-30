@@ -1,0 +1,6 @@
+plot\_tutorial
+==============
+
+.. currentmodule:: openpnm.topotools
+
+.. autofunction:: plot_tutorial

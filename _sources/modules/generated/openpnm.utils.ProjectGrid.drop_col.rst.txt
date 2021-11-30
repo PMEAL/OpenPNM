@@ -1,0 +1,8 @@
+:orphan:
+
+drop_col
+==================================
+
+.. currentmodule:: openpnm.utils
+
+.. automethod:: ProjectGrid.drop_col

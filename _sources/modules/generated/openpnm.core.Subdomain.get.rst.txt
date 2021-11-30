@@ -1,0 +1,8 @@
+:orphan:
+
+get
+==========================
+
+.. currentmodule:: openpnm.core
+
+.. automethod:: Subdomain.get

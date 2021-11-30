@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.geometry.GenericGeometry.project
+========================================
+
+.. currentmodule:: openpnm.geometry
+
+attribute
+
+.. autoproperty:: openpnm.geometry.GenericGeometry.project
+

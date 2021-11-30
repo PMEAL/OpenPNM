@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.models.geometry.hydraulic\_size\_factors.Docorator.text\_sections
+=========================================================================
+
+.. currentmodule:: openpnm.models.geometry.hydraulic_size_factors
+
+attribute
+
+.. autoattribute:: openpnm.models.geometry.hydraulic_size_factors.Docorator.text_sections
+

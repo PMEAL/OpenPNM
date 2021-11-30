@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.algorithms.StokesFlow.A
+===============================
+
+.. currentmodule:: openpnm.algorithms
+
+attribute
+
+.. autoproperty:: openpnm.algorithms.StokesFlow.A
+

@@ -1,0 +1,6 @@
+purcell\_bidirectional
+======================
+
+.. currentmodule:: openpnm.models.physics.capillary_pressure
+
+.. autofunction:: purcell_bidirectional

@@ -1,0 +1,8 @@
+:orphan:
+
+set_label
+=============================================
+
+.. currentmodule:: openpnm.network
+
+.. automethod:: DelaunayVoronoiDual.set_label

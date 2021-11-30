@@ -1,0 +1,8 @@
+:orphan:
+
+keep_params_s
+=====================================================
+
+.. currentmodule:: openpnm.models.phases.density
+
+.. automethod:: Docorator.keep_params_s

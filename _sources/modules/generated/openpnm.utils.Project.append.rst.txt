@@ -1,0 +1,8 @@
+:orphan:
+
+append
+============================
+
+.. currentmodule:: openpnm.utils
+
+.. automethod:: Project.append

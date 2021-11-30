@@ -1,0 +1,8 @@
+:orphan:
+
+with_indent
+=========================================================
+
+.. currentmodule:: openpnm.models.geometry.throat_size
+
+.. automethod:: Docorator.with_indent

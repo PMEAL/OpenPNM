@@ -1,0 +1,8 @@
+:orphan:
+
+create_incidence_matrix
+======================================================
+
+.. currentmodule:: openpnm.network
+
+.. automethod:: GenericNetwork.create_incidence_matrix

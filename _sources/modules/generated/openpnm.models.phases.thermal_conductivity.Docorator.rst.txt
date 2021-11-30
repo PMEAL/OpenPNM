@@ -1,0 +1,57 @@
+Docorator
+====================================================
+
+.. currentmodule:: openpnm.models.phases.thermal_conductivity
+
+.. autoclass:: Docorator
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            Docorator.__call__
+            Docorator.dedent
+            Docorator.dedents
+            Docorator.delete_kwargs
+            Docorator.delete_kwargs_s
+            Docorator.delete_params
+            Docorator.delete_params_s
+            Docorator.delete_types
+            Docorator.delete_types_s
+            Docorator.get_docstring
+            Docorator.get_extended_summary
+            Docorator.get_extended_summaryf
+            Docorator.get_full_description
+            Docorator.get_full_descriptionf
+            Docorator.get_sections
+            Docorator.get_sectionsf
+            Docorator.get_summary
+            Docorator.get_summaryf
+            Docorator.keep_params
+            Docorator.keep_params_s
+            Docorator.keep_types
+            Docorator.keep_types_s
+            Docorator.save_docstring
+            Docorator.with_indent
+            Docorator.with_indents
+   
+   
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            Docorator.param_like_sections
+            Docorator.params
+            Docorator.patterns
+            Docorator.python2_classes
+            Docorator.text_sections
+   
+   

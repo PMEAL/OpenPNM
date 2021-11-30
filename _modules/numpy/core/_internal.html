@@ -1,0 +1,1079 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>numpy.core._internal &#8212; OpenPNM 2.8.2 documentation</title>
+    
+  <link href="../../../_static/css/theme.css" rel="stylesheet">
+  <link href="../../../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/blank.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
+    
+  <link rel="preload" as="script" href="../../../_static/js/index.be7d3bbb2ef33a8344ce.js">
+
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/clipboard.min.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/custom.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+
+<a class="navbar-brand" href="https://www.openpnm.org">
+  <img src="../../../_static/openpnm_logo.png" class="logo" alt="logo">
+</a>
+
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class=" collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../user_guide/installation.html">
+  Installation
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../modules/index.html">
+  Module Reference
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../examples/examples.html">
+  Examples
+ </a>
+</li>
+
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/PMEAL/OpenPNM" rel="noopener" target="_blank" title="GitHub">
+            <span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://openpnm.substack.com/" rel="noopener" target="_blank" title="Substack">
+            <span><i class="fas fa-envelope-square"></i></span>
+            <label class="sr-only">Substack</label>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://twitter.com/OpenPNM" rel="noopener" target="_blank" title="Twitter">
+            <span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label>
+          </a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    
+  </div>
+</nav>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <h1>Source code for numpy.core._internal</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">A place for internal code</span>
+
+<span class="sd">Some things are more easily handled Python.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">ast</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">platform</span>
+
+<span class="kn">from</span> <span class="nn">.multiarray</span> <span class="kn">import</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">array</span><span class="p">,</span> <span class="n">ndarray</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">ctypes</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">ctypes</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="n">IS_PYPY</span> <span class="o">=</span> <span class="n">platform</span><span class="o">.</span><span class="n">python_implementation</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;PyPy&#39;</span>
+
+<span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">byteorder</span> <span class="o">==</span> <span class="s1">&#39;little&#39;</span><span class="p">:</span>
+    <span class="n">_nbo</span> <span class="o">=</span> <span class="s1">&#39;&lt;&#39;</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">_nbo</span> <span class="o">=</span> <span class="s1">&#39;&gt;&#39;</span>
+
+<span class="k">def</span> <span class="nf">_makenames_list</span><span class="p">(</span><span class="n">adict</span><span class="p">,</span> <span class="n">align</span><span class="p">):</span>
+    <span class="n">allfields</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">fname</span><span class="p">,</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">adict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="ow">or</span> <span class="n">n</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;entry not a 2- or 3- tuple&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">obj</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="n">fname</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">num</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">obj</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">num</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;invalid offset.&quot;</span><span class="p">)</span>
+        <span class="nb">format</span> <span class="o">=</span> <span class="n">dtype</span><span class="p">(</span><span class="n">obj</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">align</span><span class="o">=</span><span class="n">align</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">title</span> <span class="o">=</span> <span class="n">obj</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">title</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">allfields</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">fname</span><span class="p">,</span> <span class="nb">format</span><span class="p">,</span> <span class="n">num</span><span class="p">,</span> <span class="n">title</span><span class="p">))</span>
+    <span class="c1"># sort by offsets</span>
+    <span class="n">allfields</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+    <span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">allfields</span><span class="p">]</span>
+    <span class="n">formats</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">allfields</span><span class="p">]</span>
+    <span class="n">offsets</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">allfields</span><span class="p">]</span>
+    <span class="n">titles</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">allfields</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">names</span><span class="p">,</span> <span class="n">formats</span><span class="p">,</span> <span class="n">offsets</span><span class="p">,</span> <span class="n">titles</span>
+
+<span class="c1"># Called in PyArray_DescrConverter function when</span>
+<span class="c1">#  a dictionary without &quot;names&quot; and &quot;formats&quot;</span>
+<span class="c1">#  fields is used as a data-type descriptor.</span>
+<span class="k">def</span> <span class="nf">_usefields</span><span class="p">(</span><span class="n">adict</span><span class="p">,</span> <span class="n">align</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="n">adict</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">names</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">names</span><span class="p">,</span> <span class="n">formats</span><span class="p">,</span> <span class="n">offsets</span><span class="p">,</span> <span class="n">titles</span> <span class="o">=</span> <span class="n">_makenames_list</span><span class="p">(</span><span class="n">adict</span><span class="p">,</span> <span class="n">align</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">formats</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">offsets</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">titles</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">:</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="n">adict</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+            <span class="n">formats</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">offsets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">res</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="n">titles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">titles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">dtype</span><span class="p">({</span><span class="s2">&quot;names&quot;</span><span class="p">:</span> <span class="n">names</span><span class="p">,</span>
+                  <span class="s2">&quot;formats&quot;</span><span class="p">:</span> <span class="n">formats</span><span class="p">,</span>
+                  <span class="s2">&quot;offsets&quot;</span><span class="p">:</span> <span class="n">offsets</span><span class="p">,</span>
+                  <span class="s2">&quot;titles&quot;</span><span class="p">:</span> <span class="n">titles</span><span class="p">},</span> <span class="n">align</span><span class="p">)</span>
+
+
+<span class="c1"># construct an array_protocol descriptor list</span>
+<span class="c1">#  from the fields attribute of a descriptor</span>
+<span class="c1"># This calls itself recursively but should eventually hit</span>
+<span class="c1">#  a descriptor that has no fields and then return</span>
+<span class="c1">#  a simple typestring</span>
+
+<span class="k">def</span> <span class="nf">_array_descr</span><span class="p">(</span><span class="n">descriptor</span><span class="p">):</span>
+    <span class="n">fields</span> <span class="o">=</span> <span class="n">descriptor</span><span class="o">.</span><span class="n">fields</span>
+    <span class="k">if</span> <span class="n">fields</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">subdtype</span> <span class="o">=</span> <span class="n">descriptor</span><span class="o">.</span><span class="n">subdtype</span>
+        <span class="k">if</span> <span class="n">subdtype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">descriptor</span><span class="o">.</span><span class="n">metadata</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">descriptor</span><span class="o">.</span><span class="n">str</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">new</span> <span class="o">=</span> <span class="n">descriptor</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">new</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="p">(</span><span class="n">descriptor</span><span class="o">.</span><span class="n">str</span><span class="p">,</span> <span class="n">new</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">descriptor</span><span class="o">.</span><span class="n">str</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">_array_descr</span><span class="p">(</span><span class="n">subdtype</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">subdtype</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="n">names</span> <span class="o">=</span> <span class="n">descriptor</span><span class="o">.</span><span class="n">names</span>
+    <span class="n">ordered_fields</span> <span class="o">=</span> <span class="p">[</span><span class="n">fields</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="n">x</span><span class="p">,)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">names</span><span class="p">]</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">offset</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">ordered_fields</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">field</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">offset</span><span class="p">:</span>
+            <span class="n">num</span> <span class="o">=</span> <span class="n">field</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">offset</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;|V</span><span class="si">{</span><span class="n">num</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">))</span>
+            <span class="n">offset</span> <span class="o">+=</span> <span class="n">num</span>
+        <span class="k">elif</span> <span class="n">field</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">offset</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;dtype.descr is not defined for types with overlapping or &quot;</span>
+                <span class="s2">&quot;out-of-order fields&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">field</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="p">(</span><span class="n">field</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">field</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">field</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">field</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">subdtype</span><span class="p">:</span>
+            <span class="n">tup</span> <span class="o">=</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">_array_descr</span><span class="p">(</span><span class="n">field</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">subdtype</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+                   <span class="n">field</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">subdtype</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">tup</span> <span class="o">=</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">_array_descr</span><span class="p">(</span><span class="n">field</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+        <span class="n">offset</span> <span class="o">+=</span> <span class="n">field</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">itemsize</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tup</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">descriptor</span><span class="o">.</span><span class="n">itemsize</span> <span class="o">&gt;</span> <span class="n">offset</span><span class="p">:</span>
+        <span class="n">num</span> <span class="o">=</span> <span class="n">descriptor</span><span class="o">.</span><span class="n">itemsize</span> <span class="o">-</span> <span class="n">offset</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;|V</span><span class="si">{</span><span class="n">num</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">result</span>
+
+<span class="c1"># Build a new array from the information in a pickle.</span>
+<span class="c1"># Note that the name numpy.core._internal._reconstruct is embedded in</span>
+<span class="c1"># pickles of ndarrays made with NumPy before release 1.0</span>
+<span class="c1"># so don&#39;t remove the name here, or you&#39;ll</span>
+<span class="c1"># break backward compatibility.</span>
+<span class="k">def</span> <span class="nf">_reconstruct</span><span class="p">(</span><span class="n">subtype</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">ndarray</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="n">subtype</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="p">)</span>
+
+
+<span class="c1"># format_re was originally from numarray by J. Todd Miller</span>
+
+<span class="n">format_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;(?P&lt;order1&gt;[&lt;&gt;|=]?)&#39;</span>
+                       <span class="sa">r</span><span class="s1">&#39;(?P&lt;repeats&gt; *[(]?[ ,0-9]*[)]? *)&#39;</span>
+                       <span class="sa">r</span><span class="s1">&#39;(?P&lt;order2&gt;[&lt;&gt;|=]?)&#39;</span>
+                       <span class="sa">r</span><span class="s1">&#39;(?P&lt;dtype&gt;[A-Za-z0-9.?]*(?:\[[a-zA-Z0-9,.]+\])?)&#39;</span><span class="p">)</span>
+<span class="n">sep_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\s*,\s*&#39;</span><span class="p">)</span>
+<span class="n">space_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\s+$&#39;</span><span class="p">)</span>
+
+<span class="c1"># astr is a string (perhaps comma separated)</span>
+
+<span class="n">_convorder</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;=&#39;</span><span class="p">:</span> <span class="n">_nbo</span><span class="p">}</span>
+
+<span class="k">def</span> <span class="nf">_commastring</span><span class="p">(</span><span class="n">astr</span><span class="p">):</span>
+    <span class="n">startindex</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">while</span> <span class="n">startindex</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">astr</span><span class="p">):</span>
+        <span class="n">mo</span> <span class="o">=</span> <span class="n">format_re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">astr</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="n">startindex</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="p">(</span><span class="n">order1</span><span class="p">,</span> <span class="n">repeats</span><span class="p">,</span> <span class="n">order2</span><span class="p">,</span> <span class="n">dtype</span><span class="p">)</span> <span class="o">=</span> <span class="n">mo</span><span class="o">.</span><span class="n">groups</span><span class="p">()</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;format number </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s1"> of &quot;</span><span class="si">{</span><span class="n">astr</span><span class="si">}</span><span class="s1">&quot; is not recognized&#39;</span>
+                <span class="p">)</span> <span class="kn">from</span> <span class="bp">None</span>
+        <span class="n">startindex</span> <span class="o">=</span> <span class="n">mo</span><span class="o">.</span><span class="n">end</span><span class="p">()</span>
+        <span class="c1"># Separator or ending padding</span>
+        <span class="k">if</span> <span class="n">startindex</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">astr</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">space_re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">astr</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="n">startindex</span><span class="p">):</span>
+                <span class="n">startindex</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">astr</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">mo</span> <span class="o">=</span> <span class="n">sep_re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">astr</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="n">startindex</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">mo</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="s1">&#39;format number </span><span class="si">%d</span><span class="s1"> of &quot;</span><span class="si">%s</span><span class="s1">&quot; is not recognized&#39;</span> <span class="o">%</span>
+                        <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">astr</span><span class="p">))</span>
+                <span class="n">startindex</span> <span class="o">=</span> <span class="n">mo</span><span class="o">.</span><span class="n">end</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">order2</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+            <span class="n">order</span> <span class="o">=</span> <span class="n">order1</span>
+        <span class="k">elif</span> <span class="n">order1</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+            <span class="n">order</span> <span class="o">=</span> <span class="n">order2</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">order1</span> <span class="o">=</span> <span class="n">_convorder</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">order1</span><span class="p">,</span> <span class="n">order1</span><span class="p">)</span>
+            <span class="n">order2</span> <span class="o">=</span> <span class="n">_convorder</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">order2</span><span class="p">,</span> <span class="n">order2</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">order1</span> <span class="o">!=</span> <span class="n">order2</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s1">&#39;inconsistent byte-order specification </span><span class="si">%s</span><span class="s1"> and </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span>
+                    <span class="p">(</span><span class="n">order1</span><span class="p">,</span> <span class="n">order2</span><span class="p">))</span>
+            <span class="n">order</span> <span class="o">=</span> <span class="n">order1</span>
+
+        <span class="k">if</span> <span class="n">order</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">,</span> <span class="s1">&#39;=&#39;</span><span class="p">,</span> <span class="n">_nbo</span><span class="p">):</span>
+            <span class="n">order</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="n">dtype</span> <span class="o">=</span> <span class="n">order</span> <span class="o">+</span> <span class="n">dtype</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">repeats</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+            <span class="n">newitem</span> <span class="o">=</span> <span class="n">dtype</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">newitem</span> <span class="o">=</span> <span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">literal_eval</span><span class="p">(</span><span class="n">repeats</span><span class="p">))</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">newitem</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">result</span>
+
+<span class="k">class</span> <span class="nc">dummy_ctype</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cls</span> <span class="o">=</span> <span class="bp">cls</span>
+    <span class="k">def</span> <span class="fm">__mul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span>
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cls</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cls</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_cls</span>
+    <span class="k">def</span> <span class="fm">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cls</span> <span class="o">!=</span> <span class="n">other</span><span class="o">.</span><span class="n">_cls</span>
+
+<span class="k">def</span> <span class="nf">_getintp_ctype</span><span class="p">():</span>
+    <span class="n">val</span> <span class="o">=</span> <span class="n">_getintp_ctype</span><span class="o">.</span><span class="n">cache</span>
+    <span class="k">if</span> <span class="n">val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">val</span>
+    <span class="k">if</span> <span class="n">ctypes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="n">dummy_ctype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">intp</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">char</span> <span class="o">=</span> <span class="n">dtype</span><span class="p">(</span><span class="s1">&#39;p&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">char</span>
+        <span class="k">if</span> <span class="n">char</span> <span class="o">==</span> <span class="s1">&#39;i&#39;</span><span class="p">:</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span>
+        <span class="k">elif</span> <span class="n">char</span> <span class="o">==</span> <span class="s1">&#39;l&#39;</span><span class="p">:</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_long</span>
+        <span class="k">elif</span> <span class="n">char</span> <span class="o">==</span> <span class="s1">&#39;q&#39;</span><span class="p">:</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_longlong</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_long</span>
+    <span class="n">_getintp_ctype</span><span class="o">.</span><span class="n">cache</span> <span class="o">=</span> <span class="n">val</span>
+    <span class="k">return</span> <span class="n">val</span>
+<span class="n">_getintp_ctype</span><span class="o">.</span><span class="n">cache</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="c1"># Used for .ctypes attribute of ndarray</span>
+
+<span class="k">class</span> <span class="nc">_missing_ctypes</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">cast</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">num</span><span class="o">.</span><span class="n">value</span>
+
+    <span class="k">class</span> <span class="nc">c_void_p</span><span class="p">:</span>
+        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ptr</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">ptr</span>
+
+
+<span class="k">class</span> <span class="nc">_ctypes</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="p">,</span> <span class="n">ptr</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_arr</span> <span class="o">=</span> <span class="n">array</span>
+
+        <span class="k">if</span> <span class="n">ctypes</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ctypes</span> <span class="o">=</span> <span class="n">ctypes</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ctypes</span><span class="o">.</span><span class="n">c_void_p</span><span class="p">(</span><span class="n">ptr</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># fake a pointer-like object that holds onto the reference</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ctypes</span> <span class="o">=</span> <span class="n">_missing_ctypes</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ctypes</span><span class="o">.</span><span class="n">c_void_p</span><span class="p">(</span><span class="n">ptr</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">_objects</span> <span class="o">=</span> <span class="n">array</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_arr</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_zerod</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_zerod</span> <span class="o">=</span> <span class="kc">False</span>
+
+<div class="viewcode-block" id="_ctypes.data_as"><a class="viewcode-back" href="../../../modules/generated/openpnm.integrators.TransientSolution.ctypes.html#numpy.core._internal._ctypes.data_as">[docs]</a>    <span class="k">def</span> <span class="nf">data_as</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the data pointer cast to a particular c-types object.</span>
+<span class="sd">        For example, calling ``self._as_parameter_`` is equivalent to</span>
+<span class="sd">        ``self.data_as(ctypes.c_void_p)``. Perhaps you want to use the data as a</span>
+<span class="sd">        pointer to a ctypes array of floating-point data:</span>
+<span class="sd">        ``self.data_as(ctypes.POINTER(ctypes.c_double))``.</span>
+
+<span class="sd">        The returned pointer will keep a reference to the array.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># _ctypes.cast function causes a circular reference of self._data in</span>
+        <span class="c1"># self._data._objects. Attributes of self._data cannot be released</span>
+        <span class="c1"># until gc.collect is called. Make a copy of the pointer first then let</span>
+        <span class="c1"># it hold the array reference. This is a workaround to circumvent the</span>
+        <span class="c1"># CPython bug https://bugs.python.org/issue12836</span>
+        <span class="n">ptr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ctypes</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span>
+        <span class="n">ptr</span><span class="o">.</span><span class="n">_arr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_arr</span>
+        <span class="k">return</span> <span class="n">ptr</span></div>
+
+<div class="viewcode-block" id="_ctypes.shape_as"><a class="viewcode-back" href="../../../modules/generated/openpnm.integrators.TransientSolution.ctypes.html#numpy.core._internal._ctypes.shape_as">[docs]</a>    <span class="k">def</span> <span class="nf">shape_as</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the shape tuple as an array of some other c-types</span>
+<span class="sd">        type. For example: ``self.shape_as(ctypes.c_short)``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_zerod</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">obj</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_arr</span><span class="o">.</span><span class="n">ndim</span><span class="p">)(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_arr</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="_ctypes.strides_as"><a class="viewcode-back" href="../../../modules/generated/openpnm.integrators.TransientSolution.ctypes.html#numpy.core._internal._ctypes.strides_as">[docs]</a>    <span class="k">def</span> <span class="nf">strides_as</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the strides tuple as an array of some other</span>
+<span class="sd">        c-types type. For example: ``self.strides_as(ctypes.c_longlong)``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_zerod</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">obj</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_arr</span><span class="o">.</span><span class="n">ndim</span><span class="p">)(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_arr</span><span class="o">.</span><span class="n">strides</span><span class="p">)</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A pointer to the memory area of the array as a Python integer.</span>
+<span class="sd">        This memory area may contain data that is not aligned, or not in correct</span>
+<span class="sd">        byte-order. The memory area may not even be writeable. The array</span>
+<span class="sd">        flags and data-type of this array should be respected when passing this</span>
+<span class="sd">        attribute to arbitrary C-code to avoid trouble that can include Python</span>
+<span class="sd">        crashing. User Beware! The value of this attribute is exactly the same</span>
+<span class="sd">        as ``self._array_interface_[&#39;data&#39;][0]``.</span>
+
+<span class="sd">        Note that unlike ``data_as``, a reference will not be kept to the array:</span>
+<span class="sd">        code like ``ctypes.c_void_p((a + b).ctypes.data)`` will result in a</span>
+<span class="sd">        pointer to a deallocated array, and should be spelt</span>
+<span class="sd">        ``(a + b).ctypes.data_as(ctypes.c_void_p)``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">shape</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        (c_intp*self.ndim): A ctypes array of length self.ndim where</span>
+<span class="sd">        the basetype is the C-integer corresponding to ``dtype(&#39;p&#39;)`` on this</span>
+<span class="sd">        platform. This base-type could be `ctypes.c_int`, `ctypes.c_long`, or</span>
+<span class="sd">        `ctypes.c_longlong` depending on the platform.</span>
+<span class="sd">        The c_intp type is defined accordingly in `numpy.ctypeslib`.</span>
+<span class="sd">        The ctypes array contains the shape of the underlying array.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape_as</span><span class="p">(</span><span class="n">_getintp_ctype</span><span class="p">())</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">strides</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        (c_intp*self.ndim): A ctypes array of length self.ndim where</span>
+<span class="sd">        the basetype is the same as for the shape attribute. This ctypes array</span>
+<span class="sd">        contains the strides information from the underlying array. This strides</span>
+<span class="sd">        information is important for showing how many bytes must be jumped to</span>
+<span class="sd">        get to the next element in the array.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">strides_as</span><span class="p">(</span><span class="n">_getintp_ctype</span><span class="p">())</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">_as_parameter_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Overrides the ctypes semi-magic method</span>
+
+<span class="sd">        Enables `c_func(some_array.ctypes)`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_as</span><span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_void_p</span><span class="p">)</span>
+
+    <span class="c1"># kept for compatibility</span>
+    <span class="n">get_data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">fget</span>
+    <span class="n">get_shape</span> <span class="o">=</span> <span class="n">shape</span><span class="o">.</span><span class="n">fget</span>
+    <span class="n">get_strides</span> <span class="o">=</span> <span class="n">strides</span><span class="o">.</span><span class="n">fget</span>
+    <span class="n">get_as_parameter</span> <span class="o">=</span> <span class="n">_as_parameter_</span><span class="o">.</span><span class="n">fget</span>
+
+
+<span class="k">def</span> <span class="nf">_newnames</span><span class="p">(</span><span class="n">datatype</span><span class="p">,</span> <span class="n">order</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Given a datatype and an order object, return a new names tuple, with the</span>
+<span class="sd">    order indicated</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">oldnames</span> <span class="o">=</span> <span class="n">datatype</span><span class="o">.</span><span class="n">names</span>
+    <span class="n">nameslist</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">oldnames</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">order</span> <span class="o">=</span> <span class="p">[</span><span class="n">order</span><span class="p">]</span>
+    <span class="n">seen</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">order</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">nameslist</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">seen</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;duplicate field name: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="bp">None</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;unknown field name: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="bp">None</span>
+            <span class="n">seen</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">order</span><span class="p">)</span> <span class="o">+</span> <span class="n">nameslist</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;unsupported order value: </span><span class="si">{</span><span class="n">order</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">_copy_fields</span><span class="p">(</span><span class="n">ary</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return copy of structured array with padding between fields removed.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ary : ndarray</span>
+<span class="sd">       Structured array from which to remove padding bytes</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ary_copy : ndarray</span>
+<span class="sd">       Copy of ary with padding bytes removed</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">ary</span><span class="o">.</span><span class="n">dtype</span>
+    <span class="n">copy_dtype</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;names&#39;</span><span class="p">:</span> <span class="n">dt</span><span class="o">.</span><span class="n">names</span><span class="p">,</span>
+                  <span class="s1">&#39;formats&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">dt</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">dt</span><span class="o">.</span><span class="n">names</span><span class="p">]}</span>
+    <span class="k">return</span> <span class="n">array</span><span class="p">(</span><span class="n">ary</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">copy_dtype</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">_getfield_is_safe</span><span class="p">(</span><span class="n">oldtype</span><span class="p">,</span> <span class="n">newtype</span><span class="p">,</span> <span class="n">offset</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Checks safety of getfield for object arrays.</span>
+
+<span class="sd">    As in _view_is_safe, we need to check that memory containing objects is not</span>
+<span class="sd">    reinterpreted as a non-object datatype and vice versa.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    oldtype : data-type</span>
+<span class="sd">        Data type of the original ndarray.</span>
+<span class="sd">    newtype : data-type</span>
+<span class="sd">        Data type of the field being accessed by ndarray.getfield</span>
+<span class="sd">    offset : int</span>
+<span class="sd">        Offset of the field being accessed by ndarray.getfield</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    TypeError</span>
+<span class="sd">        If the field access is invalid</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">newtype</span><span class="o">.</span><span class="n">hasobject</span> <span class="ow">or</span> <span class="n">oldtype</span><span class="o">.</span><span class="n">hasobject</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">offset</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">newtype</span> <span class="o">==</span> <span class="n">oldtype</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="n">oldtype</span><span class="o">.</span><span class="n">names</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">oldtype</span><span class="o">.</span><span class="n">names</span><span class="p">:</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">oldtype</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">offset</span> <span class="ow">and</span>
+                        <span class="n">oldtype</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">newtype</span><span class="p">):</span>
+                    <span class="k">return</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Cannot get/set field of an object array&quot;</span><span class="p">)</span>
+    <span class="k">return</span>
+
+<span class="k">def</span> <span class="nf">_view_is_safe</span><span class="p">(</span><span class="n">oldtype</span><span class="p">,</span> <span class="n">newtype</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Checks safety of a view involving object arrays, for example when</span>
+<span class="sd">    doing::</span>
+
+<span class="sd">        np.zeros(10, dtype=oldtype).view(newtype)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    oldtype : data-type</span>
+<span class="sd">        Data type of original ndarray</span>
+<span class="sd">    newtype : data-type</span>
+<span class="sd">        Data type of the view</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    TypeError</span>
+<span class="sd">        If the new type is incompatible with the old type.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># if the types are equivalent, there is no problem.</span>
+    <span class="c1"># for example: dtype((np.record, &#39;i4,i4&#39;)) == dtype((np.void, &#39;i4,i4&#39;))</span>
+    <span class="k">if</span> <span class="n">oldtype</span> <span class="o">==</span> <span class="n">newtype</span><span class="p">:</span>
+        <span class="k">return</span>
+
+    <span class="k">if</span> <span class="n">newtype</span><span class="o">.</span><span class="n">hasobject</span> <span class="ow">or</span> <span class="n">oldtype</span><span class="o">.</span><span class="n">hasobject</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Cannot change data-type for object array.&quot;</span><span class="p">)</span>
+    <span class="k">return</span>
+
+<span class="c1"># Given a string containing a PEP 3118 format specifier,</span>
+<span class="c1"># construct a NumPy dtype</span>
+
+<span class="n">_pep3118_native_map</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;?&#39;</span><span class="p">:</span> <span class="s1">&#39;?&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;c&#39;</span><span class="p">:</span> <span class="s1">&#39;S1&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;B&#39;</span><span class="p">:</span> <span class="s1">&#39;B&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;h&#39;</span><span class="p">:</span> <span class="s1">&#39;h&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;H&#39;</span><span class="p">:</span> <span class="s1">&#39;H&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;i&#39;</span><span class="p">:</span> <span class="s1">&#39;i&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;I&#39;</span><span class="p">:</span> <span class="s1">&#39;I&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;l&#39;</span><span class="p">:</span> <span class="s1">&#39;l&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;L&#39;</span><span class="p">:</span> <span class="s1">&#39;L&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;q&#39;</span><span class="p">:</span> <span class="s1">&#39;q&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;Q&#39;</span><span class="p">:</span> <span class="s1">&#39;Q&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;e&#39;</span><span class="p">:</span> <span class="s1">&#39;e&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;f&#39;</span><span class="p">:</span> <span class="s1">&#39;f&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;d&#39;</span><span class="p">:</span> <span class="s1">&#39;d&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;g&#39;</span><span class="p">:</span> <span class="s1">&#39;g&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;Zf&#39;</span><span class="p">:</span> <span class="s1">&#39;F&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;Zd&#39;</span><span class="p">:</span> <span class="s1">&#39;D&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;Zg&#39;</span><span class="p">:</span> <span class="s1">&#39;G&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;s&#39;</span><span class="p">:</span> <span class="s1">&#39;S&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;w&#39;</span><span class="p">:</span> <span class="s1">&#39;U&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;O&#39;</span><span class="p">:</span> <span class="s1">&#39;O&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="s1">&#39;V&#39;</span><span class="p">,</span>  <span class="c1"># padding</span>
+<span class="p">}</span>
+<span class="n">_pep3118_native_typechars</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_pep3118_native_map</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+<span class="n">_pep3118_standard_map</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;?&#39;</span><span class="p">:</span> <span class="s1">&#39;?&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;c&#39;</span><span class="p">:</span> <span class="s1">&#39;S1&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;B&#39;</span><span class="p">:</span> <span class="s1">&#39;B&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;h&#39;</span><span class="p">:</span> <span class="s1">&#39;i2&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;H&#39;</span><span class="p">:</span> <span class="s1">&#39;u2&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;i&#39;</span><span class="p">:</span> <span class="s1">&#39;i4&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;I&#39;</span><span class="p">:</span> <span class="s1">&#39;u4&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;l&#39;</span><span class="p">:</span> <span class="s1">&#39;i4&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;L&#39;</span><span class="p">:</span> <span class="s1">&#39;u4&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;q&#39;</span><span class="p">:</span> <span class="s1">&#39;i8&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;Q&#39;</span><span class="p">:</span> <span class="s1">&#39;u8&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;e&#39;</span><span class="p">:</span> <span class="s1">&#39;f2&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;f&#39;</span><span class="p">:</span> <span class="s1">&#39;f&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;d&#39;</span><span class="p">:</span> <span class="s1">&#39;d&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;Zf&#39;</span><span class="p">:</span> <span class="s1">&#39;F&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;Zd&#39;</span><span class="p">:</span> <span class="s1">&#39;D&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;s&#39;</span><span class="p">:</span> <span class="s1">&#39;S&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;w&#39;</span><span class="p">:</span> <span class="s1">&#39;U&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;O&#39;</span><span class="p">:</span> <span class="s1">&#39;O&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="s1">&#39;V&#39;</span><span class="p">,</span>  <span class="c1"># padding</span>
+<span class="p">}</span>
+<span class="n">_pep3118_standard_typechars</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_pep3118_standard_map</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+<span class="n">_pep3118_unsupported_map</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;u&#39;</span><span class="p">:</span> <span class="s1">&#39;UCS-2 strings&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;&amp;&#39;</span><span class="p">:</span> <span class="s1">&#39;pointers&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;t&#39;</span><span class="p">:</span> <span class="s1">&#39;bitfields&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;X&#39;</span><span class="p">:</span> <span class="s1">&#39;function pointers&#39;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="k">class</span> <span class="nc">_Stream</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">s</span> <span class="o">=</span> <span class="n">s</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">byteorder</span> <span class="o">=</span> <span class="s1">&#39;@&#39;</span>
+
+    <span class="k">def</span> <span class="nf">advance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="p">[:</span><span class="n">n</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="p">[</span><span class="n">n</span><span class="p">:]</span>
+        <span class="k">return</span> <span class="n">res</span>
+
+    <span class="k">def</span> <span class="nf">consume</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">c</span><span class="p">)]</span> <span class="o">==</span> <span class="n">c</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">advance</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">c</span><span class="p">))</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">consume_until</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">c</span><span class="p">):</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">while</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">c</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">]):</span>
+                <span class="n">i</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">advance</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">advance</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">advance</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">c</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">res</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">next</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__bool__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_dtype_from_pep3118</span><span class="p">(</span><span class="n">spec</span><span class="p">):</span>
+    <span class="n">stream</span> <span class="o">=</span> <span class="n">_Stream</span><span class="p">(</span><span class="n">spec</span><span class="p">)</span>
+    <span class="n">dtype</span><span class="p">,</span> <span class="n">align</span> <span class="o">=</span> <span class="n">__dtype_from_pep3118</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">is_subdtype</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dtype</span>
+
+<span class="k">def</span> <span class="nf">__dtype_from_pep3118</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">is_subdtype</span><span class="p">):</span>
+    <span class="n">field_spec</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">names</span><span class="o">=</span><span class="p">[],</span>
+        <span class="n">formats</span><span class="o">=</span><span class="p">[],</span>
+        <span class="n">offsets</span><span class="o">=</span><span class="p">[],</span>
+        <span class="n">itemsize</span><span class="o">=</span><span class="mi">0</span>
+    <span class="p">)</span>
+    <span class="n">offset</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">common_alignment</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">is_padding</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="c1"># Parse spec</span>
+    <span class="k">while</span> <span class="n">stream</span><span class="p">:</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># End of structure, bail out to upper level</span>
+        <span class="k">if</span> <span class="n">stream</span><span class="o">.</span><span class="n">consume</span><span class="p">(</span><span class="s1">&#39;}&#39;</span><span class="p">):</span>
+            <span class="k">break</span>
+
+        <span class="c1"># Sub-arrays (1)</span>
+        <span class="n">shape</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">stream</span><span class="o">.</span><span class="n">consume</span><span class="p">(</span><span class="s1">&#39;(&#39;</span><span class="p">):</span>
+            <span class="n">shape</span> <span class="o">=</span> <span class="n">stream</span><span class="o">.</span><span class="n">consume_until</span><span class="p">(</span><span class="s1">&#39;)&#39;</span><span class="p">)</span>
+            <span class="n">shape</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">shape</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)))</span>
+
+        <span class="c1"># Byte order</span>
+        <span class="k">if</span> <span class="n">stream</span><span class="o">.</span><span class="n">next</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;@&#39;</span><span class="p">,</span> <span class="s1">&#39;=&#39;</span><span class="p">,</span> <span class="s1">&#39;&lt;&#39;</span><span class="p">,</span> <span class="s1">&#39;&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;^&#39;</span><span class="p">,</span> <span class="s1">&#39;!&#39;</span><span class="p">):</span>
+            <span class="n">byteorder</span> <span class="o">=</span> <span class="n">stream</span><span class="o">.</span><span class="n">advance</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">byteorder</span> <span class="o">==</span> <span class="s1">&#39;!&#39;</span><span class="p">:</span>
+                <span class="n">byteorder</span> <span class="o">=</span> <span class="s1">&#39;&gt;&#39;</span>
+            <span class="n">stream</span><span class="o">.</span><span class="n">byteorder</span> <span class="o">=</span> <span class="n">byteorder</span>
+
+        <span class="c1"># Byte order characters also control native vs. standard type sizes</span>
+        <span class="k">if</span> <span class="n">stream</span><span class="o">.</span><span class="n">byteorder</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;@&#39;</span><span class="p">,</span> <span class="s1">&#39;^&#39;</span><span class="p">):</span>
+            <span class="n">type_map</span> <span class="o">=</span> <span class="n">_pep3118_native_map</span>
+            <span class="n">type_map_chars</span> <span class="o">=</span> <span class="n">_pep3118_native_typechars</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">type_map</span> <span class="o">=</span> <span class="n">_pep3118_standard_map</span>
+            <span class="n">type_map_chars</span> <span class="o">=</span> <span class="n">_pep3118_standard_typechars</span>
+
+        <span class="c1"># Item sizes</span>
+        <span class="n">itemsize_str</span> <span class="o">=</span> <span class="n">stream</span><span class="o">.</span><span class="n">consume_until</span><span class="p">(</span><span class="k">lambda</span> <span class="n">c</span><span class="p">:</span> <span class="ow">not</span> <span class="n">c</span><span class="o">.</span><span class="n">isdigit</span><span class="p">())</span>
+        <span class="k">if</span> <span class="n">itemsize_str</span><span class="p">:</span>
+            <span class="n">itemsize</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">itemsize_str</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">itemsize</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="c1"># Data types</span>
+        <span class="n">is_padding</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="n">stream</span><span class="o">.</span><span class="n">consume</span><span class="p">(</span><span class="s1">&#39;T{&#39;</span><span class="p">):</span>
+            <span class="n">value</span><span class="p">,</span> <span class="n">align</span> <span class="o">=</span> <span class="n">__dtype_from_pep3118</span><span class="p">(</span>
+                <span class="n">stream</span><span class="p">,</span> <span class="n">is_subdtype</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">stream</span><span class="o">.</span><span class="n">next</span> <span class="ow">in</span> <span class="n">type_map_chars</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">stream</span><span class="o">.</span><span class="n">next</span> <span class="o">==</span> <span class="s1">&#39;Z&#39;</span><span class="p">:</span>
+                <span class="n">typechar</span> <span class="o">=</span> <span class="n">stream</span><span class="o">.</span><span class="n">advance</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">typechar</span> <span class="o">=</span> <span class="n">stream</span><span class="o">.</span><span class="n">advance</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+            <span class="n">is_padding</span> <span class="o">=</span> <span class="p">(</span><span class="n">typechar</span> <span class="o">==</span> <span class="s1">&#39;x&#39;</span><span class="p">)</span>
+            <span class="n">dtypechar</span> <span class="o">=</span> <span class="n">type_map</span><span class="p">[</span><span class="n">typechar</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">dtypechar</span> <span class="ow">in</span> <span class="s1">&#39;USV&#39;</span><span class="p">:</span>
+                <span class="n">dtypechar</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">itemsize</span>
+                <span class="n">itemsize</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">numpy_byteorder</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;@&#39;</span><span class="p">:</span> <span class="s1">&#39;=&#39;</span><span class="p">,</span> <span class="s1">&#39;^&#39;</span><span class="p">:</span> <span class="s1">&#39;=&#39;</span><span class="p">}</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                <span class="n">stream</span><span class="o">.</span><span class="n">byteorder</span><span class="p">,</span> <span class="n">stream</span><span class="o">.</span><span class="n">byteorder</span><span class="p">)</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">dtype</span><span class="p">(</span><span class="n">numpy_byteorder</span> <span class="o">+</span> <span class="n">dtypechar</span><span class="p">)</span>
+            <span class="n">align</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">alignment</span>
+        <span class="k">elif</span> <span class="n">stream</span><span class="o">.</span><span class="n">next</span> <span class="ow">in</span> <span class="n">_pep3118_unsupported_map</span><span class="p">:</span>
+            <span class="n">desc</span> <span class="o">=</span> <span class="n">_pep3118_unsupported_map</span><span class="p">[</span><span class="n">stream</span><span class="o">.</span><span class="n">next</span><span class="p">]</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+                <span class="s2">&quot;Unrepresentable PEP 3118 data type </span><span class="si">{!r}</span><span class="s2"> (</span><span class="si">{}</span><span class="s2">)&quot;</span>
+                <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">stream</span><span class="o">.</span><span class="n">next</span><span class="p">,</span> <span class="n">desc</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unknown PEP 3118 data type specifier </span><span class="si">%r</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">stream</span><span class="o">.</span><span class="n">s</span><span class="p">)</span>
+
+        <span class="c1">#</span>
+        <span class="c1"># Native alignment may require padding</span>
+        <span class="c1">#</span>
+        <span class="c1"># Here we assume that the presence of a &#39;@&#39; character implicitly implies</span>
+        <span class="c1"># that the start of the array is *already* aligned.</span>
+        <span class="c1">#</span>
+        <span class="n">extra_offset</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">stream</span><span class="o">.</span><span class="n">byteorder</span> <span class="o">==</span> <span class="s1">&#39;@&#39;</span><span class="p">:</span>
+            <span class="n">start_padding</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="n">offset</span><span class="p">)</span> <span class="o">%</span> <span class="n">align</span>
+            <span class="n">intra_padding</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="n">value</span><span class="o">.</span><span class="n">itemsize</span><span class="p">)</span> <span class="o">%</span> <span class="n">align</span>
+
+            <span class="n">offset</span> <span class="o">+=</span> <span class="n">start_padding</span>
+
+            <span class="k">if</span> <span class="n">intra_padding</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">itemsize</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">or</span> <span class="p">(</span><span class="n">shape</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">_prod</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">):</span>
+                    <span class="c1"># Inject internal padding to the end of the sub-item</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="n">_add_trailing_padding</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">intra_padding</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># We can postpone the injection of internal padding,</span>
+                    <span class="c1"># as the item appears at most once</span>
+                    <span class="n">extra_offset</span> <span class="o">+=</span> <span class="n">intra_padding</span>
+
+            <span class="c1"># Update common alignment</span>
+            <span class="n">common_alignment</span> <span class="o">=</span> <span class="n">_lcm</span><span class="p">(</span><span class="n">align</span><span class="p">,</span> <span class="n">common_alignment</span><span class="p">)</span>
+
+        <span class="c1"># Convert itemsize to sub-array</span>
+        <span class="k">if</span> <span class="n">itemsize</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">dtype</span><span class="p">((</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="n">itemsize</span><span class="p">,)))</span>
+
+        <span class="c1"># Sub-arrays (2)</span>
+        <span class="k">if</span> <span class="n">shape</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">dtype</span><span class="p">((</span><span class="n">value</span><span class="p">,</span> <span class="n">shape</span><span class="p">))</span>
+
+        <span class="c1"># Field name</span>
+        <span class="k">if</span> <span class="n">stream</span><span class="o">.</span><span class="n">consume</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">):</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">stream</span><span class="o">.</span><span class="n">consume_until</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">is_padding</span> <span class="ow">and</span> <span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">field_spec</span><span class="p">[</span><span class="s1">&#39;names&#39;</span><span class="p">]:</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Duplicate field name &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; in PEP3118 format&quot;</span><span class="p">)</span>
+            <span class="n">field_spec</span><span class="p">[</span><span class="s1">&#39;names&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">field_spec</span><span class="p">[</span><span class="s1">&#39;formats&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="n">field_spec</span><span class="p">[</span><span class="s1">&#39;offsets&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">offset</span><span class="p">)</span>
+
+        <span class="n">offset</span> <span class="o">+=</span> <span class="n">value</span><span class="o">.</span><span class="n">itemsize</span>
+        <span class="n">offset</span> <span class="o">+=</span> <span class="n">extra_offset</span>
+
+        <span class="n">field_spec</span><span class="p">[</span><span class="s1">&#39;itemsize&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">offset</span>
+
+    <span class="c1"># extra final padding for aligned types</span>
+    <span class="k">if</span> <span class="n">stream</span><span class="o">.</span><span class="n">byteorder</span> <span class="o">==</span> <span class="s1">&#39;@&#39;</span><span class="p">:</span>
+        <span class="n">field_spec</span><span class="p">[</span><span class="s1">&#39;itemsize&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="p">(</span><span class="o">-</span><span class="n">offset</span><span class="p">)</span> <span class="o">%</span> <span class="n">common_alignment</span>
+
+    <span class="c1"># Check if this was a simple 1-item type, and unwrap it</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">field_spec</span><span class="p">[</span><span class="s1">&#39;names&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span>
+            <span class="ow">and</span> <span class="n">field_spec</span><span class="p">[</span><span class="s1">&#39;offsets&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span>
+            <span class="ow">and</span> <span class="n">field_spec</span><span class="p">[</span><span class="s1">&#39;itemsize&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">field_spec</span><span class="p">[</span><span class="s1">&#39;formats&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">itemsize</span>
+            <span class="ow">and</span> <span class="ow">not</span> <span class="n">is_subdtype</span><span class="p">):</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">field_spec</span><span class="p">[</span><span class="s1">&#39;formats&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">_fix_names</span><span class="p">(</span><span class="n">field_spec</span><span class="p">)</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">dtype</span><span class="p">(</span><span class="n">field_spec</span><span class="p">)</span>
+
+    <span class="c1"># Finished</span>
+    <span class="k">return</span> <span class="n">ret</span><span class="p">,</span> <span class="n">common_alignment</span>
+
+<span class="k">def</span> <span class="nf">_fix_names</span><span class="p">(</span><span class="n">field_spec</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Replace names which are None with the next unused f%d name &quot;&quot;&quot;</span>
+    <span class="n">names</span> <span class="o">=</span> <span class="n">field_spec</span><span class="p">[</span><span class="s1">&#39;names&#39;</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">names</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;f</span><span class="si">{</span><span class="n">j</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">names</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="n">j</span> <span class="o">=</span> <span class="n">j</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">names</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">name</span>
+
+<span class="k">def</span> <span class="nf">_add_trailing_padding</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">padding</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Inject the specified number of padding bytes at the end of a dtype&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">fields</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">field_spec</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;f0&#39;</span><span class="p">],</span>
+            <span class="n">formats</span><span class="o">=</span><span class="p">[</span><span class="n">value</span><span class="p">],</span>
+            <span class="n">offsets</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="n">itemsize</span><span class="o">=</span><span class="n">value</span><span class="o">.</span><span class="n">itemsize</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">fields</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">names</span>
+        <span class="n">field_spec</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
+            <span class="n">formats</span><span class="o">=</span><span class="p">[</span><span class="n">fields</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">],</span>
+            <span class="n">offsets</span><span class="o">=</span><span class="p">[</span><span class="n">fields</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">],</span>
+            <span class="n">itemsize</span><span class="o">=</span><span class="n">value</span><span class="o">.</span><span class="n">itemsize</span>
+        <span class="p">)</span>
+
+    <span class="n">field_spec</span><span class="p">[</span><span class="s1">&#39;itemsize&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">padding</span>
+    <span class="k">return</span> <span class="n">dtype</span><span class="p">(</span><span class="n">field_spec</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">_prod</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">a</span><span class="p">:</span>
+        <span class="n">p</span> <span class="o">*=</span> <span class="n">x</span>
+    <span class="k">return</span> <span class="n">p</span>
+
+<span class="k">def</span> <span class="nf">_gcd</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Calculate the greatest common divisor of a and b&quot;&quot;&quot;</span>
+    <span class="k">while</span> <span class="n">b</span><span class="p">:</span>
+        <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">b</span><span class="p">,</span> <span class="n">a</span> <span class="o">%</span> <span class="n">b</span>
+    <span class="k">return</span> <span class="n">a</span>
+
+<span class="k">def</span> <span class="nf">_lcm</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">a</span> <span class="o">//</span> <span class="n">_gcd</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span> <span class="o">*</span> <span class="n">b</span>
+
+<span class="k">def</span> <span class="nf">array_ufunc_errmsg_formatter</span><span class="p">(</span><span class="n">dummy</span><span class="p">,</span> <span class="n">ufunc</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="o">*</span><span class="n">inputs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Format the error message for when __array_ufunc__ gives up. &quot;&quot;&quot;</span>
+    <span class="n">args_string</span> <span class="o">=</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;</span><span class="si">{!r}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span> <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">inputs</span><span class="p">]</span> <span class="o">+</span>
+                            <span class="p">[</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">=</span><span class="si">{!r}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+                             <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">()])</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">inputs</span> <span class="o">+</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;out&#39;</span><span class="p">,</span> <span class="p">())</span>
+    <span class="n">types_string</span> <span class="o">=</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span> <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">args</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="s1">&#39;operand type(s) all returned NotImplemented from &#39;</span>
+            <span class="s1">&#39;__array_ufunc__(</span><span class="si">{!r}</span><span class="s1">, </span><span class="si">{!r}</span><span class="s1">, </span><span class="si">{}</span><span class="s1">): </span><span class="si">{}</span><span class="s1">&#39;</span>
+            <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ufunc</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">args_string</span><span class="p">,</span> <span class="n">types_string</span><span class="p">))</span>
+
+
+<span class="k">def</span> <span class="nf">array_function_errmsg_formatter</span><span class="p">(</span><span class="n">public_api</span><span class="p">,</span> <span class="n">types</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Format the error message for when __array_ufunc__ gives up. &quot;&quot;&quot;</span>
+    <span class="n">func_name</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">.</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">public_api</span><span class="o">.</span><span class="vm">__module__</span><span class="p">,</span> <span class="n">public_api</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="s2">&quot;no implementation found for &#39;</span><span class="si">{}</span><span class="s2">&#39; on types that implement &quot;</span>
+            <span class="s1">&#39;__array_function__: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">func_name</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">types</span><span class="p">)))</span>
+
+
+<span class="k">def</span> <span class="nf">_ufunc_doc_signature_formatter</span><span class="p">(</span><span class="n">ufunc</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Builds a signature string which resembles PEP 457</span>
+
+<span class="sd">    This is used to construct the first line of the docstring</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># input arguments are simple</span>
+    <span class="k">if</span> <span class="n">ufunc</span><span class="o">.</span><span class="n">nin</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">in_args</span> <span class="o">=</span> <span class="s1">&#39;x&#39;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">in_args</span> <span class="o">=</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;x</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ufunc</span><span class="o">.</span><span class="n">nin</span><span class="p">))</span>
+
+    <span class="c1"># output arguments are both keyword or positional</span>
+    <span class="k">if</span> <span class="n">ufunc</span><span class="o">.</span><span class="n">nout</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">out_args</span> <span class="o">=</span> <span class="s1">&#39;, /, out=()&#39;</span>
+    <span class="k">elif</span> <span class="n">ufunc</span><span class="o">.</span><span class="n">nout</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">out_args</span> <span class="o">=</span> <span class="s1">&#39;, /, out=None&#39;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">out_args</span> <span class="o">=</span> <span class="s1">&#39;[, </span><span class="si">{positional}</span><span class="s1">], / [, out=</span><span class="si">{default}</span><span class="s1">]&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">positional</span><span class="o">=</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="s1">&#39;out</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ufunc</span><span class="o">.</span><span class="n">nout</span><span class="p">)),</span>
+            <span class="n">default</span><span class="o">=</span><span class="nb">repr</span><span class="p">((</span><span class="kc">None</span><span class="p">,)</span><span class="o">*</span><span class="n">ufunc</span><span class="o">.</span><span class="n">nout</span><span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="c1"># keyword only args depend on whether this is a gufunc</span>
+    <span class="n">kwargs</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;, casting=&#39;same_kind&#39;&quot;</span>
+        <span class="s2">&quot;, order=&#39;K&#39;&quot;</span>
+        <span class="s2">&quot;, dtype=None&quot;</span>
+        <span class="s2">&quot;, subok=True&quot;</span>
+        <span class="s2">&quot;[, signature&quot;</span>
+        <span class="s2">&quot;, extobj]&quot;</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">ufunc</span><span class="o">.</span><span class="n">signature</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="s2">&quot;, where=True&quot;</span> <span class="o">+</span> <span class="n">kwargs</span>
+
+    <span class="c1"># join all the parts together</span>
+    <span class="k">return</span> <span class="s1">&#39;</span><span class="si">{name}</span><span class="s1">(</span><span class="si">{in_args}{out_args}</span><span class="s1">, *</span><span class="si">{kwargs}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="n">ufunc</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+        <span class="n">in_args</span><span class="o">=</span><span class="n">in_args</span><span class="p">,</span>
+        <span class="n">out_args</span><span class="o">=</span><span class="n">out_args</span><span class="p">,</span>
+        <span class="n">kwargs</span><span class="o">=</span><span class="n">kwargs</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">npy_ctypes_check</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+    <span class="c1"># determine if a class comes from ctypes, in order to work around</span>
+    <span class="c1"># a bug in the buffer protocol for those objects, bpo-10746</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># ctypes class are new-style, so have an __mro__. This probably fails</span>
+        <span class="c1"># for ctypes classes with multiple inheritance.</span>
+        <span class="k">if</span> <span class="n">IS_PYPY</span><span class="p">:</span>
+            <span class="c1"># (..., _ctypes.basics._CData, Bufferable, object)</span>
+            <span class="n">ctype_base</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__mro__</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># # (..., _ctypes._CData, object)</span>
+            <span class="n">ctype_base</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__mro__</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+        <span class="c1"># right now, they&#39;re part of the _ctypes module</span>
+        <span class="k">return</span> <span class="s1">&#39;_ctypes&#39;</span> <span class="ow">in</span> <span class="n">ctype_base</span><span class="o">.</span><span class="vm">__module__</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+
+<span class="k">class</span> <span class="nc">recursive</span><span class="p">:</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    A decorator class for recursive nested functions.</span>
+<span class="sd">    Naive recursive nested functions hold a reference to themselves:</span>
+
+<span class="sd">    def outer(*args):</span>
+<span class="sd">        def stringify_leaky(arg0, *arg1):</span>
+<span class="sd">            if len(arg1) &gt; 0:</span>
+<span class="sd">                return stringify_leaky(*arg1)  # &lt;- HERE</span>
+<span class="sd">            return str(arg0)</span>
+<span class="sd">        stringify_leaky(*args)</span>
+
+<span class="sd">    This design pattern creates a reference cycle that is difficult for a</span>
+<span class="sd">    garbage collector to resolve. The decorator class prevents the</span>
+<span class="sd">    cycle by passing the nested function in as an argument `self`:</span>
+
+<span class="sd">    def outer(*args):</span>
+<span class="sd">        @recursive</span>
+<span class="sd">        def stringify(self, arg0, *arg1):</span>
+<span class="sd">            if len(arg1) &gt; 0:</span>
+<span class="sd">                return self(*arg1)</span>
+<span class="sd">            return str(arg0)</span>
+<span class="sd">        stringify(*args)</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">func</span> <span class="o">=</span> <span class="n">func</span>
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+</pre></div>
+
+              </div>
+              
+              
+          </main>
+          
+
+      </div>
+    </div>
+  
+  <script src="../../../_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
+<footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2021, PMEAL.<br>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.3.1.<br>
+</p>
+    </div>
+    
+  </div>
+</footer>
+  </body>
+</html>

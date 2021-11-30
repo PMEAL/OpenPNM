@@ -1,0 +1,8 @@
+:orphan:
+
+owner
+======================================================
+
+.. currentmodule:: openpnm.models.phases.partition_coefficient
+
+.. automethod:: Path.owner

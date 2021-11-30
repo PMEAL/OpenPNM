@@ -1,0 +1,8 @@
+:orphan:
+
+with_indent
+====================================================================
+
+.. currentmodule:: openpnm.models.geometry.diffusive_size_factors
+
+.. automethod:: Docorator.with_indent

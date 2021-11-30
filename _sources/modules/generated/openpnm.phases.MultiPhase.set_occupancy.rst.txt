@@ -1,0 +1,8 @@
+:orphan:
+
+set_occupancy
+=======================================
+
+.. currentmodule:: openpnm.phases
+
+.. automethod:: MultiPhase.set_occupancy

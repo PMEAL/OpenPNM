@@ -1,0 +1,8 @@
+:orphan:
+
+props
+===================================
+
+.. currentmodule:: openpnm.algorithms
+
+.. automethod:: StokesFlow.props

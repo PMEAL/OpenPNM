@@ -1,0 +1,8 @@
+:orphan:
+
+interpolate_data
+======================================================
+
+.. currentmodule:: openpnm.geometry
+
+.. automethod:: SquaresAndRectangles.interpolate_data

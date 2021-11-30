@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.network.Gabriel.Np
+==========================
+
+.. currentmodule:: openpnm.network
+
+attribute
+
+.. autoproperty:: openpnm.network.Gabriel.Np
+

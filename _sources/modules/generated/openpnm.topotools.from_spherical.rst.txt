@@ -1,0 +1,6 @@
+from\_spherical
+===============
+
+.. currentmodule:: openpnm.topotools
+
+.. autofunction:: from_spherical

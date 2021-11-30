@@ -1,0 +1,8 @@
+:orphan:
+
+save_docstring
+====================================================================
+
+.. currentmodule:: openpnm.models.geometry.throat_surface_area
+
+.. automethod:: Docorator.save_docstring

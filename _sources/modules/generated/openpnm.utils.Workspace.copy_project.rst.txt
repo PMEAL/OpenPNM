@@ -1,0 +1,8 @@
+:orphan:
+
+copy_project
+====================================
+
+.. currentmodule:: openpnm.utils
+
+.. automethod:: Workspace.copy_project

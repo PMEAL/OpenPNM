@@ -1,0 +1,8 @@
+:orphan:
+
+to_global
+===============================================
+
+.. currentmodule:: openpnm.geometry
+
+.. automethod:: SquaresAndRectangles.to_global

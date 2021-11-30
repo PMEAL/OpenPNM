@@ -1,0 +1,8 @@
+:orphan:
+
+inspect_locations
+=======================================
+
+.. currentmodule:: openpnm.utils
+
+.. automethod:: Project.inspect_locations

@@ -1,0 +1,6 @@
+valvatne\_blunt
+===============
+
+.. currentmodule:: openpnm.models.physics.hydraulic_conductance
+
+.. autofunction:: valvatne_blunt

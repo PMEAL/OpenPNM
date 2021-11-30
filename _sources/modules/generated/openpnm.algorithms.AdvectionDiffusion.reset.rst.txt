@@ -1,0 +1,8 @@
+:orphan:
+
+reset
+===========================================
+
+.. currentmodule:: openpnm.algorithms
+
+.. automethod:: AdvectionDiffusion.reset

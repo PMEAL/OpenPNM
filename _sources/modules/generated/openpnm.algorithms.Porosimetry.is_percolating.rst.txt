@@ -1,0 +1,8 @@
+:orphan:
+
+is_percolating
+=============================================
+
+.. currentmodule:: openpnm.algorithms
+
+.. automethod:: Porosimetry.is_percolating

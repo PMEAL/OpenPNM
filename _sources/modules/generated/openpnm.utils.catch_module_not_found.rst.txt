@@ -1,0 +1,6 @@
+catch\_module\_not\_found
+=========================
+
+.. currentmodule:: openpnm.utils
+
+.. autofunction:: catch_module_not_found

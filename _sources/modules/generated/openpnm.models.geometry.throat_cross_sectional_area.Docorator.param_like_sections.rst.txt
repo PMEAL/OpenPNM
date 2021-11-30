@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.models.geometry.throat\_cross\_sectional\_area.Docorator.param\_like\_sections
+======================================================================================
+
+.. currentmodule:: openpnm.models.geometry.throat_cross_sectional_area
+
+attribute
+
+.. autoattribute:: openpnm.models.geometry.throat_cross_sectional_area.Docorator.param_like_sections
+

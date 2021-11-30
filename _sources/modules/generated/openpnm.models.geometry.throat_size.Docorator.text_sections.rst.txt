@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.models.geometry.throat\_size.Docorator.text\_sections
+=============================================================
+
+.. currentmodule:: openpnm.models.geometry.throat_size
+
+attribute
+
+.. autoattribute:: openpnm.models.geometry.throat_size.Docorator.text_sections
+

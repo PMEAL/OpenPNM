@@ -1,0 +1,85 @@
+DelaunayVoronoiDual
+===================================
+
+.. currentmodule:: openpnm.network
+
+.. autoclass:: DelaunayVoronoiDual
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            DelaunayVoronoiDual.add_boundary_pores
+            DelaunayVoronoiDual.add_model
+            DelaunayVoronoiDual.check_network_health
+            DelaunayVoronoiDual.clear
+            DelaunayVoronoiDual.copy
+            DelaunayVoronoiDual.create_adjacency_matrix
+            DelaunayVoronoiDual.create_incidence_matrix
+            DelaunayVoronoiDual.filter_by_label
+            DelaunayVoronoiDual.find_connected_pores
+            DelaunayVoronoiDual.find_connecting_throat
+            DelaunayVoronoiDual.find_nearby_pores
+            DelaunayVoronoiDual.find_neighbor_pores
+            DelaunayVoronoiDual.find_neighbor_throats
+            DelaunayVoronoiDual.find_pore_hulls
+            DelaunayVoronoiDual.find_throat_facets
+            DelaunayVoronoiDual.fromkeys
+            DelaunayVoronoiDual.get
+            DelaunayVoronoiDual.get_adjacency_matrix
+            DelaunayVoronoiDual.get_conduit_data
+            DelaunayVoronoiDual.get_incidence_matrix
+            DelaunayVoronoiDual.interleave_data
+            DelaunayVoronoiDual.interpolate_data
+            DelaunayVoronoiDual.items
+            DelaunayVoronoiDual.keys
+            DelaunayVoronoiDual.labels
+            DelaunayVoronoiDual.num_neighbors
+            DelaunayVoronoiDual.num_pores
+            DelaunayVoronoiDual.num_throats
+            DelaunayVoronoiDual.params
+            DelaunayVoronoiDual.pop
+            DelaunayVoronoiDual.popitem
+            DelaunayVoronoiDual.pores
+            DelaunayVoronoiDual.props
+            DelaunayVoronoiDual.regenerate_models
+            DelaunayVoronoiDual.remove_model
+            DelaunayVoronoiDual.set_label
+            DelaunayVoronoiDual.setdefault
+            DelaunayVoronoiDual.show_hist
+            DelaunayVoronoiDual.throats
+            DelaunayVoronoiDual.to_indices
+            DelaunayVoronoiDual.to_mask
+            DelaunayVoronoiDual.update
+            DelaunayVoronoiDual.values
+   
+   
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            DelaunayVoronoiDual.Np
+            DelaunayVoronoiDual.Nt
+            DelaunayVoronoiDual.Ps
+            DelaunayVoronoiDual.Ts
+            DelaunayVoronoiDual.am
+            DelaunayVoronoiDual.conns
+            DelaunayVoronoiDual.coords
+            DelaunayVoronoiDual.im
+            DelaunayVoronoiDual.models
+            DelaunayVoronoiDual.name
+            DelaunayVoronoiDual.network
+            DelaunayVoronoiDual.project
+            DelaunayVoronoiDual.settings
+            DelaunayVoronoiDual.tri
+            DelaunayVoronoiDual.vor
+   
+   

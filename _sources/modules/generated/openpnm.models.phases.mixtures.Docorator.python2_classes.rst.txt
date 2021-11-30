@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.models.phases.mixtures.Docorator.python2\_classes
+=========================================================
+
+.. currentmodule:: openpnm.models.phases.mixtures
+
+attribute
+
+.. autoattribute:: openpnm.models.phases.mixtures.Docorator.python2_classes
+

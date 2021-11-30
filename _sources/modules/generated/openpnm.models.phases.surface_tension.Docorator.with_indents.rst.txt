@@ -1,0 +1,8 @@
+:orphan:
+
+with_indents
+============================================================
+
+.. currentmodule:: openpnm.models.phases.surface_tension
+
+.. automethod:: Docorator.with_indents

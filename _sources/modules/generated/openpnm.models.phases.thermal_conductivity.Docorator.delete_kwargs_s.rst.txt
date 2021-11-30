@@ -1,0 +1,8 @@
+:orphan:
+
+delete_kwargs_s
+====================================================================
+
+.. currentmodule:: openpnm.models.phases.thermal_conductivity
+
+.. automethod:: Docorator.delete_kwargs_s

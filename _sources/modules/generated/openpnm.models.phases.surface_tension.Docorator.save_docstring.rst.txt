@@ -1,0 +1,8 @@
+:orphan:
+
+save_docstring
+==============================================================
+
+.. currentmodule:: openpnm.models.phases.surface_tension
+
+.. automethod:: Docorator.save_docstring

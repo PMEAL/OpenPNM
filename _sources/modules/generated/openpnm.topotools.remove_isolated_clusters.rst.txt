@@ -1,0 +1,6 @@
+remove\_isolated\_clusters
+==========================
+
+.. currentmodule:: openpnm.topotools
+
+.. autofunction:: remove_isolated_clusters

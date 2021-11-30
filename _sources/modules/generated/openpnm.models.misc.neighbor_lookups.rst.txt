@@ -1,0 +1,31 @@
+:noindex:
+
+.. automodule:: openpnm.models.misc.neighbor_lookups
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+   
+      from_neighbor_pores
+      from_neighbor_throats
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   

@@ -1,0 +1,6 @@
+generate\_voxel\_image
+======================
+
+.. currentmodule:: openpnm.topotools
+
+.. autofunction:: generate_voxel_image

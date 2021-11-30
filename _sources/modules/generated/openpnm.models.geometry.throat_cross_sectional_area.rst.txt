@@ -1,0 +1,41 @@
+:noindex:
+
+.. automodule:: openpnm.models.geometry.throat_cross_sectional_area
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+   
+      cuboid
+      cylinder
+      rectangle
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :nosignatures:
+      :toctree:
+
+   
+      Docorator
+   
+   
+
+   
+   
+   
+
+   
+   
+   

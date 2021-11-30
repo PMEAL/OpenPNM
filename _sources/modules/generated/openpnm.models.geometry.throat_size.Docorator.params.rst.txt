@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.models.geometry.throat\_size.Docorator.params
+=====================================================
+
+.. currentmodule:: openpnm.models.geometry.throat_size
+
+attribute
+
+.. autoattribute:: openpnm.models.geometry.throat_size.Docorator.params
+

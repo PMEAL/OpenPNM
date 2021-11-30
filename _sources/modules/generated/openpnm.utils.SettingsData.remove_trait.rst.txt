@@ -1,0 +1,8 @@
+:orphan:
+
+remove_trait
+=======================================
+
+.. currentmodule:: openpnm.utils
+
+.. automethod:: SettingsData.remove_trait

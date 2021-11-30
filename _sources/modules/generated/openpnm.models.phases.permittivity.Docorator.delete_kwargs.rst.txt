@@ -1,0 +1,8 @@
+:orphan:
+
+delete_kwargs
+==========================================================
+
+.. currentmodule:: openpnm.models.phases.permittivity
+
+.. automethod:: Docorator.delete_kwargs

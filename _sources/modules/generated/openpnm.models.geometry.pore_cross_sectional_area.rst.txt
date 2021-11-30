@@ -1,0 +1,43 @@
+:noindex:
+
+.. automodule:: openpnm.models.geometry.pore_cross_sectional_area
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+   
+      circle
+      cone
+      cube
+      sphere
+      square
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :nosignatures:
+      :toctree:
+
+   
+      Docorator
+   
+   
+
+   
+   
+   
+
+   
+   
+   

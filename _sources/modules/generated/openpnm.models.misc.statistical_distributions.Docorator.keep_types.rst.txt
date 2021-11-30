@@ -1,0 +1,8 @@
+:orphan:
+
+keep_types
+==================================================================
+
+.. currentmodule:: openpnm.models.misc.statistical_distributions
+
+.. automethod:: Docorator.keep_types

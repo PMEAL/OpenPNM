@@ -1,0 +1,6 @@
+distance\_to\_furthest\_neighbor
+================================
+
+.. currentmodule:: openpnm.models.network
+
+.. autofunction:: distance_to_furthest_neighbor

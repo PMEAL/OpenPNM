@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.utils.Docorator.text\_sections
+======================================
+
+.. currentmodule:: openpnm.utils
+
+attribute
+
+.. autoattribute:: openpnm.utils.Docorator.text_sections
+

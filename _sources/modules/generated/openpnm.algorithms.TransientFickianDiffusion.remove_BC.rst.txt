@@ -1,0 +1,8 @@
+:orphan:
+
+remove_BC
+======================================================
+
+.. currentmodule:: openpnm.algorithms
+
+.. automethod:: TransientFickianDiffusion.remove_BC

@@ -1,0 +1,8 @@
+:orphan:
+
+delete_kwargs
+===================================================================
+
+.. currentmodule:: openpnm.models.geometry.throat_surface_area
+
+.. automethod:: Docorator.delete_kwargs

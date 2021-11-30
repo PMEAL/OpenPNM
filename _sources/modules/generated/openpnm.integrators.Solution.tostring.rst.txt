@@ -1,0 +1,8 @@
+:orphan:
+
+tostring
+=====================================
+
+.. currentmodule:: openpnm.integrators
+
+.. automethod:: Solution.tostring

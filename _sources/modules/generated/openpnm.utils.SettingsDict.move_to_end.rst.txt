@@ -1,0 +1,8 @@
+:orphan:
+
+move_to_end
+======================================
+
+.. currentmodule:: openpnm.utils
+
+.. automethod:: SettingsDict.move_to_end

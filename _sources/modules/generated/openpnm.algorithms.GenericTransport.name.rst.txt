@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.algorithms.GenericTransport.name
+========================================
+
+.. currentmodule:: openpnm.algorithms
+
+attribute
+
+.. autoproperty:: openpnm.algorithms.GenericTransport.name
+

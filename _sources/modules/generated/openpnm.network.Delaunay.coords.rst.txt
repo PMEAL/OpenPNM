@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.network.Delaunay.coords
+===============================
+
+.. currentmodule:: openpnm.network
+
+attribute
+
+.. autoproperty:: openpnm.network.Delaunay.coords
+

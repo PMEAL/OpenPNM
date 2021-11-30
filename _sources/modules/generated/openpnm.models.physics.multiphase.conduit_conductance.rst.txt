@@ -1,0 +1,6 @@
+conduit\_conductance
+====================
+
+.. currentmodule:: openpnm.models.physics.multiphase
+
+.. autofunction:: conduit_conductance

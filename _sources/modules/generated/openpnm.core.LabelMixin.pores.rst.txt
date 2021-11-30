@@ -1,0 +1,8 @@
+:orphan:
+
+pores
+=============================
+
+.. currentmodule:: openpnm.core
+
+.. automethod:: LabelMixin.pores

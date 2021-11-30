@@ -1,0 +1,6 @@
+fraction
+========
+
+.. currentmodule:: openpnm.models.misc.basic_math
+
+.. autofunction:: fraction

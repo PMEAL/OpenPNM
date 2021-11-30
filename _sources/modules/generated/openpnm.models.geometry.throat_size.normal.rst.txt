@@ -1,0 +1,6 @@
+normal
+======
+
+.. currentmodule:: openpnm.models.geometry.throat_size
+
+.. autofunction:: normal

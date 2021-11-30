@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.models.Docorator.python2\_classes
+=========================================
+
+.. currentmodule:: openpnm.models
+
+attribute
+
+.. autoattribute:: openpnm.models.Docorator.python2_classes
+

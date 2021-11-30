@@ -1,0 +1,8 @@
+:orphan:
+
+dedents
+===================================================
+
+.. currentmodule:: openpnm.models.geometry.pore_seed
+
+.. automethod:: Docorator.dedents

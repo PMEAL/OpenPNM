@@ -1,0 +1,8 @@
+:orphan:
+
+dedents
+===============================================================
+
+.. currentmodule:: openpnm.models.misc.statistical_distributions
+
+.. automethod:: Docorator.dedents

@@ -1,0 +1,8 @@
+:orphan:
+
+is_file
+========================================================
+
+.. currentmodule:: openpnm.models.phases.partition_coefficient
+
+.. automethod:: Path.is_file

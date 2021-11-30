@@ -1,0 +1,8 @@
+:orphan:
+
+plot_intrusion_curve
+===========================================================
+
+.. currentmodule:: openpnm.algorithms
+
+.. automethod:: OrdinaryPercolation.plot_intrusion_curve

@@ -1,0 +1,8 @@
+:orphan:
+
+flatten
+====================================
+
+.. currentmodule:: openpnm.integrators
+
+.. automethod:: Solution.flatten

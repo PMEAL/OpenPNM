@@ -1,0 +1,8 @@
+:orphan:
+
+dedent
+======================================================================
+
+.. currentmodule:: openpnm.models.geometry.throat_capillary_shape_factor
+
+.. automethod:: Docorator.dedent

@@ -1,0 +1,8 @@
+:orphan:
+
+update
+=========================
+
+.. currentmodule:: openpnm.phases
+
+.. automethod:: Air.update

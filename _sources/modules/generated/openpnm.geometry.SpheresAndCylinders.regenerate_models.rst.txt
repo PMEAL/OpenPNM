@@ -1,0 +1,8 @@
+:orphan:
+
+regenerate_models
+======================================================
+
+.. currentmodule:: openpnm.geometry
+
+.. automethod:: SpheresAndCylinders.regenerate_models

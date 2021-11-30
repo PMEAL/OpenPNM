@@ -1,0 +1,6 @@
+random
+======
+
+.. currentmodule:: openpnm.models.misc.statistical_distributions
+
+.. autofunction:: random

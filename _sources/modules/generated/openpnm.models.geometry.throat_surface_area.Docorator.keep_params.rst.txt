@@ -1,0 +1,8 @@
+:orphan:
+
+keep_params
+=================================================================
+
+.. currentmodule:: openpnm.models.geometry.throat_surface_area
+
+.. automethod:: Docorator.keep_params

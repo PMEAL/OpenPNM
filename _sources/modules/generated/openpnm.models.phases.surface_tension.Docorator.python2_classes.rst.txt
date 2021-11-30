@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.models.phases.surface\_tension.Docorator.python2\_classes
+=================================================================
+
+.. currentmodule:: openpnm.models.phases.surface_tension
+
+attribute
+
+.. autoattribute:: openpnm.models.phases.surface_tension.Docorator.python2_classes
+

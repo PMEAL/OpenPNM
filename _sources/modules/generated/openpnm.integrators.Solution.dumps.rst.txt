@@ -1,0 +1,8 @@
+:orphan:
+
+dumps
+==================================
+
+.. currentmodule:: openpnm.integrators
+
+.. automethod:: Solution.dumps

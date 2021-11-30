@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.models.geometry.pore\_size.Docorator.text\_sections
+===========================================================
+
+.. currentmodule:: openpnm.models.geometry.pore_size
+
+attribute
+
+.. autoattribute:: openpnm.models.geometry.pore_size.Docorator.text_sections
+

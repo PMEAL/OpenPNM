@@ -1,0 +1,8 @@
+:orphan:
+
+check_geometry_health
+===========================================
+
+.. currentmodule:: openpnm.utils
+
+.. automethod:: Project.check_geometry_health

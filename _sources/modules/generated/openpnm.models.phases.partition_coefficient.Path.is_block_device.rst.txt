@@ -1,0 +1,8 @@
+:orphan:
+
+is_block_device
+================================================================
+
+.. currentmodule:: openpnm.models.phases.partition_coefficient
+
+.. automethod:: Path.is_block_device

@@ -1,0 +1,8 @@
+:orphan:
+
+keep_types
+======================================================================
+
+.. currentmodule:: openpnm.models.geometry.pore_cross_sectional_area
+
+.. automethod:: Docorator.keep_types

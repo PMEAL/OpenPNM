@@ -1,0 +1,8 @@
+:orphan:
+
+absolute
+=========================================================
+
+.. currentmodule:: openpnm.models.phases.partition_coefficient
+
+.. automethod:: Path.absolute

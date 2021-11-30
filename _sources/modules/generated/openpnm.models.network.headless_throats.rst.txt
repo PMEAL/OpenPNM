@@ -1,0 +1,6 @@
+headless\_throats
+=================
+
+.. currentmodule:: openpnm.models.network
+
+.. autofunction:: headless_throats

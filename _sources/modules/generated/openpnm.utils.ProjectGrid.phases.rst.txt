@@ -1,0 +1,8 @@
+:orphan:
+
+phases
+================================
+
+.. currentmodule:: openpnm.utils
+
+.. automethod:: ProjectGrid.phases

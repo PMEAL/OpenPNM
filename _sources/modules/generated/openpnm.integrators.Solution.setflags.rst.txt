@@ -1,0 +1,8 @@
+:orphan:
+
+setflags
+=====================================
+
+.. currentmodule:: openpnm.integrators
+
+.. automethod:: Solution.setflags

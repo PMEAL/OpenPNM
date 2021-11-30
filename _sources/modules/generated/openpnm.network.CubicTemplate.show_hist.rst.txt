@@ -1,0 +1,8 @@
+:orphan:
+
+show_hist
+=======================================
+
+.. currentmodule:: openpnm.network
+
+.. automethod:: CubicTemplate.show_hist

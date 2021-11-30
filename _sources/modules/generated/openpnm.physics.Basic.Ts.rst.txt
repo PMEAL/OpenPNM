@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.physics.Basic.Ts
+========================
+
+.. currentmodule:: openpnm.physics
+
+attribute
+
+.. autoproperty:: openpnm.physics.Basic.Ts
+

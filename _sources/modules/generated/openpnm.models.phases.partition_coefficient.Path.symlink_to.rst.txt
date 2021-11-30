@@ -1,0 +1,8 @@
+:orphan:
+
+symlink_to
+===========================================================
+
+.. currentmodule:: openpnm.models.phases.partition_coefficient
+
+.. automethod:: Path.symlink_to

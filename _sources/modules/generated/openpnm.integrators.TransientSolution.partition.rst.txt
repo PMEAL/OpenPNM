@@ -1,0 +1,8 @@
+:orphan:
+
+partition
+===============================================
+
+.. currentmodule:: openpnm.integrators
+
+.. automethod:: TransientSolution.partition

@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.models.misc.statistical\_distributions.Docorator.params
+===============================================================
+
+.. currentmodule:: openpnm.models.misc.statistical_distributions
+
+attribute
+
+.. autoattribute:: openpnm.models.misc.statistical_distributions.Docorator.params
+

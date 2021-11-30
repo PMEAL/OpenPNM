@@ -1,0 +1,8 @@
+:orphan:
+
+cumprod
+=============================================
+
+.. currentmodule:: openpnm.integrators
+
+.. automethod:: TransientSolution.cumprod

@@ -1,0 +1,8 @@
+:orphan:
+
+traits
+=================================
+
+.. currentmodule:: openpnm.utils
+
+.. automethod:: SettingsData.traits

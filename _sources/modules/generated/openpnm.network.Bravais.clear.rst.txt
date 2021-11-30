@@ -1,0 +1,8 @@
+:orphan:
+
+clear
+=============================
+
+.. currentmodule:: openpnm.network
+
+.. automethod:: Bravais.clear

@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.models.geometry.throat\_capillary\_shape\_factor.Docorator.text\_sections
+=================================================================================
+
+.. currentmodule:: openpnm.models.geometry.throat_capillary_shape_factor
+
+attribute
+
+.. autoattribute:: openpnm.models.geometry.throat_capillary_shape_factor.Docorator.text_sections
+

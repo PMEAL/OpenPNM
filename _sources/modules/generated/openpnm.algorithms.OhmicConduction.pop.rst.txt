@@ -1,0 +1,8 @@
+:orphan:
+
+pop
+======================================
+
+.. currentmodule:: openpnm.algorithms
+
+.. automethod:: OhmicConduction.pop

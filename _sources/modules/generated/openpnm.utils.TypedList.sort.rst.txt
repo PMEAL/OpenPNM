@@ -1,0 +1,8 @@
+:orphan:
+
+sort
+============================
+
+.. currentmodule:: openpnm.utils
+
+.. automethod:: TypedList.sort

@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.algorithms.MixedInvasionPercolation.Ts
+==============================================
+
+.. currentmodule:: openpnm.algorithms
+
+attribute
+
+.. autoproperty:: openpnm.algorithms.MixedInvasionPercolation.Ts
+

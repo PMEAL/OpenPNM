@@ -1,0 +1,8 @@
+:orphan:
+
+delete_params
+===========================================================
+
+.. currentmodule:: openpnm.models.geometry.pore_volume
+
+.. automethod:: Docorator.delete_params

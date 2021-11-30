@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.models.geometry.pore\_volume.Docorator.patterns
+=======================================================
+
+.. currentmodule:: openpnm.models.geometry.pore_volume
+
+attribute
+
+.. autoattribute:: openpnm.models.geometry.pore_volume.Docorator.patterns
+

@@ -1,0 +1,6 @@
+generic\_hydraulic
+==================
+
+.. currentmodule:: openpnm.models.physics.hydraulic_conductance
+
+.. autofunction:: generic_hydraulic

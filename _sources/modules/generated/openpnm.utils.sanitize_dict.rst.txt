@@ -1,0 +1,6 @@
+sanitize\_dict
+==============
+
+.. currentmodule:: openpnm.utils
+
+.. autofunction:: sanitize_dict

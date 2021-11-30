@@ -1,0 +1,8 @@
+:orphan:
+
+__call__
+=================================================================
+
+.. currentmodule:: openpnm.models.geometry.hydraulic_size_factors
+
+.. automethod:: Docorator.__call__

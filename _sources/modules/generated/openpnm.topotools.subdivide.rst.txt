@@ -1,0 +1,6 @@
+subdivide
+=========
+
+.. currentmodule:: openpnm.topotools
+
+.. autofunction:: subdivide

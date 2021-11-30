@@ -1,0 +1,8 @@
+:orphan:
+
+setdefault
+========================================
+
+.. currentmodule:: openpnm.algorithms
+
+.. automethod:: StokesFlow.setdefault

@@ -1,0 +1,8 @@
+:orphan:
+
+filter_by_label
+=========================================
+
+.. currentmodule:: openpnm.geometry
+
+.. automethod:: Imported.filter_by_label

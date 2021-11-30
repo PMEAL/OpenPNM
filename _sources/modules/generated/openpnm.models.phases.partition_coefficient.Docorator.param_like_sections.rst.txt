@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.models.phases.partition\_coefficient.Docorator.param\_like\_sections
+============================================================================
+
+.. currentmodule:: openpnm.models.phases.partition_coefficient
+
+attribute
+
+.. autoattribute:: openpnm.models.phases.partition_coefficient.Docorator.param_like_sections
+

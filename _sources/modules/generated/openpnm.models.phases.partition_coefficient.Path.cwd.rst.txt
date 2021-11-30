@@ -1,0 +1,8 @@
+:orphan:
+
+cwd
+====================================================
+
+.. currentmodule:: openpnm.models.phases.partition_coefficient
+
+.. automethod:: Path.cwd

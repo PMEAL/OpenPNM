@@ -1,0 +1,6 @@
+generic\_distribution
+=====================
+
+.. currentmodule:: openpnm.models.geometry.pore_size
+
+.. autofunction:: generic_distribution

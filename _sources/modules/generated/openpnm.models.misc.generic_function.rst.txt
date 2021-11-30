@@ -1,0 +1,6 @@
+generic\_function
+=================
+
+.. currentmodule:: openpnm.models.misc
+
+.. autofunction:: generic_function
