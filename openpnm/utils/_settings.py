@@ -1,14 +1,17 @@
+import logging
 from copy import deepcopy
 from traits.api import HasTraits, Trait
-from openpnm.utils import PrintableDict, logging
+from openpnm.utils import PrintableDict
 from auto_all import start_all, end_all
 
 
 logger = logging.getLogger(__name__)
+
+
 start_all()
 
-
 class TypedMixin:
+    """Brief explanation of 'TypedMixin'"""
 
     def __init__(self, iterable=[], types=[]):
         self._types = types
@@ -36,6 +39,7 @@ class TypedMixin:
 
 
 class TypedSet(TypedMixin, set):
+    """Brief explanation of 'TypedSet'"""
 
     def add(self, item):
         self._check_type(item)
@@ -43,6 +47,7 @@ class TypedSet(TypedMixin, set):
 
 
 class TypedList(TypedMixin, list):
+    """Brief explanation of 'TypedSet'"""
 
     def __setitem__(self, ind, value):
         self._check_type(value)

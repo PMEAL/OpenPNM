@@ -1,7 +1,6 @@
 r"""
-======================================
-Algorithms (:mod:`openpnm.algorithms`)
-======================================
+Algorithms
+==========
 
 The ``algorithms`` module contains classes for conducting transport
 simulations on pore networks.

@@ -1,7 +1,6 @@
 r"""
-============================
-Utils (:mod:`openpnm.utils`)
-============================
+Utils
+=====
 
 This module contains two very important classes (Project and Workspace)
 as well as a number of helper classes.

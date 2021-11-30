@@ -7,6 +7,7 @@
 
 import os
 import sys
+from datetime import datetime
 
 sys.path.insert(0, os.path.abspath('.'))
 sys.path.insert(0, os.path.abspath('../'))
@@ -17,7 +18,7 @@ sys.path.insert(0, os.path.abspath('../../'))
 #------------------------------------------------------------------------#
 
 project = 'OpenPNM'
-copyright = '2021, PMEAL'
+copyright = f'{datetime.now().year}, PMEAL'
 author = 'OpenPNM Dev Team'
 
 # The full version, including alpha/beta/rc tags
@@ -59,6 +60,28 @@ templates_path = ['_templates']
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = ['_build']
 
+numpydoc_show_inherited_class_members = True
+
+members_to_exclude = [
+    'append', 'clear', 'copy', 'count', 'extend', 'fromkeys', 'get',
+    'index', 'insert', 'items', 'keys', 'pop', 'popitem', 'remove',
+    'reverse', 'setdefault', 'sort', 'update', 'values',
+    'all', 'any', 'argmax', 'argmin', 'argpartition', 'argsort',
+    'astype', 'base', 'byteswap', 'choose', 'clip', 'compress', 'conj',
+    'conjugate', 'copy', 'ctypes', 'cumprod', 'cumsum', 'data',
+    'diagonal', 'dot', 'dtype', 'dump', 'dumps', 'fill', 'flags', 'flat',
+    'flatten', 'getfield', 'imag', 'item', 'itemset', 'itemsize', 'max',
+    'mean', 'min', 'nbytes', 'ndim', 'newbyteorder', 'nonzero',
+    'partition', 'prod', 'ptp', 'put', 'ravel', 'real', 'repeat',
+    'reshape', 'resize', 'round', 'searchsorted', 'setfield', 'setflags',
+    'shape', 'size', 'sort', 'squeeze', 'std', 'strides', 'sum',
+    'swapaxes', 'take', 'tobytes', 'tofile', 'tolist', 'tostring',
+    'trace', 'transpose', 'var', 'view'
+]
+
+autodoc_default_options = {
+    'exclude-members': ", ".join(members_to_exclude)
+}
 
 #------------------------------------------------------------------------#
 # Matplotlib plot_directive options                                      #
@@ -68,7 +91,7 @@ plot_pre_code = """
 import numpy as np
 np.random.seed(123)
 """
-plot_include_source = False
+plot_include_source = True
 plot_formats = [('svg', 200), 'pdf']
 plot_html_show_formats = False
 plot_html_show_source_link = False
@@ -97,7 +120,6 @@ plot_rcparams = {
 
 import matplotlib.pyplot as plt
 plt.ioff()
-
 
 #------------------------------------------------------------------------#
 # HTML/theme options                                                     #

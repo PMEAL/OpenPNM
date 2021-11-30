@@ -10,8 +10,8 @@ porous materials.
 
 from .__version__ import __version__
 
-from . import core
 from . import utils
+from . import core
 from . import network
 from . import geometry
 from . import phases

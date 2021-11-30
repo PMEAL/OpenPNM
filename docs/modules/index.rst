@@ -19,9 +19,16 @@ Contents
    :maxdepth: 1
    :titlesonly:
 
+   utils
+   core
+   network
+   geometry
+   phases
+   physics
+   models
+   solvers
+   integrators
+   algorithms
+   topotools
+   generators
    io
-
-**TODO**
-
-- also document overloaded methods in Base and other places
-- maybe unify ..plot directive and actual example snippets

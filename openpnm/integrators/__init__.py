@@ -1,7 +1,6 @@
 r"""
-========================================
-Integrators (:mod:`openpnm.integrators`)
-========================================
+Integrators
+===========
 
 The ``integrators`` module contains wrapper classes for ode solvers.
 

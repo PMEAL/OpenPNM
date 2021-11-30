@@ -17,6 +17,7 @@ class PorosimetrySettings:
     throat_partial_filling : str
         The name of the model used to determine partial throat filling as
         a function of applied pressure.
+
     """
     quantity = 'pore.pressure'
     pore_partial_filling = ''
@@ -45,7 +46,6 @@ class Porosimetry(OrdinaryPercolation):
     See Also
     --------
     OrdinaryPercolation
-
 
     """
 

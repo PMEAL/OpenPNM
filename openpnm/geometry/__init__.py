@@ -1,13 +1,12 @@
 r"""
-==================================
-Geometry (:mod:`openpnm.geometry`)
-==================================
+Geometry
+========
 
 The ``geometry`` module contains the ``GenericGeometry`` class, and an
 assortment of subclasses that implement specific pore-scale geometrical models.
 
 The GenericGeometry Class
-=========================
+-------------------------
 
 Geometry objects (as well as Physics objects) are ``Subdomain`` subclasses,
 which allow them to be assigned to subset of the full domain (although this is
@@ -16,7 +15,7 @@ distinct regions could be modelled by giving each region its own Geometry
 with unique models (e.g. to give a bi-modal pore size distribution).
 
 Library of Preconfigured Geometry Classes
-=========================================
+-----------------------------------------
 
 This module contains a small selection of Geometry classes that are
 pre-configured with a selection of pore-scale models.  These classes provide
@@ -32,7 +31,7 @@ of it's two neighbors.  All other properties are calculated using the geometry
 of spheres and throats.
 
 Customizing a Preconfigured Geometry Instance
-=============================================
+---------------------------------------------
 
 Perhaps the ``SpheresAndCylinders`` class is almost suitable but you wish
 to decrease the pores sizes.  The following example illustrates how to
