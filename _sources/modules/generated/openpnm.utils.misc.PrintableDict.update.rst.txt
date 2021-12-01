@@ -1,0 +1,8 @@
+:orphan:
+
+update
+=======================================
+
+.. currentmodule:: openpnm.utils.misc
+
+.. automethod:: PrintableDict.update

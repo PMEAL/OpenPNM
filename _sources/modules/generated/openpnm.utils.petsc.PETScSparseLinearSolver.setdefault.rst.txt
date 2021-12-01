@@ -1,0 +1,8 @@
+:orphan:
+
+setdefault
+======================================================
+
+.. currentmodule:: openpnm.utils.petsc
+
+.. automethod:: PETScSparseLinearSolver.setdefault

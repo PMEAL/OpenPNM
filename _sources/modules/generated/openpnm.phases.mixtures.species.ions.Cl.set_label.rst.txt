@@ -1,0 +1,8 @@
+:orphan:
+
+set_label
+=================================================
+
+.. currentmodule:: openpnm.phases.mixtures.species.ions
+
+.. automethod:: Cl.set_label

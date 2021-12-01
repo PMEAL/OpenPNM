@@ -14,7 +14,9 @@
       :toctree:
    
       circles_and_rectangles
+      classic
       cones_and_cylinders
+      ctc
       cubes_and_cuboids
       pyramids_and_cuboids
       spheres_and_cylinders
@@ -24,15 +26,6 @@
    
 
    
-   
-   .. rubric:: Classes
-
-   .. autosummary::
-      :nosignatures:
-      :toctree:
-
-   
-      Docorator
    
    
 

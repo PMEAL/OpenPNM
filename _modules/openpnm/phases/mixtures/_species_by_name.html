@@ -1,0 +1,383 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>openpnm.phases.mixtures._species_by_name &#8212; OpenPNM 2.8.2 documentation</title>
+    
+  <link href="../../../../_static/css/theme.css" rel="stylesheet">
+  <link href="../../../../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/css/blank.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css" />
+    
+  <link rel="preload" as="script" href="../../../../_static/js/index.be7d3bbb2ef33a8344ce.js">
+
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/clipboard.min.js"></script>
+    <script src="../../../../_static/copybutton.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../../_static/js/custom.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+
+<a class="navbar-brand" href="https://www.openpnm.org">
+  <img src="../../../../_static/openpnm_logo.png" class="logo" alt="logo">
+</a>
+
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class=" collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../../user_guide/installation.html">
+  Installation
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../../user_guide/index.html">
+  User Guide
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../../modules/index.html">
+  Module Reference
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../../examples/examples.html">
+  Examples
+ </a>
+</li>
+
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/PMEAL/OpenPNM" rel="noopener" target="_blank" title="GitHub">
+            <span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://openpnm.substack.com/" rel="noopener" target="_blank" title="Substack">
+            <span><i class="fas fa-envelope-square"></i></span>
+            <label class="sr-only">Substack</label>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://twitter.com/OpenPNM" rel="noopener" target="_blank" title="Twitter">
+            <span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label>
+          </a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../../../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    
+  </div>
+</nav>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <h1>Source code for openpnm.phases.mixtures._species_by_name</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">openpnm.phases.mixtures</span> <span class="kn">import</span> <span class="n">GenericSpecies</span>
+<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">PrintableDict</span>
+<span class="kn">import</span> <span class="nn">chemicals</span> <span class="k">as</span> <span class="nn">chem</span>
+<span class="kn">from</span> <span class="nn">chemicals</span> <span class="kn">import</span> <span class="n">numba_vectorized</span>
+<span class="kn">from</span> <span class="nn">chemicals</span> <span class="kn">import</span> <span class="n">Vm_to_rho</span>
+<span class="kn">from</span> <span class="nn">chemicals.utils</span> <span class="kn">import</span> <span class="n">R</span><span class="p">,</span> <span class="n">k</span>
+<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">logging</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="SpeciesByName"><a class="viewcode-back" href="../../../../modules/generated/openpnm.phases.mixtures.SpeciesByName.html#openpnm.phases.mixtures.SpeciesByName">[docs]</a><span class="k">class</span> <span class="nc">SpeciesByName</span><span class="p">(</span><span class="n">GenericSpecies</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates Phase object that represents a single species in a multicomponent</span>
+<span class="sd">    mixture system.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    network : GenericNetwork</span>
+<span class="sd">        The network to which this phase object will be attached.</span>
+<span class="sd">    species : str</span>
+<span class="sd">        The name of the species to generate.  This is used to lookup tabulated</span>
+<span class="sd">        constants in the ``chemicals`` package, which attempts to find a match. For</span>
+<span class="sd">        instance, &#39;water&#39;, &#39;Water&#39;, and &#39;H2O&#39; all work.</span>
+<span class="sd">    name : str, optional</span>
+<span class="sd">        The name of the phase.  This is useful to keep track of the objects</span>
+<span class="sd">        throughout the simulation.  The name must be unique to the project.</span>
+<span class="sd">        If no name is given, one is generated.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">species</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">CAS</span> <span class="o">=</span> <span class="n">chem</span><span class="o">.</span><span class="n">CAS_from_any</span><span class="p">(</span><span class="n">species</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;CAS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">CAS</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="n">PrintableDict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;molecular_weight&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">chem</span><span class="o">.</span><span class="n">MW</span><span class="p">(</span><span class="n">CAS</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;critical_temperature&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">chem</span><span class="o">.</span><span class="n">critical</span><span class="o">.</span><span class="n">Tc</span><span class="p">(</span><span class="n">CAS</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;critical_pressure&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">chem</span><span class="o">.</span><span class="n">critical</span><span class="o">.</span><span class="n">Pc</span><span class="p">(</span><span class="n">CAS</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;critical_volume&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">chem</span><span class="o">.</span><span class="n">critical</span><span class="o">.</span><span class="n">Vc</span><span class="p">(</span><span class="n">CAS</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;critical_compressibilty_factor&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">chem</span><span class="o">.</span><span class="n">critical</span><span class="o">.</span><span class="n">Zc</span><span class="p">(</span><span class="n">CAS</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;boiling_temperature&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">chem</span><span class="o">.</span><span class="n">Tb</span><span class="p">(</span><span class="n">CAS</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;melting_temperature&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">chem</span><span class="o">.</span><span class="n">Tm</span><span class="p">(</span><span class="n">CAS</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;acentric_factor&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">chem</span><span class="o">.</span><span class="n">acentric</span><span class="o">.</span><span class="n">omega</span><span class="p">(</span><span class="n">CAS</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;dipole_moment&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">chem</span><span class="o">.</span><span class="n">dipole</span><span class="o">.</span><span class="n">dipole_moment</span><span class="p">(</span><span class="n">CAS</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">CAS</span> <span class="ow">in</span> <span class="n">extra_LJ</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">s</span><span class="p">,</span> <span class="n">e_k</span> <span class="o">=</span> <span class="n">extra_LJ</span><span class="p">[</span><span class="n">CAS</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">e_k</span> <span class="o">=</span> <span class="n">chem</span><span class="o">.</span><span class="n">lennard_jones</span><span class="o">.</span><span class="n">Stockmayer</span><span class="p">(</span><span class="n">CAS</span><span class="p">)</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="n">chem</span><span class="o">.</span><span class="n">lennard_jones</span><span class="o">.</span><span class="n">molecular_diameter</span><span class="p">(</span><span class="n">CAS</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">e_k</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;lennard_jones_epsilon&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">e_k</span><span class="o">*</span><span class="n">k</span>
+        <span class="k">if</span> <span class="n">s</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;lennard_jones_sigma&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">s</span></div>
+
+
+<div class="viewcode-block" id="GasByName"><a class="viewcode-back" href="../../../../modules/generated/openpnm.phases.mixtures.GasByName.html#openpnm.phases.mixtures.GasByName">[docs]</a><span class="k">class</span> <span class="nc">GasByName</span><span class="p">(</span><span class="n">SpeciesByName</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">species</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">species</span><span class="o">=</span><span class="n">species</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.heat_capacity&#39;</span><span class="p">,</span>
+                       <span class="n">model</span><span class="o">=</span><span class="n">gas_heat_capacity</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.thermal_conductivity&#39;</span><span class="p">,</span>
+                       <span class="n">model</span><span class="o">=</span><span class="n">gas_thermal_conductivity</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.viscosity&#39;</span><span class="p">,</span>
+                       <span class="n">model</span><span class="o">=</span><span class="n">gas_viscosity</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="LiquidByName"><a class="viewcode-back" href="../../../../modules/generated/openpnm.phases.mixtures.LiquidByName.html#openpnm.phases.mixtures.LiquidByName">[docs]</a><span class="k">class</span> <span class="nc">LiquidByName</span><span class="p">(</span><span class="n">SpeciesByName</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">species</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">species</span><span class="o">=</span><span class="n">species</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.gas_heat_capacity&#39;</span><span class="p">,</span>
+                       <span class="n">model</span><span class="o">=</span><span class="n">gas_heat_capacity</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.heat_capacity&#39;</span><span class="p">,</span>
+                       <span class="n">model</span><span class="o">=</span><span class="n">liquid_heat_capacity</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.thermal_conductivity&#39;</span><span class="p">,</span>
+                       <span class="n">model</span><span class="o">=</span><span class="n">liquid_thermal_conductivity</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.viscosity&#39;</span><span class="p">,</span>
+                       <span class="n">model</span><span class="o">=</span><span class="n">liquid_viscosity</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.density&#39;</span><span class="p">,</span>
+                       <span class="n">model</span><span class="o">=</span><span class="n">liquid_density</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.vapor_pressure&#39;</span><span class="p">,</span>
+                       <span class="n">model</span><span class="o">=</span><span class="n">vapor_pressure</span><span class="p">)</span></div>
+
+
+<span class="n">extra_LJ</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">extra_LJ</span><span class="p">[</span><span class="s1">&#39;7727-37-9&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mf">3.788</span><span class="p">,</span> <span class="mf">71.4</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">vapor_pressure</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">):</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">temperature</span><span class="p">]</span>
+    <span class="n">CAS</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;CAS&#39;</span><span class="p">]</span>
+    <span class="n">Tc</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;critical_temperature&#39;</span><span class="p">]</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">coeffs</span> <span class="o">=</span> <span class="n">chem</span><span class="o">.</span><span class="n">vapor_pressure</span><span class="o">.</span><span class="n">Psat_data_AntoineExtended</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">CAS</span><span class="p">]</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">to</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">E</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="n">Tmin</span><span class="p">,</span> <span class="n">Tmax</span> <span class="o">=</span> <span class="n">coeffs</span>
+        <span class="n">PV</span> <span class="o">=</span> <span class="n">numba_vectorized</span><span class="o">.</span><span class="n">TRC_Antoine_extended</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">E</span><span class="p">,</span> <span class="n">F</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="n">coeffs</span> <span class="o">=</span> <span class="n">chem</span><span class="o">.</span><span class="n">vapor_pressure</span><span class="o">.</span><span class="n">Psat_data_AntoinePoling</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">CAS</span><span class="p">]</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">Tmin</span><span class="p">,</span> <span class="n">Tmax</span> <span class="o">=</span> <span class="n">coeffs</span>
+        <span class="n">PV</span> <span class="o">=</span> <span class="mi">10</span><span class="o">**</span><span class="p">(</span><span class="n">A</span> <span class="o">-</span> <span class="n">B</span><span class="o">/</span><span class="p">(</span><span class="n">T</span> <span class="o">+</span> <span class="n">C</span><span class="p">))</span>
+        <span class="c1"># PV = numba_vectorized.vapor_pressure.Antoine(T=T, A=A, B=B, C=C)</span>
+    <span class="k">return</span> <span class="n">PV</span>
+
+
+<span class="k">def</span> <span class="nf">liquid_density</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">):</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">temperature</span><span class="p">]</span>
+    <span class="n">MW</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;molecular_weight&#39;</span><span class="p">]</span>
+    <span class="n">Tc</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;critical_temperature&#39;</span><span class="p">]</span>
+    <span class="n">Vc</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;critical_volume&#39;</span><span class="p">]</span>
+    <span class="n">omega</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;acentric_factor&#39;</span><span class="p">]</span>
+    <span class="n">Vm</span> <span class="o">=</span> <span class="n">numba_vectorized</span><span class="o">.</span><span class="n">COSTALD</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Vc</span><span class="p">,</span> <span class="n">omega</span><span class="p">)</span>
+    <span class="n">rhoL</span> <span class="o">=</span> <span class="n">Vm_to_rho</span><span class="p">(</span><span class="n">Vm</span><span class="p">,</span> <span class="n">MW</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">rhoL</span>
+
+
+<span class="k">def</span> <span class="nf">liquid_viscosity</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">):</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">temperature</span><span class="p">]</span>
+    <span class="n">MW</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;molecular_weight&#39;</span><span class="p">]</span>
+    <span class="n">Tc</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;critical_temperature&#39;</span><span class="p">]</span>
+    <span class="n">Pc</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;critical_pressure&#39;</span><span class="p">]</span>
+    <span class="n">omega</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;acentric_factor&#39;</span><span class="p">]</span>
+    <span class="n">muL</span> <span class="o">=</span> <span class="n">numba_vectorized</span><span class="o">.</span><span class="n">Letsou_Stiel</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">MW</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">omega</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">muL</span>
+
+
+<span class="k">def</span> <span class="nf">gas_viscosity</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">):</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">temperature</span><span class="p">]</span>
+    <span class="n">MW</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;molecular_weight&#39;</span><span class="p">]</span>
+    <span class="n">Tc</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;critical_temperature&#39;</span><span class="p">]</span>
+    <span class="n">Pc</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;critical_pressure&#39;</span><span class="p">]</span>
+    <span class="n">muG</span> <span class="o">=</span> <span class="n">numba_vectorized</span><span class="o">.</span><span class="n">viscosity_gas_Gharagheizi</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">MW</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">muG</span>
+
+
+<span class="k">def</span> <span class="nf">liquid_thermal_conductivity</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">):</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">temperature</span><span class="p">]</span>
+    <span class="n">MW</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;molecular_weight&#39;</span><span class="p">]</span>
+    <span class="n">Tb</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;boiling_temperature&#39;</span><span class="p">]</span>
+    <span class="n">Pc</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;critical_pressure&#39;</span><span class="p">]</span>
+    <span class="n">omega</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;acentric_factor&#39;</span><span class="p">]</span>
+    <span class="n">kL</span> <span class="o">=</span> <span class="n">numba_vectorized</span><span class="o">.</span><span class="n">Gharagheizi_liquid</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">MW</span><span class="p">,</span> <span class="n">Tb</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">omega</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">kL</span>
+
+
+<span class="k">def</span> <span class="nf">gas_thermal_conductivity</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">):</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">temperature</span><span class="p">]</span>
+    <span class="n">MW</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;molecular_weight&#39;</span><span class="p">]</span>
+    <span class="n">Tb</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;boiling_temperature&#39;</span><span class="p">]</span>
+    <span class="n">Pc</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;critical_pressure&#39;</span><span class="p">]</span>
+    <span class="n">omega</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;acentric_factor&#39;</span><span class="p">]</span>
+    <span class="n">kG</span> <span class="o">=</span> <span class="n">numba_vectorized</span><span class="o">.</span><span class="n">Gharagheizi_gas</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">MW</span><span class="p">,</span> <span class="n">Tb</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">omega</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">kG</span>
+
+
+<span class="k">def</span> <span class="nf">liquid_heat_capacity</span><span class="p">(</span><span class="n">target</span><span class="p">,</span>
+                         <span class="n">Cpgm</span><span class="o">=</span><span class="s1">&#39;pore.gas_heat_capacity&#39;</span><span class="p">,</span>
+                         <span class="n">T</span><span class="o">=</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">):</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">]</span>
+    <span class="n">Cpgm</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="s1">&#39;pore.gas_heat_capacity&#39;</span><span class="p">]</span>
+    <span class="n">Tc</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;critical_temperature&#39;</span><span class="p">]</span>
+    <span class="n">omega</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;acentric_factor&#39;</span><span class="p">]</span>
+    <span class="n">Cplm</span> <span class="o">=</span> <span class="n">numba_vectorized</span><span class="o">.</span><span class="n">Rowlinson_Poling</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">omega</span><span class="p">,</span> <span class="n">Cpgm</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Cplm</span>
+
+
+<span class="k">def</span> <span class="nf">gas_heat_capacity</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">):</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">temperature</span><span class="p">]</span>
+    <span class="n">props</span> <span class="o">=</span> <span class="n">chem</span><span class="o">.</span><span class="n">heat_capacity</span><span class="o">.</span><span class="n">TRC_gas_data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">target</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;CAS&#39;</span><span class="p">]]</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">Tmin</span><span class="p">,</span> <span class="n">Tmax</span><span class="p">,</span> <span class="n">a0</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">a3</span><span class="p">,</span> <span class="n">a4</span><span class="p">,</span> <span class="n">a5</span><span class="p">,</span> <span class="n">a6</span><span class="p">,</span> <span class="n">a7</span><span class="p">,</span> <span class="n">I</span><span class="p">,</span> <span class="n">J</span><span class="p">,</span> <span class="n">Hfg</span> <span class="o">=</span> <span class="n">props</span>
+    <span class="n">Cp</span> <span class="o">=</span> <span class="n">numba_vectorized</span><span class="o">.</span><span class="n">TRCCp</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">a0</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">a3</span><span class="p">,</span> <span class="n">a4</span><span class="p">,</span> <span class="n">a5</span><span class="p">,</span> <span class="n">a6</span><span class="p">,</span> <span class="n">a7</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Cp</span>
+</pre></div>
+
+              </div>
+              
+              
+          </main>
+          
+
+      </div>
+    </div>
+  
+  <script src="../../../../_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
+<footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2021, PMEAL.<br>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.3.1.<br>
+</p>
+    </div>
+    
+  </div>
+</footer>
+  </body>
+</html>

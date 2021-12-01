@@ -1,0 +1,8 @@
+:orphan:
+
+props
+==============================================
+
+.. currentmodule:: openpnm.phases.mixtures.species.gases
+
+.. automethod:: H2.props

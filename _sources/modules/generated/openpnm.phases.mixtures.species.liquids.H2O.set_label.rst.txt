@@ -1,0 +1,8 @@
+:orphan:
+
+set_label
+=====================================================
+
+.. currentmodule:: openpnm.phases.mixtures.species.liquids
+
+.. automethod:: H2O.set_label

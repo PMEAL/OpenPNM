@@ -1,8 +1,0 @@
-:orphan:
-
-with_indent
-================================================================
-
-.. currentmodule:: openpnm.models.phases.thermal_conductivity
-
-.. automethod:: Docorator.with_indent

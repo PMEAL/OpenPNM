@@ -1,8 +1,0 @@
-:orphan:
-
-get_docstring
-=====================================================================
-
-.. currentmodule:: openpnm.models.phases.electrical_conductivity
-
-.. automethod:: Docorator.get_docstring

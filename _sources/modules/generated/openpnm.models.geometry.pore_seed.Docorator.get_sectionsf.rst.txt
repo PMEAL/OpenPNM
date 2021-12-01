@@ -1,8 +1,0 @@
-:orphan:
-
-get_sectionsf
-=========================================================
-
-.. currentmodule:: openpnm.models.geometry.pore_seed
-
-.. automethod:: Docorator.get_sectionsf

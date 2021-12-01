@@ -1,8 +1,0 @@
-:orphan:
-
-get_summary
-===========================================================
-
-.. currentmodule:: openpnm.models.phases.surface_tension
-
-.. automethod:: Docorator.get_summary

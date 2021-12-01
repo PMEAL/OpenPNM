@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.phases.mixtures.GenericSpecies.network
+==============================================
+
+.. currentmodule:: openpnm.phases.mixtures
+
+attribute
+
+.. autoproperty:: openpnm.phases.mixtures.GenericSpecies.network
+

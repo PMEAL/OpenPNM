@@ -1,8 +1,0 @@
-:orphan:
-
-__call__
-==========================================================
-
-.. currentmodule:: openpnm.models.geometry.conduit_lengths
-
-.. automethod:: Docorator.__call__

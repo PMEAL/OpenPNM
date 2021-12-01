@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.phases.mixtures.GasByName.settings
+==========================================
+
+.. currentmodule:: openpnm.phases.mixtures
+
+attribute
+
+.. autoproperty:: openpnm.phases.mixtures.GasByName.settings
+

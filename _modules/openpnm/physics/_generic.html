@@ -85,6 +85,12 @@
 </li>
 
 <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../user_guide/index.html">
+  User Guide
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
  <a class="reference internal nav-link" href="../../../modules/index.html">
   Module Reference
  </a>
@@ -193,9 +199,8 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">prefix</span> <span class="o">=</span> <span class="s1">&#39;phys&#39;</span>
 
-<div class="viewcode-block" id="GenericPhysics"><a class="viewcode-back" href="../../../modules/generated/openpnm.physics.GenericPhysics.html#openpnm.physics.GenericPhysics">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">get_sections</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="s1">&#39;GenericPhysics&#39;</span><span class="p">,</span> <span class="n">sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Parameters&#39;</span><span class="p">])</span>
-<span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
-<span class="k">class</span> <span class="nc">GenericPhysics</span><span class="p">(</span><span class="n">ParamMixin</span><span class="p">,</span> <span class="n">Subdomain</span><span class="p">,</span> <span class="n">ModelsMixin</span><span class="p">):</span>
+
+<div class="viewcode-block" id="GenericPhysics"><a class="viewcode-back" href="../../../modules/generated/openpnm.physics.GenericPhysics.html#openpnm.physics.GenericPhysics">[docs]</a><span class="k">class</span> <span class="nc">GenericPhysics</span><span class="p">(</span><span class="n">ParamMixin</span><span class="p">,</span> <span class="n">Subdomain</span><span class="p">,</span> <span class="n">ModelsMixin</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This generic class is meant as a starter for custom Physics objects</span>
 
@@ -204,12 +209,17 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    phase : OpenPNM Phase object</span>
+<span class="sd">    network : GenericNetwork</span>
+<span class="sd">        The network to which this Physics should be attached</span>
+<span class="sd">    phase : GenericPhase</span>
 <span class="sd">        The Phase object to which this Physics applies</span>
-<span class="sd">    geometry : OpenPNM Geometry object</span>
+<span class="sd">    geometry : GenericGeometry</span>
 <span class="sd">        The Geometry object that defines the pores/throats where this Physics</span>
-<span class="sd">        applies</span>
-<span class="sd">    %(Base.parameters)s</span>
+<span class="sd">        should be applied.</span>
+<span class="sd">    name : str, optional</span>
+<span class="sd">        A unique string name to identify the Physics object, typically same as</span>
+<span class="sd">        instance name but can be anything.  If left blank, and name will be</span>
+<span class="sd">        generated that includes the class name and an integer index.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 

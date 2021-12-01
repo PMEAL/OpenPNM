@@ -85,6 +85,12 @@
 </li>
 
 <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../../user_guide/index.html">
+  User Guide
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
  <a class="reference internal nav-link" href="../../../../modules/index.html">
   Module Reference
  </a>
@@ -173,34 +179,45 @@
               <div>
                 
   <h1>Source code for openpnm.models.physics.thermal_conductance</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">openpnm.models.physics._utils</span> <span class="kn">import</span> <span class="n">_poisson_conductance</span>
-<span class="kn">from</span> <span class="nn">openpnm.models</span> <span class="kn">import</span> <span class="n">_doctxt</span>
-
+<span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Pore-scale models for calculating the thermal conductance of conduits.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">openpnm.models.physics._utils</span> <span class="kn">import</span> <span class="n">_poisson_conductance</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;generic_thermal&quot;</span><span class="p">,</span> <span class="s2">&quot;series_resistors&quot;</span><span class="p">]</span>
 
 
-<div class="viewcode-block" id="generic_thermal"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.physics.thermal_conductance.generic_thermal.html#openpnm.models.physics.thermal_conductance.generic_thermal">[docs]</a><span class="nd">@_doctxt</span>
-<span class="k">def</span> <span class="nf">generic_thermal</span><span class="p">(</span><span class="n">target</span><span class="p">,</span>
+<div class="viewcode-block" id="generic_thermal"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.physics.thermal_conductance.generic_thermal.html#openpnm.models.physics.thermal_conductance.generic_thermal">[docs]</a><span class="k">def</span> <span class="nf">generic_thermal</span><span class="p">(</span><span class="n">target</span><span class="p">,</span>
                     <span class="n">pore_conductivity</span><span class="o">=</span><span class="s1">&#39;pore.thermal_conductivity&#39;</span><span class="p">,</span>
                     <span class="n">throat_conductivity</span><span class="o">=</span><span class="s1">&#39;throat.thermal_conductivity&#39;</span><span class="p">,</span>
                     <span class="n">size_factors</span><span class="o">=</span><span class="s1">&#39;throat.diffusive_size_factors&#39;</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Calculate the thermal conductance of conduits in network.</span>
+<span class="sd">    Calculate the thermal conductance of conduits in network, where a</span>
+<span class="sd">    conduit is (1/2 pore - full throat - 1/2 pore). See the notes section.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(target_blurb)s</span>
+<span class="sd">    target : GenericPhysics</span>
+<span class="sd">        The object which this model is associated with. This controls the</span>
+<span class="sd">        length of the calculated array, and also provides access to other</span>
+<span class="sd">        necessary properties.</span>
 <span class="sd">    pore_conductivity : str</span>
-<span class="sd">        %(dict_blurb)s thermal conductivity</span>
+<span class="sd">        Dictionary key of the pore thermal conductivity values</span>
 <span class="sd">    throat_conductivity : str</span>
-<span class="sd">        %(dict_blurb)s throat thermal conductivity</span>
-<span class="sd">    size_factors : str</span>
-<span class="sd">        %(dict_blurb)s conduit diffusive size factors</span>
+<span class="sd">        Dictionary key of the throat thermal conductivity values</span>
+<span class="sd">    size_factors: str</span>
+<span class="sd">        Dictionary key of the conduit diffusive size factors&#39; values.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    %(return_arr)s thermal conductance</span>
+<span class="sd">    g : ndarray</span>
+<span class="sd">        Array containing thermal conductance values for conduits in the</span>
+<span class="sd">        geometry attached to the given physics object.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function requires that all the necessary phase properties already</span>
+<span class="sd">    be calculated.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">_poisson_conductance</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">target</span><span class="p">,</span>
@@ -214,21 +231,32 @@
                      <span class="n">throat_thermal_conductivity</span><span class="o">=</span><span class="s1">&#39;throat.thermal_conductivity&#39;</span><span class="p">,</span>
                      <span class="n">size_factors</span><span class="o">=</span><span class="s1">&#39;throat.diffusive_size_factors&#39;</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Calculate the thermal conductance of conduits in network.</span>
+<span class="sd">    Calculate the thermal conductance of conduits in network, where a</span>
+<span class="sd">    conduit is (1/2 pore - full throat - 1/2 pore). See the notes section.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(target_blurb)s</span>
+<span class="sd">    target : GenericPhysics</span>
+<span class="sd">        The object which this model is associated with. This controls the</span>
+<span class="sd">        length of the calculated array, and also provides access to other</span>
+<span class="sd">        necessary properties.</span>
 <span class="sd">    pore_conductivity : str</span>
-<span class="sd">        %(dict_blurb)s thermal conductivity</span>
+<span class="sd">        Dictionary key of the pore thermal conductivity values</span>
 <span class="sd">    throat_conductivity : str</span>
-<span class="sd">        %(dict_blurb)s throat thermal conductivity</span>
-<span class="sd">    size_factors : str</span>
-<span class="sd">        %(dict_blurb)s conduit diffusive size factors</span>
+<span class="sd">        Dictionary key of the throat thermal conductivity values</span>
+<span class="sd">    size_factors: str</span>
+<span class="sd">        Dictionary key of the conduit diffusive size factors&#39; values.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    %(return_arr)s thermal conductance</span>
+<span class="sd">    g : ndarray</span>
+<span class="sd">        Array containing thermal conductance values for conduits in the</span>
+<span class="sd">        geometry attached to the given physics object.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function requires that all the necessary phase properties already</span>
+<span class="sd">    be calculated.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">_poisson_conductance</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">target</span><span class="p">,</span>

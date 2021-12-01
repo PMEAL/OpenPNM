@@ -1,0 +1,8 @@
+:orphan:
+
+to_mask
+=================================================
+
+.. currentmodule:: openpnm.phases.mixtures.species.gases
+
+.. automethod:: CO2.to_mask

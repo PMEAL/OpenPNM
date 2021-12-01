@@ -1,8 +1,0 @@
-:orphan:
-
-keep_types_s
-============================================================
-
-.. currentmodule:: openpnm.models.phases.surface_tension
-
-.. automethod:: Docorator.keep_types_s

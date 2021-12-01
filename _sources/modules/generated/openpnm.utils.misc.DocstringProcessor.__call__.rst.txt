@@ -1,0 +1,8 @@
+:orphan:
+
+__call__
+==============================================
+
+.. currentmodule:: openpnm.utils.misc
+
+.. automethod:: DocstringProcessor.__call__

@@ -1,8 +1,0 @@
-:orphan:
-
-get_extended_summary
-=============================================================================
-
-.. currentmodule:: openpnm.models.geometry.hydraulic_size_factors
-
-.. automethod:: Docorator.get_extended_summary

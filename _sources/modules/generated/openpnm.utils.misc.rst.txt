@@ -1,0 +1,62 @@
+:noindex:
+
+.. automodule:: openpnm.utils.misc
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+   
+      catch_module_not_found
+      end_all
+      flat_list
+      ignore_warnings
+      is_symmetric
+      is_valid_propname
+      methods_to_table
+      models_to_table
+      prettify_logger_message
+      remove_prop_deep
+      sanitize_dict
+      start_all
+      tic
+      toc
+      unique_list
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :nosignatures:
+      :toctree:
+
+   
+      Docorator
+      DocstringProcessor
+      GenericSettings
+      HealthDict
+      NestedDict
+      OrderedDict
+      PrintableDict
+      PrintableList
+      SettingsDict
+      SubDict
+   
+   
+
+   
+   
+   
+
+   
+   
+   

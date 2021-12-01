@@ -85,6 +85,12 @@
 </li>
 
 <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../../user_guide/index.html">
+  User Guide
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
  <a class="reference internal nav-link" href="../../../../modules/index.html">
   Module Reference
  </a>
@@ -173,43 +179,42 @@
               <div>
                 
   <h1>Source code for openpnm.models.geometry.pore_surface_area</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">_np</span>
-<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">Docorator</span>
+<span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Pore Surface Area</span>
+<span class="sd">.................</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">_np</span>
 
 
-<span class="n">docstr</span> <span class="o">=</span> <span class="n">Docorator</span><span class="p">()</span>
-
-
-<div class="viewcode-block" id="sphere"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.pore_surface_area.sphere.html#openpnm.models.geometry.pore_surface_area.sphere">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">get_sections</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="s1">&#39;models.geometry.pore_surface_area&#39;</span><span class="p">,</span>
-                     <span class="n">sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Parameters&#39;</span><span class="p">,</span> <span class="s1">&#39;Returns&#39;</span><span class="p">,</span> <span class="s1">&#39;Notes&#39;</span><span class="p">])</span>
-<span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
-<span class="k">def</span> <span class="nf">sphere</span><span class="p">(</span>
+<div class="viewcode-block" id="sphere"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.pore_surface_area.sphere.html#openpnm.models.geometry.pore_surface_area.sphere">[docs]</a><span class="k">def</span> <span class="nf">sphere</span><span class="p">(</span>
     <span class="n">target</span><span class="p">,</span>
     <span class="n">pore_diameter</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">,</span>
     <span class="n">throat_cross_sectional_area</span><span class="o">=</span><span class="s1">&#39;throat.cross_sectional_area&#39;</span>
 <span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Calculates internal surface area of pore bodies assuming they are spheres,</span>
-<span class="sd">    then subtracts the areas of the neighboring throats</span>
+<span class="sd">    Calculates internal surface area of pore bodies assuming they are</span>
+<span class="sd">    spherical then subtracts the area of the neighboring throats in a</span>
+<span class="sd">    crude way, by simply considering the throat cross-sectional area, thus</span>
+<span class="sd">    not accounting for the actual curvature of the intersection.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(models.target.parameters)s</span>
-<span class="sd">    %(models.geometry.pdia)s</span>
+<span class="sd">    target : GenericGeometry</span>
+<span class="sd">        The Geometry object for which these values are being calculated.</span>
+<span class="sd">        This controls the length of the calculated array, and also</span>
+<span class="sd">        provides access to other necessary thermofluid properties.</span>
+<span class="sd">    pore_diameter : str</span>
+<span class="sd">        The dictionary key to the pore diameter array.</span>
 <span class="sd">    throat_cross_sectional_area : str</span>
-<span class="sd">        Name of the dictionary key on ``target`` where the array containing</span>
-<span class="sd">        throat cross sectional area values is stored</span>
+<span class="sd">        The dictionary key to the throat cross sectional area array.</span>
+<span class="sd">        Throat areas are needed since their insection with the pore are</span>
+<span class="sd">        removed from the computation.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    surface_areas : ndarray</span>
-<span class="sd">        Numpy ndarry containing pore surface area values</span>
-
-<span class="sd">    Notes</span>
-<span class="sd">    -----</span>
-<span class="sd">    This function subtracts the area of the neighboring throats in a</span>
-<span class="sd">    crude way, by simply considering the throat cross-sectional area,</span>
-<span class="sd">    thus not accounting for the actual curvature of the intersection.</span>
+<span class="sd">    value : ndarray</span>
+<span class="sd">        Array containing pore surface area values.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">network</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">network</span>
@@ -221,27 +226,34 @@
     <span class="k">return</span> <span class="n">value</span></div>
 
 
-<div class="viewcode-block" id="circle"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.pore_surface_area.circle.html#openpnm.models.geometry.pore_surface_area.circle">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
-<span class="k">def</span> <span class="nf">circle</span><span class="p">(</span>
+<div class="viewcode-block" id="circle"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.pore_surface_area.circle.html#openpnm.models.geometry.pore_surface_area.circle">[docs]</a><span class="k">def</span> <span class="nf">circle</span><span class="p">(</span>
     <span class="n">target</span><span class="p">,</span>
     <span class="n">pore_diameter</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">,</span>
     <span class="n">throat_cross_sectional_area</span><span class="o">=</span><span class="s1">&#39;throat.cross_sectional_area&#39;</span>
 <span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates internal surface area of pore bodies assuming they are</span>
-<span class="sd">    circular then subtracts the area of the neighboring throats.</span>
+<span class="sd">    circular then subtracts the area of the neighboring throats in a</span>
+<span class="sd">    crude way, by simply considering the throat cross-sectional area, thus</span>
+<span class="sd">    not accounting for the actual curvature of the intersection.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(models.geometry.pore_surface_area.parameters)s</span>
+<span class="sd">    target : GenericGeometry</span>
+<span class="sd">        The Geometry object for which these values are being calculated.</span>
+<span class="sd">        This controls the length of the calculated array, and also</span>
+<span class="sd">        provides access to other necessary thermofluid properties.</span>
+<span class="sd">    pore_diameter : str</span>
+<span class="sd">        The dictionary key to the pore diameter array.</span>
+<span class="sd">    throat_cross_sectional_area : str</span>
+<span class="sd">        The dictionary key to the throat cross sectional area array.</span>
+<span class="sd">        Throat areas are needed since their insection with the pore are</span>
+<span class="sd">        removed from the computation.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    %(models.geometry.pore_surface_area.returns)s</span>
-
-<span class="sd">    Notes</span>
-<span class="sd">    -----</span>
-<span class="sd">    %(models.geometry.pore_surface_area.notes)s</span>
+<span class="sd">    value : ndarray</span>
+<span class="sd">        Array containing pore surface area values.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">network</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">network</span>
@@ -264,11 +276,21 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(models.geometry.pore_surface_area.parameters)s</span>
+<span class="sd">    target : GenericGeometry</span>
+<span class="sd">        The Geometry object for which these values are being calculated.</span>
+<span class="sd">        This controls the length of the calculated array, and also</span>
+<span class="sd">        provides access to other necessary thermofluid properties.</span>
+<span class="sd">    pore_diameter : str</span>
+<span class="sd">        The dictionary key to the pore diameter array.</span>
+<span class="sd">    throat_cross_sectional_area : str</span>
+<span class="sd">        The dictionary key to the throat cross sectional area array.</span>
+<span class="sd">        Throat areas are needed since their insection with the pore are</span>
+<span class="sd">        removed from the computation.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    %(models.geometry.pore_surface_area.returns)s</span>
+<span class="sd">    value : ndarray</span>
+<span class="sd">        Array containing pore surface area values.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">network</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">network</span>
@@ -290,11 +312,21 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(models.geometry.pore_surface_area.parameters)s</span>
+<span class="sd">    target : GenericGeometry</span>
+<span class="sd">        The Geometry object for which these values are being calculated.</span>
+<span class="sd">        This controls the length of the calculated array, and also</span>
+<span class="sd">        provides access to other necessary thermofluid properties.</span>
+<span class="sd">    pore_diameter : str</span>
+<span class="sd">        The dictionary key to the pore diameter array.</span>
+<span class="sd">    throat_cross_sectional_area : str</span>
+<span class="sd">        The dictionary key to the throat cross sectional area array.</span>
+<span class="sd">        Throat areas are needed since their insection with the pore are</span>
+<span class="sd">        removed from the computation.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    %(models.geometry.pore_surface_area.returns)s</span>
+<span class="sd">    value : ndarray</span>
+<span class="sd">        Array containing pore surface area values.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">network</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">network</span>

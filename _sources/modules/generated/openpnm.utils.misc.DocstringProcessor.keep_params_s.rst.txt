@@ -1,0 +1,8 @@
+:orphan:
+
+keep_params_s
+===================================================
+
+.. currentmodule:: openpnm.utils.misc
+
+.. automethod:: DocstringProcessor.keep_params_s

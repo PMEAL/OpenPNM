@@ -1,0 +1,8 @@
+:orphan:
+
+popitem
+=======================================
+
+.. currentmodule:: openpnm.utils.misc
+
+.. automethod:: SettingsDict.popitem

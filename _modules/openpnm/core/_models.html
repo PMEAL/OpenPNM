@@ -85,6 +85,12 @@
 </li>
 
 <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../user_guide/index.html">
+  User Guide
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
  <a class="reference internal nav-link" href="../../../modules/index.html">
   Module Reference
  </a>
@@ -184,7 +190,7 @@
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;ModelsDict&#39;</span><span class="p">,</span> <span class="s1">&#39;ModelsMixin&#39;</span><span class="p">]</span>
 
 
-<div class="viewcode-block" id="ModelsDict"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.ModelsDict.html#openpnm.phases.ModelsDict">[docs]</a><span class="k">class</span> <span class="nc">ModelsDict</span><span class="p">(</span><span class="n">PrintableDict</span><span class="p">):</span>
+<div class="viewcode-block" id="ModelsDict"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.ModelsDict.html#openpnm.physics.ModelsDict">[docs]</a><span class="k">class</span> <span class="nc">ModelsDict</span><span class="p">(</span><span class="n">PrintableDict</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This subclassed dictionary is assigned to the ``models`` attribute of</span>
 <span class="sd">    all objects that inherit from the ``ModelsMixin`` class.  Each</span>
@@ -209,7 +215,7 @@
                         <span class="k">return</span> <span class="n">obj</span>
         <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;No parent object found!&quot;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="ModelsDict.dependency_list"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.ModelsDict.dependency_list.html#openpnm.phases.ModelsDict.dependency_list">[docs]</a>    <span class="k">def</span> <span class="nf">dependency_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ModelsDict.dependency_list"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.ModelsDict.dependency_list.html#openpnm.physics.ModelsDict.dependency_list">[docs]</a>    <span class="k">def</span> <span class="nf">dependency_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a list of dependencies in the order with which they should</span>
 <span class="sd">        be called to ensure data is calculated by one model before it&#39;s</span>
@@ -238,7 +244,7 @@
         <span class="n">d</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">dag</span><span class="o">.</span><span class="n">lexicographical_topological_sort</span><span class="p">(</span><span class="n">dtree</span><span class="p">,</span> <span class="nb">sorted</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">d</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ModelsDict.dependency_graph"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.ModelsDict.dependency_graph.html#openpnm.phases.ModelsDict.dependency_graph">[docs]</a>    <span class="k">def</span> <span class="nf">dependency_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">deep</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="ModelsDict.dependency_graph"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.ModelsDict.dependency_graph.html#openpnm.physics.ModelsDict.dependency_graph">[docs]</a>    <span class="k">def</span> <span class="nf">dependency_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">deep</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a NetworkX graph object of the dependencies</span>
 
@@ -315,7 +321,7 @@
 
         <span class="k">return</span> <span class="n">dtree</span></div>
 
-<div class="viewcode-block" id="ModelsDict.dependency_map"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.ModelsDict.dependency_map.html#openpnm.phases.ModelsDict.dependency_map">[docs]</a>    <span class="k">def</span> <span class="nf">dependency_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+<div class="viewcode-block" id="ModelsDict.dependency_map"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.ModelsDict.dependency_map.html#openpnm.physics.ModelsDict.dependency_map">[docs]</a>    <span class="k">def</span> <span class="nf">dependency_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                        <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                        <span class="n">figsize</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                        <span class="n">deep</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -430,7 +436,7 @@
         <span class="k">return</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="ModelsMixin"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.ModelsMixin.html#openpnm.phases.ModelsMixin">[docs]</a><span class="k">class</span> <span class="nc">ModelsMixin</span><span class="p">:</span>
+<div class="viewcode-block" id="ModelsMixin"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.ModelsMixin.html#openpnm.physics.ModelsMixin">[docs]</a><span class="k">class</span> <span class="nc">ModelsMixin</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This class is meant to be combined by the Base class in multiple</span>
 <span class="sd">    inheritence. This approach is used since Network and Algorithm do not</span>
@@ -439,7 +445,7 @@
 <span class="sd">    while the model functionality can be added only where needed.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="ModelsMixin.add_model"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.ModelsMixin.add_model.html#openpnm.phases.ModelsMixin.add_model">[docs]</a>    <span class="k">def</span> <span class="nf">add_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">propname</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">regen_mode</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="ModelsMixin.add_model"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.ModelsMixin.add_model.html#openpnm.physics.ModelsMixin.add_model">[docs]</a>    <span class="k">def</span> <span class="nf">add_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">propname</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">regen_mode</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Adds a new model to the models dictionary.</span>
 
@@ -491,7 +497,7 @@
         <span class="k">if</span> <span class="n">regen_mode</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;deferred&#39;</span><span class="p">,</span> <span class="s1">&#39;explicit&#39;</span><span class="p">]:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_regen</span><span class="p">(</span><span class="n">propname</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ModelsMixin.regenerate_models"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.ModelsMixin.regenerate_models.html#openpnm.phases.ModelsMixin.regenerate_models">[docs]</a>    <span class="k">def</span> <span class="nf">regenerate_models</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">propnames</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="p">[],</span> <span class="n">deep</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="ModelsMixin.regenerate_models"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.ModelsMixin.regenerate_models.html#openpnm.physics.ModelsMixin.regenerate_models">[docs]</a>    <span class="k">def</span> <span class="nf">regenerate_models</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">propnames</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="p">[],</span> <span class="n">deep</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Re-runs the specified model or models.</span>
 
@@ -574,7 +580,7 @@
                 <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">prettify_logger_message</span><span class="p">(</span><span class="n">msg</span><span class="p">))</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">models</span><span class="p">[</span><span class="n">prop</span><span class="p">][</span><span class="s1">&#39;regen_mode&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;deferred&#39;</span>
 
-<div class="viewcode-block" id="ModelsMixin.remove_model"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.ModelsMixin.remove_model.html#openpnm.phases.ModelsMixin.remove_model">[docs]</a>    <span class="k">def</span> <span class="nf">remove_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">propname</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">,</span> <span class="s1">&#39;data&#39;</span><span class="p">]):</span>
+<div class="viewcode-block" id="ModelsMixin.remove_model"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.ModelsMixin.remove_model.html#openpnm.physics.ModelsMixin.remove_model">[docs]</a>    <span class="k">def</span> <span class="nf">remove_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">propname</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">,</span> <span class="s1">&#39;data&#39;</span><span class="p">]):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Removes model and data from object.</span>
 

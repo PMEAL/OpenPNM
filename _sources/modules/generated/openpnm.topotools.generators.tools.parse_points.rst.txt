@@ -1,0 +1,6 @@
+parse\_points
+=============
+
+.. currentmodule:: openpnm.topotools.generators.tools
+
+.. autofunction:: parse_points

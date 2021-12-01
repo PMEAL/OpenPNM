@@ -1,0 +1,74 @@
+LiquidMixture
+=====================================
+
+.. currentmodule:: openpnm.phases.mixtures
+
+.. autoclass:: LiquidMixture
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            LiquidMixture.add_model
+            LiquidMixture.check_mixture_health
+            LiquidMixture.clear
+            LiquidMixture.copy
+            LiquidMixture.filter_by_label
+            LiquidMixture.fromkeys
+            LiquidMixture.get
+            LiquidMixture.get_conduit_data
+            LiquidMixture.interleave_data
+            LiquidMixture.interpolate_data
+            LiquidMixture.items
+            LiquidMixture.keys
+            LiquidMixture.labels
+            LiquidMixture.num_pores
+            LiquidMixture.num_throats
+            LiquidMixture.params
+            LiquidMixture.pop
+            LiquidMixture.popitem
+            LiquidMixture.pores
+            LiquidMixture.props
+            LiquidMixture.regenerate_models
+            LiquidMixture.remove_model
+            LiquidMixture.set_component
+            LiquidMixture.set_concentration
+            LiquidMixture.set_label
+            LiquidMixture.set_mole_fraction
+            LiquidMixture.setdefault
+            LiquidMixture.show_hist
+            LiquidMixture.throats
+            LiquidMixture.to_indices
+            LiquidMixture.to_mask
+            LiquidMixture.update
+            LiquidMixture.update_concentrations
+            LiquidMixture.update_mole_fractions
+            LiquidMixture.values
+   
+   
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            LiquidMixture.Np
+            LiquidMixture.Nt
+            LiquidMixture.Ps
+            LiquidMixture.Ts
+            LiquidMixture.components
+            LiquidMixture.models
+            LiquidMixture.name
+            LiquidMixture.network
+            LiquidMixture.phase
+            LiquidMixture.physics
+            LiquidMixture.project
+            LiquidMixture.settings
+   
+   

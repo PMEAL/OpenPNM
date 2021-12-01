@@ -1,8 +1,0 @@
-:orphan:
-
-__call__
-======================================================================
-
-.. currentmodule:: openpnm.models.geometry.throat_cross_sectional_area
-
-.. automethod:: Docorator.__call__

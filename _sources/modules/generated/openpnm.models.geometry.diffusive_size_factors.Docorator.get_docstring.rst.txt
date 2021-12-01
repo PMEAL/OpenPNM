@@ -1,8 +1,0 @@
-:orphan:
-
-get_docstring
-======================================================================
-
-.. currentmodule:: openpnm.models.geometry.diffusive_size_factors
-
-.. automethod:: Docorator.get_docstring

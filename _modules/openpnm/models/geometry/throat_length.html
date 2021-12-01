@@ -85,6 +85,12 @@
 </li>
 
 <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../../user_guide/index.html">
+  User Guide
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
  <a class="reference internal nav-link" href="../../../../modules/index.html">
   Module Reference
  </a>
@@ -173,15 +179,69 @@
               <div>
                 
   <h1>Source code for openpnm.models.geometry.throat_length</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">Docorator</span>
+<span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Throat Length</span>
+<span class="sd">.............</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">_np</span>
+<span class="kn">from</span> <span class="nn">numpy.linalg</span> <span class="kn">import</span> <span class="n">norm</span> <span class="k">as</span> <span class="n">_norm</span>
+<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">logging</span> <span class="k">as</span> <span class="n">_logging</span>
+<span class="n">_logger</span> <span class="o">=</span> <span class="n">_logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
-<span class="n">docstr</span> <span class="o">=</span> <span class="n">Docorator</span><span class="p">()</span>
+<div class="viewcode-block" id="ctc"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.throat_length.ctc.html#openpnm.models.geometry.throat_length.ctc">[docs]</a><span class="k">def</span> <span class="nf">ctc</span><span class="p">(</span><span class="n">target</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates throat length assuming point-like pores, i.e. center-to-center</span>
+<span class="sd">    distance between pores. Also, this model assumes that pores and throat</span>
+<span class="sd">    centroids are colinear.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    target : GenericGeometry</span>
+<span class="sd">        Geometry object which this model is associated with. This controls the</span>
+<span class="sd">        length of the calculated array, and also provides access to other</span>
+<span class="sd">        necessary properties.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    value : ndarray</span>
+<span class="sd">        Array containing throat length values.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">network</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">network</span>
+    <span class="n">throats</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">throats</span><span class="p">(</span><span class="n">target</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+    <span class="n">cn</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">][</span><span class="n">throats</span><span class="p">]</span>
+    <span class="n">C1</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="s1">&#39;pore.coords&#39;</span><span class="p">][</span><span class="n">cn</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]]</span>
+    <span class="n">C2</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="s1">&#39;pore.coords&#39;</span><span class="p">][</span><span class="n">cn</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]]</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="n">_norm</span><span class="p">(</span><span class="n">C1</span> <span class="o">-</span> <span class="n">C2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">value</span></div>
 
 
-<div class="viewcode-block" id="spheres_and_cylinders"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.throat_length.spheres_and_cylinders.html#openpnm.models.geometry.throat_length.spheres_and_cylinders">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">get_sections</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="s1">&#39;models.geometry.throat_length&#39;</span><span class="p">,</span>
-                     <span class="n">sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Parameters&#39;</span><span class="p">,</span> <span class="s1">&#39;Returns&#39;</span><span class="p">])</span>
-<span class="k">def</span> <span class="nf">spheres_and_cylinders</span><span class="p">(</span>
+<div class="viewcode-block" id="classic"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.throat_length.classic.html#openpnm.models.geometry.throat_length.classic">[docs]</a><span class="k">def</span> <span class="nf">classic</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">pore_diameter</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Finds throat length as the pore-to-pore center distance, less the radii of</span>
+<span class="sd">    each pore.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    target : GenericGeometry</span>
+<span class="sd">        Geometry object which this model is associated with. This controls the</span>
+<span class="sd">        length of the calculated array, and also provides access to other</span>
+<span class="sd">        necessary properties.</span>
+<span class="sd">    pore_diameter : str</span>
+<span class="sd">        Dictionary key of the pore diameter values</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">network</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">network</span>
+    <span class="n">throats</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">throats</span><span class="p">(</span><span class="n">target</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+    <span class="n">cn</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">][</span><span class="n">throats</span><span class="p">]</span>
+    <span class="n">ctc_dist</span> <span class="o">=</span> <span class="n">ctc</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="n">ctc_dist</span> <span class="o">-</span> <span class="n">network</span><span class="p">[</span><span class="n">pore_diameter</span><span class="p">][</span><span class="n">cn</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+    <span class="k">return</span> <span class="n">value</span></div>
+
+
+<div class="viewcode-block" id="spheres_and_cylinders"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.throat_length.spheres_and_cylinders.html#openpnm.models.geometry.throat_length.spheres_and_cylinders">[docs]</a><span class="k">def</span> <span class="nf">spheres_and_cylinders</span><span class="p">(</span>
     <span class="n">target</span><span class="p">,</span>
     <span class="n">pore_diameter</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">,</span>
     <span class="n">throat_diameter</span><span class="o">=</span><span class="s1">&#39;throat.diameter&#39;</span>
@@ -192,21 +252,19 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : OpenPNM Base object</span>
-<span class="sd">        Object with which this model is associated. This controls</span>
-<span class="sd">        the length of the calculated array, and also provides access to</span>
-<span class="sd">        other necessary properties.</span>
+<span class="sd">    target : GenericGeometry</span>
+<span class="sd">        Geometry object which this model is associated with. This controls the</span>
+<span class="sd">        length of the calculated array, and also provides access to other</span>
+<span class="sd">        necessary properties.</span>
 <span class="sd">    pore_diameter : str</span>
-<span class="sd">        Name of the dictionary key on ``target`` where the array containing</span>
-<span class="sd">        pore diameter values is stored</span>
+<span class="sd">        Dictionary key of the pore diameter values.</span>
 <span class="sd">    throat_diameter : str</span>
-<span class="sd">        Name of the dictionary key on ``target`` where the array containing</span>
-<span class="sd">        throat diameter values is stored</span>
+<span class="sd">        Dictionary key of the throat diameter values.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    lengths : ndarray</span>
-<span class="sd">        A numpy ndarray containing throat length values</span>
+<span class="sd">    ndarray</span>
+<span class="sd">        Array containing throat length values.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span> <span class="nn">openpnm.models.geometry</span> <span class="kn">import</span> <span class="n">conduit_lengths</span>
@@ -227,11 +285,19 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(models.geometry.throat_length.parameters)</span>
+<span class="sd">    target : GenericGeometry</span>
+<span class="sd">        Geometry object which this model is associated with. This controls the</span>
+<span class="sd">        length of the calculated array, and also provides access to other</span>
+<span class="sd">        necessary properties.</span>
+<span class="sd">    pore_diameter : str</span>
+<span class="sd">        Dictionary key of the pore diameter values.</span>
+<span class="sd">    throat_diameter : str</span>
+<span class="sd">        Dictionary key of the throat diameter values.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    %(models.geometry.throat_length.returns)</span>
+<span class="sd">    ndarray</span>
+<span class="sd">        Array containing throat length values.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span> <span class="nn">openpnm.models.geometry</span> <span class="kn">import</span> <span class="n">conduit_lengths</span>
@@ -252,11 +318,19 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(models.geometry.throat_length.parameters)</span>
+<span class="sd">    target : GenericGeometry</span>
+<span class="sd">        Geometry object which this model is associated with. This controls the</span>
+<span class="sd">        length of the calculated array, and also provides access to other</span>
+<span class="sd">        necessary properties.</span>
+<span class="sd">    pore_diameter : str</span>
+<span class="sd">        Dictionary key of the pore diameter values.</span>
+<span class="sd">    throat_diameter : str</span>
+<span class="sd">        Dictionary key of the throat diameter values.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    %(models.geometry.throat_length.returns</span>
+<span class="sd">    ndarray</span>
+<span class="sd">        Array containing throat length values.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span> <span class="nn">openpnm.models.geometry</span> <span class="kn">import</span> <span class="n">conduit_lengths</span>
@@ -277,11 +351,19 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(models.geometry.throat_length.parameters)</span>
+<span class="sd">    target : GenericGeometry</span>
+<span class="sd">        Geometry object which this model is associated with. This controls the</span>
+<span class="sd">        length of the calculated array, and also provides access to other</span>
+<span class="sd">        necessary properties.</span>
+<span class="sd">    pore_diameter : str</span>
+<span class="sd">        Dictionary key of the pore diameter values.</span>
+<span class="sd">    throat_diameter : str</span>
+<span class="sd">        Dictionary key of the throat diameter values.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    %(models.geometry.throat_length.returns</span>
+<span class="sd">    ndarray</span>
+<span class="sd">        Array containing throat length values.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span> <span class="nn">openpnm.models.geometry</span> <span class="kn">import</span> <span class="n">conduit_lengths</span>
@@ -302,11 +384,19 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(models.geometry.throat_length.parameters)</span>
+<span class="sd">    target : GenericGeometry</span>
+<span class="sd">        Geometry object which this model is associated with. This controls the</span>
+<span class="sd">        length of the calculated array, and also provides access to other</span>
+<span class="sd">        necessary properties.</span>
+<span class="sd">    pore_diameter : str</span>
+<span class="sd">        Dictionary key of the pore diameter values.</span>
+<span class="sd">    throat_diameter : str</span>
+<span class="sd">        Dictionary key of the throat diameter values.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    %(models.geometry.throat_length.returns</span>
+<span class="sd">    ndarray</span>
+<span class="sd">        Array containing throat length values.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span> <span class="nn">openpnm.models.geometry</span> <span class="kn">import</span> <span class="n">conduit_lengths</span>
@@ -327,11 +417,19 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(models.geometry.throat_length.parameters)</span>
+<span class="sd">    target : GenericGeometry</span>
+<span class="sd">        Geometry object which this model is associated with. This controls the</span>
+<span class="sd">        length of the calculated array, and also provides access to other</span>
+<span class="sd">        necessary properties.</span>
+<span class="sd">    pore_diameter : str</span>
+<span class="sd">        Dictionary key of the pore diameter values.</span>
+<span class="sd">    throat_diameter : str</span>
+<span class="sd">        Dictionary key of the throat diameter values.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    %(models.geometry.throat_length.returns</span>
+<span class="sd">    ndarray</span>
+<span class="sd">        Array containing throat length values.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span> <span class="nn">openpnm.models.geometry</span> <span class="kn">import</span> <span class="n">conduit_lengths</span>
@@ -352,11 +450,19 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(models.geometry.throat_length.parameters)</span>
+<span class="sd">    target : GenericGeometry</span>
+<span class="sd">        Geometry object which this model is associated with. This controls the</span>
+<span class="sd">        length of the calculated array, and also provides access to other</span>
+<span class="sd">        necessary properties.</span>
+<span class="sd">    pore_diameter : str</span>
+<span class="sd">        Dictionary key of the pore diameter values.</span>
+<span class="sd">    throat_diameter : str</span>
+<span class="sd">        Dictionary key of the throat diameter values.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    %(models.geometry.throat_length.returns</span>
+<span class="sd">    ndarray</span>
+<span class="sd">        Array containing throat length values.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span> <span class="nn">openpnm.models.geometry</span> <span class="kn">import</span> <span class="n">conduit_lengths</span>

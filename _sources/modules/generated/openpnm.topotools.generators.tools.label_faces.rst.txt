@@ -1,0 +1,6 @@
+label\_faces
+============
+
+.. currentmodule:: openpnm.topotools.generators.tools
+
+.. autofunction:: label_faces

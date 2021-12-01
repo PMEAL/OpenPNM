@@ -1,0 +1,8 @@
+:orphan:
+
+props
+=================================================
+
+.. currentmodule:: openpnm.utils.petsc
+
+.. automethod:: PETScSparseLinearSolver.props

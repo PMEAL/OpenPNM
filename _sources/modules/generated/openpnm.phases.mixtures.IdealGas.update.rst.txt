@@ -1,0 +1,8 @@
+:orphan:
+
+update
+=======================================
+
+.. currentmodule:: openpnm.phases.mixtures
+
+.. automethod:: IdealGas.update

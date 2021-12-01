@@ -1,0 +1,8 @@
+:orphan:
+
+values
+===============================================
+
+.. currentmodule:: openpnm.phases.mixtures.species.gases
+
+.. automethod:: N2.values

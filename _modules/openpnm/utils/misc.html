@@ -85,6 +85,12 @@
 </li>
 
 <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../user_guide/index.html">
+  User Guide
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
  <a class="reference internal nav-link" href="../../../modules/index.html">
   Module Reference
  </a>
@@ -190,7 +196,7 @@
 
 <span class="n">start_all</span><span class="p">()</span>
 
-<div class="viewcode-block" id="Docorator"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.Docorator.html#openpnm.utils.Docorator">[docs]</a><span class="k">class</span> <span class="nc">Docorator</span><span class="p">(</span><span class="n">DocstringProcessor</span><span class="p">):</span>
+<div class="viewcode-block" id="Docorator"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.misc.Docorator.html#openpnm.utils.misc.Docorator">[docs]</a><span class="k">class</span> <span class="nc">Docorator</span><span class="p">(</span><span class="n">DocstringProcessor</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Brief explanation of &#39;Docorator&#39;&quot;&quot;&quot;</span>
 
     <span class="n">__instance__</span> <span class="o">=</span> <span class="kc">None</span>
@@ -214,7 +220,7 @@
         <span class="k">return</span> <span class="n">Docorator</span><span class="o">.</span><span class="n">__instance__</span></div>
 
 
-<div class="viewcode-block" id="PrintableList"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.PrintableList.html#openpnm.utils.PrintableList">[docs]</a><span class="k">class</span> <span class="nc">PrintableList</span><span class="p">(</span><span class="nb">list</span><span class="p">):</span>
+<div class="viewcode-block" id="PrintableList"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.misc.PrintableList.html#openpnm.utils.misc.PrintableList">[docs]</a><span class="k">class</span> <span class="nc">PrintableList</span><span class="p">(</span><span class="nb">list</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Simple subclass of ``list`` that has nice printing. Only works flat lists.</span>
 
@@ -247,7 +253,7 @@
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="PrintableDict"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.PrintableDict.html#openpnm.utils.PrintableDict">[docs]</a><span class="k">class</span> <span class="nc">PrintableDict</span><span class="p">(</span><span class="n">OrderedDict</span><span class="p">):</span>
+<div class="viewcode-block" id="PrintableDict"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.misc.PrintableDict.html#openpnm.utils.misc.PrintableDict">[docs]</a><span class="k">class</span> <span class="nc">PrintableDict</span><span class="p">(</span><span class="n">OrderedDict</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Simple subclass of ``dict`` that has nicer printing.</span>
 
@@ -293,7 +299,7 @@
         <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="SettingsDict"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.SettingsDict.html#openpnm.utils.SettingsDict">[docs]</a><span class="k">class</span> <span class="nc">SettingsDict</span><span class="p">(</span><span class="n">PrintableDict</span><span class="p">):</span>
+<div class="viewcode-block" id="SettingsDict"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.misc.SettingsDict.html#openpnm.utils.misc.SettingsDict">[docs]</a><span class="k">class</span> <span class="nc">SettingsDict</span><span class="p">(</span><span class="n">PrintableDict</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Overloads __missing__ method to return None instead of KeyError.</span>
 
@@ -338,7 +344,7 @@
             <span class="bp">self</span><span class="p">[</span><span class="n">item</span><span class="p">]</span> <span class="o">=</span> <span class="n">dc</span><span class="p">[</span><span class="n">item</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="GenericSettings"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.GenericSettings.html#openpnm.utils.GenericSettings">[docs]</a><span class="k">class</span> <span class="nc">GenericSettings</span><span class="p">:</span>
+<div class="viewcode-block" id="GenericSettings"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.misc.GenericSettings.html#openpnm.utils.misc.GenericSettings">[docs]</a><span class="k">class</span> <span class="nc">GenericSettings</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Brief explanation of &#39;GenericSettings&#39;&quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -347,7 +353,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">item</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="SubDict"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.SubDict.html#openpnm.utils.SubDict">[docs]</a><span class="k">class</span> <span class="nc">SubDict</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
+<div class="viewcode-block" id="SubDict"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.misc.SubDict.html#openpnm.utils.misc.SubDict">[docs]</a><span class="k">class</span> <span class="nc">SubDict</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Brief explanation of &#39;SubDict&#39;&quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
@@ -356,7 +362,7 @@
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__getitem__</span><span class="p">(</span><span class="n">key</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="NestedDict"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.NestedDict.html#openpnm.utils.NestedDict">[docs]</a><span class="k">class</span> <span class="nc">NestedDict</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
+<div class="viewcode-block" id="NestedDict"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.misc.NestedDict.html#openpnm.utils.misc.NestedDict">[docs]</a><span class="k">class</span> <span class="nc">NestedDict</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Brief explanation of &#39;NestedDict&#39;&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="p">{},</span> <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">):</span>
@@ -378,11 +384,11 @@
         <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">NestedDict</span><span class="p">(</span><span class="n">delimiter</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">delimiter</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
 
-<div class="viewcode-block" id="NestedDict.unravel"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.NestedDict.unravel.html#openpnm.utils.NestedDict.unravel">[docs]</a>    <span class="k">def</span> <span class="nf">unravel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="NestedDict.unravel"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.misc.NestedDict.unravel.html#openpnm.utils.misc.NestedDict.unravel">[docs]</a>    <span class="k">def</span> <span class="nf">unravel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="bp">self</span><span class="p">[</span><span class="n">item</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">item</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="NestedDict.to_dict"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.NestedDict.to_dict.html#openpnm.utils.NestedDict.to_dict">[docs]</a>    <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dct</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="NestedDict.to_dict"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.misc.NestedDict.to_dict.html#openpnm.utils.misc.NestedDict.to_dict">[docs]</a>    <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dct</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">dct</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">dct</span> <span class="o">=</span> <span class="bp">self</span>
         <span class="n">plain_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
@@ -394,7 +400,7 @@
                 <span class="n">plain_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
         <span class="k">return</span> <span class="n">plain_dict</span></div>
 
-<div class="viewcode-block" id="NestedDict.keys"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.NestedDict.keys.html#openpnm.utils.NestedDict.keys">[docs]</a>    <span class="k">def</span> <span class="nf">keys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dicts</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="NestedDict.keys"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.misc.NestedDict.keys.html#openpnm.utils.misc.NestedDict.keys">[docs]</a>    <span class="k">def</span> <span class="nf">keys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dicts</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="n">k</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
         <span class="n">new_keys</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">k</span><span class="p">:</span>
@@ -420,7 +426,7 @@
         <span class="k">return</span> <span class="n">p</span></div>
 
 
-<div class="viewcode-block" id="HealthDict"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.HealthDict.html#openpnm.utils.HealthDict">[docs]</a><span class="k">class</span> <span class="nc">HealthDict</span><span class="p">(</span><span class="n">PrintableDict</span><span class="p">):</span>
+<div class="viewcode-block" id="HealthDict"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.misc.HealthDict.html#openpnm.utils.misc.HealthDict">[docs]</a><span class="k">class</span> <span class="nc">HealthDict</span><span class="p">(</span><span class="n">PrintableDict</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This class adds a &#39;health&#39; check to a standard dictionary.</span>
 
@@ -521,7 +527,7 @@
     <span class="k">return</span> <span class="sa">u</span><span class="s2">&quot;</span><span class="si">%.*g</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">precision</span><span class="p">,</span> <span class="n">timespan</span> <span class="o">*</span> <span class="n">scaling</span><span class="p">[</span><span class="n">order</span><span class="p">],</span> <span class="n">units</span><span class="p">[</span><span class="n">order</span><span class="p">])</span>
 
 
-<div class="viewcode-block" id="tic"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.tic.html#openpnm.utils.tic">[docs]</a><span class="k">def</span> <span class="nf">tic</span><span class="p">():</span>
+<div class="viewcode-block" id="tic"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.tic.html#openpnm.utils.misc.tic">[docs]</a><span class="k">def</span> <span class="nf">tic</span><span class="p">():</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Homemade version of matlab tic and toc function, tic starts or resets</span>
 <span class="sd">    the clock, toc reports the time since the last call of tic.</span>
@@ -535,7 +541,7 @@
     <span class="n">_startTime_for_tictoc</span> <span class="o">=</span> <span class="n">_time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="toc"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.toc.html#openpnm.utils.toc">[docs]</a><span class="k">def</span> <span class="nf">toc</span><span class="p">(</span><span class="n">quiet</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="toc"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.toc.html#openpnm.utils.misc.toc">[docs]</a><span class="k">def</span> <span class="nf">toc</span><span class="p">(</span><span class="n">quiet</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Homemade version of matlab tic and toc function, tic starts or resets</span>
 <span class="sd">    the clock, toc reports the time since the last call of tic.</span>
@@ -559,7 +565,7 @@
     <span class="k">return</span> <span class="n">t</span></div>
 
 
-<div class="viewcode-block" id="unique_list"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.unique_list.html#openpnm.utils.unique_list">[docs]</a><span class="k">def</span> <span class="nf">unique_list</span><span class="p">(</span><span class="n">input_list</span><span class="p">):</span>
+<div class="viewcode-block" id="unique_list"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.unique_list.html#openpnm.utils.misc.unique_list">[docs]</a><span class="k">def</span> <span class="nf">unique_list</span><span class="p">(</span><span class="n">input_list</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    For a given list (of points) remove any duplicates</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -583,7 +589,7 @@
     <span class="k">return</span> <span class="n">output_list</span></div>
 
 
-<div class="viewcode-block" id="flat_list"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.flat_list.html#openpnm.utils.flat_list">[docs]</a><span class="k">def</span> <span class="nf">flat_list</span><span class="p">(</span><span class="n">input_list</span><span class="p">):</span>
+<div class="viewcode-block" id="flat_list"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.misc.flat_list.html#openpnm.utils.misc.flat_list">[docs]</a><span class="k">def</span> <span class="nf">flat_list</span><span class="p">(</span><span class="n">input_list</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Given a list of nested lists of arbitrary depth, returns a single</span>
 <span class="sd">    level or &#39;flat&#39; list.</span>
@@ -594,7 +600,7 @@
     <span class="k">return</span> <span class="p">[</span><span class="n">x</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="sanitize_dict"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.sanitize_dict.html#openpnm.utils.sanitize_dict">[docs]</a><span class="k">def</span> <span class="nf">sanitize_dict</span><span class="p">(</span><span class="n">input_dict</span><span class="p">):</span>
+<div class="viewcode-block" id="sanitize_dict"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.sanitize_dict.html#openpnm.utils.misc.sanitize_dict">[docs]</a><span class="k">def</span> <span class="nf">sanitize_dict</span><span class="p">(</span><span class="n">input_dict</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Given a nested dictionary, ensures that all nested dicts are normal</span>
 <span class="sd">    Python dicts.  This is necessary for pickling, or just converting</span>
@@ -610,7 +616,7 @@
     <span class="k">return</span> <span class="n">plain_dict</span></div>
 
 
-<div class="viewcode-block" id="methods_to_table"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.methods_to_table.html#openpnm.utils.methods_to_table">[docs]</a><span class="k">def</span> <span class="nf">methods_to_table</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+<div class="viewcode-block" id="methods_to_table"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.misc.methods_to_table.html#openpnm.utils.misc.methods_to_table">[docs]</a><span class="k">def</span> <span class="nf">methods_to_table</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Brief explanation of &#39;methods_to_table&#39;&quot;&quot;&quot;</span>
     <span class="n">parent</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__mro__</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
     <span class="n">temp</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getmembers</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">predicate</span><span class="o">=</span><span class="n">inspect</span><span class="o">.</span><span class="n">isroutine</span><span class="p">)</span>
@@ -639,7 +645,7 @@
     <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="models_to_table"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.models_to_table.html#openpnm.utils.models_to_table">[docs]</a><span class="k">def</span> <span class="nf">models_to_table</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="models_to_table"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.models_to_table.html#openpnm.utils.misc.models_to_table">[docs]</a><span class="k">def</span> <span class="nf">models_to_table</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Converts a ModelsDict object to a ReST compatible table</span>
 
@@ -686,7 +692,7 @@
     <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="catch_module_not_found"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.catch_module_not_found.html#openpnm.utils.catch_module_not_found">[docs]</a><span class="k">def</span> <span class="nf">catch_module_not_found</span><span class="p">(</span><span class="n">function</span><span class="p">):</span>
+<div class="viewcode-block" id="catch_module_not_found"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.misc.catch_module_not_found.html#openpnm.utils.misc.catch_module_not_found">[docs]</a><span class="k">def</span> <span class="nf">catch_module_not_found</span><span class="p">(</span><span class="n">function</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A decorator that wraps the passed in function and catches</span>
 <span class="sd">    ModuleNotFound exception.</span>
@@ -700,7 +706,7 @@
     <span class="k">return</span> <span class="n">wrapper</span></div>
 
 
-<div class="viewcode-block" id="ignore_warnings"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.ignore_warnings.html#openpnm.utils.ignore_warnings">[docs]</a><span class="k">def</span> <span class="nf">ignore_warnings</span><span class="p">(</span><span class="n">warning</span><span class="o">=</span><span class="ne">RuntimeWarning</span><span class="p">):</span>
+<div class="viewcode-block" id="ignore_warnings"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.misc.ignore_warnings.html#openpnm.utils.misc.ignore_warnings">[docs]</a><span class="k">def</span> <span class="nf">ignore_warnings</span><span class="p">(</span><span class="n">warning</span><span class="o">=</span><span class="ne">RuntimeWarning</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Decorator for catching warnings. Useful in pore-scale models where</span>
 <span class="sd">    nans are inevitable, and numpy gets annoying by throwing lots of</span>
@@ -740,7 +746,7 @@
     <span class="k">return</span> <span class="n">_ignore_warning</span></div>
 
 
-<div class="viewcode-block" id="is_symmetric"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.is_symmetric.html#openpnm.utils.is_symmetric">[docs]</a><span class="k">def</span> <span class="nf">is_symmetric</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">):</span>
+<div class="viewcode-block" id="is_symmetric"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.misc.is_symmetric.html#openpnm.utils.misc.is_symmetric">[docs]</a><span class="k">def</span> <span class="nf">is_symmetric</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Is ``a`` a symmetric matrix?</span>
 
@@ -772,7 +778,7 @@
     <span class="k">return</span> <span class="n">issym</span></div>
 
 
-<div class="viewcode-block" id="is_valid_propname"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.is_valid_propname.html#openpnm.utils.is_valid_propname">[docs]</a><span class="k">def</span> <span class="nf">is_valid_propname</span><span class="p">(</span><span class="n">propname</span><span class="p">):</span>
+<div class="viewcode-block" id="is_valid_propname"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.misc.is_valid_propname.html#openpnm.utils.misc.is_valid_propname">[docs]</a><span class="k">def</span> <span class="nf">is_valid_propname</span><span class="p">(</span><span class="n">propname</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Checks if ``propname`` is a valid OpenPNM propname, i.e. starts with</span>
 <span class="sd">    &#39;pore.&#39; or &#39;throat.&#39;</span>
@@ -801,7 +807,7 @@
     <span class="k">return</span> <span class="kc">True</span></div>
 
 
-<div class="viewcode-block" id="prettify_logger_message"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.prettify_logger_message.html#openpnm.utils.prettify_logger_message">[docs]</a><span class="k">def</span> <span class="nf">prettify_logger_message</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span>
+<div class="viewcode-block" id="prettify_logger_message"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.prettify_logger_message.html#openpnm.utils.misc.prettify_logger_message">[docs]</a><span class="k">def</span> <span class="nf">prettify_logger_message</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Prettifies logger messages by breaking them up into multi lines&quot;&quot;&quot;</span>
     <span class="kn">from</span> <span class="nn">textwrap</span> <span class="kn">import</span> <span class="n">wrap</span>
     <span class="n">linewidth</span> <span class="o">=</span> <span class="mi">75</span> <span class="o">-</span> <span class="mi">13</span>
@@ -810,7 +816,7 @@
     <span class="k">return</span> <span class="n">indent</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">temp</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="remove_prop_deep"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.remove_prop_deep.html#openpnm.utils.remove_prop_deep">[docs]</a><span class="k">def</span> <span class="nf">remove_prop_deep</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">propname</span><span class="p">):</span>
+<div class="viewcode-block" id="remove_prop_deep"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.remove_prop_deep.html#openpnm.utils.misc.remove_prop_deep">[docs]</a><span class="k">def</span> <span class="nf">remove_prop_deep</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">propname</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Hierarchically deletes the given propname and its children&quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
         <span class="n">obj</span><span class="o">.</span><span class="n">_parse_element</span><span class="p">(</span><span class="n">propname</span><span class="p">)</span>

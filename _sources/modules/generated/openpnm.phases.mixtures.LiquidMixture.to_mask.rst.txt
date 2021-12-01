@@ -1,0 +1,8 @@
+:orphan:
+
+to_mask
+=============================================
+
+.. currentmodule:: openpnm.phases.mixtures
+
+.. automethod:: LiquidMixture.to_mask

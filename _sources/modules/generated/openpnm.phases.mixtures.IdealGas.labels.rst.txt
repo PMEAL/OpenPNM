@@ -1,0 +1,8 @@
+:orphan:
+
+labels
+=======================================
+
+.. currentmodule:: openpnm.phases.mixtures
+
+.. automethod:: IdealGas.labels

@@ -1,8 +1,0 @@
-:orphan:
-
-dedent
-===========================================================
-
-.. currentmodule:: openpnm.models.phases.thermal_conductivity
-
-.. automethod:: Docorator.dedent

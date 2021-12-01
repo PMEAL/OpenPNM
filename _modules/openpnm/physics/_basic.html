@@ -85,6 +85,12 @@
 </li>
 
 <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../user_guide/index.html">
+  User Guide
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
  <a class="reference internal nav-link" href="../../../modules/index.html">
   Module Reference
  </a>
@@ -175,26 +181,49 @@
   <h1>Source code for openpnm.physics._basic</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">openpnm.physics</span> <span class="kn">import</span> <span class="n">GenericPhysics</span>
 <span class="kn">from</span> <span class="nn">openpnm.models</span> <span class="kn">import</span> <span class="n">physics</span> <span class="k">as</span> <span class="n">mods</span>
-<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">Docorator</span>
 
-<span class="n">docstr</span> <span class="o">=</span> <span class="n">Docorator</span><span class="p">()</span>
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Basic&quot;</span><span class="p">]</span>
 
 
-<div class="viewcode-block" id="Basic"><a class="viewcode-back" href="../../../modules/generated/openpnm.physics.Basic.html#openpnm.physics.Basic">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
-<span class="k">class</span> <span class="nc">Basic</span><span class="p">(</span><span class="n">GenericPhysics</span><span class="p">):</span>
+<div class="viewcode-block" id="Basic"><a class="viewcode-back" href="../../../modules/generated/openpnm.physics.Basic.html#openpnm.physics.Basic">[docs]</a><span class="k">class</span> <span class="nc">Basic</span><span class="p">(</span><span class="n">GenericPhysics</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Minimal subclass of GenericPhysics for performing diffusion and/or</span>
 <span class="sd">    flow simulations.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(GenericPhysics.parameters)s</span>
+<span class="sd">    network : GenericNetwork</span>
+<span class="sd">        The network to which this Physics should be attached/</span>
+<span class="sd">    phase : GenericPhase</span>
+<span class="sd">        The Phase object to which this Physics applies.</span>
+<span class="sd">    geometry : GenericGeometry</span>
+<span class="sd">        The Geometry object that defines the pores/throats where this</span>
+<span class="sd">        Physics should be applied.</span>
+<span class="sd">    name : str, optional</span>
+<span class="sd">        A unique string name to identify the Physics object, typically</span>
+<span class="sd">        same as instance name but can be anything.  If left blank, and</span>
+<span class="sd">        name will be generated that include the class name and a random</span>
+<span class="sd">        string.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    GenericPhysics</span>
+<span class="sd">        Basic subclass of GenericPhysics with minimal models attached</span>
+<span class="sd">        required to perform diffusion and/or flow simulations.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">geometry</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1"># Deal with network or project arguments</span>
+        <span class="k">if</span> <span class="n">network</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">project</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">assert</span> <span class="n">network</span> <span class="ow">is</span> <span class="n">project</span><span class="o">.</span><span class="n">network</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">project</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">project</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">project</span><span class="o">=</span><span class="n">project</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="n">phase</span><span class="p">,</span> <span class="n">geometry</span><span class="o">=</span><span class="n">geometry</span><span class="p">,</span>
+                         <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.hydraulic_conductance&#39;</span><span class="p">,</span>
                        <span class="n">model</span><span class="o">=</span><span class="n">mods</span><span class="o">.</span><span class="n">hydraulic_conductance</span><span class="o">.</span><span class="n">generic_hydraulic</span><span class="p">)</span>

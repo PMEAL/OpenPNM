@@ -1,0 +1,68 @@
+GenericSpecies
+======================================
+
+.. currentmodule:: openpnm.phases.mixtures
+
+.. autoclass:: GenericSpecies
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            GenericSpecies.add_model
+            GenericSpecies.clear
+            GenericSpecies.copy
+            GenericSpecies.filter_by_label
+            GenericSpecies.fromkeys
+            GenericSpecies.get
+            GenericSpecies.get_conduit_data
+            GenericSpecies.interleave_data
+            GenericSpecies.interpolate_data
+            GenericSpecies.items
+            GenericSpecies.keys
+            GenericSpecies.labels
+            GenericSpecies.num_pores
+            GenericSpecies.num_throats
+            GenericSpecies.params
+            GenericSpecies.pop
+            GenericSpecies.popitem
+            GenericSpecies.pores
+            GenericSpecies.props
+            GenericSpecies.regenerate_models
+            GenericSpecies.remove_model
+            GenericSpecies.set_label
+            GenericSpecies.setdefault
+            GenericSpecies.show_hist
+            GenericSpecies.throats
+            GenericSpecies.to_indices
+            GenericSpecies.to_mask
+            GenericSpecies.update
+            GenericSpecies.values
+   
+   
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            GenericSpecies.Np
+            GenericSpecies.Nt
+            GenericSpecies.Ps
+            GenericSpecies.Ts
+            GenericSpecies.mixture
+            GenericSpecies.models
+            GenericSpecies.name
+            GenericSpecies.network
+            GenericSpecies.phase
+            GenericSpecies.physics
+            GenericSpecies.project
+            GenericSpecies.settings
+   
+   

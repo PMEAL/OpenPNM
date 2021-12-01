@@ -1,8 +1,0 @@
-:orphan:
-
-keep_params_s
-==========================================================
-
-.. currentmodule:: openpnm.models.phases.permittivity
-
-.. automethod:: Docorator.keep_params_s

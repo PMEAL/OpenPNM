@@ -1,8 +1,0 @@
-:orphan:
-
-get_extended_summary
-=========================================================================
-
-.. currentmodule:: openpnm.models.phases.thermal_conductivity
-
-.. automethod:: Docorator.get_extended_summary

@@ -1,8 +1,0 @@
-:orphan:
-
-save_docstring
-=============================================================
-
-.. currentmodule:: openpnm.models.phases.vapor_pressure
-
-.. automethod:: Docorator.save_docstring

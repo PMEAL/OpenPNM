@@ -1,0 +1,6 @@
+prettify\_logger\_message
+=========================
+
+.. currentmodule:: openpnm.utils.misc
+
+.. autofunction:: prettify_logger_message

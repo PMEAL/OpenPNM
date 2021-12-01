@@ -1,0 +1,34 @@
+SettingsDict
+===============================
+
+.. currentmodule:: openpnm.utils.misc
+
+.. autoclass:: SettingsDict
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            SettingsDict.clear
+            SettingsDict.copy
+            SettingsDict.fromkeys
+            SettingsDict.get
+            SettingsDict.items
+            SettingsDict.keys
+            SettingsDict.move_to_end
+            SettingsDict.pop
+            SettingsDict.popitem
+            SettingsDict.setdefault
+            SettingsDict.update
+            SettingsDict.values
+   
+   
+
+   
+   
+   

@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.phases.mixtures.species.gases.N2.physics
+================================================
+
+.. currentmodule:: openpnm.phases.mixtures.species.gases
+
+attribute
+
+.. autoproperty:: openpnm.phases.mixtures.species.gases.N2.physics
+

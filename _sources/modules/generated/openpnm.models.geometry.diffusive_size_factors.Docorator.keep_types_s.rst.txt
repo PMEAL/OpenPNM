@@ -1,8 +1,0 @@
-:orphan:
-
-keep_types_s
-=====================================================================
-
-.. currentmodule:: openpnm.models.geometry.diffusive_size_factors
-
-.. automethod:: Docorator.keep_types_s

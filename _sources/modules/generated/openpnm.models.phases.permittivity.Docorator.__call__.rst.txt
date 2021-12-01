@@ -1,8 +1,0 @@
-:orphan:
-
-__call__
-=====================================================
-
-.. currentmodule:: openpnm.models.phases.permittivity
-
-.. automethod:: Docorator.__call__

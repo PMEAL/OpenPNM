@@ -1,0 +1,8 @@
+:orphan:
+
+add_model
+================================================
+
+.. currentmodule:: openpnm.phases.mixtures
+
+.. automethod:: GenericMixture.add_model

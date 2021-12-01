@@ -1,0 +1,8 @@
+:orphan:
+
+set_concentration
+========================================================
+
+.. currentmodule:: openpnm.phases.mixtures
+
+.. automethod:: GenericMixture.set_concentration

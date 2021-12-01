@@ -1,8 +1,0 @@
-:orphan:
-
-__call__
-==============================================================
-
-.. currentmodule:: openpnm.models.phases.partition_coefficient
-
-.. automethod:: Docorator.__call__

@@ -1,0 +1,8 @@
+:orphan:
+
+filter_by_label
+======================================================
+
+.. currentmodule:: openpnm.phases.mixtures
+
+.. automethod:: GenericSpecies.filter_by_label

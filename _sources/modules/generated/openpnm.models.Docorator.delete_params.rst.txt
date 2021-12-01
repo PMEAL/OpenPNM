@@ -1,8 +1,0 @@
-:orphan:
-
-delete_params
-======================================
-
-.. currentmodule:: openpnm.models
-
-.. automethod:: Docorator.delete_params

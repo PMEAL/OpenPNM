@@ -1,8 +1,0 @@
-:orphan:
-
-__call__
-======================================================
-
-.. currentmodule:: openpnm.models.phases.molar_density
-
-.. automethod:: Docorator.__call__

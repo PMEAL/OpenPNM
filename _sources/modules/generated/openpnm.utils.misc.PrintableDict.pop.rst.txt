@@ -1,0 +1,8 @@
+:orphan:
+
+pop
+====================================
+
+.. currentmodule:: openpnm.utils.misc
+
+.. automethod:: PrintableDict.pop

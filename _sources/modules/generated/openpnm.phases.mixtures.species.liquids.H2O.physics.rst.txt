@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.phases.mixtures.species.liquids.H2O.physics
+===================================================
+
+.. currentmodule:: openpnm.phases.mixtures.species.liquids
+
+attribute
+
+.. autoproperty:: openpnm.phases.mixtures.species.liquids.H2O.physics
+

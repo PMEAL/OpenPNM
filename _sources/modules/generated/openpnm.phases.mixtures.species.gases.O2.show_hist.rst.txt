@@ -1,0 +1,8 @@
+:orphan:
+
+show_hist
+==================================================
+
+.. currentmodule:: openpnm.phases.mixtures.species.gases
+
+.. automethod:: O2.show_hist

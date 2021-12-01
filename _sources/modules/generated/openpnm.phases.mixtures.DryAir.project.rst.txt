@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.phases.mixtures.DryAir.project
+======================================
+
+.. currentmodule:: openpnm.phases.mixtures
+
+attribute
+
+.. autoproperty:: openpnm.phases.mixtures.DryAir.project
+

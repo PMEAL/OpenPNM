@@ -1,0 +1,8 @@
+:orphan:
+
+remove_model
+====================================================
+
+.. currentmodule:: openpnm.phases.mixtures.species.ions
+
+.. automethod:: Na.remove_model

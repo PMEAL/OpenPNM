@@ -1,8 +1,0 @@
-:orphan:
-
-__call__
-=============================================================
-
-.. currentmodule:: openpnm.models.phases.thermal_conductivity
-
-.. automethod:: Docorator.__call__

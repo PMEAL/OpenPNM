@@ -1,0 +1,8 @@
+:orphan:
+
+update_concentrations
+===========================================================
+
+.. currentmodule:: openpnm.phases.mixtures
+
+.. automethod:: LiquidMixture.update_concentrations

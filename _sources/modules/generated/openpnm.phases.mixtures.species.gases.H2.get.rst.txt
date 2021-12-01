@@ -1,0 +1,8 @@
+:orphan:
+
+get
+============================================
+
+.. currentmodule:: openpnm.phases.mixtures.species.gases
+
+.. automethod:: H2.get

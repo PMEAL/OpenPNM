@@ -1,8 +1,0 @@
-:orphan:
-
-__call__
-====================================================
-
-.. currentmodule:: openpnm.models.geometry.pore_seed
-
-.. automethod:: Docorator.__call__

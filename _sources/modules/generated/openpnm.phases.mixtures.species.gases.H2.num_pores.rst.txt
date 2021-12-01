@@ -1,0 +1,8 @@
+:orphan:
+
+num_pores
+==================================================
+
+.. currentmodule:: openpnm.phases.mixtures.species.gases
+
+.. automethod:: H2.num_pores

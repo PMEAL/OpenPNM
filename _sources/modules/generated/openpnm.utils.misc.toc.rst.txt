@@ -1,0 +1,6 @@
+toc
+===
+
+.. currentmodule:: openpnm.utils.misc
+
+.. autofunction:: toc

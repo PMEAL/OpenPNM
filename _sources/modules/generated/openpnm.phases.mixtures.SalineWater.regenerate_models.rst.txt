@@ -1,0 +1,8 @@
+:orphan:
+
+regenerate_models
+=====================================================
+
+.. currentmodule:: openpnm.phases.mixtures
+
+.. automethod:: SalineWater.regenerate_models

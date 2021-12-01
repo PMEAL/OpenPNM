@@ -1,8 +1,0 @@
-:orphan:
-
-keep_types
-==============================================================
-
-.. currentmodule:: openpnm.models.geometry.pore_surface_area
-
-.. automethod:: Docorator.keep_types

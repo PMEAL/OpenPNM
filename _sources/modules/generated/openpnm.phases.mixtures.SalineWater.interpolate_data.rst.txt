@@ -1,0 +1,8 @@
+:orphan:
+
+interpolate_data
+====================================================
+
+.. currentmodule:: openpnm.phases.mixtures
+
+.. automethod:: SalineWater.interpolate_data

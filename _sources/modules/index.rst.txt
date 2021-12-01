@@ -1,34 +1,40 @@
 .. _modules_index:
 
-.. module:: openpnm
-   :noindex:
-
 ################
 Module Reference
 ################
 
-OpenPNM consists of several key modules. Each module is consisted of
-several classes and each class is consisted of a few methods. Here, you'll
-find a comprehensive documentation of the modules, classes, and finally the
-methods, occasionally with basic embedded examples on how to use them.
+.. automodule:: openpnm
 
-Contents
-########
+   .. autosummary::
+      :toctree: generated
+      :recursive:
 
-.. toctree::
-   :maxdepth: 1
-   :titlesonly:
+      openpnm.utils
+      openpnm.core
+      openpnm.network
+      openpnm.geometry
+      openpnm.phases
+      openpnm.physics
+      openpnm.models
+      openpnm.solvers
+      openpnm.integrators
+      openpnm.algorithms
+      openpnm.topotools
+      openpnm.io
 
-   utils
-   core
-   network
-   geometry
-   phases
-   physics
-   models
-   solvers
-   integrators
-   algorithms
-   topotools
-   generators
-   io
+
+.. COMMENT
+
+   openpnm.utils
+   openpnm.core
+   openpnm.network
+   openpnm.geometry
+   openpnm.phases
+   openpnm.physics
+   openpnm.models
+   openpnm.solvers
+   openpnm.integrators
+   openpnm.algorithms
+   openpnm.topotools
+   openpnm.io

@@ -1,8 +1,0 @@
-:orphan:
-
-keep_params
-===================================================================
-
-.. currentmodule:: openpnm.models.misc.statistical_distributions
-
-.. automethod:: Docorator.keep_params

@@ -1,8 +1,0 @@
-:orphan:
-
-keep_params
-==============================================================
-
-.. currentmodule:: openpnm.models.geometry.throat_perimeter
-
-.. automethod:: Docorator.keep_params

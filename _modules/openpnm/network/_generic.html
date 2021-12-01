@@ -85,6 +85,12 @@
 </li>
 
 <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../user_guide/index.html">
+  User Guide
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
  <a class="reference internal nav-link" href="../../../modules/index.html">
   Module Reference
  </a>
@@ -199,27 +205,18 @@
     <span class="n">prefix</span> <span class="o">=</span> <span class="s1">&#39;net&#39;</span>
 
 
-<div class="viewcode-block" id="GenericNetwork"><a class="viewcode-back" href="../../../modules/generated/openpnm.network.GenericNetwork.html#openpnm.network.GenericNetwork">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">get_sections</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="s1">&#39;GenericNetwork&#39;</span><span class="p">,</span> <span class="n">sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Parameters&#39;</span><span class="p">])</span>
-<span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
-<span class="k">class</span> <span class="nc">GenericNetwork</span><span class="p">(</span><span class="n">ParamMixin</span><span class="p">,</span> <span class="n">Base</span><span class="p">,</span> <span class="n">ModelsMixin</span><span class="p">,</span> <span class="n">LabelMixin</span><span class="p">):</span>
+<span class="n">start_all</span><span class="p">()</span>
+
+<div class="viewcode-block" id="GenericNetwork"><a class="viewcode-back" href="../../../modules/generated/openpnm.network.GenericNetwork.html#openpnm.network.GenericNetwork">[docs]</a><span class="k">class</span> <span class="nc">GenericNetwork</span><span class="p">(</span><span class="n">ParamMixin</span><span class="p">,</span> <span class="n">Base</span><span class="p">,</span> <span class="n">ModelsMixin</span><span class="p">,</span> <span class="n">LabelMixin</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This generic class contains the main functionality used by all</span>
 <span class="sd">    networks.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    settings : dataclass-like or dict, optional</span>
-<span class="sd">        User defined settings for the object to override defaults. Can be a</span>
-<span class="sd">        dataclass-type object with settings stored as attributes or a python</span>
-<span class="sd">        dicionary of key-value pairs. Settings are stored in the ``settings``</span>
-<span class="sd">        attribute of the object.</span>
-<span class="sd">    name : string, optional</span>
-<span class="sd">        A unique name to assign to the object for easier identification.  If</span>
-<span class="sd">        not given one will be generated.</span>
-
-<span class="sd">    coords : array_like (optional)</span>
+<span class="sd">    coords : array_like</span>
 <span class="sd">        An Np-by-3 array of [x, y, z] coordinates for each pore.</span>
-<span class="sd">    conns : array_like (optional)</span>
+<span class="sd">    conns : array_like</span>
 <span class="sd">        An Nt-by-2 array of [head, tail] connections between pores.</span>
 
 <span class="sd">    Examples</span>
@@ -249,7 +246,8 @@
 <span class="sd">    2     : throat.conns</span>
 <span class="sd">    ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――</span>
 
-<span class="sd">    The ``GenericNetwork`` class has several methods for querying the topology.</span>
+<span class="sd">    The GenericNetwork class has several methods for querying the</span>
+<span class="sd">    topology.</span>
 
 <span class="sd">    &gt;&gt;&gt; Ps = pn.find_neighbor_pores(pores=1)</span>
 <span class="sd">    &gt;&gt;&gt; print(Ps)</span>
@@ -281,10 +279,7 @@
             <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">conns</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.coordination_number&#39;</span><span class="p">,</span>
                        <span class="n">model</span><span class="o">=</span><span class="n">mods</span><span class="o">.</span><span class="n">coordination_number</span><span class="p">,</span>
-                       <span class="n">regen_mode</span><span class="o">=</span><span class="s1">&#39;deferred&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.spacing&#39;</span><span class="p">,</span>
-                       <span class="n">model</span><span class="o">=</span><span class="n">mods</span><span class="o">.</span><span class="n">pore_to_pore_distance</span><span class="p">,</span>
-                       <span class="n">regen_mode</span><span class="o">=</span><span class="s1">&#39;deferred&#39;</span><span class="p">)</span>
+                       <span class="n">regen_mode</span><span class="o">=</span><span class="s1">&#39;explicit&#39;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;throat.conns&#39;</span><span class="p">:</span>
@@ -1045,6 +1040,8 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">check_network_health</span><span class="p">()</span></div></div>
+
+<span class="n">end_all</span><span class="p">()</span>
 </pre></div>
 
               </div>

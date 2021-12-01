@@ -1,0 +1,8 @@
+:orphan:
+
+to_mask
+===================================================
+
+.. currentmodule:: openpnm.utils.petsc
+
+.. automethod:: PETScSparseLinearSolver.to_mask

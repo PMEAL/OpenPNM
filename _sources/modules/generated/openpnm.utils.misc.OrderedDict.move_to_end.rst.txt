@@ -1,0 +1,8 @@
+:orphan:
+
+move_to_end
+==========================================
+
+.. currentmodule:: openpnm.utils.misc
+
+.. automethod:: OrderedDict.move_to_end

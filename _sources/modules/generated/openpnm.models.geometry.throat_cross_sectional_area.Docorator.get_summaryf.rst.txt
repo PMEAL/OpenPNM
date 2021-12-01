@@ -1,8 +1,0 @@
-:orphan:
-
-get_summaryf
-==========================================================================
-
-.. currentmodule:: openpnm.models.geometry.throat_cross_sectional_area
-
-.. automethod:: Docorator.get_summaryf

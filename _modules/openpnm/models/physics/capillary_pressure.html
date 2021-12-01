@@ -85,6 +85,12 @@
 </li>
 
 <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../../user_guide/index.html">
+  User Guide
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
  <a class="reference internal nav-link" href="../../../../modules/index.html">
   Module Reference
  </a>
@@ -173,14 +179,15 @@
               <div>
                 
   <h1>Source code for openpnm.models.physics.capillary_pressure</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">_np</span>
-<span class="kn">from</span> <span class="nn">transforms3d</span> <span class="kn">import</span> <span class="n">_gohlketransforms</span> <span class="k">as</span> <span class="n">tr</span>
+<span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Pore-scale models for calculating the capillary pressure in pores/throats.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">_np</span>
 <span class="kn">from</span> <span class="nn">openpnm.models</span> <span class="kn">import</span> <span class="n">physics</span> <span class="k">as</span> <span class="n">pm</span>
-<span class="kn">from</span> <span class="nn">openpnm.models</span> <span class="kn">import</span> <span class="n">_doctxt</span>
-<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">logging</span>
-
-
+<span class="kn">from</span> <span class="nn">transforms3d</span> <span class="kn">import</span> <span class="n">_gohlketransforms</span> <span class="k">as</span> <span class="n">tr</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;washburn&quot;</span><span class="p">,</span>
     <span class="s2">&quot;purcell&quot;</span><span class="p">,</span>
@@ -190,8 +197,41 @@
 <span class="p">]</span>
 
 
-<div class="viewcode-block" id="washburn"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.physics.capillary_pressure.washburn.html#openpnm.models.physics.capillary_pressure.washburn">[docs]</a><span class="nd">@_doctxt</span>
-<span class="k">def</span> <span class="nf">washburn</span><span class="p">(</span><span class="n">target</span><span class="p">,</span>
+<span class="k">def</span> <span class="nf">_get_key_props</span><span class="p">(</span><span class="n">phase</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                   <span class="n">diameter</span><span class="o">=</span><span class="s2">&quot;throat.diameter&quot;</span><span class="p">,</span>
+                   <span class="n">surface_tension</span><span class="o">=</span><span class="s2">&quot;pore.surface_tension&quot;</span><span class="p">,</span>
+                   <span class="n">contact_angle</span><span class="o">=</span><span class="s2">&quot;pore.contact_angle&quot;</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Many of the methods are generic to pores and throats. Some information may</span>
+<span class="sd">    be stored on either the pore or throat and needs to be interpolated.</span>
+<span class="sd">    This is a helper method to return the properties in the correct format.</span>
+
+<span class="sd">    TODO: Check for method to convert throat to pore data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">element</span> <span class="o">=</span> <span class="n">diameter</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">element</span> <span class="o">==</span> <span class="s2">&quot;pore&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">&quot;throat&quot;</span> <span class="ow">in</span> <span class="n">surface_tension</span><span class="p">:</span>
+            <span class="n">sigma</span> <span class="o">=</span> <span class="n">phase</span><span class="o">.</span><span class="n">interpolate_data</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="n">surface_tension</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">sigma</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">surface_tension</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s2">&quot;throat&quot;</span> <span class="ow">in</span> <span class="n">contact_angle</span><span class="p">:</span>
+            <span class="n">theta</span> <span class="o">=</span> <span class="n">phase</span><span class="o">.</span><span class="n">interpolate_data</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="n">contact_angle</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">theta</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">contact_angle</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">element</span> <span class="o">==</span> <span class="s2">&quot;throat&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">&quot;pore&quot;</span> <span class="ow">in</span> <span class="n">surface_tension</span><span class="p">:</span>
+            <span class="n">sigma</span> <span class="o">=</span> <span class="n">phase</span><span class="o">.</span><span class="n">interpolate_data</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="n">surface_tension</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">sigma</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">surface_tension</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s2">&quot;pore&quot;</span> <span class="ow">in</span> <span class="n">contact_angle</span><span class="p">:</span>
+            <span class="n">theta</span> <span class="o">=</span> <span class="n">phase</span><span class="o">.</span><span class="n">interpolate_data</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="n">contact_angle</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">theta</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">contact_angle</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">element</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">theta</span>
+
+
+<div class="viewcode-block" id="washburn"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.physics.capillary_pressure.washburn.html#openpnm.models.physics.capillary_pressure.washburn">[docs]</a><span class="k">def</span> <span class="nf">washburn</span><span class="p">(</span><span class="n">target</span><span class="p">,</span>
              <span class="n">surface_tension</span><span class="o">=</span><span class="s2">&quot;pore.surface_tension&quot;</span><span class="p">,</span>
              <span class="n">contact_angle</span><span class="o">=</span><span class="s2">&quot;pore.contact_angle&quot;</span><span class="p">,</span>
              <span class="n">diameter</span><span class="o">=</span><span class="s2">&quot;throat.diameter&quot;</span><span class="p">):</span>
@@ -201,19 +241,23 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(target_blurb)s</span>
+<span class="sd">    target : GenericPhysics</span>
+<span class="sd">        The object for which these values are being calculated.  This</span>
+<span class="sd">        controls the length of the calculated array, and also provides</span>
+<span class="sd">        access to other necessary thermofluid properties.</span>
 <span class="sd">    surface_tension : str</span>
-<span class="sd">        %(dict_blurb)s surface tension. If a pore property is given, it is</span>
-<span class="sd">        interpolated to a throat list.</span>
+<span class="sd">        The dictionary key containing the surface tension values to be used. If</span>
+<span class="sd">        a pore property is given, it is interpolated to a throat list.</span>
 <span class="sd">    contact_angle : str</span>
-<span class="sd">        %(dict_blurb)s contact angle. If a pore property is given, it is</span>
-<span class="sd">        interpolated to a throat list.</span>
+<span class="sd">        The dictionary key containing the contact angle values to be used. If</span>
+<span class="sd">        a pore property is given, it is interpolated to a throat list.</span>
 <span class="sd">    diameter : str</span>
-<span class="sd">        %(dict_blurb)s throat diameter</span>
+<span class="sd">        The dictionary key containing the throat diameter values to be used.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    %(return_arr)s capillary entry pressure</span>
+<span class="sd">    value : ndarray</span>
+<span class="sd">        Array containing pore/throat capillary entry pressure values.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
@@ -244,8 +288,7 @@
     <span class="k">return</span> <span class="n">value</span></div>
 
 
-<div class="viewcode-block" id="purcell"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.physics.capillary_pressure.purcell.html#openpnm.models.physics.capillary_pressure.purcell">[docs]</a><span class="nd">@_doctxt</span>
-<span class="k">def</span> <span class="nf">purcell</span><span class="p">(</span><span class="n">target</span><span class="p">,</span>
+<div class="viewcode-block" id="purcell"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.physics.capillary_pressure.purcell.html#openpnm.models.physics.capillary_pressure.purcell">[docs]</a><span class="k">def</span> <span class="nf">purcell</span><span class="p">(</span><span class="n">target</span><span class="p">,</span>
             <span class="n">r_toroid</span><span class="p">,</span>
             <span class="n">surface_tension</span><span class="o">=</span><span class="s2">&quot;pore.surface_tension&quot;</span><span class="p">,</span>
             <span class="n">contact_angle</span><span class="o">=</span><span class="s2">&quot;pore.contact_angle&quot;</span><span class="p">,</span>
@@ -256,21 +299,25 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(target_blurb)s</span>
+<span class="sd">    target : GenericPhysics</span>
+<span class="sd">        The object for which these values are being calculated.  This</span>
+<span class="sd">        controls the length of the calculated array, and also provides</span>
+<span class="sd">        access to other necessary thermofluid properties.</span>
 <span class="sd">    r_toroid : float or array_like</span>
 <span class="sd">        The radius of the toroid surrounding the pore</span>
 <span class="sd">    surface_tension : str</span>
-<span class="sd">        %(dict_blurb)s surface tension. If a pore property is given, it is</span>
-<span class="sd">        interpolated to a throat list.</span>
+<span class="sd">        The dictionary key containing the surface tension values to be used.</span>
+<span class="sd">        If a pore property is given, it is interpolated to a throat list.</span>
 <span class="sd">    contact_angle : str</span>
-<span class="sd">        %(dict_blurb)s contact angle. If a pore property is given, it is</span>
-<span class="sd">        interpolated to a throat list.</span>
+<span class="sd">        The dictionary key containing the contact angle values to be used.</span>
+<span class="sd">        If a pore property is given, it is interpolated to a throat list.</span>
 <span class="sd">    diameter : str</span>
-<span class="sd">        %(dict_blurb)s throat diameter</span>
+<span class="sd">        The dictionary key containing the throat diameter values to be used.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    %(return_arr)s capillary entry pressure</span>
+<span class="sd">    value : ndarray</span>
+<span class="sd">        Array containing pore/throat capillary entry pressure values.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
@@ -315,8 +362,7 @@
     <span class="k">return</span> <span class="n">value</span></div>
 
 
-<div class="viewcode-block" id="ransohoff_snap_off"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.physics.capillary_pressure.ransohoff_snap_off.html#openpnm.models.physics.capillary_pressure.ransohoff_snap_off">[docs]</a><span class="nd">@_doctxt</span>
-<span class="k">def</span> <span class="nf">ransohoff_snap_off</span><span class="p">(</span><span class="n">target</span><span class="p">,</span>
+<div class="viewcode-block" id="ransohoff_snap_off"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.physics.capillary_pressure.ransohoff_snap_off.html#openpnm.models.physics.capillary_pressure.ransohoff_snap_off">[docs]</a><span class="k">def</span> <span class="nf">ransohoff_snap_off</span><span class="p">(</span><span class="n">target</span><span class="p">,</span>
                        <span class="n">shape_factor</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
                        <span class="n">wavelength</span><span class="o">=</span><span class="mf">5e-6</span><span class="p">,</span>
                        <span class="n">require_pair</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -333,27 +379,36 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(target_blurb)s</span>
+<span class="sd">    target : GenericPhysics</span>
+<span class="sd">        The object for which these values are being calculated.  This</span>
+<span class="sd">        controls the length of the calculated array, and also provides</span>
+<span class="sd">        access to other necessary thermofluid properties.</span>
 <span class="sd">    shape_factor : float</span>
-<span class="sd">        A constant dependent on the shape of throat cross-section</span>
-<span class="sd">        1.75 - 2.0, see Ref [1]</span>
+<span class="sd">        constant dependent on the shape of throat cross-section</span>
+<span class="sd">        1.75 - 2.0, see Ref</span>
 <span class="sd">    wavelength : float or array like</span>
 <span class="sd">        The transverse interfacial radius of curvature at the neck</span>
 <span class="sd">        (fiber radius in fibrous media)</span>
 <span class="sd">    require_pair : bool</span>
 <span class="sd">        Controls whether snap-off requires a pair of arc meniscii to occur.</span>
 <span class="sd">    surface_tension : str</span>
-<span class="sd">        %(dict_blurb)s surface tension. If a pore property is given, it is</span>
-<span class="sd">        interpolated to a throat list.</span>
+<span class="sd">        The dictionary key containing the surface tension values to be used.</span>
+<span class="sd">        If a pore property is given, it is interpolated to a throat list.</span>
 <span class="sd">    contact_angle : str</span>
-<span class="sd">        %(dict_blurb)s contact angle. If a pore property is given, it is</span>
-<span class="sd">        interpolated to a throat list.</span>
-<span class="sd">    diameter : str</span>
-<span class="sd">        %(dict_blurb)s throat diameter</span>
+<span class="sd">        The dictionary key containing the contact angle values to be used.</span>
+<span class="sd">        If a pore property is given, it is interpolated to a throat list.</span>
+<span class="sd">    throat_diameter : str</span>
+<span class="sd">        The dictionary key containing the throat diameter values to be used.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    %(return_arr)s capillary entry pressure</span>
+<span class="sd">    value : ndarray</span>
+<span class="sd">        Array containing throat capillary snap-off pressure values.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This equation should be used to calculate the snap off capillary pressure</span>
+<span class="sd">    in fribrous media</span>
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
@@ -420,10 +475,9 @@
     <span class="k">return</span> <span class="n">value</span></div>
 
 
-<div class="viewcode-block" id="purcell_bidirectional"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.physics.capillary_pressure.purcell_bidirectional.html#openpnm.models.physics.capillary_pressure.purcell_bidirectional">[docs]</a><span class="nd">@_doctxt</span>
-<span class="k">def</span> <span class="nf">purcell_bidirectional</span><span class="p">(</span><span class="n">target</span><span class="p">,</span>
+<div class="viewcode-block" id="purcell_bidirectional"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.physics.capillary_pressure.purcell_bidirectional.html#openpnm.models.physics.capillary_pressure.purcell_bidirectional">[docs]</a><span class="k">def</span> <span class="nf">purcell_bidirectional</span><span class="p">(</span><span class="n">target</span><span class="p">,</span>
                           <span class="n">r_toroid</span><span class="o">=</span><span class="mf">5e-6</span><span class="p">,</span>
-                          <span class="n">num_points</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+                          <span class="n">num_points</span><span class="o">=</span><span class="mf">1e3</span><span class="p">,</span>
                           <span class="n">surface_tension</span><span class="o">=</span><span class="s2">&quot;pore.surface_tension&quot;</span><span class="p">,</span>
                           <span class="n">contact_angle</span><span class="o">=</span><span class="s2">&quot;pore.contact_angle&quot;</span><span class="p">,</span>
                           <span class="n">throat_diameter</span><span class="o">=</span><span class="s2">&quot;throat.diameter&quot;</span><span class="p">,</span>
@@ -439,26 +493,30 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(target_blurb)s</span>
+<span class="sd">    target : GenericPhysics</span>
+<span class="sd">        The object for which these values are being calculated.  This</span>
+<span class="sd">        controls the length of the calculated array, and also provides</span>
+<span class="sd">        access to other necessary thermofluid properties.</span>
 <span class="sd">    r_toroid : float or array_like</span>
 <span class="sd">        The radius of the toroid surrounding the pore</span>
 <span class="sd">    num_points : float, default 100</span>
 <span class="sd">        The number of divisions to make along the profile length to assess the</span>
 <span class="sd">        meniscus properties in order to find the touch length.</span>
 <span class="sd">    surface_tension : str</span>
-<span class="sd">        %(dict_blurb)s surface tension. If a pore property is given, it is</span>
-<span class="sd">        interpolated to a throat list.</span>
+<span class="sd">        The dictionary key containing the surface tension values to be used.</span>
+<span class="sd">        If a pore property is given, it is interpolated to a throat list.</span>
 <span class="sd">    contact_angle : str</span>
-<span class="sd">        %(dict_blurb)s contact angle. If a pore property is given, it is</span>
-<span class="sd">    interpolated to a throat list.</span>
+<span class="sd">        The dictionary key containing the contact angle values to be used.</span>
+<span class="sd">        If a pore property is given, it is interpolated to a throat list.</span>
 <span class="sd">    throat_diameter : str</span>
-<span class="sd">        %(dict_blurb)s throat diameter</span>
+<span class="sd">        The dictionary key containing the throat diameter values to be used.</span>
 <span class="sd">    pore_diameter : str</span>
-<span class="sd">        %(dict_blurb)s pore diameter</span>
+<span class="sd">        The dictionary key containing the pore diameter values to be used.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    %(return_arr)s capillary entry pressure</span>
+<span class="sd">    value : ndarray</span>
+<span class="sd">        Array containing throat capillary entry pressure values.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">network</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">network</span>
@@ -484,8 +542,7 @@
     <span class="k">return</span> <span class="n">_np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">values</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span><span class="o">.</span><span class="n">T</span></div>
 
 
-<div class="viewcode-block" id="sinusoidal_bidirectional"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.physics.capillary_pressure.sinusoidal_bidirectional.html#openpnm.models.physics.capillary_pressure.sinusoidal_bidirectional">[docs]</a><span class="nd">@_doctxt</span>
-<span class="k">def</span> <span class="nf">sinusoidal_bidirectional</span><span class="p">(</span><span class="n">target</span><span class="p">,</span>
+<div class="viewcode-block" id="sinusoidal_bidirectional"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.physics.capillary_pressure.sinusoidal_bidirectional.html#openpnm.models.physics.capillary_pressure.sinusoidal_bidirectional">[docs]</a><span class="k">def</span> <span class="nf">sinusoidal_bidirectional</span><span class="p">(</span><span class="n">target</span><span class="p">,</span>
                              <span class="n">r_toroid</span><span class="o">=</span><span class="mf">5e-6</span><span class="p">,</span>
                              <span class="n">num_points</span><span class="o">=</span><span class="mf">1e3</span><span class="p">,</span>
                              <span class="n">surface_tension</span><span class="o">=</span><span class="s2">&quot;pore.surface_tension&quot;</span><span class="p">,</span>
@@ -504,26 +561,30 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(target_blurb)s</span>
+<span class="sd">    target : GenericPhysics</span>
+<span class="sd">        The object for which these values are being calculated.  This</span>
+<span class="sd">        controls the length of the calculated array, and also provides</span>
+<span class="sd">        access to other necessary thermofluid properties</span>
 <span class="sd">    r_toroid : float or array_like</span>
 <span class="sd">        The radius of the toroid surrounding the pore</span>
 <span class="sd">    num_points : float, default 100</span>
 <span class="sd">        The number of divisions to make along the profile length to assess the</span>
 <span class="sd">        meniscus properties in order to find the touch length.</span>
 <span class="sd">    surface_tension : str</span>
-<span class="sd">        %(dict_blurb)s surface tension. If a pore property is given, it is</span>
-<span class="sd">        interpolated to a throat list.</span>
+<span class="sd">        The dictionary key containing the surface tension values to be used.</span>
+<span class="sd">        If a pore property is given, it is interpolated to a throat list.</span>
 <span class="sd">    contact_angle : str</span>
-<span class="sd">        %(dict_blurb)s contact angle. If a pore property is given, it is</span>
-<span class="sd">        interpolated to a throat list.</span>
+<span class="sd">        The dictionary key containing the contact angle values to be used.</span>
+<span class="sd">        If a pore property is given, it is interpolated to a throat list.</span>
 <span class="sd">    throat_diameter : str</span>
-<span class="sd">        %(dict_blurb)s throat diameter</span>
+<span class="sd">        The dictionary key containing the throat diameter values to be used.</span>
 <span class="sd">    pore_diameter : str</span>
-<span class="sd">        %(dict_blurb)s pore diameter</span>
+<span class="sd">        The dictionary key containing the pore diameter values to be used.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    %(return_arr)s capillary entry pressure</span>
+<span class="sd">    value : ndarray</span>
+<span class="sd">        Array containing throat capillary entry pressure values.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">network</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">network</span>
@@ -547,40 +608,6 @@
         <span class="n">target</span><span class="o">.</span><span class="n">remove_model</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
     <span class="k">del</span> <span class="n">network</span><span class="p">[</span><span class="s2">&quot;throat.temp_diameter&quot;</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">_np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">values</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span><span class="o">.</span><span class="n">T</span></div>
-
-
-<span class="k">def</span> <span class="nf">_get_key_props</span><span class="p">(</span><span class="n">phase</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                   <span class="n">diameter</span><span class="o">=</span><span class="s2">&quot;throat.diameter&quot;</span><span class="p">,</span>
-                   <span class="n">surface_tension</span><span class="o">=</span><span class="s2">&quot;pore.surface_tension&quot;</span><span class="p">,</span>
-                   <span class="n">contact_angle</span><span class="o">=</span><span class="s2">&quot;pore.contact_angle&quot;</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Many of the methods are generic to pores and throats. Some information may</span>
-<span class="sd">    be stored on either the pore or throat and needs to be interpolated.</span>
-<span class="sd">    This is a helper method to return the properties in the correct format.</span>
-
-<span class="sd">    TODO: Check for method to convert throat to pore data</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">element</span> <span class="o">=</span> <span class="n">diameter</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="k">if</span> <span class="n">element</span> <span class="o">==</span> <span class="s2">&quot;pore&quot;</span><span class="p">:</span>
-        <span class="k">if</span> <span class="s2">&quot;throat&quot;</span> <span class="ow">in</span> <span class="n">surface_tension</span><span class="p">:</span>
-            <span class="n">sigma</span> <span class="o">=</span> <span class="n">phase</span><span class="o">.</span><span class="n">interpolate_data</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="n">surface_tension</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">sigma</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">surface_tension</span><span class="p">]</span>
-        <span class="k">if</span> <span class="s2">&quot;throat&quot;</span> <span class="ow">in</span> <span class="n">contact_angle</span><span class="p">:</span>
-            <span class="n">theta</span> <span class="o">=</span> <span class="n">phase</span><span class="o">.</span><span class="n">interpolate_data</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="n">contact_angle</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">theta</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">contact_angle</span><span class="p">]</span>
-    <span class="k">if</span> <span class="n">element</span> <span class="o">==</span> <span class="s2">&quot;throat&quot;</span><span class="p">:</span>
-        <span class="k">if</span> <span class="s2">&quot;pore&quot;</span> <span class="ow">in</span> <span class="n">surface_tension</span><span class="p">:</span>
-            <span class="n">sigma</span> <span class="o">=</span> <span class="n">phase</span><span class="o">.</span><span class="n">interpolate_data</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="n">surface_tension</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">sigma</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">surface_tension</span><span class="p">]</span>
-        <span class="k">if</span> <span class="s2">&quot;pore&quot;</span> <span class="ow">in</span> <span class="n">contact_angle</span><span class="p">:</span>
-            <span class="n">theta</span> <span class="o">=</span> <span class="n">phase</span><span class="o">.</span><span class="n">interpolate_data</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="n">contact_angle</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">theta</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">contact_angle</span><span class="p">]</span>
-
-    <span class="k">return</span> <span class="n">element</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">theta</span>
 </pre></div>
 
               </div>

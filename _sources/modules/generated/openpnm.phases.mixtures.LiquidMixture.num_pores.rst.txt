@@ -1,0 +1,8 @@
+:orphan:
+
+num_pores
+===============================================
+
+.. currentmodule:: openpnm.phases.mixtures
+
+.. automethod:: LiquidMixture.num_pores

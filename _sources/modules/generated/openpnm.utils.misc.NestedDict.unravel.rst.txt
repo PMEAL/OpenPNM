@@ -1,0 +1,8 @@
+:orphan:
+
+unravel
+=====================================
+
+.. currentmodule:: openpnm.utils.misc
+
+.. automethod:: NestedDict.unravel

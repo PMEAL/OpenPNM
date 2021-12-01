@@ -1,8 +1,0 @@
-:orphan:
-
-keep_types
-===============================================================
-
-.. currentmodule:: openpnm.models.phases.thermal_conductivity
-
-.. automethod:: Docorator.keep_types

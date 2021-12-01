@@ -1,0 +1,8 @@
+:orphan:
+
+interpolate_data
+=========================================================
+
+.. currentmodule:: openpnm.phases.mixtures.species.gases
+
+.. automethod:: H2.interpolate_data

@@ -1,8 +1,0 @@
-:orphan:
-
-get_sections
-==============================================================
-
-.. currentmodule:: openpnm.models.geometry.throat_centroid
-
-.. automethod:: Docorator.get_sections

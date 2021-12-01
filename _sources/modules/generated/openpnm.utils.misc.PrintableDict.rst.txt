@@ -1,0 +1,34 @@
+PrintableDict
+================================
+
+.. currentmodule:: openpnm.utils.misc
+
+.. autoclass:: PrintableDict
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            PrintableDict.clear
+            PrintableDict.copy
+            PrintableDict.fromkeys
+            PrintableDict.get
+            PrintableDict.items
+            PrintableDict.keys
+            PrintableDict.move_to_end
+            PrintableDict.pop
+            PrintableDict.popitem
+            PrintableDict.setdefault
+            PrintableDict.update
+            PrintableDict.values
+   
+   
+
+   
+   
+   

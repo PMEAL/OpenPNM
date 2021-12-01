@@ -1,0 +1,8 @@
+:orphan:
+
+show_hist
+===========================================
+
+.. currentmodule:: openpnm.phases.mixtures
+
+.. automethod:: GasByName.show_hist

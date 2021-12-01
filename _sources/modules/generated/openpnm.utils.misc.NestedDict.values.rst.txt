@@ -1,0 +1,8 @@
+:orphan:
+
+values
+====================================
+
+.. currentmodule:: openpnm.utils.misc
+
+.. automethod:: NestedDict.values

@@ -1,8 +1,0 @@
-:orphan:
-
-__call__
-=================================================================
-
-.. currentmodule:: openpnm.models.geometry.diffusive_size_factors
-
-.. automethod:: Docorator.__call__

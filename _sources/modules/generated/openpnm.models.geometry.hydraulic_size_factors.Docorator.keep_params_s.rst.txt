@@ -1,8 +1,0 @@
-:orphan:
-
-keep_params_s
-======================================================================
-
-.. currentmodule:: openpnm.models.geometry.hydraulic_size_factors
-
-.. automethod:: Docorator.keep_params_s

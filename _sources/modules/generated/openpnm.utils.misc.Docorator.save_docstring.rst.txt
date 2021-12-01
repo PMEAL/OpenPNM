@@ -1,0 +1,8 @@
+:orphan:
+
+save_docstring
+===========================================
+
+.. currentmodule:: openpnm.utils.misc
+
+.. automethod:: Docorator.save_docstring

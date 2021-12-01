@@ -1,8 +1,0 @@
-:orphan:
-
-get_summaryf
-============================================================
-
-.. currentmodule:: openpnm.models.geometry.throat_volume
-
-.. automethod:: Docorator.get_summaryf

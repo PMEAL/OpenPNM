@@ -1,0 +1,8 @@
+:orphan:
+
+keep_types_s
+==================================================
+
+.. currentmodule:: openpnm.utils.misc
+
+.. automethod:: DocstringProcessor.keep_types_s

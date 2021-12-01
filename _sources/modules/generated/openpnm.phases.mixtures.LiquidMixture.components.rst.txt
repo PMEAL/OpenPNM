@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.phases.mixtures.LiquidMixture.components
+================================================
+
+.. currentmodule:: openpnm.phases.mixtures
+
+attribute
+
+.. autoproperty:: openpnm.phases.mixtures.LiquidMixture.components
+

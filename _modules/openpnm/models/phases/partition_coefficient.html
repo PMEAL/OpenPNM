@@ -85,6 +85,12 @@
 </li>
 
 <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../../user_guide/index.html">
+  User Guide
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
  <a class="reference internal nav-link" href="../../../../modules/index.html">
   Module Reference
  </a>
@@ -176,30 +182,29 @@
 <span></span><span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">logging</span><span class="p">,</span> <span class="n">Docorator</span>
-
-
+<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">logging</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
-<span class="n">docstr</span> <span class="o">=</span> <span class="n">Docorator</span><span class="p">()</span>
 
 
-<div class="viewcode-block" id="gaseous_species_in_water"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.phases.partition_coefficient.gaseous_species_in_water.html#openpnm.models.phases.partition_coefficient.gaseous_species_in_water">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
-<span class="k">def</span> <span class="nf">gaseous_species_in_water</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">chemical_formula</span><span class="p">,</span>
+<div class="viewcode-block" id="gaseous_species_in_water"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.phases.partition_coefficient.gaseous_species_in_water.html#openpnm.models.phases.partition_coefficient.gaseous_species_in_water">[docs]</a><span class="k">def</span> <span class="nf">gaseous_species_in_water</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">chemical_formula</span><span class="p">,</span>
                              <span class="n">temperature</span><span class="o">=</span><span class="s2">&quot;throat.temperature&quot;</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate Henry&#39;s law constant for gaseous species dissolved in water.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(models.target.parameters)s</span>
-<span class="sd">    chemical_formula : string</span>
+<span class="sd">    target : MultiPhase</span>
+<span class="sd">        Target object in which data is to be stored.</span>
+<span class="sd">    chemical_formula : str</span>
 <span class="sd">        Chemical formula of the dissolving species.</span>
-<span class="sd">    %(models.phase.T)s</span>
+<span class="sd">    temperature : str, optional</span>
+<span class="sd">        Dictionary key containing pore temperature values.</span>
+<span class="sd">        The default is &quot;pore.temperature&quot;.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    H : ndarray</span>
-<span class="sd">        A numpy ndarray containing Henry&#39;s law constant (Kpx) [atm/mol-frac]</span>
+<span class="sd">        Array containing Henry&#39;s law constant (Kpx) [atm/mol-frac]</span>
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>

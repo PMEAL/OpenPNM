@@ -1,0 +1,68 @@
+GasByName
+=================================
+
+.. currentmodule:: openpnm.phases.mixtures
+
+.. autoclass:: GasByName
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            GasByName.add_model
+            GasByName.clear
+            GasByName.copy
+            GasByName.filter_by_label
+            GasByName.fromkeys
+            GasByName.get
+            GasByName.get_conduit_data
+            GasByName.interleave_data
+            GasByName.interpolate_data
+            GasByName.items
+            GasByName.keys
+            GasByName.labels
+            GasByName.num_pores
+            GasByName.num_throats
+            GasByName.params
+            GasByName.pop
+            GasByName.popitem
+            GasByName.pores
+            GasByName.props
+            GasByName.regenerate_models
+            GasByName.remove_model
+            GasByName.set_label
+            GasByName.setdefault
+            GasByName.show_hist
+            GasByName.throats
+            GasByName.to_indices
+            GasByName.to_mask
+            GasByName.update
+            GasByName.values
+   
+   
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            GasByName.Np
+            GasByName.Nt
+            GasByName.Ps
+            GasByName.Ts
+            GasByName.mixture
+            GasByName.models
+            GasByName.name
+            GasByName.network
+            GasByName.phase
+            GasByName.physics
+            GasByName.project
+            GasByName.settings
+   
+   

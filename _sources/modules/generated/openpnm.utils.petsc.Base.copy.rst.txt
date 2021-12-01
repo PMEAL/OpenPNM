@@ -1,0 +1,8 @@
+:orphan:
+
+copy
+=============================
+
+.. currentmodule:: openpnm.utils.petsc
+
+.. automethod:: Base.copy

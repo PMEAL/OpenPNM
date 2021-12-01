@@ -1,4 +1,4 @@
-﻿:noindex:
+:noindex:
 
 .. automodule:: openpnm.topotools.generators
 
@@ -33,5 +33,13 @@
    
 
    
+   
+   .. rubric:: Modules
+
+   .. autosummary::
+      :toctree:
+      :recursive:
+   
+      openpnm.topotools.generators.tools
    
    

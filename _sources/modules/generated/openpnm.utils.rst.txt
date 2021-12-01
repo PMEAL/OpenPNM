@@ -65,4 +65,13 @@
 
    
    
+   .. rubric:: Modules
+
+   .. autosummary::
+      :toctree:
+      :recursive:
+   
+      openpnm.utils.misc
+      openpnm.utils.petsc
+   
    

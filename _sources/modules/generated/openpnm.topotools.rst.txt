@@ -86,4 +86,12 @@
 
    
    
+   .. rubric:: Modules
+
+   .. autosummary::
+      :toctree:
+      :recursive:
+   
+      openpnm.topotools.generators
+   
    

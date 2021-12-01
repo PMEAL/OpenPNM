@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.utils.petsc.PETScSparseLinearSolver.network
+===================================================
+
+.. currentmodule:: openpnm.utils.petsc
+
+attribute
+
+.. autoproperty:: openpnm.utils.petsc.PETScSparseLinearSolver.network
+

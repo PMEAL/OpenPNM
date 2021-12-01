@@ -1,8 +1,0 @@
-:orphan:
-
-get_docstring
-======================================================================
-
-.. currentmodule:: openpnm.models.geometry.hydraulic_size_factors
-
-.. automethod:: Docorator.get_docstring

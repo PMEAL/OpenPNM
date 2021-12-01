@@ -1,0 +1,68 @@
+SpeciesByName
+=====================================
+
+.. currentmodule:: openpnm.phases.mixtures
+
+.. autoclass:: SpeciesByName
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            SpeciesByName.add_model
+            SpeciesByName.clear
+            SpeciesByName.copy
+            SpeciesByName.filter_by_label
+            SpeciesByName.fromkeys
+            SpeciesByName.get
+            SpeciesByName.get_conduit_data
+            SpeciesByName.interleave_data
+            SpeciesByName.interpolate_data
+            SpeciesByName.items
+            SpeciesByName.keys
+            SpeciesByName.labels
+            SpeciesByName.num_pores
+            SpeciesByName.num_throats
+            SpeciesByName.params
+            SpeciesByName.pop
+            SpeciesByName.popitem
+            SpeciesByName.pores
+            SpeciesByName.props
+            SpeciesByName.regenerate_models
+            SpeciesByName.remove_model
+            SpeciesByName.set_label
+            SpeciesByName.setdefault
+            SpeciesByName.show_hist
+            SpeciesByName.throats
+            SpeciesByName.to_indices
+            SpeciesByName.to_mask
+            SpeciesByName.update
+            SpeciesByName.values
+   
+   
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            SpeciesByName.Np
+            SpeciesByName.Nt
+            SpeciesByName.Ps
+            SpeciesByName.Ts
+            SpeciesByName.mixture
+            SpeciesByName.models
+            SpeciesByName.name
+            SpeciesByName.network
+            SpeciesByName.phase
+            SpeciesByName.physics
+            SpeciesByName.project
+            SpeciesByName.settings
+   
+   

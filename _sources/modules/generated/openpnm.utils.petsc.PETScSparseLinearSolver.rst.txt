@@ -1,0 +1,54 @@
+PETScSparseLinearSolver
+===========================================
+
+.. currentmodule:: openpnm.utils.petsc
+
+.. autoclass:: PETScSparseLinearSolver
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            PETScSparseLinearSolver.clear
+            PETScSparseLinearSolver.copy
+            PETScSparseLinearSolver.fromkeys
+            PETScSparseLinearSolver.get
+            PETScSparseLinearSolver.get_conduit_data
+            PETScSparseLinearSolver.interleave_data
+            PETScSparseLinearSolver.interpolate_data
+            PETScSparseLinearSolver.items
+            PETScSparseLinearSolver.keys
+            PETScSparseLinearSolver.pop
+            PETScSparseLinearSolver.popitem
+            PETScSparseLinearSolver.props
+            PETScSparseLinearSolver.setdefault
+            PETScSparseLinearSolver.show_hist
+            PETScSparseLinearSolver.solve
+            PETScSparseLinearSolver.to_indices
+            PETScSparseLinearSolver.to_mask
+            PETScSparseLinearSolver.update
+            PETScSparseLinearSolver.values
+   
+   
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            PETScSparseLinearSolver.Np
+            PETScSparseLinearSolver.Nt
+            PETScSparseLinearSolver.Ps
+            PETScSparseLinearSolver.Ts
+            PETScSparseLinearSolver.name
+            PETScSparseLinearSolver.network
+            PETScSparseLinearSolver.project
+            PETScSparseLinearSolver.settings
+   
+   

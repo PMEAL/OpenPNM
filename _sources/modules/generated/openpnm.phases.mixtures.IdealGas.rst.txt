@@ -1,0 +1,74 @@
+IdealGas
+================================
+
+.. currentmodule:: openpnm.phases.mixtures
+
+.. autoclass:: IdealGas
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            IdealGas.add_model
+            IdealGas.check_mixture_health
+            IdealGas.clear
+            IdealGas.copy
+            IdealGas.filter_by_label
+            IdealGas.fromkeys
+            IdealGas.get
+            IdealGas.get_conduit_data
+            IdealGas.interleave_data
+            IdealGas.interpolate_data
+            IdealGas.items
+            IdealGas.keys
+            IdealGas.labels
+            IdealGas.num_pores
+            IdealGas.num_throats
+            IdealGas.params
+            IdealGas.pop
+            IdealGas.popitem
+            IdealGas.pores
+            IdealGas.props
+            IdealGas.regenerate_models
+            IdealGas.remove_model
+            IdealGas.set_component
+            IdealGas.set_concentration
+            IdealGas.set_label
+            IdealGas.set_mole_fraction
+            IdealGas.setdefault
+            IdealGas.show_hist
+            IdealGas.throats
+            IdealGas.to_indices
+            IdealGas.to_mask
+            IdealGas.update
+            IdealGas.update_concentrations
+            IdealGas.update_mole_fractions
+            IdealGas.values
+   
+   
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            IdealGas.Np
+            IdealGas.Nt
+            IdealGas.Ps
+            IdealGas.Ts
+            IdealGas.components
+            IdealGas.models
+            IdealGas.name
+            IdealGas.network
+            IdealGas.phase
+            IdealGas.physics
+            IdealGas.project
+            IdealGas.settings
+   
+   

@@ -1,0 +1,8 @@
+:orphan:
+
+values
+===========================================
+
+.. currentmodule:: openpnm.phases.mixtures
+
+.. automethod:: LiquidByName.values

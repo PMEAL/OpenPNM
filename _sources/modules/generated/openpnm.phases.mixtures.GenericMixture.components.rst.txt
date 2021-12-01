@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.phases.mixtures.GenericMixture.components
+=================================================
+
+.. currentmodule:: openpnm.phases.mixtures
+
+attribute
+
+.. autoproperty:: openpnm.phases.mixtures.GenericMixture.components
+

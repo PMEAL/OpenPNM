@@ -1,0 +1,8 @@
+:orphan:
+
+throats
+============================================
+
+.. currentmodule:: openpnm.phases.mixtures
+
+.. automethod:: LiquidByName.throats

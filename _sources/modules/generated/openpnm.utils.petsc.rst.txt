@@ -1,0 +1,33 @@
+:noindex:
+
+.. automodule:: openpnm.utils.petsc
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :nosignatures:
+      :toctree:
+
+   
+      Base
+      PETScSparseLinearSolver
+   
+   
+
+   
+   
+   
+
+   
+   
+   

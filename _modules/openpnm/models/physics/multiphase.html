@@ -85,6 +85,12 @@
 </li>
 
 <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../../user_guide/index.html">
+  User Guide
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
  <a class="reference internal nav-link" href="../../../../modules/index.html">
   Module Reference
  </a>
@@ -173,15 +179,16 @@
               <div>
                 
   <h1>Source code for openpnm.models.physics.multiphase</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">openpnm.models</span> <span class="kn">import</span> <span class="n">_doctxt</span>
-
+<span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Pore-scale models relevant to multiphase simulations.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">scipy</span> <span class="k">as</span> <span class="nn">sp</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;conduit_conductance&quot;</span><span class="p">,</span> <span class="s2">&quot;late_filling&quot;</span><span class="p">]</span>
 
 
-<div class="viewcode-block" id="conduit_conductance"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.physics.multiphase.conduit_conductance.html#openpnm.models.physics.multiphase.conduit_conductance">[docs]</a><span class="nd">@_doctxt</span>
-<span class="k">def</span> <span class="nf">conduit_conductance</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">throat_conductance</span><span class="p">,</span>
+<div class="viewcode-block" id="conduit_conductance"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.physics.multiphase.conduit_conductance.html#openpnm.models.physics.multiphase.conduit_conductance">[docs]</a><span class="k">def</span> <span class="nf">conduit_conductance</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">throat_conductance</span><span class="p">,</span>
                         <span class="n">throat_occupancy</span><span class="o">=</span><span class="s1">&#39;throat.occupancy&#39;</span><span class="p">,</span>
                         <span class="n">pore_occupancy</span><span class="o">=</span><span class="s1">&#39;pore.occupancy&#39;</span><span class="p">,</span>
                         <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;strict&#39;</span><span class="p">,</span> <span class="n">factor</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">):</span>
@@ -191,30 +198,32 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(target_blurb)s</span>
+<span class="sd">    target : GenericPhysics</span>
+<span class="sd">        The GenericPhysics where the model is attached.  Should either be a</span>
+<span class="sd">        Physics or a Phase.</span>
 <span class="sd">    throat_conductance : str</span>
-<span class="sd">        %(dict_blurb)s throat conductance for transport</span>
+<span class="sd">        The transport conductance of the phase associated with the ``target``</span>
+<span class="sd">        object at single-phase conditions.</span>
 <span class="sd">    pore_occupancy : str</span>
-<span class="sd">        %(dict_blurb)s pore occupancy of the phase associated with ``target``.</span>
-<span class="sd">        An occupancy of 1 means the pore is completely filled with the phase</span>
-<span class="sd">        and it fully conducts.</span>
+<span class="sd">        The property name containing the occupancy of the phase associated</span>
+<span class="sd">        with the ``target`` object.  An occupancy of 1 means the pore</span>
+<span class="sd">        is completely filled with the phase and it fully conducts.</span>
 <span class="sd">    throat_occupancy : str</span>
-<span class="sd">        %(dict_blurb)s throat occupancy of the phase associated with</span>
-<span class="sd">        ``target``. An occupancy of 1 means the pore is completely filled</span>
-<span class="sd">        with the phase and it fully conducts.</span>
+<span class="sd">        The property name containing the occupancy of the phase associated</span>
+<span class="sd">        with the ``target`` object.  An occupancy of 1 means the throat</span>
+<span class="sd">        is completely filled with the phase and it fully conducts.</span>
 <span class="sd">    mode : str</span>
 <span class="sd">        How agressive the method should be when determining if a conduit is</span>
 <span class="sd">        closed. Options are:</span>
 
-<span class="sd">        ========= ============================================================</span>
-<span class="sd">        Mode      Description</span>
-<span class="sd">        ========= ============================================================</span>
-<span class="sd">        strict    If any pore or throat in the conduit is unoccupied by</span>
-<span class="sd">                  the given phase, the conduit is closed.</span>
-<span class="sd">        medium    If either the throat or both pores are unoccupied, the</span>
-<span class="sd">                  conduit is closed</span>
-<span class="sd">        loose     Only close the conduit if the throat is unoccupied</span>
-<span class="sd">        ========= ============================================================</span>
+<span class="sd">            &#39;strict&#39;</span>
+<span class="sd">                If any pore or throat in the conduit is unoccupied by</span>
+<span class="sd">                the given phase, the conduit is closed.</span>
+<span class="sd">            &#39;medium&#39;</span>
+<span class="sd">                If either the throat or both pores are unoccupied, the</span>
+<span class="sd">                conduit is closed</span>
+<span class="sd">            &#39;loose&#39;</span>
+<span class="sd">                Only close the conduit if the throat is unoccupied</span>
 
 <span class="sd">    factor : float (default is 1e-6)</span>
 <span class="sd">        The factor which becomes multiplied to the original conduit&#39;s</span>
@@ -222,7 +231,8 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    %(return_arr)s adjusted conductance values</span>
+<span class="sd">    value : ndarray</span>
+<span class="sd">        Array containing conduit conductance values.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">network</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">network</span>
@@ -246,13 +256,12 @@
     <span class="k">return</span> <span class="n">value</span><span class="p">[</span><span class="n">Ts</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="late_filling"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.physics.multiphase.late_filling.html#openpnm.models.physics.multiphase.late_filling">[docs]</a><span class="nd">@_doctxt</span>
-<span class="k">def</span> <span class="nf">late_filling</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">pressure</span><span class="o">=</span><span class="s1">&#39;pore.pressure&#39;</span><span class="p">,</span>
+<div class="viewcode-block" id="late_filling"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.physics.multiphase.late_filling.html#openpnm.models.physics.multiphase.late_filling">[docs]</a><span class="k">def</span> <span class="nf">late_filling</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">pressure</span><span class="o">=</span><span class="s1">&#39;pore.pressure&#39;</span><span class="p">,</span>
                  <span class="n">Pc_star</span><span class="o">=</span><span class="s1">&#39;pore.pc_star&#39;</span><span class="p">,</span>
                  <span class="n">Swp_star</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">eta</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates the fraction of a pore or throat filled with invading fluid</span>
-<span class="sd">    based on the capillary pressure in the invading phase. The invading phase</span>
+<span class="sd">    based on the capillary pressure in the invading phase.  The invading phase</span>
 <span class="sd">    volume is calculated from:</span>
 
 <span class="sd">        .. math::</span>
@@ -261,11 +270,11 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    pressure : str</span>
-<span class="sd">        %(dict_blurb)s capillary pressure in the non-wetting phase (Pc &gt; 0).</span>
+<span class="sd">        The capillary pressure in the non-wetting phase (Pc &gt; 0).</span>
 <span class="sd">    Pc_star : str</span>
-<span class="sd">        %(dict_blurb)s minimum pressure required to create an interface</span>
-<span class="sd">        within the pore body or throat.  Typically this would be calculated</span>
-<span class="sd">        using the Washburn equation.</span>
+<span class="sd">        The minimum pressure required to create an interface within the pore</span>
+<span class="sd">        body or throat.  Typically this would be calculated using the Washburn</span>
+<span class="sd">        equation.</span>
 <span class="sd">    Swp_star : float</span>
 <span class="sd">        The residual wetting phase in an invaded pore or throat at a pressure</span>
 <span class="sd">        of ``pc_star``.</span>
@@ -275,10 +284,10 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    %(return_arr)s fraction of each pore or throat that would be filled with</span>
-<span class="sd">    non-wetting phase at the given phase pressure. This does not account</span>
-<span class="sd">    for whether or not the element is actually invaded, which requires a</span>
-<span class="sd">    percolation algorithm of some sort.</span>
+<span class="sd">    An array containing the fraction of each pore or throat that would be</span>
+<span class="sd">    filled with non-wetting phase at the given phase pressure.  This does not</span>
+<span class="sd">    account for whether or not the element is actually invaded, which requires</span>
+<span class="sd">    a percolation algorithm of some sort.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">element</span> <span class="o">=</span> <span class="n">pressure</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>

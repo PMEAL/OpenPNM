@@ -85,6 +85,12 @@
 </li>
 
 <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../user_guide/index.html">
+  User Guide
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
  <a class="reference internal nav-link" href="../../../modules/index.html">
   Module Reference
  </a>
@@ -176,53 +182,29 @@
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">openpnm.models.misc</span> <span class="k">as</span> <span class="nn">misc</span>
 <span class="kn">from</span> <span class="nn">openpnm.phases</span> <span class="kn">import</span> <span class="n">GenericPhase</span> <span class="k">as</span> <span class="n">GenericPhase</span>
-<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">logging</span><span class="p">,</span> <span class="n">SettingsAttr</span><span class="p">,</span> <span class="n">Docorator</span><span class="p">,</span> <span class="n">TypedList</span>
-
-
+<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">logging</span><span class="p">,</span> <span class="n">SettingsAttr</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
-<span class="n">docstr</span> <span class="o">=</span> <span class="n">Docorator</span><span class="p">()</span>
 
 
-<span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
 <span class="k">class</span> <span class="nc">MultiPhaseSettings</span><span class="p">:</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    %(PhaseSettings.parameters)s</span>
-<span class="sd">    phases : list of strings</span>
-<span class="sd">        The name of the phase objects which comprize this multiphase object</span>
-<span class="sd">    throat_occupancy : str</span>
-<span class="sd">        Indicates how throat occupancy is determined.  Options are:</span>
-
-<span class="sd">        =========== ==========================================================</span>
-<span class="sd">        mode        description</span>
-<span class="sd">        =========== ==========================================================</span>
-<span class="sd">        &#39;automatic&#39; The occupancy of each throat is calculated based on the</span>
-<span class="sd">                    occupancy of the two neighboring pores</span>
-<span class="sd">        &#39;manual&#39;    The occupancy of each throat must be set by hand by</span>
-<span class="sd">                    assigning values to &#39;throat.occupancy.{phase.name}&#39;</span>
-<span class="sd">        =========== ==========================================================</span>
-
-<span class="sd">    partition_coef_prefix : str</span>
-<span class="sd">        The throat property which contains the partition coefficient values</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">phases</span> <span class="o">=</span> <span class="n">TypedList</span><span class="p">(</span><span class="n">types</span><span class="o">=</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span>
+    <span class="n">phases</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">throat_occupancy</span> <span class="o">=</span> <span class="s1">&#39;manual&#39;</span>
     <span class="n">partition_coef_prefix</span> <span class="o">=</span> <span class="s1">&#39;throat.partition_coef&#39;</span>
 
 
-<div class="viewcode-block" id="MultiPhase"><a class="viewcode-back" href="../../../modules/generated/openpnm.phases.MultiPhase.html#openpnm.phases.MultiPhase">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
-<span class="k">class</span> <span class="nc">MultiPhase</span><span class="p">(</span><span class="n">GenericPhase</span><span class="p">):</span>
+<div class="viewcode-block" id="MultiPhase"><a class="viewcode-back" href="../../../modules/generated/openpnm.phases.MultiPhase.html#openpnm.phases.MultiPhase">[docs]</a><span class="k">class</span> <span class="nc">MultiPhase</span><span class="p">(</span><span class="n">GenericPhase</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Creates Phase object that represents a multiphase system consisting of</span>
 <span class="sd">    a given list of GenericPhases.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    phases : list of OpenPNM Phase objects</span>
-<span class="sd">        A list containing the phase objects which comprise the multiphase</span>
-<span class="sd">        mixture</span>
-<span class="sd">    %(GenericPhase.parameters)s</span>
+<span class="sd">    network : GenericNetwork</span>
+<span class="sd">        The network to which this phase object will be attached.</span>
+<span class="sd">    name : str, optional</span>
+<span class="sd">        The name of the phase. This is useful to keep track of the objects</span>
+<span class="sd">        throughout the simulation. The name must be unique to the project.</span>
+<span class="sd">        If no name is given, one is generated.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>

@@ -1,8 +1,0 @@
-:orphan:
-
-with_indent
-=======================================================
-
-.. currentmodule:: openpnm.models.phases.diffusivity
-
-.. automethod:: Docorator.with_indent

@@ -1,0 +1,8 @@
+:orphan:
+
+to_indices
+==================================================
+
+.. currentmodule:: openpnm.phases.mixtures.species.ions
+
+.. automethod:: Na.to_indices

@@ -85,6 +85,12 @@
 </li>
 
 <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../user_guide/index.html">
+  User Guide
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
  <a class="reference internal nav-link" href="../../../modules/index.html">
   Module Reference
  </a>
@@ -206,7 +212,37 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
+<span class="sd">    network : GenericNetwork</span>
+<span class="sd">        The network with which this object is associated</span>
 <span class="sd">    %(Base.parameters)s</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Create a new empty phase:</span>
+
+<span class="sd">    &gt;&gt;&gt; import openpnm as op</span>
+<span class="sd">    &gt;&gt;&gt; pn = op.network.Cubic([10, 10, 10])</span>
+<span class="sd">    &gt;&gt;&gt; phase = op.phases.GenericPhase(network=pn)</span>
+
+<span class="sd">    And add a model:</span>
+
+<span class="sd">    &gt;&gt;&gt; phase.add_model(propname=&#39;pore.molar_density&#39;,</span>
+<span class="sd">    ...                 model=op.models.phases.molar_density.ideal_gas)</span>
+
+<span class="sd">    Now confirm that the model was added and data was calculated.  The</span>
+<span class="sd">    ``models`` attribute can be printed:</span>
+
+<span class="sd">    &gt;&gt;&gt; print(phase.models)</span>
+<span class="sd">    ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――</span>
+<span class="sd">    #   Property Name                       Parameter                 Value</span>
+<span class="sd">    ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――</span>
+<span class="sd">    1   pore.molar_density                  model:                    ideal_gas</span>
+<span class="sd">                                            pressure:                 pore.pressure</span>
+<span class="sd">                                            temperature:              pore.temperature</span>
+<span class="sd">                                            regeneration mode:        normal</span>
+<span class="sd">    ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――</span>
+
+<span class="sd">    And the Phase itself has a nice printout using ``print(phase)``.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 

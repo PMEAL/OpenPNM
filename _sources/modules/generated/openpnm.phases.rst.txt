@@ -33,4 +33,12 @@
 
    
    
+   .. rubric:: Modules
+
+   .. autosummary::
+      :toctree:
+      :recursive:
+   
+      openpnm.phases.mixtures
+   
    

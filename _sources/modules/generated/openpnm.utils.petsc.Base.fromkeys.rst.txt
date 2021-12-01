@@ -1,0 +1,8 @@
+:orphan:
+
+fromkeys
+=================================
+
+.. currentmodule:: openpnm.utils.petsc
+
+.. automethod:: Base.fromkeys

@@ -1,0 +1,8 @@
+:orphan:
+
+get
+===============================================
+
+.. currentmodule:: openpnm.utils.petsc
+
+.. automethod:: PETScSparseLinearSolver.get

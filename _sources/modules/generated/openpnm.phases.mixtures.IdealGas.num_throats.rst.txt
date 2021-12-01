@@ -1,0 +1,8 @@
+:orphan:
+
+num_throats
+============================================
+
+.. currentmodule:: openpnm.phases.mixtures
+
+.. automethod:: IdealGas.num_throats

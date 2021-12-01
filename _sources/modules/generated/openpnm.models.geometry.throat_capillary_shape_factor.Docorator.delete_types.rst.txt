@@ -1,8 +1,0 @@
-:orphan:
-
-delete_types
-============================================================================
-
-.. currentmodule:: openpnm.models.geometry.throat_capillary_shape_factor
-
-.. automethod:: Docorator.delete_types

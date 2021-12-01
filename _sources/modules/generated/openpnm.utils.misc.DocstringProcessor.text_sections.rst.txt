@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.utils.misc.DocstringProcessor.text\_sections
+====================================================
+
+.. currentmodule:: openpnm.utils.misc
+
+attribute
+
+.. autoattribute:: openpnm.utils.misc.DocstringProcessor.text_sections
+

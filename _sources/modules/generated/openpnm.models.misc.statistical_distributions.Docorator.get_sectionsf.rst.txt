@@ -1,8 +1,0 @@
-:orphan:
-
-get_sectionsf
-=====================================================================
-
-.. currentmodule:: openpnm.models.misc.statistical_distributions
-
-.. automethod:: Docorator.get_sectionsf

@@ -1,8 +1,0 @@
-:orphan:
-
-with_indents
-=====================================================
-
-.. currentmodule:: openpnm.models.phases.mixtures
-
-.. automethod:: Docorator.with_indents

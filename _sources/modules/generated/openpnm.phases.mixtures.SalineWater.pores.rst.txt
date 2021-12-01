@@ -1,0 +1,8 @@
+:orphan:
+
+pores
+=========================================
+
+.. currentmodule:: openpnm.phases.mixtures
+
+.. automethod:: SalineWater.pores

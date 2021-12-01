@@ -1,0 +1,8 @@
+:orphan:
+
+get_sections
+==================================================
+
+.. currentmodule:: openpnm.utils.misc
+
+.. automethod:: DocstringProcessor.get_sections

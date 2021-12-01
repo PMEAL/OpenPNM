@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.utils.petsc.Base.name
+=============================
+
+.. currentmodule:: openpnm.utils.petsc
+
+attribute
+
+.. autoproperty:: openpnm.utils.petsc.Base.name
+

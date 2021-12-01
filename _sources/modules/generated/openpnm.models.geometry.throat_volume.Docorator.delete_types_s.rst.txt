@@ -1,8 +1,0 @@
-:orphan:
-
-delete_types_s
-==============================================================
-
-.. currentmodule:: openpnm.models.geometry.throat_volume
-
-.. automethod:: Docorator.delete_types_s

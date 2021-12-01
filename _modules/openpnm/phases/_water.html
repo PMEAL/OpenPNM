@@ -85,6 +85,12 @@
 </li>
 
 <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../user_guide/index.html">
+  User Guide
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
  <a class="reference internal nav-link" href="../../../modules/index.html">
   Module Reference
  </a>
@@ -175,20 +181,42 @@
   <h1>Source code for openpnm.phases._water</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">openpnm.phases</span> <span class="kn">import</span> <span class="n">GenericPhase</span>
 <span class="kn">import</span> <span class="nn">openpnm.models</span> <span class="k">as</span> <span class="nn">mods</span>
-<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">Docorator</span>
 
 
-<span class="n">docstr</span> <span class="o">=</span> <span class="n">Docorator</span><span class="p">()</span>
-
-
-<div class="viewcode-block" id="Water"><a class="viewcode-back" href="../../../modules/generated/openpnm.phases.Water.html#openpnm.phases.Water">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
-<span class="k">class</span> <span class="nc">Water</span><span class="p">(</span><span class="n">GenericPhase</span><span class="p">):</span>
+<div class="viewcode-block" id="Water"><a class="viewcode-back" href="../../../modules/generated/openpnm.phases.Water.html#openpnm.phases.Water">[docs]</a><span class="k">class</span> <span class="nc">Water</span><span class="p">(</span><span class="n">GenericPhase</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Creates Phase object with preset values for Water</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(GenericPhase.parameters)s</span>
+<span class="sd">    network : GenericNetwork</span>
+<span class="sd">        The Network to which this phase object will be associated.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import openpnm as op</span>
+<span class="sd">    &gt;&gt;&gt; pn = op.network.Cubic(shape=[5, 5, 5])</span>
+<span class="sd">    &gt;&gt;&gt; water = op.phases.Water(network=pn)</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The table below shows all of the pore-scale models that are included with</span>
+<span class="sd">    this class to calculate the physical properties of this fluid as functions</span>
+<span class="sd">    of the relevant state variables.</span>
+
+<span class="sd">    This object is initialized at standard conditions of 298 K and 101325 Pa.</span>
+<span class="sd">    If these conditions are changed the dependent properties can be</span>
+<span class="sd">    recalculated by calling ``regenerate_models``.</span>
+
+<span class="sd">    All of these parameters can be adjusted manually by editing the entries in</span>
+<span class="sd">    the **ModelsDict** stored in the ``models`` attribute of the object.</span>
+
+<span class="sd">    For a full listing of models and their parameters use ``print(obj.models)``</span>
+<span class="sd">    where ``obj`` is the handle to the object.</span>
+
+<span class="sd">    In addition to these models, this class also has a number of constant</span>
+<span class="sd">    values assigned to it which can be found by running</span>
+<span class="sd">    ``props(mode=&#39;constants&#39;)``.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>

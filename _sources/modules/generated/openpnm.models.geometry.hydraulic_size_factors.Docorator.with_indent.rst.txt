@@ -1,8 +1,0 @@
-:orphan:
-
-with_indent
-====================================================================
-
-.. currentmodule:: openpnm.models.geometry.hydraulic_size_factors
-
-.. automethod:: Docorator.with_indent

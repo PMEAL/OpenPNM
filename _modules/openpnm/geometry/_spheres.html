@@ -85,6 +85,12 @@
 </li>
 
 <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../user_guide/index.html">
+  User Guide
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
  <a class="reference internal nav-link" href="../../../modules/index.html">
   Module Reference
  </a>
@@ -176,20 +182,30 @@
 <span></span><span class="kn">import</span> <span class="nn">openpnm.models</span> <span class="k">as</span> <span class="nn">mods</span>
 <span class="kn">import</span> <span class="nn">openpnm.models.geometry</span> <span class="k">as</span> <span class="nn">gmods</span>
 <span class="kn">from</span> <span class="nn">openpnm.geometry</span> <span class="kn">import</span> <span class="n">GenericGeometry</span>
-<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">Docorator</span>
 
 
-<span class="n">docstr</span> <span class="o">=</span> <span class="n">Docorator</span><span class="p">()</span>
-
-
-<div class="viewcode-block" id="SpheresAndCylinders"><a class="viewcode-back" href="../../../modules/generated/openpnm.geometry.SpheresAndCylinders.html#openpnm.geometry.SpheresAndCylinders">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
-<span class="k">class</span> <span class="nc">SpheresAndCylinders</span><span class="p">(</span><span class="n">GenericGeometry</span><span class="p">):</span>
+<div class="viewcode-block" id="SpheresAndCylinders"><a class="viewcode-back" href="../../../modules/generated/openpnm.geometry.SpheresAndCylinders.html#openpnm.geometry.SpheresAndCylinders">[docs]</a><span class="k">class</span> <span class="nc">SpheresAndCylinders</span><span class="p">(</span><span class="n">GenericGeometry</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Spheres and Cylinders subclass of GenericGeometry. This subclass is</span>
+<span class="sd">    meant as a basic default geometry to get started quickly.</span>
 
+<span class="sd">    Pore diameters are randomly assigned between 0 and the largest sphere</span>
+<span class="sd">    that does not overlap with it&#39;s nearest neighbor.</span>
+
+<span class="sd">    Throat diameters are half the diameter of the smaller of it&#39;s two</span>
+<span class="sd">    neighboring pores.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(GenericGeometry.parameters)s</span>
+<span class="sd">    network : GenericNetwork</span>
+<span class="sd">        The network with which this Geometry should be associated</span>
+<span class="sd">    pores : array_like</span>
+<span class="sd">        The pores in the domain where this Geometry applies</span>
+<span class="sd">    throats : array_like</span>
+<span class="sd">        The throats in the domain where this Geometry applies</span>
+<span class="sd">    name : str</span>
+<span class="sd">        The name of the object, which is also used as the label where this</span>
+<span class="sd">        geometry is defined.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 

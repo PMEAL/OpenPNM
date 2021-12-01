@@ -1,0 +1,6 @@
+get\_spacing
+============
+
+.. currentmodule:: openpnm.topotools.generators.tools
+
+.. autofunction:: get_spacing

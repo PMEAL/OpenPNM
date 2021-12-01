@@ -1,0 +1,33 @@
+PrintableList
+================================
+
+.. currentmodule:: openpnm.utils.misc
+
+.. autoclass:: PrintableList
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            PrintableList.append
+            PrintableList.clear
+            PrintableList.copy
+            PrintableList.count
+            PrintableList.extend
+            PrintableList.index
+            PrintableList.insert
+            PrintableList.pop
+            PrintableList.remove
+            PrintableList.reverse
+            PrintableList.sort
+   
+   
+
+   
+   
+   

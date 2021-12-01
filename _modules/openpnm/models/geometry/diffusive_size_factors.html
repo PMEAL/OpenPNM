@@ -85,6 +85,12 @@
 </li>
 
 <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../../user_guide/index.html">
+  User Guide
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
  <a class="reference internal nav-link" href="../../../../modules/index.html">
   Module Reference
  </a>
@@ -173,10 +179,27 @@
               <div>
                 
   <h1>Source code for openpnm.models.geometry.diffusive_size_factors</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">_np</span>
-<span class="kn">import</span> <span class="nn">openpnm.models.geometry.conduit_lengths</span> <span class="k">as</span> <span class="nn">_conduit_lengths</span>
-<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">Docorator</span>
+<span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Diffusive Size Factors</span>
+<span class="sd">......................</span>
 
+<span class="sd">The diffusive size factor is the geometrical part of the pre-factor in</span>
+<span class="sd">Fick&#39;s law:</span>
+
+<span class="sd">.. math::</span>
+
+<span class="sd">    n_A = \frac{A}{L} \Delta C_A</span>
+<span class="sd">        = S_{diffusive} D_{AB} \Delta C_A</span>
+
+<span class="sd">Thus :math:`S_{diffusive}` represents the combined effect of the area and</span>
+<span class="sd">length of the *conduit*, which consists of a throat and 1/2 of the pore</span>
+<span class="sd">on each end.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">_np</span>
+<span class="kn">import</span> <span class="nn">openpnm.models.geometry.conduit_lengths</span> <span class="k">as</span> <span class="nn">_conduit_lengths</span>
+<span class="kn">from</span> <span class="nn">._misc</span> <span class="kn">import</span> <span class="n">_get_conduit_diameters</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;spheres_and_cylinders&quot;</span><span class="p">,</span>
@@ -191,13 +214,9 @@
     <span class="s2">&quot;intersecting_pyramids&quot;</span><span class="p">,</span>
     <span class="s2">&quot;ncylinders_in_series&quot;</span>
 <span class="p">]</span>
-<span class="n">docstr</span> <span class="o">=</span> <span class="n">Docorator</span><span class="p">()</span>
 
 
-<div class="viewcode-block" id="spheres_and_cylinders"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.diffusive_size_factors.spheres_and_cylinders.html#openpnm.models.geometry.diffusive_size_factors.spheres_and_cylinders">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">get_sections</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="s1">&#39;models.geometry.diffusive_size_factor&#39;</span><span class="p">,</span>
-                     <span class="n">sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Parameters&#39;</span><span class="p">,</span> <span class="s1">&#39;Returns&#39;</span><span class="p">,</span> <span class="s1">&#39;Notes&#39;</span><span class="p">])</span>
-<span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
-<span class="k">def</span> <span class="nf">spheres_and_cylinders</span><span class="p">(</span>
+<div class="viewcode-block" id="spheres_and_cylinders"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.diffusive_size_factors.spheres_and_cylinders.html#openpnm.models.geometry.diffusive_size_factors.spheres_and_cylinders">[docs]</a><span class="k">def</span> <span class="nf">spheres_and_cylinders</span><span class="p">(</span>
     <span class="n">target</span><span class="p">,</span>
     <span class="n">pore_diameter</span><span class="o">=</span><span class="s2">&quot;pore.diameter&quot;</span><span class="p">,</span>
     <span class="n">throat_diameter</span><span class="o">=</span><span class="s2">&quot;throat.diameter&quot;</span><span class="p">,</span>
@@ -208,15 +227,14 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(models.target.parameters)s</span>
-<span class="sd">    %(models.geometry.pdia)s</span>
-<span class="sd">    %(models.geometry.tdia)s</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    size_factors : dict</span>
-<span class="sd">        A dictionary containing the diffusive size factors, which can be</span>
-<span class="sd">        accessed via the dict keys &#39;pore1&#39;, &#39;pore2&#39;, and &#39;throat&#39;.</span>
+<span class="sd">    target : GenericGeometry</span>
+<span class="sd">        Geometry object which this model is associated with. This controls</span>
+<span class="sd">        the length of the calculated array, and also provides access to</span>
+<span class="sd">        other necessary properties.</span>
+<span class="sd">    pore_diameter : str</span>
+<span class="sd">        Dictionary key of the pore diameter values.</span>
+<span class="sd">    throat_diameter : str</span>
+<span class="sd">        Dictionary key of the throat diameter values.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
@@ -233,8 +251,7 @@
 <span class="sd">    on each end.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">D1</span><span class="p">,</span> <span class="n">Dt</span><span class="p">,</span> <span class="n">D2</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">get_conduit_data</span><span class="p">(</span><span class="n">poreprop</span><span class="o">=</span><span class="n">pore_diameter</span><span class="p">,</span>
-                                                 <span class="n">throatprop</span><span class="o">=</span><span class="n">throat_diameter</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">D1</span><span class="p">,</span> <span class="n">Dt</span><span class="p">,</span> <span class="n">D2</span> <span class="o">=</span> <span class="n">_get_conduit_diameters</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">pore_diameter</span><span class="p">,</span> <span class="n">throat_diameter</span><span class="p">)</span>
     <span class="n">L1</span><span class="p">,</span> <span class="n">Lt</span><span class="p">,</span> <span class="n">L2</span> <span class="o">=</span> <span class="n">_conduit_lengths</span><span class="o">.</span><span class="n">spheres_and_cylinders</span><span class="p">(</span>
         <span class="n">target</span><span class="p">,</span> <span class="n">pore_diameter</span><span class="o">=</span><span class="n">pore_diameter</span><span class="p">,</span> <span class="n">throat_diameter</span><span class="o">=</span><span class="n">throat_diameter</span>
     <span class="p">)</span><span class="o">.</span><span class="n">T</span>
@@ -247,34 +264,45 @@
     <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;pore1&quot;</span><span class="p">:</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">F1</span><span class="p">,</span> <span class="s2">&quot;throat&quot;</span><span class="p">:</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">Ft</span><span class="p">,</span> <span class="s2">&quot;pore2&quot;</span><span class="p">:</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">F2</span><span class="p">}</span></div>
 
 
-<div class="viewcode-block" id="circles_and_rectangles"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.diffusive_size_factors.circles_and_rectangles.html#openpnm.models.geometry.diffusive_size_factors.circles_and_rectangles">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
-<span class="k">def</span> <span class="nf">circles_and_rectangles</span><span class="p">(</span>
+<div class="viewcode-block" id="circles_and_rectangles"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.diffusive_size_factors.circles_and_rectangles.html#openpnm.models.geometry.diffusive_size_factors.circles_and_rectangles">[docs]</a><span class="k">def</span> <span class="nf">circles_and_rectangles</span><span class="p">(</span>
     <span class="n">target</span><span class="p">,</span>
     <span class="n">pore_diameter</span><span class="o">=</span><span class="s2">&quot;pore.diameter&quot;</span><span class="p">,</span>
     <span class="n">throat_diameter</span><span class="o">=</span><span class="s2">&quot;throat.diameter&quot;</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Computes diffusive shape coefficient for conduits assuming pores are</span>
-<span class="sd">    circles and throats are rectangles</span>
+<span class="sd">    circles and throats are rectangles.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(models.geometry.diffusive_size_factor.parameters)s</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    %(models.geometry.diffusive_size_factor.returns)s</span>
+<span class="sd">    target : GenericGeometry</span>
+<span class="sd">        Geometry object which this model is associated with. This controls</span>
+<span class="sd">        the length of the calculated array, and also provides access to</span>
+<span class="sd">        other necessary properties.</span>
+<span class="sd">    pore_diameter : str</span>
+<span class="sd">        Dictionary key of the pore diameter values.</span>
+<span class="sd">    throat_diameter : str</span>
+<span class="sd">        Dictionary key of the throat diameter values.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    %(models.geometry.diffusive_size_factor.notes)s</span>
+<span class="sd">    The diffusive size factor is the geometrical part of the pre-factor in</span>
+<span class="sd">    Fick&#39;s law:</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        n_A = \frac{A}{L} \Delta C_A</span>
+<span class="sd">            = S_{diffusive} D_{AB} \Delta C_A</span>
+
+<span class="sd">    Thus :math:`S_{diffusive}` represents the combined effect of the area and</span>
+<span class="sd">    length of the *conduit*, which consists of a throat and 1/2 of the pore</span>
+<span class="sd">    on each end.</span>
 
 <span class="sd">    This model should only be used for true 2D networks, i.e. with planar</span>
 <span class="sd">    symmetry.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">D1</span><span class="p">,</span> <span class="n">Dt</span><span class="p">,</span> <span class="n">D2</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">get_conduit_data</span><span class="p">(</span><span class="n">poreprop</span><span class="o">=</span><span class="n">pore_diameter</span><span class="p">,</span>
-                                                 <span class="n">throatprop</span><span class="o">=</span><span class="n">throat_diameter</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">D1</span><span class="p">,</span> <span class="n">Dt</span><span class="p">,</span> <span class="n">D2</span> <span class="o">=</span> <span class="n">_get_conduit_diameters</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">pore_diameter</span><span class="p">,</span> <span class="n">throat_diameter</span><span class="p">)</span>
     <span class="n">L1</span><span class="p">,</span> <span class="n">Lt</span><span class="p">,</span> <span class="n">L2</span> <span class="o">=</span> <span class="n">_conduit_lengths</span><span class="o">.</span><span class="n">circles_and_rectangles</span><span class="p">(</span>
         <span class="n">target</span><span class="p">,</span> <span class="n">pore_diameter</span><span class="o">=</span><span class="n">pore_diameter</span><span class="p">,</span> <span class="n">throat_diameter</span><span class="o">=</span><span class="n">throat_diameter</span>
     <span class="p">)</span><span class="o">.</span><span class="n">T</span>
@@ -287,8 +315,7 @@
     <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;pore1&quot;</span><span class="p">:</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">F1</span><span class="p">,</span> <span class="s2">&quot;throat&quot;</span><span class="p">:</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">Ft</span><span class="p">,</span> <span class="s2">&quot;pore2&quot;</span><span class="p">:</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">F2</span><span class="p">}</span></div>
 
 
-<div class="viewcode-block" id="cones_and_cylinders"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.diffusive_size_factors.cones_and_cylinders.html#openpnm.models.geometry.diffusive_size_factors.cones_and_cylinders">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
-<span class="k">def</span> <span class="nf">cones_and_cylinders</span><span class="p">(</span>
+<div class="viewcode-block" id="cones_and_cylinders"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.diffusive_size_factors.cones_and_cylinders.html#openpnm.models.geometry.diffusive_size_factors.cones_and_cylinders">[docs]</a><span class="k">def</span> <span class="nf">cones_and_cylinders</span><span class="p">(</span>
     <span class="n">target</span><span class="p">,</span>
     <span class="n">pore_diameter</span><span class="o">=</span><span class="s2">&quot;pore.diameter&quot;</span><span class="p">,</span>
     <span class="n">throat_diameter</span><span class="o">=</span><span class="s2">&quot;throat.diameter&quot;</span><span class="p">,</span>
@@ -299,22 +326,36 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(models.geometry.diffusive_size_factor.parameters)s</span>
+<span class="sd">    target : GenericGeometry</span>
+<span class="sd">        Geometry object which this model is associated with. This controls</span>
+<span class="sd">        the length of the calculated array, and also provides access to</span>
+<span class="sd">        other necessary properties.</span>
+<span class="sd">    pore_diameter : str</span>
+<span class="sd">        Dictionary key of the pore diameter values.</span>
+<span class="sd">    throat_diameter : str</span>
+<span class="sd">        Dictionary key of the throat diameter values.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    %(models.geometry.diffusive_size_factor.returns)s</span>
+<span class="sd">    A dictionary containing the diffusive_shape_coefficient, which can be</span>
+<span class="sd">    accessed via the dict keys &#39;pore1&#39;, &#39;pore2&#39;, and &#39;throat&#39;.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    %(models.geometry.diffusive_size_factor.notes)s</span>
+<span class="sd">    The diffusive size factor is the geometrical part of the pre-factor in</span>
+<span class="sd">    Fick&#39;s law:</span>
 
-<span class="sd">    This model should only be used for true 2D networks, i.e. with planar</span>
-<span class="sd">    symmetry.</span>
+<span class="sd">    .. math::</span>
+
+<span class="sd">        n_A = \frac{A}{L} \Delta C_A</span>
+<span class="sd">            = S_{diffusive} D_{AB} \Delta C_A</span>
+
+<span class="sd">    Thus :math:`S_{diffusive}` represents the combined effect of the area and</span>
+<span class="sd">    length of the *conduit*, which consists of a throat and 1/2 of the pore</span>
+<span class="sd">    on each end.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">D1</span><span class="p">,</span> <span class="n">Dt</span><span class="p">,</span> <span class="n">D2</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">get_conduit_data</span><span class="p">(</span><span class="n">poreprop</span><span class="o">=</span><span class="n">pore_diameter</span><span class="p">,</span>
-                                                 <span class="n">throatprop</span><span class="o">=</span><span class="n">throat_diameter</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">D1</span><span class="p">,</span> <span class="n">Dt</span><span class="p">,</span> <span class="n">D2</span> <span class="o">=</span> <span class="n">_get_conduit_diameters</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">pore_diameter</span><span class="p">,</span> <span class="n">throat_diameter</span><span class="p">)</span>
     <span class="n">L1</span><span class="p">,</span> <span class="n">Lt</span><span class="p">,</span> <span class="n">L2</span> <span class="o">=</span> <span class="n">_conduit_lengths</span><span class="o">.</span><span class="n">cones_and_cylinders</span><span class="p">(</span>
         <span class="n">target</span><span class="p">,</span> <span class="n">pore_diameter</span><span class="o">=</span><span class="n">pore_diameter</span><span class="p">,</span> <span class="n">throat_diameter</span><span class="o">=</span><span class="n">throat_diameter</span>
     <span class="p">)</span><span class="o">.</span><span class="n">T</span>
@@ -327,8 +368,7 @@
     <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;pore1&quot;</span><span class="p">:</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">F1</span><span class="p">,</span> <span class="s2">&quot;throat&quot;</span><span class="p">:</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">Ft</span><span class="p">,</span> <span class="s2">&quot;pore2&quot;</span><span class="p">:</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">F2</span><span class="p">}</span></div>
 
 
-<div class="viewcode-block" id="trapezoids_and_rectangles"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.diffusive_size_factors.trapezoids_and_rectangles.html#openpnm.models.geometry.diffusive_size_factors.trapezoids_and_rectangles">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
-<span class="k">def</span> <span class="nf">trapezoids_and_rectangles</span><span class="p">(</span>
+<div class="viewcode-block" id="trapezoids_and_rectangles"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.diffusive_size_factors.trapezoids_and_rectangles.html#openpnm.models.geometry.diffusive_size_factors.trapezoids_and_rectangles">[docs]</a><span class="k">def</span> <span class="nf">trapezoids_and_rectangles</span><span class="p">(</span>
     <span class="n">target</span><span class="p">,</span>
     <span class="n">pore_diameter</span><span class="o">=</span><span class="s2">&quot;pore.diameter&quot;</span><span class="p">,</span>
     <span class="n">throat_diameter</span><span class="o">=</span><span class="s2">&quot;throat.diameter&quot;</span><span class="p">,</span>
@@ -339,22 +379,34 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(models.geometry.diffusive_size_factor.parameters)s</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    %(models.geometry.diffusive_size_factor.returns)s</span>
+<span class="sd">    target : GenericGeometry</span>
+<span class="sd">        Geometry object which this model is associated with. This controls</span>
+<span class="sd">        the length of the calculated array, and also provides access to</span>
+<span class="sd">        other necessary properties.</span>
+<span class="sd">    pore_diameter : str</span>
+<span class="sd">        Dictionary key of the pore diameter values.</span>
+<span class="sd">    throat_diameter : str</span>
+<span class="sd">        Dictionary key of the throat diameter values.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    %(models.geometry.diffusive_size_factor.notes)s</span>
+<span class="sd">    The diffusive size factor is the geometrical part of the pre-factor in</span>
+<span class="sd">    Fick&#39;s law:</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        n_A = \frac{A}{L} \Delta C_A</span>
+<span class="sd">            = S_{diffusive} D_{AB} \Delta C_A</span>
+
+<span class="sd">    Thus :math:`S_{diffusive}` represents the combined effect of the area and</span>
+<span class="sd">    length of the *conduit*, which consists of a throat and 1/2 of the pore</span>
+<span class="sd">    on each end.</span>
 
 <span class="sd">    This model should only be used for true 2D networks, i.e. with planar</span>
 <span class="sd">    symmetry.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">D1</span><span class="p">,</span> <span class="n">Dt</span><span class="p">,</span> <span class="n">D2</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">get_conduit_data</span><span class="p">(</span><span class="n">poreprop</span><span class="o">=</span><span class="n">pore_diameter</span><span class="p">,</span>
-                                                 <span class="n">throatprop</span><span class="o">=</span><span class="n">throat_diameter</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">D1</span><span class="p">,</span> <span class="n">Dt</span><span class="p">,</span> <span class="n">D2</span> <span class="o">=</span> <span class="n">_get_conduit_diameters</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">pore_diameter</span><span class="p">,</span> <span class="n">throat_diameter</span><span class="p">)</span>
     <span class="n">L1</span><span class="p">,</span> <span class="n">Lt</span><span class="p">,</span> <span class="n">L2</span> <span class="o">=</span> <span class="n">_conduit_lengths</span><span class="o">.</span><span class="n">trapezoids_and_rectangles</span><span class="p">(</span>
         <span class="n">target</span><span class="p">,</span> <span class="n">pore_diameter</span><span class="o">=</span><span class="n">pore_diameter</span><span class="p">,</span> <span class="n">throat_diameter</span><span class="o">=</span><span class="n">throat_diameter</span>
     <span class="p">)</span><span class="o">.</span><span class="n">T</span>
@@ -384,22 +436,31 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(models.geometry.diffusive_size_factor.parameters)s</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    %(models.geometry.diffusive_size_factor.returns)s</span>
+<span class="sd">    target : GenericGeometry</span>
+<span class="sd">        Geometry object which this model is associated with. This controls</span>
+<span class="sd">        the length of the calculated array, and also provides access to</span>
+<span class="sd">        other necessary properties.</span>
+<span class="sd">    pore_diameter : str</span>
+<span class="sd">        Dictionary key of the pore diameter values.</span>
+<span class="sd">    throat_diameter : str</span>
+<span class="sd">        Dictionary key of the throat diameter values.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    %(models.geometry.diffusive_size_factor.notes)s</span>
+<span class="sd">    The diffusive size factor is the geometrical part of the pre-factor in</span>
+<span class="sd">    Fick&#39;s law:</span>
 
-<span class="sd">    This model should only be used for true 2D networks, i.e. with planar</span>
-<span class="sd">    symmetry.</span>
+<span class="sd">    .. math::</span>
+
+<span class="sd">        n_A = \frac{A}{L} \Delta C_A</span>
+<span class="sd">            = S_{diffusive} D_{AB} \Delta C_A</span>
+
+<span class="sd">    Thus :math:`S_{diffusive}` represents the combined effect of the area and</span>
+<span class="sd">    length of the *conduit*, which consists of a throat and 1/2 of the pore</span>
+<span class="sd">    on each end.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">D1</span><span class="p">,</span> <span class="n">Dt</span><span class="p">,</span> <span class="n">D2</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">get_conduit_data</span><span class="p">(</span><span class="n">poreprop</span><span class="o">=</span><span class="n">pore_diameter</span><span class="p">,</span>
-                                                 <span class="n">throatprop</span><span class="o">=</span><span class="n">throat_diameter</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">D1</span><span class="p">,</span> <span class="n">Dt</span><span class="p">,</span> <span class="n">D2</span> <span class="o">=</span> <span class="n">_get_conduit_diameters</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">pore_diameter</span><span class="p">,</span> <span class="n">throat_diameter</span><span class="p">)</span>
     <span class="n">L1</span><span class="p">,</span> <span class="n">Lt</span><span class="p">,</span> <span class="n">L2</span> <span class="o">=</span> <span class="n">_conduit_lengths</span><span class="o">.</span><span class="n">pyramids_and_cuboids</span><span class="p">(</span>
         <span class="n">target</span><span class="p">,</span> <span class="n">pore_diameter</span><span class="o">=</span><span class="n">pore_diameter</span><span class="p">,</span> <span class="n">throat_diameter</span><span class="o">=</span><span class="n">throat_diameter</span>
     <span class="p">)</span><span class="o">.</span><span class="n">T</span>
@@ -412,8 +473,7 @@
     <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;pore1&quot;</span><span class="p">:</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">F1</span><span class="p">,</span> <span class="s2">&quot;throat&quot;</span><span class="p">:</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">Ft</span><span class="p">,</span> <span class="s2">&quot;pore2&quot;</span><span class="p">:</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">F2</span><span class="p">}</span></div>
 
 
-<div class="viewcode-block" id="cubes_and_cuboids"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.diffusive_size_factors.cubes_and_cuboids.html#openpnm.models.geometry.diffusive_size_factors.cubes_and_cuboids">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
-<span class="k">def</span> <span class="nf">cubes_and_cuboids</span><span class="p">(</span>
+<div class="viewcode-block" id="cubes_and_cuboids"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.diffusive_size_factors.cubes_and_cuboids.html#openpnm.models.geometry.diffusive_size_factors.cubes_and_cuboids">[docs]</a><span class="k">def</span> <span class="nf">cubes_and_cuboids</span><span class="p">(</span>
     <span class="n">target</span><span class="p">,</span>
     <span class="n">pore_diameter</span><span class="o">=</span><span class="s2">&quot;pore.diameter&quot;</span><span class="p">,</span>
     <span class="n">throat_diameter</span><span class="o">=</span><span class="s2">&quot;throat.diameter&quot;</span><span class="p">,</span>
@@ -426,26 +486,35 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(models.geometry.diffusive_size_factor.parameters)s</span>
+<span class="sd">    target : GenericGeometry</span>
+<span class="sd">        Geometry object which this model is associated with. This controls</span>
+<span class="sd">        the length of the calculated array, and also provides access to</span>
+<span class="sd">        other necessary properties.</span>
+<span class="sd">    pore_diameter : str</span>
+<span class="sd">        Dictionary key of the pore diameter values.</span>
+<span class="sd">    throat_diameter : str</span>
+<span class="sd">        Dictionary key of the throat diameter values.</span>
 <span class="sd">    pore_aspect : list</span>
 <span class="sd">        Aspect ratio of the pores</span>
 <span class="sd">    throat_aspect : list</span>
 <span class="sd">        Aspect ratio of the throats</span>
 
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    %(models.geometry.diffusive_size_factor.returns)s</span>
-
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    %(models.geometry.diffusive_size_factor.notes)s</span>
+<span class="sd">    The diffusive size factor is the geometrical part of the pre-factor in</span>
+<span class="sd">    Fick&#39;s law:</span>
 
-<span class="sd">    This model should only be used for true 2D networks, i.e. with planar</span>
-<span class="sd">    symmetry.</span>
+<span class="sd">    .. math::</span>
+
+<span class="sd">        n_A = \frac{A}{L} \Delta C_A</span>
+<span class="sd">            = S_{diffusive} D_{AB} \Delta C_A</span>
+
+<span class="sd">    Thus :math:`S_{diffusive}` represents the combined effect of the area and</span>
+<span class="sd">    length of the *conduit*, which consists of a throat and 1/2 of the pore</span>
+<span class="sd">    on each end.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">D1</span><span class="p">,</span> <span class="n">Dt</span><span class="p">,</span> <span class="n">D2</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">get_conduit_data</span><span class="p">(</span><span class="n">poreprop</span><span class="o">=</span><span class="n">pore_diameter</span><span class="p">,</span>
-                                                 <span class="n">throatprop</span><span class="o">=</span><span class="n">throat_diameter</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">D1</span><span class="p">,</span> <span class="n">Dt</span><span class="p">,</span> <span class="n">D2</span> <span class="o">=</span> <span class="n">_get_conduit_diameters</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">pore_diameter</span><span class="p">,</span> <span class="n">throat_diameter</span><span class="p">)</span>
     <span class="n">L1</span><span class="p">,</span> <span class="n">Lt</span><span class="p">,</span> <span class="n">L2</span> <span class="o">=</span> <span class="n">_conduit_lengths</span><span class="o">.</span><span class="n">cubes_and_cuboids</span><span class="p">(</span>
         <span class="n">target</span><span class="p">,</span> <span class="n">pore_diameter</span><span class="o">=</span><span class="n">pore_diameter</span><span class="p">,</span> <span class="n">throat_diameter</span><span class="o">=</span><span class="n">throat_diameter</span>
     <span class="p">)</span><span class="o">.</span><span class="n">T</span>
@@ -458,8 +527,7 @@
     <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;pore1&quot;</span><span class="p">:</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">F1</span><span class="p">,</span> <span class="s2">&quot;throat&quot;</span><span class="p">:</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">Ft</span><span class="p">,</span> <span class="s2">&quot;pore2&quot;</span><span class="p">:</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">F2</span><span class="p">}</span></div>
 
 
-<div class="viewcode-block" id="squares_and_rectangles"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.diffusive_size_factors.squares_and_rectangles.html#openpnm.models.geometry.diffusive_size_factors.squares_and_rectangles">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
-<span class="k">def</span> <span class="nf">squares_and_rectangles</span><span class="p">(</span>
+<div class="viewcode-block" id="squares_and_rectangles"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.diffusive_size_factors.squares_and_rectangles.html#openpnm.models.geometry.diffusive_size_factors.squares_and_rectangles">[docs]</a><span class="k">def</span> <span class="nf">squares_and_rectangles</span><span class="p">(</span>
     <span class="n">target</span><span class="p">,</span>
     <span class="n">pore_diameter</span><span class="o">=</span><span class="s2">&quot;pore.diameter&quot;</span><span class="p">,</span>
     <span class="n">throat_diameter</span><span class="o">=</span><span class="s2">&quot;throat.diameter&quot;</span><span class="p">,</span>
@@ -472,26 +540,38 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(models.geometry.diffusive_size_factor.parameters)s</span>
+<span class="sd">    target : GenericGeometry</span>
+<span class="sd">        Geometry object which this model is associated with. This controls</span>
+<span class="sd">        the length of the calculated array, and also provides access to</span>
+<span class="sd">        other necessary properties.</span>
+<span class="sd">    pore_diameter : str</span>
+<span class="sd">        Dictionary key of the pore diameter values.</span>
+<span class="sd">    throat_diameter : str</span>
+<span class="sd">        Dictionary key of the throat diameter values.</span>
 <span class="sd">    pore_aspect : list</span>
 <span class="sd">        Aspect ratio of the pores</span>
 <span class="sd">    throat_aspect : list</span>
 <span class="sd">        Aspect ratio of the throats</span>
 
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    %(models.geometry.diffusive_size_factor.returns)s</span>
-
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    %(models.geometry.diffusive_size_factor.notes)s</span>
+<span class="sd">    The diffusive size factor is the geometrical part of the pre-factor in</span>
+<span class="sd">    Fick&#39;s law:</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        n_A = \frac{A}{L} \Delta C_A</span>
+<span class="sd">            = S_{diffusive} D_{AB} \Delta C_A</span>
+
+<span class="sd">    Thus :math:`S_{diffusive}` represents the combined effect of the area and</span>
+<span class="sd">    length of the *conduit*, which consists of a throat and 1/2 of the pore</span>
+<span class="sd">    on each end.</span>
 
 <span class="sd">    This model should only be used for true 2D networks, i.e. with planar</span>
 <span class="sd">    symmetry.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">D1</span><span class="p">,</span> <span class="n">Dt</span><span class="p">,</span> <span class="n">D2</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">get_conduit_data</span><span class="p">(</span><span class="n">poreprop</span><span class="o">=</span><span class="n">pore_diameter</span><span class="p">,</span>
-                                                 <span class="n">throatprop</span><span class="o">=</span><span class="n">throat_diameter</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">D1</span><span class="p">,</span> <span class="n">Dt</span><span class="p">,</span> <span class="n">D2</span> <span class="o">=</span> <span class="n">_get_conduit_diameters</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">pore_diameter</span><span class="p">,</span> <span class="n">throat_diameter</span><span class="p">)</span>
     <span class="n">L1</span><span class="p">,</span> <span class="n">Lt</span><span class="p">,</span> <span class="n">L2</span> <span class="o">=</span> <span class="n">_conduit_lengths</span><span class="o">.</span><span class="n">squares_and_rectangles</span><span class="p">(</span>
         <span class="n">target</span><span class="p">,</span> <span class="n">pore_diameter</span><span class="o">=</span><span class="n">pore_diameter</span><span class="p">,</span> <span class="n">throat_diameter</span><span class="o">=</span><span class="n">throat_diameter</span>
     <span class="p">)</span><span class="o">.</span><span class="n">T</span>
@@ -515,28 +595,36 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(models.geometry.diffusive_size_factor.parameters)s</span>
+<span class="sd">    target : GenericGeometry</span>
+<span class="sd">        Geometry object which this model is associated with. This controls</span>
+<span class="sd">        the length of the calculated array, and also provides access to</span>
+<span class="sd">        other necessary properties.</span>
+<span class="sd">    pore_diameter : str</span>
+<span class="sd">        Dictionary key of the pore diameter values.</span>
+<span class="sd">    throat_diameter : str</span>
+<span class="sd">        Dictionary key of the throat diameter values.</span>
 <span class="sd">    midpoint : str, optional</span>
-<span class="sd">        Name of the dictionary key on ``target`` where the array containing</span>
-<span class="sd">        throat midpoint values is stored</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    %(models.geometry.diffusive_size_factor.returns)s</span>
+<span class="sd">        Dictionary key of the midpoint values.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    %(models.geometry.diffusive_size_factor.notes)s</span>
+<span class="sd">    The diffusive size factor is the geometrical part of the pre-factor in</span>
+<span class="sd">    Fick&#39;s law:</span>
 
-<span class="sd">    This model should only be used for true 2D networks, i.e. with planar</span>
-<span class="sd">    symmetry.</span>
+<span class="sd">    .. math::</span>
+
+<span class="sd">        n_A = \frac{A}{L} \Delta C_A</span>
+<span class="sd">            = S_{diffusive} D_{AB} \Delta C_A</span>
+
+<span class="sd">    Thus :math:`S_{diffusive}` represents the combined effect of the area and</span>
+<span class="sd">    length of the *conduit*, which consists of a throat and 1/2 of the pore</span>
+<span class="sd">    on each end.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 
-<div class="viewcode-block" id="intersecting_trapezoids"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.diffusive_size_factors.intersecting_trapezoids.html#openpnm.models.geometry.diffusive_size_factors.intersecting_trapezoids">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
-<span class="k">def</span> <span class="nf">intersecting_trapezoids</span><span class="p">(</span>
+<div class="viewcode-block" id="intersecting_trapezoids"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.diffusive_size_factors.intersecting_trapezoids.html#openpnm.models.geometry.diffusive_size_factors.intersecting_trapezoids">[docs]</a><span class="k">def</span> <span class="nf">intersecting_trapezoids</span><span class="p">(</span>
     <span class="n">target</span><span class="p">,</span>
     <span class="n">pore_diameter</span><span class="o">=</span><span class="s2">&quot;pore.diameter&quot;</span><span class="p">,</span>
     <span class="n">throat_diameter</span><span class="o">=</span><span class="s2">&quot;throat.diameter&quot;</span><span class="p">,</span>
@@ -547,18 +635,28 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(models.geometry.diffusive_size_factor.parameters)s</span>
-<span class="sd">    midpoint : str, optional</span>
-<span class="sd">        Name of the dictionary key on ``target`` where the array containing</span>
-<span class="sd">        throat midpoint values is stored</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    %(models.geometry.diffusive_size_factor.returns)s</span>
+<span class="sd">    target : GenericGeometry</span>
+<span class="sd">        Geometry object which this model is associated with. This controls</span>
+<span class="sd">        the length of the calculated array, and also provides access to</span>
+<span class="sd">        other necessary properties.</span>
+<span class="sd">    pore_diameter : str</span>
+<span class="sd">        Dictionary key of the pore diameter values.</span>
+<span class="sd">    throat_diameter : str</span>
+<span class="sd">        Dictionary key of the throat diameter values.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    %(models.geometry.diffusive_size_factor.notes)s</span>
+<span class="sd">    The diffusive size factor is the geometrical part of the pre-factor in</span>
+<span class="sd">    Fick&#39;s law:</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        n_A = \frac{A}{L} \Delta C_A</span>
+<span class="sd">            = S_{diffusive} D_{AB} \Delta C_A</span>
+
+<span class="sd">    Thus :math:`S_{diffusive}` represents the combined effect of the area and</span>
+<span class="sd">    length of the *conduit*, which consists of a throat and 1/2 of the pore</span>
+<span class="sd">    on each end.</span>
 
 <span class="sd">    This model should only be used for true 2D networks, i.e. with planar</span>
 <span class="sd">    symmetry.</span>
@@ -578,18 +676,30 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(models.geometry.diffusive_size_factor.parameters)s</span>
+<span class="sd">    target : GenericGeometry</span>
+<span class="sd">        Geometry object which this model is associated with. This controls</span>
+<span class="sd">        the length of the calculated array, and also provides access to</span>
+<span class="sd">        other necessary properties.</span>
+<span class="sd">    pore_diameter : str</span>
+<span class="sd">        Dictionary key of the pore diameter values.</span>
+<span class="sd">    throat_diameter : str</span>
+<span class="sd">        Dictionary key of the throat diameter values.</span>
 <span class="sd">    midpoint : str, optional</span>
-<span class="sd">        Name of the dictionary key on ``target`` where the array containing</span>
-<span class="sd">        throat midpoint values is stored</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    %(models.geometry.diffusive_size_factor.returns)s</span>
+<span class="sd">        Dictionary key of the midpoint values.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    %(models.geometry.diffusive_size_factor.notes)s</span>
+<span class="sd">    The diffusive size factor is the geometrical part of the pre-factor in</span>
+<span class="sd">    Fick&#39;s law:</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        n_A = \frac{A}{L} \Delta C_A</span>
+<span class="sd">            = S_{diffusive} D_{AB} \Delta C_A</span>
+
+<span class="sd">    Thus :math:`S_{diffusive}` represents the combined effect of the area and</span>
+<span class="sd">    length of the *conduit*, which consists of a throat and 1/2 of the pore</span>
+<span class="sd">    on each end.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
@@ -607,21 +717,33 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(models.geometry.diffusive_size_factor.parameters)s</span>
+<span class="sd">    target : GenericGeometry</span>
+<span class="sd">        Geometry object which this model is associated with. This controls</span>
+<span class="sd">        the length of the calculated array, and also provides access to</span>
+<span class="sd">        other necessary properties.</span>
+<span class="sd">    pore_diameter : str</span>
+<span class="sd">        Dictionary key pointing to the pore diameter values.</span>
+<span class="sd">    throat_diameter : str</span>
+<span class="sd">        Dictionary key pointing to the throat diameter values.</span>
 <span class="sd">    n : int</span>
-<span class="sd">        Number of cylindrical divisions for each pore and throat</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    %(models.geometry.diffusive_size_factor.returns)s</span>
+<span class="sd">        Number of cylindrical divisions for each pore</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    %(models.geometry.diffusive_size_factor.notes)s</span>
+<span class="sd">    The diffusive size factor is the geometrical part of the pre-factor in</span>
+<span class="sd">    Fick&#39;s law:</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        n_A = \frac{A}{L} \Delta C_A</span>
+<span class="sd">            = S_{diffusive} D_{AB} \Delta C_A</span>
+
+<span class="sd">    Thus :math:`S_{diffusive}` represents the combined effect of the area and</span>
+<span class="sd">    length of the *conduit*, which consists of a throat and 1/2 of the pore</span>
+<span class="sd">    on each end.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">D1</span><span class="p">,</span> <span class="n">Dt</span><span class="p">,</span> <span class="n">D2</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">get_conduit_data</span><span class="p">(</span><span class="n">poreprop</span><span class="o">=</span><span class="n">pore_diameter</span><span class="p">,</span>
-                                                 <span class="n">throatprop</span><span class="o">=</span><span class="n">throat_diameter</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">D1</span><span class="p">,</span> <span class="n">Dt</span><span class="p">,</span> <span class="n">D2</span> <span class="o">=</span> <span class="n">_get_conduit_diameters</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">pore_diameter</span><span class="p">,</span> <span class="n">throat_diameter</span><span class="p">)</span>
     <span class="c1"># Ensure throats are never bigger than connected pores</span>
     <span class="n">Dt</span> <span class="o">=</span> <span class="n">_np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">Dt</span><span class="p">,</span> <span class="mf">0.99</span> <span class="o">*</span> <span class="n">_np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">D1</span><span class="p">,</span> <span class="n">D2</span><span class="p">))</span>
     <span class="n">L1</span><span class="p">,</span> <span class="n">Lt</span><span class="p">,</span> <span class="n">L2</span> <span class="o">=</span> <span class="n">_conduit_lengths</span><span class="o">.</span><span class="n">spheres_and_cylinders</span><span class="p">(</span>

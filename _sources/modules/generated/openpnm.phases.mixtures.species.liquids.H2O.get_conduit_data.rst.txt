@@ -1,0 +1,8 @@
+:orphan:
+
+get_conduit_data
+============================================================
+
+.. currentmodule:: openpnm.phases.mixtures.species.liquids
+
+.. automethod:: H2O.get_conduit_data

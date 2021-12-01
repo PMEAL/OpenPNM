@@ -1,0 +1,68 @@
+N2
+========================================
+
+.. currentmodule:: openpnm.phases.mixtures.species.gases
+
+.. autoclass:: N2
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            N2.add_model
+            N2.clear
+            N2.copy
+            N2.filter_by_label
+            N2.fromkeys
+            N2.get
+            N2.get_conduit_data
+            N2.interleave_data
+            N2.interpolate_data
+            N2.items
+            N2.keys
+            N2.labels
+            N2.num_pores
+            N2.num_throats
+            N2.params
+            N2.pop
+            N2.popitem
+            N2.pores
+            N2.props
+            N2.regenerate_models
+            N2.remove_model
+            N2.set_label
+            N2.setdefault
+            N2.show_hist
+            N2.throats
+            N2.to_indices
+            N2.to_mask
+            N2.update
+            N2.values
+   
+   
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            N2.Np
+            N2.Nt
+            N2.Ps
+            N2.Ts
+            N2.mixture
+            N2.models
+            N2.name
+            N2.network
+            N2.phase
+            N2.physics
+            N2.project
+            N2.settings
+   
+   
