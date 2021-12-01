@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.metrics.EffectiveDiffusivity.project
+============================================
+
+.. currentmodule:: openpnm.metrics
+
+attribute
+
+.. autoproperty:: openpnm.metrics.EffectiveDiffusivity.project
+

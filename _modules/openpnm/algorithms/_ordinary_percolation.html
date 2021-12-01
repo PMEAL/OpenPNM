@@ -226,7 +226,7 @@
     <span class="n">throat_volume</span> <span class="o">=</span> <span class="s1">&#39;throat.volume&#39;</span>
 
 
-<div class="viewcode-block" id="OrdinaryPercolation"><a class="viewcode-back" href="../../../modules/generated/openpnm.algorithms.OrdinaryPercolation.html#openpnm.algorithms.OrdinaryPercolation">[docs]</a><span class="k">class</span> <span class="nc">OrdinaryPercolation</span><span class="p">(</span><span class="n">GenericAlgorithm</span><span class="p">):</span>
+<div class="viewcode-block" id="OrdinaryPercolation"><a class="viewcode-back" href="../../../modules/generated/openpnm.algorithms.OrdinaryPercolation.html#openpnm.metrics.OrdinaryPercolation">[docs]</a><span class="k">class</span> <span class="nc">OrdinaryPercolation</span><span class="p">(</span><span class="n">GenericAlgorithm</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Ordinary percolation simulation with or without access limitations.</span>
 
@@ -265,7 +265,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;phase&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">phase</span><span class="o">.</span><span class="n">name</span>
 
-<div class="viewcode-block" id="OrdinaryPercolation.reset"><a class="viewcode-back" href="../../../modules/generated/openpnm.algorithms.OrdinaryPercolation.reset.html#openpnm.algorithms.OrdinaryPercolation.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="OrdinaryPercolation.reset"><a class="viewcode-back" href="../../../modules/generated/openpnm.algorithms.OrdinaryPercolation.reset.html#openpnm.metrics.OrdinaryPercolation.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Resets the various data arrays on the object back to their original</span>
 <span class="sd">        state. This is useful for repeating a simulation at different inlet</span>
@@ -280,7 +280,7 @@
         <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.residual&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.residual&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span></div>
 
-<div class="viewcode-block" id="OrdinaryPercolation.set_inlets"><a class="viewcode-back" href="../../../modules/generated/openpnm.algorithms.OrdinaryPercolation.set_inlets.html#openpnm.algorithms.OrdinaryPercolation.set_inlets">[docs]</a>    <span class="k">def</span> <span class="nf">set_inlets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="p">[],</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="OrdinaryPercolation.set_inlets"><a class="viewcode-back" href="../../../modules/generated/openpnm.algorithms.OrdinaryPercolation.set_inlets.html#openpnm.metrics.OrdinaryPercolation.set_inlets">[docs]</a>    <span class="k">def</span> <span class="nf">set_inlets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="p">[],</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sets the locations from which the invader enters the network</span>
 
@@ -305,7 +305,7 @@
         <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.invasion_pressure&#39;</span><span class="p">][</span><span class="n">Ps</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
         <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.invasion_sequence&#39;</span><span class="p">][</span><span class="n">Ps</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span></div>
 
-<div class="viewcode-block" id="OrdinaryPercolation.set_outlets"><a class="viewcode-back" href="../../../modules/generated/openpnm.algorithms.OrdinaryPercolation.set_outlets.html#openpnm.algorithms.OrdinaryPercolation.set_outlets">[docs]</a>    <span class="k">def</span> <span class="nf">set_outlets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="p">[],</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="OrdinaryPercolation.set_outlets"><a class="viewcode-back" href="../../../modules/generated/openpnm.algorithms.OrdinaryPercolation.set_outlets.html#openpnm.metrics.OrdinaryPercolation.set_outlets">[docs]</a>    <span class="k">def</span> <span class="nf">set_outlets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="p">[],</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sets the locations through which defender exits the network.</span>
 
@@ -330,7 +330,7 @@
             <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.outlets&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.outlets&#39;</span><span class="p">][</span><span class="n">Ps</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="OrdinaryPercolation.set_residual"><a class="viewcode-back" href="../../../modules/generated/openpnm.algorithms.OrdinaryPercolation.set_residual.html#openpnm.algorithms.OrdinaryPercolation.set_residual">[docs]</a>    <span class="k">def</span> <span class="nf">set_residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="p">[],</span> <span class="n">throats</span><span class="o">=</span><span class="p">[],</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="OrdinaryPercolation.set_residual"><a class="viewcode-back" href="../../../modules/generated/openpnm.algorithms.OrdinaryPercolation.set_residual.html#openpnm.metrics.OrdinaryPercolation.set_residual">[docs]</a>    <span class="k">def</span> <span class="nf">set_residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="p">[],</span> <span class="n">throats</span><span class="o">=</span><span class="p">[],</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Specify locations of any residual invader.  These locations are set</span>
 <span class="sd">        to invaded at the start of the simulation.</span>
@@ -360,7 +360,7 @@
             <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.residual&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.residual&#39;</span><span class="p">][</span><span class="n">Ts</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="OrdinaryPercolation.get_percolation_threshold"><a class="viewcode-back" href="../../../modules/generated/openpnm.algorithms.OrdinaryPercolation.get_percolation_threshold.html#openpnm.algorithms.OrdinaryPercolation.get_percolation_threshold">[docs]</a>    <span class="k">def</span> <span class="nf">get_percolation_threshold</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="OrdinaryPercolation.get_percolation_threshold"><a class="viewcode-back" href="../../../modules/generated/openpnm.algorithms.OrdinaryPercolation.get_percolation_threshold.html#openpnm.metrics.OrdinaryPercolation.get_percolation_threshold">[docs]</a>    <span class="k">def</span> <span class="nf">get_percolation_threshold</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Find the invasion threshold at which a cluster spans from the inlet to</span>
 <span class="sd">        the outlet sites</span>
@@ -380,7 +380,7 @@
                             <span class="o">+</span> <span class="s1">&#39;limited simulations&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">thresh</span></div>
 
-<div class="viewcode-block" id="OrdinaryPercolation.is_percolating"><a class="viewcode-back" href="../../../modules/generated/openpnm.algorithms.OrdinaryPercolation.is_percolating.html#openpnm.algorithms.OrdinaryPercolation.is_percolating">[docs]</a>    <span class="k">def</span> <span class="nf">is_percolating</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">applied_pressure</span><span class="p">):</span>
+<div class="viewcode-block" id="OrdinaryPercolation.is_percolating"><a class="viewcode-back" href="../../../modules/generated/openpnm.algorithms.OrdinaryPercolation.is_percolating.html#openpnm.metrics.OrdinaryPercolation.is_percolating">[docs]</a>    <span class="k">def</span> <span class="nf">is_percolating</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">applied_pressure</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a True or False value to indicate if a percolating cluster</span>
 <span class="sd">        spans between the inlet and outlet pores that were specified at the</span>
@@ -415,7 +415,7 @@
                                 <span class="n">inlets</span><span class="o">=</span><span class="n">Pin</span><span class="p">,</span> <span class="n">outlets</span><span class="o">=</span><span class="n">Pout</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">val</span></div>
 
-<div class="viewcode-block" id="OrdinaryPercolation.run"><a class="viewcode-back" href="../../../modules/generated/openpnm.algorithms.OrdinaryPercolation.run.html#openpnm.algorithms.OrdinaryPercolation.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">stop</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="OrdinaryPercolation.run"><a class="viewcode-back" href="../../../modules/generated/openpnm.algorithms.OrdinaryPercolation.run.html#openpnm.metrics.OrdinaryPercolation.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">stop</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Runs the percolation algorithm to determine which pores and throats</span>
 <span class="sd">        will be invaded at each given pressure point.</span>
@@ -509,7 +509,7 @@
         <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.invasion_sequence&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Pseq</span>
         <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.invasion_sequence&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Tseq</span></div>
 
-<div class="viewcode-block" id="OrdinaryPercolation.get_intrusion_data"><a class="viewcode-back" href="../../../modules/generated/openpnm.algorithms.OrdinaryPercolation.get_intrusion_data.html#openpnm.algorithms.OrdinaryPercolation.get_intrusion_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_intrusion_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Pc</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="OrdinaryPercolation.get_intrusion_data"><a class="viewcode-back" href="../../../modules/generated/openpnm.algorithms.OrdinaryPercolation.get_intrusion_data.html#openpnm.metrics.OrdinaryPercolation.get_intrusion_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_intrusion_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Pc</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Obtain the numerical values of the calculated intrusion curve.</span>
 
@@ -549,7 +549,7 @@
 
         <span class="k">return</span> <span class="n">data</span></div>
 
-<div class="viewcode-block" id="OrdinaryPercolation.plot_intrusion_curve"><a class="viewcode-back" href="../../../modules/generated/openpnm.algorithms.OrdinaryPercolation.plot_intrusion_curve.html#openpnm.algorithms.OrdinaryPercolation.plot_intrusion_curve">[docs]</a>    <span class="k">def</span> <span class="nf">plot_intrusion_curve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">num_markers</span><span class="o">=</span><span class="mi">25</span><span class="p">):</span>
+<div class="viewcode-block" id="OrdinaryPercolation.plot_intrusion_curve"><a class="viewcode-back" href="../../../modules/generated/openpnm.algorithms.OrdinaryPercolation.plot_intrusion_curve.html#openpnm.metrics.OrdinaryPercolation.plot_intrusion_curve">[docs]</a>    <span class="k">def</span> <span class="nf">plot_intrusion_curve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">num_markers</span><span class="o">=</span><span class="mi">25</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Plot the percolation curve as the invader volume or number fraction vs</span>
 <span class="sd">        the applied capillary pressure.</span>
@@ -566,7 +566,7 @@
         <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Capillary pressure&#39;</span><span class="p">)</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="OrdinaryPercolation.results"><a class="viewcode-back" href="../../../modules/generated/openpnm.algorithms.OrdinaryPercolation.results.html#openpnm.algorithms.OrdinaryPercolation.results">[docs]</a>    <span class="k">def</span> <span class="nf">results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Pc</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="OrdinaryPercolation.results"><a class="viewcode-back" href="../../../modules/generated/openpnm.algorithms.OrdinaryPercolation.results.html#openpnm.metrics.OrdinaryPercolation.results">[docs]</a>    <span class="k">def</span> <span class="nf">results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Pc</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This method determines which pores and throats are filled with invading</span>
 <span class="sd">        phase at the specified capillary pressure, and creates several arrays</span>

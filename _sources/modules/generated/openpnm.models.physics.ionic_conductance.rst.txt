@@ -1,5 +1,12 @@
 :noindex:
 
+.. raw:: html
+
+   <p hidden>This is a module</p>
+
+Ionic\_conductance
+==================
+
 .. automodule:: openpnm.models.physics.ionic_conductance
 
    

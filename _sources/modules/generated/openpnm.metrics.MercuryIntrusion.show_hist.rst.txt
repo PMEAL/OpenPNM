@@ -1,0 +1,8 @@
+:orphan:
+
+show_hist
+==========================================
+
+.. currentmodule:: openpnm.metrics
+
+.. automethod:: MercuryIntrusion.show_hist

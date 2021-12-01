@@ -98,9 +98,14 @@ window.onload = function () {
     */
 
     // Change h1 font to monospace if inside Module Reference
-    tmp = $("a:contains('Module Reference')")[0]
-    if (tmp.parentElement.classList.contains("active") == true){
-        $("h1").css("font-family", "Ubuntu Mono")
+    // tmp = $("a:contains('Module Reference')")[0]
+    // if (tmp.parentElement.classList.contains("active") == true){
+    //     $("h1").css("font-family", "Ubuntu Mono")
+    // }
+
+    tmp = $("p:hidden")
+    if (tmp.text().includes('module')) {
+        $("h2").hide()
     }
 
 };

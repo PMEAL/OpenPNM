@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.metrics.AbsolutePermeability.name
+=========================================
+
+.. currentmodule:: openpnm.metrics
+
+attribute
+
+.. autoproperty:: openpnm.metrics.AbsolutePermeability.name
+

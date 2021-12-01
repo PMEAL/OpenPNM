@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.metrics.GenericTransportMetrics.Np
+==========================================
+
+.. currentmodule:: openpnm.metrics
+
+attribute
+
+.. autoproperty:: openpnm.metrics.GenericTransportMetrics.Np
+

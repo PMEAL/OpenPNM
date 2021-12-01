@@ -1,5 +1,12 @@
 :noindex:
 
+.. raw:: html
+
+   <p hidden>This is a module</p>
+
+Pore\_surface\_area
+===================
+
 .. automodule:: openpnm.models.geometry.pore_surface_area
 
    

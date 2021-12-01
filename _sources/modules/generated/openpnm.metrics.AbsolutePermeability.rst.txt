@@ -1,0 +1,54 @@
+AbsolutePermeability
+====================================
+
+.. currentmodule:: openpnm.metrics
+
+.. autoclass:: AbsolutePermeability
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            AbsolutePermeability.clear
+            AbsolutePermeability.copy
+            AbsolutePermeability.fromkeys
+            AbsolutePermeability.get
+            AbsolutePermeability.get_conduit_data
+            AbsolutePermeability.interleave_data
+            AbsolutePermeability.interpolate_data
+            AbsolutePermeability.items
+            AbsolutePermeability.keys
+            AbsolutePermeability.pop
+            AbsolutePermeability.popitem
+            AbsolutePermeability.props
+            AbsolutePermeability.run
+            AbsolutePermeability.setdefault
+            AbsolutePermeability.show_hist
+            AbsolutePermeability.to_indices
+            AbsolutePermeability.to_mask
+            AbsolutePermeability.update
+            AbsolutePermeability.values
+   
+   
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            AbsolutePermeability.Np
+            AbsolutePermeability.Nt
+            AbsolutePermeability.Ps
+            AbsolutePermeability.Ts
+            AbsolutePermeability.name
+            AbsolutePermeability.network
+            AbsolutePermeability.project
+            AbsolutePermeability.settings
+   
+   

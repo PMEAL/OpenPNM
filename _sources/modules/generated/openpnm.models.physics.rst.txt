@@ -1,5 +1,12 @@
 :noindex:
 
+.. raw:: html
+
+   <p hidden>This is a module</p>
+
+Physics
+=======
+
 .. automodule:: openpnm.models.physics
 
    

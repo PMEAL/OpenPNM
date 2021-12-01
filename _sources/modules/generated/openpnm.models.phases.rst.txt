@@ -1,5 +1,12 @@
 :noindex:
 
+.. raw:: html
+
+   <p hidden>This is a module</p>
+
+Phases
+======
+
 .. automodule:: openpnm.models.phases
 
    

@@ -1,0 +1,8 @@
+:orphan:
+
+map_pores
+==========================================
+
+.. currentmodule:: openpnm.metrics
+
+.. automethod:: MercuryIntrusion.map_pores

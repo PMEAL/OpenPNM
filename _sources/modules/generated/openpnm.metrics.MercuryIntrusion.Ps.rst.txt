@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.metrics.MercuryIntrusion.Ps
+===================================
+
+.. currentmodule:: openpnm.metrics
+
+attribute
+
+.. autoproperty:: openpnm.metrics.MercuryIntrusion.Ps
+

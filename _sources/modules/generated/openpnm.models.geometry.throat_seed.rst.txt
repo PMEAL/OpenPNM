@@ -1,5 +1,12 @@
 :noindex:
 
+.. raw:: html
+
+   <p hidden>This is a module</p>
+
+Throat\_seed
+============
+
 .. automodule:: openpnm.models.geometry.throat_seed
 
    

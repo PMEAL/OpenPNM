@@ -1,5 +1,12 @@
 :noindex:
 
+.. raw:: html
+
+   <p hidden>This is a module</p>
+
+Gases
+=====
+
 .. automodule:: openpnm.phases.mixtures.species.gases
 
    

@@ -1,5 +1,12 @@
 :noindex:
 
+.. raw:: html
+
+   <p hidden>This is a module</p>
+
+Vapor\_pressure
+===============
+
 .. automodule:: openpnm.models.phases.vapor_pressure
 
    

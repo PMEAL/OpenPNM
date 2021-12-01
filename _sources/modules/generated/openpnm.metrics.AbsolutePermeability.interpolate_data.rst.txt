@@ -1,0 +1,8 @@
+:orphan:
+
+interpolate_data
+=====================================================
+
+.. currentmodule:: openpnm.metrics
+
+.. automethod:: AbsolutePermeability.interpolate_data

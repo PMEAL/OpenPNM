@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.metrics.AbsolutePermeability.Ts
+=======================================
+
+.. currentmodule:: openpnm.metrics
+
+attribute
+
+.. autoproperty:: openpnm.metrics.AbsolutePermeability.Ts
+

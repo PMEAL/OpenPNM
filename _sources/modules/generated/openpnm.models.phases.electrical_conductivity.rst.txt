@@ -1,5 +1,12 @@
 :noindex:
 
+.. raw:: html
+
+   <p hidden>This is a module</p>
+
+Electrical\_conductivity
+========================
+
 .. automodule:: openpnm.models.phases.electrical_conductivity
 
    

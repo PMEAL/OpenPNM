@@ -1,5 +1,12 @@
 :noindex:
 
+.. raw:: html
+
+   <p hidden>This is a module</p>
+
+Hydraulic\_conductance
+======================
+
 .. automodule:: openpnm.models.physics.hydraulic_conductance
 
    

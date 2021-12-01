@@ -1,5 +1,12 @@
 :noindex:
 
+.. raw:: html
+
+   <p hidden>This is a module</p>
+
+Partition\_coefficient
+======================
+
 .. automodule:: openpnm.models.phases.partition_coefficient
 
    

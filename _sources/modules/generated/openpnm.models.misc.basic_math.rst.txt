@@ -1,5 +1,12 @@
 :noindex:
 
+.. raw:: html
+
+   <p hidden>This is a module</p>
+
+Basic\_math
+===========
+
 .. automodule:: openpnm.models.misc.basic_math
 
    

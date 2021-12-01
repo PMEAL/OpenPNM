@@ -1,5 +1,12 @@
 :noindex:
 
+.. raw:: html
+
+   <p hidden>This is a module</p>
+
+Thermal\_conductivity
+=====================
+
 .. automodule:: openpnm.models.phases.thermal_conductivity
 
    

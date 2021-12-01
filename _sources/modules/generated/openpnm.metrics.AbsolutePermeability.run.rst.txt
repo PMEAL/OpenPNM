@@ -1,0 +1,8 @@
+:orphan:
+
+run
+========================================
+
+.. currentmodule:: openpnm.metrics
+
+.. automethod:: AbsolutePermeability.run

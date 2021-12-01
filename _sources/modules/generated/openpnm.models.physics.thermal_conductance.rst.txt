@@ -1,5 +1,12 @@
 :noindex:
 
+.. raw:: html
+
+   <p hidden>This is a module</p>
+
+Thermal\_conductance
+====================
+
 .. automodule:: openpnm.models.physics.thermal_conductance
 
    

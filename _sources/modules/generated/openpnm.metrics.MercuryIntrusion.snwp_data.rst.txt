@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.metrics.MercuryIntrusion.snwp\_data
+===========================================
+
+.. currentmodule:: openpnm.metrics
+
+attribute
+
+.. autoproperty:: openpnm.metrics.MercuryIntrusion.snwp_data
+

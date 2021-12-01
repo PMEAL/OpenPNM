@@ -1,5 +1,12 @@
 :noindex:
 
+.. raw:: html
+
+   <p hidden>This is a module</p>
+
+Ions
+====
+
 .. automodule:: openpnm.phases.mixtures.species.ions
 
    

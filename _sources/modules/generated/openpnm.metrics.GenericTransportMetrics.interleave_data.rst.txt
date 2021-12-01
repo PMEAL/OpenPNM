@@ -1,0 +1,8 @@
+:orphan:
+
+interleave_data
+=======================================================
+
+.. currentmodule:: openpnm.metrics
+
+.. automethod:: GenericTransportMetrics.interleave_data

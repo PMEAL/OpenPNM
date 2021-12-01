@@ -1,0 +1,54 @@
+EffectiveDiffusivity
+====================================
+
+.. currentmodule:: openpnm.metrics
+
+.. autoclass:: EffectiveDiffusivity
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            EffectiveDiffusivity.clear
+            EffectiveDiffusivity.copy
+            EffectiveDiffusivity.fromkeys
+            EffectiveDiffusivity.get
+            EffectiveDiffusivity.get_conduit_data
+            EffectiveDiffusivity.interleave_data
+            EffectiveDiffusivity.interpolate_data
+            EffectiveDiffusivity.items
+            EffectiveDiffusivity.keys
+            EffectiveDiffusivity.pop
+            EffectiveDiffusivity.popitem
+            EffectiveDiffusivity.props
+            EffectiveDiffusivity.run
+            EffectiveDiffusivity.setdefault
+            EffectiveDiffusivity.show_hist
+            EffectiveDiffusivity.to_indices
+            EffectiveDiffusivity.to_mask
+            EffectiveDiffusivity.update
+            EffectiveDiffusivity.values
+   
+   
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            EffectiveDiffusivity.Np
+            EffectiveDiffusivity.Nt
+            EffectiveDiffusivity.Ps
+            EffectiveDiffusivity.Ts
+            EffectiveDiffusivity.name
+            EffectiveDiffusivity.network
+            EffectiveDiffusivity.project
+            EffectiveDiffusivity.settings
+   
+   

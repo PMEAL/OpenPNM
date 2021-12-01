@@ -1,0 +1,8 @@
+:orphan:
+
+reset
+======================================
+
+.. currentmodule:: openpnm.metrics
+
+.. automethod:: MercuryIntrusion.reset

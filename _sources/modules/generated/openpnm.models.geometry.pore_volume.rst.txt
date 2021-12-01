@@ -1,5 +1,12 @@
 :noindex:
 
+.. raw:: html
+
+   <p hidden>This is a module</p>
+
+Pore\_volume
+============
+
 .. automodule:: openpnm.models.geometry.pore_volume
 
    

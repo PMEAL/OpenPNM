@@ -1,0 +1,8 @@
+:orphan:
+
+plot_intrusion_curve
+=====================================================
+
+.. currentmodule:: openpnm.metrics
+
+.. automethod:: MercuryIntrusion.plot_intrusion_curve

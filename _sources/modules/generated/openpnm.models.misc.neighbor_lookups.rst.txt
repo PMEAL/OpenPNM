@@ -1,5 +1,12 @@
 :noindex:
 
+.. raw:: html
+
+   <p hidden>This is a module</p>
+
+Neighbor\_lookups
+=================
+
 .. automodule:: openpnm.models.misc.neighbor_lookups
 
    

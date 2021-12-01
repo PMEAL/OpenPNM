@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.metrics.FormationFactor.settings
+========================================
+
+.. currentmodule:: openpnm.metrics
+
+attribute
+
+.. autoproperty:: openpnm.metrics.FormationFactor.settings
+

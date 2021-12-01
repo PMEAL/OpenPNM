@@ -1,5 +1,12 @@
 :noindex:
 
+.. raw:: html
+
+   <p hidden>This is a module</p>
+
+Surface\_tension
+================
+
 .. automodule:: openpnm.models.phases.surface_tension
 
    
