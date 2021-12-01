@@ -1,13 +1,8 @@
-"""
-============================================================
-petsc: A class for solving sparse linear systems using PETSc
-============================================================
-"""
 import sys
 import numpy as np
 import scipy as sp
 import scipy.sparse
-from openpnm.core import Base
+from openpnm.solvers import IterativeSolver
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 try:
@@ -19,80 +14,56 @@ except ModuleNotFoundError:
     pass
 
 
-class PETScSparseLinearSolver(Base):
+__all__ = ['PETScLinearSolver']
+
+
+class PETScLinearSolver(IterativeSolver):
     r"""
-    Solve the sparse linear system Ax = b using petsc solvers. Parallel
-    computing is supported and matrix partitioning over the available
-    cores is automatically handled by running:
+    Solves the sparse linear system Ax = b using petsc solvers.
 
-    $ mpirun -np 4 python3.5 script.py
+    Notes
+    -----
+    Parallel computing is supported and matrix partitioning over the
+    available cores is automatically handled by running:
 
-    for parallel computing.
+    .. code::
+
+        $ mpirun -np num_cores python script.py
+
+    where ``num_cores`` must be substituted with the number of cores.
 
     """
-    def __init__(self, A, b, settings=None):
-        r"""
-        Initialize the sparse system of linear equations.
-
-        Parameters
-        ----------
-        A : sparse matrix
-            2D mass matrix
-        b : ndarray
-            1D RHS vector
-        """
-        # Set some default settings
-        def_set = {'type': 'cg',
-                   'preconditioner': 'jacobi',
-                   'atol': 1e-06,
-                   'rtol': 1e-06,
-                   'maxiter': 1000}
-        self.settings._update(def_set)
-        self.settings._update(settings)
-        self.A = sp.sparse.csr_matrix(A)
-        self.b = b
-        # Matrix of coefficients size
-        self.m, self.n = (self.A).shape
-
     def _create_solver(self):
         r"""
         This method creates the petsc sparse linear solver.
         """
-        # http://www.mcs.anl.gov/petsc/petsc-current/docs/manualpages/KSP/KSPType.html#KSPType
-        iterative_solvers = ['richardson', 'chebyshev', 'cg', 'groppcg',
-                             'pipecg', 'pipecgrr', 'cgne', 'nash', 'stcg',
-                             'gltr', 'fcg', 'pipefcg', 'gmres', 'pipefgmres',
-                             'fgmres', 'lgmres', 'dgmres', 'pgmres', 'tcqmr',
-                             'bcgs', 'ibcgs', 'fbcgs', 'fbcgsr', 'bcgsl',
-                             'pipebcgs', 'cgs', 'tfqmr', 'cr', 'pipecr',
-                             'lsqr', 'preonly', 'qcg', 'bicg', 'minres',
-                             'symmlq', 'lcd', 'python', 'gcr', 'pipegcr',
-                             'tsirm', 'cgls', 'fetidp']
+        # https://petsc.org/release/docs/manualpages/KSP/KSPType.html
+        iterative = [
+            'richardson', 'chebyshev', 'cg', 'groppcg', 'pipecg', 'pipecgrr',
+            'cgne', 'nash', 'stcg', 'gltr', 'fcg', 'pipefcg', 'gmres',
+            'pipefgmres', 'fgmres', 'lgmres', 'dgmres', 'pgmres', 'tcqmr',
+            'bcgs', 'ibcgs', 'fbcgs', 'fbcgsr', 'bcgsl', 'pipebcgs', 'cgs',
+            'tfqmr', 'cr', 'pipecr', 'lsqr', 'preonly', 'qcg', 'bicg',
+            'minres', 'symmlq', 'lcd', 'python', 'gcr', 'pipegcr', 'tsirm',
+            'cgls', 'fetidp']
+        # https://petsc.org/release/docs/manualpages/PC/PCType.html
+        preconditioners = [
+            'none', 'jacobi', 'sor', 'lu', 'shell', 'bjacobi', 'mg',
+            'eisenstat', 'ilu', 'icc', 'asm', 'gasm', 'ksp', 'composite',
+            'redundant', 'spai', 'nn', 'cholesky', 'pbjacobi', 'mat', 'hypre',
+            'parms', 'fieldsplit', 'tfs', 'ml', 'galerkin', 'exotic', 'cp',
+            'bfbt', 'lsc', 'python', 'pfmg', 'syspfmg', 'redistribute', 'svd',
+            'gamg', 'sacusp', 'sacusppoly', 'bicgstabcusp', 'ainvcusp',
+            'chowiluviennacl', 'rowscalingviennacl', 'saviennacl', 'bddc',
+            'kaczmarz', 'telescope']
+        direct_lu = ['mumps', 'superlu_dist', 'umfpack', 'klu']
+        direct_cholesky = ['mumps', 'cholmod']
+        valid_solvers = iterative + direct_lu + direct_cholesky
 
-        # http://www.mcs.anl.gov/petsc/petsc-current/docs/manualpages/PC/PCType.html#PCType
-        preconditioners = ['none', 'jacobi', 'sor', 'lu', 'shell', 'bjacobi',
-                           'mg', 'eisenstat', 'ilu', 'icc', 'asm', 'gasm',
-                           'ksp', 'composite', 'redundant', 'spai', 'nn',
-                           'cholesky', 'pbjacobi', 'mat', 'hypre', 'parms',
-                           'fieldsplit', 'tfs', 'ml', 'galerkin', 'exotic',
-                           'cp', 'bfbt', 'lsc', 'python', 'pfmg', 'syspfmg',
-                           'redistribute', 'svd', 'gamg', 'sacusp',
-                           'sacusppoly', 'bicgstabcusp', 'ainvcusp',
-                           'chowiluviennacl', 'rowscalingviennacl',
-                           'saviennacl', 'bddc', 'kaczmarz', 'telescope']
+        solver = self.solver_type
+        preconditioner = self.preconditioner
 
-        lu_direct_solvers = ['mumps', 'superlu_dist', 'umfpack', 'klu']
-
-        cholesky_direct_solvers = ['mumps', 'cholmod']
-
-        solver = self.settings['type']
-        preconditioner = self.settings['preconditioner']
-        if solver not in (
-            iterative_solvers
-            + lu_direct_solvers
-            + cholesky_direct_solvers
-            + preconditioners
-        ):
+        if solver not in valid_solvers:
             raise Exception(f"{solver} solver not availabe, choose another solver")
         if preconditioner not in preconditioners:
             raise Exception(f"{preconditioner} not found, choose another preconditioner")
@@ -100,35 +71,32 @@ class PETScSparseLinearSolver(Base):
         self.ksp = PETSc.KSP()
         self.ksp.create(PETSc.COMM_WORLD)
 
-        if solver in lu_direct_solvers:
+        if solver in direct_lu:
             self.ksp.getPC().setType('lu')
             self.ksp.getPC().setFactorSolverType(solver)
             self.ksp.setType('preonly')
-
-        elif solver in cholesky_direct_solvers:
+        elif solver in direct_cholesky:
             self.ksp.getPC().setType('cholesky')
             self.ksp.getPC().setFactorSolverType(solver)
             self.ksp.setType('preonly')
-
         elif solver in preconditioners:
             self.ksp.getPC().setType(solver)
             self.ksp.setType('preonly')
-
-        elif solver in iterative_solvers:
+        elif solver in iterative:
             self.ksp.getPC().setType(preconditioner)
             self.ksp.setType(solver)
 
-    def _set_tolerances(self, atol=None, rtol=None, max_it=None):
+    def _set_tolerances(self, atol=None, rtol=None, maxiter=None):
         r"""
         Set absolute and relative tolerances, and maximum number of iterations.
         """
-        atol = self.settings['atol'] if atol is None else atol
-        rtol = self.settings['rtol'] if rtol is None else rtol
-        max_it = self.settings['maxiter'] if max_it is None else max_it
+        atol = self.atol if atol is None else atol
+        rtol = self.rtol if rtol is None else rtol
+        maxiter = self.maxiter if maxiter is None else maxiter
         # BUG: PETSc misses rtol requirement by ~10-20X -> Report to petsc4py
-        self.ksp.setTolerances(atol=None, rtol=rtol/50, max_it=max_it)
+        self.ksp.setTolerances(atol=None, rtol=rtol/50, max_it=maxiter)
 
-    def _initialize_A(self):
+    def _assemble_A(self):
         r"""
         This method creates the petsc sparse coefficients matrix from the
         OpenPNM scipy one. The method also equally decomposes the matrix at
@@ -163,7 +131,7 @@ class PETScSparseLinearSolver(Base):
         self.petsc_A.assemblyBegin()
         self.petsc_A.assemblyEnd()
 
-    def _initialize_b_x(self):
+    def _assemble_b_and_x(self):
         r"""
         Initialize the solution vector (self.petsc_x), which is a dense
         matrix (1D vector) and defines the rhs vector (self.petsc_b) from
@@ -189,18 +157,25 @@ class PETScSparseLinearSolver(Base):
         # Define the petsc rhs vector from the numpy one
         PETSc.Vec.setArray(self.petsc_b, self.b[self.Istart: self.Iend])
 
-    def solve(self, x0=None, atol=None, rtol=None, max_it=None):
+    def solve(self, A, b, x0=None, solver_type='cg', precondioner='jacobi',
+              maxiter=None, atol=None, rtol=None):
         r"""
-        This method solves the sparse linear system, converts the
-        solution vector from a PETSc.Vec instance to a numpy array,
-        and finally destroys all the petsc objects to free memory.
+        Solves and returns the solution to the linear system, Ax = b.
+
+        This method converts the solution vector from a PETSc.Vec
+        instance to a numpy array, and finally destroys all the PETSc
+        objects to free memory.
 
         Parameters
         ----------
+        A : csr_matrix
+            Coefficients matrix in Ax = b
+        b : ndarray
+            Right-hand-side vector in Ax = b
         solver_type : str, optional
             Default is the iterative solver 'cg' based on the
             Conjugate Gradient method.
-        preconditioner_type : str, optional
+        preconditioner: str, optional
             Default is the 'jacobi' preconditioner, i.e., diagonal
             scaling preconditioning. The preconditioner is used with
             iterative solvers. When a direct solver is used, this
@@ -212,25 +187,34 @@ class PETScSparseLinearSolver(Base):
 
         Returns
         -------
-        Returns a numpy array corresponding to the solution of
-        the linear sparse system Ax = b.
+        ndarray
+            The solution to Ax = b
 
         Notes
         -----
         Certain combinations of iterative solvers and precondioners
         or direct solvers and factorization types are not supported.
         The summary table of the different possibilities
-        can be found here:
-        https://www.mcs.anl.gov/petsc/documentation/linearsolvertable.html
+        can be found
+        `here <https://petsc.org/main/overview/linear_solve_table>`_
 
         """
+        self.b = b
+        self.A = sp.sparse.csr_matrix(A)
+        self.m, self.n = self.A.shape
         self.x0 = np.zeros_like(self.b) if x0 is None else x0
 
-        self._initialize_b_x()
-        self._initialize_A()
+        self.solver_type = solver_type
+        self.preconditioner = precondioner
+
+        self.atol = self._get_atol(self.b)
+        self.rtol = self._get_rtol(self.x0)
+
+        self._assemble_b_and_x()
+        self._assemble_A()
 
         self._create_solver()
-        self._set_tolerances(atol=atol, rtol=rtol, max_it=max_it)
+        self._set_tolerances(atol=atol, rtol=rtol, maxiter=maxiter)
         self.ksp.setOperators(self.petsc_A)
         self.ksp.setFromOptions()
 
@@ -252,4 +236,7 @@ class PETScSparseLinearSolver(Base):
         PETSc.Vec.destroy(self.petsc_x)
         PETSc.Vec.destroy(self.petsc_s)
 
-        return self.solution
+        # FIXME: fetch exit_code somehow from petsc
+        exit_code = 0
+
+        return self.solution, exit_code

@@ -76,7 +76,7 @@ members_to_exclude = [
     'reshape', 'resize', 'round', 'searchsorted', 'setfield', 'setflags',
     'shape', 'size', 'sort', 'squeeze', 'std', 'strides', 'sum',
     'swapaxes', 'take', 'tobytes', 'tofile', 'tolist', 'tostring',
-    'trace', 'transpose', 'var', 'view'
+    'trace', 'transpose', 'var', 'view', '__call__'
 ]
 
 autodoc_default_options = {
