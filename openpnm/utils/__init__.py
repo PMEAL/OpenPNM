@@ -1,6 +1,6 @@
 r"""
-Utils
-=====
+Utilities and helper classes/functions
+======================================
 
 This module contains two very important classes (Project and Workspace)
 as well as a number of helper classes.

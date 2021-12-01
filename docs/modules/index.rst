@@ -22,6 +22,7 @@ Module Reference
       openpnm.algorithms
       openpnm.topotools
       openpnm.io
+      openpnm.metrics
 
 
 .. COMMENT
@@ -38,3 +39,4 @@ Module Reference
    openpnm.algorithms
    openpnm.topotools
    openpnm.io
+   openpnm.metrics

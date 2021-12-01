@@ -1,6 +1,6 @@
 r"""
-Physics
-=======
+Object model for storing size-dependent thermophysical properties
+=================================================================
 
 This module contains the GenericPhysics class, along with a few preconfigured
 classes that include common pore-scale physical models

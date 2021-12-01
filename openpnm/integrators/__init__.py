@@ -1,6 +1,6 @@
 r"""
-Integrators
-===========
+Collection of ODE integrators for transient simulations
+=======================================================
 
 The ``integrators`` module contains wrapper classes for ode solvers.
 

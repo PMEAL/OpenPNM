@@ -1,6 +1,6 @@
 r"""
-Network
-=======
+Object model for storing topological information of the network
+===============================================================
 
 This module contains the ``GenericNetwork`` class, whose main purpose is to
 manage the topological representation of the Network. It also houses a

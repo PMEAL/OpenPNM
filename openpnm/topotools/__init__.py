@@ -1,6 +1,6 @@
 r"""
-TopoTools
-=========
+Collection of functions for manipulating network topology
+=========================================================
 
 This module contains a selection of functions that deal specifically with
 network topology.
