@@ -220,7 +220,7 @@ class GenericMixture(GenericPhase):
             The phase object of the component whose concentration is being
             specified
         values : array_like
-            The concentration of the given ``component `` in each pore.  This
+            The concentration of the given ``component`` in each pore.  This
             array must be *Np*-long, with one value for each pore in the
             network.  If a scalar is received it is applied to all pores.
 
@@ -247,7 +247,7 @@ class GenericMixture(GenericPhase):
         components : GenericPhase or name string
             The phase whose mole fraction is being specified
         values : array_like
-            The mole fraction of the given ``component `` in each pore.  This
+            The mole fraction of the given ``component`` in each pore.  This
             array must be *Np*-long, with one value between 0 and 1 for each
             pore in the network.  If a scalar is received it is applied to
             all pores.

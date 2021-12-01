@@ -7,11 +7,12 @@ generating sufficient information that can be turned into an openpnm network.
 
 """
 
-from .cubic import cubic
-from .delaunay import delaunay
-from .gabriel import gabriel
-from .voronoi import voronoi
-from .voronoi_delaunay_dual import voronoi_delaunay_dual
-from .template import cubic_template
-from .fcc import fcc
-from .bcc import bcc
+from ._cubic import cubic
+from ._delaunay import delaunay
+from ._gabriel import gabriel
+from ._voronoi import voronoi
+from ._voronoi_delaunay_dual import voronoi_delaunay_dual
+from ._template import cubic_template
+from ._fcc import fcc
+from ._bcc import bcc
+from . import tools

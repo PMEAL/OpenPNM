@@ -1,3 +1,8 @@
-from .Cl import Cl
-from .Na import Na
-from .Proton import Proton
+r"""
+Ions
+====
+
+"""
+from ._cl import Cl
+from ._na import Na
+from ._proton import Proton
