@@ -1,8 +1,6 @@
 r"""
-
-**openpnm.materials**
-
-----
+Collection of preconfigured Network-Geometry combinations
+=========================================================
 
 This module provides a library of preconfigured Network-Geometry combinations.
 
@@ -15,5 +13,5 @@ recipes that combine existing models in OpenPNM (e.g. ``BereaCubic``).
 
 """
 
-from .VoronoiFibers import VoronoiFibers
-from .BundleOfTubes import BundleOfTubes
+from ._voronoi_fibers import VoronoiFibers
+from ._bundle_of_tubes import BundleOfTubes

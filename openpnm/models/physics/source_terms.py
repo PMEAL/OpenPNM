@@ -26,31 +26,29 @@ def charge_conservation(target, phase, p_alg, e_alg, assumption):
 
     Parameters
     ----------
-    phase : OpenPNM Phase object
+    phase : GenericPhysics
             The phase on which the charge conservation equation is applied.
-
-    p_alg : OpenPNM Algorithm object
+    p_alg : GenericAlgorithm
             The algorithm used to enforce charge conservation.
-
-    e_alg : list of OpenPNM algorithms
+    e_alg : list[GenericAlgorithm]
             The list of algorithms used to solve for transport of different
             ionic species of the mixture phase.
-
-    assumption : string
-            A string correponding to the assumption adopted to enforce charge
+    assumption : str
+            A str correponding to the assumption adopted to enforce charge
             conservation.
 
     Returns
     -------
     A dictionary containing the following three items:
 
-        **'rate'** - The value of the source term function for the given list
-                     of algortihms under the provided assumption.
-
-        **'S1'** - A placeholder (zero array).
-
-        **'S2'** - The value of the source term function for the given list of
-                   algortihms under the provided assumption (same as 'rate').
+        'rate'
+            The value of the source term function for the given list
+            of algortihms under the provided assumption.
+        'S1'
+            A placeholder (zeros array).
+        'S2'
+            The value of the source term function for the given list of
+            algortihms under the provided assumption (same as 'rate').
 
     Notes
     -----
@@ -106,31 +104,32 @@ def standard_kinetics(target, X, prefactor, exponent):
 
     Parameters
     ----------
-    target : OpenPNM object
-        The OpenPNM object where the result will be applied.
-
-    X : string
+    target : GenericPhysics
+        The physics where the result will be applied.
+    X : str
         The dictionary key on the target object containing the the quantity
         of interest
-
-    prefactor, exponent : {string}
+    prefactor, exponent : str
         The dictionary keys on the target object containing the coefficients
         values to be used in the source term model
-
-    quantity : {string}
+    quantity : str
         The dictionary key on the target object containing the the quantity
         of interest
 
     Returns
     -------
-    A dictionary containing the following three items:
+    dict
+        A dictionary containing the following three items:
 
-        **'rate'** - The value of the source term function at the given X.
+            'rate'
+                The value of the source term function at the given X.
+            'S1'
+                The slope of the source term function at the given X.
+            'S2'
+                The intercept of the source term function at the given X.
 
-        **'S1'** - The slope of the source term function at the given X.
-
-        **'S2'** - The intercept of the source term function at the given X.
-
+    Notes
+    -----
     The slope and intercept provide a linearized source term equation about the
     current value of X as follow:
 
@@ -171,27 +170,29 @@ def linear(target, X, A1='', A2=''):
 
     Parameters
     ----------
-    target : OpenPNM object
-        The OpenPNM object where the result will be applied.
-
-    X : string
+    target : GenericPhysics
+        The physics where the result will be applied.
+    X : str
         The dictionary key on the target object containing the the quantity
         of interest
-
-    A1 -> A2 : string
+    A1 -> A2 : str
         The dictionary keys on the target object containing the coefficients
         values to be used in the source term model
 
     Returns
     -------
-    A dictionary containing the following three items:
+    dict
+        A dictionary containing the following three items:
 
-        **'rate'** - The value of the source term function at the given X.
+            'rate'
+                The value of the source term function at the given X.
+            'S1'
+                The slope of the source term function at the given X.
+            'S2'
+                The intercept of the source term function at the given X.
 
-        **'S1'** - The slope of the source term function at the given X.
-
-        **'S2'** - The intercept of the source term function at the given X.
-
+    Notes
+    -----
     The slope and intercept provide a linearized source term equation about the
     current value of X as follow:
 
@@ -220,27 +221,29 @@ def power_law(target, X, A1='', A2='', A3=''):
 
     Parameters
     ----------
-    target : OpenPNM object
-        The OpenPNM object where the result will be applied.
-
-    X : string
+    target : GenericPhysics
+        The physics where the result will be applied.
+    X : str
         The dictionary key on the target object containing the the quantity
         of interest
-
-    A1 -> A3 : string
+    A1 -> A3 : str
         The dictionary keys on the target object containing the coefficients
         values to be used in the source term model
 
     Returns
     -------
-    A dictionary containing the following three items:
+    dict
+        A dictionary containing the following three items:
 
-        **'rate'** - The value of the source term function at the given X.
+            'rate'
+                The value of the source term function at the given X.
+            'S1'
+                The slope of the source term function at the given X.
+            'S2'
+                The intercept of the source term function at the given X.
 
-        **'S1'** - The slope of the source term function at the given X.
-
-        **'S2'** - The intercept of the source term function at the given X.
-
+    Notes
+    -----
     The slope and intercept provide a linearized source term equation about the
     current value of X as follow:
 
@@ -270,27 +273,29 @@ def exponential(target, X, A1='', A2='', A3='', A4='', A5='', A6=''):
 
     Parameters
     ----------
-    target : OpenPNM object
-        The OpenPNM object where the result will be applied.
-
-    X : string
+    target : GenericPhysics
+        The physics where the result will be applied.
+    X : str
         The dictionary key on the target object containing the the quantity
         of interest
-
-    A1 -> A6 : string
+    A1 -> A6 : str
         The dictionary keys on the target object containing the coefficients
         values to be used in the source term model
 
     Returns
     -------
-    A dictionary containing the following three items:
+    dict
+        A dictionary containing the following three items:
 
-        **'rate'** - The value of the source term function at the given X.
+            'rate'
+                The value of the source term function at the given X.
+            'S1'
+                The slope of the source term function at the given X.
+            'S2'
+                The intercept of the source term function at the given X.
 
-        **'S1'** - The slope of the source term function at the given X.
-
-        **'S2'** - The intercept of the source term function at the given X.
-
+    Notes
+    -----
     The slope and intercept provide a linearized source term equation about the
     current value of X as follow:
 
@@ -323,27 +328,29 @@ def natural_exponential(target, X, A1='', A2='', A3='', A4='', A5=''):
 
     Parameters
     ----------
-    target : OpenPNM object
-        The OpenPNM object where the result will be applied.
-
-    X : string
+    target : GenericPhysics
+        The physics where the result will be applied.
+    X : str
         The dictionary key on the target object containing the the quantity
         of interest
-
-    A1 -> A5 : string
+    A1 -> A5 : str
         The dictionary keys on the target object containing the coefficients
         values to be used in the source term model
 
     Returns
     -------
-    A dictionary containing the following three items:
+    dict
+        A dictionary containing the following three items:
 
-        **'rate'** - The value of the source term function at the given X.
+            'rate'
+                The value of the source term function at the given X.
+            'S1'
+                The slope of the source term function at the given X.
+            'S2'
+                The intercept of the source term function at the given X.
 
-        **'S1'** - The slope of the source term function at the given X.
-
-        **'S2'** - The intercept of the source term function at the given X.
-
+    Notes
+    -----
     The slope and intercept provide a linearized source term equation about the
     current value of X as follow:
 
@@ -375,27 +382,29 @@ def logarithm(target, X, A1='', A2='', A3='', A4='', A5='', A6=''):
 
     Parameters
     ----------
-    target : OpenPNM object
-        The OpenPNM object where the result will be applied.
-
-    X : string
+    target : GenericPhysics
+        The physics where the result will be applied.
+    X : str
         The dictionary key on the target object containing the the quantity
         of interest
-
-    A1 -> A6 : string
+    A1 -> A6 : str
         The dictionary keys on the target object containing the coefficients
         values to be used in the source term model
 
     Returns
     -------
-    A dictionary containing the following three items:
+    dict
+        A dictionary containing the following three items:
 
-        **'rate'** - The value of the source term function at the given X.
+            'rate'
+                The value of the source term function at the given X.
+            'S1'
+                The slope of the source term function at the given X.
+            'S2'
+                The intercept of the source term function at the given X.
 
-        **'S1'** - The slope of the source term function at the given X.
-
-        **'S2'** - The intercept of the source term function at the given X.
-
+    Notes
+    -----
     The slope and intercept provide a linearized source term equation about the
     current value of X as follow:
 
@@ -429,27 +438,29 @@ def natural_logarithm(target, X, A1='', A2='', A3='', A4='', A5=''):
 
     Parameters
     ----------
-    target : OpenPNM object
-        The OpenPNM object where the result will be applied.
-
-    X : string
+    target : GenericPhysics
+        The physics where the result will be applied.
+    X : str
         The dictionary key on the target object containing the the quantity
         of interest
-
-    A1 -> A5 : string
+    A1 -> A5 : str
         The dictionary keys on the target object containing the coefficients
         values to be used in the source term model
 
     Returns
     -------
-    A dictionary containing the following three items:
+    dict
+        A dictionary containing the following three items:
 
-        **'rate'** - The value of the source term function at the given X.
+            'rate'
+                The value of the source term function at the given X.
+            'S1'
+                The slope of the source term function at the given X.
+            'S2'
+                The intercept of the source term function at the given X.
 
-        **'S1'** - The slope of the source term function at the given X.
-
-        **'S2'** - The intercept of the source term function at the given X.
-
+    Notes
+    -----
     The slope and intercept provide a linearized source term equation about the
     current value of X as follow:
 
@@ -472,10 +483,10 @@ def natural_logarithm(target, X, A1='', A2='', A3='', A4='', A5=''):
 
 
 def _build_func(eq, **args):
-    r'''
+    r"""
     Take a symbolic equation and return the lambdified version plus the
     linearization of form S1 * x + S2
-    '''
+    """
     from sympy import lambdify
     eq_prime = eq.diff(args['x'])
     s1 = eq_prime
@@ -487,30 +498,29 @@ def _build_func(eq, **args):
 
 
 def general_symbolic(target, eqn, x, **kwargs):
-    r'''
+    r"""
     A general function to interpret a sympy equation and evaluate the linear
     components of the source term.
 
     Parameters
     ----------
-    target : OpenPNM object
-        The OpenPNM object where the result will be applied.
-
+    target : GenericPhysics
+        The physics where the result will be applied.
     eqn : str
-        The string representation of the equation to use.  This will be
+        The str representation of the equation to use.  This will be
         passed to sympy's ``sympify`` function to make a *live* sympy object.
     x : str
         The dictionary key of the independent variable
     kwargs
         All additional keyword arguments are converted to sympy variables
         using the ``symbols`` function.  Note that IF the arguments are
-        strings, it is assumed they are dictionary keys pointing to arrays
+        strs, it is assumed they are dictionary keys pointing to arrays
         on the ``target`` object.  If they are numerical values they are
         used 'as is'.  Numpy arrays are not accepted.  These must be stored
         in the ``target`` dictionary and referenced by key.
 
-    Example
-    ----------
+    Examples
+    --------
     >>> import openpnm as op
     >>> from openpnm.models.physics import generic_source_term as gst
     >>> import numpy as np
@@ -527,7 +537,7 @@ def general_symbolic(target, eqn, x, **kwargs):
     ...                 model=gst.general_symbolic,
     ...                 eqn=y, x='pore.x', **arg_map)
 
-    '''
+    """
     from sympy import symbols, sympify
     eqn = sympify(eqn)
     # Get the data

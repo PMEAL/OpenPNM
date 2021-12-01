@@ -1,4 +1,7 @@
 r"""
+Pore Surface Area
+.................
+
 """
 import numpy as _np
 
@@ -29,7 +32,7 @@ def sphere(
 
     Returns
     -------
-    value : NumPy ndarray
+    value : ndarray
         Array containing pore surface area values.
 
     """
@@ -68,7 +71,7 @@ def circle(
 
     Returns
     -------
-    value : NumPy ndarray
+    value : ndarray
         Array containing pore surface area values.
 
     """
@@ -96,7 +99,7 @@ def cube(
         The Geometry object for which these values are being calculated.
         This controls the length of the calculated array, and also
         provides access to other necessary thermofluid properties.
-    pore_diameter : string
+    pore_diameter : str
         The dictionary key to the pore diameter array.
     throat_cross_sectional_area : str
         The dictionary key to the throat cross sectional area array.
@@ -105,7 +108,7 @@ def cube(
 
     Returns
     -------
-    value : NumPy ndarray
+    value : ndarray
         Array containing pore surface area values.
 
     """
@@ -141,7 +144,7 @@ def square(
 
     Returns
     -------
-    value : NumPy ndarray
+    value : ndarray
         Array containing pore surface area values.
 
     """

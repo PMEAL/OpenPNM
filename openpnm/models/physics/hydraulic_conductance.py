@@ -22,7 +22,7 @@ def generic_hydraulic(target,
 
     Parameters
     ----------
-    target : _GenericPhysics
+    target : GenericPhysics
         Physics object with which this model is associated.
     pore_viscosity : str
         Dictionary key of the pore viscosity values.
@@ -67,7 +67,7 @@ def hagen_poiseuille(
 
     Parameters
     ----------
-    target : _GenericPhysics
+    target : GenericPhysics
         Physics object with which this model is associated.
     pore_viscosity : str
         Dictionary key of the pore viscosity values.
@@ -118,7 +118,7 @@ def hagen_poiseuille_power_law(
 
     Parameters
     ----------
-    target : _GenericPhysics
+    target : GenericPhysics
         Physics object with which this model is associated.
     pore_area : str
         Dictionary key of the pore area values.
@@ -159,7 +159,7 @@ def hagen_poiseuille_power_law(
     be calculated.
 
     """
-    # Fetch openpnm objects
+    # Fetch GenericPhysicss
     network = target.project.network
     throats = network.throats(target.name)
     phase = target.project.find_phase(target)
@@ -219,12 +219,13 @@ def valvatne_blunt(
     conduit_lengths="throat.conduit_lengths",
 ):
     r"""
-    Calculate the single phase hydraulic conductance of conduits in network,
-    where a conduit is (1/2 pore - full throat - 1/2 pore) according to [1].
-    Function has been adapted for use with the Statoil imported networks and
-    makes use of the shape factor in these networks to apply Hagen-Poiseuille
-    flow for conduits of different shape classes: Triangular, Square and
-    Circular [2].
+    Calculates the single phase hydraulic conductance of conduits.
+
+    A conduit is (1/2 pore - full throat - 1/2 pore) according to [1].
+    Function has been adapted for use with the Statoil imported networks
+    and makes use of the shape factor in these networks to apply
+    Hagen-Poiseuille flow for conduits of different shape classes:
+    triangular, square and circular [2].
 
     Parameters
     ----------
@@ -241,17 +242,25 @@ def valvatne_blunt(
     pore_area : str
         Dictionary key of the pore area values. The pore area is
         calculated using following formula:
-            pore_area = (pore_radius ** 2) / (4 * pore_shape_factor)
-        Where theoratical value of pore_shape_factor in circular tube is
+
+            pore_area = (pore_radius^2) / (4 * pore_shape_factor)
+
+        where theoratical value of pore_shape_factor in circular tube is
         calculated using following formula:
-            pore_shape_factor = pore_area / perimeter **2 = 1/4π
+
+            pore_shape_factor = pore_area / perimeter^2 = 1/4π
+
     throat_area : str
         Dictionary key of the throat area values. The throat area is
         calculated using following formula:
-            throat_area = (throat_radius ** 2) / (4 * throat_shape_factor)
-        Where theoratical value of throat_shape_factor in circular tube is
+
+            throat_area = (throat_radius^2) / (4 * throat_shape_factor)
+
+        where theoratical value of throat_shape_factor in circular tube is
         calculated using following formula:
-            throat_shape_factor = throat_area / perimeter ** 2 = 1/4π
+
+            throat_shape_factor = throat_area / perimeter^2 = 1/4π
+
     conduit_lengths : str
         Dictionary key of the throat conduit lengths.
 
@@ -272,7 +281,7 @@ def valvatne_blunt(
     J. Colloid Interface Sci., 236, 295–304.
 
     """
-    # Fetch openpnm objects
+    # Fetch GenericPhysicss
     network = target.network
     conns = network["throat.conns"]
     mu_p = target[pore_viscosity]

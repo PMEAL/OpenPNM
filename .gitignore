@@ -10,6 +10,9 @@ public/
 build/
 dist/
 
+# sphinx stubs
+**/generated/
+
 # ** means any number of levels, * means only one
 **/.ipynb_checkpoints/*.ipynb
 

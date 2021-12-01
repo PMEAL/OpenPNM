@@ -1,7 +1,6 @@
 r"""
-===============================================================================
-Submodule -- throat_centroid
-===============================================================================
+Throat Centroid
+...............
 
 """
 import numpy as _np
@@ -13,14 +12,14 @@ def pore_coords(target):
 
     Parameters
     ----------
-    target : OpenPNM Object
+    target : GenericGeometry
         The object which this model is associated with. This controls the
         length of the calculated array, and also provides access to other
         necessary properties.
 
     Returns
     -------
-    value : NumPy ndarray
+    value : ndarray
         Array containing throat centroid values.
 
     """

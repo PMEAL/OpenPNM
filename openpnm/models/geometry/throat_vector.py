@@ -1,4 +1,7 @@
 r"""
+Throat Vector
+.............
+
 """
 from transforms3d import _gohlketransforms as tr
 
@@ -9,12 +12,12 @@ def pore_to_pore(target):
 
     Parameters
     ----------
-    target: OpenPNM object
+    target: GenericGeometry
         The object containing the geometrical properties of the throats
 
     Returns
     -------
-    unit_vec : NumPy ndarray, shape = (N, 3)
+    unit_vec : ndarray, shape = (N, 3)
         Array containing pore-to-pore unit vectors
 
     Notes

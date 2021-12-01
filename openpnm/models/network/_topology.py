@@ -1,11 +1,12 @@
+r"""
+Topology
+--------
+Pore-scale models related to topology of the network.
+
+"""
 from numpy.linalg import norm
 from scipy.sparse import csgraph
 import numpy as np
-
-
-r"""
-Pore-scale models related to topology of the network.
-"""
 
 __all__ = [  # Keep this alphabetical for easier inspection of what's imported
     'coordination_number',
@@ -14,7 +15,7 @@ __all__ = [  # Keep this alphabetical for easier inspection of what's imported
     'distance_to_nearest_pore',
     'pore_to_pore_distance',
     'reduce_coordination',
-    ]
+]
 
 
 def coordination_number(target):
@@ -89,7 +90,7 @@ def reduce_coordination(target, z):
 
     Parameters
     ----------
-    target : OpenPNM Network object
+    target : GenericNetwork
         The network whose throats are to be trimmed
     z : scalar
         The desired average coordination number.  It is not possible to specify

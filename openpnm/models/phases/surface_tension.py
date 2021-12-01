@@ -13,28 +13,26 @@ def water(target, temperature='pore.temperature', salinity='pore.salinity'):
 
     Parameters
     ----------
-    target : OpenPNM Object
-        The object for which these values are being calculated.  This
+    target : GenericPhase
+        The object for which these values are being calculated. This
         controls the length of the calculated array, and also provides
         access to other necessary thermofluid properties.
-
-    temperature : string
-        The dictionary key containing the temperature values.  Temperature must
+    temperature : str
+        The dictionary key containing the temperature values. Temperature must
         be in Kelvin for this emperical equation to work
-
-    salinity : string
-        The dictionary key containing the salinity values.  Salinity must be
+    salinity : str
+        The dictionary key containing the salinity values. Salinity must be
         expressed in g of salt per kg of solution (ppt).
 
     Returns
     -------
-    value : NumPy ndarray
+    value : ndarray
         Array containing surface tension of seawater in [N/m]
 
     Notes
     -----
     T must be in K, and S in g of salt per kg of phase, or ppt (parts per
-        thousand)
+    thousand)
     VALIDITY: 273 < T < 313 K; 0 < S < 40 g/kg;
     ACCURACY: 0.2 %
 
@@ -67,26 +65,22 @@ def eotvos(target, k, temperature='pore.temperature',
 
     Parameters
     ----------
-    target : OpenPNM Object
+    target : GenericPhase
         The object for which these values are being calculated.  This
         controls the length of the calculated array, and also provides
         access to other necessary thermofluid properties.
-
     k : float
         Constant parameter specific to fluid
-
-    temperature : string
+    temperature : str
         The dictionary key containing the temperature values (K)
-
-    critical_temperature : string
+    critical_temperature : str
         The dictionary key containing the critical temperature values (K)
-
-    molar_density : string
+    molar_density : str
         The dictionary key containing the molar density values (K)
 
     Returns
     -------
-    value : NumPy ndarray
+    value : ndarray
         Array containing surface tension values [N/m]
 
     TODO: Needs description, and improve definition of k
@@ -107,29 +101,24 @@ def guggenheim_katayama(target, K2, n, temperature='pore.temperature',
 
     Parameters
     ----------
-    target : OpenPNM Object
+    target : GenericPhase
         The object for which these values are being calculated.  This
         controls the length of the calculated array, and also provides
         access to other necessary thermofluid properties.
-
     K2 : scalar
         Fluid specific constant
-
     n : scalar
         Fluid specific constant
-
-    temperature : string
+    temperature : str
         The dictionary key containing the temperature values (K)
-
-    critical_temperature : string
+    critical_temperature : str
         The dictionary key containing the critical temperature values (K)
-
-    critical_pressure : string
+    critical_pressure : str
         The dictionary key containing the critical pressure values (K)
 
     Returns
     -------
-    value : NumPy ndarray
+    value : ndarray
         Array containing surface tension values [N/m]
 
     """
@@ -149,26 +138,22 @@ def brock_bird_scaling(target, sigma_o, To, temperature='pore.temperature',
 
     Parameters
     ----------
-    target : OpenPNM Object
+    target : GenericPhase
         The object for which these values are being calculated.  This
         controls the length of the calculated array, and also provides
         access to other necessary thermofluid properties.
-
     To : float
         Reference temperature (K)
-
     sigma_o : float
         Surface tension at reference temperature (N/m)
-
-    temperature : string
+    temperature : str
         The dictionary key containing the temperature values (K)
-
-    critical_temperature : string
+    critical_temperature : str
         The dictionary key containing the critical temperature values (K)
 
     Returns
     -------
-    value : NumPy ndarray
+    value : ndarray
         Array containing surface tension values scaled to the temperature [N/m]
 
     """
