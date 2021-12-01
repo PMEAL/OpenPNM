@@ -23,20 +23,3 @@ Module Reference
       openpnm.topotools
       openpnm.io
       openpnm.metrics
-
-
-.. COMMENT
-
-   openpnm.utils
-   openpnm.core
-   openpnm.network
-   openpnm.geometry
-   openpnm.phases
-   openpnm.physics
-   openpnm.models
-   openpnm.solvers
-   openpnm.integrators
-   openpnm.algorithms
-   openpnm.topotools
-   openpnm.io
-   openpnm.metrics
