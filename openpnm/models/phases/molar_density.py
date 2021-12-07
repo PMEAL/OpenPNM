@@ -10,20 +10,18 @@ def standard(target, mol_weight='pore.molecular_weight',
 
     Parameters
     ----------
-    target : OpenPNM Object
+    target : GenericPhase
         The object for which these values are being calculated.  This
         controls the length of the calculated array, and also provides
         access to other necessary thermofluid properties.
-
-    mol_weight : string
+    mol_weight : str
         The dictionary key containing the molecular weight in kg/mol
-
-    density : string
+    density : str
         The dictionary key containing the density in kg/m3
 
     Returns
     -------
-    value : NumPy ndarray
+    value : ndarray
         Array containing molar density values [mol/m3]
 
     """
@@ -40,20 +38,18 @@ def ideal_gas(target, pressure='pore.pressure',
 
     Parameters
     ----------
-    target : OpenPNM Object
+    target : GenericPhase
         The object for which these values are being calculated.  This
         controls the length of the calculated array, and also provides
         access to other necessary thermofluid properties.
-
-    temperature : string
+    temperature : str
         The dictionary key containing the density in kg/m3
-
-    pressure : string
+    pressure : str
         The dictionary key containing the pressure values in Pascals (Pa)
 
     Returns
     -------
-    value : NumPy ndarray
+    value : ndarray
         Array containing molar density values [mol/m3]
 
     Notes
@@ -79,28 +75,24 @@ def vanderwaals(target, pressure='pore.pressure',
 
     Parameters
     ----------
-    target : OpenPNM Object
+    target : GenericPhase
         The object for which these values are being calculated.  This
         controls the length of the calculated array, and also provides
         access to other necessary thermofluid properties.
-
-    pressure : string
+    pressure : str
         The dictionary key containing the pressure values in Pascals (Pa)
-
-    temperature : string
+    temperature : str
         The dictionary key containing the temperature values in Kelvin (K)
-
-    critical_pressure : string
+    critical_pressure : str
         The dictionary key containing the critical pressure values in Pascals
         (Pa)
-
-    critical_temperature : string
+    critical_temperature : str
         The dictionary key containing the critical temperature values in Kelvin
         (K)
 
     Returns
     -------
-    value : NumPy ndarray
+    value : ndarray
         Array containing molar density values [mol/m3]
 
     """

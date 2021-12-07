@@ -1,8 +1,6 @@
 r"""
-
-**openpnm.models.physics**
-
-----
+Physics
+-------
 
 This submodule contains models for calculating properties related to physical
 transport processes, including conductances, reaction rates, and capillary

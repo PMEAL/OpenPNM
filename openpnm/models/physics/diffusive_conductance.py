@@ -3,7 +3,7 @@ Pore-scale models for calculating the diffusive conductance of conduits.
 """
 import numpy as _np
 import scipy.constants as _const
-from openpnm.models.physics.utils import _poisson_conductance
+from openpnm.models.physics._utils import _poisson_conductance
 
 __all__ = [
     "generic_diffusive",
@@ -132,7 +132,7 @@ def mixed_diffusion(target,
     be calculated.
 
     """
-    # Fetch openpnm objects
+    # Fetch GenericPhysicss
     network = target.network
     phase = target.project.find_phase(target)
 
@@ -205,9 +205,10 @@ def taylor_aris_diffusion(target,
     already calculated.
 
     """
-    # Fetch openpnm objects
+    # Fetch GenericPhysicss
     network = target.network
-    throats = network.map_throats(throats=target.Ts, origin=target)
+    domain = target._domain
+    throats = domain.throats(target.name)
     phase = target.project.find_phase(target)
     cn = network['throat.conns'][throats]
     F = network[size_factors]
@@ -268,9 +269,9 @@ def multiphase_diffusion(target,
     information.
 
     """
-    # Fetch openpnm objects
+    # Fetch GenericPhysicss
     network = target.network
-    throats = target.throats(target=network)
+    throats = target.throats(to_global=True)
     phase = target.project.find_phase(target)
     cn = network.conns[throats]
     F = network[size_factors]

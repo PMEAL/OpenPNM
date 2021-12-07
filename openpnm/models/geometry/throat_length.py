@@ -1,4 +1,7 @@
 r"""
+Throat Length
+.............
+
 """
 import numpy as _np
 from numpy.linalg import norm as _norm
@@ -26,7 +29,7 @@ def ctc(target):
 
     """
     network = target.project.network
-    throats = network.map_throats(throats=target.Ts, origin=target)
+    throats = network.throats(target.name)
     cn = network['throat.conns'][throats]
     C1 = network['pore.coords'][cn[:, 0]]
     C2 = network['pore.coords'][cn[:, 1]]
@@ -45,13 +48,12 @@ def classic(target, pore_diameter='pore.diameter'):
         Geometry object which this model is associated with. This controls the
         length of the calculated array, and also provides access to other
         necessary properties.
-
     pore_diameter : str
         Dictionary key of the pore diameter values
 
     """
     network = target.project.network
-    throats = network.map_throats(throats=target.Ts, origin=target)
+    throats = network.throats(target.name)
     cn = network['throat.conns'][throats]
     ctc_dist = ctc(target)
     value = ctc_dist - network[pore_diameter][cn].sum(axis=1) / 2
@@ -73,10 +75,8 @@ def spheres_and_cylinders(
         Geometry object which this model is associated with. This controls the
         length of the calculated array, and also provides access to other
         necessary properties.
-
     pore_diameter : str
         Dictionary key of the pore diameter values.
-
     throat_diameter : str
         Dictionary key of the throat diameter values.
 
@@ -108,10 +108,8 @@ def circles_and_rectangles(
         Geometry object which this model is associated with. This controls the
         length of the calculated array, and also provides access to other
         necessary properties.
-
     pore_diameter : str
         Dictionary key of the pore diameter values.
-
     throat_diameter : str
         Dictionary key of the throat diameter values.
 
@@ -143,10 +141,8 @@ def cones_and_cylinders(
         Geometry object which this model is associated with. This controls the
         length of the calculated array, and also provides access to other
         necessary properties.
-
     pore_diameter : str
         Dictionary key of the pore diameter values.
-
     throat_diameter : str
         Dictionary key of the throat diameter values.
 
@@ -178,10 +174,8 @@ def trapezoids_and_rectangles(
         Geometry object which this model is associated with. This controls the
         length of the calculated array, and also provides access to other
         necessary properties.
-
     pore_diameter : str
         Dictionary key of the pore diameter values.
-
     throat_diameter : str
         Dictionary key of the throat diameter values.
 
@@ -213,10 +207,8 @@ def pyramids_and_cuboids(
         Geometry object which this model is associated with. This controls the
         length of the calculated array, and also provides access to other
         necessary properties.
-
     pore_diameter : str
         Dictionary key of the pore diameter values.
-
     throat_diameter : str
         Dictionary key of the throat diameter values.
 
@@ -248,10 +240,8 @@ def cubes_and_cuboids(
         Geometry object which this model is associated with. This controls the
         length of the calculated array, and also provides access to other
         necessary properties.
-
     pore_diameter : str
         Dictionary key of the pore diameter values.
-
     throat_diameter : str
         Dictionary key of the throat diameter values.
 
@@ -283,10 +273,8 @@ def squares_and_rectangles(
         Geometry object which this model is associated with. This controls the
         length of the calculated array, and also provides access to other
         necessary properties.
-
     pore_diameter : str
         Dictionary key of the pore diameter values.
-
     throat_diameter : str
         Dictionary key of the throat diameter values.
 

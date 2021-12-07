@@ -10,32 +10,26 @@ def fuller(target, MA, MB, vA, vB, temperature='pore.temperature',
 
     Parameters
     ----------
-    target : OpenPNM Object
+    target : GenericPhase
         The object for which these values are being calculated.  This
         controls the length of the calculated array, and also provides
         access to other necessary thermofluid properties.
-
     MA : float, array_like
         Molecular weight of component A [kg/mol]
-
     MB : float, array_like
         Molecular weight of component B [kg/mol]
-
     vA:  float, array_like
         Sum of atomic diffusion volumes for component A
-
     vB:  float, array_like
         Sum of atomic diffusion volumes for component B
-
-    pressure : string
+    pressure : str
         The dictionary key containing the pressure values in Pascals (Pa)
-
-    temperature : string
+    temperature : str
         The dictionary key containing the temperature values in Kelvin (K)
 
     Returns
     -------
-    value : NumPy ndarray
+    value : ndarray
         Array containing gas diffusion coefficient values [m2/s].
 
     """
@@ -57,26 +51,22 @@ def fuller_scaling(target, DABo, To, Po, temperature='pore.temperature',
 
     Parameters
     ----------
-    target : OpenPNM Object
+    target : GenericPhase
         The object for which these values are being calculated.  This
         controls the length of the calculated array, and also provides
         access to other necessary thermofluid properties.
-
     DABo : float, array_like
         Diffusion coefficient at reference conditions
-
     Po, To : float, array_like
         Pressure & temperature at reference conditions, respectively
-
-    pressure : string
+    pressure : str
         The dictionary key containing the pressure values in Pascals (Pa)
-
-    temperature : string
+    temperature : str
         The dictionary key containing the temperature values in Kelvin (K)
 
     Returns
     -------
-    value : NumPy ndarray
+    value : ndarray
         Array containing scaled gas diffusion coefficient values [m2/s].
 
     """
@@ -94,32 +84,26 @@ def tyn_calus(target, VA, VB, sigma_A, sigma_B, temperature='pore.temperature',
 
     Parameters
     ----------
-    target : OpenPNM Object
+    target : GenericPhase
         The object for which these values are being calculated.  This
         controls the length of the calculated array, and also provides
         access to other necessary thermofluid properties.
-
     VA : float, array_like
         Molar volume of component A at boiling temperature (m3/mol)
-
     VB : float, array_like
         Molar volume of component B at boiling temperature (m3/mol)
-
     sigmaA:  float, array_like
         Surface tension of component A at boiling temperature (N/m)
-
     sigmaB:  float, array_like
         Surface tension of component B at boiling temperature (N/m)
-
-    pressure : string
+    pressure : str
         The dictionary key containing the pressure values in Pascals (Pa)
-
-    temperature : string
+    temperature : str
         The dictionary key containing the temperature values in Kelvin (K)
 
     Returns
     -------
-    value : NumPy ndarray
+    value : ndarray
         Array containing liquid diffusion coefficient values [m2/s].
 
     """
@@ -139,26 +123,22 @@ def tyn_calus_scaling(target, DABo, To, mu_o, viscosity='pore.viscosity',
 
     Parameters
     ----------
-    target : OpenPNM Object
+    target : GenericPhase
         The object for which these values are being calculated.  This
         controls the length of the calculated array, and also provides
         access to other necessary thermofluid properties.
-
     DABo : float, array_like
         Diffusion coefficient at reference conditions
-
     mu_o, To : float, array_like
         Viscosity & temperature at reference conditions, respectively
-
-    pressure : string
+    pressure : str
         The dictionary key containing the pressure values in Pascals (Pa)
-
-    temperature : string
+    temperature : str
         The dictionary key containing the temperature values in Kelvin (K)
 
     Returns
     -------
-    value : NumPy ndarray
+    value : ndarray
         Array containing scaled liquid diffusion coefficient values [m2/s].
 
     """
@@ -176,7 +156,7 @@ def chapman_enskog(target, MA, MB, sigma_AB, omega_AB,
 
     Parameters
     ----------
-    target : OpenPNM Object
+    target : GenericPhase
         The object for which these values are being calculated.  This
         controls the length of the calculated array, and also provides
         access to other necessary thermofluid properties.
@@ -190,6 +170,7 @@ def chapman_enskog(target, MA, MB, sigma_AB, omega_AB,
         Dictionary key to the phase temperature in K (default = 'pore.temperature')
     pressure : str
         Dictionary key to the phase pressure in Pa (default = 'pore.pressure')
+
     """
     T = target[temperature]
     P = target[pressure]

@@ -1,1 +1,6 @@
-from .H2O import H2O
+r"""
+Liquids
+=======
+
+"""
+from ._h2o import H2O

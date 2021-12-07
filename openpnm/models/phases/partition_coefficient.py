@@ -12,19 +12,17 @@ def gaseous_species_in_water(target, chemical_formula,
 
     Parameters
     ----------
-    target : OpenPNM MultiPhase object
+    target : MultiPhase
         Target object in which data is to be stored.
-
-    chemical_formula : string
+    chemical_formula : str
         Chemical formula of the dissolving species.
-
-    temperature : string, optional
+    temperature : str, optional
         Dictionary key containing pore temperature values.
         The default is "pore.temperature".
 
     Returns
     -------
-    H : numpy ndarray
+    H : ndarray
         Array containing Henry's law constant (Kpx) [atm/mol-frac]
 
     References

@@ -17,35 +17,32 @@ def conduit_conductance(target, throat_conductance,
 
     Parameters
     ----------
-    target : OpenPNM Object
-        The OpenPNM object where the model is attached.  Should either be a
+    target : GenericPhysics
+        The GenericPhysics where the model is attached.  Should either be a
         Physics or a Phase.
-
-    throat_conductance : string
+    throat_conductance : str
         The transport conductance of the phase associated with the ``target``
         object at single-phase conditions.
-
-    pore_occupancy : string
+    pore_occupancy : str
         The property name containing the occupancy of the phase associated
         with the ``target`` object.  An occupancy of 1 means the pore
         is completely filled with the phase and it fully conducts.
-
-    throat_occupancy : string
+    throat_occupancy : str
         The property name containing the occupancy of the phase associated
         with the ``target`` object.  An occupancy of 1 means the throat
         is completely filled with the phase and it fully conducts.
-
-    mode : 'strict' or 'medium' or 'loose'
+    mode : str
         How agressive the method should be when determining if a conduit is
-        closed.
+        closed. Options are:
 
-        **'strict'** :  If any pore or throat in the conduit is unoccupied by
-         the given phase, the conduit is closed.
-
-        **'medium'** : If either the throat or both pores are unoccupied, the
-        conduit is closed
-
-        **'loose'** : Only close the conduit if the throat is unoccupied
+            'strict'
+                If any pore or throat in the conduit is unoccupied by
+                the given phase, the conduit is closed.
+            'medium'
+                If either the throat or both pores are unoccupied, the
+                conduit is closed
+            'loose'
+                Only close the conduit if the throat is unoccupied
 
     factor : float (default is 1e-6)
         The factor which becomes multiplied to the original conduit's
@@ -53,11 +50,12 @@ def conduit_conductance(target, throat_conductance,
 
     Returns
     -------
-    value : NumPy ndarray
+    value : ndarray
         Array containing conduit conductance values.
 
     """
     network = target.project.network
+    domain = target._domain
     phase = target.project.find_phase(target)
     Tinv = phase[throat_occupancy] < 0.5
     P12 = network['throat.conns']
@@ -73,7 +71,7 @@ def conduit_conductance(target, throat_conductance,
     value = phase[throat_conductance].copy()
     value[mask] = value[mask]*factor
     # Now map throats onto target object
-    Ts = network.map_throats(throats=target.Ts, origin=target)
+    Ts = domain.throats(target.name)
     return value[Ts]
 
 
@@ -90,18 +88,15 @@ def late_filling(target, pressure='pore.pressure',
 
     Parameters
     ----------
-    pressure : string
+    pressure : str
         The capillary pressure in the non-wetting phase (Pc > 0).
-
-    Pc_star : string
+    Pc_star : str
         The minimum pressure required to create an interface within the pore
         body or throat.  Typically this would be calculated using the Washburn
         equation.
-
     Swp_star : float
         The residual wetting phase in an invaded pore or throat at a pressure
         of ``pc_star``.
-
     eta : float
         Exponent controlling the rate at which wetting phase is displaced with
         increasing pressure.
@@ -115,7 +110,7 @@ def late_filling(target, pressure='pore.pressure',
 
     """
     element = pressure.split('.')[0]
-    network = target.project.network
+    domain = target._domain
     phase = target.project.find_phase(target)
     pc_star = phase[Pc_star]
     Pc = phase[pressure]
@@ -125,9 +120,9 @@ def late_filling(target, pressure='pore.pressure',
     values = np.clip(1 - Swp, 0.0, 1.0)
     # Now map element onto target object
     if element == 'throat':
-        Ts = network.map_throats(throats=target.Ts, origin=target)
+        Ts = domain.throats(target.name)
         values = values[Ts]
     else:
-        Ps = network.map_pores(pores=target.Ps, origin=target)
+        Ps = domain.pores(target.name)
         values = values[Ps]
     return values

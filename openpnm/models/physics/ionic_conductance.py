@@ -3,7 +3,7 @@ Pore-scale models for calculating ionic conductance of conduits.
 """
 import numpy as _np
 from openpnm.utils import logging
-from openpnm.models.physics.utils import _poisson_conductance
+from openpnm.models.physics._utils import _poisson_conductance
 logger = logging.getLogger(__name__)
 
 __all__ = ["poisson", "electroneutrality"]
@@ -103,9 +103,10 @@ def electroneutrality(target,
     if ions == []:
         raise Exception('List of ions must be provided')
 
-    # Fetch openpnm objects
+    # Fetch GenericPhysicss
     network = target.network
-    throats = network.map_throats(throats=target.Ts, origin=target)
+    domain = target._domain
+    throats = domain.throats(target.name)
     phase = target.project.find_phase(target)
     cn = network.conns[throats]
 

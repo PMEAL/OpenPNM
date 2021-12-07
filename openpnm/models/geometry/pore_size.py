@@ -1,9 +1,13 @@
 r"""
+Pore Size
+.........
+
 The pore-size models in this sub-module are used to apply desired pore-size
 distributions to a pore network.  Most of the models accept pore seeds, and
 then look-up pore-sizes from cumuative distribtions functions.  There is also
 a model for finding the largest possible sphere that can be placed on each
 site.
+
 """
 from openpnm.utils import logging as _logging
 from openpnm.models import misc as _misc
@@ -66,17 +70,15 @@ def largest_sphere(target, fixed_diameter='pore.fixed_diameter', iters=5):
 
     Parameters
     ----------
-    target : OpenPNM Object
+    target : GenericGeometry
         The object which this model is associated with. This controls the
         length of the calculated array, and also provides access to other
         necessary properties.
-
-    fixed_diameter : string
+    fixed_diameter : str
         The dictionary key containing the pore diameter values already
         assigned to network, if any.  If not provided a starting value is
         assumed as half-way to the nearest neighbor.
-
-    iters : integer
+    iters : int
         The number of iterations to perform when searching for maximum
         diameter.  This function iteratively grows pores until they touch
         their nearest neighbor, which is also growing, so this parameter limits
@@ -85,7 +87,7 @@ def largest_sphere(target, fixed_diameter='pore.fixed_diameter', iters=5):
 
     Returns
     -------
-    D : NumPy ndarray
+    D : ndarray
         Array containing pore diameter values.
 
     Notes
@@ -93,9 +95,9 @@ def largest_sphere(target, fixed_diameter='pore.fixed_diameter', iters=5):
     This model looks into all pores in the network when finding the diameter.
     This means that when multiple Geometry objects are defined, it will
     consider the diameter of pores on adjacent Geometries. If no diameters
-    have been assigned to these neighboring pores it will assume 0.  If
+    have been assigned to these neighboring pores it will assume 0. If
     diameter value are assigned to the neighboring pores AFTER this model is
-    run, the pores will overlap.  This can be remedied by running this model
+    run, the pores will overlap. This can be remedied by running this model
     again.
 
     """
@@ -136,21 +138,19 @@ def equivalent_diameter(target, pore_volume='pore.volume',
 
     Parameters
     ----------
-    target : OpenPNM Geometry Object
-        The Geometry object which this model is associated with. This controls
-        the length of the calculated array, and also provides access to other
-        necessary geometric properties.
-
-    pore_volume : string
+    target : GenericGeometry
+        The Geometry object which this model is associated with. This
+        controls the length of the calculated array, and also provides
+        access to other necessary geometric properties.
+    pore_volume : str
         The dictionary key containing the pore volume values
-
-    pore_shape : string
+    pore_shape : str
         The shape of the pore body to assume when back-calculating from
         volume.  Options are 'sphere' (default) or 'cube'.
 
     Returns
     -------
-    D : NumPy ndarray
+    D : ndarray
         Array containing pore diameter values.
 
     """

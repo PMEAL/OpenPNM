@@ -31,8 +31,8 @@ class GenericTransportTest:
         phys = op.physics.GenericPhysics(network=net, phase=phase, geometry=geom)
         phys["throat.conductance"] = 1.0
         alg = op.algorithms.GenericTransport(network=net, phase=phase)
-        alg.settings.update({"quantity": "pore.concentration",
-                             "conductance": "throat.conductance"})
+        alg.settings._update({"quantity": "pore.concentration",
+                              "conductance": "throat.conductance"})
         with pytest.raises(Exception):
             alg.run()
 
@@ -281,7 +281,7 @@ class GenericTransportTest:
         alg = op.algorithms.GenericTransport(network=self.net,
                                              phase=self.phase)
         h = self.net.check_network_health()
-        op.topotools.trim(self.net, pores=h['trim_pores'])
+        op.topotools.trim(self.net, pores=h['disconnected_pores'])
         alg.settings['conductance'] = 'throat.diffusive_conductance'
         alg.settings['quantity'] = 'pore.mole_fraction'
         alg.set_rate_BC(pores=[0, 1, 2, 3], total_rate=1)

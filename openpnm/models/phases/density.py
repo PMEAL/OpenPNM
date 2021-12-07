@@ -9,20 +9,18 @@ def standard(target, mol_weight='pore.molecular_weight',
 
     Parameters
     ----------
-    target : OpenPNM Object
+    target : GenericPhase
         The object for which these values are being calculated.  This
         controls the length of the calculated array, and also provides
         access to other necessary thermofluid properties.
-
-    mol_weight : string
+    mol_weight : str
         The dictionary key containing the molecular weight values (kg/mol)
-
-    molar_density : string
+    molar_density : str
         The dictionary key containing the molar density values (mol/m3)
 
     Returns
     -------
-    value : NumPy ndarray
+    value : ndarray
         Array containing density values (kg/m3)
 
     """
@@ -39,23 +37,20 @@ def ideal_gas(target, pressure='pore.pressure', temperature='pore.temperature',
 
     Parameters
     ----------
-    target : OpenPNM Object
+    target : GenericPhase
         The object for which these values are being calculated.  This
         controls the length of the calculated array, and also provides
         access to other necessary thermofluid properties.
-
-    pressure : string
+    pressure : str
         The dictionary key containing the pressure values (Pa)
-
-    temperature : string
+    temperature : str
         The dictionary key containing the temperature values (K)
-
-    mol_weight : string
+    mol_weight : str
         The dictionary key containing the molecular weight values (kg/mol)
 
     Returns
     -------
-    value : NumPy ndarray
+    value : ndarray
         Array containing density values in [kg/m3]
 
     """
@@ -77,23 +72,21 @@ def water(target, temperature='pore.temperature', salinity='pore.salinity'):
 
     Parameters
     ----------
-    target : OpenPNM Object
+    target : GenericPhase
         The object for which these values are being calculated.  This
         controls the length of the calculated array, and also provides
         access to other necessary thermofluid properties.
-
-    temperature : string
+    temperature : str
         The dictionary key containing the temperature values.  Temperature must
         be in Kelvin for this emperical equation to work
-
-    salinity : string
+    salinity : str
         The dictionary key containing the salinity values.  Salinity must be
         expressed in g of salt per kg of solution (ppt).
 
 
     Returns
     -------
-    value : NumPy ndarray
+    value : ndarray
         The density of water/seawater in [kg/m3]
 
     Notes

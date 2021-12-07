@@ -13,22 +13,20 @@ def water(target, temperature="pore.temperature", salinity="pore.salinity"):
 
     Parameters
     ----------
-    target : OpenPNM Object
+    target : GenericPhase
         The object for which these values are being calculated.  This
         controls the length of the calculated array, and also provides
         access to other necessary thermofluid properties.
-
-    temperature : string
+    temperature : str
         The dictionary key containing the temperature values.  Temperature must
         be in Kelvin for this emperical equation to work
-
-    salinity : string
+    salinity : str
         The dictionary key containing the salinity values.  Salinity must be
         expressed in g of salt per kg of solution (ppt).
 
     Returns
     -------
-    value : NumPy ndarray
+    value : ndarray
         Array containing thermal conductivity of water/seawater in [W/m.K]
 
     Notes
@@ -79,34 +77,28 @@ def chung(
 
     Parameters
     ----------
-    target : OpenPNM Object
+    target : GenericPhase
         The object for which these values are being calculated.  This
         controls the length of the calculated array, and also provides
         access to other necessary thermofluid properties.
-
-    acentric_factor : string
+    acentric_factor : str
         Dictionary key containing the acentric factor of the component
-
-    Cv : string
+    Cv : str
         Dictionary key containing the heat capacity at constant volume
         (J/(mol.K))
-
-    mol_weight : string
+    mol_weight : str
         Dictionary key containing the molecular weight of the component
         (kg/mol)
-
-    viscosity : string
+    viscosity : str
         The dictionary key containing the viscosity values (Pa.s)
-
-    temperature : string
+    temperature : str
         The dictionary key containing the temperature values (K)
-
-    critical_temperatre: string
+    critical_temperatre: str
         The dictionary key containing the critical temperature values (K)
 
     Returns
     -------
-    value : NumPy ndarray
+    value : ndarray
         Array containing thermal conductivity values in [W/m.K]
 
     """
@@ -142,27 +134,23 @@ def sato(
 
     Parameters
     ----------
-    target : OpenPNM Object
+    target : GenericPhase
         The object for which these values are being calculated.  This
         controls the length of the calculated array, and also provides
         access to other necessary thermofluid properties.
-
-    boiling_temperature :  string
+    boiling_temperature :  str
         Dictionary key containing the toiling temperature of the component (K)
-
-    mol_weight : string
+    mol_weight : str
         Dictionary key containing the molecular weight of the component
         (kg/mol)
-
-    temperature : string
+    temperature : str
         The dictionary key containing the temperature values (K)
-
-    critical_temperature : string
+    critical_temperature : str
         The dictionary key containing the critical temperature values (K)
 
     Returns
     -------
-    value : NumPy ndarray
+    value : ndarray
         Array containing thermal conductivity values in [W/m.K]
 
     """

@@ -87,7 +87,7 @@ class UtilsTest:
         sf.run()
         air.update(sf.results())
         phys.regenerate_models()
-        ad.settings.update({"cache_A": False, "cache_b": False})
+        ad.settings._update({"cache_A": False, "cache_b": False})
         ad._build_A()
         # Non-uniform pressure field --> positive advection --> non-symmetric
         assert not op.utils.misc.is_symmetric(ad.A)
