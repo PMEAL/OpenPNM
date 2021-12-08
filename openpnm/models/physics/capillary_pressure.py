@@ -1,12 +1,11 @@
-r"""
-Pore-scale models for calculating the capillary pressure in pores/throats.
-"""
-import logging
 import numpy as _np
-from openpnm.models import physics as pm
 from transforms3d import _gohlketransforms as tr
-logger = logging.getLogger(__name__)
+from openpnm.models import physics as pm
+from openpnm.models import _doctxt
+from openpnm.utils import logging
 
+
+logger = logging.getLogger(__name__)
 __all__ = [
     "washburn",
     "purcell",
@@ -16,40 +15,7 @@ __all__ = [
 ]
 
 
-def _get_key_props(phase=None,
-                   diameter="throat.diameter",
-                   surface_tension="pore.surface_tension",
-                   contact_angle="pore.contact_angle"):
-    r"""
-    Many of the methods are generic to pores and throats. Some information may
-    be stored on either the pore or throat and needs to be interpolated.
-    This is a helper method to return the properties in the correct format.
-
-    TODO: Check for method to convert throat to pore data
-    """
-    element = diameter.split(".")[0]
-    if element == "pore":
-        if "throat" in surface_tension:
-            sigma = phase.interpolate_data(propname=surface_tension)
-        else:
-            sigma = phase[surface_tension]
-        if "throat" in contact_angle:
-            theta = phase.interpolate_data(propname=contact_angle)
-        else:
-            theta = phase[contact_angle]
-    if element == "throat":
-        if "pore" in surface_tension:
-            sigma = phase.interpolate_data(propname=surface_tension)
-        else:
-            sigma = phase[surface_tension]
-        if "pore" in contact_angle:
-            theta = phase.interpolate_data(propname=contact_angle)
-        else:
-            theta = phase[contact_angle]
-
-    return element, sigma, theta
-
-
+@_doctxt
 def washburn(target,
              surface_tension="pore.surface_tension",
              contact_angle="pore.contact_angle",
@@ -60,23 +26,19 @@ def washburn(target,
 
     Parameters
     ----------
-    target : GenericPhysics
-        The object for which these values are being calculated.  This
-        controls the length of the calculated array, and also provides
-        access to other necessary thermofluid properties.
+    %(target_blurb)s
     surface_tension : str
-        The dictionary key containing the surface tension values to be used. If
-        a pore property is given, it is interpolated to a throat list.
+        %(dict_blurb)s surface tension. If a pore property is given, it is
+        interpolated to a throat list.
     contact_angle : str
-        The dictionary key containing the contact angle values to be used. If
-        a pore property is given, it is interpolated to a throat list.
+        %(dict_blurb)s contact angle. If a pore property is given, it is
+        interpolated to a throat list.
     diameter : str
-        The dictionary key containing the throat diameter values to be used.
+        %(dict_blurb)s throat diameter
 
     Returns
     -------
-    value : ndarray
-        Array containing pore/throat capillary entry pressure values.
+    %(return_arr)s capillary entry pressure
 
     Notes
     -----
@@ -107,6 +69,7 @@ def washburn(target,
     return value
 
 
+@_doctxt
 def purcell(target,
             r_toroid,
             surface_tension="pore.surface_tension",
@@ -118,25 +81,21 @@ def purcell(target,
 
     Parameters
     ----------
-    target : GenericPhysics
-        The object for which these values are being calculated.  This
-        controls the length of the calculated array, and also provides
-        access to other necessary thermofluid properties.
+    %(target_blurb)s
     r_toroid : float or array_like
         The radius of the toroid surrounding the pore
     surface_tension : str
-        The dictionary key containing the surface tension values to be used.
-        If a pore property is given, it is interpolated to a throat list.
+        %(dict_blurb)s surface tension. If a pore property is given, it is
+        interpolated to a throat list.
     contact_angle : str
-        The dictionary key containing the contact angle values to be used.
-        If a pore property is given, it is interpolated to a throat list.
+        %(dict_blurb)s contact angle. If a pore property is given, it is
+        interpolated to a throat list.
     diameter : str
-        The dictionary key containing the throat diameter values to be used.
+        %(dict_blurb)s throat diameter
 
     Returns
     -------
-    value : ndarray
-        Array containing pore/throat capillary entry pressure values.
+    %(return_arr)s capillary entry pressure
 
     Notes
     -----
@@ -181,6 +140,7 @@ def purcell(target,
     return value
 
 
+@_doctxt
 def ransohoff_snap_off(target,
                        shape_factor=2.0,
                        wavelength=5e-6,
@@ -198,36 +158,27 @@ def ransohoff_snap_off(target,
 
     Parameters
     ----------
-    target : GenericPhysics
-        The object for which these values are being calculated.  This
-        controls the length of the calculated array, and also provides
-        access to other necessary thermofluid properties.
+    %(target_blurb)s
     shape_factor : float
-        constant dependent on the shape of throat cross-section
-        1.75 - 2.0, see Ref
+        A constant dependent on the shape of throat cross-section
+        1.75 - 2.0, see Ref [1]
     wavelength : float or array like
         The transverse interfacial radius of curvature at the neck
         (fiber radius in fibrous media)
     require_pair : bool
         Controls whether snap-off requires a pair of arc meniscii to occur.
     surface_tension : str
-        The dictionary key containing the surface tension values to be used.
-        If a pore property is given, it is interpolated to a throat list.
+        %(dict_blurb)s surface tension. If a pore property is given, it is
+        interpolated to a throat list.
     contact_angle : str
-        The dictionary key containing the contact angle values to be used.
-        If a pore property is given, it is interpolated to a throat list.
-    throat_diameter : str
-        The dictionary key containing the throat diameter values to be used.
+        %(dict_blurb)s contact angle. If a pore property is given, it is
+        interpolated to a throat list.
+    diameter : str
+        %(dict_blurb)s throat diameter
 
     Returns
     -------
-    value : ndarray
-        Array containing throat capillary snap-off pressure values.
-
-    Notes
-    -----
-    This equation should be used to calculate the snap off capillary pressure
-    in fribrous media
+    %(return_arr)s capillary entry pressure
 
     References
     ----------
@@ -294,9 +245,10 @@ def ransohoff_snap_off(target,
     return value
 
 
+@_doctxt
 def purcell_bidirectional(target,
                           r_toroid=5e-6,
-                          num_points=1e3,
+                          num_points=1000,
                           surface_tension="pore.surface_tension",
                           contact_angle="pore.contact_angle",
                           throat_diameter="throat.diameter",
@@ -312,30 +264,26 @@ def purcell_bidirectional(target,
 
     Parameters
     ----------
-    target : GenericPhysics
-        The object for which these values are being calculated.  This
-        controls the length of the calculated array, and also provides
-        access to other necessary thermofluid properties.
+    %(target_blurb)s
     r_toroid : float or array_like
         The radius of the toroid surrounding the pore
     num_points : float, default 100
         The number of divisions to make along the profile length to assess the
         meniscus properties in order to find the touch length.
     surface_tension : str
-        The dictionary key containing the surface tension values to be used.
-        If a pore property is given, it is interpolated to a throat list.
+        %(dict_blurb)s surface tension. If a pore property is given, it is
+        interpolated to a throat list.
     contact_angle : str
-        The dictionary key containing the contact angle values to be used.
-        If a pore property is given, it is interpolated to a throat list.
+        %(dict_blurb)s contact angle. If a pore property is given, it is
+    interpolated to a throat list.
     throat_diameter : str
-        The dictionary key containing the throat diameter values to be used.
+        %(dict_blurb)s throat diameter
     pore_diameter : str
-        The dictionary key containing the pore diameter values to be used.
+        %(dict_blurb)s pore diameter
 
     Returns
     -------
-    value : ndarray
-        Array containing throat capillary entry pressure values.
+    %(return_arr)s capillary entry pressure
 
     """
     network = target.project.network
@@ -361,6 +309,7 @@ def purcell_bidirectional(target,
     return _np.vstack((values[0], values[1])).T
 
 
+@_doctxt
 def sinusoidal_bidirectional(target,
                              r_toroid=5e-6,
                              num_points=1e3,
@@ -380,30 +329,26 @@ def sinusoidal_bidirectional(target,
 
     Parameters
     ----------
-    target : GenericPhysics
-        The object for which these values are being calculated.  This
-        controls the length of the calculated array, and also provides
-        access to other necessary thermofluid properties
+    %(target_blurb)s
     r_toroid : float or array_like
         The radius of the toroid surrounding the pore
     num_points : float, default 100
         The number of divisions to make along the profile length to assess the
         meniscus properties in order to find the touch length.
     surface_tension : str
-        The dictionary key containing the surface tension values to be used.
-        If a pore property is given, it is interpolated to a throat list.
+        %(dict_blurb)s surface tension. If a pore property is given, it is
+        interpolated to a throat list.
     contact_angle : str
-        The dictionary key containing the contact angle values to be used.
-        If a pore property is given, it is interpolated to a throat list.
+        %(dict_blurb)s contact angle. If a pore property is given, it is
+        interpolated to a throat list.
     throat_diameter : str
-        The dictionary key containing the throat diameter values to be used.
+        %(dict_blurb)s throat diameter
     pore_diameter : str
-        The dictionary key containing the pore diameter values to be used.
+        %(dict_blurb)s pore diameter
 
     Returns
     -------
-    value : ndarray
-        Array containing throat capillary entry pressure values.
+    %(return_arr)s capillary entry pressure
 
     """
     network = target.project.network
@@ -427,3 +372,37 @@ def sinusoidal_bidirectional(target,
         target.remove_model(key)
     del network["throat.temp_diameter"]
     return _np.vstack((values[0], values[1])).T
+
+
+def _get_key_props(phase=None,
+                   diameter="throat.diameter",
+                   surface_tension="pore.surface_tension",
+                   contact_angle="pore.contact_angle"):
+    r"""
+    Many of the methods are generic to pores and throats. Some information may
+    be stored on either the pore or throat and needs to be interpolated.
+    This is a helper method to return the properties in the correct format.
+
+    TODO: Check for method to convert throat to pore data
+    """
+    element = diameter.split(".")[0]
+    if element == "pore":
+        if "throat" in surface_tension:
+            sigma = phase.interpolate_data(propname=surface_tension)
+        else:
+            sigma = phase[surface_tension]
+        if "throat" in contact_angle:
+            theta = phase.interpolate_data(propname=contact_angle)
+        else:
+            theta = phase[contact_angle]
+    if element == "throat":
+        if "pore" in surface_tension:
+            sigma = phase.interpolate_data(propname=surface_tension)
+        else:
+            sigma = phase[surface_tension]
+        if "pore" in contact_angle:
+            theta = phase.interpolate_data(propname=contact_angle)
+        else:
+            theta = phase[contact_angle]
+
+    return element, sigma, theta

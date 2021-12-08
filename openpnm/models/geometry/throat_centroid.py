@@ -1,26 +1,23 @@
-r"""
-Throat Centroid
-...............
-
-"""
 import numpy as _np
+from openpnm.utils import Docorator
 
 
+docstr = Docorator()
+
+
+@docstr.dedent
 def pore_coords(target):
     r"""
-    Calculate throat centroid values by averaging adjacent pore coordinates.
+    Calculate throat centroid values by averaging adjacent pore coordinates
 
     Parameters
     ----------
-    target : GenericGeometry
-        The object which this model is associated with. This controls the
-        length of the calculated array, and also provides access to other
-        necessary properties.
+    %(models.target.parameters)s
 
     Returns
     -------
-    value : ndarray
-        Array containing throat centroid values.
+    values : ndarray
+        A numpy ndarray containing throat centroid values
 
     """
     network = target.project.network

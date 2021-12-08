@@ -1,9 +1,11 @@
-r"""
-"""
 import numpy as np
-import scipy as sp
+from openpnm.utils import Docorator
 
 
+docstr = Docorator()
+
+
+@docstr.dedent
 def water(target, temperature='pore.temperature', salinity='pore.salinity'):
     r"""
     Calculates surface tension of pure water or seawater at atmospheric
@@ -13,26 +15,21 @@ def water(target, temperature='pore.temperature', salinity='pore.salinity'):
 
     Parameters
     ----------
-    target : GenericPhase
-        The object for which these values are being calculated. This
-        controls the length of the calculated array, and also provides
-        access to other necessary thermofluid properties.
-    temperature : str
-        The dictionary key containing the temperature values. Temperature must
-        be in Kelvin for this emperical equation to work
-    salinity : str
-        The dictionary key containing the salinity values. Salinity must be
+    %(models.target.parameters)s
+    %(models.phase.T)s
+    salinity : string
+        The dictionary key containing the salinity values.  Salinity must be
         expressed in g of salt per kg of solution (ppt).
 
     Returns
     -------
     value : ndarray
-        Array containing surface tension of seawater in [N/m]
+        A numpy ndarray containing surface tension of seawater in [N/m]
 
     Notes
     -----
     T must be in K, and S in g of salt per kg of phase, or ppt (parts per
-    thousand)
+        thousand)
     VALIDITY: 273 < T < 313 K; 0 < S < 40 g/kg;
     ACCURACY: 0.2 %
 
@@ -57,6 +54,7 @@ def water(target, temperature='pore.temperature', salinity='pore.salinity'):
     return value
 
 
+@docstr.dedent
 def eotvos(target, k, temperature='pore.temperature',
            critical_temperature='pore.critical_temperature',
            molar_density='pore.molar_density'):
@@ -65,23 +63,19 @@ def eotvos(target, k, temperature='pore.temperature',
 
     Parameters
     ----------
-    target : GenericPhase
-        The object for which these values are being calculated.  This
-        controls the length of the calculated array, and also provides
-        access to other necessary thermofluid properties.
+    %(models.target.parameters)s
     k : float
         Constant parameter specific to fluid
-    temperature : str
-        The dictionary key containing the temperature values (K)
-    critical_temperature : str
+    %(models.phase.T)s
+    critical_temperature : string
         The dictionary key containing the critical temperature values (K)
-    molar_density : str
+    molar_density : string
         The dictionary key containing the molar density values (K)
 
     Returns
     -------
     value : ndarray
-        Array containing surface tension values [N/m]
+        A numpy ndarray containing surface tension values [N/m]
 
     TODO: Needs description, and improve definition of k
 
@@ -93,6 +87,7 @@ def eotvos(target, k, temperature='pore.temperature',
     return value
 
 
+@docstr.dedent
 def guggenheim_katayama(target, K2, n, temperature='pore.temperature',
                         critical_temperature='pore.critical_temperature',
                         critical_pressure='pore.critical_pressure'):
@@ -101,25 +96,21 @@ def guggenheim_katayama(target, K2, n, temperature='pore.temperature',
 
     Parameters
     ----------
-    target : GenericPhase
-        The object for which these values are being calculated.  This
-        controls the length of the calculated array, and also provides
-        access to other necessary thermofluid properties.
+    %(models.target.parameters)s
     K2 : scalar
         Fluid specific constant
     n : scalar
         Fluid specific constant
-    temperature : str
-        The dictionary key containing the temperature values (K)
-    critical_temperature : str
+    %(models.phase.T)s
+    critical_temperature : string
         The dictionary key containing the critical temperature values (K)
-    critical_pressure : str
+    critical_pressure : string
         The dictionary key containing the critical pressure values (K)
 
     Returns
     -------
     value : ndarray
-        Array containing surface tension values [N/m]
+        A numpy ndarray containing surface tension values [N/m]
 
     """
     T = target[temperature]
@@ -130,6 +121,7 @@ def guggenheim_katayama(target, K2, n, temperature='pore.temperature',
     return value
 
 
+@docstr.dedent
 def brock_bird_scaling(target, sigma_o, To, temperature='pore.temperature',
                        critical_temperature='pore.critical_temperature'):
     r"""
@@ -138,23 +130,20 @@ def brock_bird_scaling(target, sigma_o, To, temperature='pore.temperature',
 
     Parameters
     ----------
-    target : GenericPhase
-        The object for which these values are being calculated.  This
-        controls the length of the calculated array, and also provides
-        access to other necessary thermofluid properties.
+    %(models.target.parameters)s
     To : float
         Reference temperature (K)
     sigma_o : float
         Surface tension at reference temperature (N/m)
-    temperature : str
-        The dictionary key containing the temperature values (K)
-    critical_temperature : str
+    %(models.phase.T)s
+    critical_temperature : string
         The dictionary key containing the critical temperature values (K)
 
     Returns
     -------
     value : ndarray
-        Array containing surface tension values scaled to the temperature [N/m]
+        A numpy ndarray containing surface tension values scaled to the
+        temperature [N/m]
 
     """
     Tc = target[critical_temperature]

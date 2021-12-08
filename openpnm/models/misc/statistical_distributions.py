@@ -1,13 +1,10 @@
-r"""
-Statistical Distributions
-=========================
-
-"""
 import numpy as np
-from openpnm.utils import logging
+import scipy.stats as spts
+from openpnm.utils import logging, Docorator
+
+
+docstr = Docorator()
 logger = logging.getLogger(__name__)
-
-
 __all__ = [
     'random',
     'weibull',
@@ -17,67 +14,33 @@ __all__ = [
 ]
 
 
-def random(target, element, seed=None, num_range=[0, 1]):
-    r"""
-    Create an array of random numbers of a specified size.
-
-    Parameters
-    ----------
-    target : Base
-        The object which this model is associated with. This controls the
-        length of the calculated array, and also provides access to other
-        necessary properties.
-    seed : int
-        The starting seed value to send to Scipy's random number generator.
-        The default is None, which means different distribution is returned
-        each time the model is run.
-    num_range : list
-        A two element list indicating the low and high end of the returned
-        numbers.
-
-    Returns
-    -------
-    values : ndarray
-        Array containing uniformly-distributed random numbers.
-
-    """
-    range_size = num_range[1] - num_range[0]
-    range_min = num_range[0]
-    if seed is not None:
-        np.random.seed(seed)
-    value = np.random.rand(target._count(element),)
-    value = value*range_size + range_min
-    return value
-
-
+@docstr.get_sections(base='models.misc.stats',
+                     sections=['Parameters', 'Returns'])
+@docstr.dedent
 def weibull(target, seeds, shape, scale, loc):
     r"""
     Produces values from a Weibull distribution given a set of random numbers.
 
     Parameters
     ----------
-    target : Base
-        The object which this model is associated with. This controls the
-        length of the calculated array, and also provides access to other
-        necessary properties.
-    seeds : str, optional
-        The dictionary key on the Geometry object containing random seed values
-        (between 0 and 1) to use in the statistical distribution.
+    %(models.target.parameters)s
+    %(models.misc.seeds)s
     shape : float
-        This controls the skewness of the distribution, with 'shape' < 1 giving
-        values clustered on the low end of the range with a long tail, and
-        'shape' > 1 giving a more symmetrical distribution.
+        Controls the width or skewness of the distribution. For more
+        information on the effect of this parameter refer to the
+        corresponding `scipy.stats function
+        <https://docs.scipy.org/doc/scipy/reference/stats.html>`_.
     scale : float
-        This controls the width of the distribution with most of values falling
-        below this number.
+        Controls the width of the distribution. For more information on
+        the effect of this parameter refer to the corresponding
+        scipy.stats function.
     loc : float
-        Applies an offset to the distribution such that the smallest values are
-        above this number.
+            Specifies the central value of ???
 
     Returns
     -------
-    values : ndarray
-        Array containing random numbers based on Weibull distribution.
+    values : ndndarray
+        A numpy ndarray containing values following the distribution
 
     Examples
     --------
@@ -98,36 +61,31 @@ def weibull(target, seeds, shape, scale, loc):
        plt.show()
 
     """
-    import scipy.stats as spts
-
     seeds = target[seeds]
     value = spts.weibull_min.ppf(q=seeds, c=shape, scale=scale, loc=loc)
     return value
 
 
-def normal(target, seeds, scale, loc):
+def normal(target, seeds, mean=None, stddev=None, scale=None, loc=None):
     r"""
     Produces values from a Weibull distribution given a set of random numbers.
 
     Parameters
     ----------
-    target : Base
-        The object with which this function as associated.  This argument
-        is required to (1) set number of values to generate (geom.Np or
-        geom.Nt) and (2) provide access to other necessary values
-        (i.e. geom['pore.seed']).
-    seeds : str, optional
-        The dictionary key on the Geometry object containing random seed values
-        (between 0 and 1) to use in the statistical distribution.
-    scale : float
-        The standard deviation of the Normal distribution
-    loc : float
-        The mean of the Normal distribution
+    %(models.target.parameters)s
+    %(models.misc.seeds)s
+    mean : float
+        The mean value of the distribution.  This is referred to as the
+        ``loc`` in the scipy.stats function, and this key word is also
+        accepted.
+    stddev : float
+        The standard deviation of the distribution.  This is referred to as
+        the  ``scale`` in the scipy.stats function, and this key word is also
+        accepted.
 
     Returns
     -------
-    values : ndarray
-        Array containing normally distributed random numbers.
+    %(models.misc.stats.returns)s
 
     Examples
     --------
@@ -147,8 +105,8 @@ def normal(target, seeds, scale, loc):
        plt.show()
 
     """
-    import scipy.stats as spts
-
+    scale = stddev if stddev is not None else scale
+    loc = mean if mean is not None else loc
     seeds = target[seeds]
     value = spts.norm.ppf(q=seeds, scale=scale, loc=loc)
     return value
@@ -163,21 +121,15 @@ def generic_distribution(target, seeds, func):
 
     Parameters
     ----------
-    target : Base
-        The object which this model is associated with. This controls the
-        length of the calculated array, and also provides access to other
-        necessary properties.
-    seeds : str, optional
-        The dictionary key on the Geometry object containing random seed values
-        (between 0 and 1) to use in the statistical distribution.
+    %(models.target.parameters)s
+    %(models.misc.seeds)s
     func : object
-        An 'rv_frozen' object from the Scipy.stats library with all of the
+        A 'rv_frozen' object from the scipy.stats library with all of the
         parameters pre-specified.
 
     Returns
     -------
-    values : ndarray
-        Array containing random numbers based on given ppf.
+    %(models.misc.stats.returns)s
 
     Examples
     --------
@@ -213,24 +165,55 @@ def generic_distribution(target, seeds, func):
     return value
 
 
+@docstr.dedent
+def random(target, element, seed=None, num_range=[0, 1]):
+    r"""
+    Create an array of random numbers of a specified size.
+
+    Parameters
+    ----------
+    %(models.target.parameters)s
+    seed : int
+        The starting seed value to sent to numpy's random number generator.
+        A value of ``None`` means a different distribution is returned each
+        time the model is (re)run.
+    num_range : list
+        A two element list indicating the low and high end of the returned
+        numbers.  The default is ``[0, 1]``, but a value of ``[0.1, 0.9]``
+        may be useful if these values are to be used in subsequent
+        distributions to prevent generating extreme values in the tails.
+
+    Returns
+    -------
+    %(models.misc.stats.returns)s
+
+    """
+    range_size = num_range[1] - num_range[0]
+    range_min = num_range[0]
+    if seed is not None:
+        np.random.seed(seed)
+    value = np.random.rand(target._count(element),)
+    value = value*range_size + range_min
+    return value
+
+@docstr.dedent
 def match_histogram(target, bin_centers, bin_heights, element='pore'):
     r"""
     Generate values corresponding to a given histogram
 
     Parameters
     ----------
-    target : Base
-        The object for which values are to be generated
+    %(models.target.parameters)s
     bin_centers : array_like
-        The x-axis of the histogram, such as pore sizes
+        The x-axis of the histogram, such as pore sizes.
     bin_heights : array_like
-        The y-axis of the histogram, such as the number of pores of each size
+        The y-axis of the histogram, such as the number of pores of each size.
     element : str
         Controls how many values to generate. Can either be 'pore' or 'throat'.
 
     Returns
     -------
-    vals : ndarray
+    values : ndarray
         Values corresponding to ``bin_centers`` generated in proportion to the
         respective ``bin_heights``.
 

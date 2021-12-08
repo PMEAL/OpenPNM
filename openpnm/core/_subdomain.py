@@ -213,5 +213,5 @@ class Subdomain(Base, LabelMixin):
         if missing_vals is None:
             vals = vals[vals >= 0]
         else:
-            vals[vals >= 0] = missing_vals
+            vals[vals < 0] = missing_vals
         return vals

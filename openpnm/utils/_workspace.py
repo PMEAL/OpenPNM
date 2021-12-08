@@ -3,10 +3,11 @@ import numpy as np
 import openpnm
 from openpnm.utils.misc import SettingsDict
 from auto_all import start_all, end_all
+
+
 logger = logging.getLogger(__name__)
-
-
 start_all()
+
 
 class SettingsDict(SettingsDict):
     """Brief explanation of 'SettingsDict'"""

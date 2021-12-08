@@ -1,7 +1,10 @@
 import openpnm.models as mods
 from openpnm.geometry import GenericGeometry
-from openpnm.utils import logging, SettingsAttr
+from openpnm.utils import logging, SettingsAttr, TypedList, Docorator
+
+
 logger = logging.getLogger(__name__)
+docstr = Docorator()
 
 
 class ImportedSettings:
@@ -28,9 +31,10 @@ class ImportedSettings:
     throat_diameter = 'inscribed_diameter'
     pore_shape = 'cone'
     throat_shape = 'cylinder'
-    exclude_props = []
+    exclude_props = TypedList(types=[str])
 
 
+@docstr.dedent
 class Imported(GenericGeometry):
     r"""
     This geometry class extracts all numerical properites from the received
@@ -42,15 +46,11 @@ class Imported(GenericGeometry):
 
     Parameters
     ----------
-    network : GenericNetwork
-        The network with which this Geometry should be associated
-    exclude : list[str]
+    exclude : list of strings
         A list of which network properties should *not* be transferred to
         new geometry object.  'pore.coords' and 'throat.conns' are *always*
         excluded.  Note that labels are not transferred, only properties.
-    name : str
-        The name of the object, which is also used as the label where this
-        geometry is defined.
+    %(GenericGeometry.parameters)s
 
     Notes
     -----

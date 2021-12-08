@@ -1,10 +1,9 @@
-r"""
-Throat Size
-...........
-
-"""
-from openpnm.models import misc as _misc
 import numpy as _np
+from openpnm.models import misc as _misc
+from openpnm.utils import Docorator
+
+
+docstr = Docorator()
 
 
 def weibull(target, shape, scale, loc, seeds='throat.seed'):
@@ -45,6 +44,7 @@ def from_neighbor_pores(target, prop='pore.diameter', mode='min'):
 from_neighbor_pores.__doc__ = _misc.from_neighbor_pores.__doc__
 
 
+@docstr.dedent
 def equivalent_diameter(target, throat_area='throat.area',
                         throat_shape='circle'):
     r"""
@@ -53,12 +53,10 @@ def equivalent_diameter(target, throat_area='throat.area',
 
     Parameters
     ----------
-    target : GenericGeometry
-        The object which this model is associated with. This controls the
-        length of the calculated array, and also provides access to other
-        necessary properties.
+    %(models.target.parameters)s
     thorat_area : str
-        The dictionary key to the throat area values
+        Name of the dictionary key on ``target`` where the array containing
+        throat area values is stored
     throat_shape : str
         The shape cross-sectional shape of the throat to assume when
         back-calculating from the area.  Options are 'circle' (default) or
@@ -66,8 +64,8 @@ def equivalent_diameter(target, throat_area='throat.area',
 
     Returns
     -------
-    value : ndarray
-        Array containing throat equivalent diameter.
+    diameters : ndarray
+        A numpy ndarray containing throat diameter values
 
     """
     area = target[throat_area]

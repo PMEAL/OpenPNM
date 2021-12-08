@@ -7,11 +7,12 @@ from copy import deepcopy
 from openpnm.utils import HealthDict, Workspace
 from ._grid import Tableist
 from auto_all import start_all, end_all
+
+
 logger = logging.getLogger(__name__)
 ws = Workspace()
-
-
 start_all()
+
 
 class Project(list):
     r"""

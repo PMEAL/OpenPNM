@@ -930,6 +930,17 @@ class BaseTest:
         with pytest.raises(KeyError):
             pn.get_conduit_data('blah')
 
+    def test_get_conduit_data_different_props(self):
+        pn = op.network.Cubic(shape=[3, 3, 3])
+        pn['pore.diameter'] = 2.0
+        pn['throat.volume'] = 1.0
+        a = pn.get_conduit_data(poreprop='pore.diameter',
+                                throatprop='throat.volume')
+        assert np.all(a.shape == (54, 3))
+        assert np.all(a[:, 1] == 1.0)
+        assert np.all(a[:, 0] == 2.0)
+        assert np.all(a[:, 2] == 2.0)
+
     def test_del_nested_dicts(self):
         pn = op.network.Cubic(shape=[3, 3, 3])
         geo = op.geometry.SpheresAndCylinders(network=pn,

@@ -1,8 +1,11 @@
-r"""
-"""
 import numpy as np
+from openpnm.utils import Docorator
 
 
+docstr = Docorator()
+
+
+@docstr.dedent
 def standard(target, mol_weight='pore.molecular_weight',
              density='pore.density'):
     r"""
@@ -10,19 +13,16 @@ def standard(target, mol_weight='pore.molecular_weight',
 
     Parameters
     ----------
-    target : GenericPhase
-        The object for which these values are being calculated.  This
-        controls the length of the calculated array, and also provides
-        access to other necessary thermofluid properties.
-    mol_weight : str
+    %(models.target.parameters)s
+    mol_weight : string
         The dictionary key containing the molecular weight in kg/mol
-    density : str
+    density : string
         The dictionary key containing the density in kg/m3
 
     Returns
     -------
     value : ndarray
-        Array containing molar density values [mol/m3]
+        A numpy ndrray containing molar density values [mol/m3]
 
     """
     MW = target[mol_weight]
@@ -31,6 +31,7 @@ def standard(target, mol_weight='pore.molecular_weight',
     return value
 
 
+@docstr.dedent
 def ideal_gas(target, pressure='pore.pressure',
               temperature='pore.temperature'):
     r"""
@@ -38,19 +39,14 @@ def ideal_gas(target, pressure='pore.pressure',
 
     Parameters
     ----------
-    target : GenericPhase
-        The object for which these values are being calculated.  This
-        controls the length of the calculated array, and also provides
-        access to other necessary thermofluid properties.
-    temperature : str
-        The dictionary key containing the density in kg/m3
-    pressure : str
-        The dictionary key containing the pressure values in Pascals (Pa)
+    %(models.target.parameters)s
+    %(models.phase.T)s
+    %(models.phase.P)s
 
     Returns
     -------
     value : ndarray
-        Array containing molar density values [mol/m3]
+        A numpy ndarray containing molar density values [mol/m3]
 
     Notes
     -----
@@ -66,6 +62,7 @@ def ideal_gas(target, pressure='pore.pressure',
     return value
 
 
+@docstr.dedent
 def vanderwaals(target, pressure='pore.pressure',
                 temperature='pore.temperature',
                 critical_pressure='pore.critical_pressure',
@@ -75,14 +72,9 @@ def vanderwaals(target, pressure='pore.pressure',
 
     Parameters
     ----------
-    target : GenericPhase
-        The object for which these values are being calculated.  This
-        controls the length of the calculated array, and also provides
-        access to other necessary thermofluid properties.
-    pressure : str
-        The dictionary key containing the pressure values in Pascals (Pa)
-    temperature : str
-        The dictionary key containing the temperature values in Kelvin (K)
+    %(models.target.parameters)s
+    %(models.phase.T)s
+    %(models.phase.P)s
     critical_pressure : str
         The dictionary key containing the critical pressure values in Pascals
         (Pa)
@@ -93,7 +85,7 @@ def vanderwaals(target, pressure='pore.pressure',
     Returns
     -------
     value : ndarray
-        Array containing molar density values [mol/m3]
+        A numpy ndarray containing molar density values [mol/m3]
 
     """
 

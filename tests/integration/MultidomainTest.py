@@ -1,5 +1,4 @@
 import openpnm as op
-import scipy as sp
 
 
 class MultipleDomainTest():

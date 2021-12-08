@@ -1,11 +1,13 @@
-r"""
-Throat Capillary Shape Factor
-.............................
-
-"""
 import numpy as _np
+from openpnm.utils import Docorator
 
 
+docstr = Docorator()
+
+
+@docstr.get_sections(base='models.geometry.throat_capillary_shape_factor',
+                     sections=['Parameters', 'Returns'])
+@docstr.dedent
 def compactness(target, throat_perimeter='throat.perimeter',
                 throat_area='throat.area'):
     r"""
@@ -17,18 +19,15 @@ def compactness(target, throat_perimeter='throat.perimeter',
 
     Parameters
     ----------
-    target : GenericGeometry
-        The object which this model is associated with. This controls the
-        length of the calculated array, and also provides access to other
-        necessary properties.
-    throat_perimeter : str
-        The dictionary key of the array containing the throat perimeter values.
-    throat_area : str
-        The dictionary key of the array containing the throat area values.
+    %(models.target.parameters)s
+    throat_perimeter : string
+        The dictionary key of the array containing the throat perimeter values
+    throat_area : string
+        The dictionary key of the array containing the throat area values
 
     Returns
     -------
-    alpha : ndarray
+    alpha : NumPy ndarray
         Array containing throat compactness values.
 
     References
@@ -68,24 +67,16 @@ def compactness(target, throat_perimeter='throat.perimeter',
 def mason_morrow(target, throat_perimeter='throat.perimeter',
                  throat_area='throat.area'):
     r"""
-    Mason and Morrow relate the capillary pressure to the shaped factor in a
+    Mason and Morrow relate the capillary pressure to the shape factor in a
     similar way to Mortensen but for triangles.
 
     Parameters
     ----------
-    target : GenericGeometry
-        The object which this model is associated with. This controls the
-        length of the calculated array, and also provides access to other
-        necessary properties.
-    throat_perimeter : str
-        The dictionary key of the array containing the throat perimeter values.
-    throat_area : str
-        The dictionary key of the array containing the throat area values.
+    %(models.geometry.throat_capillary_shape_factor.parameters)s
 
     Returns
     -------
-    value : ndarray
-        Array containing throat shape factor values.
+    %(models.geometry.throat_capillary_shape_factor.returns)s
 
     References
     ----------
@@ -112,21 +103,12 @@ def jenkins_rao(target, throat_perimeter='throat.perimeter',
 
     Parameters
     ----------
-    target : GenericGeometry
-        The object which this model is associated with. This controls the
-        length of the calculated array, and also provides access to other
-        necessary properties.
-    throat_perimeter : str
-        The dictionary key of the array containing the throat perimeter values.
-    throat_area : str
-        The dictionary key of the array containing the throat area values.
-    throat_diameter : str
-        The dictionary key of the array containing the throat diameter values.
+    %(models.geometry.throat_capillary_shape_factor.returns)s
+    %(models.geometry.tdia)s
 
     Returns
     -------
-    value : ndarray
-        Array containing throat capillary pressure values.
+    %(models.geometry.throat_capillary_shape_factor.returns)s
 
     References
     ----------

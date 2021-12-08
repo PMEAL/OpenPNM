@@ -18,7 +18,8 @@ class PhysicsSettings:
     """
     prefix = 'phys'
 
-
+@docstr.get_sections(base='GenericPhysics', sections=['Parameters'])
+@docstr.dedent
 class GenericPhysics(ParamMixin, Subdomain, ModelsMixin):
     r"""
     This generic class is meant as a starter for custom Physics objects
@@ -28,17 +29,12 @@ class GenericPhysics(ParamMixin, Subdomain, ModelsMixin):
 
     Parameters
     ----------
-    network : GenericNetwork
-        The network to which this Physics should be attached
-    phase : GenericPhase
+    phase : OpenPNM Phase object
         The Phase object to which this Physics applies
-    geometry : GenericGeometry
+    geometry : OpenPNM Geometry object
         The Geometry object that defines the pores/throats where this Physics
-        should be applied.
-    name : str, optional
-        A unique string name to identify the Physics object, typically same as
-        instance name but can be anything.  If left blank, and name will be
-        generated that includes the class name and an integer index.
+        applies
+    %(Base.parameters)s
 
     """
 

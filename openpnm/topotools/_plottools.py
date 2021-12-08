@@ -6,6 +6,7 @@ from auto_all import start_all, end_all
 
 start_all()
 
+
 def plot_connections(network,
                      throats=None,
                      ax=None,

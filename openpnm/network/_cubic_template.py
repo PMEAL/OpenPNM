@@ -2,11 +2,11 @@ import numpy as np
 from openpnm.network import Cubic
 from openpnm import topotools
 from openpnm.utils import logging
-from auto_all import start_all, end_all
+
+
 logger = logging.getLogger(__name__)
+__all__ = ['CubicTemplate']
 
-
-start_all()
 
 class CubicTemplate(Cubic):
     r"""
@@ -70,5 +70,3 @@ class CubicTemplate(Cubic):
         mask_surface = self["pore.surface"]
         mask_internal_surface = (num_neighbors < max_neighbors) & ~mask_surface
         self.set_label("pore.internal_surface", pores=mask_internal_surface)
-
-end_all()

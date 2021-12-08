@@ -1,9 +1,11 @@
-r"""
-"""
 import numpy as np
-import scipy as sp
+from openpnm.utils import Docorator
 
 
+docstr = Docorator()
+
+
+@docstr.dedent
 def water(target, temperature="pore.temperature", salinity="pore.salinity"):
     r"""
     Calculates thermal conductivity of pure water or seawater at atmospheric
@@ -13,21 +15,16 @@ def water(target, temperature="pore.temperature", salinity="pore.salinity"):
 
     Parameters
     ----------
-    target : GenericPhase
-        The object for which these values are being calculated.  This
-        controls the length of the calculated array, and also provides
-        access to other necessary thermofluid properties.
-    temperature : str
-        The dictionary key containing the temperature values.  Temperature must
-        be in Kelvin for this emperical equation to work
-    salinity : str
+    %(models.target.parameters)s
+    %(models.phase.T)s
+    salinity : string
         The dictionary key containing the salinity values.  Salinity must be
         expressed in g of salt per kg of solution (ppt).
 
     Returns
     -------
     value : ndarray
-        Array containing thermal conductivity of water/seawater in [W/m.K]
+        A numpy ndarray containing thermal conductivity of water/seawater in [W/m.K]
 
     Notes
     -----
@@ -62,6 +59,7 @@ def water(target, temperature="pore.temperature", salinity="pore.salinity"):
     return value
 
 
+@docstr.dedent
 def chung(
     target,
     Cv="pore.heat_capacity",
@@ -77,29 +75,25 @@ def chung(
 
     Parameters
     ----------
-    target : GenericPhase
-        The object for which these values are being calculated.  This
-        controls the length of the calculated array, and also provides
-        access to other necessary thermofluid properties.
-    acentric_factor : str
+    %(models.target.parameters)s
+    acentric_factor : string
         Dictionary key containing the acentric factor of the component
-    Cv : str
+    Cv : string
         Dictionary key containing the heat capacity at constant volume
         (J/(mol.K))
-    mol_weight : str
+    mol_weight : string
         Dictionary key containing the molecular weight of the component
         (kg/mol)
-    viscosity : str
+    viscosity : string
         The dictionary key containing the viscosity values (Pa.s)
-    temperature : str
-        The dictionary key containing the temperature values (K)
-    critical_temperatre: str
+    %(models.phase.T)s
+    critical_temperatre: string
         The dictionary key containing the critical temperature values (K)
 
     Returns
     -------
     value : ndarray
-        Array containing thermal conductivity values in [W/m.K]
+        A numpy ndarray containing thermal conductivity values in [W/m.K]
 
     """
     Cv = target[Cv]
@@ -134,24 +128,20 @@ def sato(
 
     Parameters
     ----------
-    target : GenericPhase
-        The object for which these values are being calculated.  This
-        controls the length of the calculated array, and also provides
-        access to other necessary thermofluid properties.
-    boiling_temperature :  str
+    %(models.target.parameters)s
+    boiling_temperature :  string
         Dictionary key containing the toiling temperature of the component (K)
-    mol_weight : str
+    mol_weight : string
         Dictionary key containing the molecular weight of the component
         (kg/mol)
-    temperature : str
-        The dictionary key containing the temperature values (K)
-    critical_temperature : str
+    %(models.phase.T)s
+    critical_temperature : string
         The dictionary key containing the critical temperature values (K)
 
     Returns
     -------
     value : ndarray
-        Array containing thermal conductivity values in [W/m.K]
+        A numpy ndarray containing thermal conductivity values in [W/m.K]
 
     """
     T = target[temperature]

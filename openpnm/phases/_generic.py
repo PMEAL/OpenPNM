@@ -31,37 +31,7 @@ class GenericPhase(ParamMixin, Base, ModelsMixin, LabelMixin):
 
     Parameters
     ----------
-    network : GenericNetwork
-        The network with which this object is associated
     %(Base.parameters)s
-
-    Examples
-    --------
-    Create a new empty phase:
-
-    >>> import openpnm as op
-    >>> pn = op.network.Cubic([10, 10, 10])
-    >>> phase = op.phases.GenericPhase(network=pn)
-
-    And add a model:
-
-    >>> phase.add_model(propname='pore.molar_density',
-    ...                 model=op.models.phases.molar_density.ideal_gas)
-
-    Now confirm that the model was added and data was calculated.  The
-    ``models`` attribute can be printed:
-
-    >>> print(phase.models)
-    ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-    #   Property Name                       Parameter                 Value
-    ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-    1   pore.molar_density                  model:                    ideal_gas
-                                            pressure:                 pore.pressure
-                                            temperature:              pore.temperature
-                                            regeneration mode:        normal
-    ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-
-    And the Phase itself has a nice printout using ``print(phase)``.
 
     """
 

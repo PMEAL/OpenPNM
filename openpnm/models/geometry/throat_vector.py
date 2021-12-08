@@ -1,31 +1,30 @@
-r"""
-Throat Vector
-.............
-
-"""
 from transforms3d import _gohlketransforms as tr
+from openpnm.utils import Docorator
 
 
+docstr = Docorator()
+
+
+@docstr.dedent
 def pore_to_pore(target):
     r"""
     Calculates throat vector as straight path between connected pores.
 
     Parameters
     ----------
-    target: GenericGeometry
-        The object containing the geometrical properties of the throats
+    %(models.target.parameters)s
 
     Returns
     -------
-    unit_vec : ndarray, shape = (N, 3)
-        Array containing pore-to-pore unit vectors
+    unit_vec : ndarray
+        A [Nt-by-3] numpy ndarray containing pore-to-pore unit vectors
 
     Notes
     -----
     There is an important impicit assumption here: the positive direction is
     taken as the direction from the pore with the lower index to the higher.
     This corresponds to the pores in the 1st and 2nd columns of the
-    'throat.conns' array as stored on the etwork.
+    'throat.conns' array as stored on the network.
 
     """
     network = target.project.network

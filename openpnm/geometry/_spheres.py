@@ -1,30 +1,20 @@
 import openpnm.models as mods
 import openpnm.models.geometry as gmods
 from openpnm.geometry import GenericGeometry
+from openpnm.utils import Docorator
 
 
+docstr = Docorator()
+
+
+@docstr.dedent
 class SpheresAndCylinders(GenericGeometry):
     r"""
-    Spheres and Cylinders subclass of GenericGeometry. This subclass is
-    meant as a basic default geometry to get started quickly.
 
-    Pore diameters are randomly assigned between 0 and the largest sphere
-    that does not overlap with it's nearest neighbor.
-
-    Throat diameters are half the diameter of the smaller of it's two
-    neighboring pores.
 
     Parameters
     ----------
-    network : GenericNetwork
-        The network with which this Geometry should be associated
-    pores : array_like
-        The pores in the domain where this Geometry applies
-    throats : array_like
-        The throats in the domain where this Geometry applies
-    name : str
-        The name of the object, which is also used as the label where this
-        geometry is defined.
+    %(GenericGeometry.parameters)s
 
     """
 
@@ -64,25 +54,25 @@ class SpheresAndCylinders(GenericGeometry):
                        prop='throat.max_size')
 
         self.add_model(propname='throat.length',
-                       model=mods.geometry.throat_length.spheres_and_cylinders,
-                       pore_diameter='pore.diameter',
-                       throat_diameter='throat.diameter')
+                        model=mods.geometry.throat_length.spheres_and_cylinders,
+                        pore_diameter='pore.diameter',
+                        throat_diameter='throat.diameter')
 
         self.add_model(propname='throat.cross_sectional_area',
-                       model=mods.geometry.throat_cross_sectional_area.cylinder,
-                       throat_diameter='throat.diameter')
+                        model=mods.geometry.throat_cross_sectional_area.cylinder,
+                        throat_diameter='throat.diameter')
 
         self.add_model(propname='throat.volume',
-                       model=mods.geometry.throat_volume.cylinder,
-                       throat_diameter='throat.diameter',
-                       throat_length='throat.length')
+                        model=mods.geometry.throat_volume.cylinder,
+                        throat_diameter='throat.diameter',
+                        throat_length='throat.length')
 
         self.add_model(propname='throat.diffusive_size_factors',
-                       model=gmods.diffusive_size_factors.spheres_and_cylinders,
-                       pore_diameter="pore.diameter",
-                       throat_diameter="throat.diameter")
+                        model=gmods.diffusive_size_factors.spheres_and_cylinders,
+                        pore_diameter="pore.diameter",
+                        throat_diameter="throat.diameter")
 
         self.add_model(propname='throat.hydraulic_size_factors',
-                       model=gmods.hydraulic_size_factors.spheres_and_cylinders,
-                       pore_diameter="pore.diameter",
-                       throat_diameter="throat.diameter")
+                        model=gmods.hydraulic_size_factors.spheres_and_cylinders,
+                        pore_diameter="pore.diameter",
+                        throat_diameter="throat.diameter")

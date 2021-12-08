@@ -4,26 +4,29 @@ Pore Cross Sectional Area
 
 """
 from numpy import pi as _pi
+from openpnm.utils import Docorator
 
 
+docstr = Docorator()
+
+
+@docstr.get_sections(base='models.geometry.pore_cross_section',
+                     sections=['Parameters', 'Returns'])
+@docstr.dedent
 def sphere(target, pore_diameter='pore.diameter'):
     r"""
-    Calculate cross-sectional area assuming the pore body is a sphere.
+    Calculate cross-sectional area assuming the pore body is a sphere
 
     Parameters
     ----------
-    target : GenericGeometry
-        The Geometry object which this model is associated with. This
-        controls the length of the calculated array, and also provides
-        access to other necessary geometric properties.
-    pore_diameter : str
-        The dictionary key of the array on the Geometry object containing
-        the pore diameter values necessary to find the area.
+    %(models.target.parameters)s
+    %(models.geometry.pdia)s
+
 
     Returns
     -------
-    ndarray
-        Array containing pore area values.
+    areas : ndarray
+        A numpy ndarry containing pore cross-sectional area values
 
     """
     D = target[pore_diameter]
@@ -32,22 +35,15 @@ def sphere(target, pore_diameter='pore.diameter'):
 
 def cone(target, pore_diameter='pore.diameter'):
     r"""
-    Calculate cross-sectional area assuming the pore body is a cone.
+    Calculate cross-sectional area assuming the pore body is a cone
 
     Parameters
     ----------
-    target : GenericGeometry
-        The Geometry object which this model is associated with. This
-        controls the length of the calculated array, and also provides
-        access to other necessary geometric properties.
-    pore_diameter : str
-        The dictionary key of the array on the Geometry object containing
-        the pore diameter values necessary to find the area.
+    %(models.geometry.pore_cross_section.parameters)s
 
     Returns
     -------
-    ndarray
-        Array containing pore area values.
+    %(models.geometry.pore_cross_section.returns)s
 
     """
     D = target[pore_diameter]
@@ -60,18 +56,11 @@ def cube(target, pore_diameter='pore.diameter'):
 
     Parameters
     ----------
-    target : GenericGeometry
-        The Geometry object which this model is associated with. This
-        controls the length of the calculated array, and also provides
-        access to other necessary geometric properties.
-    pore_diameter : str
-        The dictionary key of the array on the Geometry object containing
-        the pore diameter values necessary to find the area.
+    %(models.geometry.pore_cross_section.parameters)s
 
     Returns
     -------
-    ndarray
-        Array containing pore area values.
+    %(models.geometry.pore_cross_section.returns)s
 
     """
     D = target[pore_diameter]
@@ -80,22 +69,15 @@ def cube(target, pore_diameter='pore.diameter'):
 
 def circle(target, pore_diameter='pore.diameter'):
     r"""
-    Calculate cross-sectional area assuming the pore body is a circle.
+    Calculate cross-sectional area assuming the pore body is a circle
 
     Parameters
     ----------
-    target : GenericGeometry
-        The Geometry object which this model is associated with. This
-        controls the length of the calculated array, and also provides
-        access to other necessary geometric properties.
-    pore_diameter : str
-        The dictionary key of the array on the Geometry object containing
-        the pore diameter values necessary to find the area.
+    %(models.geometry.pore_cross_section.parameters)s
 
     Returns
     -------
-    ndarray
-        Array containing pore area values.
+    %(models.geometry.pore_cross_section.returns)s
 
     Notes
     -----
@@ -108,22 +90,15 @@ def circle(target, pore_diameter='pore.diameter'):
 
 def square(target, pore_diameter='pore.diameter'):
     r"""
-    Calculate cross-sectional area assuming the pore body is a square.
+    Calculate cross-sectional area assuming the pore body is a square
 
     Parameters
     ----------
-    target : GenericGeometry
-        The Geometry object which this model is associated with. This
-        controls the length of the calculated array, and also provides
-        access to other necessary geometric properties.
-    pore_diameter : str
-        The dictionary key of the array on the Geometry object containing
-        the pore diameter values necessary to find the area.
+    %(models.geometry.pore_cross_section.parameters)s
 
     Returns
     -------
-    ndarray
-        Array containing pore area values.
+    %(models.geometry.pore_cross_section.returns)s
 
     Notes
     -----

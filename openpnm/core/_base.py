@@ -2,7 +2,6 @@ import warnings
 import uuid
 from copy import deepcopy
 import numpy as np
-from collections import namedtuple
 from openpnm.utils import Workspace, logging
 from openpnm.utils import SettingsAttr
 from openpnm.utils.misc import PrintableList, Docorator
@@ -40,8 +39,17 @@ class Base(dict):
 
     Parameters
     ----------
-    name : str, optional
-        The unique name of the object.  If not given one will be generated.
+    network : OpenPNM network object
+        The network to which this object is associated
+    settings : dataclass-like or dict, optional
+        User defined settings for the object to override defaults. Can be a
+        dataclass-type object with settings stored as attributes or a python
+        dicionary of key-value pairs. Settings are stored in the ``settings``
+        attribute of the object.
+    name : string, optional
+        A unique name to assign to the object for easier identification.  If
+        not given one will be generated.
+
     Np : int, default is 0
         The total number of pores to be assigned to the object
     Nt : int, default is 0
@@ -798,45 +806,62 @@ class Base(dict):
             values *= self[propname].units
         return values
 
-    def get_conduit_data(self, prop, mode='mean'):
+    def get_conduit_data(self, poreprop, throatprop=None, mode='mean'):
         r"""
         Combines requested data into a single 3-column array.
 
         Parameters
         ----------
-        prop : str
-            The dictionary key to the property of interest
-        mode : str
-            How interpolation should be peformed for missing values. If
-            values are present for both pores and throats, then this
-            argument is ignored. The ``interpolate`` data method is used.
-            Options are:
+        poreprop : str
+            The dictionary key to the pore property of interest
+        throatprop : str, optional
+            The dictionary key to the throat property of interest. If not
+            given then the same property as ``poreprop`` is assumed.  So
+            if poreprop = 'pore.foo' (or just 'foo'), then throatprop is
+            set to 'throat.foo').
+        mode : string
+            How interpolation should be peformed for missing values. If values
+            are present for both pores and throats, then this argument is
+            ignored.  The ``interpolate`` data method is used.  Options are:
+
+                * 'mean' (default)
 
                 **'mean'** (default):
                     Finds the mean value of the neighboring pores (or throats)
-                **'min'**
-                    Finds the minimuem of the neighboring pores (or throats)
-                **'max'**
+                * 'min'
+                    Finds the minimum of the neighboring pores (or throats)
+                * 'max'
                     Finds the maximum of the neighboring pores (or throats)
 
         Returns
         -------
         conduit_data : ndarray
-            An Nt-by-3 array with each column containg the requested
+            An Nt-by-3 array with each column containing the requested
             property for each pore-throat-pore conduit.
 
         """
+        # Deal with various args
+        if not poreprop.startswith('pore'):
+            poreprop = 'pore.' + poreprop
+        if throatprop is None:
+            throatprop = 'throat.' + poreprop.split('.', 1)[1]
+        if not throatprop.startswith('throat'):
+            throatprop = 'throat.' + throatprop
+        # Generate array
+        conns = self.network.conns
+        domain = self._domain
         try:
-            T = self['throat.' + prop]
+            T = domain[throatprop]
             try:
-                P1, P2 = self['pore.' + prop][self.network.conns].T
+                P1, P2 = domain[poreprop][conns.T]
             except KeyError:
-                P = self.interpolate_data(propname='throat.'+prop, mode=mode)
-                P1, P2 = P[self.network.conns].T
+                P = domain.interpolate_data(propname=throatprop, mode=mode)
+                P1, P2 = P[conns.T]
         except KeyError:
-            P1, P2 = self['pore.' + prop][self.network.conns].T
-            T = self.interpolate_data(propname='pore.'+prop, mode=mode)
-        return np.vstack((P1, T, P2)).T
+            P1, P2 = domain[poreprop][conns.T]
+            T = domain.interpolate_data(propname=poreprop, mode=mode)
+        mask = self.throats(to_global=True)
+        return np.vstack((P1[mask], T[mask], P2[mask])).T
 
     def _count(self, element=None):
         r"""

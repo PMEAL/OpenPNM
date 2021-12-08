@@ -2,12 +2,12 @@ import numpy as np
 from openpnm import topotools
 from openpnm.network import GenericNetwork, Cubic
 from openpnm.utils import logging, Workspace
-from auto_all import start_all, end_all
+
+
 logger = logging.getLogger(__name__)
 ws = Workspace()
+__all__ = ['Bravais']
 
-
-start_all()
 
 class Bravais(GenericNetwork):
     r"""
@@ -238,5 +238,3 @@ class Bravais(GenericNetwork):
                 offset = -1*offset
             topotools.add_boundary_pores(network=self, pores=Ps, offset=offset,
                                          apply_label=item + '_boundary')
-
-end_all()

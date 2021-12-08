@@ -1,42 +1,31 @@
-r"""
-Pore-scale models for calculating the thermal conductance of conduits.
-"""
 from openpnm.models.physics._utils import _poisson_conductance
+from openpnm.models import _doctxt
+
 
 __all__ = ["generic_thermal", "series_resistors"]
 
 
+@_doctxt
 def generic_thermal(target,
                     pore_conductivity='pore.thermal_conductivity',
                     throat_conductivity='throat.thermal_conductivity',
                     size_factors='throat.diffusive_size_factors'):
     r"""
-    Calculate the thermal conductance of conduits in network, where a
-    conduit is (1/2 pore - full throat - 1/2 pore). See the notes section.
+    Calculate the thermal conductance of conduits in network.
 
     Parameters
     ----------
-    target : GenericPhysics
-        The object which this model is associated with. This controls the
-        length of the calculated array, and also provides access to other
-        necessary properties.
+    %(target_blurb)s
     pore_conductivity : str
-        Dictionary key of the pore thermal conductivity values
+        %(dict_blurb)s thermal conductivity
     throat_conductivity : str
-        Dictionary key of the throat thermal conductivity values
-    size_factors: str
-        Dictionary key of the conduit diffusive size factors' values.
+        %(dict_blurb)s throat thermal conductivity
+    size_factors : str
+        %(dict_blurb)s conduit diffusive size factors
 
     Returns
     -------
-    g : ndarray
-        Array containing thermal conductance values for conduits in the
-        geometry attached to the given physics object.
-
-    Notes
-    -----
-    This function requires that all the necessary phase properties already
-    be calculated.
+    %(return_arr)s thermal conductance
 
     """
     return _poisson_conductance(target=target,
@@ -50,32 +39,21 @@ def series_resistors(target,
                      throat_thermal_conductivity='throat.thermal_conductivity',
                      size_factors='throat.diffusive_size_factors'):
     r"""
-    Calculate the thermal conductance of conduits in network, where a
-    conduit is (1/2 pore - full throat - 1/2 pore). See the notes section.
+    Calculate the thermal conductance of conduits in network.
 
     Parameters
     ----------
-    target : GenericPhysics
-        The object which this model is associated with. This controls the
-        length of the calculated array, and also provides access to other
-        necessary properties.
+    %(target_blurb)s
     pore_conductivity : str
-        Dictionary key of the pore thermal conductivity values
+        %(dict_blurb)s thermal conductivity
     throat_conductivity : str
-        Dictionary key of the throat thermal conductivity values
-    size_factors: str
-        Dictionary key of the conduit diffusive size factors' values.
+        %(dict_blurb)s throat thermal conductivity
+    size_factors : str
+        %(dict_blurb)s conduit diffusive size factors
 
     Returns
     -------
-    g : ndarray
-        Array containing thermal conductance values for conduits in the
-        geometry attached to the given physics object.
-
-    Notes
-    -----
-    This function requires that all the necessary phase properties already
-    be calculated.
+    %(return_arr)s thermal conductance
 
     """
     return _poisson_conductance(target=target,

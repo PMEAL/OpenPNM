@@ -3,11 +3,12 @@ import scipy.sparse as sprs
 from scipy.sparse import csgraph
 from openpnm.utils import PrintableDict, logging, Workspace
 from auto_all import start_all, end_all
+
+
 logger = logging.getLogger(__name__)
 ws = Workspace()
-
-
 start_all()
+
 
 def ispercolating(am, inlets, outlets, mode='site'):
     r"""
