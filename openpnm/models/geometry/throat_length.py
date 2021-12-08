@@ -36,7 +36,9 @@ def spheres_and_cylinders(
     """
     from openpnm.models.geometry import conduit_lengths
     out = conduit_lengths.spheres_and_cylinders(
-        target, pore_diameter=pore_diameter, throat_diameter=throat_diameter
+        target=target,
+        pore_diameter=pore_diameter,
+        throat_diameter=throat_diameter
     )
     return out[:, 1]
 
@@ -61,7 +63,9 @@ def circles_and_rectangles(
     """
     from openpnm.models.geometry import conduit_lengths
     out = conduit_lengths.circles_and_rectangles(
-        target, pore_diameter=pore_diameter, throat_diameter=throat_diameter
+        target=target,
+        pore_diameter=pore_diameter,
+        throat_diameter=throat_diameter
     )
     return out[:, 1]
 
@@ -86,7 +90,9 @@ def cones_and_cylinders(
     """
     from openpnm.models.geometry import conduit_lengths
     out = conduit_lengths.cones_and_cylinders(
-        target, pore_diameter=pore_diameter, throat_diameter=throat_diameter
+        target=target,
+        pore_diameter=pore_diameter,
+        throat_diameter=throat_diameter
     )
     return out[:, 1]
 
@@ -111,7 +117,9 @@ def trapezoids_and_rectangles(
     """
     from openpnm.models.geometry import conduit_lengths
     out = conduit_lengths.trapezoids_and_rectangles(
-        target, pore_diameter=pore_diameter, throat_diameter=throat_diameter
+        target=target,
+        pore_diameter=pore_diameter,
+        throat_diameter=throat_diameter
     )
     return out[:, 1]
 
@@ -136,7 +144,9 @@ def pyramids_and_cuboids(
     """
     from openpnm.models.geometry import conduit_lengths
     out = conduit_lengths.pyramids_and_cuboids(
-        target, pore_diameter=pore_diameter, throat_diameter=throat_diameter
+        target=target,
+        pore_diameter=pore_diameter,
+        throat_diameter=throat_diameter
     )
     return out[:, 1]
 
@@ -161,7 +171,9 @@ def cubes_and_cuboids(
     """
     from openpnm.models.geometry import conduit_lengths
     out = conduit_lengths.cubes_and_cuboids(
-        target, pore_diameter=pore_diameter, throat_diameter=throat_diameter
+        target=target,
+        pore_diameter=pore_diameter,
+        throat_diameter=throat_diameter
     )
     return out[:, 1]
 
@@ -186,6 +198,8 @@ def squares_and_rectangles(
     """
     from openpnm.models.geometry import conduit_lengths
     out = conduit_lengths.squares_and_rectangles(
-        target, pore_diameter=pore_diameter, throat_diameter=throat_diameter
+        target=target,
+        pore_diameter=pore_diameter,
+        throat_diameter=throat_diameter
     )
     return out[:, 1]

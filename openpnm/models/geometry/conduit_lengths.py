@@ -34,9 +34,11 @@ def spheres_and_cylinders(
         ``[pore1, throat, pore2]``.
 
     """
-    L_ctc = target.network['throat.spacing']
-    D1, Dt, D2 = target.network.get_conduit_data(poreprop=pore_diameter,
-                                                 throatprop=throat_diameter).T
+    L_ctc = target['throat.spacing']
+    D1, Dt, D2 = target.get_conduit_data(
+        poreprop=pore_diameter,
+        throatprop=throat_diameter
+    ).T
 
     # Handle the case where Dt > Dp
     if (Dt > D1).any() or (Dt > D2).any():
@@ -50,8 +52,6 @@ def spheres_and_cylinders(
     L1[mask] = _L1[mask]
     L2[mask] = (L_ctc - L1)[mask]
     Lt = _np.maximum(L_ctc - (L1 + L2), 1e-15)
-    inds = target.throats(to_global=True)
-    L1, Lt, L2 = L1[inds], Lt[inds], L2[inds]
     return _np.vstack((L1, Lt, L2)).T
 
 
@@ -109,9 +109,11 @@ def cones_and_cylinders(
     %(models.geometry.conduit_lengths.returns)s
 
     """
-    L_ctc = target.network['throat.spacing']
-    D1, Dt, D2 = target.network.get_conduit_data(poreprop=pore_diameter,
-                                                 throatprop=throat_diameter).T
+    L_ctc = target['throat.spacing']
+    D1, Dt, D2 = target.get_conduit_data(
+        poreprop=pore_diameter,
+        throatprop=throat_diameter
+    ).T
 
     L1 = D1 / 2
     L2 = D2 / 2
@@ -122,8 +124,6 @@ def cones_and_cylinders(
     L1[mask] = _L1[mask]
     L2[mask] = (L_ctc - L1)[mask]
     Lt = _np.maximum(L_ctc - (L1 + L2), 1e-15)
-    inds = target.throats(to_global=True)
-    L1, Lt, L2 = L1[inds], Lt[inds], L2[inds]
     return _np.vstack((L1, Lt, L2)).T
 
 
@@ -151,9 +151,11 @@ def trapezoids_and_rectangles(
     symmetry.
 
     """
-    L_ctc = target.network['throat.spacing']
-    D1, Dt, D2 = target.network.get_conduit_data(poreprop=pore_diameter,
-                                                 throatprop=throat_diameter).T
+    L_ctc = target['throat.spacing']
+    D1, Dt, D2 = target.get_conduit_data(
+        poreprop=pore_diameter,
+        throatprop=throat_diameter
+    ).T
 
     L1 = D1 / 2
     L2 = D2 / 2
@@ -164,8 +166,6 @@ def trapezoids_and_rectangles(
     L1[mask] = _L1[mask]
     L2[mask] = (L_ctc - L1)[mask]
     Lt = _np.maximum(L_ctc - (L1 + L2), 1e-15)
-    inds = target.throats(to_global=True)
-    L1, Lt, L2 = L1[inds], Lt[inds], L2[inds]
     return _np.vstack((L1, Lt, L2)).T
 
 
@@ -212,9 +212,11 @@ def cubes_and_cuboids(
     %(models.geometry.conduit_lengths.returns)s
 
     """
-    L_ctc = target.network['throat.spacing']
-    D1, Dt, D2 = target.network.get_conduit_data(poreprop=pore_diameter,
-                                                 throatprop=throat_diameter).T
+    L_ctc = target['throat.spacing']
+    D1, Dt, D2 = target.get_conduit_data(
+        poreprop=pore_diameter,
+        throatprop=throat_diameter
+    ).T
 
     L1 = D1 / 2
     L2 = D2 / 2
@@ -226,8 +228,6 @@ def cubes_and_cuboids(
     mask = (Lt < 0) & (L2 > L1)
     L1[mask] = (L_ctc - L2)[mask]
     Lt = _np.maximum(Lt, 1e-15)
-    inds = target.throats(to_global=True)
-    L1, Lt, L2 = L1[inds], Lt[inds], L2[inds]
     return _np.vstack((L1, Lt, L2)).T
 
 

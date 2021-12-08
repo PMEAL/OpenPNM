@@ -54,25 +54,25 @@ class SpheresAndCylinders(GenericGeometry):
                        prop='throat.max_size')
 
         self.add_model(propname='throat.length',
-                       model=mods.geometry.throat_length.spheres_and_cylinders,
-                       pore_diameter='pore.diameter',
-                       throat_diameter='throat.diameter')
+                        model=mods.geometry.throat_length.spheres_and_cylinders,
+                        pore_diameter='pore.diameter',
+                        throat_diameter='throat.diameter')
 
         self.add_model(propname='throat.cross_sectional_area',
-                       model=mods.geometry.throat_cross_sectional_area.cylinder,
-                       throat_diameter='throat.diameter')
+                        model=mods.geometry.throat_cross_sectional_area.cylinder,
+                        throat_diameter='throat.diameter')
 
         self.add_model(propname='throat.volume',
-                       model=mods.geometry.throat_volume.cylinder,
-                       throat_diameter='throat.diameter',
-                       throat_length='throat.length')
+                        model=mods.geometry.throat_volume.cylinder,
+                        throat_diameter='throat.diameter',
+                        throat_length='throat.length')
 
         self.add_model(propname='throat.diffusive_size_factors',
-                       model=gmods.diffusive_size_factors.spheres_and_cylinders,
-                       pore_diameter="pore.diameter",
-                       throat_diameter="throat.diameter")
+                        model=gmods.diffusive_size_factors.spheres_and_cylinders,
+                        pore_diameter="pore.diameter",
+                        throat_diameter="throat.diameter")
 
         self.add_model(propname='throat.hydraulic_size_factors',
-                       model=gmods.hydraulic_size_factors.spheres_and_cylinders,
-                       pore_diameter="pore.diameter",
-                       throat_diameter="throat.diameter")
+                        model=gmods.hydraulic_size_factors.spheres_and_cylinders,
+                        pore_diameter="pore.diameter",
+                        throat_diameter="throat.diameter")
