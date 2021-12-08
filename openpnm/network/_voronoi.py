@@ -1,11 +1,10 @@
 from openpnm import topotools
 from openpnm.utils import logging
 from openpnm.network import DelaunayVoronoiDual
-from auto_all import start_all, end_all
 
 
 logger = logging.getLogger(__name__)
-start_all()
+__all__ = ['Voronoi']
 
 
 class Voronoi(DelaunayVoronoiDual):
@@ -48,5 +47,3 @@ class Voronoi(DelaunayVoronoiDual):
         pop = ['pore.delaunay', 'throat.delaunay', 'throat.interconnect']
         for item in pop:
             del self[item]
-
-end_all()

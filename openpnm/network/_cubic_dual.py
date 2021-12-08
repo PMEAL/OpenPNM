@@ -2,12 +2,11 @@ import numpy as np
 from openpnm.network import GenericNetwork, Cubic
 from openpnm import topotools
 from openpnm.utils import logging, Workspace
-from auto_all import start_all, end_all
 
 
 logger = logging.getLogger(__name__)
 ws = Workspace()
-start_all()
+__all__ = ['CubicDual']
 
 
 class CubicDual(GenericNetwork):
@@ -158,5 +157,3 @@ class CubicDual(GenericNetwork):
                 offset = -1*offset
             topotools.add_boundary_pores(network=self, pores=Ps, offset=offset,
                                          apply_label=item + '_boundary')
-
-end_all()

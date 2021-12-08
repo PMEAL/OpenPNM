@@ -3,11 +3,10 @@ import scipy.spatial as sptl
 from openpnm.network import Delaunay
 from openpnm.topotools import trim
 from openpnm.utils import logging
-from auto_all import start_all, end_all
 
 
 logger = logging.getLogger(__name__)
-start_all()
+__all__ = ['Gabriel']
 
 
 class Gabriel(Delaunay):
@@ -82,5 +81,3 @@ class Gabriel(Delaunay):
             # Identify throats whose centroid is not near an unconnected node
             g = np.around(n, decimals=5) == np.around(r, decimals=5)
             trim(self, throats=~g)
-
-end_all()

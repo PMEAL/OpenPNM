@@ -4,11 +4,10 @@ import scipy.spatial as sptl
 from openpnm import topotools
 from openpnm.utils import logging
 from openpnm.network import GenericNetwork
-from auto_all import start_all, end_all
 
 
 logger = logging.getLogger(__name__)
-start_all()
+__all__ = ['DelaunayVoronoiDual']
 
 
 class DelaunayVoronoiDual(GenericNetwork):
@@ -333,5 +332,3 @@ class DelaunayVoronoiDual(GenericNetwork):
                 ax_off = -1*ax_off
             topotools.add_boundary_pores(network=self, pores=Ps, offset=ax_off,
                                          apply_label=item + '_boundary')
-
-end_all()

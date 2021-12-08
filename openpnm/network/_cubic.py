@@ -1,12 +1,11 @@
 import numpy as np
 from openpnm.network import GenericNetwork
 from openpnm import topotools
-from auto_all import start_all, end_all
 from openpnm.utils import logging, Docorator
 
 docstr = Docorator()
 logger = logging.getLogger(__name__)
-start_all()
+__all__ = ['Cubic']
 
 
 @docstr.dedent
@@ -214,5 +213,3 @@ class Cubic(GenericNetwork):
             except KeyError:
                 logger.warning("No pores labelled " + label
                                + " were found, skipping boundary addition")
-
-end_all()

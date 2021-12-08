@@ -1,11 +1,10 @@
 from openpnm import topotools
 from openpnm.utils import logging
 from openpnm.network import DelaunayVoronoiDual
-from auto_all import start_all, end_all
 
 
 logger = logging.getLogger(__name__)
-start_all()
+__all__ = ['Delaunay']
 
 
 class Delaunay(DelaunayVoronoiDual):
@@ -106,5 +105,3 @@ class Delaunay(DelaunayVoronoiDual):
         # Trim additional pores that are missed by the parent class's trimming
         Ps = topotools.isoutside(coords=self['pore.coords'], shape=shape)
         topotools.trim(network=self, pores=Ps)
-
-end_all()
