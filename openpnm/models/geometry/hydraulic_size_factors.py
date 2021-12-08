@@ -56,10 +56,12 @@ def spheres_and_cylinders(
     pores on each end.
 
     """
-    D1, Dt, D2 = target.network.get_conduit_data(poreprop=pore_diameter,
-                                                 throatprop=throat_diameter).T
+    D1, Dt, D2 = target.get_conduit_data(poreprop=pore_diameter,
+                                         throatprop=throat_diameter).T
     L1, Lt, L2 = _conduit_lengths.spheres_and_cylinders(
-        target, pore_diameter=pore_diameter, throat_diameter=throat_diameter
+        target=target,
+        pore_diameter=pore_diameter,
+        throat_diameter=throat_diameter
     ).T
 
     # Fi is the integral of (1/A^2) dx, x = [0, Li]
@@ -105,10 +107,12 @@ def circles_and_rectangles(
     %(models.geometry.hydraulic_size_factor.notes)s
 
     """
-    D1, Dt, D2 = target.network.get_conduit_data(poreprop=pore_diameter,
-                                                 throatprop=throat_diameter).T
+    D1, Dt, D2 = target.get_conduit_data(poreprop=pore_diameter,
+                                         throatprop=throat_diameter).T
     L1, Lt, L2 = _conduit_lengths.circles_and_rectangles(
-        target, pore_diameter=pore_diameter, throat_diameter=throat_diameter
+        target=target,
+        pore_diameter=pore_diameter,
+        throat_diameter=throat_diameter
     ).T
 
     # Fi is the integral of (1/A^3) dx, x = [0, Li]
@@ -145,10 +149,12 @@ def cones_and_cylinders(
     %(models.geometry.hydraulic_size_factor.notes)s
 
     """
-    D1, Dt, D2 = target.network.get_conduit_data(poreprop=pore_diameter,
-                                                 throatprop=throat_diameter).T
+    D1, Dt, D2 = target.get_conduit_data(poreprop=pore_diameter,
+                                         throatprop=throat_diameter).T
     L1, Lt, L2 = _conduit_lengths.cones_and_cylinders(
-        target, pore_diameter=pore_diameter, throat_diameter=throat_diameter
+        target=target,
+        pore_diameter=pore_diameter,
+        throat_diameter=throat_diameter
     ).T
 
     # Fi is the integral of (1/A^2) dx, x = [0, Li]
@@ -193,10 +199,12 @@ def trapezoids_and_rectangles(
     symmetry.
 
     """
-    D1, Dt, D2 = target.network.get_conduit_data(poreprop=pore_diameter,
-                                                 throatprop=throat_diameter).T
+    D1, Dt, D2 = target.get_conduit_data(poreprop=pore_diameter,
+                                         throatprop=throat_diameter).T
     L1, Lt, L2 = _conduit_lengths.cones_and_cylinders(
-        target, pore_diameter=pore_diameter, throat_diameter=throat_diameter
+        target=target,
+        pore_diameter=pore_diameter,
+        throat_diameter=throat_diameter
     ).T
 
     # Fi is the integral of (1/A^3) dx, x = [0, Li]
@@ -233,10 +241,14 @@ def pyramids_and_cuboids(
     %(models.geometry.hydraulic_size_factor.notes)s
 
     """
-    D1, Dt, D2 = target.network.get_conduit_data(poreprop=pore_diameter,
-                                                 throatprop=throat_diameter).T
+    D1, Dt, D2 = target.get_conduit_data(
+        poreprop=pore_diameter,
+        throatprop=throat_diameter
+    ).T
     L1, Lt, L2 = _conduit_lengths.pyramids_and_cuboids(
-        target, pore_diameter=pore_diameter, throat_diameter=throat_diameter
+        target=target,
+        pore_diameter=pore_diameter,
+        throat_diameter=throat_diameter
     ).T
 
     # Fi is the integral of (1/A^2) dx, x = [0, Li]
@@ -284,10 +296,14 @@ def cubes_and_cuboids(
     %(models.geometry.hydraulic_size_factor.notes)s
 
     """
-    D1, Dt, D2 = target.network.get_conduit_data(poreprop=pore_diameter,
-                                                 throatprop=throat_diameter).T
+    D1, Dt, D2 = target.get_conduit_data(
+        poreprop=pore_diameter,
+        throatprop=throat_diameter
+    ).T
     L1, Lt, L2 = _conduit_lengths.cubes_and_cuboids(
-        target, pore_diameter=pore_diameter, throat_diameter=throat_diameter
+        target=target,
+        pore_diameter=pore_diameter,
+        throat_diameter=throat_diameter
     ).T
 
     # Fi is the integral of (1/A^2) dx, x = [0, Li]
@@ -338,10 +354,14 @@ def squares_and_rectangles(
     symmetry.
 
     """
-    D1, Dt, D2 = target.network.get_conduit_data(poreprop=pore_diameter,
-                                                 throatprop=throat_diameter).T
+    D1, Dt, D2 = target.get_conduit_data(
+        poreprop=pore_diameter,
+        throatprop=throat_diameter
+    ).T
     L1, Lt, L2 = _conduit_lengths.squares_and_rectangles(
-        target, pore_diameter=pore_diameter, throat_diameter=throat_diameter
+        target=target,
+        pore_diameter=pore_diameter,
+        throat_diameter=throat_diameter
     ).T
 
     # Fi is the integral of (1/A^3) dx, x = [0, Li]
@@ -468,12 +488,16 @@ def ncylinders_in_series(
     %(models.geometry.hydraulic_size_factor.notes)s
 
     """
-    D1, Dt, D2 = target.network.get_conduit_data(poreprop=pore_diameter,
-                                                 throatprop=throat_diameter).T
+    D1, Dt, D2 = target.get_conduit_data(
+        poreprop=pore_diameter,
+        throatprop=throat_diameter
+    ).T
     # Ensure throats are never bigger than connected pores
     Dt = _np.minimum(Dt, 0.99 * _np.minimum(D1, D2))
     L1, Lt, L2 = _conduit_lengths.spheres_and_cylinders(
-        target, pore_diameter=pore_diameter, throat_diameter=throat_diameter
+        target=target,
+        pore_diameter=pore_diameter,
+        throat_diameter=throat_diameter
     ).T
     dL1 = _np.linspace(0, L1, num=n)
     dL2 = _np.linspace(0, L2, num=n)

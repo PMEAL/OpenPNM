@@ -86,6 +86,22 @@ class SubdomainTest:
         assert phys1 in air.physics
         assert phys2 in air.physics
 
+    def test_get_conduit_data_with_subdomains(self):
+        pn = op.network.Cubic([6, 1, 1])
+        g1 = op.geometry.GenericGeometry(network=pn, pores=[0, 1, 2],
+                                         throats=[0, 1, 2])
+        g2 = op.geometry.GenericGeometry(network=pn, pores=[3, 4, 5],
+                                         throats=[3, 4])
+        pn['pore.foo'] = pn.Ps
+        pn['throat.foo'] = pn.Ts
+        d = g1.get_conduit_data(poreprop='pore.foo', throatprop='throat.foo')
+        assert np.all(d == np.array([[0, 0, 1],
+                                     [1, 1, 2],
+                                     [2, 2, 3]]))
+        d = g2.get_conduit_data(poreprop='pore.foo', throatprop='throat.foo')
+        assert np.all(d == np.array([[3, 3, 4],
+                                     [4, 4, 5]]))
+
 
 if __name__ == '__main__':
 

@@ -2,7 +2,6 @@ import warnings
 import uuid
 from copy import deepcopy
 import numpy as np
-from collections import namedtuple
 from openpnm.utils import Workspace, logging
 from openpnm.utils import SettingsAttr
 from openpnm.utils.misc import PrintableList, Docorator
@@ -837,7 +836,7 @@ class Base(dict):
         Returns
         -------
         conduit_data : ndarray
-            An Nt-by-3 array with each column containg the requested
+            An Nt-by-3 array with each column containing the requested
             property for each pore-throat-pore conduit.
 
         """
@@ -849,17 +848,20 @@ class Base(dict):
         if not throatprop.startswith('throat'):
             throatprop = 'throat.' + throatprop
         # Generate array
+        conns = self.network.conns
+        domain = self._domain
         try:
-            T = self[throatprop]
+            T = domain[throatprop]
             try:
-                P1, P2 = self[poreprop][self.network.conns].T
+                P1, P2 = domain[poreprop][conns.T]
             except KeyError:
-                P = self.interpolate_data(propname=throatprop, mode=mode)
-                P1, P2 = P[self.network.conns].T
+                P = domain.interpolate_data(propname=throatprop, mode=mode)
+                P1, P2 = P[conns.T]
         except KeyError:
-            P1, P2 = self[poreprop][self.network.conns].T
-            T = self.interpolate_data(propname=poreprop, mode=mode)
-        return np.vstack((P1, T, P2)).T
+            P1, P2 = domain[poreprop][conns.T]
+            T = domain.interpolate_data(propname=poreprop, mode=mode)
+        mask = self.throats(to_global=True)
+        return np.vstack((P1[mask], T[mask], P2[mask])).T
 
     def _count(self, element=None):
         r"""

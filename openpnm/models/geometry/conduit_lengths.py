@@ -49,9 +49,9 @@ def spheres_and_cylinders(
     mask = L_ctc - 0.5 * (D1 + D2) < 0
     L1[mask] = _L1[mask]
     L2[mask] = (L_ctc - L1)[mask]
-
     Lt = _np.maximum(L_ctc - (L1 + L2), 1e-15)
-
+    inds = target.throats(to_global=True)
+    L1, Lt, L2 = L1[inds], Lt[inds], L2[inds]
     return _np.vstack((L1, Lt, L2)).T
 
 
@@ -121,9 +121,9 @@ def cones_and_cylinders(
     mask = L_ctc - 0.5 * (D1 + D2) < 0
     L1[mask] = _L1[mask]
     L2[mask] = (L_ctc - L1)[mask]
-
     Lt = _np.maximum(L_ctc - (L1 + L2), 1e-15)
-
+    inds = target.throats(to_global=True)
+    L1, Lt, L2 = L1[inds], Lt[inds], L2[inds]
     return _np.vstack((L1, Lt, L2)).T
 
 
@@ -163,9 +163,9 @@ def trapezoids_and_rectangles(
     mask = L_ctc - 0.5 * (D1 + D2) < 0
     L1[mask] = _L1[mask]
     L2[mask] = (L_ctc - L1)[mask]
-
     Lt = _np.maximum(L_ctc - (L1 + L2), 1e-15)
-
+    inds = target.throats(to_global=True)
+    L1, Lt, L2 = L1[inds], Lt[inds], L2[inds]
     return _np.vstack((L1, Lt, L2)).T
 
 
@@ -226,7 +226,8 @@ def cubes_and_cuboids(
     mask = (Lt < 0) & (L2 > L1)
     L1[mask] = (L_ctc - L2)[mask]
     Lt = _np.maximum(Lt, 1e-15)
-
+    inds = target.throats(to_global=True)
+    L1, Lt, L2 = L1[inds], Lt[inds], L2[inds]
     return _np.vstack((L1, Lt, L2)).T
 
 
