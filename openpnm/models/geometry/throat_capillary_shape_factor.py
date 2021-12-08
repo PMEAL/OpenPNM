@@ -19,7 +19,7 @@ def compactness(target, throat_perimeter='throat.perimeter',
 
     Parameters
     ----------
-    %(model.target.parameters)s
+    %(models.target.parameters)s
     throat_perimeter : string
         The dictionary key of the array containing the throat perimeter values
     throat_area : string

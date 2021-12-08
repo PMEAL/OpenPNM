@@ -14,7 +14,7 @@ class SquaresAndRectangles(GenericGeometry):
 
     Parameters
     ----------
-    %(GenericGeometry)s
+    %(GenericGeometry.parameters)s
 
     """
 
