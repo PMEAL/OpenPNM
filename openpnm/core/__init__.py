@@ -1,6 +1,6 @@
 r"""
-Core
-====
+Main classes of OpenPNM
+=======================
 
 This module contains the main classes from which all other major objects
 (Network, Geometry, Physics, Phase, and Algorithm) derive.

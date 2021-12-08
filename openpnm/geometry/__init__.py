@@ -1,6 +1,6 @@
 r"""
-Geometry
-========
+Object model for storing geometrical information of the network
+===============================================================
 
 The ``geometry`` module contains the ``GenericGeometry`` class, and an
 assortment of subclasses that implement specific pore-scale geometrical models.

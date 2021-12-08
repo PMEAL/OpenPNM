@@ -1,5 +1,11 @@
 :noindex:
 
+.. raw:: html
+
+   <p hidden>This is a module</p>
+
+{{ name | capitalize | escape | underline }}
+
 .. automodule:: {{ fullname }}
 
    {% block attributes %}

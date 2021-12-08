@@ -48,8 +48,8 @@ class IterativeSolver(BaseSolver):
             ``rtol = residual(@x_final) / residual(@x0)``
 
         """
-        res0 = self._get_residual(x=x0)
-        atol = self._get_atol()
+        res0 = self._get_residual(A=self.A, b=self.b, x=x0)
+        atol = self._get_atol(b=self.b)
         rtol = atol / res0
         return rtol
 

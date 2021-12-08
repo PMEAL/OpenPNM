@@ -1,3 +1,8 @@
+"""
+Tools
+-----
+
+"""
 import numpy as np
 from openpnm.topotools import generate_base_points, dimensionality, isoutside
 

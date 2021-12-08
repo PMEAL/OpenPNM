@@ -1,7 +1,6 @@
 r"""
-===
-I/O
-===
+Collection of functions for import/export-ing data
+==================================================
 
 This module contains functionality for importing and exporting data
 between OpenPNM and other formats.
