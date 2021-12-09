@@ -11,7 +11,7 @@ import time
 import heapq as hq
 import numpy as np
 from scipy.sparse import coo_matrix, dok_matrix
-from openpnm.contrib import MixedInvasionPercolation
+from openpnm.algorithms import MixedInvasionPercolation
 from transforms3d._gohlketransforms import angle_between_vectors
 from openpnm.utils import logging, SettingsAttr, Docorator
 docstr = Docorator()

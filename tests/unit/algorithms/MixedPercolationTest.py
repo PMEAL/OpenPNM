@@ -1,7 +1,7 @@
 import numpy as np
 import openpnm as op
 import openpnm.models.geometry as gm
-from openpnm.contrib import MixedInvasionPercolation as mp
+from openpnm.algorithms import MixedInvasionPercolation as mp
 import matplotlib.pyplot as plt
 
 
@@ -447,7 +447,7 @@ class MixedPercolationTest:
                        r_toroid=r_tor,
                        mode='max')
         phys['pore.entry_pressure'] = 0.0
-        ip = op.contrib.MixedInvasionPercolation(network=pn)
+        ip = op.algorithms.MixedInvasionPercolation(network=pn)
         ip.setup(phase=water)
         ip.set_inlets(pores=pn.pores('bottom'))
         ip.run()
