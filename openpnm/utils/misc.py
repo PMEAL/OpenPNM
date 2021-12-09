@@ -118,15 +118,6 @@ class PrintableDict(OrderedDict):
         return "\n".join(lines)
 
 
-class GenericSettings:
-    """Brief explanation of 'GenericSettings'"""
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        for item in dir(self):
-            if not item.startswith('__'):
-                self.__dict__[item] = getattr(self, item)
-
-
 class SubDict(dict):
     """Brief explanation of 'SubDict'"""
     def __getitem__(self, key):
