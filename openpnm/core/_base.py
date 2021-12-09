@@ -715,18 +715,19 @@ class Base(dict):
             # All objs are present and array found on all objs
             try:
                 W = max([a.shape[1] for a in arrs])  # Width of array
+                shape = [N, W]
             except:
-                W = 1
+                shape = [N, ]
             types = [a.dtype for a in arrs]
             if len(set(types)) == 1:
                 # All types are the same
-                temp_arr = np.ones([N, W], dtype=types[0]).squeeze()
+                temp_arr = np.ones(shape, dtype=types[0])
                 for vals, inds in zip(arrs, locs):
                     temp_arr[inds] = vals
                 return temp_arr  # Return early because it's just easier
             if all([a.dtype in [float, int, bool] for a in arrs]):
                 # All types are numeric, make float
-                temp_arr = np.ones([N, W], dtype=float).squeeze()
+                temp_arr = np.ones(shape, dtype=float)
                 for vals, inds in zip(arrs, locs):
                     temp_arr[inds] = vals
                 return temp_arr  # Return early because it's just easier
