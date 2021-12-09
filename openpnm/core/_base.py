@@ -682,14 +682,14 @@ class Base(dict):
         [False False False False]
 
         """
-        # Fetch sources list depending on type of self
+        # Fetch subdomains list depending on type of self
         proj = self.project
         if self._isa() in ['network', 'geometry']:
-            sources = list(proj.geometries().values())
+            subdomains = list(proj.geometries().values())
         elif self._isa() in ['phase', 'physics']:
-            sources = list(proj.find_physics(phase=self))
+            subdomains= list(proj.find_physics(phase=self))
         elif self._isa() in ['algorithm', 'base']:
-            sources = [self]
+            subdomains= [self]
         else:
             raise Exception('Unrecognized object type, cannot find dependents')
 
@@ -698,33 +698,35 @@ class Base(dict):
         N = self.project.network._count(element)
 
         # Attempt to fetch the requested array from each object
-        arrs = [obj.get(prop, None) for obj in sources]
+        arrs = [obj.get(prop, None) for obj in subdomains]
 
         # Check for missing sources, and add None to arrs if necessary
-        if N > sum([obj._count(element) for obj in sources]):
+        if N > sum([obj._count(element) for obj in subdomains]):
             arrs.append(None)
 
         # Obtain list of locations for inserting values
-        locs = [self._get_indices(element, item.name) for item in sources]
+        locs = [self._get_indices(element, item.name) for item in subdomains]
 
         if np.all([item is None for item in arrs]):  # prop not found anywhere
             raise KeyError(prop)
 
         # Let's start by handling the easy cases first
         if not any([a is None for a in arrs]):
-            # All objs present and array found on all objs
-            shape = list(arrs[0].shape)
-            shape[0] = N
+            # All objs are present and array found on all objs
+            try:
+                W = max([a.shape[1] for a in arrs])  # Width of array
+            except:
+                W = 1
             types = [a.dtype for a in arrs]
             if len(set(types)) == 1:
                 # All types are the same
-                temp_arr = np.ones(shape, dtype=types[0])
+                temp_arr = np.ones([N, W], dtype=types[0]).squeeze()
                 for vals, inds in zip(arrs, locs):
                     temp_arr[inds] = vals
                 return temp_arr  # Return early because it's just easier
             if all([a.dtype in [float, int, bool] for a in arrs]):
                 # All types are numeric, make float
-                temp_arr = np.ones(shape, dtype=float)
+                temp_arr = np.ones([N, W], dtype=float).squeeze()
                 for vals, inds in zip(arrs, locs):
                     temp_arr[inds] = vals
                 return temp_arr  # Return early because it's just easier

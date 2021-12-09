@@ -301,6 +301,29 @@ class InterleaveDataTest:
         with pytest.raises(Exception):
             pn['pore.bee.bop'] = 1
 
+    def test_interleaving_nt_by_1_with_nt_by_2(self):
+        pn = op.network.Cubic(shape=[10, 1, 1])
+        geo1 = op.geometry.SpheresAndCylinders(network=pn, pores=range(5),
+                                               throats=range(4))
+        geo2 = op.geometry.SpheresAndCylinders(network=pn, pores=range(5, 10),
+                                               throats=range(4, 9))
+        geo1['throat.conduit_data'] = np.ones((geo1.Nt, 2))
+        geo2['throat.conduit_data'] = np.ones((geo2.Nt, 1))*2
+        a = np.array([[1., 1.],
+                      [1., 1.],
+                      [1., 1.],
+                      [1., 1.],
+                      [2., 2.],
+                      [2., 2.],
+                      [2., 2.],
+                      [2., 2.],
+                      [2., 2.]])
+        assert np.all(pn['throat.conduit_data'] == a)
+        # Now do it the other way
+        geo1['throat.conduit_data'] = np.ones((geo1.Nt, 1))
+        geo2['throat.conduit_data'] = np.ones((geo2.Nt, 2))*2
+        assert np.all(pn['throat.conduit_data'] == a)
+
 
 if __name__ == '__main__':
 
