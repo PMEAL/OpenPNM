@@ -1,6 +1,6 @@
 import openpnm as op
 import numpy as np
-from openpnm.algorithms import MixedInvasionPercolationCoop as mpc
+from openpnm.contrib import MixedInvasionPercolationCoop as mpc
 import matplotlib.pyplot as plt
 import openpnm.models.geometry as gm
 
@@ -89,7 +89,7 @@ class MixedPercolationCoopTest:
                        r_toroid=r_tor,
                        target_Pc=5000)
         phys['pore.entry_pressure'] = 0.0
-        ip = op.algorithms.MixedInvasionPercolationCoop(network=pn)
+        ip = op.contrib.MixedInvasionPercolationCoop(network=pn)
         ip.setup(phase=water)
         ip.setup(cooperative_pore_filling='throat.meniscus')
         points = np.arange(0.1, 1, 0.05)*ip._max_pressure()
@@ -101,6 +101,7 @@ class MixedPercolationCoopTest:
 
 if __name__ == '__main__':
     t = MixedPercolationCoopTest()
+    self = t
     t.setup_class()
     for item in t.__dir__():
         if item.startswith('test'):
