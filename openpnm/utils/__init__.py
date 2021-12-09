@@ -9,9 +9,9 @@ as well as a number of helper classes.
 
 import logging as logging
 from .misc import *
+from ._settings import *
 from ._workspace import *
 from ._project import *
-from ._settings import *
 
 
 # You can add info to the logger message by inserting the desired %(item)

@@ -1,22 +1,45 @@
 import logging
 import numpy as np
 import openpnm
-from openpnm.utils.misc import SettingsDict
-from auto_all import start_all, end_all
+from openpnm.utils import SettingsAttr
 
 
 logger = logging.getLogger(__name__)
-start_all()
+__all__ = [
+    'Workspace',
+    ]
 
+class WorkspaceSettings(SettingsAttr):
+    r"""
+    loglevel : int
+        Sets the threshold for the severity of logger message which appear.
+        Ranges are as follows:
 
-class SettingsDict(SettingsDict):
-    """Brief explanation of 'SettingsDict'"""
+        ======= ==============================================================
+        Level   Description
+        ======= ==============================================================
+        10      DEBUG: Detailed information, typically of interest only when
+                diagnosing problems.
+        20      INFO: Confirmation that things are working as expected.
+        30      WARNING: An indication that something unexpected happened, or
+                indicative of some problem in the near future (e.g. ‘disk
+                space low’). The software is still working as expected.
+        40      ERROR: Due to a more serious problem, the software has not
+                been able to perform some function.
+        50      CRITICAL: A serious error, indicating that the program itself
+                may be unable to continue running.
+        ======= ==============================================================
+    """
 
-    def __setitem__(self, key, value):
-        if key == 'loglevel':
-            logger = logging.getLogger()
-            logger.setLevel(value)
-        super().__setitem__(key, value)
+    @property
+    def loglevel(self):
+        logger = logging.getLogger()
+        return logger.level
+
+    @loglevel.setter
+    def loglevel(self, value):
+        logger = logging.getLogger()
+        logger.setLevel(value)
 
 
 class Workspace(dict):
@@ -53,8 +76,8 @@ class Workspace(dict):
     def __init__(self):
         super().__init__()
         self._projects = {}
-        self.settings = SettingsDict()
-        self.settings['loglevel'] = 30
+        self.settings = WorkspaceSettings()
+        self.settings.loglevel = 30
 
     def __setitem__(self, name, project):
         if name is None:
@@ -313,5 +336,3 @@ class Workspace(dict):
             s.append(' ' + item.name)
             s.append(item.__str__())
         return '\n'.join(s)
-
-end_all()
