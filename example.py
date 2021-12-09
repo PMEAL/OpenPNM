@@ -4,6 +4,7 @@ from openpnm.models.physics import source_terms
 
 # %% Initialization: create Workspace and project objects.
 ws = op.Workspace()
+ws.settings.loglevel = 50
 proj = ws.new_project()
 np.random.seed(9)
 

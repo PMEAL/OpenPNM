@@ -151,6 +151,9 @@ class SettingsAttr:
         d._key = 'Settings'
         d._value = 'Values'
         d.update(self.__dict__)
+        for item in self.__dir__():
+            if not item.startswith('_'):
+                d[item] = getattr(self, item)
         return d.__str__()
 
     def __repr__(self):

@@ -118,60 +118,6 @@ class PrintableDict(OrderedDict):
         return "\n".join(lines)
 
 
-class SettingsDict(PrintableDict):
-    r"""
-    Overloads __missing__ method to return None instead of KeyError.
-
-    This is useful for checking the value of a settings without first
-    ensuring it exists.
-
-    Examples
-    --------
-    >>> from openpnm.utils import SettingsDict
-    >>> sd = SettingsDict()
-    >>> sd['test'] = True
-    >>> print(sd['test'])
-    True
-    >>> print(sd['not_a_valid_key'])
-    None
-
-    """
-    __doc__ = ''
-
-    def __setitem__(self, key, value):
-        try:
-            json.dumps(value)
-        except TypeError:
-            raise Exception('Only serializable objects can be stored in settings')
-        super().__setitem__(key, value)
-
-    def __missing__(self, key):
-        self[key] = None
-        return self[key]
-
-    def _update_settings_and_docs(self, dc):
-        if isinstance(dc, type):  # If dc is class then instantiate it
-            dc = dc()
-        self.__doc__ = dc.__doc__
-        # if dc is a dataclass object. This step is only necessary to support
-        # Python 3.6 which doesn't have the dataclasses module
-        if hasattr(dc, '__dict__'):
-            dc = copy.deepcopy(dc.__dict__)
-        else:
-            dc = copy.deepcopy(dc)
-        for item in dc.keys():
-            self[item] = dc[item]
-
-
-class GenericSettings:
-    """Brief explanation of 'GenericSettings'"""
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        for item in dir(self):
-            if not item.startswith('__'):
-                self.__dict__[item] = getattr(self, item)
-
-
 class SubDict(dict):
     """Brief explanation of 'SubDict'"""
     def __getitem__(self, key):
