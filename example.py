@@ -18,7 +18,7 @@ phys_water = op.physics.Standard(network=pn, phase=water, geometry=geo)
 phys_hg = op.physics.Standard(network=pn, phase=hg, geometry=geo)
 
 # %% Perform porosimetry simulation
-mip = op.algorithms.Porosimetry(network=pn, phase=hg)
+mip = op.metrics.Porosimetry(network=pn, phase=hg)
 mip.set_inlets(pores=pn.pores(['top', 'bottom']))
 mip.run()
 hg.update(mip.results(Pc=70000))
