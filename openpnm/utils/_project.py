@@ -5,13 +5,23 @@ import openpnm
 import numpy as np
 from copy import deepcopy
 from openpnm.utils import HealthDict, Workspace
+from openpnm.utils import SettingsAttr
 from ._grid import Tableist
-from auto_all import start_all, end_all
 
 
 logger = logging.getLogger(__name__)
 ws = Workspace()
-start_all()
+__all__ = [
+    'Project',
+    ]
+
+
+class ProjectSettings(SettingsAttr):
+    r"""
+    uuid : str
+        A universally unique identifier for the object to keep things straight
+    """
+    uuid = ''
 
 
 class Project(list):
@@ -41,10 +51,9 @@ class Project(list):
     """
 
     def __init__(self, *args, **kwargs):
-        from openpnm.utils import SettingsAttr
         name = kwargs.pop('name', None)
         super().__init__(*args, **kwargs)
-        self.settings = SettingsAttr()
+        self.settings = ProjectSettings()
         ws[name] = self  # Register self with workspace
         self.settings['uuid'] = str(uuid.uuid4())
 
@@ -1061,5 +1070,3 @@ class ProjectGrid(Tableist):
         Retrieves a list of all phases
         """
         return self.header[0][1:]
-
-end_all()
