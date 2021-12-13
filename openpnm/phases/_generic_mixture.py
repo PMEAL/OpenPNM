@@ -1,8 +1,7 @@
 # from collections import ChainMap  # Might use eventually
 import numpy as np
 from chemicals import Vm_to_rho, rho_to_Vm
-from chemicals import numba_vectorized
-from chemicals import R, k
+from chemicals import R
 from openpnm.phases import GenericPhase as GenericPhase
 from openpnm.utils import HealthDict, PrintableList, SubDict
 from openpnm.utils import Docorator, SettingsAttr
@@ -56,9 +55,6 @@ class GenericMixture(GenericPhase):
             self.set_component(comp)
             self.set_mole_fraction(comp, np.nan)
         self['pore.mole_fraction.all'] = np.nan
-
-        logger.warning('Mixtures are a beta feature and functionality may '
-                       + 'change in future versions')
 
     def __getitem__(self, key):
         try:

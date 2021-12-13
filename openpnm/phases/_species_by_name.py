@@ -1,0 +1,82 @@
+from openpnm.phases import GenericSpecies
+import chemicals as chem
+from chemicals.utils import k
+import openpnm.models.phases as mods
+from openpnm.utils import logging
+logger = logging.getLogger(__name__)
+
+
+class SpeciesByName(GenericSpecies):
+    r"""
+    Creates Phase object that represents a single species in a multicomponent
+    mixture system.
+
+    Parameters
+    ----------
+    network : GenericNetwork
+        The network to which this phase object will be attached.
+    species : str
+        The name of the species to generate.  This is used to lookup tabulated
+        constants in the ``chemicals`` package, which attempts to find a match. For
+        instance, 'water', 'Water', and 'H2O' all work.
+    name : str, optional
+        The name of the phase.  This is useful to keep track of the objects
+        throughout the simulation.  The name must be unique to the project.
+        If no name is given, one is generated.
+
+    """
+
+    def __init__(self, species, **kwargs):
+        super().__init__(**kwargs)
+        CAS = chem.CAS_from_any(species)
+        self.settings['CAS'] = CAS
+        a = chem.identifiers.search_chemical(CAS)
+        self.settings['common_name'] = a.common_name
+        self['param.molecular_weight'] = a.MW
+        self['param.critical_temperature'] = chem.critical.Tc(CAS)
+        self['param.critical_pressure'] = chem.critical.Pc(CAS)
+        self['param.critical_volume'] = chem.critical.Vc(CAS)
+        self['param.critical_compressibilty_factor'] = chem.critical.Zc(CAS)
+        self['param.boiling_temperature'] = chem.Tb(CAS)
+        self['param.melting_temperature'] = chem.Tm(CAS)
+        self['param.acentric_factor'] = chem.acentric.omega(CAS)
+        self['param.dipole_moment'] = chem.dipole.dipole_moment(CAS)
+        if CAS in extra_LJ.keys():
+            s, e_k = extra_LJ[CAS]
+        else:
+            e_k = chem.lennard_jones.Stockmayer(CAS)
+            s = chem.lennard_jones.molecular_diameter(CAS)
+        if e_k is not None:
+            self['param.lennard_jones_epsilon'] = e_k*k
+        if s is not None:
+            self['param.lennard_jones_sigma'] = s
+
+
+class GasByName(SpeciesByName):
+    def __init__(self, species, **kwargs):
+        super().__init__(species=species, **kwargs)
+        self.add_model(propname='pore.heat_capacity',
+                       model=mods.heat_capacity.gas_heat_capacity)
+        self.add_model(propname='pore.thermal_conductivity',
+                       model=mods.thermal_conductivity.gas_thermal_conductivity)
+        self.add_model(propname='pore.viscosity',
+                       model=mods.viscosity.gas_viscosity)
+
+
+class LiquidByName(SpeciesByName):
+    def __init__(self, species, **kwargs):
+        super().__init__(species=species, **kwargs)
+        self.add_model(propname='pore.heat_capacity',
+                       model=mods.heat_capacity.liquid_heat_capacity)
+        self.add_model(propname='pore.thermal_conductivity',
+                       model=mods.thermal_conductivity.liquid_thermal_conductivity)
+        self.add_model(propname='pore.viscosity',
+                       model=mods.viscosity.liquid_viscosity)
+        self.add_model(propname='pore.density',
+                       model=mods.density.liquid_density)
+        self.add_model(propname='pore.vapor_pressure',
+                       model=mods.vapor_pressure.vapor_pressure)
+
+
+extra_LJ = {}
+extra_LJ['7727-37-9'] = (3.788, 71.4)

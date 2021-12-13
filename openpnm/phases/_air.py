@@ -1,9 +1,14 @@
-from openpnm.phases import GenericPhase
+from openpnm.phases import GenericPhase, GenericMixture, GasByName
 import openpnm.models as mods
-from openpnm.utils import Docorator
+from openpnm.utils import Docorator, Workspace
 
 
+ws = Workspace()
 docstr = Docorator()
+__all__ = [
+    'Air',
+    'AirMixture',
+    ]
 
 
 @docstr.dedent
@@ -54,3 +59,29 @@ class Air(GenericPhase):
                        prop='pore.temperature',
                        a=[0.00000182082, 6.51815E-08, -3.48553E-11,
                           1.11409E-14])
+
+
+
+
+class AirMixture(GenericMixture):
+
+    def __init__(self, **kwargs):
+        network = kwargs['network']
+        class N2Settings:
+            prefix = 'N2'
+        class O2Settings:
+            prefix = 'O2'
+        o2 = GasByName(network=network, species='O2', settings=N2Settings)
+        n2 = GasByName(network=network, species='N2', settings=O2Settings)
+        super().__init__(components=[o2, n2], **kwargs)
+
+
+
+
+
+
+
+
+
+
+

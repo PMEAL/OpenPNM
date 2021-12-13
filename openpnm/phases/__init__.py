@@ -62,7 +62,10 @@ to all the other calculated pore-scale properties, call the
 
 """
 from ._generic import GenericPhase
-from ._air import Air
+from ._multiphase import MultiPhase
+from ._generic_species import GenericSpecies
+from ._generic_mixture import GenericMixture
+from ._species_by_name import SpeciesByName, GasByName, LiquidByName
+from ._air import *
 from ._water import Water
 from ._mercury import Mercury
-from ._multiphase import MultiPhase
