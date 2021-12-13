@@ -70,13 +70,12 @@ def mole_weighted_average(target, prop):
         specified property.
     """
     comps = target.components.values()
-    element = prop.split('.')[0]
     if len(comps) == 0:
-        vals = np.zeros(target._count(element))*np.nan
+        vals = np.zeros(target.Np)*np.nan
     else:
-        vals = np.zeros(target._count(element))
+        vals = np.zeros(target.Np)
         for item in comps:
-            frac = target[element + '.mole_fraction.' + item.name]
+            frac = target['pore.mole_fraction.' + item.name]
             temp = item[prop]
             vals += temp*frac
     return vals

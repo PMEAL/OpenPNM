@@ -107,7 +107,6 @@ class SettingsAttr:
         if settings is None:
             return
         if isinstance(settings, dict):
-            logger.warn('Specifying settings via dicts is deprecated')
             docs = False
             for k, v in settings.items():
                 if override:

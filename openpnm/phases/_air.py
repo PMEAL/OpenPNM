@@ -64,18 +64,27 @@ class Air(GenericPhase):
 
 
 class AirMixture(GenericMixture):
+    r"""
+    A Mixture class consisting of two species classes for O2 and N2
+
+    """
 
     def __init__(self, **kwargs):
         network = kwargs['network']
-        class N2Settings:
-            prefix = 'N2'
-        class O2Settings:
-            prefix = 'O2'
-        o2 = GasByName(network=network, species='O2', settings=N2Settings)
-        n2 = GasByName(network=network, species='N2', settings=O2Settings)
+        o2 = GasByName(network=network, species='O2', settings={'prefix': 'O2'})
+        n2 = GasByName(network=network, species='N2', settings={'prefix': 'N2'})
         super().__init__(components=[o2, n2], **kwargs)
+        self['pore.mole_fraction.' + o2.name] = 0.21
+        self['pore.mole_fraction.' + n2.name] = 0.79
 
-
+        self.add_model(propname='pore.molecular_weight',
+                       model=mods.phases.mixtures.mole_weighted_average,
+                       prop='param.molecular_weight')
+        self.add_model(propname='pore.density',
+                       model=mods.phases.density.ideal_gas,
+                       temperature='pore.temperature',
+                       pressure='pore.pressure',
+                       mol_weight='pore.molecular_weight')
 
 
 
