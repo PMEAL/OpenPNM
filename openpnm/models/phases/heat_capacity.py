@@ -1,5 +1,6 @@
 from chemicals import numba_vectorized
 import chemicals as chem
+import numpy as np
 
 
 def liquid_heat_capacity(
@@ -40,3 +41,10 @@ def gas_heat_capacity(
     _, Tmin, Tmax, a0, a1, a2, a3, a4, a5, a6, a7, I, J, Hfg = props
     Cp = numba_vectorized.TRCCp(T, a0, a1, a2, a3, a4, a5, a6, a7)
     return Cp
+
+
+def mixture_heat_capacity(target):
+    zs = [target['pore.mole_fraction.' + c.name] for c in target.components.values()]
+    Cps = [c['pore.heat_capacity'] for c in target.components.values()]
+    Cpmix = np.sum([zs[i]*Cps[i] for i in range(len(zs))], axis=0)
+    return Cpmix

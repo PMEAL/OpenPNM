@@ -1,11 +1,11 @@
-# from collections import ChainMap  # Might use eventually
 import numpy as np
-from chemicals import Vm_to_rho, rho_to_Vm
-from chemicals import R
-from openpnm.phases import GenericPhase as GenericPhase
+from openpnm.phases import GenericPhase
+import openpnm.models.phases as mods
 from openpnm.utils import HealthDict, PrintableList, SubDict
 from openpnm.utils import Docorator, SettingsAttr
 from openpnm.utils import logging
+
+
 logger = logging.getLogger(__name__)
 docstr = Docorator()
 
@@ -35,7 +35,7 @@ class GenericMixture(GenericPhase):
     Parameters
     ----------
     %(GenericPhase.parameters)s
-    components : list[GenericPhase]s
+    components : list
         A list of all components that constitute this mixture
 
     Notes
@@ -344,28 +344,28 @@ class LiquidMixture(GenericMixture):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.add_model(propname='pore.molecular_weight',
-                       model=mixture_molecular_weight,
+                       model=mods.mixture.mixture_molecular_weight,
                        regen_mode='deferred')
         self.add_model(propname='pore.viscosity',
-                       model=liquid_mixture_viscosity,
+                       model=mods.viscosity.liquid_mixture_viscosity,
                        regen_mode='deferred')
         self.add_model(propname='pore.critical_volume',
-                       model=liquid_mixture_critical_volume,
+                       model=mods.critical_properties.liquid_mixture_critical_volume,
                        regen_mode='deferred')
         self.add_model(propname='pore.critical_temperature',
-                       model=liquid_mixture_critical_temperature,
+                       model=mods.critical_properties.liquid_mixture_critical_temperature,
                        regen_mode='deferred')
         self.add_model(propname='pore.acentric_factor',
-                       model=mixture_acentric_factor,
+                       model=mods.critical_properties.mixture_acentric_factor,
                        regen_mode='deferred')
         self.add_model(propname='pore.density',
-                       model=liquid_mixture_density,
+                       model=mods.density.liquid_mixture_density,
                        regen_mode='deferred')
         self.add_model(propname='pore.thermal_conductivity',
-                       model=liquid_mixture_thermal_conductivity,
+                       model=mods.thermal_conductivity.liquid_mixture_thermal_conductivity,
                        regen_mode='deferred')
         self.add_model(propname='pore.heat_capacity',
-                       model=mixture_heat_capacity,
+                       model=mods.heat_capacity.mixture_heat_capacity,
                        regen_mode='deferred')
 
 
@@ -373,211 +373,26 @@ class GasMixture(GenericMixture):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.add_model(propname='pore.molecular_weight',
-                       model=mixture_molecular_weight,
+                       model=mods.mixtures.mixture_molecular_weight,
                        regen_mode='deferred')
         self.add_model(propname='pore.gas_viscosity',
-                       model=gas_mixture_viscosity,
+                       model=mods.viscosity.gas_mixture_viscosity,
                        regen_mode='deferred')
         self.add_model(propname='pore.thermal_conductivity',
-                       model=gas_mixture_thermal_conductivity,
+                       model=mods.thermal_conductivity.gas_mixture_thermal_conductivity,
                        regen_mode='deferred')
         self.add_model(propname='pore.heat_capacity',
-                       model=mixture_heat_capacity,
+                       model=mods.heat_capacity.mixture_heat_capacity,
                        regen_mode='deferred')
         self.add_model(propname='pore.LJ_epsilon',
-                       model=gas_mixture_LJ_epsilon,
+                       model=mods.diffusivity.gas_mixture_LJ_epsilon,
                        regen_mode='deferred')
         self.add_model(propname='pore.LJ_sigma',
-                       model=gas_mixture_LJ_sigma,
+                       model=mods.diffusivity.gas_mixture_LJ_sigma,
                        regen_mode='deferred')
         self.add_model(propname='pore.LJ_omega',
-                       model=gas_mixture_LJ_collision_integral,
+                       model=mods.diffusivity.gas_mixture_LJ_collision_integral,
                        regen_mode='deferred')
-        self.add_model(propname='pore.diffusion_coefficient',
-                       model=gas_mixture_diffusivity,
+        self.add_model(propname='pore.diffusivity',
+                       model=mods.diffusivity.gas_mixture_diffusivity,
                        regen_mode='deferred')
-
-
-def gas_mixture_viscosity(target):
-    ys = [target['pore.mole_fraction.' + c.name] for c in target.components.values()]
-    MWs = [c.parameters['molecular_weight'] for c in target.components.values()]
-    mus = [c['pore.viscosity'] for c in target.components.values()]
-    # Should be a one-liner, but not working
-    # mu = numba_vectorized.Herning_Zipperer(ys, mus, MWs, sqrtMWs)
-    num = 0.0
-    denom = 0.0
-    for i in range(len(ys)):
-        num += ys[i]*mus[i]*np.sqrt(MWs[i])
-        denom += ys[i]*np.sqrt(MWs[i])
-    mu = num/denom
-    return mu
-
-
-def liquid_mixture_viscosity(target):
-    xs = [target['pore.mole_fraction.' + c.name] for c in target.components.values()]
-    mus = [c['pore.viscosity'] for c in target.components.values()]
-    mu = 0.0
-    for i in range(len(xs)):
-        mu += xs[i]*np.log(mus[i])
-    return np.exp(mu)
-
-
-def liquid_mixture_critical_volume(target):
-    xs = [target['pore.mole_fraction.' + c.name] for c in target.components.values()]
-    Vcs = [c.parameters['critical_volume'] for c in target.components.values()]
-    N = len(xs)  # Number of components
-
-    Vm1 = np.sum([xs[i]*Vcs[i] for i in range(N)], axis=0)
-    Vm2 = np.sum([xs[i]*(Vcs[i])**(2/3) for i in range(N)], axis=0)
-    Vm3 = np.sum([xs[i]*(Vcs[i])**(1/3) for i in range(N)], axis=0)
-    Vm = 0.25*(Vm1 + 3*(Vm2*Vm3))
-    return Vm
-
-
-def liquid_mixture_critical_temperature(target, Vc='pore.critical_volume'):
-    xs = [target['pore.mole_fraction.' + c.name] for c in target.components.values()]
-    Tcs = [c.parameters['critical_temperature'] for c in target.components.values()]
-    Vcs = [c.parameters['critical_volume'] for c in target.components.values()]
-    Vm = target[Vc]
-    N = len(xs)  # Number of components
-
-    num = np.zeros_like(xs[0])
-    for i in range(N):
-        for j in range(N):
-            VT = (Vcs[i]*Tcs[i]*Vcs[j]*Tcs[j])**0.5
-            num += xs[i]*xs[j]*VT
-    Tcm = num/Vm
-    return Tcm
-
-
-def mixture_acentric_factor(target):
-    xs = [target['pore.mole_fraction.' + c.name] for c in target.components.values()]
-    omegas = [c.parameters['acentric_factor'] for c in target.components.values()]
-    omega = np.sum([omegas[i]*xs[i] for i in range(len(xs))], axis=0)
-    return omega
-
-
-def mixture_molecular_weight(target):
-    xs = [target['pore.mole_fraction.' + c.name] for c in target.components.values()]
-    MWs = [c.parameters['molecular_weight'] for c in target.components.values()]
-    MW = np.zeros_like(xs[0])
-    for i in range(len(xs)):
-        MW += xs[i]*MWs[i]
-    return MW
-
-
-def liquid_mixture_density(target, temperature='pore.temperature'):
-    # Actually pure component density using mixture properties
-    T = target[temperature]
-    MW = target['pore.molecular_weight']
-    Tc = target['pore.critical_temperature']
-    Vc = target['pore.critical_volume']
-    omega = target['pore.acentric_factor']
-    T = np.clip(T, -np.inf, Tc)
-    Tr = T/Tc
-    tau = 1.0 - Tr
-    tau_cbrt = (tau)**(1.0/3.)
-    a = 0.296123
-    b = 0.0480645
-    c = 0.0427258
-    d = 0.386914
-    e = 0.190454
-    f = 0.81446
-    g = 1.43907
-    h = 1.52816
-    V_delta = (-a + Tr*(Tr*(-b*Tr - c) + d))/(Tr - 1.00001)
-    V_0 = tau_cbrt*(tau_cbrt*(tau_cbrt*(e*tau_cbrt - f) + g) - h) + 1.0
-    Vm = Vc*V_0*(1.0 - omega*V_delta)
-    rhoL = Vm_to_rho(Vm=Vm, MW=MW)
-    return rhoL
-
-
-def liquid_mixture_thermal_conductivity(target, density='pore.density'):
-    xs = [target['pore.mole_fraction.' + c.name] for c in target.components.values()]
-    kLs = [c['pore.thermal_conductivity'] for c in target.components.values()]
-    # kL = numba_vectorized.DIPPR9I(xs, kLs)  # Another one that doesn't work
-    Vm = [rho_to_Vm(c[density], c.parameters['molecular_weight'])
-          for c in target.components.values()]
-    denom = np.sum([xs[i]*Vm[i] for i in range(len(xs))], axis=0)
-    phis = np.array([xs[i]*Vm[i] for i in range(len(xs))])/denom
-    kij = 2/np.sum([1/kLs[i] for i in range(len(xs))], axis=0)
-    kmix = np.zeros_like(xs[0])
-    N = len(xs)
-    for i in range(N):
-        for j in range(N):
-            kmix += phis[i]*phis[j]*kij
-    return kmix
-
-
-def gas_mixture_thermal_conductivity(target, temperature='pore.temperature'):
-    T = target[temperature]
-    ys = [target['pore.mole_fraction.' + c.name] for c in target.components.values()]
-    kGs = [c['pore.thermal_conductivity'] for c in target.components.values()]
-    MWs = [c.parameters['molecular_weight'] for c in target.components.values()]
-    # numba_vectorized.Lindsay_Bromley(T, ys, kGs, mus, Tbs, MWs)
-    kmix = np.zeros_like(T)
-    for i in range(len(ys)):
-        num = ys[i]*kGs[i]
-        A = 0.0
-        denom = 0.0
-        for j in range(len(ys)):
-            A += np.sqrt(MWs[j]/MWs[i])
-            denom += ys[j]*A
-        kmix += num/denom
-    return kmix
-
-
-def mixture_heat_capacity(target):
-    zs = [target['pore.mole_fraction.' + c.name] for c in target.components.values()]
-    Cps = [c['pore.heat_capacity'] for c in target.components.values()]
-    Cpmix = np.sum([zs[i]*Cps[i] for i in range(len(zs))], axis=0)
-    return Cpmix
-
-
-def gas_mixture_LJ_collision_integral(
-        target,
-        temperature='pore.temperature',
-        epsilon='pore.LJ_epsilon',
-        ):
-    T = target[temperature]
-    eAB = target[epsilon]
-    A = 1.06036
-    B = 0.15610
-    C = 0.19300
-    D = 0.47635
-    E = 1.03587
-    F = 1.52996
-    G = 1.76474
-    H = 3.89411
-    Ts = k*T/eAB
-    Omega = A/Ts**B + C/np.exp(D*Ts) + E/np.exp(F*Ts) + G/np.exp(H*Ts)
-    return Omega
-
-
-def gas_mixture_LJ_epsilon(target):
-    es = [c.parameters['lennard_jones_epsilon'] for c in target.components.values()]
-    eAB = np.sqrt(np.prod(es))
-    return eAB
-
-
-def gas_mixture_LJ_sigma(target):
-    ss = [c.parameters['lennard_jones_sigma'] for c in target.components.values()]
-    sAB = np.mean(ss)
-    return sAB
-
-
-def gas_mixture_diffusivity(
-        target,
-        temperature='pore.temperature',
-        pressure='pore.pressure',
-        sigma='pore.LJ_sigma',
-        omega='pore.LJ_omega',
-        ):
-    MW = [c.parameters['molecular_weight'] for c in target.components.values()]
-    MWAB = 2/np.sum(1/np.array(MW))
-    T = target[temperature]
-    P = target[pressure]
-    sAB = target[sigma]
-    Omega = target[omega]
-    DAB = 0.00266*T*1.5/(P*MWAB**0.5*sAB**2*Omega)*101.325  # Convert to m2/s
-    return DAB

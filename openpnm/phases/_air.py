@@ -1,4 +1,4 @@
-from openpnm.phases import GenericPhase, GenericMixture, GasByName
+from openpnm.phases import GenericPhase, GasMixture, GasByName
 import openpnm.models as mods
 from openpnm.utils import Docorator, Workspace
 
@@ -61,9 +61,7 @@ class Air(GenericPhase):
                           1.11409E-14])
 
 
-
-
-class AirMixture(GenericMixture):
+class AirMixture(GasMixture):
     r"""
     A Mixture class consisting of two species classes for O2 and N2
 

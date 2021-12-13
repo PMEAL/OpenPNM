@@ -1,4 +1,6 @@
 from openpnm.utils import Docorator
+import numpy as np
+import scipy.constants as const
 
 
 docstr = Docorator()
@@ -161,3 +163,166 @@ def chapman_enskog(target, MA, MB, sigma_AB, omega_AB,
     P = target[pressure]
     DAB = 1.858e-3*(T**3*(0.001/MA + 0.001/MB))**0.5/(P*101325*sigma_AB**2*omega_AB)
     return DAB
+
+
+def gas_mixture_LJ_collision_integral(
+        target,
+        temperature='pore.temperature',
+        epsilon='pore.LJ_epsilon',
+        ):
+    T = target[temperature]
+    eAB = target[epsilon]
+    A = 1.06036
+    B = 0.15610
+    C = 0.19300
+    D = 0.47635
+    E = 1.03587
+    F = 1.52996
+    G = 1.76474
+    H = 3.89411
+    Ts = const.Boltzmann*T/eAB
+    Omega = A/Ts**B + C/np.exp(D*Ts) + E/np.exp(F*Ts) + G/np.exp(H*Ts)
+    return Omega
+
+
+def gas_mixture_LJ_epsilon(target):
+    es = [c['param.lennard_jones_epsilon'] for c in target.components.values()]
+    eAB = np.sqrt(np.prod(es))
+    return eAB
+
+
+def gas_mixture_LJ_sigma(target):
+    ss = [c['param.lennard_jones_sigma'] for c in target.components.values()]
+    sAB = np.mean(ss)
+    return sAB
+
+
+def gas_mixture_diffusivity(
+        target,
+        temperature='pore.temperature',
+        pressure='pore.pressure',
+        sigma='pore.LJ_sigma',
+        omega='pore.LJ_omega',
+        ):
+    MW = [c['param.molecular_weight'] for c in target.components.values()]
+    MWAB = 2/np.sum(1/np.array(MW))
+    T = target[temperature]
+    P = target[pressure]
+    sAB = target[sigma]
+    Omega = target[omega]
+    DAB = 0.00266*T*1.5/(P*MWAB**0.5*sAB**2*Omega)*101.325  # Convert to m2/s
+    return DAB
+
+
+def fuller_mixture(target, molecular_weight='pore.molecular_weight',
+                   molar_diffusion_volume='pore.molar_diffusion_volume',
+                   temperature='pore.temperature',
+                   pressure='pore.pressure'):
+    r"""
+    Estimates the diffusion coeffient of both species in a binary gas
+    mixture using the Fuller correlation
+
+    Parameters
+    ----------
+    %(models.target.parameters)s
+    molecular_weight : string
+        Dictionary key containing the molecular weight of each species.  The
+        default is 'pore.molecular_weight'
+    molar_diffusion_volume : string
+        Dictionary key containing the molar diffusion volume of each species.
+        This is used by the Fuller correlation.  The default is
+        'pore.molar_diffusion_volume'
+    %(models.phase.T)s
+    %(models.phase.P)s
+
+    Returns
+    -------
+    Dij : dict containing ND-arrys
+        The dict contains one array for each component, containing the
+        diffusion coefficient of that component at each location.
+    """
+    species_A, species_B = target.components.values()
+    T = target[temperature]
+    P = target[pressure]
+    MA = species_A[molecular_weight]
+    MB = species_B[molecular_weight]
+    vA = species_A[molar_diffusion_volume]
+    vB = species_B[molar_diffusion_volume]
+    MAB = 1e3*2*(1.0/MA + 1.0/MB)**(-1)
+    P = P*1e-5
+    value = 0.00143*T**1.75/(P*(MAB**0.5)*(vA**(1./3) + vB**(1./3))**2)*1e-4
+    return value
+
+
+@docstr.dedent
+def wilke_fuller_mixture(
+        target,
+        molecular_weight='pore.molecular_weight',
+        molar_diffusion_volume='pore.molar_diffusion_volume',
+        temperature='pore.temperature',
+        pressure='pore.pressure'):
+    r"""
+    Estimates the diffusion coeffient of each species in a gas mixture
+
+    Uses the fuller equation to estimate binary diffusivity between pairs, then
+    uses the correction of Fairbanks and Wilke to account for the composition
+    of the gas mixture.
+
+    Parameters
+    ----------
+    %(models.target.parameters)s
+    molecular_weight : string
+        Dictionary key containing the molecular weight of each species.  The
+        default is 'pore.molecular_weight'
+    molar_diffusion_volume : string
+        Dictionary key containing the molar diffusion volume of each species.
+        This is used by the Fuller correlation.  The default is
+        'pore.molar_diffusion_volume'
+    %(models.phase.T)s
+    %(models.phase.P)s
+
+    Returns
+    -------
+    Dij : dict containing ND-arrys
+        The dict contains one array for each component, containing the
+        diffusion coefficient of that component at each location.
+
+    Reference
+    ---------
+    Fairbanks DF and CR Wilke, Diffusion Coefficients in Multicomponent
+    Gas Mixtures. Industrial & Engineering Chemistry, 42(3), p471–475 (1950).
+    `DOI: 10.1021/ie50483a022 <http://doi.org/10.1021/ie50483a022>`_
+    """
+
+    class MixDict(dict):
+        r"""
+        This utility dict is used to create a temporary mixture object containing
+        only two components of a mixture that has several.  This is necessary for
+        use of the fuller model for calculating binary diffusivities.
+        """
+        def __init__(self, target, components):
+            super().__init__(target)
+            self.components = {}
+            for item in components:
+                self.components.update({item.name: item})
+
+
+    comps = list(target.components.values())
+    values = {}
+    for i in range(len(comps)):
+        A = comps[i]
+        denom = 0.0
+        for j in range(len(comps)):
+            if i != j:
+                B = comps[j]
+                temp = MixDict(target=target, components=(A, B))
+                D = fuller_mixture(target=temp,
+                                       molecular_weight=molecular_weight,
+                                       molar_diffusion_volume=molar_diffusion_volume,
+                                       temperature=temperature,
+                                       pressure=pressure)
+                yB = target['pore.mole_fraction.' + B.name]
+                denom += yB/D
+        yA = target['pore.mole_fraction.' + A.name]
+        values[A.name] = (1 - yA)/denom
+    return values

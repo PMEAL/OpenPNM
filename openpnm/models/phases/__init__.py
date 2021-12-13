@@ -23,6 +23,7 @@ _docstr.params['models.phase.SI_note'] = \
     units on values and arrays, however the use of SI is assumed."""
 
 
+from . import critical_props
 from . import density
 from . import diffusivity
 from . import electrical_conductivity

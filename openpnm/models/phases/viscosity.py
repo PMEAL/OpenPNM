@@ -167,3 +167,27 @@ def gas_viscosity(target, temperature='pore.temperature'):
     Pc = target['param.critical_pressure']
     muG = numba_vectorized.viscosity_gas_Gharagheizi(T, Tc, Pc, MW)
     return muG
+
+
+def gas_mixture_viscosity(target):
+    ys = [target['pore.mole_fraction.' + c.name] for c in target.components.values()]
+    MWs = [c['param.molecular_weight'] for c in target.components.values()]
+    mus = [c['pore.viscosity'] for c in target.components.values()]
+    # Should be a one-liner, but not working
+    # mu = numba_vectorized.Herning_Zipperer(ys, mus, MWs, sqrtMWs)
+    num = 0.0
+    denom = 0.0
+    for i in range(len(ys)):
+        num += ys[i]*mus[i]*np.sqrt(MWs[i])
+        denom += ys[i]*np.sqrt(MWs[i])
+    mu = num/denom
+    return mu
+
+
+def liquid_mixture_viscosity(target):
+    xs = [target['pore.mole_fraction.' + c.name] for c in target.components.values()]
+    mus = [c['pore.viscosity'] for c in target.components.values()]
+    mu = 0.0
+    for i in range(len(xs)):
+        mu += xs[i]*np.log(mus[i])
+    return np.exp(mu)

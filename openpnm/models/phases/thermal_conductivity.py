@@ -1,6 +1,6 @@
 import numpy as np
 from openpnm.utils import Docorator
-from chemicals import numba_vectorized
+from chemicals import numba_vectorized, rho_to_Vm
 
 
 docstr = Docorator()
@@ -176,3 +176,38 @@ def gas_thermal_conductivity(target, temperature='pore.temperature'):
     omega = target['param.acentric_factor']
     kG = numba_vectorized.Gharagheizi_gas(T, MW, Tb, Pc, omega)
     return kG
+
+
+def liquid_mixture_thermal_conductivity(target, density='pore.density'):
+    xs = [target['pore.mole_fraction.' + c.name] for c in target.components.values()]
+    kLs = [c['pore.thermal_conductivity'] for c in target.components.values()]
+    # kL = numba_vectorized.DIPPR9I(xs, kLs)  # Another one that doesn't work
+    Vm = [rho_to_Vm(c[density], c['param.molecular_weight'])
+          for c in target.components.values()]
+    denom = np.sum([xs[i]*Vm[i] for i in range(len(xs))], axis=0)
+    phis = np.array([xs[i]*Vm[i] for i in range(len(xs))])/denom
+    kij = 2/np.sum([1/kLs[i] for i in range(len(xs))], axis=0)
+    kmix = np.zeros_like(xs[0])
+    N = len(xs)
+    for i in range(N):
+        for j in range(N):
+            kmix += phis[i]*phis[j]*kij
+    return kmix
+
+
+def gas_mixture_thermal_conductivity(target, temperature='pore.temperature'):
+    T = target[temperature]
+    ys = [target['pore.mole_fraction.' + c.name] for c in target.components.values()]
+    kGs = [c['pore.thermal_conductivity'] for c in target.components.values()]
+    MWs = [c['param.molecular_weight'] for c in target.components.values()]
+    # numba_vectorized.Lindsay_Bromley(T, ys, kGs, mus, Tbs, MWs)
+    kmix = np.zeros_like(T)
+    for i in range(len(ys)):
+        num = ys[i]*kGs[i]
+        A = 0.0
+        denom = 0.0
+        for j in range(len(ys)):
+            A += np.sqrt(MWs[j]/MWs[i])
+            denom += ys[j]*A
+        kmix += num/denom
+    return kmix
