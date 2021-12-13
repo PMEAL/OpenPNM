@@ -1,5 +1,7 @@
 import numpy as np
 from openpnm.utils import Docorator
+import chemicals as chem
+from chemicals import numba_vectorized
 
 
 docstr = Docorator()
@@ -86,3 +88,19 @@ def water(target, temperature='pore.temperature', salinity='pore.salinity'):
     Pv_sw = Pv_w/(1+0.57357*(S/(1000-S)))
     value = Pv_sw
     return value
+
+
+def vapor_pressure(target, temperature='pore.temperature'):
+    T = target[temperature]
+    CAS = target.settings['CAS']
+    Tc = target['param.critical_temperature']
+    try:
+        coeffs = chem.vapor_pressure.Psat_data_AntoineExtended.loc[CAS]
+        _, A, B, C, Tc, to, n, E, F, Tmin, Tmax = coeffs
+        PV = numba_vectorized.TRC_Antoine_extended(T, A, B, C, n, E, F)
+    except KeyError:
+        coeffs = chem.vapor_pressure.Psat_data_AntoinePoling.loc[CAS]
+        _, A, B, C, Tmin, Tmax = coeffs
+        PV = 10**(A - B/(T + C))
+        # PV = numba_vectorized.vapor_pressure.Antoine(T=T, A=A, B=B, C=C)
+    return PV

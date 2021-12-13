@@ -1,6 +1,5 @@
-r"""
-"""
 import numpy as np
+from chemicals import numba_vectorized
 
 
 def water(target, temperature='pore.temperature', salinity='pore.salinity'):
@@ -149,3 +148,22 @@ def chung(target, temperature='pore.temperature',
     sigma = 0.809*(Vc**(1/3))
     value = 26.69E-9*np.sqrt(MW*T)/(omega*sigma**2)
     return value
+
+
+def liquid_viscosity(target, temperature='pore.temperature'):
+    T = target[temperature]
+    MW = target['param.molecular_weight']
+    Tc = target['param.critical_temperature']
+    Pc = target['param.critical_pressure']
+    omega = target['param.acentric_factor']
+    muL = numba_vectorized.Letsou_Stiel(T, MW, Tc, Pc, omega)
+    return muL
+
+
+def gas_viscosity(target, temperature='pore.temperature'):
+    T = target[temperature]
+    MW = target['param.molecular_weight']
+    Tc = target['param.critical_temperature']
+    Pc = target['param.critical_pressure']
+    muG = numba_vectorized.viscosity_gas_Gharagheizi(T, Tc, Pc, MW)
+    return muG

@@ -26,6 +26,7 @@ _docstr.params['models.phase.SI_note'] = \
 from . import density
 from . import diffusivity
 from . import electrical_conductivity
+from . import heat_capacity
 from . import misc
 from . import mixtures
 from . import molar_density

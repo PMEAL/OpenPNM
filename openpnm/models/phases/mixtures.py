@@ -1,5 +1,9 @@
 import numpy as np
 from openpnm.utils import Docorator
+import chemicals as chem
+from chemicals import numba_vectorized
+from chemicals import Vm_to_rho
+from chemicals.utils import R, k
 
 
 docstr = Docorator()

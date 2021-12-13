@@ -1,5 +1,6 @@
 import numpy as np
 from openpnm.utils import Docorator
+from chemicals import numba_vectorized
 
 
 docstr = Docorator()
@@ -155,3 +156,23 @@ def sato(
         / (3 + 20 * (1 - Tbr) ** (2 / 3))
     )
     return value
+
+
+def liquid_thermal_conductivity(target, temperature='pore.temperature'):
+    T = target[temperature]
+    MW = target['param.molecular_weight']
+    Tb = target['param.boiling_temperature']
+    Pc = target['param.critical_pressure']
+    omega = target['param.acentric_factor']
+    kL = numba_vectorized.Gharagheizi_liquid(T, MW, Tb, Pc, omega)
+    return kL
+
+
+def gas_thermal_conductivity(target, temperature='pore.temperature'):
+    T = target[temperature]
+    MW = target['param.molecular_weight']
+    Tb = target['param.boiling_temperature']
+    Pc = target['param.critical_pressure']
+    omega = target['param.acentric_factor']
+    kG = numba_vectorized.Gharagheizi_gas(T, MW, Tb, Pc, omega)
+    return kG
