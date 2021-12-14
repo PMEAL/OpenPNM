@@ -1,7 +1,6 @@
-r"""
-Pore-scale models for calculating hydraulic conductance of conduits.
-"""
 import numpy as _np
+from openpnm.models import _doctxt
+
 
 __all__ = [
     "generic_hydraulic",
@@ -11,31 +10,29 @@ __all__ = [
 ]
 
 
-def generic_hydraulic(target,
-                      pore_viscosity='pore.viscosity',
-                      throat_viscosity='throat.viscosity',
-                      size_factors='throat.hydraulic_size_factors'):
+@_doctxt
+def generic_hydraulic(
+    target,
+    pore_viscosity='pore.viscosity',
+    throat_viscosity='throat.viscosity',
+    size_factors='throat.hydraulic_size_factors'
+):
     r"""
     Calculates the hydraulic conductance of conduits in network.
 
-    A conduit is defined as (1/2 pore - full throat - 1/2 pore).
-
     Parameters
     ----------
-    target : _GenericPhysics
-        Physics object with which this model is associated.
+    %(target_blurb)s
     pore_viscosity : str
-        Dictionary key of the pore viscosity values.
+        %(dict_blurb)s pore viscosity
     throat_viscosity : str
-        Dictionary key of the throat viscosity values.
-    size_factors: str
-        Dictionary key of the conduit hydraulic size factors' values.
+        %(dict_blurb)s throat viscosity
+    size_factors : str
+        %(dict_blurb)s conduit hydraulic size factors
 
     Returns
     -------
-    ndarray
-        Array containing hydraulic conductance values for conduits in the
-        geometry attached to the given physics object.
+    %(return_arr)s hydraulic conductance
 
     """
     network = target.network
@@ -54,6 +51,7 @@ def generic_hydraulic(target,
     return F[throats] / mut
 
 
+@_doctxt
 def hagen_poiseuille(
     target,
     pore_viscosity="pore.viscosity",
@@ -63,29 +61,19 @@ def hagen_poiseuille(
     r"""
     Calculates the hydraulic conductance of conduits in network.
 
-    A conduit is defined as (1/2 pore - full throat - 1/2 pore).
-
     Parameters
     ----------
-    target : _GenericPhysics
-        Physics object with which this model is associated.
+    %(target_blurb)s
     pore_viscosity : str
-        Dictionary key of the pore viscosity values.
+        %(dict_blurb)s pore viscosity
     throat_viscosity : str
-        Dictionary key of the throat viscosity values.
-    size_factors: str
-        Dictionary key of the conduit size factors' values.
+        %(dict_blurb)s throat viscosity
+    size_factors : str
+        %(dict_blurb)s conduit hydraulic size factors
 
     Returns
     -------
-    g : ndarray
-        Array containing hydraulic conductance values for conduits in the
-        geometry attached to the given physics object.
-
-    Notes
-    -----
-    This function requires that all the necessary phase properties already
-    be calculated.
+    %(return_arr)s hydraulic conductance
 
     """
     return generic_hydraulic(target=target,
@@ -94,6 +82,7 @@ def hagen_poiseuille(
                              size_factors=size_factors)
 
 
+@_doctxt
 def hagen_poiseuille_power_law(
     target,
     pore_area="pore.area",
@@ -114,52 +103,40 @@ def hagen_poiseuille_power_law(
     Calculates the hydraulic conductance of conduits in network, assuming
     a non Newtonian fluid whose viscosity obeys a power law.
 
-    A conduit is defined as (1/2 pore - full throat - 1/2 pore).
-
     Parameters
     ----------
-    target : _GenericPhysics
-        Physics object with which this model is associated.
+    %(target_blurb)s
     pore_area : str
-        Dictionary key of the pore area values.
+        %(dict_blurb)s pore area
     throat_area : str
-        Dictionary key of the throat area values.
+        %(dict_blurb)s throat area
+    throat_area : str
+        %(dict_blurb)s throat area
     pore_viscosity_min : str
-        Dictionary key of the pore minimum viscosity values.
+        %(dict_blurb)s pore minimum viscosity
     throat_viscosity_min : str
-        Dictionary key of the throat minimum viscosity values.
-    pore_viscosity_max : str
-        Dictionary key of the pore maximum viscosity values.
-    throat_viscosity_max : str
-        Dictionary key of the throat maximum viscosity values.
+        %(dict_blurb)s throat minimum viscosity
     conduit_lengths : str
-        Dictionary key of the conduit lengths' values.
+        %(dict_blurb)s conduit lengths
     size_factors: str
-        Dictionary key of the conduit size factors' values.
+        %(dict_blurb)s conduit size factors
     pore_consistency : str
-        Dictionary key of the pore fluid consistency values.
+        %(dict_blurb)s pore fluid consistency
     throat_consistency : str
-        Dictionary key of the throat fluid consistency values.
+        %(dict_blurb)s throat fluid consistency
     pore_flow_index : str
-        Dictionary key of the pore fluid flow index values.
+        %(dict_blurb)s pore fluid flow index
     throat_flow_index : str
-        Dictionary key of the throat fluid flow index values.
+        %(dict_blurb)s throat fluid flow index
     pore_pressure : str
-        Dictionary key of the pore pressure values.
+        %(dict_blurb)s pore pressure
 
     Returns
     -------
-    g : ndarray
-        Array containing hydraulic conductance values for conduits in the
-        geometry attached to the given physics object.
-
-    Notes
-    -----
-    This function requires that all the necessary phase properties already
-    be calculated.
+    %(return_arr)s hydraulic conductance
 
     """
-    # Fetch openpnm objects
+    # Fetch GenericPhysicss
     network = target.project.network
     throats = network.throats(target.name)
     phase = target.project.find_phase(target)
@@ -208,6 +185,7 @@ def hagen_poiseuille_power_law(
     return F[throats] / mut
 
 
+@_doctxt
 def valvatne_blunt(
     target,
     pore_viscosity="pore.viscosity",
@@ -219,47 +197,60 @@ def valvatne_blunt(
     conduit_lengths="throat.conduit_lengths",
 ):
     r"""
-    Calculate the single phase hydraulic conductance of conduits in network,
-    where a conduit is (1/2 pore - full throat - 1/2 pore) according to [1].
-    Function has been adapted for use with the Statoil imported networks and
-    makes use of the shape factor in these networks to apply Hagen-Poiseuille
-    flow for conduits of different shape classes: Triangular, Square and
-    Circular [2].
+    Calculates the single phase hydraulic conductance of conduits.
+
+    Function has been adapted for use with the Statoil imported networks
+    and makes use of the shape factor in these networks to apply
+    Hagen-Poiseuille flow for conduits of different shape classes:
+    triangular, square and circular [2].
 
     Parameters
     ----------
-    target : GenericPhysics
-        Physics object with which this model is associated.
+    %(target_blurb)s
     pore_viscosity : str
-        Dictionary key of the pore viscosity values.
+        %(dict_blurb)s pore viscosity
     throat_viscosity : str
-        Dictionary key of the throat viscosity values.
+        %(dict_blurb)s throat viscosity
     pore_shape_factor : str
-        Dictionary key of the pore geometric shape factor values.
+        %(dict_blurb)s pore geometric shape factor
     throat_shape_factor : str
-        Dictionary key of the throat geometric shape factor values.
+        %(dict_blurb)s throat geometric shape factor
     pore_area : str
-        Dictionary key of the pore area values. The pore area is
+        %(dict_blurb)s pore area
+        The pore area is calculated using following formula:
+
+        .. math::
+
+            A_P = \frac{R_P^2}{(4 \cdot SF_P)}
+
+        where theoratical value of pore_shape_factor in a circular tube is
         calculated using following formula:
-            pore_area = (pore_radius ** 2) / (4 * pore_shape_factor)
-        Where theoratical value of pore_shape_factor in circular tube is
-        calculated using following formula:
-            pore_shape_factor = pore_area / perimeter **2 = 1/4π
+
+        .. math::
+
+            SF_P = \frac{A_P}{P_P^2} = 1/4π
+
     throat_area : str
-        Dictionary key of the throat area values. The throat area is
-        calculated using following formula:
-            throat_area = (throat_radius ** 2) / (4 * throat_shape_factor)
-        Where theoratical value of throat_shape_factor in circular tube is
-        calculated using following formula:
-            throat_shape_factor = throat_area / perimeter ** 2 = 1/4π
+        %(dict_blurb)s throat area.
+        The throat area is calculated using following formula:
+
+        .. math::
+
+            T_A = \frac{R_T^2}{(4 \cdot SF_T)}
+
+        where theoratical value of throat shape factor in circular tube is
+        calculated using :
+
+        .. math::
+
+            SF_T = \frac{T_A}{T_P^2} = 1/4π
+
     conduit_lengths : str
-        Dictionary key of the throat conduit lengths.
+        %(dict_blurb)s throat conduit lengths
 
     Returns
     -------
-    g : ndarray
-        Array containing hydraulic conductance values for conduits in the
-        geometry attached to the given physics object.
+    %(return_arr)s
 
     References
     ----------
@@ -272,7 +263,7 @@ def valvatne_blunt(
     J. Colloid Interface Sci., 236, 295–304.
 
     """
-    # Fetch openpnm objects
+    # Fetch GenericPhysicss
     network = target.network
     conns = network["throat.conns"]
     mu_p = target[pore_viscosity]

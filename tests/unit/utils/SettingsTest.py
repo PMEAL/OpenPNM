@@ -58,26 +58,6 @@ class SettingsTest:
         with pytest.raises(Exception):
             sets4.c = "string"
 
-    def test_from_dict(self):
-        d = {'a': 3, 'b': 4.5, 'c': []}
-
-        sets5 = SettingsAttr(d)
-        with pytest.raises(Exception):
-            sets5.c = "string"
-
-    def test_update_from_dict(self):
-        class S6:
-            r"""
-            This is a docstring
-            """
-            a = 1
-            b = 2
-
-        sets6 = SettingsAttr(S6)
-        assert sets6.a == 1
-        sets6._update({'a': 22, 'c': 5.5})
-        assert sets6.a == 22
-
     def test_update_from_dataclass(self):
         class S7:
             r"""

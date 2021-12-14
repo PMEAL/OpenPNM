@@ -1,49 +1,39 @@
-r"""
-Pore-scale models for calculating the advective-diffusive conductance of
-conduits.
-"""
 import numpy as _np
+from openpnm.models import _doctxt
+
 
 __all__ = ["ad_dif"]
 
 
-def ad_dif(target,
-           pore_pressure='pore.pressure',
-           throat_hydraulic_conductance='throat.hydraulic_conductance',
-           throat_diffusive_conductance='throat.diffusive_conductance',
-           s_scheme='powerlaw'):
+@_doctxt
+def ad_dif(
+    target,
+    pore_pressure='pore.pressure',
+    throat_hydraulic_conductance='throat.hydraulic_conductance',
+    throat_diffusive_conductance='throat.diffusive_conductance',
+    s_scheme='powerlaw'
+):
     r"""
     Calculates the advective-diffusive conductance of conduits in network.
 
-    A conduit is defined as ( 1/2 pore - full throat - 1/2 pore ). See the
-    notes section.
-
     Parameters
     ----------
-    target : GenericPhysics
-        The Physics object which this model is associated with. This
-        controls the length of the calculated array, and also provides
-        access to other necessary properties.
+    %(target_blurb)s
     pore_pressure : str
-        Dictionary key of the pore pressure values
-   throat_hydraulic_conductance : str
-       Dictionary key of the throat hydraulic conductance values
-   throat_diffusive_conductance : str
-       Dictionary key of the throat diffusive conductance values
-   s_scheme : str
-       Name of the space discretization scheme to use
+        %(dict_blurb)s pore pressure
+    throat_hydraulic_conductance : str
+        %(dict_blurb)s hydraulic conductance
+    throat_diffusive_conductance : str
+        %(dict_blurb)s throat diffusive conductance
+    s_scheme : str
+        Name of the space discretization scheme to use
 
     Returns
     -------
-    g : ndarray
-        Array containing advective-diffusive conductance values for
-        conduits in the geometry attached to the given physics object.
+    %(return_arr)s advection-diffuvsion conductance values
 
     Notes
     -----
-    This function requires that all the necessary phase properties already
-    be calculated.
-
     This function calculates the specified property for the *entire*
     network then extracts the values for the appropriate throats at the
     end.
@@ -51,7 +41,7 @@ def ad_dif(target,
     This function assumes cylindrical throats with constant cross-section
     area. Corrections for different shapes and variable cross-section area
     can be imposed by passing the proper conduit_shape_factors argument
-    when computig the diffusive and hydraulic conductances.
+    when computing the diffusive and hydraulic conductances.
 
     shape_factor depends on the physics of the problem, i.e.
     diffusion-like processes and fluid flow need different shape factors.

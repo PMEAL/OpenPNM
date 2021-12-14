@@ -101,6 +101,7 @@ class MixedPercolationCoopTest:
 
 if __name__ == '__main__':
     t = MixedPercolationCoopTest()
+    self = t
     t.setup_class()
     for item in t.__dir__():
         if item.startswith('test'):

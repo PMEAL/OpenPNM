@@ -43,11 +43,14 @@ snow = ps.networks.snow2(im, voxel_size=data['resolution'],
 # ps.imshow(snow.regions/snow.phases)
 
 # %% Open network in OpenPNM
-settings = {'pore_shape': 'pyramid',
-            'throat_shape': 'cuboid',
-            'pore_diameter': 'equivalent_diameter',
-            'throat_diameter': 'inscribed_diameter'}
-pn, geo = op.io.PoreSpy.import_data(snow.network, settings=settings)
+class Settings:
+    pore_shape = 'pyramid'
+    throat_shape = 'cuboid'
+    pore_diameter = 'equivalent_diameter'
+    throat_diameter = 'inscribed_diameter'
+
+
+pn, geo = op.io.PoreSpy.import_data(snow.network, settings=Settings)
 h = pn.check_network_health()
 op.topotools.trim(network=pn, pores=h['disconnected_pores'])
 gas = op.phases.GenericPhase(network=pn)
