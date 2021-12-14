@@ -255,7 +255,7 @@ class LabelMixin:
         Parameters
         ----------
         label : str
-                The label to apply to the specified locations
+            The label to apply to the specified locations
         pores : array_like
             A list of pore indices or a boolean mask of where given label
             should be added or removed (see ``mode``)
@@ -265,20 +265,24 @@ class LabelMixin:
         mode : str
             Controls how the labels are handled.  Options are:
 
-            * 'add' (default)
-                Adds the given label to the specified locations while
-                keeping existing labels
-            * 'overwrite'
-                Removes existing label from all locations before
-                adding the label in the specified locations
-            * 'remove'
-                Removes the given label from the specified locations
-                leaving the remainder intact
-            * 'purge'
-                Removes the specified label from the object completely
-            * 'clear'
-                Sets all the labels to ``False`` but does not remove the label
-                array
+            =========== ======================================================
+            mode        description
+            =========== ======================================================
+            'add'       (default) Adds the given label to the specified
+                        locations while keeping existing labels
+
+            'overwrite' Removes existing label from all locations before
+                        adding the label in the specified locations
+
+            'remove'    Removes the given label from the specified locations
+                        leaving the remainder intact
+
+            'purge'     Removes the specified label from the object completely.
+                        This ignores the ``pores`` and ``throats`` arguments.
+
+            'clear'     Sets all the labels to ``False`` but does not remove
+                        the label array
+            =========== ======================================================
 
         """
         self._parse_mode(mode=mode,
