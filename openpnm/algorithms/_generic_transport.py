@@ -513,7 +513,7 @@ class GenericTransport(GenericAlgorithm):
 
         # Fetch phase/geometries/physics
         prj = self.network.project
-        phase = prj.find_phase(self)
+        phase = prj.phases(self.settings.phase)
         geometries = prj.geometries().values()
         physics = prj.physics().values()
 
