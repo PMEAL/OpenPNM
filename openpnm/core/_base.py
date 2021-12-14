@@ -91,7 +91,10 @@ class Base(dict):
         self.update({'throat.all': np.ones(shape=(Nt, ), dtype=bool)})
 
     def __repr__(self):
-        return f'<{self.__class__.__module__} object at {hex(id(self))}>'
+        module = self.__module__
+        module = ".".join([x for x in module.split(".") if not x.startswith("_")])
+        cname = self.__class__.__name__
+        return f'<{module}.{cname} at {hex(id(self))}>'
 
     def __eq__(self, other):
         return hex(id(self)) == hex(id(other))
@@ -1140,9 +1143,12 @@ class Base(dict):
         return element + '.' + propname.split('.')[-1]
 
     def __str__(self):
+        module = self.__module__
+        module = ".".join([x for x in module.split(".") if not x.startswith("_")])
+        cname = self.__class__.__name__
         horizontal_rule = '―' * 78
         lines = [horizontal_rule]
-        lines.append(self.__module__.replace('__', '') + ' : ' + self.name)
+        lines.append(f"{module}.{cname} : {self.name}")
         lines.append(horizontal_rule)
         lines.append("{0:<5s} {1:<45s} {2:<10s}".format('#',
                                                         'Properties',
