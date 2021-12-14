@@ -198,12 +198,12 @@ def gas_mixture_LJ_sigma(target):
 
 
 def gas_mixture_diffusivity(
-        target,
-        temperature='pore.temperature',
-        pressure='pore.pressure',
-        sigma='pore.LJ_sigma',
-        omega='pore.LJ_omega',
-        ):
+    target,
+    temperature='pore.temperature',
+    pressure='pore.pressure',
+    sigma='pore.LJ_sigma',
+    omega='pore.LJ_omega',
+):
     MW = [c['param.molecular_weight'] for c in target.components.values()]
     MWAB = 2/np.sum(1/np.array(MW))
     T = target[temperature]
@@ -214,7 +214,8 @@ def gas_mixture_diffusivity(
     return DAB
 
 
-def fuller_mixture(target, molecular_weight='pore.molecular_weight',
+def fuller_mixture(target,
+                   molecular_weight='pore.molecular_weight',
                    molar_diffusion_volume='pore.molar_diffusion_volume',
                    temperature='pore.temperature',
                    pressure='pore.pressure'):
@@ -264,7 +265,7 @@ def wilke_fuller_mixture(
     r"""
     Estimates the diffusion coeffient of each species in a gas mixture
 
-    Uses the fuller equation to estimate binary diffusivity between pairs, then
+    Uses the Fuller equation to estimate binary diffusivity between pairs, then
     uses the correction of Fairbanks and Wilke to account for the composition
     of the gas mixture.
 
