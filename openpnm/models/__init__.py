@@ -30,7 +30,7 @@ _doctxt = Substitution(
     return_arr=\
     r"""values : ndarray
             A numpy ndarray containing the computed values of """,
-    )
+)
 
 
 # %%
@@ -40,7 +40,7 @@ __all__ = [
     'geometry',
     'phases',
     'physics',
-    ]
+]
 
 from . import misc
 from . import network
