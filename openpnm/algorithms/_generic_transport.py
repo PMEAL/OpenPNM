@@ -525,7 +525,7 @@ class GenericTransport(GenericAlgorithm):
             dg = nx.compose_all([x.models.dependency_graph(deep=True) for x in objs])
             d = {}  # maps prop -> obj.name
             for obj in objs:
-                for k, v in obj.check_data_health().items():
+                for k, v in prj.check_data_health(obj).items():
                     if "Has NaNs" in v:
                         # FIXME: The next line doesn't cover multi-level props
                         base_prop = ".".join(k.split(".")[:2])
