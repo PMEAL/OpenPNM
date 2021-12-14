@@ -248,15 +248,19 @@ class Project(list):
         If no Phase object can be found, then an Exception is raised.
 
         """
+        # If received algorithm, tell user to use alg.settings.phase
+        if obj._isa('algorithm'):
+            raise Exception("The name(s) of the associated phase(s) with algorithm"
+                            " objects can be found via 'alg.settings.phase'")
         # If received phase, just return self
         if obj._isa('phase'):
             return obj
         # Otherwise find it using bottom-up approach (i.e. look in phase keys)
         for item in self.phases().values():
-            if ('pore.' + obj.name in item) or ('throat.' + obj.name in item):
+            if (f'pore.{obj.name}' in item) or (f'throat.{obj.name}' in item):
                 return item
         # If all else fails, throw an exception
-        raise Exception('Cannot find a phase associated with '+obj.name)
+        raise Exception(f'Cannot find a phase associated with {obj.name}')
 
     def find_geometry(self, physics):
         r"""
