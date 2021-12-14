@@ -715,11 +715,14 @@ class Base(dict):
 
         # Let's start by handling the easy cases first
         if not any([a is None for a in arrs]):
+            # If any arrays are more than 1 column, then make they all are
+            if np.any(np.array([a.ndim for a in arrs]) > 1):
+                arrs = [np.atleast_2d(a).T if a.ndim == 1 else a for a in arrs]
             # All objs are present and array found on all objs
             try:
                 W = max([a.shape[1] for a in arrs])  # Width of array
                 shape = [N, W]
-            except:
+            except IndexError:
                 shape = [N, ]
             types = [a.dtype for a in arrs]
             if len(set(types)) == 1:

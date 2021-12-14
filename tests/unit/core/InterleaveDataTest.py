@@ -323,6 +323,15 @@ class InterleaveDataTest:
         geo1['throat.conduit_data'] = np.ones((geo1.Nt, 1))
         geo2['throat.conduit_data'] = np.ones((geo2.Nt, 2))*2
         assert np.all(pn['throat.conduit_data'] == a)
+        # Now do it with 1D arrays
+        geo1['throat.conduit_data'] = np.ones((geo1.Nt, ))
+        geo2['throat.conduit_data'] = np.ones((geo2.Nt, 2))*2
+        assert np.all(pn['throat.conduit_data'] == a)
+        # Now do it the other way
+        geo1['throat.conduit_data'] = np.ones((geo1.Nt, 2))
+        geo2['throat.conduit_data'] = np.ones((geo2.Nt, ))*2
+        assert np.all(pn['throat.conduit_data'] == a)
+
 
 
 if __name__ == '__main__':
