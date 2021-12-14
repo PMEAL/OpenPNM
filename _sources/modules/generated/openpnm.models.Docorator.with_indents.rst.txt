@@ -1,0 +1,8 @@
+:orphan:
+
+with_indents
+=====================================
+
+.. currentmodule:: openpnm.models
+
+.. automethod:: Docorator.with_indents

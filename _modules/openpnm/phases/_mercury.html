@@ -190,39 +190,16 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    network : GenericNetwork</span>
-<span class="sd">        The network to which this phase object will be attached.</span>
+<span class="sd">    %(GenericPhase.parameters)s</span>
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
-<span class="sd">    [1] Thermophysical Properties of Materials for Nuclear Engineering: IAEA,</span>
-<span class="sd">        Vienna, 2008. ISBN 978-92-0-106508-7:</span>
+<span class="sd">    The correlations and constants for this class were taken from:</span>
 
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import openpnm as op</span>
-<span class="sd">    &gt;&gt;&gt; pn = op.network.Cubic(shape=[5, 5, 5])</span>
-<span class="sd">    &gt;&gt;&gt; hg = op.phases.Mercury(network=pn)</span>
+<span class="sd">    ::</span>
 
-<span class="sd">    Notes</span>
-<span class="sd">    -----</span>
-<span class="sd">    The table below shows all of the pore-scale models that are included with</span>
-<span class="sd">    this class to calculate the physical properties of this fluid as functions</span>
-<span class="sd">    of the relevant state variables.</span>
-
-<span class="sd">    This object is initialized at standard conditions of 298 K and 101325 Pa.</span>
-<span class="sd">    If these conditions are changed the dependent properties can be</span>
-<span class="sd">    recalculated by calling ``regenerate_models``.</span>
-
-<span class="sd">    All of these parameters can be adjusted manually by editing the entries in</span>
-<span class="sd">    the **ModelsDict** stored in the ``models`` attribute of the object.</span>
-
-<span class="sd">    For a full listing of models and their parameters use ``print(obj.models)``</span>
-<span class="sd">    where ``obj`` is the handle to the object.</span>
-
-<span class="sd">    In addition to these models, this class also has a number of constant</span>
-<span class="sd">    values assigned to it which can be found by running</span>
-<span class="sd">    ``props(mode=&#39;constants&#39;)``.</span>
+<span class="sd">        Thermophysical Properties of Materials for Nuclear Engineering:</span>
+<span class="sd">        IAEA, Vienna, 2008. ISBN 978-92-0-106508-7:</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>

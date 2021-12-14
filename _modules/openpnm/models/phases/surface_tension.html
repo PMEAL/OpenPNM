@@ -179,13 +179,15 @@
               <div>
                 
   <h1>Source code for openpnm.models.phases.surface_tension</h1><div class="highlight"><pre>
-<span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">scipy</span> <span class="k">as</span> <span class="nn">sp</span>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">Docorator</span>
 
 
-<div class="viewcode-block" id="water"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.phases.surface_tension.water.html#openpnm.models.phases.surface_tension.water">[docs]</a><span class="k">def</span> <span class="nf">water</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">,</span> <span class="n">salinity</span><span class="o">=</span><span class="s1">&#39;pore.salinity&#39;</span><span class="p">):</span>
+<span class="n">docstr</span> <span class="o">=</span> <span class="n">Docorator</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="water"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.phases.surface_tension.water.html#openpnm.models.phases.surface_tension.water">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+<span class="k">def</span> <span class="nf">water</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">,</span> <span class="n">salinity</span><span class="o">=</span><span class="s1">&#39;pore.salinity&#39;</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates surface tension of pure water or seawater at atmospheric</span>
 <span class="sd">    pressure using Eq. (28) given by Sharqawy et al. Values at</span>
@@ -194,26 +196,21 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : GenericPhase</span>
-<span class="sd">        The object for which these values are being calculated. This</span>
-<span class="sd">        controls the length of the calculated array, and also provides</span>
-<span class="sd">        access to other necessary thermofluid properties.</span>
-<span class="sd">    temperature : str</span>
-<span class="sd">        The dictionary key containing the temperature values. Temperature must</span>
-<span class="sd">        be in Kelvin for this emperical equation to work</span>
-<span class="sd">    salinity : str</span>
-<span class="sd">        The dictionary key containing the salinity values. Salinity must be</span>
+<span class="sd">    %(models.target.parameters)s</span>
+<span class="sd">    %(models.phase.T)s</span>
+<span class="sd">    salinity : string</span>
+<span class="sd">        The dictionary key containing the salinity values.  Salinity must be</span>
 <span class="sd">        expressed in g of salt per kg of solution (ppt).</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    value : ndarray</span>
-<span class="sd">        Array containing surface tension of seawater in [N/m]</span>
+<span class="sd">        A numpy ndarray containing surface tension of seawater in [N/m]</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    T must be in K, and S in g of salt per kg of phase, or ppt (parts per</span>
-<span class="sd">    thousand)</span>
+<span class="sd">        thousand)</span>
 <span class="sd">    VALIDITY: 273 &lt; T &lt; 313 K; 0 &lt; S &lt; 40 g/kg;</span>
 <span class="sd">    ACCURACY: 0.2 %</span>
 
@@ -238,7 +235,8 @@
     <span class="k">return</span> <span class="n">value</span></div>
 
 
-<div class="viewcode-block" id="eotvos"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.phases.surface_tension.eotvos.html#openpnm.models.phases.surface_tension.eotvos">[docs]</a><span class="k">def</span> <span class="nf">eotvos</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">,</span>
+<div class="viewcode-block" id="eotvos"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.phases.surface_tension.eotvos.html#openpnm.models.phases.surface_tension.eotvos">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+<span class="k">def</span> <span class="nf">eotvos</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">,</span>
            <span class="n">critical_temperature</span><span class="o">=</span><span class="s1">&#39;pore.critical_temperature&#39;</span><span class="p">,</span>
            <span class="n">molar_density</span><span class="o">=</span><span class="s1">&#39;pore.molar_density&#39;</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -246,23 +244,19 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : GenericPhase</span>
-<span class="sd">        The object for which these values are being calculated.  This</span>
-<span class="sd">        controls the length of the calculated array, and also provides</span>
-<span class="sd">        access to other necessary thermofluid properties.</span>
+<span class="sd">    %(models.target.parameters)s</span>
 <span class="sd">    k : float</span>
 <span class="sd">        Constant parameter specific to fluid</span>
-<span class="sd">    temperature : str</span>
-<span class="sd">        The dictionary key containing the temperature values (K)</span>
-<span class="sd">    critical_temperature : str</span>
+<span class="sd">    %(models.phase.T)s</span>
+<span class="sd">    critical_temperature : string</span>
 <span class="sd">        The dictionary key containing the critical temperature values (K)</span>
-<span class="sd">    molar_density : str</span>
+<span class="sd">    molar_density : string</span>
 <span class="sd">        The dictionary key containing the molar density values (K)</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    value : ndarray</span>
-<span class="sd">        Array containing surface tension values [N/m]</span>
+<span class="sd">        A numpy ndarray containing surface tension values [N/m]</span>
 
 <span class="sd">    TODO: Needs description, and improve definition of k</span>
 
@@ -274,7 +268,8 @@
     <span class="k">return</span> <span class="n">value</span></div>
 
 
-<div class="viewcode-block" id="guggenheim_katayama"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.phases.surface_tension.guggenheim_katayama.html#openpnm.models.phases.surface_tension.guggenheim_katayama">[docs]</a><span class="k">def</span> <span class="nf">guggenheim_katayama</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">K2</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">,</span>
+<div class="viewcode-block" id="guggenheim_katayama"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.phases.surface_tension.guggenheim_katayama.html#openpnm.models.phases.surface_tension.guggenheim_katayama">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+<span class="k">def</span> <span class="nf">guggenheim_katayama</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">K2</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">,</span>
                         <span class="n">critical_temperature</span><span class="o">=</span><span class="s1">&#39;pore.critical_temperature&#39;</span><span class="p">,</span>
                         <span class="n">critical_pressure</span><span class="o">=</span><span class="s1">&#39;pore.critical_pressure&#39;</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -282,25 +277,21 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : GenericPhase</span>
-<span class="sd">        The object for which these values are being calculated.  This</span>
-<span class="sd">        controls the length of the calculated array, and also provides</span>
-<span class="sd">        access to other necessary thermofluid properties.</span>
+<span class="sd">    %(models.target.parameters)s</span>
 <span class="sd">    K2 : scalar</span>
 <span class="sd">        Fluid specific constant</span>
 <span class="sd">    n : scalar</span>
 <span class="sd">        Fluid specific constant</span>
-<span class="sd">    temperature : str</span>
-<span class="sd">        The dictionary key containing the temperature values (K)</span>
-<span class="sd">    critical_temperature : str</span>
+<span class="sd">    %(models.phase.T)s</span>
+<span class="sd">    critical_temperature : string</span>
 <span class="sd">        The dictionary key containing the critical temperature values (K)</span>
-<span class="sd">    critical_pressure : str</span>
+<span class="sd">    critical_pressure : string</span>
 <span class="sd">        The dictionary key containing the critical pressure values (K)</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    value : ndarray</span>
-<span class="sd">        Array containing surface tension values [N/m]</span>
+<span class="sd">        A numpy ndarray containing surface tension values [N/m]</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">T</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">temperature</span><span class="p">]</span>
@@ -311,7 +302,8 @@
     <span class="k">return</span> <span class="n">value</span></div>
 
 
-<div class="viewcode-block" id="brock_bird_scaling"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.phases.surface_tension.brock_bird_scaling.html#openpnm.models.phases.surface_tension.brock_bird_scaling">[docs]</a><span class="k">def</span> <span class="nf">brock_bird_scaling</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">sigma_o</span><span class="p">,</span> <span class="n">To</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">,</span>
+<div class="viewcode-block" id="brock_bird_scaling"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.phases.surface_tension.brock_bird_scaling.html#openpnm.models.phases.surface_tension.brock_bird_scaling">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+<span class="k">def</span> <span class="nf">brock_bird_scaling</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">sigma_o</span><span class="p">,</span> <span class="n">To</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">,</span>
                        <span class="n">critical_temperature</span><span class="o">=</span><span class="s1">&#39;pore.critical_temperature&#39;</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Uses Brock_Bird model to adjust surface tension from it&#39;s value at a given</span>
@@ -319,23 +311,20 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : GenericPhase</span>
-<span class="sd">        The object for which these values are being calculated.  This</span>
-<span class="sd">        controls the length of the calculated array, and also provides</span>
-<span class="sd">        access to other necessary thermofluid properties.</span>
+<span class="sd">    %(models.target.parameters)s</span>
 <span class="sd">    To : float</span>
 <span class="sd">        Reference temperature (K)</span>
 <span class="sd">    sigma_o : float</span>
 <span class="sd">        Surface tension at reference temperature (N/m)</span>
-<span class="sd">    temperature : str</span>
-<span class="sd">        The dictionary key containing the temperature values (K)</span>
-<span class="sd">    critical_temperature : str</span>
+<span class="sd">    %(models.phase.T)s</span>
+<span class="sd">    critical_temperature : string</span>
 <span class="sd">        The dictionary key containing the critical temperature values (K)</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    value : ndarray</span>
-<span class="sd">        Array containing surface tension values scaled to the temperature [N/m]</span>
+<span class="sd">        A numpy ndarray containing surface tension values scaled to the</span>
+<span class="sd">        temperature [N/m]</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">Tc</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">critical_temperature</span><span class="p">]</span>

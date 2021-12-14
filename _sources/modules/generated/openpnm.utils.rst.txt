@@ -46,18 +46,12 @@ Utils
 
    
       Docorator
-      GenericSettings
       HealthDict
       NestedDict
       PrintableDict
       PrintableList
       Project
-      ProjectGrid
-      Settings
       SettingsAttr
-      SettingsAttr2
-      SettingsData
-      SettingsDict
       SubDict
       TypedList
       TypedMixin
@@ -79,6 +73,5 @@ Utils
       :recursive:
    
       openpnm.utils.misc
-      openpnm.utils.petsc
    
    

@@ -1,0 +1,8 @@
+:orphan:
+
+delete_params
+=====================================================
+
+.. currentmodule:: openpnm.models.phases.density
+
+.. automethod:: Docorator.delete_params

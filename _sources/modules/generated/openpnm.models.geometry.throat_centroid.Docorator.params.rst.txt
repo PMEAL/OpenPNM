@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.models.geometry.throat\_centroid.Docorator.params
+=========================================================
+
+.. currentmodule:: openpnm.models.geometry.throat_centroid
+
+attribute
+
+.. autoattribute:: openpnm.models.geometry.throat_centroid.Docorator.params
+

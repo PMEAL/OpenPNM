@@ -186,13 +186,24 @@
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
 <span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">HealthDict</span><span class="p">,</span> <span class="n">Workspace</span>
+<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">SettingsAttr</span>
 <span class="kn">from</span> <span class="nn">._grid</span> <span class="kn">import</span> <span class="n">Tableist</span>
-<span class="kn">from</span> <span class="nn">auto_all</span> <span class="kn">import</span> <span class="n">start_all</span><span class="p">,</span> <span class="n">end_all</span>
+
+
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 <span class="n">ws</span> <span class="o">=</span> <span class="n">Workspace</span><span class="p">()</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;Project&#39;</span><span class="p">,</span>
+    <span class="p">]</span>
 
 
-<span class="n">start_all</span><span class="p">()</span>
+<span class="k">class</span> <span class="nc">ProjectSettings</span><span class="p">(</span><span class="n">SettingsAttr</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    uuid : str</span>
+<span class="sd">        A universally unique identifier for the object to keep things straight</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">uuid</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
 
 <div class="viewcode-block" id="Project"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.Project.html#openpnm.utils.Project">[docs]</a><span class="k">class</span> <span class="nc">Project</span><span class="p">(</span><span class="nb">list</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -221,10 +232,9 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">SettingsAttr</span>
         <span class="n">name</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span> <span class="o">=</span> <span class="n">SettingsAttr</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span> <span class="o">=</span> <span class="n">ProjectSettings</span><span class="p">()</span>
         <span class="n">ws</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span>  <span class="c1"># Register self with workspace</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;uuid&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span>
 
@@ -1186,13 +1196,13 @@
     <span class="n">grid</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">fget</span><span class="o">=</span><span class="n">_get_grid</span><span class="p">,</span> <span class="n">fset</span><span class="o">=</span><span class="n">_set_grid</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="ProjectGrid"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.ProjectGrid.html#openpnm.utils.ProjectGrid">[docs]</a><span class="k">class</span> <span class="nc">ProjectGrid</span><span class="p">(</span><span class="n">Tableist</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">ProjectGrid</span><span class="p">(</span><span class="n">Tableist</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is a subclass of a Tableist grid, which adds the ability to lookup</span>
 <span class="sd">    by geometries and phases, as more specific versions of rows and cols</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="ProjectGrid.row"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.ProjectGrid.row.html#openpnm.utils.ProjectGrid.row">[docs]</a>    <span class="k">def</span> <span class="nf">row</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">row</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieve a specified row from the table</span>
 
@@ -1207,9 +1217,9 @@
 <span class="sd">            A table object containing only a single row</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_row</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">_grid</span><span class="o">.</span><span class="n">table_data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_row</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">_grid</span><span class="o">.</span><span class="n">table_data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
-<div class="viewcode-block" id="ProjectGrid.col"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.ProjectGrid.col.html#openpnm.utils.ProjectGrid.col">[docs]</a>    <span class="k">def</span> <span class="nf">col</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">col</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieves a specified column from the table</span>
 
@@ -1226,23 +1236,21 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">temp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_col</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">_grid</span><span class="o">.</span><span class="n">table_data</span>
         <span class="n">temp</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">temp</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">temp</span></div>
+        <span class="k">return</span> <span class="n">temp</span>
 
-<div class="viewcode-block" id="ProjectGrid.geometries"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.ProjectGrid.geometries.html#openpnm.utils.ProjectGrid.geometries">[docs]</a>    <span class="k">def</span> <span class="nf">geometries</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">geometries</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieves a list of all geometries</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">temp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
         <span class="n">temp</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">temp</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">temp</span></div>
+        <span class="k">return</span> <span class="n">temp</span>
 
-<div class="viewcode-block" id="ProjectGrid.phases"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.ProjectGrid.phases.html#openpnm.utils.ProjectGrid.phases">[docs]</a>    <span class="k">def</span> <span class="nf">phases</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">phases</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieves a list of all phases</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">:]</span></div></div>
-
-<span class="n">end_all</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">:]</span>
 </pre></div>
 
               </div>

@@ -185,11 +185,11 @@
 <span class="kn">from</span> <span class="nn">openpnm</span> <span class="kn">import</span> <span class="n">topotools</span>
 <span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">logging</span>
 <span class="kn">from</span> <span class="nn">openpnm.network</span> <span class="kn">import</span> <span class="n">GenericNetwork</span>
-<span class="kn">from</span> <span class="nn">auto_all</span> <span class="kn">import</span> <span class="n">start_all</span><span class="p">,</span> <span class="n">end_all</span>
+
+
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;DelaunayVoronoiDual&#39;</span><span class="p">]</span>
 
-
-<span class="n">start_all</span><span class="p">()</span>
 
 <div class="viewcode-block" id="DelaunayVoronoiDual"><a class="viewcode-back" href="../../../modules/generated/openpnm.network.DelaunayVoronoiDual.html#openpnm.network.DelaunayVoronoiDual">[docs]</a><span class="k">class</span> <span class="nc">DelaunayVoronoiDual</span><span class="p">(</span><span class="n">GenericNetwork</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -513,8 +513,6 @@
                 <span class="n">ax_off</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="o">*</span><span class="n">ax_off</span>
             <span class="n">topotools</span><span class="o">.</span><span class="n">add_boundary_pores</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="n">Ps</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="n">ax_off</span><span class="p">,</span>
                                          <span class="n">apply_label</span><span class="o">=</span><span class="n">item</span> <span class="o">+</span> <span class="s1">&#39;_boundary&#39;</span><span class="p">)</span></div></div>
-
-<span class="n">end_all</span><span class="p">()</span>
 </pre></div>
 
               </div>

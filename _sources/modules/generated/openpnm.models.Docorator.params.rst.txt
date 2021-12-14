@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.models.Docorator.params
+===============================
+
+.. currentmodule:: openpnm.models
+
+attribute
+
+.. autoattribute:: openpnm.models.Docorator.params
+

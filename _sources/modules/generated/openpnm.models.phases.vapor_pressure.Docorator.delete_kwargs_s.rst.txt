@@ -1,0 +1,8 @@
+:orphan:
+
+delete_kwargs_s
+==============================================================
+
+.. currentmodule:: openpnm.models.phases.vapor_pressure
+
+.. automethod:: Docorator.delete_kwargs_s

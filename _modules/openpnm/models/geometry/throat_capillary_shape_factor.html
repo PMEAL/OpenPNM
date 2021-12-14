@@ -179,15 +179,17 @@
               <div>
                 
   <h1>Source code for openpnm.models.geometry.throat_capillary_shape_factor</h1><div class="highlight"><pre>
-<span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Throat Capillary Shape Factor</span>
-<span class="sd">.............................</span>
-
-<span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">_np</span>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">_np</span>
+<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">Docorator</span>
 
 
-<div class="viewcode-block" id="compactness"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.throat_capillary_shape_factor.compactness.html#openpnm.models.geometry.throat_capillary_shape_factor.compactness">[docs]</a><span class="k">def</span> <span class="nf">compactness</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">throat_perimeter</span><span class="o">=</span><span class="s1">&#39;throat.perimeter&#39;</span><span class="p">,</span>
+<span class="n">docstr</span> <span class="o">=</span> <span class="n">Docorator</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="compactness"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.throat_capillary_shape_factor.compactness.html#openpnm.models.geometry.throat_capillary_shape_factor.compactness">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">get_sections</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="s1">&#39;models.geometry.throat_capillary_shape_factor&#39;</span><span class="p">,</span>
+                     <span class="n">sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Parameters&#39;</span><span class="p">,</span> <span class="s1">&#39;Returns&#39;</span><span class="p">])</span>
+<span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+<span class="k">def</span> <span class="nf">compactness</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">throat_perimeter</span><span class="o">=</span><span class="s1">&#39;throat.perimeter&#39;</span><span class="p">,</span>
                 <span class="n">throat_area</span><span class="o">=</span><span class="s1">&#39;throat.area&#39;</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Mortensen et al. have shown that the Hagen-Poiseuille hydraluic resistance</span>
@@ -198,18 +200,15 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : GenericGeometry</span>
-<span class="sd">        The object which this model is associated with. This controls the</span>
-<span class="sd">        length of the calculated array, and also provides access to other</span>
-<span class="sd">        necessary properties.</span>
-<span class="sd">    throat_perimeter : str</span>
-<span class="sd">        The dictionary key of the array containing the throat perimeter values.</span>
-<span class="sd">    throat_area : str</span>
-<span class="sd">        The dictionary key of the array containing the throat area values.</span>
+<span class="sd">    %(models.target.parameters)s</span>
+<span class="sd">    throat_perimeter : string</span>
+<span class="sd">        The dictionary key of the array containing the throat perimeter values</span>
+<span class="sd">    throat_area : string</span>
+<span class="sd">        The dictionary key of the array containing the throat area values</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    alpha : ndarray</span>
+<span class="sd">    alpha : NumPy ndarray</span>
 <span class="sd">        Array containing throat compactness values.</span>
 
 <span class="sd">    References</span>
@@ -249,24 +248,16 @@
 <div class="viewcode-block" id="mason_morrow"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.throat_capillary_shape_factor.mason_morrow.html#openpnm.models.geometry.throat_capillary_shape_factor.mason_morrow">[docs]</a><span class="k">def</span> <span class="nf">mason_morrow</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">throat_perimeter</span><span class="o">=</span><span class="s1">&#39;throat.perimeter&#39;</span><span class="p">,</span>
                  <span class="n">throat_area</span><span class="o">=</span><span class="s1">&#39;throat.area&#39;</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Mason and Morrow relate the capillary pressure to the shaped factor in a</span>
+<span class="sd">    Mason and Morrow relate the capillary pressure to the shape factor in a</span>
 <span class="sd">    similar way to Mortensen but for triangles.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : GenericGeometry</span>
-<span class="sd">        The object which this model is associated with. This controls the</span>
-<span class="sd">        length of the calculated array, and also provides access to other</span>
-<span class="sd">        necessary properties.</span>
-<span class="sd">    throat_perimeter : str</span>
-<span class="sd">        The dictionary key of the array containing the throat perimeter values.</span>
-<span class="sd">    throat_area : str</span>
-<span class="sd">        The dictionary key of the array containing the throat area values.</span>
+<span class="sd">    %(models.geometry.throat_capillary_shape_factor.parameters)s</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    value : ndarray</span>
-<span class="sd">        Array containing throat shape factor values.</span>
+<span class="sd">    %(models.geometry.throat_capillary_shape_factor.returns)s</span>
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
@@ -293,21 +284,12 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : GenericGeometry</span>
-<span class="sd">        The object which this model is associated with. This controls the</span>
-<span class="sd">        length of the calculated array, and also provides access to other</span>
-<span class="sd">        necessary properties.</span>
-<span class="sd">    throat_perimeter : str</span>
-<span class="sd">        The dictionary key of the array containing the throat perimeter values.</span>
-<span class="sd">    throat_area : str</span>
-<span class="sd">        The dictionary key of the array containing the throat area values.</span>
-<span class="sd">    throat_diameter : str</span>
-<span class="sd">        The dictionary key of the array containing the throat diameter values.</span>
+<span class="sd">    %(models.geometry.throat_capillary_shape_factor.returns)s</span>
+<span class="sd">    %(models.geometry.tdia)s</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    value : ndarray</span>
-<span class="sd">        Array containing throat capillary pressure values.</span>
+<span class="sd">    %(models.geometry.throat_capillary_shape_factor.returns)s</span>
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>

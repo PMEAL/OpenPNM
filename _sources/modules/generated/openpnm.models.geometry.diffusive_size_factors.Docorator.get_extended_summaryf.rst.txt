@@ -1,0 +1,8 @@
+:orphan:
+
+get_extended_summaryf
+==============================================================================
+
+.. currentmodule:: openpnm.models.geometry.diffusive_size_factors
+
+.. automethod:: Docorator.get_extended_summaryf

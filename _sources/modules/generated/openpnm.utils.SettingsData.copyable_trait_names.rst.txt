@@ -1,8 +1,0 @@
-:orphan:
-
-copyable_trait_names
-===============================================
-
-.. currentmodule:: openpnm.utils
-
-.. automethod:: SettingsData.copyable_trait_names

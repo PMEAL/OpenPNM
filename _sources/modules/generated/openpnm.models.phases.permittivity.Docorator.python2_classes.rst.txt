@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.models.phases.permittivity.Docorator.python2\_classes
+=============================================================
+
+.. currentmodule:: openpnm.models.phases.permittivity
+
+attribute
+
+.. autoattribute:: openpnm.models.phases.permittivity.Docorator.python2_classes
+

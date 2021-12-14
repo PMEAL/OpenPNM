@@ -182,11 +182,11 @@
 <span></span><span class="kn">from</span> <span class="nn">openpnm</span> <span class="kn">import</span> <span class="n">topotools</span>
 <span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">logging</span>
 <span class="kn">from</span> <span class="nn">openpnm.network</span> <span class="kn">import</span> <span class="n">DelaunayVoronoiDual</span>
-<span class="kn">from</span> <span class="nn">auto_all</span> <span class="kn">import</span> <span class="n">start_all</span><span class="p">,</span> <span class="n">end_all</span>
+
+
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Delaunay&#39;</span><span class="p">]</span>
 
-
-<span class="n">start_all</span><span class="p">()</span>
 
 <div class="viewcode-block" id="Delaunay"><a class="viewcode-back" href="../../../modules/generated/openpnm.network.Delaunay.html#openpnm.network.Delaunay">[docs]</a><span class="k">class</span> <span class="nc">Delaunay</span><span class="p">(</span><span class="n">DelaunayVoronoiDual</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -286,8 +286,6 @@
         <span class="c1"># Trim additional pores that are missed by the parent class&#39;s trimming</span>
         <span class="n">Ps</span> <span class="o">=</span> <span class="n">topotools</span><span class="o">.</span><span class="n">isoutside</span><span class="p">(</span><span class="n">coords</span><span class="o">=</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.coords&#39;</span><span class="p">],</span> <span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">)</span>
         <span class="n">topotools</span><span class="o">.</span><span class="n">trim</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="n">Ps</span><span class="p">)</span></div>
-
-<span class="n">end_all</span><span class="p">()</span>
 </pre></div>
 
               </div>

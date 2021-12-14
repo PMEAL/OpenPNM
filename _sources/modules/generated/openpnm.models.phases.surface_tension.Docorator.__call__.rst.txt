@@ -1,0 +1,8 @@
+:orphan:
+
+__call__
+========================================================
+
+.. currentmodule:: openpnm.models.phases.surface_tension
+
+.. automethod:: Docorator.__call__

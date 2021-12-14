@@ -179,13 +179,15 @@
               <div>
                 
   <h1>Source code for openpnm.models.phases.thermal_conductivity</h1><div class="highlight"><pre>
-<span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">scipy</span> <span class="k">as</span> <span class="nn">sp</span>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">Docorator</span>
 
 
-<div class="viewcode-block" id="water"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.phases.thermal_conductivity.water.html#openpnm.models.phases.thermal_conductivity.water">[docs]</a><span class="k">def</span> <span class="nf">water</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="s2">&quot;pore.temperature&quot;</span><span class="p">,</span> <span class="n">salinity</span><span class="o">=</span><span class="s2">&quot;pore.salinity&quot;</span><span class="p">):</span>
+<span class="n">docstr</span> <span class="o">=</span> <span class="n">Docorator</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="water"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.phases.thermal_conductivity.water.html#openpnm.models.phases.thermal_conductivity.water">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+<span class="k">def</span> <span class="nf">water</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="s2">&quot;pore.temperature&quot;</span><span class="p">,</span> <span class="n">salinity</span><span class="o">=</span><span class="s2">&quot;pore.salinity&quot;</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates thermal conductivity of pure water or seawater at atmospheric</span>
 <span class="sd">    pressure using the correlation given by Jamieson and Tudhope. Values at</span>
@@ -194,21 +196,16 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : GenericPhase</span>
-<span class="sd">        The object for which these values are being calculated.  This</span>
-<span class="sd">        controls the length of the calculated array, and also provides</span>
-<span class="sd">        access to other necessary thermofluid properties.</span>
-<span class="sd">    temperature : str</span>
-<span class="sd">        The dictionary key containing the temperature values.  Temperature must</span>
-<span class="sd">        be in Kelvin for this emperical equation to work</span>
-<span class="sd">    salinity : str</span>
+<span class="sd">    %(models.target.parameters)s</span>
+<span class="sd">    %(models.phase.T)s</span>
+<span class="sd">    salinity : string</span>
 <span class="sd">        The dictionary key containing the salinity values.  Salinity must be</span>
 <span class="sd">        expressed in g of salt per kg of solution (ppt).</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    value : ndarray</span>
-<span class="sd">        Array containing thermal conductivity of water/seawater in [W/m.K]</span>
+<span class="sd">        A numpy ndarray containing thermal conductivity of water/seawater in [W/m.K]</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
@@ -243,7 +240,8 @@
     <span class="k">return</span> <span class="n">value</span></div>
 
 
-<div class="viewcode-block" id="chung"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.phases.thermal_conductivity.chung.html#openpnm.models.phases.thermal_conductivity.chung">[docs]</a><span class="k">def</span> <span class="nf">chung</span><span class="p">(</span>
+<div class="viewcode-block" id="chung"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.phases.thermal_conductivity.chung.html#openpnm.models.phases.thermal_conductivity.chung">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+<span class="k">def</span> <span class="nf">chung</span><span class="p">(</span>
     <span class="n">target</span><span class="p">,</span>
     <span class="n">Cv</span><span class="o">=</span><span class="s2">&quot;pore.heat_capacity&quot;</span><span class="p">,</span>
     <span class="n">acentric_factor</span><span class="o">=</span><span class="s2">&quot;pore.acentric_factor&quot;</span><span class="p">,</span>
@@ -258,29 +256,25 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : GenericPhase</span>
-<span class="sd">        The object for which these values are being calculated.  This</span>
-<span class="sd">        controls the length of the calculated array, and also provides</span>
-<span class="sd">        access to other necessary thermofluid properties.</span>
-<span class="sd">    acentric_factor : str</span>
+<span class="sd">    %(models.target.parameters)s</span>
+<span class="sd">    acentric_factor : string</span>
 <span class="sd">        Dictionary key containing the acentric factor of the component</span>
-<span class="sd">    Cv : str</span>
+<span class="sd">    Cv : string</span>
 <span class="sd">        Dictionary key containing the heat capacity at constant volume</span>
 <span class="sd">        (J/(mol.K))</span>
-<span class="sd">    mol_weight : str</span>
+<span class="sd">    mol_weight : string</span>
 <span class="sd">        Dictionary key containing the molecular weight of the component</span>
 <span class="sd">        (kg/mol)</span>
-<span class="sd">    viscosity : str</span>
+<span class="sd">    viscosity : string</span>
 <span class="sd">        The dictionary key containing the viscosity values (Pa.s)</span>
-<span class="sd">    temperature : str</span>
-<span class="sd">        The dictionary key containing the temperature values (K)</span>
-<span class="sd">    critical_temperatre: str</span>
+<span class="sd">    %(models.phase.T)s</span>
+<span class="sd">    critical_temperatre: string</span>
 <span class="sd">        The dictionary key containing the critical temperature values (K)</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    value : ndarray</span>
-<span class="sd">        Array containing thermal conductivity values in [W/m.K]</span>
+<span class="sd">        A numpy ndarray containing thermal conductivity values in [W/m.K]</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">Cv</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">Cv</span><span class="p">]</span>
@@ -315,24 +309,20 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : GenericPhase</span>
-<span class="sd">        The object for which these values are being calculated.  This</span>
-<span class="sd">        controls the length of the calculated array, and also provides</span>
-<span class="sd">        access to other necessary thermofluid properties.</span>
-<span class="sd">    boiling_temperature :  str</span>
+<span class="sd">    %(models.target.parameters)s</span>
+<span class="sd">    boiling_temperature :  string</span>
 <span class="sd">        Dictionary key containing the toiling temperature of the component (K)</span>
-<span class="sd">    mol_weight : str</span>
+<span class="sd">    mol_weight : string</span>
 <span class="sd">        Dictionary key containing the molecular weight of the component</span>
 <span class="sd">        (kg/mol)</span>
-<span class="sd">    temperature : str</span>
-<span class="sd">        The dictionary key containing the temperature values (K)</span>
-<span class="sd">    critical_temperature : str</span>
+<span class="sd">    %(models.phase.T)s</span>
+<span class="sd">    critical_temperature : string</span>
 <span class="sd">        The dictionary key containing the critical temperature values (K)</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    value : ndarray</span>
-<span class="sd">        Array containing thermal conductivity values in [W/m.K]</span>
+<span class="sd">        A numpy ndarray containing thermal conductivity values in [W/m.K]</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">T</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">temperature</span><span class="p">]</span>

@@ -1,8 +1,0 @@
-:orphan:
-
-validate_trait
-=========================================
-
-.. currentmodule:: openpnm.utils
-
-.. automethod:: SettingsData.validate_trait

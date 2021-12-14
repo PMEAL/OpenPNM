@@ -1,0 +1,8 @@
+:orphan:
+
+delete_kwargs_s
+========================================================================
+
+.. currentmodule:: openpnm.models.geometry.hydraulic_size_factors
+
+.. automethod:: Docorator.delete_kwargs_s

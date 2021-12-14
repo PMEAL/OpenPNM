@@ -180,19 +180,21 @@
                 
   <h1>Source code for openpnm.models.phases.misc</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">_np</span>
+<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">Docorator</span>
 
 
-<div class="viewcode-block" id="mix_and_match"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.phases.misc.mix_and_match.html#openpnm.models.phases.misc.mix_and_match">[docs]</a><span class="k">def</span> <span class="nf">mix_and_match</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">prop</span><span class="p">,</span> <span class="n">phases</span><span class="p">,</span> <span class="n">occupancy</span><span class="p">):</span>
+<span class="n">docstr</span> <span class="o">=</span> <span class="n">Docorator</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="mix_and_match"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.phases.misc.mix_and_match.html#openpnm.models.phases.misc.mix_and_match">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+<span class="k">def</span> <span class="nf">mix_and_match</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">prop</span><span class="p">,</span> <span class="n">phases</span><span class="p">,</span> <span class="n">occupancy</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the given property by looking it up from a list of given phases</span>
 <span class="sd">    based on occupancy.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : GenericPhase</span>
-<span class="sd">        The object which this model is associated with. This controls the</span>
-<span class="sd">        length of the calculated array, and also provides access to other</span>
-<span class="sd">        necessary properties.</span>
+<span class="sd">    %(models.target.parameters)s</span>
 <span class="sd">    prop : str</span>
 <span class="sd">        The dictionary key to the array containing the pore/throat property to</span>
 <span class="sd">        be used in the calculation.</span>
@@ -211,13 +213,11 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Hack for ModelsMixin to not complain (cyclic dep)</span>
     <span class="n">prop</span> <span class="o">=</span> <span class="n">prop</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span>
-
     <span class="n">values</span> <span class="o">=</span> <span class="n">_np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">phases</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">prop</span><span class="p">])</span>
 
     <span class="k">for</span> <span class="n">phase</span> <span class="ow">in</span> <span class="n">phases</span><span class="p">:</span>
         <span class="n">mask</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">occupancy</span><span class="p">]</span>
         <span class="n">values</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">prop</span><span class="p">][</span><span class="n">mask</span><span class="p">]</span>
-
     <span class="k">return</span> <span class="n">values</span></div>
 </pre></div>
 

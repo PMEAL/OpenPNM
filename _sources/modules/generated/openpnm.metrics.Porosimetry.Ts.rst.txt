@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.metrics.Porosimetry.Ts
+==============================
+
+.. currentmodule:: openpnm.metrics
+
+attribute
+
+.. autoproperty:: openpnm.metrics.Porosimetry.Ts
+

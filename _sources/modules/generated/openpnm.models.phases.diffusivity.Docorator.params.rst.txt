@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.models.phases.diffusivity.Docorator.params
+==================================================
+
+.. currentmodule:: openpnm.models.phases.diffusivity
+
+attribute
+
+.. autoattribute:: openpnm.models.phases.diffusivity.Docorator.params
+

@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.models.geometry.diffusive\_size\_factors.Docorator.python2\_classes
+===========================================================================
+
+.. currentmodule:: openpnm.models.geometry.diffusive_size_factors
+
+attribute
+
+.. autoattribute:: openpnm.models.geometry.diffusive_size_factors.Docorator.python2_classes
+

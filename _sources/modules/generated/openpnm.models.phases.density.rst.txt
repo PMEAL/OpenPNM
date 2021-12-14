@@ -28,6 +28,15 @@ Density
 
    
    
+   .. rubric:: Classes
+
+   .. autosummary::
+      :nosignatures:
+      :toctree:
+
+   
+      Docorator
+   
    
 
    

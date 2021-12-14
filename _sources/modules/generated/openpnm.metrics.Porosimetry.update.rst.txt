@@ -1,0 +1,8 @@
+:orphan:
+
+update
+==================================
+
+.. currentmodule:: openpnm.metrics
+
+.. automethod:: Porosimetry.update

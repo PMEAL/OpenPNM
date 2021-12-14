@@ -1,0 +1,8 @@
+:orphan:
+
+dedents
+=======================================================
+
+.. currentmodule:: openpnm.models.phases.surface_tension
+
+.. automethod:: Docorator.dedents

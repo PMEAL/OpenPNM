@@ -179,52 +179,42 @@
               <div>
                 
   <h1>Source code for openpnm.models.physics.ad_dif_conductance</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Pore-scale models for calculating the advective-diffusive conductance of</span>
-<span class="sd">conduits.</span>
-<span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">_np</span>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">_np</span>
+<span class="kn">from</span> <span class="nn">openpnm.models</span> <span class="kn">import</span> <span class="n">_doctxt</span>
+
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ad_dif&quot;</span><span class="p">]</span>
 
 
-<div class="viewcode-block" id="ad_dif"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.physics.ad_dif_conductance.ad_dif.html#openpnm.models.physics.ad_dif_conductance.ad_dif">[docs]</a><span class="k">def</span> <span class="nf">ad_dif</span><span class="p">(</span><span class="n">target</span><span class="p">,</span>
-           <span class="n">pore_pressure</span><span class="o">=</span><span class="s1">&#39;pore.pressure&#39;</span><span class="p">,</span>
-           <span class="n">throat_hydraulic_conductance</span><span class="o">=</span><span class="s1">&#39;throat.hydraulic_conductance&#39;</span><span class="p">,</span>
-           <span class="n">throat_diffusive_conductance</span><span class="o">=</span><span class="s1">&#39;throat.diffusive_conductance&#39;</span><span class="p">,</span>
-           <span class="n">s_scheme</span><span class="o">=</span><span class="s1">&#39;powerlaw&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="ad_dif"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.physics.ad_dif_conductance.ad_dif.html#openpnm.models.physics.ad_dif_conductance.ad_dif">[docs]</a><span class="nd">@_doctxt</span>
+<span class="k">def</span> <span class="nf">ad_dif</span><span class="p">(</span>
+    <span class="n">target</span><span class="p">,</span>
+    <span class="n">pore_pressure</span><span class="o">=</span><span class="s1">&#39;pore.pressure&#39;</span><span class="p">,</span>
+    <span class="n">throat_hydraulic_conductance</span><span class="o">=</span><span class="s1">&#39;throat.hydraulic_conductance&#39;</span><span class="p">,</span>
+    <span class="n">throat_diffusive_conductance</span><span class="o">=</span><span class="s1">&#39;throat.diffusive_conductance&#39;</span><span class="p">,</span>
+    <span class="n">s_scheme</span><span class="o">=</span><span class="s1">&#39;powerlaw&#39;</span>
+<span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates the advective-diffusive conductance of conduits in network.</span>
 
-<span class="sd">    A conduit is defined as ( 1/2 pore - full throat - 1/2 pore ). See the</span>
-<span class="sd">    Notes section.</span>
-
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : GenericPhysics</span>
-<span class="sd">        The Physics object which this model is associated with. This</span>
-<span class="sd">        controls the length of the calculated array, and also provides</span>
-<span class="sd">        access to other necessary properties.</span>
+<span class="sd">    %(target_blurb)s</span>
 <span class="sd">    pore_pressure : str</span>
-<span class="sd">        Dictionary key of the pore pressure values</span>
+<span class="sd">        %(dict_blurb)s pore pressure</span>
 <span class="sd">    throat_hydraulic_conductance : str</span>
-<span class="sd">        Dictionary key of the throat hydraulic conductance values</span>
+<span class="sd">        %(dict_blurb)s hydraulic conductance</span>
 <span class="sd">    throat_diffusive_conductance : str</span>
-<span class="sd">        Dictionary key of the throat diffusive conductance values</span>
+<span class="sd">        %(dict_blurb)s throat diffusive conductance</span>
 <span class="sd">    s_scheme : str</span>
 <span class="sd">        Name of the space discretization scheme to use</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    g : ndarray</span>
-<span class="sd">        Array containing advective-diffusive conductance values for</span>
-<span class="sd">        conduits in the geometry attached to the given physics object.</span>
+<span class="sd">    %(return_arr)s advection-diffuvsion conductance values</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    This function requires that all the necessary phase properties already</span>
-<span class="sd">    be calculated.</span>
-
 <span class="sd">    This function calculates the specified property for the *entire*</span>
 <span class="sd">    network then extracts the values for the appropriate throats at the</span>
 <span class="sd">    end.</span>
@@ -232,7 +222,7 @@
 <span class="sd">    This function assumes cylindrical throats with constant cross-section</span>
 <span class="sd">    area. Corrections for different shapes and variable cross-section area</span>
 <span class="sd">    can be imposed by passing the proper conduit_shape_factors argument</span>
-<span class="sd">    when computig the diffusive and hydraulic conductances.</span>
+<span class="sd">    when computing the diffusive and hydraulic conductances.</span>
 
 <span class="sd">    shape_factor depends on the physics of the problem, i.e.</span>
 <span class="sd">    diffusion-like processes and fluid flow need different shape factors.</span>

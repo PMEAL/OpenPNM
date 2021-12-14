@@ -179,16 +179,13 @@
               <div>
                 
   <h1>Source code for openpnm.models.misc.statistical_distributions</h1><div class="highlight"><pre>
-<span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Statistical Distributions</span>
-<span class="sd">=========================</span>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">scipy.stats</span> <span class="k">as</span> <span class="nn">spts</span>
+<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">logging</span><span class="p">,</span> <span class="n">Docorator</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">logging</span>
+
+<span class="n">docstr</span> <span class="o">=</span> <span class="n">Docorator</span><span class="p">()</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
-
-
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s1">&#39;random&#39;</span><span class="p">,</span>
     <span class="s1">&#39;weibull&#39;</span><span class="p">,</span>
@@ -198,67 +195,33 @@
 <span class="p">]</span>
 
 
-<div class="viewcode-block" id="random"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.misc.statistical_distributions.random.html#openpnm.models.misc.random">[docs]</a><span class="k">def</span> <span class="nf">random</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">element</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">num_range</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Create an array of random numbers of a specified size.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    target : Base</span>
-<span class="sd">        The object which this model is associated with. This controls the</span>
-<span class="sd">        length of the calculated array, and also provides access to other</span>
-<span class="sd">        necessary properties.</span>
-<span class="sd">    seed : int</span>
-<span class="sd">        The starting seed value to send to Scipy&#39;s random number generator.</span>
-<span class="sd">        The default is None, which means different distribution is returned</span>
-<span class="sd">        each time the model is run.</span>
-<span class="sd">    num_range : list</span>
-<span class="sd">        A two element list indicating the low and high end of the returned</span>
-<span class="sd">        numbers.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    values : ndarray</span>
-<span class="sd">        Array containing uniformly-distributed random numbers.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">range_size</span> <span class="o">=</span> <span class="n">num_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">num_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">range_min</span> <span class="o">=</span> <span class="n">num_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="k">if</span> <span class="n">seed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
-    <span class="n">value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">target</span><span class="o">.</span><span class="n">_count</span><span class="p">(</span><span class="n">element</span><span class="p">),)</span>
-    <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">*</span><span class="n">range_size</span> <span class="o">+</span> <span class="n">range_min</span>
-    <span class="k">return</span> <span class="n">value</span></div>
-
-
-<div class="viewcode-block" id="weibull"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.misc.weibull.html#openpnm.models.misc.weibull">[docs]</a><span class="k">def</span> <span class="nf">weibull</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">seeds</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">loc</span><span class="p">):</span>
+<div class="viewcode-block" id="weibull"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.misc.weibull.html#openpnm.models.misc.statistical_distributions.weibull">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">get_sections</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="s1">&#39;models.misc.stats&#39;</span><span class="p">,</span>
+                     <span class="n">sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Parameters&#39;</span><span class="p">,</span> <span class="s1">&#39;Returns&#39;</span><span class="p">])</span>
+<span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+<span class="k">def</span> <span class="nf">weibull</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">seeds</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">loc</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Produces values from a Weibull distribution given a set of random numbers.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : Base</span>
-<span class="sd">        The object which this model is associated with. This controls the</span>
-<span class="sd">        length of the calculated array, and also provides access to other</span>
-<span class="sd">        necessary properties.</span>
-<span class="sd">    seeds : str, optional</span>
-<span class="sd">        The dictionary key on the Geometry object containing random seed values</span>
-<span class="sd">        (between 0 and 1) to use in the statistical distribution.</span>
+<span class="sd">    %(models.target.parameters)s</span>
+<span class="sd">    %(models.misc.seeds)s</span>
 <span class="sd">    shape : float</span>
-<span class="sd">        This controls the skewness of the distribution, with &#39;shape&#39; &lt; 1 giving</span>
-<span class="sd">        values clustered on the low end of the range with a long tail, and</span>
-<span class="sd">        &#39;shape&#39; &gt; 1 giving a more symmetrical distribution.</span>
+<span class="sd">        Controls the width or skewness of the distribution. For more</span>
+<span class="sd">        information on the effect of this parameter refer to the</span>
+<span class="sd">        corresponding `scipy.stats function</span>
+<span class="sd">        &lt;https://docs.scipy.org/doc/scipy/reference/stats.html&gt;`_.</span>
 <span class="sd">    scale : float</span>
-<span class="sd">        This controls the width of the distribution with most of values falling</span>
-<span class="sd">        below this number.</span>
+<span class="sd">        Controls the width of the distribution. For more information on</span>
+<span class="sd">        the effect of this parameter refer to the corresponding</span>
+<span class="sd">        scipy.stats function.</span>
 <span class="sd">    loc : float</span>
-<span class="sd">        Applies an offset to the distribution such that the smallest values are</span>
-<span class="sd">        above this number.</span>
+<span class="sd">            Specifies the central value of ???</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    values : ndarray</span>
-<span class="sd">        Array containing random numbers based on Weibull distribution.</span>
+<span class="sd">    values : ndndarray</span>
+<span class="sd">        A numpy ndarray containing values following the distribution</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -279,36 +242,31 @@
 <span class="sd">       plt.show()</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">import</span> <span class="nn">scipy.stats</span> <span class="k">as</span> <span class="nn">spts</span>
-
     <span class="n">seeds</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">seeds</span><span class="p">]</span>
     <span class="n">value</span> <span class="o">=</span> <span class="n">spts</span><span class="o">.</span><span class="n">weibull_min</span><span class="o">.</span><span class="n">ppf</span><span class="p">(</span><span class="n">q</span><span class="o">=</span><span class="n">seeds</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="n">scale</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="n">loc</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">value</span></div>
 
 
-<div class="viewcode-block" id="normal"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.misc.statistical_distributions.normal.html#openpnm.models.misc.normal">[docs]</a><span class="k">def</span> <span class="nf">normal</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">seeds</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">loc</span><span class="p">):</span>
+<div class="viewcode-block" id="normal"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.misc.statistical_distributions.normal.html#openpnm.models.misc.statistical_distributions.normal">[docs]</a><span class="k">def</span> <span class="nf">normal</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">seeds</span><span class="p">,</span> <span class="n">mean</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">stddev</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Produces values from a Weibull distribution given a set of random numbers.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : Base</span>
-<span class="sd">        The object with which this function as associated.  This argument</span>
-<span class="sd">        is required to (1) set number of values to generate (geom.Np or</span>
-<span class="sd">        geom.Nt) and (2) provide access to other necessary values</span>
-<span class="sd">        (i.e. geom[&#39;pore.seed&#39;]).</span>
-<span class="sd">    seeds : str, optional</span>
-<span class="sd">        The dictionary key on the Geometry object containing random seed values</span>
-<span class="sd">        (between 0 and 1) to use in the statistical distribution.</span>
-<span class="sd">    scale : float</span>
-<span class="sd">        The standard deviation of the Normal distribution</span>
-<span class="sd">    loc : float</span>
-<span class="sd">        The mean of the Normal distribution</span>
+<span class="sd">    %(models.target.parameters)s</span>
+<span class="sd">    %(models.misc.seeds)s</span>
+<span class="sd">    mean : float</span>
+<span class="sd">        The mean value of the distribution.  This is referred to as the</span>
+<span class="sd">        ``loc`` in the scipy.stats function, and this key word is also</span>
+<span class="sd">        accepted.</span>
+<span class="sd">    stddev : float</span>
+<span class="sd">        The standard deviation of the distribution.  This is referred to as</span>
+<span class="sd">        the  ``scale`` in the scipy.stats function, and this key word is also</span>
+<span class="sd">        accepted.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    values : ndarray</span>
-<span class="sd">        Array containing normally distributed random numbers.</span>
+<span class="sd">    %(models.misc.stats.returns)s</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -328,14 +286,14 @@
 <span class="sd">       plt.show()</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">import</span> <span class="nn">scipy.stats</span> <span class="k">as</span> <span class="nn">spts</span>
-
+    <span class="n">scale</span> <span class="o">=</span> <span class="n">stddev</span> <span class="k">if</span> <span class="n">stddev</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">scale</span>
+    <span class="n">loc</span> <span class="o">=</span> <span class="n">mean</span> <span class="k">if</span> <span class="n">mean</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">loc</span>
     <span class="n">seeds</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">seeds</span><span class="p">]</span>
     <span class="n">value</span> <span class="o">=</span> <span class="n">spts</span><span class="o">.</span><span class="n">norm</span><span class="o">.</span><span class="n">ppf</span><span class="p">(</span><span class="n">q</span><span class="o">=</span><span class="n">seeds</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="n">scale</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="n">loc</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">value</span></div>
 
 
-<div class="viewcode-block" id="generic_distribution"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.misc.statistical_distributions.generic_distribution.html#openpnm.models.misc.generic_distribution">[docs]</a><span class="k">def</span> <span class="nf">generic_distribution</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">seeds</span><span class="p">,</span> <span class="n">func</span><span class="p">):</span>
+<div class="viewcode-block" id="generic_distribution"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.misc.statistical_distributions.generic_distribution.html#openpnm.models.misc.statistical_distributions.generic_distribution">[docs]</a><span class="k">def</span> <span class="nf">generic_distribution</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">seeds</span><span class="p">,</span> <span class="n">func</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Accepts an &#39;rv_frozen&#39; object from the Scipy.stats submodule and returns</span>
 <span class="sd">    values from the distribution for the given seeds</span>
@@ -344,21 +302,15 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : Base</span>
-<span class="sd">        The object which this model is associated with. This controls the</span>
-<span class="sd">        length of the calculated array, and also provides access to other</span>
-<span class="sd">        necessary properties.</span>
-<span class="sd">    seeds : str, optional</span>
-<span class="sd">        The dictionary key on the Geometry object containing random seed values</span>
-<span class="sd">        (between 0 and 1) to use in the statistical distribution.</span>
+<span class="sd">    %(models.target.parameters)s</span>
+<span class="sd">    %(models.misc.seeds)s</span>
 <span class="sd">    func : object</span>
-<span class="sd">        An &#39;rv_frozen&#39; object from the Scipy.stats library with all of the</span>
+<span class="sd">        A &#39;rv_frozen&#39; object from the scipy.stats library with all of the</span>
 <span class="sd">        parameters pre-specified.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    values : ndarray</span>
-<span class="sd">        Array containing random numbers based on given ppf.</span>
+<span class="sd">    %(models.misc.stats.returns)s</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -394,24 +346,55 @@
     <span class="k">return</span> <span class="n">value</span></div>
 
 
-<div class="viewcode-block" id="match_histogram"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.misc.statistical_distributions.match_histogram.html#openpnm.models.misc.match_histogram">[docs]</a><span class="k">def</span> <span class="nf">match_histogram</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">bin_centers</span><span class="p">,</span> <span class="n">bin_heights</span><span class="p">,</span> <span class="n">element</span><span class="o">=</span><span class="s1">&#39;pore&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="random"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.misc.statistical_distributions.random.html#openpnm.models.misc.statistical_distributions.random">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+<span class="k">def</span> <span class="nf">random</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">element</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">num_range</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create an array of random numbers of a specified size.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    %(models.target.parameters)s</span>
+<span class="sd">    seed : int</span>
+<span class="sd">        The starting seed value to sent to numpy&#39;s random number generator.</span>
+<span class="sd">        A value of ``None`` means a different distribution is returned each</span>
+<span class="sd">        time the model is (re)run.</span>
+<span class="sd">    num_range : list</span>
+<span class="sd">        A two element list indicating the low and high end of the returned</span>
+<span class="sd">        numbers.  The default is ``[0, 1]``, but a value of ``[0.1, 0.9]``</span>
+<span class="sd">        may be useful if these values are to be used in subsequent</span>
+<span class="sd">        distributions to prevent generating extreme values in the tails.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    %(models.misc.stats.returns)s</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">range_size</span> <span class="o">=</span> <span class="n">num_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">num_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">range_min</span> <span class="o">=</span> <span class="n">num_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">seed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">target</span><span class="o">.</span><span class="n">_count</span><span class="p">(</span><span class="n">element</span><span class="p">),)</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">*</span><span class="n">range_size</span> <span class="o">+</span> <span class="n">range_min</span>
+    <span class="k">return</span> <span class="n">value</span></div>
+
+<div class="viewcode-block" id="match_histogram"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.misc.statistical_distributions.match_histogram.html#openpnm.models.misc.statistical_distributions.match_histogram">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+<span class="k">def</span> <span class="nf">match_histogram</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">bin_centers</span><span class="p">,</span> <span class="n">bin_heights</span><span class="p">,</span> <span class="n">element</span><span class="o">=</span><span class="s1">&#39;pore&#39;</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generate values corresponding to a given histogram</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : Base</span>
-<span class="sd">        The object for which values are to be generated</span>
+<span class="sd">    %(models.target.parameters)s</span>
 <span class="sd">    bin_centers : array_like</span>
-<span class="sd">        The x-axis of the histogram, such as pore sizes</span>
+<span class="sd">        The x-axis of the histogram, such as pore sizes.</span>
 <span class="sd">    bin_heights : array_like</span>
-<span class="sd">        The y-axis of the histogram, such as the number of pores of each size</span>
+<span class="sd">        The y-axis of the histogram, such as the number of pores of each size.</span>
 <span class="sd">    element : str</span>
 <span class="sd">        Controls how many values to generate. Can either be &#39;pore&#39; or &#39;throat&#39;.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    vals : ndarray</span>
+<span class="sd">    values : ndarray</span>
 <span class="sd">        Values corresponding to ``bin_centers`` generated in proportion to the</span>
 <span class="sd">        respective ``bin_heights``.</span>
 

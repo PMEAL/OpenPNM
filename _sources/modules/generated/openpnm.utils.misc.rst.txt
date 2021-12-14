@@ -49,13 +49,11 @@ Misc
    
       Docorator
       DocstringProcessor
-      GenericSettings
       HealthDict
       NestedDict
       OrderedDict
       PrintableDict
       PrintableList
-      SettingsDict
       SubDict
    
    

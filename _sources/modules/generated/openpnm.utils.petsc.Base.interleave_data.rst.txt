@@ -1,8 +1,0 @@
-:orphan:
-
-interleave_data
-========================================
-
-.. currentmodule:: openpnm.utils.petsc
-
-.. automethod:: Base.interleave_data

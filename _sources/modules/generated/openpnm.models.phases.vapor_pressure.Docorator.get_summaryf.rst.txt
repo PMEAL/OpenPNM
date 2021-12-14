@@ -1,0 +1,8 @@
+:orphan:
+
+get_summaryf
+===========================================================
+
+.. currentmodule:: openpnm.models.phases.vapor_pressure
+
+.. automethod:: Docorator.get_summaryf

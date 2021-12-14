@@ -179,47 +179,40 @@
               <div>
                 
   <h1>Source code for openpnm.models.physics.ionic_conductance</h1><div class="highlight"><pre>
-<span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Pore-scale models for calculating ionic conductance of conduits.</span>
-<span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">_np</span>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">_np</span>
 <span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">logging</span>
+<span class="kn">from</span> <span class="nn">openpnm.models</span> <span class="kn">import</span> <span class="n">_doctxt</span>
 <span class="kn">from</span> <span class="nn">openpnm.models.physics._utils</span> <span class="kn">import</span> <span class="n">_poisson_conductance</span>
-<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;poisson&quot;</span><span class="p">,</span> <span class="s2">&quot;electroneutrality&quot;</span><span class="p">]</span>
 
 
-<div class="viewcode-block" id="poisson"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.physics.ionic_conductance.poisson.html#openpnm.models.physics.ionic_conductance.poisson">[docs]</a><span class="k">def</span> <span class="nf">poisson</span><span class="p">(</span><span class="n">target</span><span class="p">,</span>
-            <span class="n">pore_permittivity</span><span class="o">=</span><span class="s1">&#39;pore.permittivity&#39;</span><span class="p">,</span>
-            <span class="n">throat_permittivity</span><span class="o">=</span><span class="s1">&#39;throat.permittivity&#39;</span><span class="p">,</span>
-            <span class="n">size_factors</span><span class="o">=</span><span class="s1">&#39;throat.diffusive_size_factors&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="poisson"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.physics.ionic_conductance.poisson.html#openpnm.models.physics.ionic_conductance.poisson">[docs]</a><span class="nd">@_doctxt</span>
+<span class="k">def</span> <span class="nf">poisson</span><span class="p">(</span>
+    <span class="n">target</span><span class="p">,</span>
+    <span class="n">pore_permittivity</span><span class="o">=</span><span class="s1">&#39;pore.permittivity&#39;</span><span class="p">,</span>
+    <span class="n">throat_permittivity</span><span class="o">=</span><span class="s1">&#39;throat.permittivity&#39;</span><span class="p">,</span>
+    <span class="n">size_factors</span><span class="o">=</span><span class="s1">&#39;throat.diffusive_size_factors&#39;</span>
+<span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate the ionic conductance of conduits in network (using the</span>
-<span class="sd">    Poisson equation for charge conservation), where a conduit is</span>
-<span class="sd">    (1/2 pore - full throat - 1/2 pore). See the notes section.</span>
+<span class="sd">    Poisson equation for charge conservation)</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : GenericPhysics</span>
-<span class="sd">        Physics object with which this model is associated.</span>
+<span class="sd">    %(target_blurb)s</span>
 <span class="sd">    pore_permittivity : str</span>
-<span class="sd">        Dictionary key of the pore permittivity values.</span>
+<span class="sd">        %(dict_blurb)s pore permittivity</span>
 <span class="sd">    throat_permittivity : str</span>
-<span class="sd">        Dictionary key of the throat permittivity values.</span>
+<span class="sd">        %(dict_blurb)s throat permittivity</span>
 <span class="sd">    size_factors: str</span>
-<span class="sd">        Dictionary key of the conduit size factors&#39; values.</span>
+<span class="sd">        %(dict_blurb)s conduit size factors&#39;</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    g : ndarray</span>
-<span class="sd">        Array containing ionic conductance values for conduits in the</span>
-<span class="sd">        geometry attached to the given physics object.</span>
-
-<span class="sd">    Notes</span>
-<span class="sd">    -----</span>
-<span class="sd">    This function requires that all the necessary phase properties already</span>
-<span class="sd">    be calculated.</span>
+<span class="sd">    %(return_arr)s ionic conductance</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">epsilon0</span> <span class="o">=</span> <span class="mf">8.854187817e-12</span>
@@ -230,55 +223,48 @@
     <span class="k">return</span> <span class="n">tmp</span> <span class="o">*</span> <span class="n">epsilon0</span></div>
 
 
-<div class="viewcode-block" id="electroneutrality"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.physics.ionic_conductance.electroneutrality.html#openpnm.models.physics.ionic_conductance.electroneutrality">[docs]</a><span class="k">def</span> <span class="nf">electroneutrality</span><span class="p">(</span><span class="n">target</span><span class="p">,</span>
-                      <span class="n">pore_diffusivity</span><span class="o">=</span><span class="s1">&#39;pore.diffusivity&#39;</span><span class="p">,</span>
-                      <span class="n">throat_diffusivity</span><span class="o">=</span><span class="s1">&#39;throat.diffusivity&#39;</span><span class="p">,</span>
-                      <span class="n">size_factors</span><span class="o">=</span><span class="s2">&quot;throat.diffusive_size_factors&quot;</span><span class="p">,</span>
-                      <span class="n">pore_volume</span><span class="o">=</span><span class="s1">&#39;pore.volume&#39;</span><span class="p">,</span>
-                      <span class="n">pore_temperature</span><span class="o">=</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">,</span>
-                      <span class="n">throat_temperature</span><span class="o">=</span><span class="s1">&#39;throat.temperature&#39;</span><span class="p">,</span>
-                      <span class="n">pore_valence</span><span class="o">=</span><span class="s1">&#39;pore.valence&#39;</span><span class="p">,</span>
-                      <span class="n">throat_valence</span><span class="o">=</span><span class="s1">&#39;throat.valence&#39;</span><span class="p">,</span>
-                      <span class="n">pore_concentration</span><span class="o">=</span><span class="s1">&#39;pore.concentration&#39;</span><span class="p">,</span>
-                      <span class="n">ions</span><span class="o">=</span><span class="p">[]):</span>
+<div class="viewcode-block" id="electroneutrality"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.physics.ionic_conductance.electroneutrality.html#openpnm.models.physics.ionic_conductance.electroneutrality">[docs]</a><span class="k">def</span> <span class="nf">electroneutrality</span><span class="p">(</span>
+    <span class="n">target</span><span class="p">,</span>
+    <span class="n">pore_diffusivity</span><span class="o">=</span><span class="s1">&#39;pore.diffusivity&#39;</span><span class="p">,</span>
+    <span class="n">throat_diffusivity</span><span class="o">=</span><span class="s1">&#39;throat.diffusivity&#39;</span><span class="p">,</span>
+    <span class="n">size_factors</span><span class="o">=</span><span class="s2">&quot;throat.diffusive_size_factors&quot;</span><span class="p">,</span>
+    <span class="n">pore_volume</span><span class="o">=</span><span class="s1">&#39;pore.volume&#39;</span><span class="p">,</span>
+    <span class="n">pore_temperature</span><span class="o">=</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">,</span>
+    <span class="n">throat_temperature</span><span class="o">=</span><span class="s1">&#39;throat.temperature&#39;</span><span class="p">,</span>
+    <span class="n">pore_valence</span><span class="o">=</span><span class="s1">&#39;pore.valence&#39;</span><span class="p">,</span>
+    <span class="n">throat_valence</span><span class="o">=</span><span class="s1">&#39;throat.valence&#39;</span><span class="p">,</span>
+    <span class="n">pore_concentration</span><span class="o">=</span><span class="s1">&#39;pore.concentration&#39;</span><span class="p">,</span>
+    <span class="n">ions</span><span class="o">=</span><span class="p">[]</span>
+<span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates the ionic conductance of conduits in network (assuming</span>
-<span class="sd">    electroneutrality for charge conservation), where a conduit is</span>
-<span class="sd">    (1/2 pore - full throat - 1/2 pore). See the notes section.</span>
+<span class="sd">    electroneutrality for charge conservation)</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : GenericPhysics</span>
-<span class="sd">        Physics object with which this model is associated.</span>
+<span class="sd">    %(target_blurb)s</span>
 <span class="sd">    pore_diffusivity : str</span>
-<span class="sd">        Dictionary key of the pore diffusivity values</span>
+<span class="sd">        %(dict_blurb)s pore diffusivity</span>
 <span class="sd">    throat_diffusivity : str</span>
-<span class="sd">        Dictionary key of the throat diffusivity values</span>
-<span class="sd">    size_factors: str</span>
-<span class="sd">        Dictionary key of the conduit size factors&#39; values.</span>
-<span class="sd">    pore_volume : str</span>
-<span class="sd">        Dictionary key of the pore volume values</span>
+<span class="sd">        %(dict_blurb)s throat diffusivity</span>
 <span class="sd">    pore_temperature : str</span>
-<span class="sd">        Dictionary key of the pore temperature values</span>
+<span class="sd">        %(dict_blurb)s pore temperature</span>
 <span class="sd">    throat_temperature : str</span>
-<span class="sd">        Dictionary key of the throat temperature values</span>
+<span class="sd">        %(dict_blurb)s throat temperature</span>
+<span class="sd">    size_factors: str</span>
+<span class="sd">        %(dict_blurb)s conduit size factors</span>
+<span class="sd">    throat_temperature : str</span>
+<span class="sd">        %(dict_blurb)s throat temperature</span>
 <span class="sd">    pore_valence : str</span>
-<span class="sd">       Dictionary key of the pore ionic species valence values</span>
+<span class="sd">        %(dict_blurb)s ionic valence values</span>
 <span class="sd">    throat_valence : str</span>
-<span class="sd">       Dictionary key of the throat ionic species valence values</span>
+<span class="sd">        %(dict_blurb)s ionic species valence</span>
 <span class="sd">    pore_concentration : str</span>
-<span class="sd">       Dictionary key of the pore ionic species concentration values</span>
+<span class="sd">        %(dict_blurb)s ionic species pore concentration</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    g : ndarray</span>
-<span class="sd">        Array containing ionic conductance values for conduits in the</span>
-<span class="sd">        geometry attached to the given physics object.</span>
-
-<span class="sd">    Notes</span>
-<span class="sd">    -----</span>
-<span class="sd">    This function requires that all the necessary phase properties already</span>
-<span class="sd">    be calculated.</span>
+<span class="sd">    %(return_arr)s ionic conductance</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">ions</span> <span class="o">==</span> <span class="p">[]:</span>

@@ -1,8 +1,0 @@
-:orphan:
-
-geometries
-====================================
-
-.. currentmodule:: openpnm.utils
-
-.. automethod:: ProjectGrid.geometries

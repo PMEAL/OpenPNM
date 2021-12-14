@@ -1,8 +1,0 @@
-:orphan:
-
-items
-=================================================
-
-.. currentmodule:: openpnm.utils.petsc
-
-.. automethod:: PETScSparseLinearSolver.items

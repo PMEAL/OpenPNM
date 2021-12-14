@@ -179,57 +179,47 @@
               <div>
                 
   <h1>Source code for openpnm.models.geometry.pore_volume</h1><div class="highlight"><pre>
-<span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Pore Volume</span>
-<span class="sd">...........</span>
-
-<span class="sd">These models calculate pore volumes depending on the specified shape</span>
-
-<span class="sd">&quot;&quot;&quot;</span>
-
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">pi</span> <span class="k">as</span> <span class="n">_pi</span>
+<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">Docorator</span>
 
 
-<div class="viewcode-block" id="sphere"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.pore_volume.sphere.html#openpnm.models.geometry.pore_volume.sphere">[docs]</a><span class="k">def</span> <span class="nf">sphere</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">pore_diameter</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">):</span>
+<span class="n">docstr</span> <span class="o">=</span> <span class="n">Docorator</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="sphere"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.pore_volume.sphere.html#openpnm.models.geometry.pore_volume.sphere">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">get_sections</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="s1">&#39;models.geometry.pore_volume&#39;</span><span class="p">,</span>
+                     <span class="n">sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Parameters&#39;</span><span class="p">,</span> <span class="s1">&#39;Returns&#39;</span><span class="p">])</span>
+<span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+<span class="k">def</span> <span class="nf">sphere</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">pore_diameter</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate pore volume from diameter assuming a spherical pore body</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : GenericGeometry</span>
-<span class="sd">        The object which this model is associated with. This controls</span>
-<span class="sd">        the length of the calculated array, and also provides access to other</span>
-<span class="sd">        necessary geometric properties.</span>
-<span class="sd">    pore_diameter : str</span>
-<span class="sd">        The dictionary key of the pore diameter values</span>
+<span class="sd">    %(models.target.parameters)s</span>
+<span class="sd">    %(models.geometry.pdia)s</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    value : ndarray</span>
-<span class="sd">        Array containing pore volume values.</span>
+<span class="sd">    volumes : ndarray</span>
+<span class="sd">        Numpy ndarray containing pore volume values</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">_pi</span><span class="o">/</span><span class="mi">6</span><span class="o">*</span><span class="n">target</span><span class="p">[</span><span class="n">pore_diameter</span><span class="p">]</span><span class="o">**</span><span class="mi">3</span></div>
 
 
-<div class="viewcode-block" id="cube"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.pore_volume.cube.html#openpnm.models.geometry.pore_volume.cube">[docs]</a><span class="k">def</span> <span class="nf">cube</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">pore_diameter</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="cube"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.pore_volume.cube.html#openpnm.models.geometry.pore_volume.cube">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+<span class="k">def</span> <span class="nf">cube</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">pore_diameter</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate pore volume from diameter assuming a cubic pore body</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : GenericGeometry</span>
-<span class="sd">        The object which this model is associated with. This controls</span>
-<span class="sd">        the length of the calculated array, and also provides access to other</span>
-<span class="sd">        necessary geometric properties.</span>
-<span class="sd">    pore_diameter : str</span>
-<span class="sd">        The dictionary key of the pore diameter values</span>
+<span class="sd">    %(models.geometry.pore_volume.parameters)s</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    value : ndarray</span>
-<span class="sd">        Array containing pore volume values.</span>
+<span class="sd">    %(models.geometry.pore_volume.returns)s</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">target</span><span class="p">[</span><span class="n">pore_diameter</span><span class="p">]</span><span class="o">**</span><span class="mi">3</span></div>
@@ -241,12 +231,11 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : GenericGeometry</span>
-<span class="sd">        The object which this model is associated with. This controls</span>
-<span class="sd">        the length of the calculated array, and also provides access to other</span>
-<span class="sd">        necessary geometric properties.</span>
-<span class="sd">    pore_diameter : str</span>
-<span class="sd">        The dictionary key of the pore diameter values</span>
+<span class="sd">    %(models.geometry.pore_volume.parameters)s</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    %(models.geometry.pore_volume.returns)s</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">_pi</span><span class="o">/</span><span class="mi">4</span> <span class="o">*</span> <span class="n">target</span><span class="p">[</span><span class="n">pore_diameter</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span></div>
@@ -258,12 +247,11 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : GenericGeometry</span>
-<span class="sd">        The object which this model is associated with. This controls</span>
-<span class="sd">        the length of the calculated array, and also provides access to other</span>
-<span class="sd">        necessary geometric properties.</span>
-<span class="sd">    pore_diameter : str</span>
-<span class="sd">        The dictionary key of the pore diameter values</span>
+<span class="sd">    %(models.geometry.pore_volume.parameters)s</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    %(models.geometry.pore_volume.returns)s</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">target</span><span class="p">[</span><span class="n">pore_diameter</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span></div>
@@ -273,24 +261,18 @@
               <span class="n">throat_volume</span><span class="o">=</span><span class="s1">&#39;throat.volume&#39;</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate the effective pore volume for optional use in transient</span>
-<span class="sd">    simulations. The effective pore volume is calculated by adding half the</span>
-<span class="sd">    volume of all neighbouring throats to the pore volume.</span>
+<span class="sd">    simulations. The effective pore volume is calculated by adding half</span>
+<span class="sd">    the volume of all neighbouring throats to the pore volume.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : GenericGeometry</span>
-<span class="sd">        The object which this model is associated with. This controls</span>
-<span class="sd">        the length of the calculated array, and also provides access to other</span>
-<span class="sd">        necessary geometric properties.</span>
-<span class="sd">    pore_volume : str</span>
-<span class="sd">        The dictionary key of the pore volume values</span>
-<span class="sd">    throat_volume : str</span>
-<span class="sd">        The dictionary key of the throat volume values</span>
+<span class="sd">    %(models.geometry.pore_volume.parameters)s</span>
+<span class="sd">    %(models.geometry.pvol)s</span>
+<span class="sd">    %(models.geometry.tvol)s</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    value : ndarray</span>
-<span class="sd">        Array containing pore volume values.</span>
+<span class="sd">    %(models.geometry.pore_volume.returns)s</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">network</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">network</span>

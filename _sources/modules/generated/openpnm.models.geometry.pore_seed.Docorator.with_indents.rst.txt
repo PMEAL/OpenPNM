@@ -1,0 +1,8 @@
+:orphan:
+
+with_indents
+========================================================
+
+.. currentmodule:: openpnm.models.geometry.pore_seed
+
+.. automethod:: Docorator.with_indents

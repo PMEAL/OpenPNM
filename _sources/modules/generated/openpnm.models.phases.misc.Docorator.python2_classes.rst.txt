@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.models.phases.misc.Docorator.python2\_classes
+=====================================================
+
+.. currentmodule:: openpnm.models.phases.misc
+
+attribute
+
+.. autoattribute:: openpnm.models.phases.misc.Docorator.python2_classes
+

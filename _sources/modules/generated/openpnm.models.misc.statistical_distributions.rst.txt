@@ -30,6 +30,15 @@ Statistical\_distributions
 
    
    
+   .. rubric:: Classes
+
+   .. autosummary::
+      :nosignatures:
+      :toctree:
+
+   
+      Docorator
+   
    
 
    

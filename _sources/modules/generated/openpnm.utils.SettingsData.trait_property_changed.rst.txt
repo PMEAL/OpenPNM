@@ -1,8 +1,0 @@
-:orphan:
-
-trait_property_changed
-=================================================
-
-.. currentmodule:: openpnm.utils
-
-.. automethod:: SettingsData.trait_property_changed

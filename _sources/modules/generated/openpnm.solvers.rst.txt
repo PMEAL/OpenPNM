@@ -29,6 +29,7 @@ Solvers
       BaseSolver
       DirectSolver
       IterativeSolver
+      PETScLinearSolver
       PardisoSpsolve
       ScipySpsolve
    

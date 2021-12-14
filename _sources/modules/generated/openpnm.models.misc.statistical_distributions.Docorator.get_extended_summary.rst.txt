@@ -1,0 +1,8 @@
+:orphan:
+
+get_extended_summary
+============================================================================
+
+.. currentmodule:: openpnm.models.misc.statistical_distributions
+
+.. automethod:: Docorator.get_extended_summary

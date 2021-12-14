@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.models.geometry.conduit\_lengths.Docorator.python2\_classes
+===================================================================
+
+.. currentmodule:: openpnm.models.geometry.conduit_lengths
+
+attribute
+
+.. autoattribute:: openpnm.models.geometry.conduit_lengths.Docorator.python2_classes
+

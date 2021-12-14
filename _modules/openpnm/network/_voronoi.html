@@ -182,11 +182,11 @@
 <span></span><span class="kn">from</span> <span class="nn">openpnm</span> <span class="kn">import</span> <span class="n">topotools</span>
 <span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">logging</span>
 <span class="kn">from</span> <span class="nn">openpnm.network</span> <span class="kn">import</span> <span class="n">DelaunayVoronoiDual</span>
-<span class="kn">from</span> <span class="nn">auto_all</span> <span class="kn">import</span> <span class="n">start_all</span><span class="p">,</span> <span class="n">end_all</span>
+
+
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Voronoi&#39;</span><span class="p">]</span>
 
-
-<span class="n">start_all</span><span class="p">()</span>
 
 <div class="viewcode-block" id="Voronoi"><a class="viewcode-back" href="../../../modules/generated/openpnm.network.Voronoi.html#openpnm.network.Voronoi">[docs]</a><span class="k">class</span> <span class="nc">Voronoi</span><span class="p">(</span><span class="n">DelaunayVoronoiDual</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -228,8 +228,6 @@
         <span class="n">pop</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;pore.delaunay&#39;</span><span class="p">,</span> <span class="s1">&#39;throat.delaunay&#39;</span><span class="p">,</span> <span class="s1">&#39;throat.interconnect&#39;</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">pop</span><span class="p">:</span>
             <span class="k">del</span> <span class="bp">self</span><span class="p">[</span><span class="n">item</span><span class="p">]</span></div>
-
-<span class="n">end_all</span><span class="p">()</span>
 </pre></div>
 
               </div>

@@ -1,0 +1,8 @@
+:orphan:
+
+save_docstring
+=======================================================================
+
+.. currentmodule:: openpnm.models.geometry.diffusive_size_factors
+
+.. automethod:: Docorator.save_docstring

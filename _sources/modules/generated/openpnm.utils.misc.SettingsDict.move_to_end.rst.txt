@@ -1,8 +1,0 @@
-:orphan:
-
-move_to_end
-===========================================
-
-.. currentmodule:: openpnm.utils.misc
-
-.. automethod:: SettingsDict.move_to_end

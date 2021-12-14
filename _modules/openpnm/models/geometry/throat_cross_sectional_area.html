@@ -179,31 +179,29 @@
               <div>
                 
   <h1>Source code for openpnm.models.geometry.throat_cross_sectional_area</h1><div class="highlight"><pre>
-<span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Throat Cross Sectional Area</span>
-<span class="sd">...........................</span>
-
-<span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">pi</span> <span class="k">as</span> <span class="n">_pi</span>
+<span></span><span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">pi</span> <span class="k">as</span> <span class="n">_pi</span>
+<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">Docorator</span>
 
 
-<div class="viewcode-block" id="cylinder"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.throat_cross_sectional_area.cylinder.html#openpnm.models.geometry.throat_cross_sectional_area.cylinder">[docs]</a><span class="k">def</span> <span class="nf">cylinder</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">throat_diameter</span><span class="o">=</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">):</span>
+<span class="n">docstr</span> <span class="o">=</span> <span class="n">Docorator</span><span class="p">()</span>
+<span class="n">docstr</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;models.geometry.throat_cross_sectional_area.returns&#39;</span><span class="p">]</span> <span class="o">=</span> \
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;areas : ndarray</span>
+<span class="sd">            A numpy ndarray containing throat cross-sectional area values&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="cylinder"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.throat_cross_sectional_area.cylinder.html#openpnm.models.geometry.throat_cross_sectional_area.cylinder">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+<span class="k">def</span> <span class="nf">cylinder</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">throat_diameter</span><span class="o">=</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate throat cross-sectional area for a cylindrical throat</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : GenericGeometry</span>
-<span class="sd">        The object which this model is associated with. This controls the</span>
-<span class="sd">        length of the calculated array, and also provides access to other</span>
-<span class="sd">        necessary properties.</span>
-<span class="sd">    throat_diameter : str</span>
-<span class="sd">        Dictionary key of the throat diameter values</span>
+<span class="sd">    %(models.target.parameters)s</span>
+<span class="sd">    %(models.geometry.tdia)s</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    value : ndarray</span>
-<span class="sd">        Array containing throat cross-sectional area values.</span>
+<span class="sd">    %(models.geometry.throat_cross_sectional_area.returns)s</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">diams</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">throat_diameter</span><span class="p">]</span>
@@ -211,23 +209,19 @@
     <span class="k">return</span> <span class="n">value</span></div>
 
 
-<div class="viewcode-block" id="cuboid"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.throat_cross_sectional_area.cuboid.html#openpnm.models.geometry.throat_cross_sectional_area.cuboid">[docs]</a><span class="k">def</span> <span class="nf">cuboid</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">throat_diameter</span><span class="o">=</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="cuboid"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.throat_cross_sectional_area.cuboid.html#openpnm.models.geometry.throat_cross_sectional_area.cuboid">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+<span class="k">def</span> <span class="nf">cuboid</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">throat_diameter</span><span class="o">=</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate throat cross-sectional area for a cuboid throat</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : GenericGeometry</span>
-<span class="sd">        The object which this model is associated with. This controls the</span>
-<span class="sd">        length of the calculated array, and also provides access to other</span>
-<span class="sd">        necessary properties.</span>
-<span class="sd">    throat_diameter : str</span>
-<span class="sd">        Dictionary key of the throat diameter values</span>
+<span class="sd">    %(models.target.parameters)s</span>
+<span class="sd">    %(models.geometry.tdia)s</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    value : ndarray</span>
-<span class="sd">        Array containing throat cross-sectional area values.</span>
+<span class="sd">    %(models.geometry.throat_cross_sectional_area.returns)s</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">diams</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">throat_diameter</span><span class="p">]</span>
@@ -241,12 +235,12 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : GenericGeometry</span>
-<span class="sd">        The object which this model is associated with. This controls the</span>
-<span class="sd">        length of the calculated array, and also provides access to other</span>
-<span class="sd">        necessary properties.</span>
-<span class="sd">    throat_diameter : str</span>
-<span class="sd">        Dictionary key of the throat diameter values</span>
+<span class="sd">    %(models.target.parameters)s</span>
+<span class="sd">    %(models.geometry.tdia)s</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    %(models.geometry.throat_cross_sectional_area.returns)s</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">target</span><span class="p">[</span><span class="n">throat_diameter</span><span class="p">]</span></div>

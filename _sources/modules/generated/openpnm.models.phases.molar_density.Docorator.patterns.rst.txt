@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.models.phases.molar\_density.Docorator.patterns
+=======================================================
+
+.. currentmodule:: openpnm.models.phases.molar_density
+
+attribute
+
+.. autoattribute:: openpnm.models.phases.molar_density.Docorator.patterns
+

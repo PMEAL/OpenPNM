@@ -1,8 +1,0 @@
-:orphan:
-
-set_row_and_col
-=========================================
-
-.. currentmodule:: openpnm.utils
-
-.. automethod:: ProjectGrid.set_row_and_col

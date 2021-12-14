@@ -19,6 +19,16 @@ Models
 
    
    
+   .. rubric:: Classes
+
+   .. autosummary::
+      :nosignatures:
+      :toctree:
+
+   
+      Docorator
+      Substitution
+   
    
 
    

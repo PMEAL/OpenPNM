@@ -1,0 +1,8 @@
+:orphan:
+
+delete_params_s
+===============================================================
+
+.. currentmodule:: openpnm.models.geometry.throat_volume
+
+.. automethod:: Docorator.delete_params_s

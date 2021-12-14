@@ -1,0 +1,8 @@
+:orphan:
+
+with_indent
+===================================================================
+
+.. currentmodule:: openpnm.models.phases.electrical_conductivity
+
+.. automethod:: Docorator.with_indent

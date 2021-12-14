@@ -1,8 +1,0 @@
-:orphan:
-
-clone_traits
-=======================================
-
-.. currentmodule:: openpnm.utils
-
-.. automethod:: SettingsData.clone_traits

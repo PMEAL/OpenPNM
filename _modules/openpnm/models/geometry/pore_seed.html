@@ -179,20 +179,13 @@
               <div>
                 
   <h1>Source code for openpnm.models.geometry.pore_seed</h1><div class="highlight"><pre>
-<span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Pore Seed</span>
-<span class="sd">.........</span>
-
-<span class="sd">Pore seed models are use to calculate random numbers for each pore, which can</span>
-<span class="sd">subsequently be used in statistical distributions to calculate actual pore</span>
-<span class="sd">sizes.</span>
-
-<span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">_np</span>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">_np</span>
 <span class="kn">import</span> <span class="nn">scipy</span> <span class="k">as</span> <span class="nn">_sp</span>
 <span class="kn">from</span> <span class="nn">openpnm.models</span> <span class="kn">import</span> <span class="n">misc</span> <span class="k">as</span> <span class="n">_misc</span>
-<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">logging</span> <span class="k">as</span> <span class="n">_logging</span>
-<span class="n">_logger</span> <span class="o">=</span> <span class="n">_logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">Docorator</span>
+
+
+<span class="n">docstr</span> <span class="o">=</span> <span class="n">Docorator</span><span class="p">()</span>
 
 
 <div class="viewcode-block" id="random"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.pore_seed.random.html#openpnm.models.geometry.pore_seed.random">[docs]</a><span class="k">def</span> <span class="nf">random</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">num_range</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]):</span>
@@ -202,38 +195,36 @@
 <span class="n">random</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="n">_misc</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="vm">__doc__</span>
 
 
-<div class="viewcode-block" id="spatially_correlated"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.pore_seed.spatially_correlated.html#openpnm.models.geometry.pore_seed.spatially_correlated">[docs]</a><span class="k">def</span> <span class="nf">spatially_correlated</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">strel</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="spatially_correlated"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.pore_seed.spatially_correlated.html#openpnm.models.geometry.pore_seed.spatially_correlated">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+<span class="k">def</span> <span class="nf">spatially_correlated</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">strel</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generates pore seeds that are spatailly correlated with their neighbors.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : GenericGeometry</span>
-<span class="sd">        The object which this model is associated with. This controls the</span>
-<span class="sd">        length of the calculated array, and also provides access to other</span>
-<span class="sd">        necessary properties.</span>
+<span class="sd">    %(models.target.parameters)s</span>
 <span class="sd">    weights : list of ints, optional</span>
-<span class="sd">        The [Nx,Ny,Nz] distances (in number of pores) in each direction that</span>
+<span class="sd">        The [Nx, Ny, Nz] distances (in number of pores) in each direction that</span>
 <span class="sd">        should be correlated.</span>
-<span class="sd">    strel : array_like, optional (in place of weights)</span>
-<span class="sd">        The option allows full control over the spatial correlation pattern by</span>
-<span class="sd">        specifying the structuring element to be used in the convolution.</span>
+<span class="sd">    strel : array_like, optional (in place of ``weights``)</span>
+<span class="sd">        This option allows full control over the spatial correlation pattern</span>
+<span class="sd">        by specifying the structuring element to be used in the convolution.</span>
 
 <span class="sd">        The array should be a 3D array containing the strength of correlations</span>
 <span class="sd">        in each direction.  Nonzero values indicate the strength, direction</span>
 <span class="sd">        and extent of correlations.  The following would achieve a basic</span>
-<span class="sd">        correlation in the z-direction:</span>
+<span class="sd">        correlation in the x-direction:</span>
 
-<span class="sd">    ::</span>
+<span class="sd">        ::</span>
 
-<span class="sd">        strel = np.array([[[0, 0, 0], [0, 0, 0], [0, 0, 0]],</span>
-<span class="sd">                          [[0, 0, 0], [1, 1, 1], [0, 0, 0]],</span>
-<span class="sd">                          [[0, 0, 0], [0, 0, 0], [0, 0, 0]]])</span>
+<span class="sd">            strel = np.array([[[0, 0, 0], [0, 0, 0], [0, 0, 0]],</span>
+<span class="sd">                              [[0, 0, 0], [1, 1, 1], [0, 0, 0]],</span>
+<span class="sd">                              [[0, 0, 0], [0, 0, 0], [0, 0, 0]]])</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    values : ndarray</span>
-<span class="sd">        Array containing pore seed values.</span>
+<span class="sd">    seeds : ndarray</span>
+<span class="sd">        A numpy ndarry containing pore cross-sectional area values</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
@@ -244,12 +235,12 @@
 
 <span class="sd">    Because is uses image analysis tools, it only works on Cubic networks.</span>
 
-<span class="sd">    This is the appproached used by Gostick et al [2]_ to create an anistropic</span>
+<span class="sd">    This is the appproached used by Gostick et al [1]_ to create an anistropic</span>
 <span class="sd">    gas diffusion layer for fuel cell electrodes.</span>
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
-<span class="sd">    .. [2] J. Gostick et al, Pore network modeling of fibrous gas diffusion</span>
+<span class="sd">    .. [1] J. Gostick et al, Pore network modeling of fibrous gas diffusion</span>
 <span class="sd">           layers for polymer electrolyte membrane fuel cells. J Power Sources</span>
 <span class="sd">           v173, pp277–290 (2007)</span>
 
@@ -275,9 +266,9 @@
             <span class="k">return</span> <span class="n">im</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
         <span class="n">w</span> <span class="o">=</span> <span class="n">_np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
         <span class="n">strel</span> <span class="o">=</span> <span class="n">_np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">w</span><span class="o">*</span><span class="mi">2</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">strel</span><span class="p">[</span><span class="n">w</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">w</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="p">:]</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="n">strel</span><span class="p">[:,</span> <span class="n">w</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">w</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="n">strel</span><span class="p">[</span><span class="n">w</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">:,</span> <span class="n">w</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">1</span>
-        <span class="n">strel</span><span class="p">[</span><span class="n">w</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">w</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="p">:]</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="n">im</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">convolve</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">strel</span><span class="p">)</span>
     <span class="c1"># Convolution is no longer randomly distributed, so fit a gaussian</span>
     <span class="c1"># and find it&#39;s seeds</span>

@@ -1,0 +1,8 @@
+:orphan:
+
+__call__
+=======================================================
+
+.. currentmodule:: openpnm.models.phases.vapor_pressure
+
+.. automethod:: Docorator.__call__

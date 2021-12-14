@@ -26,6 +26,15 @@ Permittivity
 
    
    
+   .. rubric:: Classes
+
+   .. autosummary::
+      :nosignatures:
+      :toctree:
+
+   
+      Docorator
+   
    
 
    

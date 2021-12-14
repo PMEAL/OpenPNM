@@ -1,0 +1,8 @@
+:orphan:
+
+__call__
+====================================================
+
+.. currentmodule:: openpnm.models.geometry.pore_size
+
+.. automethod:: Docorator.__call__

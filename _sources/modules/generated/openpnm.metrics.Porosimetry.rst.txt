@@ -1,0 +1,68 @@
+Porosimetry
+===========================
+
+.. currentmodule:: openpnm.metrics
+
+.. autoclass:: Porosimetry
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            Porosimetry.clear
+            Porosimetry.copy
+            Porosimetry.fromkeys
+            Porosimetry.get
+            Porosimetry.get_conduit_data
+            Porosimetry.get_intrusion_data
+            Porosimetry.get_percolation_threshold
+            Porosimetry.interleave_data
+            Porosimetry.interpolate_data
+            Porosimetry.is_percolating
+            Porosimetry.items
+            Porosimetry.keys
+            Porosimetry.map_pores
+            Porosimetry.map_throats
+            Porosimetry.plot_intrusion_curve
+            Porosimetry.pop
+            Porosimetry.popitem
+            Porosimetry.props
+            Porosimetry.reset
+            Porosimetry.results
+            Porosimetry.run
+            Porosimetry.set_inlets
+            Porosimetry.set_outlets
+            Porosimetry.set_partial_filling
+            Porosimetry.set_residual
+            Porosimetry.setdefault
+            Porosimetry.show_hist
+            Porosimetry.to_indices
+            Porosimetry.to_mask
+            Porosimetry.toindices
+            Porosimetry.tomask
+            Porosimetry.update
+            Porosimetry.values
+   
+   
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            Porosimetry.Np
+            Porosimetry.Nt
+            Porosimetry.Ps
+            Porosimetry.Ts
+            Porosimetry.name
+            Porosimetry.network
+            Porosimetry.project
+            Porosimetry.settings
+   
+   

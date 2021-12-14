@@ -1,0 +1,8 @@
+:orphan:
+
+save_docstring
+===========================================================
+
+.. currentmodule:: openpnm.models.phases.permittivity
+
+.. automethod:: Docorator.save_docstring

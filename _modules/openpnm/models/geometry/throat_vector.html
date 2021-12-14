@@ -179,34 +179,33 @@
               <div>
                 
   <h1>Source code for openpnm.models.geometry.throat_vector</h1><div class="highlight"><pre>
-<span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Throat Vector</span>
-<span class="sd">.............</span>
-
-<span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">transforms3d</span> <span class="kn">import</span> <span class="n">_gohlketransforms</span> <span class="k">as</span> <span class="n">tr</span>
+<span></span><span class="kn">from</span> <span class="nn">transforms3d</span> <span class="kn">import</span> <span class="n">_gohlketransforms</span> <span class="k">as</span> <span class="n">tr</span>
+<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">Docorator</span>
 
 
-<div class="viewcode-block" id="pore_to_pore"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.throat_vector.pore_to_pore.html#openpnm.models.geometry.throat_vector.pore_to_pore">[docs]</a><span class="k">def</span> <span class="nf">pore_to_pore</span><span class="p">(</span><span class="n">target</span><span class="p">):</span>
+<span class="n">docstr</span> <span class="o">=</span> <span class="n">Docorator</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="pore_to_pore"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.throat_vector.pore_to_pore.html#openpnm.models.geometry.throat_vector.pore_to_pore">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+<span class="k">def</span> <span class="nf">pore_to_pore</span><span class="p">(</span><span class="n">target</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates throat vector as straight path between connected pores.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target: GenericGeometry</span>
-<span class="sd">        The object containing the geometrical properties of the throats</span>
+<span class="sd">    %(models.target.parameters)s</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    unit_vec : ndarray, shape = (N, 3)</span>
-<span class="sd">        Array containing pore-to-pore unit vectors</span>
+<span class="sd">    unit_vec : ndarray</span>
+<span class="sd">        A [Nt-by-3] numpy ndarray containing pore-to-pore unit vectors</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    There is an important impicit assumption here: the positive direction is</span>
 <span class="sd">    taken as the direction from the pore with the lower index to the higher.</span>
 <span class="sd">    This corresponds to the pores in the 1st and 2nd columns of the</span>
-<span class="sd">    &#39;throat.conns&#39; array as stored on the etwork.</span>
+<span class="sd">    &#39;throat.conns&#39; array as stored on the network.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">network</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">network</span>

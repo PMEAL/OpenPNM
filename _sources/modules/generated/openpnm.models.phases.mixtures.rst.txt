@@ -36,6 +36,7 @@ Mixtures
       :toctree:
 
    
+      Docorator
       MixDict
    
    

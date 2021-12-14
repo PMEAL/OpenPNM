@@ -1,0 +1,8 @@
+:orphan:
+
+keep_types_s
+============================================================================
+
+.. currentmodule:: openpnm.models.geometry.throat_capillary_shape_factor
+
+.. automethod:: Docorator.keep_types_s

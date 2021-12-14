@@ -1,6 +1,0 @@
-classic
-=======
-
-.. currentmodule:: openpnm.models.geometry.throat_length
-
-.. autofunction:: classic

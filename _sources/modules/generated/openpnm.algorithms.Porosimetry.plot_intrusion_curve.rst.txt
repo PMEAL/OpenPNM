@@ -1,8 +1,0 @@
-:orphan:
-
-plot_intrusion_curve
-===================================================
-
-.. currentmodule:: openpnm.algorithms
-
-.. automethod:: Porosimetry.plot_intrusion_curve

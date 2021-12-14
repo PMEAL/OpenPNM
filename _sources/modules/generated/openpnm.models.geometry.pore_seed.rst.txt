@@ -27,6 +27,15 @@ Pore\_seed
 
    
    
+   .. rubric:: Classes
+
+   .. autosummary::
+      :nosignatures:
+      :toctree:
+
+   
+      Docorator
+   
    
 
    

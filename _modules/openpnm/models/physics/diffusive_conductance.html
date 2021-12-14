@@ -179,47 +179,42 @@
               <div>
                 
   <h1>Source code for openpnm.models.physics.diffusive_conductance</h1><div class="highlight"><pre>
-<span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Pore-scale models for calculating the diffusive conductance of conduits.</span>
-<span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">_np</span>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">_np</span>
 <span class="kn">import</span> <span class="nn">scipy.constants</span> <span class="k">as</span> <span class="nn">_const</span>
+<span class="kn">from</span> <span class="nn">openpnm.models</span> <span class="kn">import</span> <span class="n">_doctxt</span>
 <span class="kn">from</span> <span class="nn">openpnm.models.physics._utils</span> <span class="kn">import</span> <span class="n">_poisson_conductance</span>
+
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;generic_diffusive&quot;</span><span class="p">,</span>
     <span class="s2">&quot;ordinary_diffusion&quot;</span><span class="p">,</span>
     <span class="s2">&quot;mixed_diffusion&quot;</span><span class="p">,</span>
     <span class="s2">&quot;taylor_aris_diffusion&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;multiphase_diffusion&quot;</span>
+    <span class="s2">&quot;multiphase_diffusion&quot;</span><span class="p">,</span>
 <span class="p">]</span>
 
 
-<div class="viewcode-block" id="generic_diffusive"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.physics.diffusive_conductance.generic_diffusive.html#openpnm.models.physics.diffusive_conductance.generic_diffusive">[docs]</a><span class="k">def</span> <span class="nf">generic_diffusive</span><span class="p">(</span><span class="n">target</span><span class="p">,</span>
+<div class="viewcode-block" id="generic_diffusive"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.physics.diffusive_conductance.generic_diffusive.html#openpnm.models.physics.diffusive_conductance.generic_diffusive">[docs]</a><span class="nd">@_doctxt</span>
+<span class="k">def</span> <span class="nf">generic_diffusive</span><span class="p">(</span><span class="n">target</span><span class="p">,</span>
                       <span class="n">pore_diffusivity</span><span class="o">=</span><span class="s2">&quot;pore.diffusivity&quot;</span><span class="p">,</span>
                       <span class="n">throat_diffusivity</span><span class="o">=</span><span class="s2">&quot;throat.diffusivity&quot;</span><span class="p">,</span>
                       <span class="n">size_factors</span><span class="o">=</span><span class="s2">&quot;throat.diffusive_size_factors&quot;</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates the diffusive conductance of conduits in network.</span>
 
-<span class="sd">    A conduit is defined as (1/2 pore - full throat - 1/2 pore).</span>
-
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : GenericPhysics</span>
-<span class="sd">        Physics object with which this model is associated.</span>
+<span class="sd">    %(target_blurb)s</span>
 <span class="sd">    pore_diffusivity : str</span>
-<span class="sd">        Dictionary key of the pore diffusivity values.</span>
+<span class="sd">        %(dict_blurb)s pore diffusivity</span>
 <span class="sd">    throat_diffusivity : str</span>
-<span class="sd">        Dictionary key of the throat diffusivity values.</span>
-<span class="sd">    size_factors: str</span>
-<span class="sd">        Dictionary key of the conduit diffusive size factors&#39; values.</span>
+<span class="sd">        %(dict_blurb)s throat diffusivity</span>
+<span class="sd">    size_factors : str</span>
+<span class="sd">        %(dict_blurb)s conduit diffusive size factors</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    ndarray</span>
-<span class="sd">        Array containing diffusive conductance values for conduits in the</span>
-<span class="sd">        geometry attached to the given physics object.</span>
+<span class="sd">    %(return_arr)s diffusive conductance</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">_poisson_conductance</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">target</span><span class="p">,</span>
@@ -228,31 +223,27 @@
                                 <span class="n">size_factors</span><span class="o">=</span><span class="n">size_factors</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="ordinary_diffusion"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.physics.diffusive_conductance.ordinary_diffusion.html#openpnm.models.physics.diffusive_conductance.ordinary_diffusion">[docs]</a><span class="k">def</span> <span class="nf">ordinary_diffusion</span><span class="p">(</span><span class="n">target</span><span class="p">,</span>
+<div class="viewcode-block" id="ordinary_diffusion"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.physics.diffusive_conductance.ordinary_diffusion.html#openpnm.models.physics.diffusive_conductance.ordinary_diffusion">[docs]</a><span class="nd">@_doctxt</span>
+<span class="k">def</span> <span class="nf">ordinary_diffusion</span><span class="p">(</span><span class="n">target</span><span class="p">,</span>
                        <span class="n">pore_diffusivity</span><span class="o">=</span><span class="s2">&quot;pore.diffusivity&quot;</span><span class="p">,</span>
                        <span class="n">throat_diffusivity</span><span class="o">=</span><span class="s2">&quot;throat.diffusivity&quot;</span><span class="p">,</span>
                        <span class="n">size_factors</span><span class="o">=</span><span class="s2">&quot;throat.diffusive_size_factors&quot;</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates the diffusive conductance of conduits in network.</span>
 
-<span class="sd">    A conduit is defined as (1/2 pore - full throat - 1/2 pore).</span>
-
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : GenericPhysics</span>
-<span class="sd">        Physics object with which this model is associated.</span>
+<span class="sd">    %(target_blurb)s</span>
 <span class="sd">    pore_diffusivity : str</span>
-<span class="sd">        Dictionary key of the pore diffusivity values.</span>
+<span class="sd">        %(dict_blurb)s pore diffusivity</span>
 <span class="sd">    throat_diffusivity : str</span>
-<span class="sd">        Dictionary key of the throat diffusivity values.</span>
+<span class="sd">        %(dict_blurb)s throat diffusivity</span>
 <span class="sd">    size_factors: str</span>
-<span class="sd">        Dictionary key of the conduit diffusive size factors&#39; values.</span>
+<span class="sd">        %(dict_blurb)s conduit diffusive size factors</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    ndarray</span>
-<span class="sd">        Array containing diffusive conductance values for conduits in the</span>
-<span class="sd">        geometry attached to the given physics object.</span>
+<span class="sd">    %(return_arr)s diffusive conductance</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">_poisson_conductance</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">target</span><span class="p">,</span>
@@ -260,8 +251,8 @@
                                 <span class="n">throat_conductivity</span><span class="o">=</span><span class="n">throat_diffusivity</span><span class="p">,</span>
                                 <span class="n">size_factors</span><span class="o">=</span><span class="n">size_factors</span><span class="p">)</span></div>
 
-
-<div class="viewcode-block" id="mixed_diffusion"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.physics.diffusive_conductance.mixed_diffusion.html#openpnm.models.physics.diffusive_conductance.mixed_diffusion">[docs]</a><span class="k">def</span> <span class="nf">mixed_diffusion</span><span class="p">(</span><span class="n">target</span><span class="p">,</span>
+<div class="viewcode-block" id="mixed_diffusion"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.physics.diffusive_conductance.mixed_diffusion.html#openpnm.models.physics.diffusive_conductance.mixed_diffusion">[docs]</a><span class="nd">@_doctxt</span>
+<span class="k">def</span> <span class="nf">mixed_diffusion</span><span class="p">(</span><span class="n">target</span><span class="p">,</span>
                     <span class="n">pore_diameter</span><span class="o">=</span><span class="s2">&quot;pore.diameter&quot;</span><span class="p">,</span>
                     <span class="n">throat_diameter</span><span class="o">=</span><span class="s2">&quot;throat.diameter&quot;</span><span class="p">,</span>
                     <span class="n">pore_diffusivity</span><span class="o">=</span><span class="s2">&quot;pore.diffusivity&quot;</span><span class="p">,</span>
@@ -274,43 +265,27 @@
 <span class="sd">    Calculates the diffusive conductance of conduits in network with</span>
 <span class="sd">    Knudsen correction.</span>
 
-<span class="sd">    A conduit is defined as (1/2 pore - full throat - 1/2 pore). See</span>
-<span class="sd">    Notes section for the limitations of this method.</span>
-
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : GenericPhysics</span>
-<span class="sd">        Physics object with which this model is associated.</span>
+<span class="sd">    %(target_blurb)s</span>
 <span class="sd">    pore_diameter : str</span>
-<span class="sd">        Dictionary key of the pore diameter values.</span>
+<span class="sd">        %(dict_blurb)s pore diameter</span>
 <span class="sd">    throat_diameter : str</span>
-<span class="sd">        Dictionary key of the throat diameter values.</span>
+<span class="sd">        %(dict_blurb)s throat diameter</span>
 <span class="sd">    pore_diffusivity : str</span>
-<span class="sd">        Dictionary key of the pore diffusivity values.</span>
+<span class="sd">        %(dict_blurb)s pore diffusivity</span>
 <span class="sd">    throat_diffusivity : str</span>
-<span class="sd">        Dictionary key of the throat diffusivity values.</span>
+<span class="sd">        %(dict_blurb)s pore diffusivity</span>
 <span class="sd">    pore_temperature : str</span>
-<span class="sd">        Dictionary key of the pore temperature values.</span>
-<span class="sd">    throat_temperature : str</span>
-<span class="sd">        Dictionary key of the throat temperature values.</span>
+<span class="sd">        %(dict_blurb)s pore temperature</span>
 <span class="sd">    molecular_weigth : str</span>
-<span class="sd">        Dictionary key of the pore molecular weight values.</span>
-<span class="sd">    size_factors: str</span>
-<span class="sd">        Dictionary key of the conduit diffusive size factors&#39; values.</span>
+<span class="sd">        %(dict_blurb)s pore molecular weight</span>
+<span class="sd">    size_factors : str</span>
+<span class="sd">        %(dict_blurb)s size factor</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    ndarray</span>
-<span class="sd">        Array containing diffusive conductance values for conduits in the</span>
-<span class="sd">        geometry attached to the given physics object.</span>
-
-<span class="sd">    Notes</span>
-<span class="sd">    -----</span>
-<span class="sd">    This function is ONLY suitable for dilute mixtures and NOT those with</span>
-<span class="sd">    concentrated species.</span>
-
-<span class="sd">    This function requires that all the necessary phase properties already</span>
-<span class="sd">    be calculated.</span>
+<span class="sd">    %(return_arr)s diffusive conductance</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Fetch GenericPhysicss</span>
@@ -341,7 +316,8 @@
                                 <span class="n">size_factors</span><span class="o">=</span><span class="n">size_factors</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="taylor_aris_diffusion"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.physics.diffusive_conductance.taylor_aris_diffusion.html#openpnm.models.physics.diffusive_conductance.taylor_aris_diffusion">[docs]</a><span class="k">def</span> <span class="nf">taylor_aris_diffusion</span><span class="p">(</span><span class="n">target</span><span class="p">,</span>
+<div class="viewcode-block" id="taylor_aris_diffusion"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.physics.diffusive_conductance.taylor_aris_diffusion.html#openpnm.models.physics.diffusive_conductance.taylor_aris_diffusion">[docs]</a><span class="nd">@_doctxt</span>
+<span class="k">def</span> <span class="nf">taylor_aris_diffusion</span><span class="p">(</span><span class="n">target</span><span class="p">,</span>
                           <span class="n">pore_area</span><span class="o">=</span><span class="s2">&quot;pore.area&quot;</span><span class="p">,</span>
                           <span class="n">throat_area</span><span class="o">=</span><span class="s2">&quot;throat.area&quot;</span><span class="p">,</span>
                           <span class="n">pore_diffusivity</span><span class="o">=</span><span class="s2">&quot;pore.diffusivity&quot;</span><span class="p">,</span>
@@ -353,37 +329,27 @@
 <span class="sd">    Calculates the diffusive conductance of conduits in network</span>
 <span class="sd">    considering the Taylor-Aris effect (effect of flow on diffusion).</span>
 
-<span class="sd">    A conduit is defined as (1/2 pore - full throat - 1/2 pore)</span>
-
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : GenericPhysics</span>
-<span class="sd">        Physics object with which this model is associated.</span>
+<span class="sd">    %(target_blurb)s</span>
 <span class="sd">    pore_area : str</span>
-<span class="sd">        Dictionary key of the pore area values.</span>
+<span class="sd">        %(dict_blurb)s pore cross-sectional area</span>
 <span class="sd">    throat_area : str</span>
-<span class="sd">        Dictionary key of the throat area values.</span>
+<span class="sd">        %(dict_blurb)s throat cross-sectional area</span>
 <span class="sd">    pore_diffusivity : str</span>
-<span class="sd">        Dictionary key of the pore diffusivity values.</span>
+<span class="sd">        %(dict_blurb)s pore diffusivity</span>
 <span class="sd">    throat_diffusivity : str</span>
-<span class="sd">        Dictionary key of the throat diffusivity values.</span>
+<span class="sd">        %(dict_blurb)s pore diffusivity</span>
 <span class="sd">    pore_pressure : str</span>
-<span class="sd">        Dictionary key of the pore pressure values.</span>
+<span class="sd">        %(dict_blurb)s pore pressure</span>
 <span class="sd">    throat_hydraulic_conductance : str</span>
-<span class="sd">        Dictionary key of the throat hydraulic_conductance values.</span>
-<span class="sd">    size_factors: str</span>
-<span class="sd">        Dictionary key of the conduit size factors&#39; values.</span>
+<span class="sd">        %(dict_blurb)s throat hydraulic conductance</span>
+<span class="sd">    size_factors : str</span>
+<span class="sd">        %(dict_blurb)s conduit size factors</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    ndarray</span>
-<span class="sd">        Array containing diffusive conductance values for conduits in the</span>
-<span class="sd">        geometry attached to the given physics object.</span>
-
-<span class="sd">    Notes</span>
-<span class="sd">    -----</span>
-<span class="sd">    This function requires that all the necessary phase properties are</span>
-<span class="sd">    already calculated.</span>
+<span class="sd">    %(return_arr)s diffusive conductance</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Fetch GenericPhysicss</span>
@@ -418,7 +384,8 @@
     <span class="k">return</span> <span class="n">Dt</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">Pet</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="mi">192</span><span class="p">)</span> <span class="o">*</span> <span class="n">F</span><span class="p">[</span><span class="n">throats</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="multiphase_diffusion"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.physics.diffusive_conductance.multiphase_diffusion.html#openpnm.models.physics.diffusive_conductance.multiphase_diffusion">[docs]</a><span class="k">def</span> <span class="nf">multiphase_diffusion</span><span class="p">(</span><span class="n">target</span><span class="p">,</span>
+<div class="viewcode-block" id="multiphase_diffusion"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.physics.diffusive_conductance.multiphase_diffusion.html#openpnm.models.physics.diffusive_conductance.multiphase_diffusion">[docs]</a><span class="nd">@_doctxt</span>
+<span class="k">def</span> <span class="nf">multiphase_diffusion</span><span class="p">(</span><span class="n">target</span><span class="p">,</span>
                          <span class="n">pore_diffusivity</span><span class="o">=</span><span class="s2">&quot;pore.diffusivity&quot;</span><span class="p">,</span>
                          <span class="n">throat_diffusivity</span><span class="o">=</span><span class="s2">&quot;throat.diffusivity&quot;</span><span class="p">,</span>
                          <span class="n">size_factors</span><span class="o">=</span><span class="s2">&quot;throat.diffusive_size_factors&quot;</span><span class="p">,</span>
@@ -428,26 +395,23 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : GenericPhysics</span>
-<span class="sd">        Physics object with which this model is associated.</span>
+<span class="sd">    %(target_blurb)s</span>
 <span class="sd">    pore_diffusivity : str</span>
-<span class="sd">        Dictionary key of the pore diffusivity values.</span>
+<span class="sd">        %(dict_blurb)s pore diffusivity</span>
 <span class="sd">    throat_diffusivity : str</span>
-<span class="sd">        Dictionary key of the throat diffusivity values.</span>
-<span class="sd">    size_factors: str</span>
-<span class="sd">        Dictionary key of the conduit size factors&#39; values.</span>
+<span class="sd">        %(dict_blurb)s throat diffusivity</span>
+<span class="sd">    size_factors : str</span>
+<span class="sd">        %(dict_blurb)s conduit size factors</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    ndarray</span>
-<span class="sd">        Array containing diffusive conductance values for conduits in the</span>
-<span class="sd">        geometry attached to the given physics object.</span>
+<span class="sd">    %(return_arr)s diffusive conductance</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    This method assumes that phase[&quot;partition_coef&quot;] contains information on</span>
-<span class="sd">    binary phase partitioning. See ``MultiPhase`` class documentation for more</span>
-<span class="sd">    information.</span>
+<span class="sd">    This method assumes that ``phase[&quot;partition_coef&quot;]`` contains information</span>
+<span class="sd">    on binary phase partitioning. See ``MultiPhase`` class documentation for</span>
+<span class="sd">    more information.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Fetch GenericPhysicss</span>

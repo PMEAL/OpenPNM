@@ -26,6 +26,15 @@ Misc
 
    
    
+   .. rubric:: Classes
+
+   .. autosummary::
+      :nosignatures:
+      :toctree:
+
+   
+      Docorator
+   
    
 
    

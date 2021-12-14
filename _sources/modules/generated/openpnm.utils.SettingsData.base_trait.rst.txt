@@ -1,8 +1,0 @@
-:orphan:
-
-base_trait
-=====================================
-
-.. currentmodule:: openpnm.utils
-
-.. automethod:: SettingsData.base_trait

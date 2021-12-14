@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.models.phases.density.Docorator.params
+==============================================
+
+.. currentmodule:: openpnm.models.phases.density
+
+attribute
+
+.. autoattribute:: openpnm.models.phases.density.Docorator.params
+

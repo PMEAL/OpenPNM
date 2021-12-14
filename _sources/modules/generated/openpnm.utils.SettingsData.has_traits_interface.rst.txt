@@ -1,8 +1,0 @@
-:orphan:
-
-has_traits_interface
-===============================================
-
-.. currentmodule:: openpnm.utils
-
-.. automethod:: SettingsData.has_traits_interface

@@ -1,0 +1,8 @@
+:orphan:
+
+__call__
+========================================================
+
+.. currentmodule:: openpnm.models.geometry.throat_volume
+
+.. automethod:: Docorator.__call__

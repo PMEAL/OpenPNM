@@ -1,8 +1,0 @@
-:orphan:
-
-get_conduit_data
-=========================================
-
-.. currentmodule:: openpnm.utils.petsc
-
-.. automethod:: Base.get_conduit_data

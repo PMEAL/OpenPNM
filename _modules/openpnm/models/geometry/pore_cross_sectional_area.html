@@ -185,26 +185,29 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">pi</span> <span class="k">as</span> <span class="n">_pi</span>
+<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">Docorator</span>
 
 
-<div class="viewcode-block" id="sphere"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.pore_cross_sectional_area.sphere.html#openpnm.models.geometry.pore_cross_sectional_area.sphere">[docs]</a><span class="k">def</span> <span class="nf">sphere</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">pore_diameter</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">):</span>
+<span class="n">docstr</span> <span class="o">=</span> <span class="n">Docorator</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="sphere"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.pore_cross_sectional_area.sphere.html#openpnm.models.geometry.pore_cross_sectional_area.sphere">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">get_sections</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="s1">&#39;models.geometry.pore_cross_section&#39;</span><span class="p">,</span>
+                     <span class="n">sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Parameters&#39;</span><span class="p">,</span> <span class="s1">&#39;Returns&#39;</span><span class="p">])</span>
+<span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+<span class="k">def</span> <span class="nf">sphere</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">pore_diameter</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Calculate cross-sectional area assuming the pore body is a sphere.</span>
+<span class="sd">    Calculate cross-sectional area assuming the pore body is a sphere</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : GenericGeometry</span>
-<span class="sd">        The Geometry object which this model is associated with. This</span>
-<span class="sd">        controls the length of the calculated array, and also provides</span>
-<span class="sd">        access to other necessary geometric properties.</span>
-<span class="sd">    pore_diameter : str</span>
-<span class="sd">        The dictionary key of the array on the Geometry object containing</span>
-<span class="sd">        the pore diameter values necessary to find the area.</span>
+<span class="sd">    %(models.target.parameters)s</span>
+<span class="sd">    %(models.geometry.pdia)s</span>
+
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    ndarray</span>
-<span class="sd">        Array containing pore area values.</span>
+<span class="sd">    areas : ndarray</span>
+<span class="sd">        A numpy ndarry containing pore cross-sectional area values</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">D</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">pore_diameter</span><span class="p">]</span>
@@ -213,22 +216,15 @@
 
 <div class="viewcode-block" id="cone"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.pore_cross_sectional_area.cone.html#openpnm.models.geometry.pore_cross_sectional_area.cone">[docs]</a><span class="k">def</span> <span class="nf">cone</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">pore_diameter</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Calculate cross-sectional area assuming the pore body is a cone.</span>
+<span class="sd">    Calculate cross-sectional area assuming the pore body is a cone</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : GenericGeometry</span>
-<span class="sd">        The Geometry object which this model is associated with. This</span>
-<span class="sd">        controls the length of the calculated array, and also provides</span>
-<span class="sd">        access to other necessary geometric properties.</span>
-<span class="sd">    pore_diameter : str</span>
-<span class="sd">        The dictionary key of the array on the Geometry object containing</span>
-<span class="sd">        the pore diameter values necessary to find the area.</span>
+<span class="sd">    %(models.geometry.pore_cross_section.parameters)s</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    ndarray</span>
-<span class="sd">        Array containing pore area values.</span>
+<span class="sd">    %(models.geometry.pore_cross_section.returns)s</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">D</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">pore_diameter</span><span class="p">]</span>
@@ -241,18 +237,11 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : GenericGeometry</span>
-<span class="sd">        The Geometry object which this model is associated with. This</span>
-<span class="sd">        controls the length of the calculated array, and also provides</span>
-<span class="sd">        access to other necessary geometric properties.</span>
-<span class="sd">    pore_diameter : str</span>
-<span class="sd">        The dictionary key of the array on the Geometry object containing</span>
-<span class="sd">        the pore diameter values necessary to find the area.</span>
+<span class="sd">    %(models.geometry.pore_cross_section.parameters)s</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    ndarray</span>
-<span class="sd">        Array containing pore area values.</span>
+<span class="sd">    %(models.geometry.pore_cross_section.returns)s</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">D</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">pore_diameter</span><span class="p">]</span>
@@ -261,22 +250,15 @@
 
 <div class="viewcode-block" id="circle"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.pore_cross_sectional_area.circle.html#openpnm.models.geometry.pore_cross_sectional_area.circle">[docs]</a><span class="k">def</span> <span class="nf">circle</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">pore_diameter</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Calculate cross-sectional area assuming the pore body is a circle.</span>
+<span class="sd">    Calculate cross-sectional area assuming the pore body is a circle</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : GenericGeometry</span>
-<span class="sd">        The Geometry object which this model is associated with. This</span>
-<span class="sd">        controls the length of the calculated array, and also provides</span>
-<span class="sd">        access to other necessary geometric properties.</span>
-<span class="sd">    pore_diameter : str</span>
-<span class="sd">        The dictionary key of the array on the Geometry object containing</span>
-<span class="sd">        the pore diameter values necessary to find the area.</span>
+<span class="sd">    %(models.geometry.pore_cross_section.parameters)s</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    ndarray</span>
-<span class="sd">        Array containing pore area values.</span>
+<span class="sd">    %(models.geometry.pore_cross_section.returns)s</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
@@ -289,22 +271,15 @@
 
 <div class="viewcode-block" id="square"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.pore_cross_sectional_area.square.html#openpnm.models.geometry.pore_cross_sectional_area.square">[docs]</a><span class="k">def</span> <span class="nf">square</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">pore_diameter</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Calculate cross-sectional area assuming the pore body is a square.</span>
+<span class="sd">    Calculate cross-sectional area assuming the pore body is a square</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : GenericGeometry</span>
-<span class="sd">        The Geometry object which this model is associated with. This</span>
-<span class="sd">        controls the length of the calculated array, and also provides</span>
-<span class="sd">        access to other necessary geometric properties.</span>
-<span class="sd">    pore_diameter : str</span>
-<span class="sd">        The dictionary key of the array on the Geometry object containing</span>
-<span class="sd">        the pore diameter values necessary to find the area.</span>
+<span class="sd">    %(models.geometry.pore_cross_section.parameters)s</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    ndarray</span>
-<span class="sd">        Array containing pore area values.</span>
+<span class="sd">    %(models.geometry.pore_cross_section.returns)s</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>

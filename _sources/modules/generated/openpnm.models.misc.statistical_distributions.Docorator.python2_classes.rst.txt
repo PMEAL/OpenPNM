@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.models.misc.statistical\_distributions.Docorator.python2\_classes
+=========================================================================
+
+.. currentmodule:: openpnm.models.misc.statistical_distributions
+
+attribute
+
+.. autoattribute:: openpnm.models.misc.statistical_distributions.Docorator.python2_classes
+

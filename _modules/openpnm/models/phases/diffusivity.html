@@ -179,11 +179,16 @@
               <div>
                 
   <h1>Source code for openpnm.models.phases.diffusivity</h1><div class="highlight"><pre>
-<span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">Docorator</span>
 
 
-<div class="viewcode-block" id="fuller"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.phases.diffusivity.fuller.html#openpnm.models.phases.diffusivity.fuller">[docs]</a><span class="k">def</span> <span class="nf">fuller</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">MA</span><span class="p">,</span> <span class="n">MB</span><span class="p">,</span> <span class="n">vA</span><span class="p">,</span> <span class="n">vB</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">,</span>
+<span class="n">docstr</span> <span class="o">=</span> <span class="n">Docorator</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="fuller"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.phases.diffusivity.fuller.html#openpnm.models.phases.diffusivity.fuller">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">get_sections</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="s1">&#39;models.phase.diffusivity&#39;</span><span class="p">,</span>
+                     <span class="n">sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Returns&#39;</span><span class="p">])</span>
+<span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+<span class="k">def</span> <span class="nf">fuller</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">MA</span><span class="p">,</span> <span class="n">MB</span><span class="p">,</span> <span class="n">vA</span><span class="p">,</span> <span class="n">vB</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">,</span>
            <span class="n">pressure</span><span class="o">=</span><span class="s1">&#39;pore.pressure&#39;</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Uses Fuller model to estimate diffusion coefficient for gases from first</span>
@@ -191,30 +196,23 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : GenericPhase</span>
-<span class="sd">        The object for which these values are being calculated.  This</span>
-<span class="sd">        controls the length of the calculated array, and also provides</span>
-<span class="sd">        access to other necessary thermofluid properties.</span>
-<span class="sd">    MA : float, array_like</span>
+<span class="sd">    %(models.target.parameters)s</span>
+<span class="sd">    MA : float</span>
 <span class="sd">        Molecular weight of component A [kg/mol]</span>
-<span class="sd">    MB : float, array_like</span>
+<span class="sd">    MB : float</span>
 <span class="sd">        Molecular weight of component B [kg/mol]</span>
-<span class="sd">    vA:  float, array_like</span>
+<span class="sd">    vA:  float</span>
 <span class="sd">        Sum of atomic diffusion volumes for component A</span>
 <span class="sd">    vB:  float, array_like</span>
 <span class="sd">        Sum of atomic diffusion volumes for component B</span>
-<span class="sd">    pressure : str</span>
-<span class="sd">        The dictionary key containing the pressure values in Pascals (Pa)</span>
-<span class="sd">    temperature : str</span>
-<span class="sd">        The dictionary key containing the temperature values in Kelvin (K)</span>
+<span class="sd">    %(models.phase.T)s</span>
+<span class="sd">    %(models.phase.P)s</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    value : ndarray</span>
-<span class="sd">        Array containing gas diffusion coefficient values [m2/s].</span>
-
+<span class="sd">    diffusivities : ndarray</span>
+<span class="sd">        A numpy ndarray containing diffusion coefficient values [m2/s].</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-
     <span class="n">T</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">temperature</span><span class="p">]</span>
     <span class="n">P</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">pressure</span><span class="p">]</span>
     <span class="n">MAB</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="n">MA</span><span class="o">+</span><span class="mf">1.0</span><span class="o">/</span><span class="n">MB</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
@@ -224,32 +222,29 @@
     <span class="k">return</span> <span class="n">value</span></div>
 
 
-<div class="viewcode-block" id="fuller_scaling"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.phases.diffusivity.fuller_scaling.html#openpnm.models.phases.diffusivity.fuller_scaling">[docs]</a><span class="k">def</span> <span class="nf">fuller_scaling</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">DABo</span><span class="p">,</span> <span class="n">To</span><span class="p">,</span> <span class="n">Po</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">,</span>
+<div class="viewcode-block" id="fuller_scaling"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.phases.diffusivity.fuller_scaling.html#openpnm.models.phases.diffusivity.fuller_scaling">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+<span class="k">def</span> <span class="nf">fuller_scaling</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">DABo</span><span class="p">,</span> <span class="n">To</span><span class="o">=</span><span class="mf">298.0</span><span class="p">,</span> <span class="n">Po</span><span class="o">=</span><span class="mi">101325</span><span class="p">,</span>
+                   <span class="n">temperature</span><span class="o">=</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">,</span>
                    <span class="n">pressure</span><span class="o">=</span><span class="s1">&#39;pore.pressure&#39;</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Uses Fuller model to adjust a diffusion coefficient for gases from</span>
+<span class="sd">    Uses Fuller correlation to adjust a diffusion coefficient for gases from</span>
 <span class="sd">    reference conditions to conditions of interest</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : GenericPhase</span>
-<span class="sd">        The object for which these values are being calculated.  This</span>
-<span class="sd">        controls the length of the calculated array, and also provides</span>
-<span class="sd">        access to other necessary thermofluid properties.</span>
-<span class="sd">    DABo : float, array_like</span>
+<span class="sd">    %(models.target.parameters)s</span>
+<span class="sd">    DABo : float</span>
 <span class="sd">        Diffusion coefficient at reference conditions</span>
-<span class="sd">    Po, To : float, array_like</span>
-<span class="sd">        Pressure &amp; temperature at reference conditions, respectively</span>
-<span class="sd">    pressure : str</span>
-<span class="sd">        The dictionary key containing the pressure values in Pascals (Pa)</span>
-<span class="sd">    temperature : str</span>
-<span class="sd">        The dictionary key containing the temperature values in Kelvin (K)</span>
+<span class="sd">    Po : float</span>
+<span class="sd">        Pressure at reference conditions</span>
+<span class="sd">    To : float</span>
+<span class="sd">        Temperature at reference conditions</span>
+<span class="sd">    %(models.phase.T)s</span>
+<span class="sd">    %(models.phase.P)s</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    value : ndarray</span>
-<span class="sd">        Array containing scaled gas diffusion coefficient values [m2/s].</span>
-
+<span class="sd">    %(models.phase.diffusivity.returns)s</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">Ti</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">temperature</span><span class="p">]</span>
     <span class="n">Pi</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">pressure</span><span class="p">]</span>
@@ -257,36 +252,30 @@
     <span class="k">return</span> <span class="n">value</span></div>
 
 
-<div class="viewcode-block" id="tyn_calus"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.phases.diffusivity.tyn_calus.html#openpnm.models.phases.diffusivity.tyn_calus">[docs]</a><span class="k">def</span> <span class="nf">tyn_calus</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">VA</span><span class="p">,</span> <span class="n">VB</span><span class="p">,</span> <span class="n">sigma_A</span><span class="p">,</span> <span class="n">sigma_B</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">,</span>
+<div class="viewcode-block" id="tyn_calus"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.phases.diffusivity.tyn_calus.html#openpnm.models.phases.diffusivity.tyn_calus">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+<span class="k">def</span> <span class="nf">tyn_calus</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">VA</span><span class="p">,</span> <span class="n">VB</span><span class="p">,</span> <span class="n">sigma_A</span><span class="p">,</span> <span class="n">sigma_B</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">,</span>
               <span class="n">viscosity</span><span class="o">=</span><span class="s1">&#39;pore.viscosity&#39;</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Uses Tyn_Calus model to estimate diffusion coefficient in a dilute liquid</span>
+<span class="sd">    Uses Tyn-Calus model to estimate diffusion coefficient in a dilute liquid</span>
 <span class="sd">    solution of A in B from first principles at conditions of interest</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : GenericPhase</span>
-<span class="sd">        The object for which these values are being calculated.  This</span>
-<span class="sd">        controls the length of the calculated array, and also provides</span>
-<span class="sd">        access to other necessary thermofluid properties.</span>
-<span class="sd">    VA : float, array_like</span>
+<span class="sd">    %(models.target.parameters)s</span>
+<span class="sd">    VA : float</span>
 <span class="sd">        Molar volume of component A at boiling temperature (m3/mol)</span>
-<span class="sd">    VB : float, array_like</span>
+<span class="sd">    VB : float</span>
 <span class="sd">        Molar volume of component B at boiling temperature (m3/mol)</span>
-<span class="sd">    sigmaA:  float, array_like</span>
+<span class="sd">    sigmaA : float</span>
 <span class="sd">        Surface tension of component A at boiling temperature (N/m)</span>
-<span class="sd">    sigmaB:  float, array_like</span>
+<span class="sd">    sigmaB : float</span>
 <span class="sd">        Surface tension of component B at boiling temperature (N/m)</span>
-<span class="sd">    pressure : str</span>
-<span class="sd">        The dictionary key containing the pressure values in Pascals (Pa)</span>
-<span class="sd">    temperature : str</span>
-<span class="sd">        The dictionary key containing the temperature values in Kelvin (K)</span>
+<span class="sd">    %(models.phase.T)s</span>
+<span class="sd">    %(models.phase.P)s</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    value : ndarray</span>
-<span class="sd">        Array containing liquid diffusion coefficient values [m2/s].</span>
-
+<span class="sd">    %(models.phase.diffusivity.returns)s</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">T</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">temperature</span><span class="p">]</span>
     <span class="n">mu</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">viscosity</span><span class="p">]</span>
@@ -296,32 +285,29 @@
     <span class="k">return</span> <span class="n">value</span></div>
 
 
-<div class="viewcode-block" id="tyn_calus_scaling"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.phases.diffusivity.tyn_calus_scaling.html#openpnm.models.phases.diffusivity.tyn_calus_scaling">[docs]</a><span class="k">def</span> <span class="nf">tyn_calus_scaling</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">DABo</span><span class="p">,</span> <span class="n">To</span><span class="p">,</span> <span class="n">mu_o</span><span class="p">,</span> <span class="n">viscosity</span><span class="o">=</span><span class="s1">&#39;pore.viscosity&#39;</span><span class="p">,</span>
+<div class="viewcode-block" id="tyn_calus_scaling"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.phases.diffusivity.tyn_calus_scaling.html#openpnm.models.phases.diffusivity.tyn_calus_scaling">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+<span class="k">def</span> <span class="nf">tyn_calus_scaling</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">DABo</span><span class="p">,</span> <span class="n">To</span><span class="p">,</span> <span class="n">mu_o</span><span class="p">,</span>
+                      <span class="n">viscosity</span><span class="o">=</span><span class="s1">&#39;pore.viscosity&#39;</span><span class="p">,</span>
                       <span class="n">temperature</span><span class="o">=</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Uses Tyn_Calus model to adjust a diffusion coeffciient for liquids from</span>
+<span class="sd">    Uses Tyn-Calus model to adjust a diffusion coeffcient for liquids from</span>
 <span class="sd">    reference conditions to conditions of interest</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : GenericPhase</span>
-<span class="sd">        The object for which these values are being calculated.  This</span>
-<span class="sd">        controls the length of the calculated array, and also provides</span>
-<span class="sd">        access to other necessary thermofluid properties.</span>
-<span class="sd">    DABo : float, array_like</span>
+<span class="sd">    %(models.target.parameters)s</span>
+<span class="sd">    DABo : float</span>
 <span class="sd">        Diffusion coefficient at reference conditions</span>
-<span class="sd">    mu_o, To : float, array_like</span>
-<span class="sd">        Viscosity &amp; temperature at reference conditions, respectively</span>
-<span class="sd">    pressure : str</span>
-<span class="sd">        The dictionary key containing the pressure values in Pascals (Pa)</span>
-<span class="sd">    temperature : str</span>
-<span class="sd">        The dictionary key containing the temperature values in Kelvin (K)</span>
+<span class="sd">    mu_o : float</span>
+<span class="sd">        Viscosity at reference conditions</span>
+<span class="sd">    To : float</span>
+<span class="sd">        Temperature at reference conditions</span>
+<span class="sd">    %(models.phase.T)s</span>
+<span class="sd">    %(models.phase.P)s</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    value : ndarray</span>
-<span class="sd">        Array containing scaled liquid diffusion coefficient values [m2/s].</span>
-
+<span class="sd">    %(models.phase.diffusivity.returns)s</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">Ti</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">temperature</span><span class="p">]</span>
     <span class="n">mu_i</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">viscosity</span><span class="p">]</span>
@@ -329,7 +315,8 @@
     <span class="k">return</span> <span class="n">value</span></div>
 
 
-<div class="viewcode-block" id="chapman_enskog"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.phases.diffusivity.chapman_enskog.html#openpnm.models.phases.diffusivity.chapman_enskog">[docs]</a><span class="k">def</span> <span class="nf">chapman_enskog</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">MA</span><span class="p">,</span> <span class="n">MB</span><span class="p">,</span> <span class="n">sigma_AB</span><span class="p">,</span> <span class="n">omega_AB</span><span class="p">,</span>
+<div class="viewcode-block" id="chapman_enskog"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.phases.diffusivity.chapman_enskog.html#openpnm.models.phases.diffusivity.chapman_enskog">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+<span class="k">def</span> <span class="nf">chapman_enskog</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">MA</span><span class="p">,</span> <span class="n">MB</span><span class="p">,</span> <span class="n">sigma_AB</span><span class="p">,</span> <span class="n">omega_AB</span><span class="p">,</span>
                    <span class="n">temperature</span><span class="o">=</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">,</span>
                    <span class="n">pressure</span><span class="o">=</span><span class="s1">&#39;pore.pressure&#39;</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -337,21 +324,19 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : GenericPhase</span>
-<span class="sd">        The object for which these values are being calculated.  This</span>
-<span class="sd">        controls the length of the calculated array, and also provides</span>
-<span class="sd">        access to other necessary thermofluid properties.</span>
+<span class="sd">    %(models.target.parameters)s</span>
 <span class="sd">    MA, MB : scalar</span>
 <span class="sd">        The molecular mass of species A and B in units of kg/mol</span>
 <span class="sd">    sigma_AB : scalar</span>
 <span class="sd">        The collision diameter in units of Angstroms</span>
 <span class="sd">    omega_AB : scalar</span>
 <span class="sd">        The collision integral</span>
-<span class="sd">    temperature : str</span>
-<span class="sd">        Dictionary key to the phase temperature in K (default = &#39;pore.temperature&#39;)</span>
-<span class="sd">    pressure : str</span>
-<span class="sd">        Dictionary key to the phase pressure in Pa (default = &#39;pore.pressure&#39;)</span>
+<span class="sd">    %(models.phase.T)s</span>
+<span class="sd">    %(models.phase.P)s</span>
 
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    %(models.phase.diffusivity.returns)s</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">T</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">temperature</span><span class="p">]</span>
     <span class="n">P</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">pressure</span><span class="p">]</span>

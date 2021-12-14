@@ -179,53 +179,50 @@
               <div>
                 
   <h1>Source code for openpnm.models.geometry.throat_perimeter</h1><div class="highlight"><pre>
-<span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Throat Perimeter</span>
-<span class="sd">................</span>
-
-<span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">_np</span>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">_np</span>
+<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">Docorator</span>
 
 
-<div class="viewcode-block" id="cylinder"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.throat_perimeter.cylinder.html#openpnm.models.geometry.throat_perimeter.cylinder">[docs]</a><span class="k">def</span> <span class="nf">cylinder</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">throat_diameter</span><span class="o">=</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">):</span>
+<span class="n">docstr</span> <span class="o">=</span> <span class="n">Docorator</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="cylinder"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.throat_perimeter.cylinder.html#openpnm.models.geometry.throat_perimeter.cylinder">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">get_sections</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="s1">&#39;models.geometry.throat_perimeter&#39;</span><span class="p">,</span>
+                     <span class="n">sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Parameters&#39;</span><span class="p">,</span> <span class="s1">&#39;Returns&#39;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">cylinder</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">throat_diameter</span><span class="o">=</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calcuate the throat perimeter assuming a circular cross-section</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : GenericGeometry</span>
-<span class="sd">        The object which this model is associated with. This controls the</span>
-<span class="sd">        length of the calculated array, and also provides access to other</span>
-<span class="sd">        necessary properties.</span>
+<span class="sd">    target : OpenPNM Base object</span>
+<span class="sd">        Object with which this model is associated. This controls</span>
+<span class="sd">        the length of the calculated array, and also provides access to</span>
+<span class="sd">        other necessary properties.</span>
 <span class="sd">    throat_diameter : str</span>
-<span class="sd">        The dictionary key of the array containing the throat diameter values</span>
+<span class="sd">        Name of the dictionary key on ``target`` where the array containing</span>
+<span class="sd">        throat diameter values is stored</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    value : ndarray</span>
-<span class="sd">        Array containing throat perimeter values.</span>
+<span class="sd">    perimeters : ndarray</span>
+<span class="sd">        A numpy ndarray containing throat perimeter values</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">target</span><span class="p">[</span><span class="n">throat_diameter</span><span class="p">]</span><span class="o">*</span><span class="n">_np</span><span class="o">.</span><span class="n">pi</span></div>
 
 
-<div class="viewcode-block" id="cuboid"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.throat_perimeter.cuboid.html#openpnm.models.geometry.throat_perimeter.cuboid">[docs]</a><span class="k">def</span> <span class="nf">cuboid</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">throat_diameter</span><span class="o">=</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="cuboid"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.throat_perimeter.cuboid.html#openpnm.models.geometry.throat_perimeter.cuboid">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+<span class="k">def</span> <span class="nf">cuboid</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">throat_diameter</span><span class="o">=</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calcuate the throat perimeter assuming a square cross-section</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : GenericGeometry</span>
-<span class="sd">        The object which this model is associated with. This controls the</span>
-<span class="sd">        length of the calculated array, and also provides access to other</span>
-<span class="sd">        necessary properties.</span>
-<span class="sd">    throat_diameter : str</span>
-<span class="sd">        The dictionary key of the array containing the throat diameter values.</span>
+<span class="sd">    %(models.geometry.throat_perimeter.parameters)s</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    value : ndarray</span>
-<span class="sd">        Array containing throat perimeter values.</span>
+<span class="sd">    %(models.geometry.throat_perimeter.returns)s</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">target</span><span class="p">[</span><span class="n">throat_diameter</span><span class="p">]</span><span class="o">*</span><span class="mi">4</span></div>
@@ -237,17 +234,11 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : GenericGeometry</span>
-<span class="sd">        The object which this model is associated with. This controls the</span>
-<span class="sd">        length of the calculated array, and also provides access to other</span>
-<span class="sd">        necessary properties.</span>
-<span class="sd">    throat_diameter : str</span>
-<span class="sd">        The dictionary key of the array containing the throat diameter values</span>
+<span class="sd">    %(models.geometry.throat_perimeter.parameters)s</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    value : ndarray</span>
-<span class="sd">        Array containing throat perimeter values.</span>
+<span class="sd">    %(models.geometry.throat_perimeter.returns)s</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="mf">1.0</span></div>

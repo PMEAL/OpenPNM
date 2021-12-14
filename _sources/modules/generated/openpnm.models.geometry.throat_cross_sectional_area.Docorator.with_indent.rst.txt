@@ -1,0 +1,8 @@
+:orphan:
+
+with_indent
+=========================================================================
+
+.. currentmodule:: openpnm.models.geometry.throat_cross_sectional_area
+
+.. automethod:: Docorator.with_indent

@@ -1,8 +1,0 @@
-:orphan:
-
-sync_trait
-=====================================
-
-.. currentmodule:: openpnm.utils
-
-.. automethod:: SettingsData.sync_trait

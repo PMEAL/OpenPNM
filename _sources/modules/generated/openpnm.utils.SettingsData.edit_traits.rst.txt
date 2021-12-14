@@ -1,8 +1,0 @@
-:orphan:
-
-edit_traits
-======================================
-
-.. currentmodule:: openpnm.utils
-
-.. automethod:: SettingsData.edit_traits

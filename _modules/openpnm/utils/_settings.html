@@ -183,11 +183,16 @@
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
 <span class="kn">from</span> <span class="nn">traits.api</span> <span class="kn">import</span> <span class="n">HasTraits</span><span class="p">,</span> <span class="n">Trait</span>
 <span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">PrintableDict</span>
-<span class="kn">from</span> <span class="nn">auto_all</span> <span class="kn">import</span> <span class="n">start_all</span><span class="p">,</span> <span class="n">end_all</span>
+
+
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;TypedMixin&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;TypedSet&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;TypedList&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;SettingsAttr&#39;</span><span class="p">,</span>
+    <span class="p">]</span>
 
-
-<span class="n">start_all</span><span class="p">()</span>
 
 <div class="viewcode-block" id="TypedMixin"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.TypedMixin.html#openpnm.utils.TypedMixin">[docs]</a><span class="k">class</span> <span class="nc">TypedMixin</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Brief explanation of &#39;TypedMixin&#39;&quot;&quot;&quot;</span>
@@ -327,165 +332,13 @@
         <span class="n">d</span><span class="o">.</span><span class="n">_key</span> <span class="o">=</span> <span class="s1">&#39;Settings&#39;</span>
         <span class="n">d</span><span class="o">.</span><span class="n">_value</span> <span class="o">=</span> <span class="s1">&#39;Values&#39;</span>
         <span class="n">d</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__dir__</span><span class="p">():</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">item</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">):</span>
+                <span class="n">d</span><span class="p">[</span><span class="n">item</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">d</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span></div>
-
-
-<div class="viewcode-block" id="Settings"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.Settings.html#openpnm.utils.Settings">[docs]</a><span class="k">class</span> <span class="nc">Settings</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Brief explanation of &#39;Settings&#39;&quot;&quot;&quot;</span>
-
-    <span class="n">__instance__</span> <span class="o">=</span> <span class="kc">None</span>
-
-    <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">Settings</span><span class="o">.</span><span class="n">__instance__</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">Settings</span><span class="o">.</span><span class="n">__instance__</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">Settings</span><span class="o">.</span><span class="n">__instance__</span>
-
-<div class="viewcode-block" id="Settings.get_settings"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.Settings.get_settings.html#openpnm.utils.Settings.get_settings">[docs]</a>    <span class="k">def</span> <span class="nf">get_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">):</span>
-        <span class="n">c</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">()</span>
-        <span class="bp">self</span><span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">]</span> <span class="o">=</span> <span class="bp">cls</span>
-        <span class="k">return</span> <span class="bp">cls</span></div>
-
-<div class="viewcode-block" id="Settings.set_settings"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.Settings.set_settings.html#openpnm.utils.Settings.set_settings">[docs]</a>    <span class="k">def</span> <span class="nf">set_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">s</span> <span class="o">=</span> <span class="n">SettingsAttr</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">s</span><span class="o">.</span><span class="n">_update</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">docs</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">s</span></div></div>
-
-
-<div class="viewcode-block" id="SettingsData"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.SettingsData.html#openpnm.utils.SettingsData">[docs]</a><span class="k">class</span> <span class="nc">SettingsData</span><span class="p">(</span><span class="n">HasTraits</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Brief explanation of &#39;SettingsData&#39;&quot;&quot;&quot;</span>
-
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">d</span> <span class="o">=</span> <span class="n">PrintableDict</span><span class="p">()</span>
-        <span class="n">d</span><span class="o">.</span><span class="n">_key</span> <span class="o">=</span> <span class="s1">&#39;Settings&#39;</span>
-        <span class="n">d</span><span class="o">.</span><span class="n">_value</span> <span class="o">=</span> <span class="s1">&#39;Values&#39;</span>
-        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">visible_traits</span><span class="p">():</span>
-            <span class="n">d</span><span class="p">[</span><span class="n">item</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">d</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span>
-
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span></div>
-
-
-<div class="viewcode-block" id="SettingsAttr2"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.SettingsAttr2.html#openpnm.utils.SettingsAttr2">[docs]</a><span class="k">class</span> <span class="nc">SettingsAttr2</span><span class="p">:</span>
-
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Brief explanation of &#39;SettingsAttr2&#39;</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        settings : key-value collection</span>
-<span class="sd">            Ideally should be an `SettingsData`` object which is a subclass</span>
-<span class="sd">            of a the ``HasTraits`` class from the ``traits`` package. The</span>
-<span class="sd">            docstring for this class is adopted from the received argument only</span>
-<span class="sd">            **if** a ``HasTraits`` class is received. This is meant to work</span>
-<span class="sd">            with ``docrep`` so the inherited docstring on the ``SettingsData``</span>
-<span class="sd">            object will be shown by this wrapper. Optionally ``settings`` can</span>
-<span class="sd">            be a ``dict`` or any ``dataclasss``-type object with data stored</span>
-<span class="sd">            as attributes.</span>
-
-<span class="sd">        Notes</span>
-<span class="sd">        -----</span>
-<span class="sd">        This class is a wrapper around the ``HasTraits`` class from the</span>
-<span class="sd">        ``traits`` package. The main point is the provide a clean namespace</span>
-<span class="sd">        on the object so that only the specified attributes show up. It also</span>
-<span class="sd">        allows for combining multiple objects into one using the ``_update``</span>
-<span class="sd">        method.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Add blank HasTraits object to self._settings</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="n">SettingsData</span><span class="p">):</span>
-            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="s1">&#39;_settings&#39;</span><span class="p">,</span> <span class="n">settings</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="s1">&#39;_settings&#39;</span><span class="p">,</span> <span class="n">SettingsData</span><span class="p">())</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_update</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_settings</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="vm">__doc__</span>
-
-    <span class="k">def</span> <span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_settings</span><span class="o">.</span><span class="n">visible_traits</span><span class="p">():</span>
-            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_settings</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">val</span> <span class="o">=</span> <span class="n">Trait</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">val</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_settings</span><span class="o">.</span><span class="n">add_trait</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_settings</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="fm">__delattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_settings</span><span class="o">.</span><span class="fm">__delattr__</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_settings</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_settings</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="fm">__dir__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">temp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_settings</span><span class="o">.</span><span class="n">visible_traits</span><span class="p">()</span>
-        <span class="n">temp</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">temp</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">i</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)]</span>
-        <span class="k">return</span> <span class="n">temp</span>
-
-    <span class="k">def</span> <span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_settings</span><span class="o">.</span><span class="n">visible_traits</span><span class="p">()</span>
-
-    <span class="k">def</span> <span class="nf">_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">docs</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Merges new key-value collections onto the existing object.</span>
-
-<span class="sd">        This method allows several collections to be combined. It is hidden</span>
-<span class="sd">        to avoid polluting the name space, which is reserved for actual data</span>
-<span class="sd">        attributes.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        settings : key-value collection</span>
-<span class="sd">            Can be either a `SettingsData`` object which is a subclass</span>
-<span class="sd">            of a the ``HasTraits`` class from the ``traits`` package, or a</span>
-<span class="sd">            ``dict`` or ``dataclasss`` object.</span>
-
-<span class="sd">        Notes</span>
-<span class="sd">        -----</span>
-<span class="sd">        In the case of ``dict`` or ``dataclass``-like objects, the data-types</span>
-<span class="sd">        for the attributes are inferred from the values recieved. In all cases,</span>
-<span class="sd">        the docs of the ``settings`` are ignored; this can only be set during</span>
-<span class="sd">        init.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="s1">&#39;items&#39;</span><span class="p">):</span>  <span class="c1"># Dictionary</span>
-            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">settings</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="s1">&#39;visible_traits&#39;</span><span class="p">):</span>
-            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">settings</span><span class="o">.</span><span class="n">visible_traits</span><span class="p">():</span>
-                <span class="n">v</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_settings</span><span class="o">.</span><span class="n">add_trait</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">Trait</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">v</span><span class="o">.</span><span class="vm">__class__</span><span class="p">))</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">attrs</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">i</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)]</span>
-            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">attrs</span><span class="p">:</span>
-                <span class="n">v</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
-                <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">docs</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_settings</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="vm">__doc__</span>
-
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_settings</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span>
-
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">__doc__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_settings</span><span class="o">.</span><span class="vm">__doc__</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">_attrs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__dir__</span><span class="p">()</span></div>
-
-
-<span class="n">end_all</span><span class="p">()</span>
 </pre></div>
 
               </div>

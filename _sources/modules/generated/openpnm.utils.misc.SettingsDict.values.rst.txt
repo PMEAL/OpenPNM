@@ -1,8 +1,0 @@
-:orphan:
-
-values
-======================================
-
-.. currentmodule:: openpnm.utils.misc
-
-.. automethod:: SettingsDict.values

@@ -179,30 +179,38 @@
               <div>
                 
   <h1>Source code for openpnm.models.phases.density</h1><div class="highlight"><pre>
-<span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">Docorator</span>
 
 
-<div class="viewcode-block" id="standard"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.phases.density.standard.html#openpnm.models.phases.density.standard">[docs]</a><span class="k">def</span> <span class="nf">standard</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">mol_weight</span><span class="o">=</span><span class="s1">&#39;pore.molecular_weight&#39;</span><span class="p">,</span>
+<span class="n">docstr</span> <span class="o">=</span> <span class="n">Docorator</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="standard"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.phases.density.standard.html#openpnm.models.phases.density.standard">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">get_sections</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="s1">&#39;models.phase.density&#39;</span><span class="p">,</span>
+                     <span class="n">sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Returns&#39;</span><span class="p">])</span>
+<span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+<span class="k">def</span> <span class="nf">standard</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">mol_weight</span><span class="o">=</span><span class="s1">&#39;pore.molecular_weight&#39;</span><span class="p">,</span>
              <span class="n">molar_density</span><span class="o">=</span><span class="s1">&#39;pore.molar_density&#39;</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates the mass density from the molecular weight and molar density</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : GenericPhase</span>
-<span class="sd">        The object for which these values are being calculated.  This</span>
-<span class="sd">        controls the length of the calculated array, and also provides</span>
-<span class="sd">        access to other necessary thermofluid properties.</span>
+<span class="sd">    %(models.target.parameters)s</span>
 <span class="sd">    mol_weight : str</span>
-<span class="sd">        The dictionary key containing the molecular weight values (kg/mol)</span>
+<span class="sd">        Name of the dictionary key on ``target`` where the array containing</span>
+<span class="sd">        molecular weight values is stored</span>
 <span class="sd">    molar_density : str</span>
-<span class="sd">        The dictionary key containing the molar density values (mol/m3)</span>
+<span class="sd">        Name of the dictionary key on ``target`` where the array containing</span>
+<span class="sd">        molar density values is stored</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    value : ndarray</span>
-<span class="sd">        Array containing density values (kg/m3)</span>
+<span class="sd">    densities : ndarray</span>
+<span class="sd">        A numpy ndarray containing density values</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    %(models.phase.SI_note)s</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">MW</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">mol_weight</span><span class="p">]</span>
@@ -211,28 +219,24 @@
     <span class="k">return</span> <span class="n">value</span></div>
 
 
-<div class="viewcode-block" id="ideal_gas"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.phases.density.ideal_gas.html#openpnm.models.phases.density.ideal_gas">[docs]</a><span class="k">def</span> <span class="nf">ideal_gas</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">pressure</span><span class="o">=</span><span class="s1">&#39;pore.pressure&#39;</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">,</span>
+<div class="viewcode-block" id="ideal_gas"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.phases.density.ideal_gas.html#openpnm.models.phases.density.ideal_gas">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+<span class="k">def</span> <span class="nf">ideal_gas</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">pressure</span><span class="o">=</span><span class="s1">&#39;pore.pressure&#39;</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">,</span>
               <span class="n">mol_weight</span><span class="o">=</span><span class="s1">&#39;pore.molecular_weight&#39;</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Uses ideal gas law to calculate the mass density of an ideal gas</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : GenericPhase</span>
-<span class="sd">        The object for which these values are being calculated.  This</span>
-<span class="sd">        controls the length of the calculated array, and also provides</span>
-<span class="sd">        access to other necessary thermofluid properties.</span>
-<span class="sd">    pressure : str</span>
-<span class="sd">        The dictionary key containing the pressure values (Pa)</span>
-<span class="sd">    temperature : str</span>
-<span class="sd">        The dictionary key containing the temperature values (K)</span>
+<span class="sd">    %(models.target.parameters)s</span>
+<span class="sd">    %(models.phase.T)s</span>
+<span class="sd">    %(models.phase.P)s</span>
 <span class="sd">    mol_weight : str</span>
-<span class="sd">        The dictionary key containing the molecular weight values (kg/mol)</span>
+<span class="sd">        Name of the dictionary key on ``target`` where the array containing</span>
+<span class="sd">        molecular weight values is stored</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    value : ndarray</span>
-<span class="sd">        Array containing density values in [kg/m3]</span>
+<span class="sd">    %(models.phase.density.returns)s</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -253,22 +257,15 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : GenericPhase</span>
-<span class="sd">        The object for which these values are being calculated.  This</span>
-<span class="sd">        controls the length of the calculated array, and also provides</span>
-<span class="sd">        access to other necessary thermofluid properties.</span>
-<span class="sd">    temperature : str</span>
-<span class="sd">        The dictionary key containing the temperature values.  Temperature must</span>
-<span class="sd">        be in Kelvin for this emperical equation to work</span>
+<span class="sd">    %(models.target.parameters)s</span>
+<span class="sd">    %(models.phase.T)s</span>
 <span class="sd">    salinity : str</span>
-<span class="sd">        The dictionary key containing the salinity values.  Salinity must be</span>
-<span class="sd">        expressed in g of salt per kg of solution (ppt).</span>
-
+<span class="sd">        Name of the dictionary key on ``target`` where the array containing</span>
+<span class="sd">        salinity values is stored.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    value : ndarray</span>
-<span class="sd">        The density of water/seawater in [kg/m3]</span>
+<span class="sd">    %(models.phase.density.returns)s</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>

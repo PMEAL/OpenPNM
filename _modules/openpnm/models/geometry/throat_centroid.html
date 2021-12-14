@@ -179,29 +179,26 @@
               <div>
                 
   <h1>Source code for openpnm.models.geometry.throat_centroid</h1><div class="highlight"><pre>
-<span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Throat Centroid</span>
-<span class="sd">...............</span>
-
-<span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">_np</span>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">_np</span>
+<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">Docorator</span>
 
 
-<div class="viewcode-block" id="pore_coords"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.throat_centroid.pore_coords.html#openpnm.models.geometry.throat_centroid.pore_coords">[docs]</a><span class="k">def</span> <span class="nf">pore_coords</span><span class="p">(</span><span class="n">target</span><span class="p">):</span>
+<span class="n">docstr</span> <span class="o">=</span> <span class="n">Docorator</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="pore_coords"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.throat_centroid.pore_coords.html#openpnm.models.geometry.throat_centroid.pore_coords">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+<span class="k">def</span> <span class="nf">pore_coords</span><span class="p">(</span><span class="n">target</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Calculate throat centroid values by averaging adjacent pore coordinates.</span>
+<span class="sd">    Calculate throat centroid values by averaging adjacent pore coordinates</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : GenericGeometry</span>
-<span class="sd">        The object which this model is associated with. This controls the</span>
-<span class="sd">        length of the calculated array, and also provides access to other</span>
-<span class="sd">        necessary properties.</span>
+<span class="sd">    %(models.target.parameters)s</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    value : ndarray</span>
-<span class="sd">        Array containing throat centroid values.</span>
+<span class="sd">    values : ndarray</span>
+<span class="sd">        A numpy ndarray containing throat centroid values</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">network</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">network</span>

@@ -1,0 +1,8 @@
+:orphan:
+
+save_docstring
+======================================================================
+
+.. currentmodule:: openpnm.models.misc.statistical_distributions
+
+.. automethod:: Docorator.save_docstring

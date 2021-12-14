@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.models.geometry.pore\_surface\_area.Docorator.param\_like\_sections
+===========================================================================
+
+.. currentmodule:: openpnm.models.geometry.pore_surface_area
+
+attribute
+
+.. autoattribute:: openpnm.models.geometry.pore_surface_area.Docorator.param_like_sections
+

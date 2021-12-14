@@ -394,7 +394,7 @@
         <span class="k">if</span> <span class="n">missing_vals</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">vals</span> <span class="o">=</span> <span class="n">vals</span><span class="p">[</span><span class="n">vals</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">vals</span><span class="p">[</span><span class="n">vals</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">missing_vals</span>
+            <span class="n">vals</span><span class="p">[</span><span class="n">vals</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">missing_vals</span>
         <span class="k">return</span> <span class="n">vals</span></div></div>
 </pre></div>
 

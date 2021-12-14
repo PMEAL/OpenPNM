@@ -179,27 +179,10 @@
               <div>
                 
   <h1>Source code for openpnm.models.geometry.hydraulic_size_factors</h1><div class="highlight"><pre>
-<span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Hydraulic Size Factors</span>
-<span class="sd">......................</span>
-
-<span class="sd">The hydraulic size factor is the geometrical part of the pre-factor in</span>
-<span class="sd">Stoke&#39;s flow:</span>
-
-<span class="sd">.. math::</span>
-
-<span class="sd">    Q = \frac{A^2}{8 \pi \mu L} \Delta P</span>
-<span class="sd">      = \frac{S_{hydraulic}}{\mu} \Delta P</span>
-
-<span class="sd">Thus :math:`S_{hydraulic}` represents the combined effect of the area</span>
-<span class="sd">and length of the *conduit*, which consists of a throat and 1/2 of the</span>
-<span class="sd">pores on each end.</span>
-
-<span class="sd">&quot;&quot;&quot;</span>
-
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">_np</span>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">_np</span>
 <span class="kn">import</span> <span class="nn">openpnm.models.geometry.conduit_lengths</span> <span class="k">as</span> <span class="nn">_conduit_lengths</span>
-<span class="kn">from</span> <span class="nn">._misc</span> <span class="kn">import</span> <span class="n">_get_conduit_diameters</span>
+<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">Docorator</span>
+
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;spheres_and_cylinders&quot;</span><span class="p">,</span>
@@ -212,9 +195,13 @@
     <span class="s2">&quot;intersecting_pyramids&quot;</span><span class="p">,</span>
     <span class="s2">&quot;ncylinders_in_series&quot;</span>
 <span class="p">]</span>
+<span class="n">docstr</span> <span class="o">=</span> <span class="n">Docorator</span><span class="p">()</span>
 
 
-<div class="viewcode-block" id="spheres_and_cylinders"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.hydraulic_size_factors.spheres_and_cylinders.html#openpnm.models.geometry.hydraulic_size_factors.spheres_and_cylinders">[docs]</a><span class="k">def</span> <span class="nf">spheres_and_cylinders</span><span class="p">(</span>
+<div class="viewcode-block" id="spheres_and_cylinders"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.hydraulic_size_factors.spheres_and_cylinders.html#openpnm.models.geometry.hydraulic_size_factors.spheres_and_cylinders">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">get_sections</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="s1">&#39;models.geometry.hydraulic_size_factor&#39;</span><span class="p">,</span>
+                     <span class="n">sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Parameters&#39;</span><span class="p">,</span> <span class="s1">&#39;Returns&#39;</span><span class="p">,</span> <span class="s1">&#39;Notes&#39;</span><span class="p">])</span>
+<span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+<span class="k">def</span> <span class="nf">spheres_and_cylinders</span><span class="p">(</span>
     <span class="n">target</span><span class="p">,</span>
     <span class="n">pore_diameter</span><span class="o">=</span><span class="s2">&quot;pore.diameter&quot;</span><span class="p">,</span>
     <span class="n">throat_diameter</span><span class="o">=</span><span class="s2">&quot;throat.diameter&quot;</span><span class="p">,</span>
@@ -225,20 +212,15 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : GenericGeometry</span>
-<span class="sd">        Geometry object which this model is associated with. This controls</span>
-<span class="sd">        the length of the calculated array, and also provides access to</span>
-<span class="sd">        other necessary properties.</span>
-<span class="sd">    pore_diameter : str</span>
-<span class="sd">        Dictionary key of the pore diameter values.</span>
-<span class="sd">    throat_diameter : str</span>
-<span class="sd">        Dictionary key of the throat diameter values.</span>
+<span class="sd">    %(models.target.parameters)s</span>
+<span class="sd">    %(models.geometry.pdia)s</span>
+<span class="sd">    %(models.geometry.tdia)s</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    dict</span>
-<span class="sd">        Dictionary containing conduit size factors. Size factors are</span>
-<span class="sd">        accessible via the keys: &#39;pore1&#39;, &#39;throat&#39;, and &#39;pore2&#39;.</span>
+<span class="sd">    size_factors : dict</span>
+<span class="sd">        A dictionary containing the hydraulic size factors, which can be</span>
+<span class="sd">        accessed via the dict keys &#39;pore1&#39;, &#39;pore2&#39;, and &#39;throat&#39;.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
@@ -255,9 +237,12 @@
 <span class="sd">    pores on each end.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">D1</span><span class="p">,</span> <span class="n">Dt</span><span class="p">,</span> <span class="n">D2</span> <span class="o">=</span> <span class="n">_get_conduit_diameters</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">pore_diameter</span><span class="p">,</span> <span class="n">throat_diameter</span><span class="p">)</span>
+    <span class="n">D1</span><span class="p">,</span> <span class="n">Dt</span><span class="p">,</span> <span class="n">D2</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">get_conduit_data</span><span class="p">(</span><span class="n">poreprop</span><span class="o">=</span><span class="n">pore_diameter</span><span class="p">,</span>
+                                         <span class="n">throatprop</span><span class="o">=</span><span class="n">throat_diameter</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
     <span class="n">L1</span><span class="p">,</span> <span class="n">Lt</span><span class="p">,</span> <span class="n">L2</span> <span class="o">=</span> <span class="n">_conduit_lengths</span><span class="o">.</span><span class="n">spheres_and_cylinders</span><span class="p">(</span>
-        <span class="n">target</span><span class="p">,</span> <span class="n">pore_diameter</span><span class="o">=</span><span class="n">pore_diameter</span><span class="p">,</span> <span class="n">throat_diameter</span><span class="o">=</span><span class="n">throat_diameter</span>
+        <span class="n">target</span><span class="o">=</span><span class="n">target</span><span class="p">,</span>
+        <span class="n">pore_diameter</span><span class="o">=</span><span class="n">pore_diameter</span><span class="p">,</span>
+        <span class="n">throat_diameter</span><span class="o">=</span><span class="n">throat_diameter</span>
     <span class="p">)</span><span class="o">.</span><span class="n">T</span>
 
     <span class="c1"># Fi is the integral of (1/A^2) dx, x = [0, Li]</span>
@@ -280,7 +265,8 @@
     <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;pore1&quot;</span><span class="p">:</span> <span class="n">S1</span><span class="p">,</span> <span class="s2">&quot;throat&quot;</span><span class="p">:</span> <span class="n">St</span><span class="p">,</span> <span class="s2">&quot;pore2&quot;</span><span class="p">:</span> <span class="n">S2</span><span class="p">}</span></div>
 
 
-<div class="viewcode-block" id="circles_and_rectangles"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.hydraulic_size_factors.circles_and_rectangles.html#openpnm.models.geometry.hydraulic_size_factors.circles_and_rectangles">[docs]</a><span class="k">def</span> <span class="nf">circles_and_rectangles</span><span class="p">(</span>
+<div class="viewcode-block" id="circles_and_rectangles"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.hydraulic_size_factors.circles_and_rectangles.html#openpnm.models.geometry.hydraulic_size_factors.circles_and_rectangles">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+<span class="k">def</span> <span class="nf">circles_and_rectangles</span><span class="p">(</span>
     <span class="n">target</span><span class="p">,</span>
     <span class="n">pore_diameter</span><span class="o">=</span><span class="s2">&quot;pore.diameter&quot;</span><span class="p">,</span>
     <span class="n">throat_diameter</span><span class="o">=</span><span class="s2">&quot;throat.diameter&quot;</span><span class="p">,</span>
@@ -291,42 +277,23 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : GenericGeometry</span>
-<span class="sd">        Geometry object which this model is associated with. This controls</span>
-<span class="sd">        the length of the calculated array, and also provides access to</span>
-<span class="sd">        other necessary properties.</span>
-<span class="sd">    pore_diameter : str</span>
-<span class="sd">        Dictionary key of the pore diameter values.</span>
-<span class="sd">    throat_diameter : str</span>
-<span class="sd">        Dictionary key of the throat diameter values.</span>
+<span class="sd">    %(models.geometry.hydraulic_size_factor.parameters)s</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    dict</span>
-<span class="sd">        Dictionary containing conduit size factors. Size factors are</span>
-<span class="sd">        accessible via the keys: &#39;pore1&#39;, &#39;throat&#39;, and &#39;pore2&#39;.</span>
+<span class="sd">    %(models.geometry.hydraulic_size_factor.returns)s</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    The hydraulic size factor is the geometrical part of the pre-factor in</span>
-<span class="sd">    Stoke&#39;s flow:</span>
-
-<span class="sd">    .. math::</span>
-
-<span class="sd">        Q = \frac{A^2}{8 \pi \mu L} \Delta P</span>
-<span class="sd">          = \frac{S_{hydraulic}}{\mu} \Delta P</span>
-
-<span class="sd">    Thus :math:`S_{hydraulic}` represents the combined effect of the area</span>
-<span class="sd">    and length of the *conduit*, which consists of a throat and 1/2 of the</span>
-<span class="sd">    pores on each end.</span>
-
-<span class="sd">    This model should only be used for true 2D networks, i.e. with planar</span>
-<span class="sd">    symmetry.</span>
+<span class="sd">    %(models.geometry.hydraulic_size_factor.notes)s</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">D1</span><span class="p">,</span> <span class="n">Dt</span><span class="p">,</span> <span class="n">D2</span> <span class="o">=</span> <span class="n">_get_conduit_diameters</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">pore_diameter</span><span class="p">,</span> <span class="n">throat_diameter</span><span class="p">)</span>
+    <span class="n">D1</span><span class="p">,</span> <span class="n">Dt</span><span class="p">,</span> <span class="n">D2</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">get_conduit_data</span><span class="p">(</span><span class="n">poreprop</span><span class="o">=</span><span class="n">pore_diameter</span><span class="p">,</span>
+                                         <span class="n">throatprop</span><span class="o">=</span><span class="n">throat_diameter</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
     <span class="n">L1</span><span class="p">,</span> <span class="n">Lt</span><span class="p">,</span> <span class="n">L2</span> <span class="o">=</span> <span class="n">_conduit_lengths</span><span class="o">.</span><span class="n">circles_and_rectangles</span><span class="p">(</span>
-        <span class="n">target</span><span class="p">,</span> <span class="n">pore_diameter</span><span class="o">=</span><span class="n">pore_diameter</span><span class="p">,</span> <span class="n">throat_diameter</span><span class="o">=</span><span class="n">throat_diameter</span>
+        <span class="n">target</span><span class="o">=</span><span class="n">target</span><span class="p">,</span>
+        <span class="n">pore_diameter</span><span class="o">=</span><span class="n">pore_diameter</span><span class="p">,</span>
+        <span class="n">throat_diameter</span><span class="o">=</span><span class="n">throat_diameter</span>
     <span class="p">)</span><span class="o">.</span><span class="n">T</span>
 
     <span class="c1"># Fi is the integral of (1/A^3) dx, x = [0, Li]</span>
@@ -340,7 +307,8 @@
     <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;pore1&quot;</span><span class="p">:</span> <span class="n">S1</span><span class="p">,</span> <span class="s2">&quot;throat&quot;</span><span class="p">:</span> <span class="n">St</span><span class="p">,</span> <span class="s2">&quot;pore2&quot;</span><span class="p">:</span> <span class="n">S2</span><span class="p">}</span></div>
 
 
-<div class="viewcode-block" id="cones_and_cylinders"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.hydraulic_size_factors.cones_and_cylinders.html#openpnm.models.geometry.hydraulic_size_factors.cones_and_cylinders">[docs]</a><span class="k">def</span> <span class="nf">cones_and_cylinders</span><span class="p">(</span>
+<div class="viewcode-block" id="cones_and_cylinders"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.hydraulic_size_factors.cones_and_cylinders.html#openpnm.models.geometry.hydraulic_size_factors.cones_and_cylinders">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+<span class="k">def</span> <span class="nf">cones_and_cylinders</span><span class="p">(</span>
     <span class="n">target</span><span class="p">,</span>
     <span class="n">pore_diameter</span><span class="o">=</span><span class="s2">&quot;pore.diameter&quot;</span><span class="p">,</span>
     <span class="n">throat_diameter</span><span class="o">=</span><span class="s2">&quot;throat.diameter&quot;</span><span class="p">,</span>
@@ -351,39 +319,23 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : GenericGeometry</span>
-<span class="sd">        The object which this model is associated with. This controls the</span>
-<span class="sd">        length of the calculated array, and also provides access to other</span>
-<span class="sd">        necessary properties.</span>
-<span class="sd">    pore_diameter : str</span>
-<span class="sd">        Dictionary key of the pore diameter values.</span>
-<span class="sd">    throat_diameter : str</span>
-<span class="sd">        Dictionary key of the throat diameter values.</span>
+<span class="sd">    %(models.geometry.hydraulic_size_factor.parameters)s</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    dict</span>
-<span class="sd">        Dictionary containing conduit size factors. Size factors are</span>
-<span class="sd">        accessible via the keys: &#39;pore1&#39;, &#39;throat&#39;, and &#39;pore2&#39;.</span>
+<span class="sd">    %(models.geometry.hydraulic_size_factor.returns)s</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    The hydraulic size factor is the geometrical part of the pre-factor in</span>
-<span class="sd">    Stoke&#39;s flow:</span>
-
-<span class="sd">    .. math::</span>
-
-<span class="sd">        Q = \frac{A^2}{8 \pi \mu L} \Delta P</span>
-<span class="sd">          = \frac{S_{hydraulic}}{\mu} \Delta P</span>
-
-<span class="sd">    Thus :math:`S_{hydraulic}` represents the combined effect of the area</span>
-<span class="sd">    and length of the *conduit*, which consists of a throat and 1/2 of the</span>
-<span class="sd">    pores on each end.</span>
+<span class="sd">    %(models.geometry.hydraulic_size_factor.notes)s</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">D1</span><span class="p">,</span> <span class="n">Dt</span><span class="p">,</span> <span class="n">D2</span> <span class="o">=</span> <span class="n">_get_conduit_diameters</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">pore_diameter</span><span class="p">,</span> <span class="n">throat_diameter</span><span class="p">)</span>
+    <span class="n">D1</span><span class="p">,</span> <span class="n">Dt</span><span class="p">,</span> <span class="n">D2</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">get_conduit_data</span><span class="p">(</span><span class="n">poreprop</span><span class="o">=</span><span class="n">pore_diameter</span><span class="p">,</span>
+                                         <span class="n">throatprop</span><span class="o">=</span><span class="n">throat_diameter</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
     <span class="n">L1</span><span class="p">,</span> <span class="n">Lt</span><span class="p">,</span> <span class="n">L2</span> <span class="o">=</span> <span class="n">_conduit_lengths</span><span class="o">.</span><span class="n">cones_and_cylinders</span><span class="p">(</span>
-        <span class="n">target</span><span class="p">,</span> <span class="n">pore_diameter</span><span class="o">=</span><span class="n">pore_diameter</span><span class="p">,</span> <span class="n">throat_diameter</span><span class="o">=</span><span class="n">throat_diameter</span>
+        <span class="n">target</span><span class="o">=</span><span class="n">target</span><span class="p">,</span>
+        <span class="n">pore_diameter</span><span class="o">=</span><span class="n">pore_diameter</span><span class="p">,</span>
+        <span class="n">throat_diameter</span><span class="o">=</span><span class="n">throat_diameter</span>
     <span class="p">)</span><span class="o">.</span><span class="n">T</span>
 
     <span class="c1"># Fi is the integral of (1/A^2) dx, x = [0, Li]</span>
@@ -402,7 +354,8 @@
     <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;pore1&quot;</span><span class="p">:</span> <span class="n">S1</span><span class="p">,</span> <span class="s2">&quot;throat&quot;</span><span class="p">:</span> <span class="n">St</span><span class="p">,</span> <span class="s2">&quot;pore2&quot;</span><span class="p">:</span> <span class="n">S2</span><span class="p">}</span></div>
 
 
-<div class="viewcode-block" id="trapezoids_and_rectangles"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.hydraulic_size_factors.trapezoids_and_rectangles.html#openpnm.models.geometry.hydraulic_size_factors.trapezoids_and_rectangles">[docs]</a><span class="k">def</span> <span class="nf">trapezoids_and_rectangles</span><span class="p">(</span>
+<div class="viewcode-block" id="trapezoids_and_rectangles"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.hydraulic_size_factors.trapezoids_and_rectangles.html#openpnm.models.geometry.hydraulic_size_factors.trapezoids_and_rectangles">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+<span class="k">def</span> <span class="nf">trapezoids_and_rectangles</span><span class="p">(</span>
     <span class="n">target</span><span class="p">,</span>
     <span class="n">pore_diameter</span><span class="o">=</span><span class="s2">&quot;pore.diameter&quot;</span><span class="p">,</span>
     <span class="n">throat_diameter</span><span class="o">=</span><span class="s2">&quot;throat.diameter&quot;</span><span class="p">,</span>
@@ -413,42 +366,26 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : GenericGeometry</span>
-<span class="sd">        The object which this model is associated with. This controls the</span>
-<span class="sd">        length of the calculated array, and also provides access to other</span>
-<span class="sd">        necessary properties.</span>
-<span class="sd">    pore_diameter : str</span>
-<span class="sd">        Dictionary key of the pore diameter values.</span>
-<span class="sd">    throat_diameter : str</span>
-<span class="sd">        Dictionary key of the throat diameter values.</span>
+<span class="sd">    %(models.geometry.hydraulic_size_factor.parameters)s</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    dict</span>
-<span class="sd">        Dictionary containing conduit size factors. Size factors are</span>
-<span class="sd">        accessible via the keys: &#39;pore1&#39;, &#39;throat&#39;, and &#39;pore2&#39;.</span>
+<span class="sd">    %(models.geometry.hydraulic_size_factor.returns)s</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    The hydraulic size factor is the geometrical part of the pre-factor in</span>
-<span class="sd">    Stoke&#39;s flow:</span>
-
-<span class="sd">    .. math::</span>
-
-<span class="sd">        Q = \frac{A^2}{8 \pi \mu L} \Delta P</span>
-<span class="sd">          = \frac{S_{hydraulic}}{\mu} \Delta P</span>
-
-<span class="sd">    Thus :math:`S_{hydraulic}` represents the combined effect of the area</span>
-<span class="sd">    and length of the *conduit*, which consists of a throat and 1/2 of the</span>
-<span class="sd">    pores on each end.</span>
+<span class="sd">    %(models.geometry.hydraulic_size_factor.notes)s</span>
 
 <span class="sd">    This model should only be used for true 2D networks, i.e. with planar</span>
 <span class="sd">    symmetry.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">D1</span><span class="p">,</span> <span class="n">Dt</span><span class="p">,</span> <span class="n">D2</span> <span class="o">=</span> <span class="n">_get_conduit_diameters</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">pore_diameter</span><span class="p">,</span> <span class="n">throat_diameter</span><span class="p">)</span>
+    <span class="n">D1</span><span class="p">,</span> <span class="n">Dt</span><span class="p">,</span> <span class="n">D2</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">get_conduit_data</span><span class="p">(</span><span class="n">poreprop</span><span class="o">=</span><span class="n">pore_diameter</span><span class="p">,</span>
+                                         <span class="n">throatprop</span><span class="o">=</span><span class="n">throat_diameter</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
     <span class="n">L1</span><span class="p">,</span> <span class="n">Lt</span><span class="p">,</span> <span class="n">L2</span> <span class="o">=</span> <span class="n">_conduit_lengths</span><span class="o">.</span><span class="n">cones_and_cylinders</span><span class="p">(</span>
-        <span class="n">target</span><span class="p">,</span> <span class="n">pore_diameter</span><span class="o">=</span><span class="n">pore_diameter</span><span class="p">,</span> <span class="n">throat_diameter</span><span class="o">=</span><span class="n">throat_diameter</span>
+        <span class="n">target</span><span class="o">=</span><span class="n">target</span><span class="p">,</span>
+        <span class="n">pore_diameter</span><span class="o">=</span><span class="n">pore_diameter</span><span class="p">,</span>
+        <span class="n">throat_diameter</span><span class="o">=</span><span class="n">throat_diameter</span>
     <span class="p">)</span><span class="o">.</span><span class="n">T</span>
 
     <span class="c1"># Fi is the integral of (1/A^3) dx, x = [0, Li]</span>
@@ -462,7 +399,8 @@
     <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;pore1&quot;</span><span class="p">:</span> <span class="n">S1</span><span class="p">,</span> <span class="s2">&quot;throat&quot;</span><span class="p">:</span> <span class="n">St</span><span class="p">,</span> <span class="s2">&quot;pore2&quot;</span><span class="p">:</span> <span class="n">S2</span><span class="p">}</span></div>
 
 
-<div class="viewcode-block" id="pyramids_and_cuboids"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.hydraulic_size_factors.pyramids_and_cuboids.html#openpnm.models.geometry.hydraulic_size_factors.pyramids_and_cuboids">[docs]</a><span class="k">def</span> <span class="nf">pyramids_and_cuboids</span><span class="p">(</span>
+<div class="viewcode-block" id="pyramids_and_cuboids"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.hydraulic_size_factors.pyramids_and_cuboids.html#openpnm.models.geometry.hydraulic_size_factors.pyramids_and_cuboids">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+<span class="k">def</span> <span class="nf">pyramids_and_cuboids</span><span class="p">(</span>
     <span class="n">target</span><span class="p">,</span>
     <span class="n">pore_diameter</span><span class="o">=</span><span class="s2">&quot;pore.diameter&quot;</span><span class="p">,</span>
     <span class="n">throat_diameter</span><span class="o">=</span><span class="s2">&quot;throat.diameter&quot;</span><span class="p">,</span>
@@ -473,39 +411,25 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : GenericGeometry</span>
-<span class="sd">        Geometry object which this model is associated with. This controls</span>
-<span class="sd">        the length of the calculated array, and also provides access to</span>
-<span class="sd">        other necessary properties.</span>
-<span class="sd">    pore_diameter : str</span>
-<span class="sd">        Dictionary key pointing to the pore diameter values.</span>
-<span class="sd">    throat_diameter : str</span>
-<span class="sd">        Dictionary key pointing to the throat diameter values.</span>
+<span class="sd">    %(models.geometry.hydraulic_size_factor.parameters)s</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    dict</span>
-<span class="sd">        Dictionary containing conduit size factors. Size factors are</span>
-<span class="sd">        accessible via the keys: &#39;pore1&#39;, &#39;throat&#39;, and &#39;pore2&#39;.</span>
+<span class="sd">    %(models.geometry.hydraulic_size_factor.returns)s</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    The hydraulic size factor is the geometrical part of the pre-factor in</span>
-<span class="sd">    Stoke&#39;s flow:</span>
-
-<span class="sd">    .. math::</span>
-
-<span class="sd">        Q = \frac{A^2}{8 \pi \mu L} \Delta P</span>
-<span class="sd">          = \frac{S_{hydraulic}}{\mu} \Delta P</span>
-
-<span class="sd">    Thus :math:`S_{hydraulic}` represents the combined effect of the area</span>
-<span class="sd">    and length of the *conduit*, which consists of a throat and 1/2 of the</span>
-<span class="sd">    pores on each end.</span>
+<span class="sd">    %(models.geometry.hydraulic_size_factor.notes)s</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">D1</span><span class="p">,</span> <span class="n">Dt</span><span class="p">,</span> <span class="n">D2</span> <span class="o">=</span> <span class="n">_get_conduit_diameters</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">pore_diameter</span><span class="p">,</span> <span class="n">throat_diameter</span><span class="p">)</span>
+    <span class="n">D1</span><span class="p">,</span> <span class="n">Dt</span><span class="p">,</span> <span class="n">D2</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">get_conduit_data</span><span class="p">(</span>
+        <span class="n">poreprop</span><span class="o">=</span><span class="n">pore_diameter</span><span class="p">,</span>
+        <span class="n">throatprop</span><span class="o">=</span><span class="n">throat_diameter</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">T</span>
     <span class="n">L1</span><span class="p">,</span> <span class="n">Lt</span><span class="p">,</span> <span class="n">L2</span> <span class="o">=</span> <span class="n">_conduit_lengths</span><span class="o">.</span><span class="n">pyramids_and_cuboids</span><span class="p">(</span>
-        <span class="n">target</span><span class="p">,</span> <span class="n">pore_diameter</span><span class="o">=</span><span class="n">pore_diameter</span><span class="p">,</span> <span class="n">throat_diameter</span><span class="o">=</span><span class="n">throat_diameter</span>
+        <span class="n">target</span><span class="o">=</span><span class="n">target</span><span class="p">,</span>
+        <span class="n">pore_diameter</span><span class="o">=</span><span class="n">pore_diameter</span><span class="p">,</span>
+        <span class="n">throat_diameter</span><span class="o">=</span><span class="n">throat_diameter</span>
     <span class="p">)</span><span class="o">.</span><span class="n">T</span>
 
     <span class="c1"># Fi is the integral of (1/A^2) dx, x = [0, Li]</span>
@@ -524,7 +448,8 @@
     <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;pore1&quot;</span><span class="p">:</span> <span class="n">S1</span><span class="p">,</span> <span class="s2">&quot;throat&quot;</span><span class="p">:</span> <span class="n">St</span><span class="p">,</span> <span class="s2">&quot;pore2&quot;</span><span class="p">:</span> <span class="n">S2</span><span class="p">}</span></div>
 
 
-<div class="viewcode-block" id="cubes_and_cuboids"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.hydraulic_size_factors.cubes_and_cuboids.html#openpnm.models.geometry.hydraulic_size_factors.cubes_and_cuboids">[docs]</a><span class="k">def</span> <span class="nf">cubes_and_cuboids</span><span class="p">(</span>
+<div class="viewcode-block" id="cubes_and_cuboids"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.hydraulic_size_factors.cubes_and_cuboids.html#openpnm.models.geometry.hydraulic_size_factors.cubes_and_cuboids">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+<span class="k">def</span> <span class="nf">cubes_and_cuboids</span><span class="p">(</span>
     <span class="n">target</span><span class="p">,</span>
     <span class="n">pore_diameter</span><span class="o">=</span><span class="s2">&quot;pore.diameter&quot;</span><span class="p">,</span>
     <span class="n">throat_diameter</span><span class="o">=</span><span class="s2">&quot;throat.diameter&quot;</span><span class="p">,</span>
@@ -537,14 +462,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : GenericGeometry</span>
-<span class="sd">        Geometry object which this model is associated with. This controls</span>
-<span class="sd">        the length of the calculated array, and also provides access to</span>
-<span class="sd">        other necessary properties.</span>
-<span class="sd">    pore_diameter : str</span>
-<span class="sd">        Dictionary key pointing to the pore diameter values.</span>
-<span class="sd">    throat_diameter : str</span>
-<span class="sd">        Dictionary key pointing to the throat diameter values.</span>
+<span class="sd">    %(models.geometry.hydraulic_size_factor.parameters)s</span>
 <span class="sd">    pore_aspect : list</span>
 <span class="sd">        Aspect ratio of the pores</span>
 <span class="sd">    throat_aspect : list</span>
@@ -552,28 +470,21 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    dict</span>
-<span class="sd">        Dictionary containing conduit size factors. Size factors are</span>
-<span class="sd">        accessible via the keys: &#39;pore1&#39;, &#39;throat&#39;, and &#39;pore2&#39;.</span>
+<span class="sd">    %(models.geometry.hydraulic_size_factor.returns)s</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    The hydraulic size factor is the geometrical part of the pre-factor in</span>
-<span class="sd">    Stoke&#39;s flow:</span>
-
-<span class="sd">    .. math::</span>
-
-<span class="sd">        Q = \frac{A^2}{8 \pi \mu L} \Delta P</span>
-<span class="sd">          = \frac{S_{hydraulic}}{\mu} \Delta P</span>
-
-<span class="sd">    Thus :math:`S_{hydraulic}` represents the combined effect of the area</span>
-<span class="sd">    and length of the *conduit*, which consists of a throat and 1/2 of the</span>
-<span class="sd">    pores on each end.</span>
+<span class="sd">    %(models.geometry.hydraulic_size_factor.notes)s</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">D1</span><span class="p">,</span> <span class="n">Dt</span><span class="p">,</span> <span class="n">D2</span> <span class="o">=</span> <span class="n">_get_conduit_diameters</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">pore_diameter</span><span class="p">,</span> <span class="n">throat_diameter</span><span class="p">)</span>
+    <span class="n">D1</span><span class="p">,</span> <span class="n">Dt</span><span class="p">,</span> <span class="n">D2</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">get_conduit_data</span><span class="p">(</span>
+        <span class="n">poreprop</span><span class="o">=</span><span class="n">pore_diameter</span><span class="p">,</span>
+        <span class="n">throatprop</span><span class="o">=</span><span class="n">throat_diameter</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">T</span>
     <span class="n">L1</span><span class="p">,</span> <span class="n">Lt</span><span class="p">,</span> <span class="n">L2</span> <span class="o">=</span> <span class="n">_conduit_lengths</span><span class="o">.</span><span class="n">cubes_and_cuboids</span><span class="p">(</span>
-        <span class="n">target</span><span class="p">,</span> <span class="n">pore_diameter</span><span class="o">=</span><span class="n">pore_diameter</span><span class="p">,</span> <span class="n">throat_diameter</span><span class="o">=</span><span class="n">throat_diameter</span>
+        <span class="n">target</span><span class="o">=</span><span class="n">target</span><span class="p">,</span>
+        <span class="n">pore_diameter</span><span class="o">=</span><span class="n">pore_diameter</span><span class="p">,</span>
+        <span class="n">throat_diameter</span><span class="o">=</span><span class="n">throat_diameter</span>
     <span class="p">)</span><span class="o">.</span><span class="n">T</span>
 
     <span class="c1"># Fi is the integral of (1/A^2) dx, x = [0, Li]</span>
@@ -592,7 +503,8 @@
     <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;pore1&quot;</span><span class="p">:</span> <span class="n">S1</span><span class="p">,</span> <span class="s2">&quot;throat&quot;</span><span class="p">:</span> <span class="n">St</span><span class="p">,</span> <span class="s2">&quot;pore2&quot;</span><span class="p">:</span> <span class="n">S2</span><span class="p">}</span></div>
 
 
-<div class="viewcode-block" id="squares_and_rectangles"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.hydraulic_size_factors.squares_and_rectangles.html#openpnm.models.geometry.hydraulic_size_factors.squares_and_rectangles">[docs]</a><span class="k">def</span> <span class="nf">squares_and_rectangles</span><span class="p">(</span>
+<div class="viewcode-block" id="squares_and_rectangles"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.hydraulic_size_factors.squares_and_rectangles.html#openpnm.models.geometry.hydraulic_size_factors.squares_and_rectangles">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+<span class="k">def</span> <span class="nf">squares_and_rectangles</span><span class="p">(</span>
     <span class="n">target</span><span class="p">,</span>
     <span class="n">pore_diameter</span><span class="o">=</span><span class="s2">&quot;pore.diameter&quot;</span><span class="p">,</span>
     <span class="n">throat_diameter</span><span class="o">=</span><span class="s2">&quot;throat.diameter&quot;</span><span class="p">,</span>
@@ -605,14 +517,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : GenericGeometry</span>
-<span class="sd">        Geometry object which this model is associated with. This controls</span>
-<span class="sd">        the length of the calculated array, and also provides access to</span>
-<span class="sd">        other necessary properties.</span>
-<span class="sd">    pore_diameter : str</span>
-<span class="sd">        Dictionary key pointing to the pore diameter values.</span>
-<span class="sd">    throat_diameter : str</span>
-<span class="sd">        Dictionary key pointing to the throat diameter values.</span>
+<span class="sd">    %(models.geometry.hydraulic_size_factor.parameters)s</span>
 <span class="sd">    pore_aspect : list</span>
 <span class="sd">        Aspect ratio of the pores</span>
 <span class="sd">    throat_aspect : list</span>
@@ -620,31 +525,24 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    dict</span>
-<span class="sd">        Dictionary containing conduit size factors. Size factors are</span>
-<span class="sd">        accessible via the keys: &#39;pore1&#39;, &#39;throat&#39;, and &#39;pore2&#39;.</span>
+<span class="sd">    %(models.geometry.hydraulic_size_factor.returns)s</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    The hydraulic size factor is the geometrical part of the pre-factor in</span>
-<span class="sd">    Stoke&#39;s flow:</span>
-
-<span class="sd">    .. math::</span>
-
-<span class="sd">        Q = \frac{A^2}{8 \pi \mu L} \Delta P</span>
-<span class="sd">          = \frac{S_{hydraulic}}{\mu} \Delta P</span>
-
-<span class="sd">    Thus :math:`S_{hydraulic}` represents the combined effect of the area</span>
-<span class="sd">    and length of the *conduit*, which consists of a throat and 1/2 of the</span>
-<span class="sd">    pores on each end.</span>
+<span class="sd">    %(models.geometry.hydraulic_size_factor.notes)s</span>
 
 <span class="sd">    This model should only be used for true 2D networks, i.e. with planar</span>
 <span class="sd">    symmetry.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">D1</span><span class="p">,</span> <span class="n">Dt</span><span class="p">,</span> <span class="n">D2</span> <span class="o">=</span> <span class="n">_get_conduit_diameters</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">pore_diameter</span><span class="p">,</span> <span class="n">throat_diameter</span><span class="p">)</span>
+    <span class="n">D1</span><span class="p">,</span> <span class="n">Dt</span><span class="p">,</span> <span class="n">D2</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">get_conduit_data</span><span class="p">(</span>
+        <span class="n">poreprop</span><span class="o">=</span><span class="n">pore_diameter</span><span class="p">,</span>
+        <span class="n">throatprop</span><span class="o">=</span><span class="n">throat_diameter</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">T</span>
     <span class="n">L1</span><span class="p">,</span> <span class="n">Lt</span><span class="p">,</span> <span class="n">L2</span> <span class="o">=</span> <span class="n">_conduit_lengths</span><span class="o">.</span><span class="n">squares_and_rectangles</span><span class="p">(</span>
-        <span class="n">target</span><span class="p">,</span> <span class="n">pore_diameter</span><span class="o">=</span><span class="n">pore_diameter</span><span class="p">,</span> <span class="n">throat_diameter</span><span class="o">=</span><span class="n">throat_diameter</span>
+        <span class="n">target</span><span class="o">=</span><span class="n">target</span><span class="p">,</span>
+        <span class="n">pore_diameter</span><span class="o">=</span><span class="n">pore_diameter</span><span class="p">,</span>
+        <span class="n">throat_diameter</span><span class="o">=</span><span class="n">throat_diameter</span>
     <span class="p">)</span><span class="o">.</span><span class="n">T</span>
 
     <span class="c1"># Fi is the integral of (1/A^3) dx, x = [0, Li]</span>
@@ -658,7 +556,8 @@
     <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;pore1&quot;</span><span class="p">:</span> <span class="n">S1</span><span class="p">,</span> <span class="s2">&quot;throat&quot;</span><span class="p">:</span> <span class="n">St</span><span class="p">,</span> <span class="s2">&quot;pore2&quot;</span><span class="p">:</span> <span class="n">S2</span><span class="p">}</span></div>
 
 
-<div class="viewcode-block" id="intersecting_cones"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.hydraulic_size_factors.intersecting_cones.html#openpnm.models.geometry.hydraulic_size_factors.intersecting_cones">[docs]</a><span class="k">def</span> <span class="nf">intersecting_cones</span><span class="p">(</span>
+<div class="viewcode-block" id="intersecting_cones"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.hydraulic_size_factors.intersecting_cones.html#openpnm.models.geometry.hydraulic_size_factors.intersecting_cones">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+<span class="k">def</span> <span class="nf">intersecting_cones</span><span class="p">(</span>
     <span class="n">target</span><span class="p">,</span>
     <span class="n">pore_diameter</span><span class="o">=</span><span class="s2">&quot;pore.diameter&quot;</span><span class="p">,</span>
     <span class="n">throat_diameter</span><span class="o">=</span><span class="s2">&quot;throat.diameter&quot;</span><span class="p">,</span>
@@ -669,42 +568,24 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : GenericGeometry</span>
-<span class="sd">        Geometry object which this model is associated with. This controls</span>
-<span class="sd">        the length of the calculated array, and also provides access to</span>
-<span class="sd">        other necessary properties.</span>
-<span class="sd">    pore_diameter : str</span>
-<span class="sd">        Dictionary key pointing to the pore diameter values.</span>
-<span class="sd">    throat_diameter : str</span>
-<span class="sd">        Dictionary key pointing to the throat diameter values.</span>
+<span class="sd">    %(models.geometry.hydraulic_size_factor.parameters)s</span>
 <span class="sd">    midpoint : str, optional</span>
 <span class="sd">        Dictionary key of the midpoint values.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    dict</span>
-<span class="sd">        Dictionary containing conduit size factors. Size factors are</span>
-<span class="sd">        accessible via the keys: &#39;pore1&#39;, &#39;throat&#39;, and &#39;pore2&#39;.</span>
+<span class="sd">    %(models.geometry.hydraulic_size_factor.returns)s</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    The hydraulic size factor is the geometrical part of the pre-factor in</span>
-<span class="sd">    Stoke&#39;s flow:</span>
-
-<span class="sd">    .. math::</span>
-
-<span class="sd">        Q = \frac{A^2}{8 \pi \mu L} \Delta P</span>
-<span class="sd">          = \frac{S_{hydraulic}}{\mu} \Delta P</span>
-
-<span class="sd">    Thus :math:`S_{hydraulic}` represents the combined effect of the area</span>
-<span class="sd">    and length of the *conduit*, which consists of a throat and 1/2 of the</span>
-<span class="sd">    pores on each end.</span>
+<span class="sd">    %(models.geometry.hydraulic_size_factor.notes)s</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 
-<div class="viewcode-block" id="intersecting_trapezoids"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.hydraulic_size_factors.intersecting_trapezoids.html#openpnm.models.geometry.hydraulic_size_factors.intersecting_trapezoids">[docs]</a><span class="k">def</span> <span class="nf">intersecting_trapezoids</span><span class="p">(</span>
+<div class="viewcode-block" id="intersecting_trapezoids"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.hydraulic_size_factors.intersecting_trapezoids.html#openpnm.models.geometry.hydraulic_size_factors.intersecting_trapezoids">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+<span class="k">def</span> <span class="nf">intersecting_trapezoids</span><span class="p">(</span>
     <span class="n">target</span><span class="p">,</span>
     <span class="n">pore_diameter</span><span class="o">=</span><span class="s2">&quot;pore.diameter&quot;</span><span class="p">,</span>
     <span class="n">throat_diameter</span><span class="o">=</span><span class="s2">&quot;throat.diameter&quot;</span><span class="p">,</span>
@@ -716,36 +597,17 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : GenericGeometry</span>
-<span class="sd">        Geometry object which this model is associated with. This controls</span>
-<span class="sd">        the length of the calculated array, and also provides access to</span>
-<span class="sd">        other necessary properties.</span>
-<span class="sd">    pore_diameter : str</span>
-<span class="sd">        Dictionary key pointing to the pore diameter values.</span>
-<span class="sd">    throat_diameter : str</span>
-<span class="sd">        Dictionary key pointing to the throat diameter values.</span>
+<span class="sd">    %(models.geometry.hydraulic_size_factor.parameters)s</span>
 <span class="sd">    midpoint : str, optional</span>
 <span class="sd">        Dictionary key of the midpoint values.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    dict</span>
-<span class="sd">        Dictionary containing conduit size factors. Size factors are</span>
-<span class="sd">        accessible via the keys: &#39;pore1&#39;, &#39;throat&#39;, and &#39;pore2&#39;.</span>
+<span class="sd">    %(models.geometry.hydraulic_size_factor.returns)s</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    The hydraulic size factor is the geometrical part of the pre-factor in</span>
-<span class="sd">    Stoke&#39;s flow:</span>
-
-<span class="sd">    .. math::</span>
-
-<span class="sd">        Q = \frac{A^2}{8 \pi \mu L} \Delta P</span>
-<span class="sd">          = \frac{S_{hydraulic}}{\mu} \Delta P</span>
-
-<span class="sd">    Thus :math:`S_{hydraulic}` represents the combined effect of the area</span>
-<span class="sd">    and length of the *conduit*, which consists of a throat and 1/2 of the</span>
-<span class="sd">    pores on each end.</span>
+<span class="sd">    %(models.geometry.hydraulic_size_factor.notes)s</span>
 
 <span class="sd">    This model should only be used for true 2D networks, i.e. with planar</span>
 <span class="sd">    symmetry.</span>
@@ -753,8 +615,8 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-
-<div class="viewcode-block" id="intersecting_pyramids"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.hydraulic_size_factors.intersecting_pyramids.html#openpnm.models.geometry.hydraulic_size_factors.intersecting_pyramids">[docs]</a><span class="k">def</span> <span class="nf">intersecting_pyramids</span><span class="p">(</span>
+<div class="viewcode-block" id="intersecting_pyramids"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.hydraulic_size_factors.intersecting_pyramids.html#openpnm.models.geometry.hydraulic_size_factors.intersecting_pyramids">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+<span class="k">def</span> <span class="nf">intersecting_pyramids</span><span class="p">(</span>
     <span class="n">target</span><span class="p">,</span>
     <span class="n">pore_diameter</span><span class="o">=</span><span class="s2">&quot;pore.diameter&quot;</span><span class="p">,</span>
     <span class="n">throat_diameter</span><span class="o">=</span><span class="s2">&quot;throat.diameter&quot;</span><span class="p">,</span>
@@ -765,42 +627,24 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : GenericGeometry</span>
-<span class="sd">        Geometry object which this model is associated with. This controls</span>
-<span class="sd">        the length of the calculated array, and also provides access to</span>
-<span class="sd">        other necessary properties.</span>
-<span class="sd">    pore_diameter : str</span>
-<span class="sd">        Dictionary key pointing to the pore diameter values.</span>
-<span class="sd">    throat_diameter : str</span>
-<span class="sd">        Dictionary key pointing to the throat diameter values.</span>
+<span class="sd">    %(models.geometry.hydraulic_size_factor.parameters)s</span>
 <span class="sd">    midpoint : str, optional</span>
 <span class="sd">        Dictionary key of the midpoint values.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    dict</span>
-<span class="sd">        Dictionary containing conduit size factors. Size factors are</span>
-<span class="sd">        accessible via the keys: &#39;pore1&#39;, &#39;throat&#39;, and &#39;pore2&#39;.</span>
+<span class="sd">    %(models.geometry.hydraulic_size_factor.returns)s</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    The hydraulic size factor is the geometrical part of the pre-factor in</span>
-<span class="sd">    Stoke&#39;s flow:</span>
-
-<span class="sd">    .. math::</span>
-
-<span class="sd">        Q = \frac{A^2}{8 \pi \mu L} \Delta P</span>
-<span class="sd">          = \frac{S_{hydraulic}}{\mu} \Delta P</span>
-
-<span class="sd">    Thus :math:`S_{hydraulic}` represents the combined effect of the area</span>
-<span class="sd">    and length of the *conduit*, which consists of a throat and 1/2 of the</span>
-<span class="sd">    pores on each end.</span>
+<span class="sd">    %(models.geometry.hydraulic_size_factor.notes)s</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 
-<div class="viewcode-block" id="ncylinders_in_series"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.hydraulic_size_factors.ncylinders_in_series.html#openpnm.models.geometry.hydraulic_size_factors.ncylinders_in_series">[docs]</a><span class="k">def</span> <span class="nf">ncylinders_in_series</span><span class="p">(</span>
+<div class="viewcode-block" id="ncylinders_in_series"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.hydraulic_size_factors.ncylinders_in_series.html#openpnm.models.geometry.hydraulic_size_factors.ncylinders_in_series">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+<span class="k">def</span> <span class="nf">ncylinders_in_series</span><span class="p">(</span>
     <span class="n">target</span><span class="p">,</span>
     <span class="n">pore_diameter</span><span class="o">=</span><span class="s2">&quot;pore.diameter&quot;</span><span class="p">,</span>
     <span class="n">throat_diameter</span><span class="o">=</span><span class="s2">&quot;throat.diameter&quot;</span><span class="p">,</span>
@@ -812,43 +656,29 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : GenericGeometry</span>
-<span class="sd">        Geometry object which this model is associated with. This controls</span>
-<span class="sd">        the length of the calculated array, and also provides access to</span>
-<span class="sd">        other necessary properties.</span>
-<span class="sd">    pore_diameter : str</span>
-<span class="sd">        Dictionary key pointing to the pore diameter values.</span>
-<span class="sd">    throat_diameter : str</span>
-<span class="sd">        Dictionary key pointing to the throat diameter values.</span>
+<span class="sd">    %(models.geometry.hydraulic_size_factor.parameters)s</span>
 <span class="sd">    n : int</span>
 <span class="sd">        Number of cylindrical divisions for each pore</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    dict</span>
-<span class="sd">        Dictionary containing conduit size factors. Size factors are</span>
-<span class="sd">        accessible via the keys: &#39;pore1&#39;, &#39;throat&#39;, and &#39;pore2&#39;.</span>
+<span class="sd">    %(models.geometry.hydraulic_size_factor.returns)s</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    The hydraulic size factor is the geometrical part of the pre-factor in</span>
-<span class="sd">    Stoke&#39;s flow:</span>
-
-<span class="sd">    .. math::</span>
-
-<span class="sd">        Q = \frac{A^2}{8 \pi \mu L} \Delta P</span>
-<span class="sd">          = \frac{S_{hydraulic}}{\mu} \Delta P</span>
-
-<span class="sd">    Thus :math:`S_{hydraulic}` represents the combined effect of the area</span>
-<span class="sd">    and length of the *conduit*, which consists of a throat and 1/2 of the</span>
-<span class="sd">    pores on each end.</span>
+<span class="sd">    %(models.geometry.hydraulic_size_factor.notes)s</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">D1</span><span class="p">,</span> <span class="n">Dt</span><span class="p">,</span> <span class="n">D2</span> <span class="o">=</span> <span class="n">_get_conduit_diameters</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">pore_diameter</span><span class="p">,</span> <span class="n">throat_diameter</span><span class="p">)</span>
+    <span class="n">D1</span><span class="p">,</span> <span class="n">Dt</span><span class="p">,</span> <span class="n">D2</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">get_conduit_data</span><span class="p">(</span>
+        <span class="n">poreprop</span><span class="o">=</span><span class="n">pore_diameter</span><span class="p">,</span>
+        <span class="n">throatprop</span><span class="o">=</span><span class="n">throat_diameter</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">T</span>
     <span class="c1"># Ensure throats are never bigger than connected pores</span>
     <span class="n">Dt</span> <span class="o">=</span> <span class="n">_np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">Dt</span><span class="p">,</span> <span class="mf">0.99</span> <span class="o">*</span> <span class="n">_np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">D1</span><span class="p">,</span> <span class="n">D2</span><span class="p">))</span>
     <span class="n">L1</span><span class="p">,</span> <span class="n">Lt</span><span class="p">,</span> <span class="n">L2</span> <span class="o">=</span> <span class="n">_conduit_lengths</span><span class="o">.</span><span class="n">spheres_and_cylinders</span><span class="p">(</span>
-        <span class="n">target</span><span class="p">,</span> <span class="n">pore_diameter</span><span class="o">=</span><span class="n">pore_diameter</span><span class="p">,</span> <span class="n">throat_diameter</span><span class="o">=</span><span class="n">throat_diameter</span>
+        <span class="n">target</span><span class="o">=</span><span class="n">target</span><span class="p">,</span>
+        <span class="n">pore_diameter</span><span class="o">=</span><span class="n">pore_diameter</span><span class="p">,</span>
+        <span class="n">throat_diameter</span><span class="o">=</span><span class="n">throat_diameter</span>
     <span class="p">)</span><span class="o">.</span><span class="n">T</span>
     <span class="n">dL1</span> <span class="o">=</span> <span class="n">_np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">L1</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="n">n</span><span class="p">)</span>
     <span class="n">dL2</span> <span class="o">=</span> <span class="n">_np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">L2</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="n">n</span><span class="p">)</span>

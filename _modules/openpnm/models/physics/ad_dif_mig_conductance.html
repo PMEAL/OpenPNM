@@ -179,11 +179,8 @@
               <div>
                 
   <h1>Source code for openpnm.models.physics.ad_dif_mig_conductance</h1><div class="highlight"><pre>
-<span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Pore-scale models for calculating the advective-diffusive-migrative</span>
-<span class="sd">conductance of conduits.</span>
-<span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">_np</span>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">_np</span>
+
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ad_dif_mig&quot;</span><span class="p">]</span>
 
@@ -200,29 +197,25 @@
                <span class="n">s_scheme</span><span class="o">=</span><span class="s2">&quot;powerlaw&quot;</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate the advective-diffusive-migrative conductance of conduits</span>
-<span class="sd">    in network, where a conduit is ( 1/2 pore - full throat - 1/2 pore ).</span>
-<span class="sd">    See the notes section.</span>
+<span class="sd">    in network</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : GenericPhysics</span>
-<span class="sd">        The object which this model is associated with. This controls the</span>
-<span class="sd">        length of the calculated array, and also provides access to other</span>
-<span class="sd">        necessary properties.</span>
+<span class="sd">    %(target_blurb)s</span>
 <span class="sd">    pore_pressure : str</span>
-<span class="sd">        Dictionary key of the pore pressure values</span>
+<span class="sd">        %(dict_blurb)s pore pressure</span>
 <span class="sd">    pore_potential : str</span>
-<span class="sd">        Dictionary key of the pore potential values</span>
+<span class="sd">        %(dict_blurb)s pore potential</span>
 <span class="sd">    throat_hydraulic_conductance : str</span>
-<span class="sd">        Dictionary key of the throat hydraulic conductance values</span>
+<span class="sd">        %(dict_blurb)s hydraulic conductance</span>
 <span class="sd">    throat_diffusive_conductance : str</span>
-<span class="sd">        Dictionary key of the throat diffusive conductance values</span>
+<span class="sd">        %(dict_blurb)s diffusive conductance</span>
 <span class="sd">    throat_valence : str</span>
-<span class="sd">        Dictionary key of the throat ionic species valence values</span>
+<span class="sd">        %(dict_blurb)s throat ionic species valence</span>
 <span class="sd">    pore_temperature : str</span>
-<span class="sd">        Dictionary key of the pore temperature values</span>
+<span class="sd">        %(dict_blurb)s pore temperature</span>
 <span class="sd">    throat_temperature : str</span>
-<span class="sd">        Dictionary key of the throat temperature values</span>
+<span class="sd">        %(dict_blurb)s throat temperature</span>
 <span class="sd">    ion : str</span>
 <span class="sd">        Name of the ionic species</span>
 <span class="sd">    s_scheme : str</span>
@@ -230,15 +223,10 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    g : ndarray</span>
-<span class="sd">        Array containing advective-diffusive-migrative conductance values for</span>
-<span class="sd">        conduits in the geometry attached to the given physics object.</span>
+<span class="sd">    %(return_arr)s advection-diffusion-migration conductance</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    This function requires that all the necessary phase properties already</span>
-<span class="sd">    be calculated.</span>
-
 <span class="sd">    This function calculates the specified property for the *entire*</span>
 <span class="sd">    network then extracts the values for the appropriate throats at the end.</span>
 

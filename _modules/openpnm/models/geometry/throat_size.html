@@ -179,13 +179,12 @@
               <div>
                 
   <h1>Source code for openpnm.models.geometry.throat_size</h1><div class="highlight"><pre>
-<span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Throat Size</span>
-<span class="sd">...........</span>
-
-<span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">_np</span>
 <span class="kn">from</span> <span class="nn">openpnm.models</span> <span class="kn">import</span> <span class="n">misc</span> <span class="k">as</span> <span class="n">_misc</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">_np</span>
+<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">Docorator</span>
+
+
+<span class="n">docstr</span> <span class="o">=</span> <span class="n">Docorator</span><span class="p">()</span>
 
 
 <div class="viewcode-block" id="weibull"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.throat_size.weibull.html#openpnm.models.geometry.throat_size.weibull">[docs]</a><span class="k">def</span> <span class="nf">weibull</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">loc</span><span class="p">,</span> <span class="n">seeds</span><span class="o">=</span><span class="s1">&#39;throat.seed&#39;</span><span class="p">):</span>
@@ -226,7 +225,8 @@
 <span class="n">from_neighbor_pores</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="n">_misc</span><span class="o">.</span><span class="n">from_neighbor_pores</span><span class="o">.</span><span class="vm">__doc__</span>
 
 
-<div class="viewcode-block" id="equivalent_diameter"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.throat_size.equivalent_diameter.html#openpnm.models.geometry.throat_size.equivalent_diameter">[docs]</a><span class="k">def</span> <span class="nf">equivalent_diameter</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">throat_area</span><span class="o">=</span><span class="s1">&#39;throat.area&#39;</span><span class="p">,</span>
+<div class="viewcode-block" id="equivalent_diameter"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.geometry.throat_size.equivalent_diameter.html#openpnm.models.geometry.throat_size.equivalent_diameter">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+<span class="k">def</span> <span class="nf">equivalent_diameter</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">throat_area</span><span class="o">=</span><span class="s1">&#39;throat.area&#39;</span><span class="p">,</span>
                         <span class="n">throat_shape</span><span class="o">=</span><span class="s1">&#39;circle&#39;</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates the diameter of a cirlce or edge-length of a sqaure with same</span>
@@ -234,12 +234,10 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : GenericGeometry</span>
-<span class="sd">        The object which this model is associated with. This controls the</span>
-<span class="sd">        length of the calculated array, and also provides access to other</span>
-<span class="sd">        necessary properties.</span>
+<span class="sd">    %(models.target.parameters)s</span>
 <span class="sd">    thorat_area : str</span>
-<span class="sd">        The dictionary key to the throat area values</span>
+<span class="sd">        Name of the dictionary key on ``target`` where the array containing</span>
+<span class="sd">        throat area values is stored</span>
 <span class="sd">    throat_shape : str</span>
 <span class="sd">        The shape cross-sectional shape of the throat to assume when</span>
 <span class="sd">        back-calculating from the area.  Options are &#39;circle&#39; (default) or</span>
@@ -247,8 +245,8 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    value : ndarray</span>
-<span class="sd">        Array containing throat equivalent diameter.</span>
+<span class="sd">    diameters : ndarray</span>
+<span class="sd">        A numpy ndarray containing throat diameter values</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">area</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">throat_area</span><span class="p">]</span>

@@ -181,8 +181,11 @@
   <h1>Source code for openpnm.geometry._imported</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">openpnm.models</span> <span class="k">as</span> <span class="nn">mods</span>
 <span class="kn">from</span> <span class="nn">openpnm.geometry</span> <span class="kn">import</span> <span class="n">GenericGeometry</span>
-<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">logging</span><span class="p">,</span> <span class="n">SettingsAttr</span>
+<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">logging</span><span class="p">,</span> <span class="n">SettingsAttr</span><span class="p">,</span> <span class="n">TypedList</span><span class="p">,</span> <span class="n">Docorator</span>
+
+
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">docstr</span> <span class="o">=</span> <span class="n">Docorator</span><span class="p">()</span>
 
 
 <span class="k">class</span> <span class="nc">ImportedSettings</span><span class="p">:</span>
@@ -209,10 +212,11 @@
     <span class="n">throat_diameter</span> <span class="o">=</span> <span class="s1">&#39;inscribed_diameter&#39;</span>
     <span class="n">pore_shape</span> <span class="o">=</span> <span class="s1">&#39;cone&#39;</span>
     <span class="n">throat_shape</span> <span class="o">=</span> <span class="s1">&#39;cylinder&#39;</span>
-    <span class="n">exclude_props</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">exclude_props</span> <span class="o">=</span> <span class="n">TypedList</span><span class="p">(</span><span class="n">types</span><span class="o">=</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span>
 
 
-<div class="viewcode-block" id="Imported"><a class="viewcode-back" href="../../../modules/generated/openpnm.geometry.Imported.html#openpnm.geometry.Imported">[docs]</a><span class="k">class</span> <span class="nc">Imported</span><span class="p">(</span><span class="n">GenericGeometry</span><span class="p">):</span>
+<div class="viewcode-block" id="Imported"><a class="viewcode-back" href="../../../modules/generated/openpnm.geometry.Imported.html#openpnm.geometry.Imported">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+<span class="k">class</span> <span class="nc">Imported</span><span class="p">(</span><span class="n">GenericGeometry</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This geometry class extracts all numerical properites from the received</span>
 <span class="sd">    network object and moves them to itself.</span>
@@ -223,15 +227,11 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    network : GenericNetwork</span>
-<span class="sd">        The network with which this Geometry should be associated</span>
-<span class="sd">    exclude : list[str]</span>
+<span class="sd">    exclude : list of strings</span>
 <span class="sd">        A list of which network properties should *not* be transferred to</span>
 <span class="sd">        new geometry object.  &#39;pore.coords&#39; and &#39;throat.conns&#39; are *always*</span>
 <span class="sd">        excluded.  Note that labels are not transferred, only properties.</span>
-<span class="sd">    name : str</span>
-<span class="sd">        The name of the object, which is also used as the label where this</span>
-<span class="sd">        geometry is defined.</span>
+<span class="sd">    %(GenericGeometry.parameters)s</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>

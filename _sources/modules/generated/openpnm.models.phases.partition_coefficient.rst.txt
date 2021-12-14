@@ -33,6 +33,7 @@ Partition\_coefficient
       :toctree:
 
    
+      Docorator
       Path
    
    

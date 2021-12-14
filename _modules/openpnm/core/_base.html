@@ -183,7 +183,6 @@
 <span class="kn">import</span> <span class="nn">uuid</span>
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
 <span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">Workspace</span><span class="p">,</span> <span class="n">logging</span>
 <span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">SettingsAttr</span>
 <span class="kn">from</span> <span class="nn">openpnm.utils.misc</span> <span class="kn">import</span> <span class="n">PrintableList</span><span class="p">,</span> <span class="n">Docorator</span>
@@ -214,15 +213,24 @@
     <span class="n">uuid</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
 
 
-<div class="viewcode-block" id="Base"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.petsc.Base.html#openpnm.algorithms.Base">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">get_sections</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="s1">&#39;Base&#39;</span><span class="p">,</span> <span class="n">sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Parameters&#39;</span><span class="p">])</span>
+<div class="viewcode-block" id="Base"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.Base.html#openpnm.algorithms.Base">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">get_sections</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="s1">&#39;Base&#39;</span><span class="p">,</span> <span class="n">sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Parameters&#39;</span><span class="p">])</span>
 <span class="k">class</span> <span class="nc">Base</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Contains methods for working with the data in the OpenPNM dict objects</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    name : str, optional</span>
-<span class="sd">        The unique name of the object.  If not given one will be generated.</span>
+<span class="sd">    network : OpenPNM network object</span>
+<span class="sd">        The network to which this object is associated</span>
+<span class="sd">    settings : dataclass-like or dict, optional</span>
+<span class="sd">        User defined settings for the object to override defaults. Can be a</span>
+<span class="sd">        dataclass-type object with settings stored as attributes or a python</span>
+<span class="sd">        dicionary of key-value pairs. Settings are stored in the ``settings``</span>
+<span class="sd">        attribute of the object.</span>
+<span class="sd">    name : string, optional</span>
+<span class="sd">        A unique name to assign to the object for easier identification.  If</span>
+<span class="sd">        not given one will be generated.</span>
+
 <span class="sd">    Np : int, default is 0</span>
 <span class="sd">        The total number of pores to be assigned to the object</span>
 <span class="sd">    Nt : int, default is 0</span>
@@ -454,7 +462,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">network</span>
 
-<div class="viewcode-block" id="Base.clear"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.petsc.Base.clear.html#openpnm.algorithms.Base.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="Base.clear"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.Base.clear.html#openpnm.algorithms.Base.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        A subclassed version of the standard dict&#39;s clear method.  This can be</span>
 <span class="sd">        used to selectively clear certain data from the object, including</span>
@@ -528,7 +536,7 @@
                 <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">names</span><span class="p">:</span>
                     <span class="k">del</span> <span class="bp">self</span><span class="p">[</span><span class="n">item</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="Base.keys"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.petsc.Base.keys.html#openpnm.algorithms.Base.keys">[docs]</a>    <span class="k">def</span> <span class="nf">keys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">deep</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="Base.keys"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.Base.keys.html#openpnm.algorithms.Base.keys">[docs]</a>    <span class="k">def</span> <span class="nf">keys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">deep</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This subclass works exactly like ``keys`` when no arguments are passed,</span>
 <span class="sd">        but optionally accepts an ``element`` and a ``mode``, which filters</span>
@@ -610,7 +618,7 @@
 
         <span class="k">return</span> <span class="n">temp</span></div>
 
-<div class="viewcode-block" id="Base.props"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.petsc.Base.props.html#openpnm.algorithms.Base.props">[docs]</a>    <span class="k">def</span> <span class="nf">props</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">deep</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="Base.props"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.Base.props.html#openpnm.algorithms.Base.props">[docs]</a>    <span class="k">def</span> <span class="nf">props</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">deep</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a list containing the names of all defined pore or throat</span>
 <span class="sd">        properties.</span>
@@ -725,7 +733,7 @@
         <span class="n">mask</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">return</span> <span class="n">mask</span>
 
-<div class="viewcode-block" id="Base.to_mask"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.petsc.Base.to_mask.html#openpnm.algorithms.Base.to_mask">[docs]</a>    <span class="k">def</span> <span class="nf">to_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">throats</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Base.to_mask"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.Base.to_mask.html#openpnm.algorithms.Base.to_mask">[docs]</a>    <span class="k">def</span> <span class="nf">to_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">throats</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert a list of pore or throat indices into a boolean mask of the</span>
 <span class="sd">        correct length.</span>
@@ -773,7 +781,7 @@
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Cannot specify both pores and throats&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">mask</span></div>
 
-<div class="viewcode-block" id="Base.to_indices"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.petsc.Base.to_indices.html#openpnm.algorithms.Base.to_indices">[docs]</a>    <span class="k">def</span> <span class="nf">to_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mask</span><span class="p">):</span>
+<div class="viewcode-block" id="Base.to_indices"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.Base.to_indices.html#openpnm.algorithms.Base.to_indices">[docs]</a>    <span class="k">def</span> <span class="nf">to_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mask</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Converts a boolean mask to a list of pore or throat indices.</span>
 
@@ -807,7 +815,7 @@
         <span class="n">indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_indices</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">indices</span></div>
 
-<div class="viewcode-block" id="Base.interleave_data"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.petsc.Base.interleave_data.html#openpnm.algorithms.Base.interleave_data">[docs]</a>    <span class="k">def</span> <span class="nf">interleave_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prop</span><span class="p">):</span>
+<div class="viewcode-block" id="Base.interleave_data"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.Base.interleave_data.html#openpnm.algorithms.Base.interleave_data">[docs]</a>    <span class="k">def</span> <span class="nf">interleave_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prop</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieves requested property from associated objects, to produce a full</span>
 <span class="sd">        Np or Nt length array.</span>
@@ -855,14 +863,14 @@
 <span class="sd">        [False False False False]</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Fetch sources list depending on type of self</span>
+        <span class="c1"># Fetch subdomains list depending on type of self</span>
         <span class="n">proj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_isa</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;network&#39;</span><span class="p">,</span> <span class="s1">&#39;geometry&#39;</span><span class="p">]:</span>
-            <span class="n">sources</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">proj</span><span class="o">.</span><span class="n">geometries</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+            <span class="n">subdomains</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">proj</span><span class="o">.</span><span class="n">geometries</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_isa</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;phase&#39;</span><span class="p">,</span> <span class="s1">&#39;physics&#39;</span><span class="p">]:</span>
-            <span class="n">sources</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">proj</span><span class="o">.</span><span class="n">find_physics</span><span class="p">(</span><span class="n">phase</span><span class="o">=</span><span class="bp">self</span><span class="p">))</span>
+            <span class="n">subdomains</span><span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">proj</span><span class="o">.</span><span class="n">find_physics</span><span class="p">(</span><span class="n">phase</span><span class="o">=</span><span class="bp">self</span><span class="p">))</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_isa</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;algorithm&#39;</span><span class="p">,</span> <span class="s1">&#39;base&#39;</span><span class="p">]:</span>
-            <span class="n">sources</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="p">]</span>
+            <span class="n">subdomains</span><span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Unrecognized object type, cannot find dependents&#39;</span><span class="p">)</span>
 
@@ -871,23 +879,26 @@
         <span class="n">N</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">_count</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
 
         <span class="c1"># Attempt to fetch the requested array from each object</span>
-        <span class="n">arrs</span> <span class="o">=</span> <span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">prop</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">sources</span><span class="p">]</span>
+        <span class="n">arrs</span> <span class="o">=</span> <span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">prop</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">subdomains</span><span class="p">]</span>
 
         <span class="c1"># Check for missing sources, and add None to arrs if necessary</span>
-        <span class="k">if</span> <span class="n">N</span> <span class="o">&gt;</span> <span class="nb">sum</span><span class="p">([</span><span class="n">obj</span><span class="o">.</span><span class="n">_count</span><span class="p">(</span><span class="n">element</span><span class="p">)</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">sources</span><span class="p">]):</span>
+        <span class="k">if</span> <span class="n">N</span> <span class="o">&gt;</span> <span class="nb">sum</span><span class="p">([</span><span class="n">obj</span><span class="o">.</span><span class="n">_count</span><span class="p">(</span><span class="n">element</span><span class="p">)</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">subdomains</span><span class="p">]):</span>
             <span class="n">arrs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
 
         <span class="c1"># Obtain list of locations for inserting values</span>
-        <span class="n">locs</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_indices</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">sources</span><span class="p">]</span>
+        <span class="n">locs</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_indices</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">subdomains</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">([</span><span class="n">item</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">arrs</span><span class="p">]):</span>  <span class="c1"># prop not found anywhere</span>
             <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="n">prop</span><span class="p">)</span>
 
         <span class="c1"># Let&#39;s start by handling the easy cases first</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">([</span><span class="n">a</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">arrs</span><span class="p">]):</span>
-            <span class="c1"># All objs present and array found on all objs</span>
-            <span class="n">shape</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">arrs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-            <span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">N</span>
+            <span class="c1"># All objs are present and array found on all objs</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">W</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">arrs</span><span class="p">])</span>  <span class="c1"># Width of array</span>
+                <span class="n">shape</span> <span class="o">=</span> <span class="p">[</span><span class="n">N</span><span class="p">,</span> <span class="n">W</span><span class="p">]</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="n">shape</span> <span class="o">=</span> <span class="p">[</span><span class="n">N</span><span class="p">,</span> <span class="p">]</span>
             <span class="n">types</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">arrs</span><span class="p">]</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">types</span><span class="p">))</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="c1"># All types are the same</span>
@@ -943,7 +954,7 @@
 
         <span class="k">return</span> <span class="n">temp_arr</span></div>
 
-<div class="viewcode-block" id="Base.interpolate_data"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.petsc.Base.interpolate_data.html#openpnm.algorithms.Base.interpolate_data">[docs]</a>    <span class="k">def</span> <span class="nf">interpolate_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">propname</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;mean&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="Base.interpolate_data"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.Base.interpolate_data.html#openpnm.algorithms.Base.interpolate_data">[docs]</a>    <span class="k">def</span> <span class="nf">interpolate_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">propname</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;mean&#39;</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Determines a pore (or throat) property as the average of it&#39;s</span>
 <span class="sd">        neighboring throats (or pores)</span>
@@ -979,45 +990,62 @@
             <span class="n">values</span> <span class="o">*=</span> <span class="bp">self</span><span class="p">[</span><span class="n">propname</span><span class="p">]</span><span class="o">.</span><span class="n">units</span>
         <span class="k">return</span> <span class="n">values</span></div>
 
-<div class="viewcode-block" id="Base.get_conduit_data"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.petsc.Base.get_conduit_data.html#openpnm.algorithms.Base.get_conduit_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_conduit_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prop</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;mean&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="Base.get_conduit_data"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.Base.get_conduit_data.html#openpnm.algorithms.Base.get_conduit_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_conduit_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">poreprop</span><span class="p">,</span> <span class="n">throatprop</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;mean&#39;</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Combines requested data into a single 3-column array.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        prop : str</span>
-<span class="sd">            The dictionary key to the property of interest</span>
-<span class="sd">        mode : str</span>
-<span class="sd">            How interpolation should be peformed for missing values. If</span>
-<span class="sd">            values are present for both pores and throats, then this</span>
-<span class="sd">            argument is ignored. The ``interpolate`` data method is used.</span>
-<span class="sd">            Options are:</span>
+<span class="sd">        poreprop : str</span>
+<span class="sd">            The dictionary key to the pore property of interest</span>
+<span class="sd">        throatprop : str, optional</span>
+<span class="sd">            The dictionary key to the throat property of interest. If not</span>
+<span class="sd">            given then the same property as ``poreprop`` is assumed.  So</span>
+<span class="sd">            if poreprop = &#39;pore.foo&#39; (or just &#39;foo&#39;), then throatprop is</span>
+<span class="sd">            set to &#39;throat.foo&#39;).</span>
+<span class="sd">        mode : string</span>
+<span class="sd">            How interpolation should be peformed for missing values. If values</span>
+<span class="sd">            are present for both pores and throats, then this argument is</span>
+<span class="sd">            ignored.  The ``interpolate`` data method is used.  Options are:</span>
+
+<span class="sd">                * &#39;mean&#39; (default)</span>
 
 <span class="sd">                **&#39;mean&#39;** (default):</span>
 <span class="sd">                    Finds the mean value of the neighboring pores (or throats)</span>
-<span class="sd">                **&#39;min&#39;**</span>
-<span class="sd">                    Finds the minimuem of the neighboring pores (or throats)</span>
-<span class="sd">                **&#39;max&#39;**</span>
+<span class="sd">                * &#39;min&#39;</span>
+<span class="sd">                    Finds the minimum of the neighboring pores (or throats)</span>
+<span class="sd">                * &#39;max&#39;</span>
 <span class="sd">                    Finds the maximum of the neighboring pores (or throats)</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        conduit_data : ndarray</span>
-<span class="sd">            An Nt-by-3 array with each column containg the requested</span>
+<span class="sd">            An Nt-by-3 array with each column containing the requested</span>
 <span class="sd">            property for each pore-throat-pore conduit.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Deal with various args</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">poreprop</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;pore&#39;</span><span class="p">):</span>
+            <span class="n">poreprop</span> <span class="o">=</span> <span class="s1">&#39;pore.&#39;</span> <span class="o">+</span> <span class="n">poreprop</span>
+        <span class="k">if</span> <span class="n">throatprop</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">throatprop</span> <span class="o">=</span> <span class="s1">&#39;throat.&#39;</span> <span class="o">+</span> <span class="n">poreprop</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">throatprop</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;throat&#39;</span><span class="p">):</span>
+            <span class="n">throatprop</span> <span class="o">=</span> <span class="s1">&#39;throat.&#39;</span> <span class="o">+</span> <span class="n">throatprop</span>
+        <span class="c1"># Generate array</span>
+        <span class="n">conns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">conns</span>
+        <span class="n">domain</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_domain</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">T</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.&#39;</span> <span class="o">+</span> <span class="n">prop</span><span class="p">]</span>
+            <span class="n">T</span> <span class="o">=</span> <span class="n">domain</span><span class="p">[</span><span class="n">throatprop</span><span class="p">]</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">P1</span><span class="p">,</span> <span class="n">P2</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.&#39;</span> <span class="o">+</span> <span class="n">prop</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">conns</span><span class="p">]</span><span class="o">.</span><span class="n">T</span>
+                <span class="n">P1</span><span class="p">,</span> <span class="n">P2</span> <span class="o">=</span> <span class="n">domain</span><span class="p">[</span><span class="n">poreprop</span><span class="p">][</span><span class="n">conns</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
             <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-                <span class="n">P</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interpolate_data</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.&#39;</span><span class="o">+</span><span class="n">prop</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
-                <span class="n">P1</span><span class="p">,</span> <span class="n">P2</span> <span class="o">=</span> <span class="n">P</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">conns</span><span class="p">]</span><span class="o">.</span><span class="n">T</span>
+                <span class="n">P</span> <span class="o">=</span> <span class="n">domain</span><span class="o">.</span><span class="n">interpolate_data</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="n">throatprop</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
+                <span class="n">P1</span><span class="p">,</span> <span class="n">P2</span> <span class="o">=</span> <span class="n">P</span><span class="p">[</span><span class="n">conns</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-            <span class="n">P1</span><span class="p">,</span> <span class="n">P2</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.&#39;</span> <span class="o">+</span> <span class="n">prop</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">conns</span><span class="p">]</span><span class="o">.</span><span class="n">T</span>
-            <span class="n">T</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interpolate_data</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.&#39;</span><span class="o">+</span><span class="n">prop</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">P1</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">P2</span><span class="p">))</span><span class="o">.</span><span class="n">T</span></div>
+            <span class="n">P1</span><span class="p">,</span> <span class="n">P2</span> <span class="o">=</span> <span class="n">domain</span><span class="p">[</span><span class="n">poreprop</span><span class="p">][</span><span class="n">conns</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
+            <span class="n">T</span> <span class="o">=</span> <span class="n">domain</span><span class="o">.</span><span class="n">interpolate_data</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="n">poreprop</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">throats</span><span class="p">(</span><span class="n">to_global</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">P1</span><span class="p">[</span><span class="n">mask</span><span class="p">],</span> <span class="n">T</span><span class="p">[</span><span class="n">mask</span><span class="p">],</span> <span class="n">P2</span><span class="p">[</span><span class="n">mask</span><span class="p">]))</span><span class="o">.</span><span class="n">T</span></div>
 
     <span class="k">def</span> <span class="nf">_count</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -1061,7 +1089,7 @@
         <span class="n">temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="fm">__getitem__</span><span class="p">(</span><span class="n">element</span><span class="o">+</span><span class="s1">&#39;.all&#39;</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">temp</span>
 
-<div class="viewcode-block" id="Base.show_hist"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.petsc.Base.show_hist.html#openpnm.algorithms.Base.show_hist">[docs]</a>    <span class="k">def</span> <span class="nf">show_hist</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+<div class="viewcode-block" id="Base.show_hist"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.Base.show_hist.html#openpnm.algorithms.Base.show_hist">[docs]</a>    <span class="k">def</span> <span class="nf">show_hist</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                   <span class="n">props</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">,</span> <span class="s1">&#39;throat.diameter&#39;</span><span class="p">,</span> <span class="s1">&#39;throat.length&#39;</span><span class="p">],</span>
                   <span class="n">bins</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>

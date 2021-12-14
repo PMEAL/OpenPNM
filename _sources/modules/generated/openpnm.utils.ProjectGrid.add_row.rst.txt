@@ -1,8 +1,0 @@
-:orphan:
-
-add_row
-=================================
-
-.. currentmodule:: openpnm.utils
-
-.. automethod:: ProjectGrid.add_row

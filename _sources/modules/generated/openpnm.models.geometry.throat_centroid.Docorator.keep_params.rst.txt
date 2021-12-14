@@ -1,0 +1,8 @@
+:orphan:
+
+keep_params
+=============================================================
+
+.. currentmodule:: openpnm.models.geometry.throat_centroid
+
+.. automethod:: Docorator.keep_params

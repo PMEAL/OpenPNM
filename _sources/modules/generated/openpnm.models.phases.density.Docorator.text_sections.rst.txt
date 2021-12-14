@@ -1,0 +1,11 @@
+:orphan:
+
+openpnm.models.phases.density.Docorator.text\_sections
+======================================================
+
+.. currentmodule:: openpnm.models.phases.density
+
+attribute
+
+.. autoattribute:: openpnm.models.phases.density.Docorator.text_sections
+

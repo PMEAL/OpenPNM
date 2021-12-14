@@ -180,22 +180,23 @@
                 
   <h1>Source code for openpnm.models.phases.mixtures</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">Docorator</span>
 
 
-<div class="viewcode-block" id="salinity"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.phases.mixtures.salinity.html#openpnm.models.phases.mixtures.salinity">[docs]</a><span class="k">def</span> <span class="nf">salinity</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">,</span>
+<span class="n">docstr</span> <span class="o">=</span> <span class="n">Docorator</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="salinity"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.phases.mixtures.salinity.html#openpnm.models.phases.mixtures.salinity">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+<span class="k">def</span> <span class="nf">salinity</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">,</span>
              <span class="n">concentration</span><span class="o">=</span><span class="s1">&#39;pore.concentration&#39;</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates the salinity in g salt per kg of solution from concentration</span>
 
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    target : GenericPhase</span>
-<span class="sd">        The object for which these values are being calculated.  This</span>
-<span class="sd">        controls the length of the calculated array, and also provides</span>
-<span class="sd">        access to other necessary thermofluid properties.</span>
-<span class="sd">    temperature : str</span>
-<span class="sd">        The dictionary key containing the temperature values in Kelvin.</span>
-<span class="sd">    concentration : str</span>
+<span class="sd">    Parameter</span>
+<span class="sd">    ---------</span>
+<span class="sd">    %(models.target.parameters)s</span>
+<span class="sd">    %(models.phase.T)s</span>
+<span class="sd">    concentration : string</span>
 <span class="sd">        The dictionary key containing the concentration values, in SI units of</span>
 <span class="sd">        mol/m3.</span>
 
@@ -229,25 +230,21 @@
     <span class="k">return</span> <span class="n">S</span></div>
 
 
-<div class="viewcode-block" id="mole_weighted_average"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.phases.mixtures.mole_weighted_average.html#openpnm.models.phases.mixtures.mole_weighted_average">[docs]</a><span class="k">def</span> <span class="nf">mole_weighted_average</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">prop</span><span class="p">):</span>
+<div class="viewcode-block" id="mole_weighted_average"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.phases.mixtures.mole_weighted_average.html#openpnm.models.phases.mixtures.mole_weighted_average">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+<span class="k">def</span> <span class="nf">mole_weighted_average</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">prop</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Brief explanation of &#39;mole_weighted_average&#39;</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : GenericMixture</span>
-<span class="sd">        The object for which these values are being calculated.  This</span>
-<span class="sd">        controls the length of the calculated array, and also provides</span>
-<span class="sd">        access to other necessary thermofluid properties.</span>
-<span class="sd">    prop : str</span>
+<span class="sd">    %(models.target.parameters)s</span>
+<span class="sd">    prop : string</span>
 <span class="sd">        The dictionary key to the property to be averaged.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    vals : ndarray</span>
-<span class="sd">        An ndarray containing the mole fraction weighted average value of the</span>
+<span class="sd">    vals : ND-array</span>
+<span class="sd">        An ND-array containing the mole fraction weighted average value of the</span>
 <span class="sd">        specified property.</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">comps</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
     <span class="n">element</span> <span class="o">=</span> <span class="n">prop</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
@@ -272,30 +269,22 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : GenericMixture</span>
-<span class="sd">        The object for which these values are being calculated.  This</span>
-<span class="sd">        controls the length of the calculated array, and also provides</span>
-<span class="sd">        access to other necessary thermofluid properties.</span>
-<span class="sd">    molecular_weight : str</span>
+<span class="sd">    %(models.target.parameters)s</span>
+<span class="sd">    molecular_weight : string</span>
 <span class="sd">        Dictionary key containing the molecular weight of each species.  The</span>
 <span class="sd">        default is &#39;pore.molecular_weight&#39;</span>
-<span class="sd">    molar_diffusion_volume : str</span>
+<span class="sd">    molar_diffusion_volume : string</span>
 <span class="sd">        Dictionary key containing the molar diffusion volume of each species.</span>
 <span class="sd">        This is used by the Fuller correlation.  The default is</span>
 <span class="sd">        &#39;pore.molar_diffusion_volume&#39;</span>
-<span class="sd">    temperature : str</span>
-<span class="sd">        Dictionary key contain the temperature of the mixture.  The default</span>
-<span class="sd">        is &#39;pore.temperature&#39;</span>
-<span class="sd">    pressure : str</span>
-<span class="sd">        Dictionary key contain the pressure of the mixture.  The default</span>
-<span class="sd">        is &#39;pore.pressure&#39;.</span>
+<span class="sd">    %(models.phase.T)s</span>
+<span class="sd">    %(models.phase.P)s</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    Dij : dict containing ND-arrys</span>
 <span class="sd">        The dict contains one array for each component, containing the</span>
 <span class="sd">        diffusion coefficient of that component at each location.</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">species_A</span><span class="p">,</span> <span class="n">species_B</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
     <span class="n">T</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">temperature</span><span class="p">]</span>
@@ -310,7 +299,8 @@
     <span class="k">return</span> <span class="n">value</span></div>
 
 
-<div class="viewcode-block" id="wilke_fuller_diffusivity"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.phases.mixtures.wilke_fuller_diffusivity.html#openpnm.models.phases.mixtures.wilke_fuller_diffusivity">[docs]</a><span class="k">def</span> <span class="nf">wilke_fuller_diffusivity</span><span class="p">(</span>
+<div class="viewcode-block" id="wilke_fuller_diffusivity"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.phases.mixtures.wilke_fuller_diffusivity.html#openpnm.models.phases.mixtures.wilke_fuller_diffusivity">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+<span class="k">def</span> <span class="nf">wilke_fuller_diffusivity</span><span class="p">(</span>
         <span class="n">target</span><span class="p">,</span>
         <span class="n">molecular_weight</span><span class="o">=</span><span class="s1">&#39;pore.molecular_weight&#39;</span><span class="p">,</span>
         <span class="n">molar_diffusion_volume</span><span class="o">=</span><span class="s1">&#39;pore.molar_diffusion_volume&#39;</span><span class="p">,</span>
@@ -325,23 +315,16 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : GenericMixture</span>
-<span class="sd">        The object for which these values are being calculated.  This</span>
-<span class="sd">        controls the length of the calculated array, and also provides</span>
-<span class="sd">        access to other necessary thermofluid properties.</span>
-<span class="sd">    molecular_weight : str</span>
+<span class="sd">    %(models.target.parameters)s</span>
+<span class="sd">    molecular_weight : string</span>
 <span class="sd">        Dictionary key containing the molecular weight of each species.  The</span>
 <span class="sd">        default is &#39;pore.molecular_weight&#39;</span>
-<span class="sd">    molar_diffusion_volume : str</span>
+<span class="sd">    molar_diffusion_volume : string</span>
 <span class="sd">        Dictionary key containing the molar diffusion volume of each species.</span>
 <span class="sd">        This is used by the Fuller correlation.  The default is</span>
 <span class="sd">        &#39;pore.molar_diffusion_volume&#39;</span>
-<span class="sd">    temperature : str</span>
-<span class="sd">        Dictionary key containing the temperature of the mixture.  The default</span>
-<span class="sd">        is &#39;pore.temperature&#39;</span>
-<span class="sd">    pressure : str</span>
-<span class="sd">        Dictionary key containing the pressure of the mixture.  The default</span>
-<span class="sd">        is &#39;pore.pressure&#39;</span>
+<span class="sd">    %(models.phase.T)s</span>
+<span class="sd">    %(models.phase.P)s</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -349,12 +332,11 @@
 <span class="sd">        The dict contains one array for each component, containing the</span>
 <span class="sd">        diffusion coefficient of that component at each location.</span>
 
-<span class="sd">    References</span>
-<span class="sd">    ----------</span>
+<span class="sd">    Reference</span>
+<span class="sd">    ---------</span>
 <span class="sd">    Fairbanks DF and CR Wilke, Diffusion Coefficients in Multicomponent</span>
 <span class="sd">    Gas Mixtures. Industrial &amp; Engineering Chemistry, 42(3), p471–475 (1950).</span>
 <span class="sd">    `DOI: 10.1021/ie50483a022 &lt;http://doi.org/10.1021/ie50483a022&gt;`_</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">comps</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">target</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
     <span class="n">values</span> <span class="o">=</span> <span class="p">{}</span>

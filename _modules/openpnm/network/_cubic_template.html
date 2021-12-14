@@ -183,11 +183,11 @@
 <span class="kn">from</span> <span class="nn">openpnm.network</span> <span class="kn">import</span> <span class="n">Cubic</span>
 <span class="kn">from</span> <span class="nn">openpnm</span> <span class="kn">import</span> <span class="n">topotools</span>
 <span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">logging</span>
-<span class="kn">from</span> <span class="nn">auto_all</span> <span class="kn">import</span> <span class="n">start_all</span><span class="p">,</span> <span class="n">end_all</span>
+
+
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;CubicTemplate&#39;</span><span class="p">]</span>
 
-
-<span class="n">start_all</span><span class="p">()</span>
 
 <div class="viewcode-block" id="CubicTemplate"><a class="viewcode-back" href="../../../modules/generated/openpnm.network.CubicTemplate.html#openpnm.network.CubicTemplate">[docs]</a><span class="k">class</span> <span class="nc">CubicTemplate</span><span class="p">(</span><span class="n">Cubic</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -251,8 +251,6 @@
         <span class="n">mask_surface</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;pore.surface&quot;</span><span class="p">]</span>
         <span class="n">mask_internal_surface</span> <span class="o">=</span> <span class="p">(</span><span class="n">num_neighbors</span> <span class="o">&lt;</span> <span class="n">max_neighbors</span><span class="p">)</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">mask_surface</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s2">&quot;pore.internal_surface&quot;</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="n">mask_internal_surface</span><span class="p">)</span></div>
-
-<span class="n">end_all</span><span class="p">()</span>
 </pre></div>
 
               </div>

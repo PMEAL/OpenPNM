@@ -1,0 +1,8 @@
+:orphan:
+
+keep_params
+===================================================================
+
+.. currentmodule:: openpnm.models.phases.electrical_conductivity
+
+.. automethod:: Docorator.keep_params

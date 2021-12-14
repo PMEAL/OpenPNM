@@ -1,8 +1,0 @@
-:orphan:
-
-class_trait_view
-===========================================
-
-.. currentmodule:: openpnm.utils
-
-.. automethod:: SettingsData.class_trait_view
