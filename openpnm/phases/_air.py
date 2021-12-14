@@ -1,53 +1,29 @@
 from openpnm.phases import GenericPhase
 import openpnm.models as mods
+from openpnm.utils import Docorator
 
 
+docstr = Docorator()
+
+
+@docstr.dedent
 class Air(GenericPhase):
     r"""
-    Creates Phase object with preset models and values for air.
+    Creates a Phase object with preset models and values for air.
 
     Parameters
     ----------
-    network : GenericNetwork
-        The network to which this phase object will be attached.
-    name : str, optional
-        The name of the phase.  This is useful to keep track of the objects
-        throughout the simulation.  The name must be unique to the project.  If
-        no name is given, one is generated.
-
-    Examples
-    --------
-    >>> import openpnm as op
-    >>> pn = op.network.Cubic(shape=[5, 5, 5])
-    >>> air = op.phases.Air(network=pn)
-
-    Notes
-    -----
-    The table below shows all of the pore-scale models that are included with
-    this class to calculate the physical properties of this fluid as functions
-    of the relevant state variables.
-
-    This object is initialized at standard conditions of 298 K and 101325 Pa.
-    If these conditions are changed, the dependent properties can be
-    recalculated by calling ``regenerate_models``.
-
-    All of these parameters can be adjusted manually by editing the entries in
-    the **ModelsDict** stored in the ``models`` attribute of the object.
-
-    For a full listing of models and their parameters use ``print(obj.models)``
-    where ``obj`` is the handle to the object.
-
-    In addition to these models, this class also has a number of constant
-    values assigned to it which can be found by running
-    ``props(mode='constants')``.
+    %(GenericPhase.parameters)s
 
     References
     ----------
-    The pore scale models for this class are taken from:
+    The correlations and constants for this class are taken from:
 
-    [1] E.W. Lemmon and R.T. Jacobsen, "Viscosity and Thermal Conductivity
-    Equations for Nitrogen, Oxygen, Argon, and Air", Int. J. of Thermophysics,
-    Vol. 25, No. 1, January 2004, pp. 21-69
+    ::
+
+        E.W. Lemmon and R.T. Jacobsen, "Viscosity and Thermal Conductivity
+        Equations for Nitrogen, Oxygen, Argon, and Air", Int. J. of
+        Thermophysics, Vol. 25, No. 1, January 2004, pp. 21-69
 
     """
 

@@ -2,7 +2,7 @@ import numpy as np
 from openpnm.utils import logging
 from openpnm.phases import Mercury
 from openpnm.physics import GenericPhysics
-from openpnm.algorithms import Porosimetry
+from openpnm.metrics import Porosimetry
 from openpnm import models
 from openpnm import topotools
 logger = logging.getLogger(__name__)

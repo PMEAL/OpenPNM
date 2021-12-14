@@ -1,33 +1,37 @@
-r"""
-"""
 import numpy as np
+from openpnm.utils import Docorator
 
 
+docstr = Docorator()
+
+
+@docstr.get_sections(base='models.phase.vapor_pressure',
+                     sections=['Returns'])
+@docstr.dedent
 def antoine(target, A, B, C, temperature='pore.temperature'):
     r"""
-    Uses Antoine equation [1] to estimate vapor pressure of a pure component
+    Uses Antoine equation to estimate vapor pressure of a pure component
 
     Parameters
     ----------
-    target : GenericPhase
-        The object for which these values are being calculated.  This
-        controls the length of the calculated array, and also provides
-        access to other necessary thermofluid properties.
+    %(models.target.parameters)s
     A, B, C :  scalars
         Antoine vapor pressure coefficients for pure compounds. Since virtually
         all Antoine coefficients are reported for units of mmHg and C for
-        historical reaons, this method assumes these A, B and C values are for
+        historical reasons, this method assumes these A, B and C values are for
         mmHg and C, but converts all properties internally to return Pascals.
-    temperature : str
-        The dictionary key containing the phase temperature values in Kelvin
-        [K].  Can be either pore or throat values.
+    %(models.phase.T)s
 
     Returns
     -------
     value : ndarray
         Array containing vapor pressure values [Pa]
 
-    [1] Antoine, C. (1888), Vapor Pressure: a new relationship between pressure
+    References
+    ----------
+    ::
+
+        Antoine, C. (1888), Vapor Pressure: a new relationship between pressure
         and temperature, Comptes Rendus des Séances de l'Académie des Sciences
         (in French) 107: 681–684, 778–780, 836–837
 
@@ -44,19 +48,14 @@ def water(target, temperature='pore.temperature', salinity='pore.salinity'):
 
     Parameters
     ----------
-    target : GenericPhase
-        The object for which these values are being calculated.  This
-        controls the length of the calculated array, and also provides
-        access to other necessary thermofluid properties.
-    temperature : str
-        The dictionary key containing the phase temperature values
+    %(models.target.parameters)s
+    %(models.phase.T)s
     salinity : str
         The dictionary key containing the phase salinity values
 
     Returns
     -------
-    value : ndarray
-        Array containing vapor pressure of water/seawater in [Pa]
+    %(models.phase.vapor_pressure.returns)s
 
     Notes
     -----

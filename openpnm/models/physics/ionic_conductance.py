@@ -1,44 +1,37 @@
-r"""
-Pore-scale models for calculating ionic conductance of conduits.
-"""
 import numpy as _np
 from openpnm.utils import logging
+from openpnm.models import _doctxt
 from openpnm.models.physics._utils import _poisson_conductance
-logger = logging.getLogger(__name__)
 
+
+logger = logging.getLogger(__name__)
 __all__ = ["poisson", "electroneutrality"]
 
 
-def poisson(target,
-            pore_permittivity='pore.permittivity',
-            throat_permittivity='throat.permittivity',
-            size_factors='throat.diffusive_size_factors'):
+@_doctxt
+def poisson(
+    target,
+    pore_permittivity='pore.permittivity',
+    throat_permittivity='throat.permittivity',
+    size_factors='throat.diffusive_size_factors'
+):
     r"""
     Calculate the ionic conductance of conduits in network (using the
-    Poisson equation for charge conservation), where a conduit is
-    (1/2 pore - full throat - 1/2 pore). See the notes section.
+    Poisson equation for charge conservation)
 
     Parameters
     ----------
-    target : GenericPhysics
-        Physics object with which this model is associated.
+    %(target_blurb)s
     pore_permittivity : str
-        Dictionary key of the pore permittivity values.
+        %(dict_blurb)s pore permittivity
     throat_permittivity : str
-        Dictionary key of the throat permittivity values.
+        %(dict_blurb)s throat permittivity
     size_factors: str
-        Dictionary key of the conduit size factors' values.
+        %(dict_blurb)s conduit size factors'
 
     Returns
     -------
-    g : ndarray
-        Array containing ionic conductance values for conduits in the
-        geometry attached to the given physics object.
-
-    Notes
-    -----
-    This function requires that all the necessary phase properties already
-    be calculated.
+    %(return_arr)s ionic conductance
 
     """
     epsilon0 = 8.854187817e-12
@@ -49,55 +42,48 @@ def poisson(target,
     return tmp * epsilon0
 
 
-def electroneutrality(target,
-                      pore_diffusivity='pore.diffusivity',
-                      throat_diffusivity='throat.diffusivity',
-                      size_factors="throat.diffusive_size_factors",
-                      pore_volume='pore.volume',
-                      pore_temperature='pore.temperature',
-                      throat_temperature='throat.temperature',
-                      pore_valence='pore.valence',
-                      throat_valence='throat.valence',
-                      pore_concentration='pore.concentration',
-                      ions=[]):
+def electroneutrality(
+    target,
+    pore_diffusivity='pore.diffusivity',
+    throat_diffusivity='throat.diffusivity',
+    size_factors="throat.diffusive_size_factors",
+    pore_volume='pore.volume',
+    pore_temperature='pore.temperature',
+    throat_temperature='throat.temperature',
+    pore_valence='pore.valence',
+    throat_valence='throat.valence',
+    pore_concentration='pore.concentration',
+    ions=[]
+):
     r"""
     Calculates the ionic conductance of conduits in network (assuming
-    electroneutrality for charge conservation), where a conduit is
-    (1/2 pore - full throat - 1/2 pore). See the notes section.
+    electroneutrality for charge conservation)
 
     Parameters
     ----------
-    target : GenericPhysics
-        Physics object with which this model is associated.
+    %(target_blurb)s
     pore_diffusivity : str
-        Dictionary key of the pore diffusivity values
+        %(dict_blurb)s pore diffusivity
     throat_diffusivity : str
-        Dictionary key of the throat diffusivity values
-    size_factors: str
-        Dictionary key of the conduit size factors' values.
-    pore_volume : str
-        Dictionary key of the pore volume values
+        %(dict_blurb)s throat diffusivity
     pore_temperature : str
-        Dictionary key of the pore temperature values
+        %(dict_blurb)s pore temperature
     throat_temperature : str
-        Dictionary key of the throat temperature values
+        %(dict_blurb)s throat temperature
+    size_factors: str
+        %(dict_blurb)s conduit size factors
+    throat_temperature : str
+        %(dict_blurb)s throat temperature
     pore_valence : str
-       Dictionary key of the pore ionic species valence values
+        %(dict_blurb)s ionic valence values
     throat_valence : str
-       Dictionary key of the throat ionic species valence values
+        %(dict_blurb)s ionic species valence
     pore_concentration : str
-       Dictionary key of the pore ionic species concentration values
+        %(dict_blurb)s ionic species pore concentration
 
     Returns
     -------
-    g : ndarray
-        Array containing ionic conductance values for conduits in the
-        geometry attached to the given physics object.
-
-    Notes
-    -----
-    This function requires that all the necessary phase properties already
-    be calculated.
+    %(return_arr)s ionic conductance
 
     """
     if ions == []:

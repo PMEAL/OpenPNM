@@ -2,6 +2,7 @@ r"""
 ========================
 MixedInvasionPercolation
 ========================
+
 IP allowing pores and throats to invade separately.
 
 """
@@ -13,6 +14,7 @@ from openpnm.topotools import find_clusters, site_percolation
 from openpnm.utils import logging, SettingsAttr, Docorator
 docstr = Docorator()
 logger = logging.getLogger(__name__)
+
 
 __all__ = ['MixedInvasionPercolation']
 

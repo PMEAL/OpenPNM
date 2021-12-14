@@ -1,50 +1,47 @@
-r"""
-Throat Perimeter
-................
-
-"""
 import numpy as _np
+from openpnm.utils import Docorator
 
 
+docstr = Docorator()
+
+
+@docstr.get_sections(base='models.geometry.throat_perimeter',
+                     sections=['Parameters', 'Returns'])
 def cylinder(target, throat_diameter='throat.diameter'):
     r"""
     Calcuate the throat perimeter assuming a circular cross-section
 
     Parameters
     ----------
-    target : GenericGeometry
-        The object which this model is associated with. This controls the
-        length of the calculated array, and also provides access to other
-        necessary properties.
+    target : OpenPNM Base object
+        Object with which this model is associated. This controls
+        the length of the calculated array, and also provides access to
+        other necessary properties.
     throat_diameter : str
-        The dictionary key of the array containing the throat diameter values
+        Name of the dictionary key on ``target`` where the array containing
+        throat diameter values is stored
 
     Returns
     -------
-    value : ndarray
-        Array containing throat perimeter values.
+    perimeters : ndarray
+        A numpy ndarray containing throat perimeter values
 
     """
     return target[throat_diameter]*_np.pi
 
 
+@docstr.dedent
 def cuboid(target, throat_diameter='throat.diameter'):
     r"""
     Calcuate the throat perimeter assuming a square cross-section
 
     Parameters
     ----------
-    target : GenericGeometry
-        The object which this model is associated with. This controls the
-        length of the calculated array, and also provides access to other
-        necessary properties.
-    throat_diameter : str
-        The dictionary key of the array containing the throat diameter values.
+    %(models.geometry.throat_perimeter.parameters)s
 
     Returns
     -------
-    value : ndarray
-        Array containing throat perimeter values.
+    %(models.geometry.throat_perimeter.returns)s
 
     """
     return target[throat_diameter]*4
@@ -56,17 +53,11 @@ def rectangle(target, throat_diameter='throat.diameter'):
 
     Parameters
     ----------
-    target : GenericGeometry
-        The object which this model is associated with. This controls the
-        length of the calculated array, and also provides access to other
-        necessary properties.
-    throat_diameter : str
-        The dictionary key of the array containing the throat diameter values
+    %(models.geometry.throat_perimeter.parameters)s
 
     Returns
     -------
-    value : ndarray
-        Array containing throat perimeter values.
+    %(models.geometry.throat_perimeter.returns)s
 
     """
     return 1.0

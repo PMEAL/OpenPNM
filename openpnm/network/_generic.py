@@ -6,7 +6,6 @@ from openpnm import topotools
 from openpnm.utils import Docorator, SettingsAttr
 from openpnm.utils import Workspace, logging
 import openpnm.models.network as mods
-from auto_all import start_all, end_all
 logger = logging.getLogger(__name__)
 ws = Workspace()
 docstr = Docorator()
@@ -24,8 +23,8 @@ class NetworkSettings:
     prefix = 'net'
 
 
-start_all()
-
+@docstr.get_sections(base='GenericNetwork', sections=['Parameters'])
+@docstr.dedent
 class GenericNetwork(ParamMixin, Base, ModelsMixin, LabelMixin):
     r"""
     This generic class contains the main functionality used by all
@@ -33,9 +32,18 @@ class GenericNetwork(ParamMixin, Base, ModelsMixin, LabelMixin):
 
     Parameters
     ----------
-    coords : array_like
+    settings : dataclass-like or dict, optional
+        User defined settings for the object to override defaults. Can be a
+        dataclass-type object with settings stored as attributes or a python
+        dicionary of key-value pairs. Settings are stored in the ``settings``
+        attribute of the object.
+    name : string, optional
+        A unique name to assign to the object for easier identification.  If
+        not given one will be generated.
+
+    coords : array_like (optional)
         An Np-by-3 array of [x, y, z] coordinates for each pore.
-    conns : array_like
+    conns : array_like (optional)
         An Nt-by-2 array of [head, tail] connections between pores.
 
     Examples
@@ -65,8 +73,7 @@ class GenericNetwork(ParamMixin, Base, ModelsMixin, LabelMixin):
     2     : throat.conns
     ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 
-    The GenericNetwork class has several methods for querying the
-    topology.
+    The ``GenericNetwork`` class has several methods for querying the topology.
 
     >>> Ps = pn.find_neighbor_pores(pores=1)
     >>> print(Ps)
@@ -98,7 +105,10 @@ class GenericNetwork(ParamMixin, Base, ModelsMixin, LabelMixin):
             self['throat.conns'] = np.array(conns)
         self.add_model(propname='pore.coordination_number',
                        model=mods.coordination_number,
-                       regen_mode='explicit')
+                       regen_mode='deferred')
+        self.add_model(propname='throat.spacing',
+                       model=mods.pore_to_pore_distance,
+                       regen_mode='deferred')
 
     def __setitem__(self, key, value):
         if key == 'throat.conns':
@@ -859,5 +869,3 @@ class GenericNetwork(ParamMixin, Base, ModelsMixin, LabelMixin):
 
         """
         return self.project.check_network_health()
-
-end_all()

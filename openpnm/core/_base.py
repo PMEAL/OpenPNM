@@ -2,7 +2,6 @@ import warnings
 import uuid
 from copy import deepcopy
 import numpy as np
-from collections import namedtuple
 from openpnm.utils import Workspace, logging
 from openpnm.utils import SettingsAttr
 from openpnm.utils.misc import PrintableList, Docorator
@@ -40,8 +39,17 @@ class Base(dict):
 
     Parameters
     ----------
-    name : str, optional
-        The unique name of the object.  If not given one will be generated.
+    network : OpenPNM network object
+        The network to which this object is associated
+    settings : dataclass-like or dict, optional
+        User defined settings for the object to override defaults. Can be a
+        dataclass-type object with settings stored as attributes or a python
+        dicionary of key-value pairs. Settings are stored in the ``settings``
+        attribute of the object.
+    name : string, optional
+        A unique name to assign to the object for easier identification.  If
+        not given one will be generated.
+
     Np : int, default is 0
         The total number of pores to be assigned to the object
     Nt : int, default is 0
@@ -83,7 +91,10 @@ class Base(dict):
         self.update({'throat.all': np.ones(shape=(Nt, ), dtype=bool)})
 
     def __repr__(self):
-        return f'<{self.__class__.__module__} object at {hex(id(self))}>'
+        module = self.__module__
+        module = ".".join([x for x in module.split(".") if not x.startswith("_")])
+        cname = self.__class__.__name__
+        return f'<{module}.{cname} at {hex(id(self))}>'
 
     def __eq__(self, other):
         return hex(id(self)) == hex(id(other))
@@ -674,14 +685,14 @@ class Base(dict):
         [False False False False]
 
         """
-        # Fetch sources list depending on type of self
+        # Fetch subdomains list depending on type of self
         proj = self.project
         if self._isa() in ['network', 'geometry']:
-            sources = list(proj.geometries().values())
+            subdomains = list(proj.geometries().values())
         elif self._isa() in ['phase', 'physics']:
-            sources = list(proj.find_physics(phase=self))
+            subdomains= list(proj.find_physics(phase=self))
         elif self._isa() in ['algorithm', 'base']:
-            sources = [self]
+            subdomains= [self]
         else:
             raise Exception('Unrecognized object type, cannot find dependents')
 
@@ -690,23 +701,29 @@ class Base(dict):
         N = self.project.network._count(element)
 
         # Attempt to fetch the requested array from each object
-        arrs = [obj.get(prop, None) for obj in sources]
+        arrs = [obj.get(prop, None) for obj in subdomains]
 
         # Check for missing sources, and add None to arrs if necessary
-        if N > sum([obj._count(element) for obj in sources]):
+        if N > sum([obj._count(element) for obj in subdomains]):
             arrs.append(None)
 
         # Obtain list of locations for inserting values
-        locs = [self._get_indices(element, item.name) for item in sources]
+        locs = [self._get_indices(element, item.name) for item in subdomains]
 
         if np.all([item is None for item in arrs]):  # prop not found anywhere
             raise KeyError(prop)
 
         # Let's start by handling the easy cases first
         if not any([a is None for a in arrs]):
-            # All objs present and array found on all objs
-            shape = list(arrs[0].shape)
-            shape[0] = N
+            # If any arrays are more than 1 column, then make they all are
+            if np.any(np.array([a.ndim for a in arrs]) > 1):
+                arrs = [np.atleast_2d(a).T if a.ndim == 1 else a for a in arrs]
+            # All objs are present and array found on all objs
+            try:
+                W = max([a.shape[1] for a in arrs])  # Width of array
+                shape = [N, W]
+            except IndexError:
+                shape = [N, ]
             types = [a.dtype for a in arrs]
             if len(set(types)) == 1:
                 # All types are the same
@@ -798,45 +815,62 @@ class Base(dict):
             values *= self[propname].units
         return values
 
-    def get_conduit_data(self, prop, mode='mean'):
+    def get_conduit_data(self, poreprop, throatprop=None, mode='mean'):
         r"""
         Combines requested data into a single 3-column array.
 
         Parameters
         ----------
-        prop : str
-            The dictionary key to the property of interest
-        mode : str
-            How interpolation should be peformed for missing values. If
-            values are present for both pores and throats, then this
-            argument is ignored. The ``interpolate`` data method is used.
-            Options are:
+        poreprop : str
+            The dictionary key to the pore property of interest
+        throatprop : str, optional
+            The dictionary key to the throat property of interest. If not
+            given then the same property as ``poreprop`` is assumed.  So
+            if poreprop = 'pore.foo' (or just 'foo'), then throatprop is
+            set to 'throat.foo').
+        mode : string
+            How interpolation should be peformed for missing values. If values
+            are present for both pores and throats, then this argument is
+            ignored.  The ``interpolate`` data method is used.  Options are:
+
+                * 'mean' (default)
 
                 **'mean'** (default):
                     Finds the mean value of the neighboring pores (or throats)
-                **'min'**
-                    Finds the minimuem of the neighboring pores (or throats)
-                **'max'**
+                * 'min'
+                    Finds the minimum of the neighboring pores (or throats)
+                * 'max'
                     Finds the maximum of the neighboring pores (or throats)
 
         Returns
         -------
         conduit_data : ndarray
-            An Nt-by-3 array with each column containg the requested
+            An Nt-by-3 array with each column containing the requested
             property for each pore-throat-pore conduit.
 
         """
+        # Deal with various args
+        if not poreprop.startswith('pore'):
+            poreprop = 'pore.' + poreprop
+        if throatprop is None:
+            throatprop = 'throat.' + poreprop.split('.', 1)[1]
+        if not throatprop.startswith('throat'):
+            throatprop = 'throat.' + throatprop
+        # Generate array
+        conns = self.network.conns
+        domain = self._domain
         try:
-            T = self['throat.' + prop]
+            T = domain[throatprop]
             try:
-                P1, P2 = self['pore.' + prop][self.network.conns].T
+                P1, P2 = domain[poreprop][conns.T]
             except KeyError:
-                P = self.interpolate_data(propname='throat.'+prop, mode=mode)
-                P1, P2 = P[self.network.conns].T
+                P = domain.interpolate_data(propname=throatprop, mode=mode)
+                P1, P2 = P[conns.T]
         except KeyError:
-            P1, P2 = self['pore.' + prop][self.network.conns].T
-            T = self.interpolate_data(propname='pore.'+prop, mode=mode)
-        return np.vstack((P1, T, P2)).T
+            P1, P2 = domain[poreprop][conns.T]
+            T = domain.interpolate_data(propname=poreprop, mode=mode)
+        mask = self.throats(to_global=True)
+        return np.vstack((P1[mask], T[mask], P2[mask])).T
 
     def _count(self, element=None):
         r"""
@@ -1112,9 +1146,12 @@ class Base(dict):
         return element + '.' + propname.split('.')[-1]
 
     def __str__(self):
+        module = self.__module__
+        module = ".".join([x for x in module.split(".") if not x.startswith("_")])
+        cname = self.__class__.__name__
         horizontal_rule = '―' * 78
         lines = [horizontal_rule]
-        lines.append(self.__module__.replace('__', '') + ' : ' + self.name)
+        lines.append(f"{module}.{cname} : {self.name}")
         lines.append(horizontal_rule)
         lines.append("{0:<5s} {1:<45s} {2:<10s}".format('#',
                                                         'Properties',

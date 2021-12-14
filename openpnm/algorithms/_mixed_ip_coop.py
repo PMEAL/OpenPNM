@@ -2,6 +2,7 @@ r"""
 ============================
 MixedInvasionPercolationCoop
 ============================
+
 IP allowing pores and throats to invade separately with added cooperative
 filling algorithms.
 
@@ -15,6 +16,7 @@ from transforms3d._gohlketransforms import angle_between_vectors
 from openpnm.utils import logging, SettingsAttr, Docorator
 docstr = Docorator()
 logger = logging.getLogger(__name__)
+
 
 __all__ = ['MixedInvasionPercolationCoop']
 

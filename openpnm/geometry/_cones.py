@@ -1,30 +1,20 @@
 import openpnm.models as mods
 import openpnm.models.geometry as gmods
 from openpnm.geometry import GenericGeometry
+from openpnm.utils import Docorator
 
 
+docstr = Docorator()
+
+
+@docstr.dedent
 class ConesAndCylinders(GenericGeometry):
     r"""
-    Cones and Cylinders subclass of GenericGeometry. This subclass is
-    meant as a basic default geometry to get started quickly.
 
-    Pore diameters are randomly assigned between 0 and the largest sphere
-    that does not overlap with it's nearest neighbor.
-
-    Throat diameters are half the diameter of the smaller of it's two
-    neighboring pores.
 
     Parameters
     ----------
-    network : GenericNetwork
-        The network with which this Geometry should be associated
-    pores : array_like
-        The pores in the domain where this Geometry applies
-    throats : array_like
-        The throats in the domain where this Geometry applies
-    name : str
-        The name of the object, which is also used as the label where this
-        geometry is defined.
+    %(GenericGeometry.parameters)s
 
     """
 

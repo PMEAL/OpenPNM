@@ -1,16 +1,42 @@
 import numpy as np
 import openpnm.models.misc as misc
 from openpnm.phases import GenericPhase as GenericPhase
-from openpnm.utils import logging, SettingsAttr
+from openpnm.utils import logging, SettingsAttr, Docorator, TypedList
+
+
 logger = logging.getLogger(__name__)
+docstr = Docorator()
 
 
+@docstr.dedent
 class MultiPhaseSettings:
-    phases = []
+    r"""
+    Parameters
+    ----------
+    %(PhaseSettings.parameters)s
+    phases : list of strings
+        The name of the phase objects which comprize this multiphase object
+    throat_occupancy : str
+        Indicates how throat occupancy is determined.  Options are:
+
+        =========== ==========================================================
+        mode        description
+        =========== ==========================================================
+        'automatic' The occupancy of each throat is calculated based on the
+                    occupancy of the two neighboring pores
+        'manual'    The occupancy of each throat must be set by hand by
+                    assigning values to 'throat.occupancy.{phase.name}'
+        =========== ==========================================================
+
+    partition_coef_prefix : str
+        The throat property which contains the partition coefficient values
+    """
+    phases = TypedList(types=[str])
     throat_occupancy = 'manual'
     partition_coef_prefix = 'throat.partition_coef'
 
 
+@docstr.dedent
 class MultiPhase(GenericPhase):
     r"""
     Creates Phase object that represents a multiphase system consisting of
@@ -18,12 +44,10 @@ class MultiPhase(GenericPhase):
 
     Parameters
     ----------
-    network : GenericNetwork
-        The network to which this phase object will be attached.
-    name : str, optional
-        The name of the phase. This is useful to keep track of the objects
-        throughout the simulation. The name must be unique to the project.
-        If no name is given, one is generated.
+    phases : list of OpenPNM Phase objects
+        A list containing the phase objects which comprise the multiphase
+        mixture
+    %(GenericPhase.parameters)s
 
     Examples
     --------

@@ -19,20 +19,21 @@ class GeometrySettings:
     prefix = 'geo'
 
 
+@docstr.get_sections(base='GenericGeometry', sections=['Parameters',
+                                                       'Examples'])
+@docstr.dedent
 class GenericGeometry(ParamMixin, Subdomain, ModelsMixin):
     r"""
     This generic class is meant as a starter for custom Geometry objects
 
-    It has no pore-scale models assigned to it, so a a blank slate.  Note that
+    It has no pore-scale models assigned to it, so is a blank slate.  Note that
     all OpenPNM Geometry sub-classes are just GenericGeometry instances with a
-    number of models added.
+    assortment of models added.
 
     Parameters
     ----------
-    network : GenericNetwork
-        The Network object to which this Geometry applies.
     pores : array_like
-        The list of pores where this Geometry applies.
+        The list of pores where this geometry applies.
     throats : array_like
         The list of throats where this Geometry applies.
     name : str

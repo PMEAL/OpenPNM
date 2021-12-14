@@ -1,9 +1,22 @@
-r"""
-"""
+from openpnm.utils import Docorator
 
+
+docstr = Docorator()
+
+
+@docstr.dedent
 def water(target):
     r"""
     Calculates the relative permittivity of saline water.
+
+    Parameters
+    ----------
+    %(models.target.parameters)s
+
+    Returns
+    -------
+    permittivity : ndarrat
+        A numpy ndarray containing permittivity values
 
     Notes
     -----
