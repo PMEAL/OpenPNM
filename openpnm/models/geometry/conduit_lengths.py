@@ -1,21 +1,16 @@
 import numpy as _np
-import openpnm.geometry.GenericGeometry as _GenericGeometry
-from .misc import _get_conduit_diameters
-from .throat_length import ctc as _ctc
-
-__all__ = [
-    "spheres_and_cylinders",
-    "circles_and_rectangles",
-    "cones_and_cylinders",
-    "trapezoids_and_rectangles",
-    "pyramids_and_cuboids",
-    "cubes_and_cuboids",
-    "squares_and_rectangles"
-]
+from openpnm.utils import Docorator
 
 
+docstr = Docorator()
+
+
+# Fetch this docstring and use it on the other models in this file
+@docstr.get_sections(base='models.geometry.conduit_lengths',
+                     sections=['Parameters', 'Returns'])
+@docstr.dedent
 def spheres_and_cylinders(
-    target: _GenericGeometry,
+    target,
     pore_diameter="pore.diameter",
     throat_diameter="throat.diameter",
 ):
@@ -27,25 +22,23 @@ def spheres_and_cylinders(
 
     Parameters
     ----------
-    target : GenericGeometry
-        Geometry object which this model is associated with. This controls
-        the length of the calculated array, and also provides access to
-        other necessary properties.
-    pore_diameter : str
-        Dictionary key of the pore diameter values.
-    throat_diameter : str
-        Dictionary key of the throat diameter values.
+    %(models.target.parameters)s
+    %(models.geometry.pdia)s
+    %(models.geometry.tdia)s
 
     Returns
     -------
-    ndarray
-        Array (Nt by 3) containing conduit lengths' values for conduits in
-        the given geometry object. The array is formatted as:
-            [pore1, throat, pore2].T
+    lengths : ndarray
+        Array (Nt by 3) containing conduit length values for each element
+        of the pore-throat-pore conduits. The array is formatted as
+        ``[pore1, throat, pore2]``.
 
     """
-    L_ctc = _ctc(target)
-    D1, Dt, D2 = _get_conduit_diameters(target, pore_diameter, throat_diameter)
+    L_ctc = target['throat.spacing']
+    D1, Dt, D2 = target.get_conduit_data(
+        poreprop=pore_diameter,
+        throatprop=throat_diameter
+    ).T
 
     # Handle the case where Dt > Dp
     if (Dt > D1).any() or (Dt > D2).any():
@@ -58,12 +51,11 @@ def spheres_and_cylinders(
     mask = L_ctc - 0.5 * (D1 + D2) < 0
     L1[mask] = _L1[mask]
     L2[mask] = (L_ctc - L1)[mask]
-
     Lt = _np.maximum(L_ctc - (L1 + L2), 1e-15)
-
     return _np.vstack((L1, Lt, L2)).T
 
 
+@docstr.dedent
 def circles_and_rectangles(
     target,
     pore_diameter="pore.diameter",
@@ -77,21 +69,11 @@ def circles_and_rectangles(
 
     Parameters
     ----------
-    target : GenericGeometry
-        Geometry object which this model is associated with. This controls
-        the length of the calculated array, and also provides access to
-        other necessary properties.
-    pore_diameter : str
-        Dictionary key of the pore diameter values.
-    throat_diameter : str
-        Dictionary key of the throat diameter values.
+    %(models.geometry.conduit_lengths.parameters)s
 
     Returns
     -------
-    ndarray
-        Array (Nt by 3) containing conduit lengths' values for conduits in
-        the given geometry object. The array is formatted as:
-            [pore1, throat, pore2].T
+    %(models.geometry.conduit_lengths.returns)s
 
     Notes
     -----
@@ -106,6 +88,7 @@ def circles_and_rectangles(
     )
 
 
+@docstr.dedent
 def cones_and_cylinders(
     target,
     pore_diameter="pore.diameter",
@@ -119,25 +102,18 @@ def cones_and_cylinders(
 
     Parameters
     ----------
-    target : GenericGeometry
-        Geometry object which this model is associated with. This controls
-        the length of the calculated array, and also provides access to
-        other necessary properties.
-    pore_diameter : str
-        Dictionary key of the pore diameter values.
-    throat_diameter : str
-        Dictionary key of the throat diameter values.
+    %(models.geometry.conduit_lengths.parameters)s
 
     Returns
     -------
-    ndarray
-        Array (Nt by 3) containing conduit lengths' values for conduits in
-        the given geometry object. The array is formatted as:
-            [pore1, throat, pore2].T
+    %(models.geometry.conduit_lengths.returns)s
 
     """
-    L_ctc = _ctc(target)
-    D1, Dt, D2 = _get_conduit_diameters(target, pore_diameter, throat_diameter)
+    L_ctc = target['throat.spacing']
+    D1, Dt, D2 = target.get_conduit_data(
+        poreprop=pore_diameter,
+        throatprop=throat_diameter
+    ).T
 
     L1 = D1 / 2
     L2 = D2 / 2
@@ -147,12 +123,11 @@ def cones_and_cylinders(
     mask = L_ctc - 0.5 * (D1 + D2) < 0
     L1[mask] = _L1[mask]
     L2[mask] = (L_ctc - L1)[mask]
-
     Lt = _np.maximum(L_ctc - (L1 + L2), 1e-15)
-
     return _np.vstack((L1, Lt, L2)).T
 
 
+@docstr.dedent
 def trapezoids_and_rectangles(
     target,
     pore_diameter="pore.diameter",
@@ -162,25 +137,13 @@ def trapezoids_and_rectangles(
     Calculates conduit lengths in the network assuming pores are
     trapezoids and throats are rectangles.
 
-    A conduit is defined as ( 1/2 pore - full throat - 1/2 pore ).
-
     Parameters
     ----------
-    target : GenericGeometry
-        Geometry object which this model is associated with. This controls
-        the length of the calculated array, and also provides access to
-        other necessary properties.
-    pore_diameter : str
-        Dictionary key of the pore diameter values.
-    throat_diameter : str
-        Dictionary key of the throat diameter values.
+    %(models.geometry.conduit_lengths.parameters)s
 
     Returns
     -------
-    ndarray
-        Array (Nt by 3) containing conduit lengths' values for conduits in
-        the given geometry object. The array is formatted as:
-            [pore1, throat, pore2].T
+    %(models.geometry.conduit_lengths.returns)s
 
     Notes
     -----
@@ -188,8 +151,11 @@ def trapezoids_and_rectangles(
     symmetry.
 
     """
-    L_ctc = _ctc(target)
-    D1, Dt, D2 = _get_conduit_diameters(target, pore_diameter, throat_diameter)
+    L_ctc = target['throat.spacing']
+    D1, Dt, D2 = target.get_conduit_data(
+        poreprop=pore_diameter,
+        throatprop=throat_diameter
+    ).T
 
     L1 = D1 / 2
     L2 = D2 / 2
@@ -199,12 +165,11 @@ def trapezoids_and_rectangles(
     mask = L_ctc - 0.5 * (D1 + D2) < 0
     L1[mask] = _L1[mask]
     L2[mask] = (L_ctc - L1)[mask]
-
     Lt = _np.maximum(L_ctc - (L1 + L2), 1e-15)
-
     return _np.vstack((L1, Lt, L2)).T
 
 
+@docstr.dedent
 def pyramids_and_cuboids(
     target,
     pore_diameter="pore.diameter",
@@ -214,32 +179,21 @@ def pyramids_and_cuboids(
     Calculates conduit lengths in the network assuming pores are truncated
     pyramids and throats are cuboids.
 
-    A conduit is defined as ( 1/2 pore - full throat - 1/2 pore ).
-
     Parameters
     ----------
-    target : GenericGeometry
-        Geometry object which this model is associated with. This controls
-        the length of the calculated array, and also provides access to
-        other necessary properties.
-    pore_diameter : str
-        Dictionary key of the pore diameter values.
-    throat_diameter : str
-        Dictionary key of the throat diameter values.
+    %(models.geometry.conduit_lengths.parameters)s
 
     Returns
     -------
-    ndarray
-        Array (Nt by 3) containing conduit lengths' values for conduits in
-        the given geometry object. The array is formatted as:
-            [pore1, throat, pore2].T
+    %(models.geometry.conduit_lengths.returns)s
 
     """
-    return cones_and_cylinders(
-        target, pore_diameter=pore_diameter, throat_diameter=throat_diameter
-    )
+    return cones_and_cylinders(target,
+                               pore_diameter=pore_diameter,
+                               throat_diameter=throat_diameter)
 
 
+@docstr.dedent
 def cubes_and_cuboids(
     target,
     pore_diameter="pore.diameter",
@@ -249,29 +203,20 @@ def cubes_and_cuboids(
     Calculates conduit lengths in the network assuming pores are cubes
     and throats are cuboids.
 
-    A conduit is defined as ( 1/2 pore - full throat - 1/2 pore ).
-
     Parameters
     ----------
-    target : GenericGeometry
-        Geometry object which this model is associated with. This controls
-        the length of the calculated array, and also provides access to
-        other necessary properties.
-    pore_diameter : str
-        Dictionary key of the pore diameter values.
-    throat_diameter : str
-        Dictionary key of the throat diameter values.
+    %(models.geometry.conduit_lengths.parameters)s
 
     Returns
     -------
-    ndarray
-        Array (Nt by 3) containing conduit lengths' values for conduits in
-        the given geometry object. The array is formatted as:
-            [pore1, throat, pore2].T
+    %(models.geometry.conduit_lengths.returns)s
 
     """
-    L_ctc = _ctc(target)
-    D1, Dt, D2 = _get_conduit_diameters(target, pore_diameter, throat_diameter)
+    L_ctc = target['throat.spacing']
+    D1, Dt, D2 = target.get_conduit_data(
+        poreprop=pore_diameter,
+        throatprop=throat_diameter
+    ).T
 
     L1 = D1 / 2
     L2 = D2 / 2
@@ -283,10 +228,10 @@ def cubes_and_cuboids(
     mask = (Lt < 0) & (L2 > L1)
     L1[mask] = (L_ctc - L2)[mask]
     Lt = _np.maximum(Lt, 1e-15)
-
     return _np.vstack((L1, Lt, L2)).T
 
 
+@docstr.dedent
 def squares_and_rectangles(
     target,
     pore_diameter="pore.diameter",
@@ -296,25 +241,13 @@ def squares_and_rectangles(
     Calculates conduit lengths in the network assuming pores are squares
     and throats are rectangles.
 
-    A conduit is defined as ( 1/2 pore - full throat - 1/2 pore ).
-
     Parameters
     ----------
-    target : GenericGeometry
-        Geometry object which this model is associated with. This controls
-        the length of the calculated array, and also provides access to
-        other necessary properties.
-    pore_diameter : str
-        Dictionary key of the pore diameter values.
-    throat_diameter : str
-        Dictionary key of the throat diameter values.
+    %(models.geometry.conduit_lengths.parameters)s
 
     Returns
     -------
-    ndarray
-        Array (Nt by 3) containing conduit lengths' values for conduits in
-        the given geometry object. The array is formatted as:
-            [pore1, throat, pore2].T
+    %(models.geometry.conduit_lengths.returns)s
 
     Notes
     -----
@@ -322,14 +255,13 @@ def squares_and_rectangles(
     symmetry.
 
     """
-    return cubes_and_cuboids(
-        target, pore_diameter=pore_diameter, throat_diameter=throat_diameter
-    )
+    return cubes_and_cuboids(target,
+                             pore_diameter=pore_diameter,
+                             throat_diameter=throat_diameter)
 
 
 # Dealing with errors and exceptions
 def _raise_incompatible_data():
     raise Exception(
         "'spheres_and_cylinders' can only be applied when throat diameter is"
-        " smaller than that of adjacent pores."
-    )
+        " smaller than that of adjacent pores.")

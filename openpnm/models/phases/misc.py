@@ -1,6 +1,11 @@
 import numpy as _np
+from openpnm.utils import Docorator
 
 
+docstr = Docorator()
+
+
+@docstr.dedent
 def mix_and_match(target, prop, phases, occupancy):
     r"""
     Return the given property by looking it up from a list of given phases
@@ -8,20 +13,14 @@ def mix_and_match(target, prop, phases, occupancy):
 
     Parameters
     ----------
-    target : OpenPNM Object
-        The object which this model is associated with. This controls the
-        length of the calculated array, and also provides access to other
-        necessary properties.
-
-    prop : string
+    %(models.target.parameters)s
+    prop : str
         The dictionary key to the array containing the pore/throat property to
         be used in the calculation.
-
     phases : list
-        List of OpenPNM phase objects over which the given `prop` is to be
+        List of GenericPhases over which the given `prop` is to be
         averaged out.
-
-    occupancy : string
+    occupancy : str
         The dictionary key to the array containing the occupancy associated
         with each of the given ``phases``.
 
@@ -33,11 +32,9 @@ def mix_and_match(target, prop, phases, occupancy):
     """
     # Hack for ModelsMixin to not complain (cyclic dep)
     prop = prop.strip("_")
-
     values = _np.zeros_like(phases[0][prop])
 
     for phase in phases:
         mask = phase[occupancy]
         values[mask] = phase[prop][mask]
-
     return values

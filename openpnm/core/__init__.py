@@ -1,22 +1,18 @@
 r"""
-
-**openpnm.core**
-
-----
+Main classes of OpenPNM
+=======================
 
 This module contains the main classes from which all other major objects
 (Network, Geometry, Physics, Phase, and Algorithm) derive.
 
-----
-
-**The Base Class**
+The Base class
+--------------
 
 The ``Base`` class is a ``dict`` that has added methods for indexing the pores
-and throats, applying labels, and managing the stored data.  All OpenPNM
+and throats, applying labels, and managing the stored data. All OpenPNM
 object inherit from ``Base`` so possess these methods.
-----
 
-**The Subdomain Class**
+----
 
 ``Base`` objects, Networks, Phases, Algorithms, are assigned to all locations
 in the domain.  The ``Subdomain`` class is a direct descendent of ``Base``
@@ -32,12 +28,11 @@ the boss.  So a Geometry object named ``geom1`` will put labels 'pore.geom1'
 and 'throat.geom1' into the Network dictionary, with ``True`` values indicating
 where ``geom1`` applies.
 
-----
-
-**The ModelsMixin Class**
+The ModelsMixin class
+---------------------
 
 `Mixins <https://en.wikipedia.org/wiki/Mixin>`_ are a useful feature of Python
-that allow a few methods to be added to a class that needs them.  In OpenPNM,
+that allow a few methods to be added to a class that needs them. In OpenPNM,
 the ability to store and run 'pore-scale' models is not needed by some objects
 (Network, Algorithms), but is essential to Geometry, Physics, and Phase
 objects.
@@ -48,10 +43,9 @@ models and their associated parameters.  When ``regenerate_models`` is called
 the function and all the given parameters are retrieved from this dictionary
 and run.
 
-
 """
 
-from .ModelsMixin import ModelsMixin, ModelsDict
-from .Base import Base
-from .Mixins import ParamMixin, LegacyMixin, LabelMixin
-from .Subdomain import Subdomain
+from ._models import *
+from ._base import *
+from ._mixins import *
+from ._subdomain import *

@@ -1,37 +1,34 @@
 r"""
+Collection of pre-defined algorithms
+====================================
 
-**openpnm.algorithms**
-
-----
-
-The ``algorithms`` module contains classes for conducting transport simulations
-on pore networks.
+The ``algorithms`` module contains classes for conducting transport
+simulations on pore networks.
 
 """
 
-from .GenericAlgorithm import GenericAlgorithm, GenericAlgorithmSettings
-from .GenericTransport import GenericTransport, GenericTransportSettings
+from ._generic_algorithm import *
+from ._generic_transport import *
 
-from .ReactiveTransport import ReactiveTransport, ReactiveTransportSettings
-from .TransientReactiveTransport import TransientReactiveTransport
+from ._reactive_transport import *
+from ._transient_reactive_transport import *
 
-from .StokesFlow import StokesFlow
+from ._stokes_flow import *
 
-from .FickianDiffusion import FickianDiffusion
-from .TransientFickianDiffusion import TransientFickianDiffusion
+from ._fickian_diffusion import *
+from ._transient_fickian_diffusion import *
 
-from .AdvectionDiffusion import AdvectionDiffusion
-from .TransientAdvectionDiffusion import TransientAdvectionDiffusion
+from ._advection_diffusion import *
+from ._transient_advection_diffusion import *
 
-from .FourierConduction import FourierConduction
-from .OhmicConduction import OhmicConduction
+from ._fourier_conduction import *
+from ._ohmic_conduction import *
 
-from .OrdinaryPercolation import OrdinaryPercolation
-from .InvasionPercolation import InvasionPercolation
-from .MixedInvasionPercolation import MixedInvasionPercolation
-from .MixedInvasionPercolationCoop import MixedInvasionPercolationCoop
+from ._ordinary_percolation import *
+from ._invasion_percolation import *
 
-from .Porosimetry import Porosimetry
+from ._mixed_ip import *
+from ._mixed_ip_coop import *
 
-from .IonicConduction import IonicConduction
-from .TransientIonicConduction import TransientIonicConduction
+from ._ionic_conduction import *
+from ._transient_ionic_conduction import *

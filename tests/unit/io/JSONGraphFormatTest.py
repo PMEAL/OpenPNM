@@ -17,7 +17,7 @@ class JSONGraphFormatTest:
         self.net['pore.diameter'] = 2.0 * np.ones(self.net.Np)
         self.net['throat.diameter'] = 2.0 * np.ones(self.net.Nt)
         self.net.add_model(propname='throat.length',
-                           model=op.models.geometry.throat_length.ctc)
+                           model=op.models.network.pore_to_pore_distance)
 
     def teardown_class(self):
         ws = op.Workspace()

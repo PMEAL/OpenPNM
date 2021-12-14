@@ -1,23 +1,20 @@
 r"""
-
-**openpnm.physics**
-
-----
+Object model for storing size-dependent thermophysical properties
+=================================================================
 
 This module contains the GenericPhysics class, along with a few preconfigured
 classes that include common pore-scale physical models
 
-----
+The GenericPhysics Class
+------------------------
+ADDTEXT
 
-**The GenericPhysics Class**
-
-----
-
-**Library of Preconfigured Physics Classes**
-
+Library of Preconfigured Physics Classes
+----------------------------------------
+ADDTEXT
 
 """
 
-from .GenericPhysics import GenericPhysics
-from .Standard import Standard
-from .Basic import Basic
+from ._generic import GenericPhysics
+from ._standard import Standard
+from ._basic import Basic

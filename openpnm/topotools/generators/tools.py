@@ -1,3 +1,8 @@
+"""
+Tools
+-----
+
+"""
 import numpy as np
 from openpnm.topotools import generate_base_points, dimensionality, isoutside
 
@@ -204,10 +209,10 @@ def label_surface_nodes(network):
 
 
 def label_faces(network, threshold=0.05):
-    r'''
+    r"""
     Label the vertices sitting on the faces of the domain in accordance with
     the conventions used for cubic etc.
-    '''
+    """
     dims = dimensionality(network)
     coords = np.around(network['vert.coords'], decimals=10)
     min_labels = ['front', 'left', 'bottom']
@@ -258,43 +263,3 @@ def crop(network, shape, mode='full'):
         network['vert.outside'] = np.zeros(network['vert.coords'].shape[0], dtype=bool)
         network['vert.outside'][Pdrop] = True
     return network
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

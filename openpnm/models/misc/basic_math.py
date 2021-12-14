@@ -1,4 +1,7 @@
 r"""
+Basic Math
+==========
+
 """
 import numpy as np
 from openpnm.utils import logging
@@ -28,12 +31,11 @@ def invert(target, prop):
 
     Parameters
     ----------
-    target : OpenPNM Object
+    target : Base
         The object which this model is associated with. This controls the
         length of the calculated array, and also provides access to other
         necessary properties.
-
-    prop : string
+    prop : str
         Dictionary key pointing the values to invert
 
     """
@@ -46,16 +48,15 @@ def fraction(target, numerator, denominator):
 
     Parameters
     ----------
-    target : OpenPNM Object
+    target : Base
         The object which this model is associated with. This controls the
         length of the calculated array, and also provides access to other
         necessary properties.
-
-    numerator : string
+    numerator : str
         Dictionary key pointing the numerator values
-
-    denominator : string
+    denominator : str
         Dictionary key pointing the denominator values
+
     """
     x = target[numerator]
     y = target[denominator]
@@ -68,11 +69,10 @@ def summation(target, props=[]):
 
     Parameters
     ----------
-    target : OpenPNM Object
+    target : Base
         The object which this model is associated with. This controls the
         length of the calculated array, and also provides access to other
         necessary properties.
-
     props : list of dictionary keys
         The dictionary keys pointing the arrays whose elements should be summed
 
@@ -89,16 +89,15 @@ def normalize(target, prop, xmin=0, xmax=1):
 
     Parameters
     ----------
-    target : OpenPNM Object
+    target : Base
         The object which this model is associated with. This controls the
         length of the calculated array, and also provides access to other
         necessary properties.
-
     xmin : float
         Lower limit of the re-scaled data
-
     xmax : float
         Upper limit of the re-scaled data
+
     """
     vals = target[prop]
     # Scale to 0 to 1
@@ -113,16 +112,15 @@ def clip(target, prop, xmax, xmin=0):
 
     Parameters
     ----------
-    target : OpenPNM Object
+    target : Base
         The object which this model is associated with. This controls the
         length of the calculated array, and also provides access to other
         necessary properties.
-
     xmin : float
         Values below this limit will be replaced with ``xmin``.
-
     xmax : float
         Values above this limit will be replaced with ``xmax``.
+
     """
     vals = np.clip(target[prop], xmin, xmax)
     return vals
@@ -134,17 +132,16 @@ def constant(target, value):
 
     Parameters
     ----------
-    target : OpenPNM Object
+    target : Base
         The object which this model is associated with. This controls the
         length of the calculated array, and also provides access to other
         necessary properties.
-
     value : scalar
         The numerical value to apply
 
     Returns
     -------
-    value : NumPy ndarray
+    value : ndarray
         Array containing constant values equal to ``value``.
 
     Notes
@@ -162,18 +159,18 @@ def product(target, props):
 
     Parameters
     ----------
-    target : OpenPNM Object
+    target : Base
         The object which this model is associated with. This controls the
         length of the calculated array, and also provides access to other
         necessary properties.
-
-    props : Array of string
+    props : list[str]
         The name of the arguments to be used for the product.
 
     Returns
     -------
-    value : NumPy ndarray
+    value : ndarray
         Array containing product values of ``target[props[0]]``, ``target[props[1]]``, etc.
+
     """
     value = np.ones_like(target[props[0]])
     for item in props:
@@ -183,25 +180,24 @@ def product(target, props):
 
 def scaled(target, prop, factor):
     r"""
-    Scales an existing value by a factor.  Useful for constricting some throat
-    property.
+    Scales an existing value by a factor.
+
+    Useful for constricting some throat property.
 
     Parameters
     ----------
-    target : OpenPNM Object
+    target : Base
         The object which this model is associated with. This controls the
         length of the calculated array, and also provides access to other
         necessary properties.
-
-    prop : string
+    prop : str
         The dictionary key of the array containing the values to be scaled.
-
-    factor : scalar
+    factor : str
         The factor by which the values should be scaled.
 
     Returns
     -------
-    value : NumPy ndarray
+    value : ndarray
         Array containing ``target[prop]`` values scaled by ``factor``.
 
     """
