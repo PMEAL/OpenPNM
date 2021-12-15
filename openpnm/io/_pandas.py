@@ -2,8 +2,7 @@ import numpy as np
 from flatdict import FlatDict
 from collections import namedtuple
 from openpnm.io import Dict, GenericIO
-from openpnm.utils import sanitize_dict, logging
-logger = logging.getLogger(__name__)
+from openpnm.utils import sanitize_dict
 
 
 class Pandas(GenericIO):
@@ -48,8 +47,8 @@ class Pandas(GenericIO):
         Returns
         -------
         Pandas ``DataFrame`` object containing property and label data in each
-        column.  If ``join`` was False (default) the two DataFrames are
-        returned i a named tuple, or else a single DataFrame with pore and
+        column.  If ``join`` was ``False`` (default) the two DataFrames are
+        returned in a named tuple, otherwise a single DataFrame with pore and
         throat data in the same file, despite the column length being
         different.
 
@@ -97,3 +96,10 @@ class Pandas(GenericIO):
             data = nt(pore=pdata, throat=tdata)
 
         return data
+
+
+def to_pandas(network, phases=[], filename='', join=False, delim=' | '):
+    Pandas.export_data(network=network, phases=phases, join=join, delim=delim)
+
+
+to_pandas.__doc__ = Pandas.export_data.__doc__

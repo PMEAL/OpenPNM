@@ -1,9 +1,7 @@
 import pickle as pk
-from openpnm.utils import logging
 from openpnm.io import GenericIO
 from openpnm.network import GenericNetwork
 from openpnm.geometry import Imported
-logger = logging.getLogger(__name__)
 
 
 class PoreSpy(GenericIO):
@@ -39,3 +37,11 @@ class PoreSpy(GenericIO):
         Imported(network=network, settings=settings)
 
         return network.project
+
+
+def from_porespy(filename, project=None, settings=None):
+    project = PoreSpy.import_data(filename=filename, project=project, settings=settings)
+    return project
+
+
+from_porespy.__doc__ = PoreSpy.import_data.__doc__

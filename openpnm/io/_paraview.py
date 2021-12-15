@@ -337,3 +337,10 @@ class ParaView(GenericIO):
         statefile = f"{file}.pvsm"
         paraview_path = "paraview"
         subprocess.Popen([paraview_path, statefile])
+
+
+def to_paraview(network, filename):
+    ParaView.export_data(network=network, filename=filename)
+
+
+to_paraview.__doc__ = ParaView.export_data.__doc__

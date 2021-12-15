@@ -199,3 +199,18 @@ class PerGeos(GenericIO):
         network = cls._update_network(network=network, net=net)
 
         return network.project
+
+
+def from_pergeos(filename, network=None):
+    project = PerGeos.load_project(filename=filename, network=network)
+    return project
+
+
+from_pergeos.__doc__ = PerGeos.import_data.__doc__
+
+
+def to_pergeos(network=None, phases=[], filename=''):
+    PerGeos.export_data(network=network, phases=phases, filename=filename)
+
+
+to_pergeos.__doc__ = PerGeos.export_data.__doc__

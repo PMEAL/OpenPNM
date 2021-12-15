@@ -11,7 +11,7 @@ from openpnm.network import GenericNetwork
 logger = logging.getLogger(__name__)
 
 
-class JSONGraphFormat(GenericIO):
+class JSONGraph(GenericIO):
     r"""
     Class for reading and writing OpenPNM networks to JSON Graph Format (JGF).
 
@@ -190,3 +190,21 @@ class JSONGraphFormat(GenericIO):
                        model=gmods.pore_volume.sphere)
 
         return network.project
+
+
+def from_jsongraph(filename, project=None):
+    project = JSONGraph.import_data(filename=filename, project=project)
+    return project
+
+
+from_jsongraph.__doc__ = JSONGraph.import_data.__doc__
+
+
+def to_jsongraph(network, filename=''):
+    JSONGraph.export_data(network=network, filename=filename)
+
+
+to_jsongraph.__doc__ = JSONGraph.export_data.__doc__
+
+
+
