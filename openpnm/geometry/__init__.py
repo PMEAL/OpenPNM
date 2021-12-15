@@ -1,15 +1,12 @@
 r"""
-
-**openpnm.geometry**
-
-----
+Object model for storing geometrical information of the network
+===============================================================
 
 The ``geometry`` module contains the ``GenericGeometry`` class, and an
 assortment of subclasses that implement specific pore-scale geometrical models.
 
-----
-
-**The GenericGeometry Class**
+The GenericGeometry Class
+-------------------------
 
 Geometry objects (as well as Physics objects) are ``Subdomain`` subclasses,
 which allow them to be assigned to subset of the full domain (although this is
@@ -17,9 +14,8 @@ not alway necessary).  This functionality was added so that networks with
 distinct regions could be modelled by giving each region its own Geometry
 with unique models (e.g. to give a bi-modal pore size distribution).
 
-----
-
-**Library of Preconfigured Geometry Classes**
+Library of Preconfigured Geometry Classes
+-----------------------------------------
 
 This module contains a small selection of Geometry classes that are
 pre-configured with a selection of pore-scale models.  These classes provide
@@ -34,41 +30,12 @@ between 0 and 0.1.  Throat diameters are taken as half the size of the smaller
 of it's two neighbors.  All other properties are calculated using the geometry
 of spheres and throats.
 
-The table belows shows the specific models used on ``_StickAndBall``:
+Customizing a Preconfigured Geometry Instance
+---------------------------------------------
 
-+----+----------------------+------------------+--------------------------+
-| #  | Property Name        | Parameter        | Value                    |
-+====+======================+==================+==========================+
-| 1  | pore.seed            | model:           | random                   |
-+----+----------------------+------------------+--------------------------+
-| 2  | pore.max_size        | model:           | largest_sphere           |
-+----+----------------------+------------------+--------------------------+
-| 3  | pore.diameter        | model:           | product                  |
-+----+----------------------+------------------+--------------------------+
-| 4  | pore.area            | model:           | sphere                   |
-+----+----------------------+------------------+--------------------------+
-| 5  | pore.volume          | model:           | sphere                   |
-+----+----------------------+------------------+--------------------------+
-| 6  | throat.max_size      | model:           | from_neighbor_pores      |
-+----+----------------------+------------------+--------------------------+
-| 7  | throat.diameter      | model:           | scaled                   |
-+----+----------------------+------------------+--------------------------+
-| 8  | throat.length        | model:           | piecewise                |
-+----+----------------------+------------------+--------------------------+
-| 9  | throat.surface_area  | model:           | cylinder                 |
-+----+----------------------+------------------+--------------------------+
-| 10 | throat.volume        | model:           | cylinder                 |
-+----+----------------------+------------------+--------------------------+
-| 11 | throat.area          | model:           | cylinder                 |
-+----+----------------------+------------------+--------------------------+
-
-----
-
-**Customizing a Preconfigured Geometry Instance**
-
-Perhaps the ``_StickAndBall`` class is almost suitable but you wish to decrease
-the pores sizes.  The following example illustrates how to alter the
-``'pore.size'`` model accordingly:
+Perhaps the ``SpheresAndCylinders`` class is almost suitable but you wish
+to decrease the pores sizes.  The following example illustrates how to
+alter the ``'pore.size'`` model accordingly:
 
 >>> import openpnm as op
 >>> pn = op.network.Cubic([5, 5, 5])
@@ -88,12 +55,12 @@ This example illustrated that you can change one property ('pore.seed') and
 that change can be cascaded to all dependent properties ('pore.diameter').
 
 """
-from .GenericGeometry import GenericGeometry
-from .Imported import Imported
-from .SpheresAndCylinders import SpheresAndCylinders
-from .CirclesAndRectangles import CirclesAndRectangles
-from .ConesAndCylinders import ConesAndCylinders
-from .PyramidsAndCuboids import PyramidsAndCuboids
-from .TrapezoidsAndRectangles import TrapezoidsAndRectangles
-from .CubesAndCuboids import CubesAndCuboids
-from .SquaresAndRectangles import SquaresAndRectangles
+from ._generic import GenericGeometry
+from ._circles import CirclesAndRectangles
+from ._cones import ConesAndCylinders
+from ._cubes import CubesAndCuboids
+from ._imported import Imported
+from ._pyramids import PyramidsAndCuboids
+from ._spheres import SpheresAndCylinders
+from ._squares import SquaresAndRectangles
+from ._trapezoids import TrapezoidsAndRectangles

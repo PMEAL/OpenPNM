@@ -1,8 +1,13 @@
-r"""
-"""
 import numpy as _np
+from openpnm.utils import Docorator
 
 
+docstr = Docorator()
+
+
+@docstr.get_sections(base='models.geometry.throat_volume',
+                     sections=['Parameters', 'Returns'])
+@docstr.dedent
 def cylinder(target, throat_length='throat.length',
              throat_diameter='throat.diameter'):
     r"""
@@ -10,24 +15,21 @@ def cylinder(target, throat_length='throat.length',
 
     Parameters
     ----------
-    target : OpenPNM Object
-        The object which this model is associated with. This controls the
-        length of the calculated array, and also provides access to other
-        necessary properties.
-
-    throat_length and throat_diameter : strings
-        The dictionary keys containing the arrays with the throat diameter and
-        length values.
+    %(models.target.parameters)s
+    %(models.geometry.tlen)s
+    %(models.geometry.tdia)s
 
     Returns
     -------
-    value : NumPy ndarray
-        Array containing throat volume values.
+    volumes : ndarray
+        A numpy ndarray containing throat volume values
 
     Notes
     -----
-    At present this models does NOT account for the volume reprsented by the
-    intersection of the throat with a spherical pore body.
+    This models does not account for the volume reprsented by the
+    intersection of the throat with a spherical pore body.  Use the ``lens``
+    or ``pendular_ring`` models in addition to this one to account for this
+    volume.
 
     """
     leng = target[throat_length]
@@ -36,6 +38,7 @@ def cylinder(target, throat_length='throat.length',
     return value
 
 
+@docstr.dedent
 def cuboid(target, throat_length='throat.length',
            throat_diameter='throat.diameter'):
     r"""
@@ -43,19 +46,11 @@ def cuboid(target, throat_length='throat.length',
 
     Parameters
     ----------
-    target : OpenPNM Object
-        The object which this model is associated with. This controls the
-        length of the calculated array, and also provides access to other
-        necessary properties.
-
-    throat_length and throat_diameter : strings
-        The dictionary keys containing the arrays with the throat diameter and
-        length values.
+    %(models.geometry.throat_volume.parameters)s
 
     Returns
     -------
-    value : NumPy ndarray
-        Array containing throat volume values.
+    %(models.geometry.throat_volume.returns)s
 
     Notes
     -----
@@ -69,6 +64,29 @@ def cuboid(target, throat_length='throat.length',
     return value
 
 
+@docstr.dedent
+def rectangle(target, throat_length='throat.length',
+              throat_diameter='throat.diameter'):
+    r"""
+    Calculate throat volume assuing a rectangular shape
+
+    Parameters
+    ----------
+    %(models.geometry.throat_volume.parameters)s
+
+    Returns
+    -------
+    %(models.geometry.throat_volume.returns)s
+
+    Notes
+    -----
+    At present this models does NOT account for the volume reprsented by the
+    intersection of the throat with a spherical pore body.
+    """
+    return target[throat_length] * target[throat_diameter]
+
+
+@docstr.dedent
 def extrusion(target, throat_length='throat.length',
               throat_area='throat.area'):
     r"""
@@ -77,19 +95,14 @@ def extrusion(target, throat_length='throat.length',
 
     Parameters
     ----------
-    target : OpenPNM Object
-        The object which this model is associated with. This controls the
-        length of the calculated array, and also provides access to other
-        necessary properties.
-
-    throat_length and throat_area : strings
-        The dictionary keys containing the arrays with the throat area and
-        length values.
+    ----------
+    %(models.target.parameters)s
+    %(models.geometry.tlen)s
+    %(models.geometry.tarea)s
 
     Returns
     -------
-    value : NumPy ndarray
-        Array containing throat volume values.
+    %(models.geometry.throat_volume.returns)s
 
     Notes
     -----
@@ -103,30 +116,7 @@ def extrusion(target, throat_length='throat.length',
     return value
 
 
-def rectangle(target, throat_length='throat.length',
-              throat_diameter='throat.diameter'):
-    r"""
-    Calculate throat volume assuing a rectangular shape
-
-    Parameters
-    ----------
-    target : OpenPNM Object
-        The object which this model is associated with. This controls the
-        length of the calculated array, and also provides access to other
-        necessary properties.
-
-    throat_length and throat_diameter : strings
-        The dictionary keys containing the arrays with the throat diameter and
-        length values.
-
-    Notes
-    -----
-    At present this models does NOT account for the volume reprsented by the
-    intersection of the throat with a spherical pore body.
-    """
-    return target[throat_length] * target[throat_diameter]
-
-
+@docstr.dedent
 def lens(target, throat_diameter='throat.diameter',
          pore_diameter='pore.diameter'):
     r"""
@@ -138,22 +128,17 @@ def lens(target, throat_diameter='throat.diameter',
 
     Parameters
     ----------
-    throat_diameter : string
-        The dictionary keys containing the array with the throat diameter
-        values.
-    pore_diameter : string
-        The dictionary keys containing the array with the pore diameter
-        values.
+    %(models.target.parameters)s
+    %(models.geometry.tdia)s
+    %(models.geometry.pdia)s
 
     Returns
     -------
-    volume : ND-array
-        The volume that should be subtracted from each throat volume to prevent
-        double counting the volume of overlapping area.
+    %(models.geometry.throat_volume.returns)s
 
     Notes
     -----
-    This model does NOT consider the possibility that multiple throats might
+    This model does not consider the possibility that multiple throats might
     overlap in the same location which could happen if throats are large and
     connectivity is random.
 
@@ -163,8 +148,8 @@ def lens(target, throat_diameter='throat.diameter',
     """
     network = target.network
     conns = network['throat.conns']
-    Rp = target[pore_diameter]
-    Rt = target[throat_diameter]
+    Rp = target[pore_diameter]/2
+    Rt = target[throat_diameter]/2
     a = _np.atleast_2d(Rt).T
     q = _np.arcsin(a/Rp[conns])
     b = Rp[conns]*_np.cos(q)
@@ -173,6 +158,7 @@ def lens(target, throat_diameter='throat.diameter',
     return _np.sum(V, axis=1)
 
 
+@docstr.dedent
 def pendular_ring(target, throat_diameter='throat.diameter',
                   pore_diameter='pore.diameter'):
     r"""
@@ -185,22 +171,17 @@ def pendular_ring(target, throat_diameter='throat.diameter',
 
     Parameters
     ----------
-    throat_diameter : string
-        The dictionary keys containing the array with the throat diameter
-        values.
-    pore_diameter : string
-        The dictionary keys containing the array with the pore diameter
-        values.
+    %(models.target.parameters)s
+    %(models.geometry.tdia)s
+    %(models.geometry.pdia)s
 
     Returns
     -------
-    volume : ND-array
-        The volume that should be added to each throat volume to account for
-        under-represented void volume at the pore-throat junctions.
+    %(models.geometry.throat_volume.returns)s
 
     Notes
     -----
-    This model does NOT consider the possibility that multiple throats might
+    This model does not consider the possibility that multiple throats might
     overlap in the same location which could happen if throats are large and
     connectivity is random.
 
@@ -210,8 +191,8 @@ def pendular_ring(target, throat_diameter='throat.diameter',
     """
     network = target.network
     conns = network['throat.conns']
-    Rp = target[pore_diameter]
-    Rt = target[throat_diameter]
+    Rp = target[pore_diameter]/2
+    Rt = target[throat_diameter]/2
     a = _np.atleast_2d(Rt).T
     q = _np.arcsin(a/Rp[conns])
     b = Rp[conns]*_np.cos(q)

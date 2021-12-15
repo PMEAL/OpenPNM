@@ -1,73 +1,59 @@
-r"""
-Pore-scale models for calculating the advective-diffusive-migrative
-conductance of conduits.
-"""
 import numpy as _np
+
 
 __all__ = ["ad_dif_mig"]
 
 
-def ad_dif_mig(
-    target,
-    pore_pressure="pore.pressure",
-    pore_potential="pore.potential",
-    throat_hydraulic_conductance="throat.hydraulic_conductance",
-    throat_diffusive_conductance="throat.diffusive_conductance",
-    throat_valence="throat.valence",
-    pore_temperature="pore.temperature",
-    throat_temperature="throat.temperature",
-    ion="",
-    s_scheme="powerlaw",
-):
+def ad_dif_mig(target,
+               pore_pressure="pore.pressure",
+               pore_potential="pore.potential",
+               throat_hydraulic_conductance="throat.hydraulic_conductance",
+               throat_diffusive_conductance="throat.diffusive_conductance",
+               throat_valence="throat.valence",
+               pore_temperature="pore.temperature",
+               throat_temperature="throat.temperature",
+               ion="",
+               s_scheme="powerlaw"):
     r"""
     Calculate the advective-diffusive-migrative conductance of conduits
-    in network, where a conduit is ( 1/2 pore - full throat - 1/2 pore ).
-    See the notes section.
+    in network
 
     Parameters
     ----------
-    target : OpenPNM Object
-        The object which this model is associated with. This controls the
-        length of the calculated array, and also provides access to other
-        necessary properties.
-    pore_pressure : string
-        Dictionary key of the pore pressure values
-    pore_potential : string
-        Dictionary key of the pore potential values
-    throat_hydraulic_conductance : string
-        Dictionary key of the throat hydraulic conductance values
-    throat_diffusive_conductance : string
-        Dictionary key of the throat diffusive conductance values
-    throat_valence : string
-        Dictionary key of the throat ionic species valence values
-    pore_temperature : string
-        Dictionary key of the pore temperature values
-    throat_temperature : string
-        Dictionary key of the throat temperature values
-    ion : string
+    %(target_blurb)s
+    pore_pressure : str
+        %(dict_blurb)s pore pressure
+    pore_potential : str
+        %(dict_blurb)s pore potential
+    throat_hydraulic_conductance : str
+        %(dict_blurb)s hydraulic conductance
+    throat_diffusive_conductance : str
+        %(dict_blurb)s diffusive conductance
+    throat_valence : str
+        %(dict_blurb)s throat ionic species valence
+    pore_temperature : str
+        %(dict_blurb)s pore temperature
+    throat_temperature : str
+        %(dict_blurb)s throat temperature
+    ion : str
         Name of the ionic species
-    s_scheme : string
+    s_scheme : str
         Name of the space discretization scheme to use
 
     Returns
     -------
-    g : ndarray
-        Array containing advective-diffusive-migrative conductance values for
-        conduits in the geometry attached to the given physics object.
+    %(return_arr)s advection-diffusion-migration conductance
 
     Notes
     -----
-    (1) This function requires that all the necessary phase properties already
-    be calculated.
-
-    (2) This function calculates the specified property for the *entire*
+    This function calculates the specified property for the *entire*
     network then extracts the values for the appropriate throats at the end.
 
-    (3) This function assumes cylindrical throats with constant cross-section
+    This function assumes cylindrical throats with constant cross-section
     area. Corrections for different shapes and variable cross-section area can
     be imposed by passing the proper conduit_shape_factors argument.
 
-    (4) shape_factor depends on the physics of the problem, i.e. diffusion-like
+    'shape_factor' depends on the physics of the problem, i.e. diffusion-like
     processes and fluid flow need different shape factors.
 
     """
@@ -76,7 +62,7 @@ def ad_dif_mig(
     throat_valence = throat_valence + "." + ion
 
     network = target.project.network
-    throats = network.map_throats(throats=target.Ts, origin=target)
+    throats = network.throats(target.name)
     phase = target.project.find_phase(target)
     cn = network["throat.conns"][throats]
     T = phase[throat_temperature][throats]

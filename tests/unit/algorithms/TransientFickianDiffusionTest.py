@@ -20,8 +20,8 @@ class TransientFickianDiffusionTest:
         self.phys['throat.diffusive_conductance'] = 1e-15
         self.alg = op.algorithms.TransientFickianDiffusion(network=self.net,
                                                            phase=self.phase)
-        self.alg.settings.update({'quantity': 'pore.concentration',
-                                  'conductance': 'throat.diffusive_conductance'})
+        self.alg.settings._update({'quantity': 'pore.concentration',
+                                   'conductance': 'throat.diffusive_conductance'})
         self.alg.set_value_BC(pores=self.net.pores('right'), values=1)
         self.alg.set_value_BC(pores=self.net.pores('left'), values=0)
 

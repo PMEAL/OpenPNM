@@ -13,17 +13,18 @@ class TopotoolsTest:
     def teardown_class(self):
         self.ws.clear()
 
-    def test_reduce_coordination(self):
-        net = op.network.Cubic(shape=[10, 10, 10], connectivity=26)
-        a = np.mean(net.num_neighbors(pores=net.Ps, flatten=False))
-        b = 20.952
-        assert a == b
-        topotools.reduce_coordination(network=net, z=6)
-        a = np.mean(net.num_neighbors(pores=net.Ps, flatten=False))
-        b = 6.0
-        assert_allclose(a, b)
-        h = net.check_network_health()
-        assert h.health
+    def test_filter_pores_by_z(self):
+        pn = op.network.Cubic(shape=[4, 4, 1])
+        Ps = op.topotools.filter_pores_by_z(network=pn, pores=0, z=1)
+        assert_allclose(Ps, [])
+        Ps = op.topotools.filter_pores_by_z(network=pn, pores=0, z=2)
+        assert_allclose(Ps, [0])
+        Ps = op.topotools.filter_pores_by_z(network=pn, pores=[0, 1], z=1)
+        assert_allclose(Ps, [])
+        Ps = op.topotools.filter_pores_by_z(network=pn, pores=[0, 1], z=2)
+        assert_allclose(Ps, [0])
+        Ps = op.topotools.filter_pores_by_z(network=pn, pores=pn.Ps, z=4)
+        assert_allclose(Ps, [5, 6, 9, 10])
 
     def test_label_faces(self):
         net = op.network.Cubic(shape=[3, 3, 3], connectivity=6)
@@ -435,19 +436,6 @@ class TopotoolsTest:
                                   pores1=pores1,
                                   pores2=pores2, mode='delaunay')
         assert pn.Nt == 436
-
-    def test_filter_pores_by_z(self):
-        pn = op.network.Cubic(shape=[4, 4, 1])
-        Ps = op.topotools.filter_pores_by_z(network=pn, pores=0, z=1)
-        assert_allclose(Ps, [])
-        Ps = op.topotools.filter_pores_by_z(network=pn, pores=0, z=2)
-        assert_allclose(Ps, [0])
-        Ps = op.topotools.filter_pores_by_z(network=pn, pores=[0, 1], z=1)
-        assert_allclose(Ps, [])
-        Ps = op.topotools.filter_pores_by_z(network=pn, pores=[0, 1], z=2)
-        assert_allclose(Ps, [0])
-        Ps = op.topotools.filter_pores_by_z(network=pn, pores=pn.Ps, z=4)
-        assert_allclose(Ps, [5, 6, 9, 10])
 
     def test_is_fully_connected(self):
         pn = op.network.Cubic(shape=[4, 4, 1])

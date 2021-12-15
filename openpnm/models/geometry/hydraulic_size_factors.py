@@ -1,22 +1,7 @@
-r"""
-The hydraulic size factor is the geometrical part of the pre-factor in
-Stoke's flow:
-
-.. math::
-
-    Q = \frac{A^2}{8 \mu L} \Delta P
-      = \frac{S_{hydraulic}}{\mu} \Delta P
-
-Thus :math:`S_{hydraulic}` represents the combined effect of the area
-and length of the *conduit*, which consists of a throat and 1/2 of the
-pores on each end.
-
-"""
-
 import numpy as _np
 import openpnm.models.geometry.conduit_lengths as _conduit_lengths
-import openpnm.geometry.GenericGeometry as _GenericGeometry
-from .misc import _get_conduit_diameters
+from openpnm.utils import Docorator
+
 
 __all__ = [
     "spheres_and_cylinders",
@@ -29,10 +14,14 @@ __all__ = [
     "intersecting_pyramids",
     "ncylinders_in_series"
 ]
+docstr = Docorator()
 
 
+@docstr.get_sections(base='models.geometry.hydraulic_size_factor',
+                     sections=['Parameters', 'Returns', 'Notes'])
+@docstr.dedent
 def spheres_and_cylinders(
-    target: _GenericGeometry,
+    target,
     pore_diameter="pore.diameter",
     throat_diameter="throat.diameter",
 ):
@@ -42,20 +31,15 @@ def spheres_and_cylinders(
 
     Parameters
     ----------
-    target : GenericGeometry
-        Geometry object which this model is associated with. This controls
-        the length of the calculated array, and also provides access to
-        other necessary properties.
-    pore_diameter : str
-        Dictionary key of the pore diameter values.
-    throat_diameter : str
-        Dictionary key of the throat diameter values.
+    %(models.target.parameters)s
+    %(models.geometry.pdia)s
+    %(models.geometry.tdia)s
 
     Returns
     -------
-    dict
-        Dictionary containing conduit size factors. Size factors are
-        accessible via the keys: 'pore1', 'throat', and 'pore2'.
+    size_factors : dict
+        A dictionary containing the hydraulic size factors, which can be
+        accessed via the dict keys 'pore1', 'pore2', and 'throat'.
 
     Notes
     -----
@@ -64,7 +48,7 @@ def spheres_and_cylinders(
 
     .. math::
 
-        Q = \frac{A^2}{8 \mu L} \Delta P
+        Q = \frac{A^2}{8 \pi \mu L} \Delta P
           = \frac{S_{hydraulic}}{\mu} \Delta P
 
     Thus :math:`S_{hydraulic}` represents the combined effect of the area
@@ -72,9 +56,12 @@ def spheres_and_cylinders(
     pores on each end.
 
     """
-    D1, Dt, D2 = _get_conduit_diameters(target, pore_diameter, throat_diameter)
+    D1, Dt, D2 = target.get_conduit_data(poreprop=pore_diameter,
+                                         throatprop=throat_diameter).T
     L1, Lt, L2 = _conduit_lengths.spheres_and_cylinders(
-        target, pore_diameter=pore_diameter, throat_diameter=throat_diameter
+        target=target,
+        pore_diameter=pore_diameter,
+        throat_diameter=throat_diameter
     ).T
 
     # Fi is the integral of (1/A^2) dx, x = [0, Li]
@@ -97,8 +84,9 @@ def spheres_and_cylinders(
     return {"pore1": S1, "throat": St, "pore2": S2}
 
 
+@docstr.dedent
 def circles_and_rectangles(
-    target: _GenericGeometry,
+    target,
     pore_diameter="pore.diameter",
     throat_diameter="throat.diameter",
 ):
@@ -108,42 +96,23 @@ def circles_and_rectangles(
 
     Parameters
     ----------
-    target : GenericGeometry
-        Geometry object which this model is associated with. This controls
-        the length of the calculated array, and also provides access to
-        other necessary properties.
-    pore_diameter : str
-        Dictionary key of the pore diameter values.
-    throat_diameter : str
-        Dictionary key of the throat diameter values.
+    %(models.geometry.hydraulic_size_factor.parameters)s
 
     Returns
     -------
-    dict
-        Dictionary containing conduit size factors. Size factors are
-        accessible via the keys: 'pore1', 'throat', and 'pore2'.
+    %(models.geometry.hydraulic_size_factor.returns)s
 
     Notes
     -----
-    The hydraulic size factor is the geometrical part of the pre-factor in
-    Stoke's flow:
-
-    .. math::
-
-        Q = \frac{A^2}{8 \mu L} \Delta P
-          = \frac{S_{hydraulic}}{\mu} \Delta P
-
-    Thus :math:`S_{hydraulic}` represents the combined effect of the area
-    and length of the *conduit*, which consists of a throat and 1/2 of the
-    pores on each end.
-
-    This model should only be used for true 2D networks, i.e. with planar
-    symmetry.
+    %(models.geometry.hydraulic_size_factor.notes)s
 
     """
-    D1, Dt, D2 = _get_conduit_diameters(target, pore_diameter, throat_diameter)
+    D1, Dt, D2 = target.get_conduit_data(poreprop=pore_diameter,
+                                         throatprop=throat_diameter).T
     L1, Lt, L2 = _conduit_lengths.circles_and_rectangles(
-        target, pore_diameter=pore_diameter, throat_diameter=throat_diameter
+        target=target,
+        pore_diameter=pore_diameter,
+        throat_diameter=throat_diameter
     ).T
 
     # Fi is the integral of (1/A^3) dx, x = [0, Li]
@@ -157,8 +126,9 @@ def circles_and_rectangles(
     return {"pore1": S1, "throat": St, "pore2": S2}
 
 
+@docstr.dedent
 def cones_and_cylinders(
-    target: _GenericGeometry,
+    target,
     pore_diameter="pore.diameter",
     throat_diameter="throat.diameter",
 ):
@@ -168,39 +138,23 @@ def cones_and_cylinders(
 
     Parameters
     ----------
-    target : OpenPNM Object
-        The object which this model is associated with. This controls the
-        length of the calculated array, and also provides access to other
-        necessary properties.
-    pore_diameter : str
-        Dictionary key of the pore diameter values.
-    throat_diameter : str
-        Dictionary key of the throat diameter values.
+    %(models.geometry.hydraulic_size_factor.parameters)s
 
     Returns
     -------
-    dict
-        Dictionary containing conduit size factors. Size factors are
-        accessible via the keys: 'pore1', 'throat', and 'pore2'.
+    %(models.geometry.hydraulic_size_factor.returns)s
 
     Notes
     -----
-    The hydraulic size factor is the geometrical part of the pre-factor in
-    Stoke's flow:
-
-    .. math::
-
-        Q = \frac{A^2}{8 \mu L} \Delta P
-          = \frac{S_{hydraulic}}{\mu} \Delta P
-
-    Thus :math:`S_{hydraulic}` represents the combined effect of the area
-    and length of the *conduit*, which consists of a throat and 1/2 of the
-    pores on each end.
+    %(models.geometry.hydraulic_size_factor.notes)s
 
     """
-    D1, Dt, D2 = _get_conduit_diameters(target, pore_diameter, throat_diameter)
+    D1, Dt, D2 = target.get_conduit_data(poreprop=pore_diameter,
+                                         throatprop=throat_diameter).T
     L1, Lt, L2 = _conduit_lengths.cones_and_cylinders(
-        target, pore_diameter=pore_diameter, throat_diameter=throat_diameter
+        target=target,
+        pore_diameter=pore_diameter,
+        throat_diameter=throat_diameter
     ).T
 
     # Fi is the integral of (1/A^2) dx, x = [0, Li]
@@ -219,8 +173,9 @@ def cones_and_cylinders(
     return {"pore1": S1, "throat": St, "pore2": S2}
 
 
+@docstr.dedent
 def trapezoids_and_rectangles(
-    target: _GenericGeometry,
+    target,
     pore_diameter="pore.diameter",
     throat_diameter="throat.diameter",
 ):
@@ -230,42 +185,26 @@ def trapezoids_and_rectangles(
 
     Parameters
     ----------
-    target : OpenPNM Object
-        The object which this model is associated with. This controls the
-        length of the calculated array, and also provides access to other
-        necessary properties.
-    pore_diameter : str
-        Dictionary key of the pore diameter values.
-    throat_diameter : str
-        Dictionary key of the throat diameter values.
+    %(models.geometry.hydraulic_size_factor.parameters)s
 
     Returns
     -------
-    dict
-        Dictionary containing conduit size factors. Size factors are
-        accessible via the keys: 'pore1', 'throat', and 'pore2'.
+    %(models.geometry.hydraulic_size_factor.returns)s
 
     Notes
     -----
-    The hydraulic size factor is the geometrical part of the pre-factor in
-    Stoke's flow:
-
-    .. math::
-
-        Q = \frac{A^2}{8 \mu L} \Delta P
-          = \frac{S_{hydraulic}}{\mu} \Delta P
-
-    Thus :math:`S_{hydraulic}` represents the combined effect of the area
-    and length of the *conduit*, which consists of a throat and 1/2 of the
-    pores on each end.
+    %(models.geometry.hydraulic_size_factor.notes)s
 
     This model should only be used for true 2D networks, i.e. with planar
     symmetry.
 
     """
-    D1, Dt, D2 = _get_conduit_diameters(target, pore_diameter, throat_diameter)
+    D1, Dt, D2 = target.get_conduit_data(poreprop=pore_diameter,
+                                         throatprop=throat_diameter).T
     L1, Lt, L2 = _conduit_lengths.cones_and_cylinders(
-        target, pore_diameter=pore_diameter, throat_diameter=throat_diameter
+        target=target,
+        pore_diameter=pore_diameter,
+        throat_diameter=throat_diameter
     ).T
 
     # Fi is the integral of (1/A^3) dx, x = [0, Li]
@@ -279,6 +218,7 @@ def trapezoids_and_rectangles(
     return {"pore1": S1, "throat": St, "pore2": S2}
 
 
+@docstr.dedent
 def pyramids_and_cuboids(
     target,
     pore_diameter="pore.diameter",
@@ -290,39 +230,25 @@ def pyramids_and_cuboids(
 
     Parameters
     ----------
-    target : GenericGeometry
-        Geometry object which this model is associated with. This controls
-        the length of the calculated array, and also provides access to
-        other necessary properties.
-    pore_diameter : str
-        Dictionary key pointing to the pore diameter values.
-    throat_diameter : str
-        Dictionary key pointing to the throat diameter values.
+    %(models.geometry.hydraulic_size_factor.parameters)s
 
     Returns
     -------
-    dict
-        Dictionary containing conduit size factors. Size factors are
-        accessible via the keys: 'pore1', 'throat', and 'pore2'.
+    %(models.geometry.hydraulic_size_factor.returns)s
 
     Notes
     -----
-    The hydraulic size factor is the geometrical part of the pre-factor in
-    Stoke's flow:
-
-    .. math::
-
-        Q = \frac{A^2}{8 \mu L} \Delta P
-          = \frac{S_{hydraulic}}{\mu} \Delta P
-
-    Thus :math:`S_{hydraulic}` represents the combined effect of the area
-    and length of the *conduit*, which consists of a throat and 1/2 of the
-    pores on each end.
+    %(models.geometry.hydraulic_size_factor.notes)s
 
     """
-    D1, Dt, D2 = _get_conduit_diameters(target, pore_diameter, throat_diameter)
+    D1, Dt, D2 = target.get_conduit_data(
+        poreprop=pore_diameter,
+        throatprop=throat_diameter
+    ).T
     L1, Lt, L2 = _conduit_lengths.pyramids_and_cuboids(
-        target, pore_diameter=pore_diameter, throat_diameter=throat_diameter
+        target=target,
+        pore_diameter=pore_diameter,
+        throat_diameter=throat_diameter
     ).T
 
     # Fi is the integral of (1/A^2) dx, x = [0, Li]
@@ -341,8 +267,9 @@ def pyramids_and_cuboids(
     return {"pore1": S1, "throat": St, "pore2": S2}
 
 
+@docstr.dedent
 def cubes_and_cuboids(
-    target: _GenericGeometry,
+    target,
     pore_diameter="pore.diameter",
     throat_diameter="throat.diameter",
     pore_aspect=[1, 1, 1],
@@ -354,14 +281,7 @@ def cubes_and_cuboids(
 
     Parameters
     ----------
-    target : GenericGeometry
-        Geometry object which this model is associated with. This controls
-        the length of the calculated array, and also provides access to
-        other necessary properties.
-    pore_diameter : str
-        Dictionary key pointing to the pore diameter values.
-    throat_diameter : str
-        Dictionary key pointing to the throat diameter values.
+    %(models.geometry.hydraulic_size_factor.parameters)s
     pore_aspect : list
         Aspect ratio of the pores
     throat_aspect : list
@@ -369,28 +289,21 @@ def cubes_and_cuboids(
 
     Returns
     -------
-    dict
-        Dictionary containing conduit size factors. Size factors are
-        accessible via the keys: 'pore1', 'throat', and 'pore2'.
+    %(models.geometry.hydraulic_size_factor.returns)s
 
     Notes
     -----
-    The hydraulic size factor is the geometrical part of the pre-factor in
-    Stoke's flow:
-
-    .. math::
-
-        Q = \frac{A^2}{8 \mu L} \Delta P
-          = \frac{S_{hydraulic}}{\mu} \Delta P
-
-    Thus :math:`S_{hydraulic}` represents the combined effect of the area
-    and length of the *conduit*, which consists of a throat and 1/2 of the
-    pores on each end.
+    %(models.geometry.hydraulic_size_factor.notes)s
 
     """
-    D1, Dt, D2 = _get_conduit_diameters(target, pore_diameter, throat_diameter)
+    D1, Dt, D2 = target.get_conduit_data(
+        poreprop=pore_diameter,
+        throatprop=throat_diameter
+    ).T
     L1, Lt, L2 = _conduit_lengths.cubes_and_cuboids(
-        target, pore_diameter=pore_diameter, throat_diameter=throat_diameter
+        target=target,
+        pore_diameter=pore_diameter,
+        throat_diameter=throat_diameter
     ).T
 
     # Fi is the integral of (1/A^2) dx, x = [0, Li]
@@ -409,8 +322,9 @@ def cubes_and_cuboids(
     return {"pore1": S1, "throat": St, "pore2": S2}
 
 
+@docstr.dedent
 def squares_and_rectangles(
-    target: _GenericGeometry,
+    target,
     pore_diameter="pore.diameter",
     throat_diameter="throat.diameter",
     pore_aspect=[1, 1],
@@ -422,14 +336,7 @@ def squares_and_rectangles(
 
     Parameters
     ----------
-    target : GenericGeometry
-        Geometry object which this model is associated with. This controls
-        the length of the calculated array, and also provides access to
-        other necessary properties.
-    pore_diameter : str
-        Dictionary key pointing to the pore diameter values.
-    throat_diameter : str
-        Dictionary key pointing to the throat diameter values.
+    %(models.geometry.hydraulic_size_factor.parameters)s
     pore_aspect : list
         Aspect ratio of the pores
     throat_aspect : list
@@ -437,31 +344,24 @@ def squares_and_rectangles(
 
     Returns
     -------
-    dict
-        Dictionary containing conduit size factors. Size factors are
-        accessible via the keys: 'pore1', 'throat', and 'pore2'.
+    %(models.geometry.hydraulic_size_factor.returns)s
 
     Notes
     -----
-    The hydraulic size factor is the geometrical part of the pre-factor in
-    Stoke's flow:
-
-    .. math::
-
-        Q = \frac{A^2}{8 \mu L} \Delta P
-          = \frac{S_{hydraulic}}{\mu} \Delta P
-
-    Thus :math:`S_{hydraulic}` represents the combined effect of the area
-    and length of the *conduit*, which consists of a throat and 1/2 of the
-    pores on each end.
+    %(models.geometry.hydraulic_size_factor.notes)s
 
     This model should only be used for true 2D networks, i.e. with planar
     symmetry.
 
     """
-    D1, Dt, D2 = _get_conduit_diameters(target, pore_diameter, throat_diameter)
+    D1, Dt, D2 = target.get_conduit_data(
+        poreprop=pore_diameter,
+        throatprop=throat_diameter
+    ).T
     L1, Lt, L2 = _conduit_lengths.squares_and_rectangles(
-        target, pore_diameter=pore_diameter, throat_diameter=throat_diameter
+        target=target,
+        pore_diameter=pore_diameter,
+        throat_diameter=throat_diameter
     ).T
 
     # Fi is the integral of (1/A^3) dx, x = [0, Li]
@@ -475,8 +375,9 @@ def squares_and_rectangles(
     return {"pore1": S1, "throat": St, "pore2": S2}
 
 
+@docstr.dedent
 def intersecting_cones(
-    target: _GenericGeometry,
+    target,
     pore_diameter="pore.diameter",
     throat_diameter="throat.diameter",
     midpoint=None,
@@ -486,43 +387,25 @@ def intersecting_cones(
 
     Parameters
     ----------
-    target : GenericGeometry
-        Geometry object which this model is associated with. This controls
-        the length of the calculated array, and also provides access to
-        other necessary properties.
-    pore_diameter : str
-        Dictionary key pointing to the pore diameter values.
-    throat_diameter : str
-        Dictionary key pointing to the throat diameter values.
+    %(models.geometry.hydraulic_size_factor.parameters)s
     midpoint : str, optional
         Dictionary key of the midpoint values.
 
     Returns
     -------
-    dict
-        Dictionary containing conduit size factors. Size factors are
-        accessible via the keys: 'pore1', 'throat', and 'pore2'.
+    %(models.geometry.hydraulic_size_factor.returns)s
 
     Notes
     -----
-    The hydraulic size factor is the geometrical part of the pre-factor in
-    Stoke's flow:
-
-    .. math::
-
-        Q = \frac{A^2}{8 \mu L} \Delta P
-          = \frac{S_{hydraulic}}{\mu} \Delta P
-
-    Thus :math:`S_{hydraulic}` represents the combined effect of the area
-    and length of the *conduit*, which consists of a throat and 1/2 of the
-    pores on each end.
+    %(models.geometry.hydraulic_size_factor.notes)s
 
     """
     raise NotImplementedError
 
 
+@docstr.dedent
 def intersecting_trapezoids(
-    target: _GenericGeometry,
+    target,
     pore_diameter="pore.diameter",
     throat_diameter="throat.diameter",
     midpoint=None,
@@ -533,36 +416,17 @@ def intersecting_trapezoids(
 
     Parameters
     ----------
-    target : GenericGeometry
-        Geometry object which this model is associated with. This controls
-        the length of the calculated array, and also provides access to
-        other necessary properties.
-    pore_diameter : str
-        Dictionary key pointing to the pore diameter values.
-    throat_diameter : str
-        Dictionary key pointing to the throat diameter values.
+    %(models.geometry.hydraulic_size_factor.parameters)s
     midpoint : str, optional
         Dictionary key of the midpoint values.
 
     Returns
     -------
-    dict
-        Dictionary containing conduit size factors. Size factors are
-        accessible via the keys: 'pore1', 'throat', and 'pore2'.
+    %(models.geometry.hydraulic_size_factor.returns)s
 
     Notes
     -----
-    The hydraulic size factor is the geometrical part of the pre-factor in
-    Stoke's flow:
-
-    .. math::
-
-        Q = \frac{A^2}{8 \mu L} \Delta P
-          = \frac{S_{hydraulic}}{\mu} \Delta P
-
-    Thus :math:`S_{hydraulic}` represents the combined effect of the area
-    and length of the *conduit*, which consists of a throat and 1/2 of the
-    pores on each end.
+    %(models.geometry.hydraulic_size_factor.notes)s
 
     This model should only be used for true 2D networks, i.e. with planar
     symmetry.
@@ -570,9 +434,9 @@ def intersecting_trapezoids(
     """
     raise NotImplementedError
 
-
+@docstr.dedent
 def intersecting_pyramids(
-    target: _GenericGeometry,
+    target,
     pore_diameter="pore.diameter",
     throat_diameter="throat.diameter",
     midpoint=None,
@@ -582,43 +446,25 @@ def intersecting_pyramids(
 
     Parameters
     ----------
-    target : GenericGeometry
-        Geometry object which this model is associated with. This controls
-        the length of the calculated array, and also provides access to
-        other necessary properties.
-    pore_diameter : str
-        Dictionary key pointing to the pore diameter values.
-    throat_diameter : str
-        Dictionary key pointing to the throat diameter values.
+    %(models.geometry.hydraulic_size_factor.parameters)s
     midpoint : str, optional
         Dictionary key of the midpoint values.
 
     Returns
     -------
-    dict
-        Dictionary containing conduit size factors. Size factors are
-        accessible via the keys: 'pore1', 'throat', and 'pore2'.
+    %(models.geometry.hydraulic_size_factor.returns)s
 
     Notes
     -----
-    The hydraulic size factor is the geometrical part of the pre-factor in
-    Stoke's flow:
-
-    .. math::
-
-        Q = \frac{A^2}{8 \mu L} \Delta P
-          = \frac{S_{hydraulic}}{\mu} \Delta P
-
-    Thus :math:`S_{hydraulic}` represents the combined effect of the area
-    and length of the *conduit*, which consists of a throat and 1/2 of the
-    pores on each end.
+    %(models.geometry.hydraulic_size_factor.notes)s
 
     """
     raise NotImplementedError
 
 
+@docstr.dedent
 def ncylinders_in_series(
-    target: _GenericGeometry,
+    target,
     pore_diameter="pore.diameter",
     throat_diameter="throat.diameter",
     n=5,
@@ -629,43 +475,29 @@ def ncylinders_in_series(
 
     Parameters
     ----------
-    target : GenericGeometry
-        Geometry object which this model is associated with. This controls
-        the length of the calculated array, and also provides access to
-        other necessary properties.
-    pore_diameter : str
-        Dictionary key pointing to the pore diameter values.
-    throat_diameter : str
-        Dictionary key pointing to the throat diameter values.
+    %(models.geometry.hydraulic_size_factor.parameters)s
     n : int
         Number of cylindrical divisions for each pore
 
     Returns
     -------
-    dict
-        Dictionary containing conduit size factors. Size factors are
-        accessible via the keys: 'pore1', 'throat', and 'pore2'.
+    %(models.geometry.hydraulic_size_factor.returns)s
 
     Notes
     -----
-    The hydraulic size factor is the geometrical part of the pre-factor in
-    Stoke's flow:
-
-    .. math::
-
-        Q = \frac{A^2}{8 \mu L} \Delta P
-          = \frac{S_{hydraulic}}{\mu} \Delta P
-
-    Thus :math:`S_{hydraulic}` represents the combined effect of the area
-    and length of the *conduit*, which consists of a throat and 1/2 of the
-    pores on each end.
+    %(models.geometry.hydraulic_size_factor.notes)s
 
     """
-    D1, Dt, D2 = _get_conduit_diameters(target, pore_diameter, throat_diameter)
+    D1, Dt, D2 = target.get_conduit_data(
+        poreprop=pore_diameter,
+        throatprop=throat_diameter
+    ).T
     # Ensure throats are never bigger than connected pores
     Dt = _np.minimum(Dt, 0.99 * _np.minimum(D1, D2))
     L1, Lt, L2 = _conduit_lengths.spheres_and_cylinders(
-        target, pore_diameter=pore_diameter, throat_diameter=throat_diameter
+        target=target,
+        pore_diameter=pore_diameter,
+        throat_diameter=throat_diameter
     ).T
     dL1 = _np.linspace(0, L1, num=n)
     dL2 = _np.linspace(0, L2, num=n)

@@ -1,19 +1,19 @@
-r"""
-Pore-scale models for calculating the diffusive conductance of conduits.
-"""
 import numpy as _np
 import scipy.constants as _const
-from openpnm.models.physics.utils import _poisson_conductance
+from openpnm.models import _doctxt
+from openpnm.models.physics._utils import _poisson_conductance
+
 
 __all__ = [
     "generic_diffusive",
     "ordinary_diffusion",
     "mixed_diffusion",
     "taylor_aris_diffusion",
-    "multiphase_diffusion"
+    "multiphase_diffusion",
 ]
 
 
+@_doctxt
 def generic_diffusive(target,
                       pore_diffusivity="pore.diffusivity",
                       throat_diffusivity="throat.diffusivity",
@@ -21,24 +21,19 @@ def generic_diffusive(target,
     r"""
     Calculates the diffusive conductance of conduits in network.
 
-    A conduit is defined as (1/2 pore - full throat - 1/2 pore).
-
     Parameters
     ----------
-    target : GenericPhysics
-        Physics object with which this model is associated.
+    %(target_blurb)s
     pore_diffusivity : str
-        Dictionary key of the pore diffusivity values.
+        %(dict_blurb)s pore diffusivity
     throat_diffusivity : str
-        Dictionary key of the throat diffusivity values.
-    size_factors: str
-        Dictionary key of the conduit diffusive size factors' values.
+        %(dict_blurb)s throat diffusivity
+    size_factors : str
+        %(dict_blurb)s conduit diffusive size factors
 
     Returns
     -------
-    ndarray
-        Array containing diffusive conductance values for conduits in the
-        geometry attached to the given physics object.
+    %(return_arr)s diffusive conductance
 
     """
     return _poisson_conductance(target=target,
@@ -47,6 +42,7 @@ def generic_diffusive(target,
                                 size_factors=size_factors)
 
 
+@_doctxt
 def ordinary_diffusion(target,
                        pore_diffusivity="pore.diffusivity",
                        throat_diffusivity="throat.diffusivity",
@@ -54,24 +50,19 @@ def ordinary_diffusion(target,
     r"""
     Calculates the diffusive conductance of conduits in network.
 
-    A conduit is defined as (1/2 pore - full throat - 1/2 pore).
-
     Parameters
     ----------
-    target : GenericPhysics
-        Physics object with which this model is associated.
+    %(target_blurb)s
     pore_diffusivity : str
-        Dictionary key of the pore diffusivity values.
+        %(dict_blurb)s pore diffusivity
     throat_diffusivity : str
-        Dictionary key of the throat diffusivity values.
+        %(dict_blurb)s throat diffusivity
     size_factors: str
-        Dictionary key of the conduit diffusive size factors' values.
+        %(dict_blurb)s conduit diffusive size factors
 
     Returns
     -------
-    ndarray
-        Array containing diffusive conductance values for conduits in the
-        geometry attached to the given physics object.
+    %(return_arr)s diffusive conductance
 
     """
     return _poisson_conductance(target=target,
@@ -79,7 +70,7 @@ def ordinary_diffusion(target,
                                 throat_conductivity=throat_diffusivity,
                                 size_factors=size_factors)
 
-
+@_doctxt
 def mixed_diffusion(target,
                     pore_diameter="pore.diameter",
                     throat_diameter="throat.diameter",
@@ -93,46 +84,30 @@ def mixed_diffusion(target,
     Calculates the diffusive conductance of conduits in network with
     Knudsen correction.
 
-    A conduit is defined as (1/2 pore - full throat - 1/2 pore). See
-    Notes section for the limitations of this method.
-
     Parameters
     ----------
-    target : GenericPhysics
-        Physics object with which this model is associated.
+    %(target_blurb)s
     pore_diameter : str
-        Dictionary key of the pore diameter values.
+        %(dict_blurb)s pore diameter
     throat_diameter : str
-        Dictionary key of the throat diameter values.
+        %(dict_blurb)s throat diameter
     pore_diffusivity : str
-        Dictionary key of the pore diffusivity values.
+        %(dict_blurb)s pore diffusivity
     throat_diffusivity : str
-        Dictionary key of the throat diffusivity values.
+        %(dict_blurb)s pore diffusivity
     pore_temperature : str
-        Dictionary key of the pore temperature values.
-    throat_temperature : str
-        Dictionary key of the throat temperature values.
+        %(dict_blurb)s pore temperature
     molecular_weigth : str
-        Dictionary key of the pore molecular weight values.
-    size_factors: str
-        Dictionary key of the conduit diffusive size factors' values.
+        %(dict_blurb)s pore molecular weight
+    size_factors : str
+        %(dict_blurb)s size factor
 
     Returns
     -------
-    ndarray
-        Array containing diffusive conductance values for conduits in the
-        geometry attached to the given physics object.
-
-    Notes
-    -----
-    This function is ONLY suitable for dilute mixtures and NOT those with
-    concentrated species.
-
-    This function requires that all the necessary phase properties already
-    be calculated.
+    %(return_arr)s diffusive conductance
 
     """
-    # Fetch openpnm objects
+    # Fetch GenericPhysicss
     network = target.network
     phase = target.project.find_phase(target)
 
@@ -160,6 +135,7 @@ def mixed_diffusion(target,
                                 size_factors=size_factors)
 
 
+@_doctxt
 def taylor_aris_diffusion(target,
                           pore_area="pore.area",
                           throat_area="throat.area",
@@ -172,42 +148,33 @@ def taylor_aris_diffusion(target,
     Calculates the diffusive conductance of conduits in network
     considering the Taylor-Aris effect (effect of flow on diffusion).
 
-    A conduit is defined as (1/2 pore - full throat - 1/2 pore)
-
     Parameters
     ----------
-    target : GenericPhysics
-        Physics object with which this model is associated.
+    %(target_blurb)s
     pore_area : str
-        Dictionary key of the pore area values.
+        %(dict_blurb)s pore cross-sectional area
     throat_area : str
-        Dictionary key of the throat area values.
+        %(dict_blurb)s throat cross-sectional area
     pore_diffusivity : str
-        Dictionary key of the pore diffusivity values.
+        %(dict_blurb)s pore diffusivity
     throat_diffusivity : str
-        Dictionary key of the throat diffusivity values.
+        %(dict_blurb)s pore diffusivity
     pore_pressure : str
-        Dictionary key of the pore pressure values.
+        %(dict_blurb)s pore pressure
     throat_hydraulic_conductance : str
-        Dictionary key of the throat hydraulic_conductance values.
-    size_factors: str
-        Dictionary key of the conduit size factors' values.
+        %(dict_blurb)s throat hydraulic conductance
+    size_factors : str
+        %(dict_blurb)s conduit size factors
 
     Returns
     -------
-    ndarray
-        Array containing diffusive conductance values for conduits in the
-        geometry attached to the given physics object.
-
-    Notes
-    -----
-    This function requires that all the necessary phase properties are
-    already calculated.
+    %(return_arr)s diffusive conductance
 
     """
-    # Fetch openpnm objects
+    # Fetch GenericPhysicss
     network = target.network
-    throats = network.map_throats(throats=target.Ts, origin=target)
+    domain = target._domain
+    throats = domain.throats(target.name)
     phase = target.project.find_phase(target)
     cn = network['throat.conns'][throats]
     F = network[size_factors]
@@ -236,6 +203,7 @@ def taylor_aris_diffusion(target,
     return Dt * (1 + Pet**2 / 192) * F[throats]
 
 
+@_doctxt
 def multiphase_diffusion(target,
                          pore_diffusivity="pore.diffusivity",
                          throat_diffusivity="throat.diffusivity",
@@ -246,31 +214,28 @@ def multiphase_diffusion(target,
 
     Parameters
     ----------
-    target : GenericPhysics
-        Physics object with which this model is associated.
+    %(target_blurb)s
     pore_diffusivity : str
-        Dictionary key of the pore diffusivity values.
+        %(dict_blurb)s pore diffusivity
     throat_diffusivity : str
-        Dictionary key of the throat diffusivity values.
-    size_factors: str
-        Dictionary key of the conduit size factors' values.
+        %(dict_blurb)s throat diffusivity
+    size_factors : str
+        %(dict_blurb)s conduit size factors
 
     Returns
     -------
-    ndarray
-        Array containing diffusive conductance values for conduits in the
-        geometry attached to the given physics object.
+    %(return_arr)s diffusive conductance
 
     Notes
     -----
-    This method assumes that phase["partition_coef"] contains information on
-    binary phase partitioning. See ``MultiPhase`` class documentation for more
-    information.
+    This method assumes that ``phase["partition_coef"]`` contains information
+    on binary phase partitioning. See ``MultiPhase`` class documentation for
+    more information.
 
     """
-    # Fetch openpnm objects
+    # Fetch GenericPhysicss
     network = target.network
-    throats = target.throats(target=network)
+    throats = target.throats(to_global=True)
     phase = target.project.find_phase(target)
     cn = network.conns[throats]
     F = network[size_factors]

@@ -38,9 +38,9 @@ class MultiPhaseTest:
         m = op.phases.MultiPhase(network=self.net, phases=phases)
 
         Ps_water = np.array([0, 1, 2])
-        Ps_water_mask = self.net.tomask(pores=Ps_water)
+        Ps_water_mask = self.net.to_mask(pores=Ps_water)
         Ts_water = np.array([4, 12, 22])
-        Ts_water_mask = self.net.tomask(throats=Ts_water)
+        Ts_water_mask = self.net.to_mask(throats=Ts_water)
 
         m.set_occupancy(self.water, pores=Ps_water, throats=Ts_water)
 
@@ -84,9 +84,9 @@ class MultiPhaseTest:
 
         Ps_water = np.array([0, 1, 2])
         Pvals = np.array([0.5, 0.9, 0.01])
-        Ps_water_mask = self.net.tomask(Ps_water)
+        Ps_water_mask = self.net.to_mask(Ps_water)
         Ts_water = np.array([4, 12, 22])
-        Ts_water_mask = self.net.tomask(throats=Ts_water)
+        Ts_water_mask = self.net.to_mask(throats=Ts_water)
         Tvals = np.array([0.3, 0.4, 0.1])
 
         # Pvals/Tvals and pores/throats; same array length
@@ -155,7 +155,7 @@ class MultiPhaseTest:
         assert np.all(self.air['pore.temperature'] == 200)
 
         Ps = self.net['pore.coords'][:, 0] < 3
-        Ts = self.net.tomask(throats=self.net.find_neighbor_throats(Ps))
+        Ts = self.net.to_mask(throats=self.net.find_neighbor_throats(Ps))
 
         m.set_occupancy(phase=self.water, Pvals=Ps, Tvals=Ts)
         m.set_occupancy(phase=self.air, Pvals=~Ps, Tvals=~Ts)

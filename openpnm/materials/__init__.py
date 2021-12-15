@@ -1,8 +1,6 @@
 r"""
-
-**openpnm.materials**
-
-----
+Collection of preconfigured Network-Geometry combinations
+=========================================================
 
 This module provides a library of preconfigured Network-Geometry combinations.
 
@@ -13,17 +11,7 @@ spacing and pore sizes.  Some of the classes in this module have a signficant
 amount of custom code (e.g. ``VoronoiFibers``), while others are simple
 recipes that combine existing models in OpenPNM (e.g. ``BereaCubic``).
 
-
-The table below gives a list of available Material generators:
-
-+---------------------+-------------------------------------------------------+
-| Material Name       | Description                                           |
-+=====================+=======================================================+
-| VoronoiFibers       | Resembles a fibrous paper or mat with straight        |
-|                     | intersecting fibers.                                  |
-+---------------------+-------------------------------------------------------+
-
 """
 
-from .VoronoiFibers import VoronoiFibers
-from .BundleOfTubes import BundleOfTubes
+from ._voronoi_fibers import VoronoiFibers
+from ._bundle_of_tubes import BundleOfTubes

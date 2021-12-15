@@ -167,6 +167,7 @@ class ModelsTest:
 
     def test_regenerate_models_on_network_with_deep(self):
         pn = op.network.Cubic(shape=[5, 5, 5])
+        pn.regenerate_models()
         geo = op.geometry.SpheresAndCylinders(network=pn, pores=pn.Ps, throats=pn.Ts)
         a = len(pn.props())
         pn.clear()

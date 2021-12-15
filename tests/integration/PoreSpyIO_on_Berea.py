@@ -1,4 +1,6 @@
 import openpnm as op
+
+
 import porespy as ps
 import numpy as np
 import os
@@ -38,16 +40,19 @@ data = {
 # %% Perform extraction
 snow = ps.networks.snow2(im, voxel_size=data['resolution'],
                          boundary_width=[3, 0, 0], accuracy='standard')
-ps.imshow(snow.regions/snow.phases)
+# ps.imshow(snow.regions/snow.phases)
 
 # %% Open network in OpenPNM
-settings = {'pore_shape': 'pyramid',
-            'throat_shape': 'cuboid',
-            'pore_diameter': 'equivalent_diameter',
-            'throat_diameter': 'inscribed_diameter'}
-pn, geo = op.io.PoreSpy.import_data(snow.network, settings=settings)
+class Settings:
+    pore_shape = 'pyramid'
+    throat_shape = 'cuboid'
+    pore_diameter = 'equivalent_diameter'
+    throat_diameter = 'inscribed_diameter'
+
+
+pn, geo = op.io.PoreSpy.import_data(snow.network, settings=Settings)
 h = pn.check_network_health()
-op.topotools.trim(network=pn, pores=h['trim_pores'])
+op.topotools.trim(network=pn, pores=h['disconnected_pores'])
 gas = op.phases.GenericPhase(network=pn)
 gas['pore.diffusivity'] = 1.0
 gas['pore.viscosity'] = 1.0

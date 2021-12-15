@@ -1,13 +1,10 @@
-r"""
-Pore seed models are use to calculate random numbers for each pore, which can
-subsequently be used in statistical distributions to calculate actual pore
-sizes.
-"""
 import numpy as _np
 import scipy as _sp
 from openpnm.models import misc as _misc
-from openpnm.utils import logging as _logging
-_logger = _logging.getLogger(__name__)
+from openpnm.utils import Docorator
+
+
+docstr = Docorator()
 
 
 def random(target, seed=None, num_range=[0, 1]):
@@ -17,40 +14,36 @@ def random(target, seed=None, num_range=[0, 1]):
 random.__doc__ = _misc.random.__doc__
 
 
+@docstr.dedent
 def spatially_correlated(target, weights=None, strel=None):
     r"""
     Generates pore seeds that are spatailly correlated with their neighbors.
 
     Parameters
     ----------
-    target : OpenPNM Object
-        The object which this model is associated with. This controls the
-        length of the calculated array, and also provides access to other
-        necessary properties.
-
+    %(models.target.parameters)s
     weights : list of ints, optional
-        The [Nx,Ny,Nz] distances (in number of pores) in each direction that
+        The [Nx, Ny, Nz] distances (in number of pores) in each direction that
         should be correlated.
-
-    strel : array_like, optional (in place of weights)
-        The option allows full control over the spatial correlation pattern by
-        specifying the structuring element to be used in the convolution.
+    strel : array_like, optional (in place of ``weights``)
+        This option allows full control over the spatial correlation pattern
+        by specifying the structuring element to be used in the convolution.
 
         The array should be a 3D array containing the strength of correlations
         in each direction.  Nonzero values indicate the strength, direction
         and extent of correlations.  The following would achieve a basic
-        correlation in the z-direction:
+        correlation in the x-direction:
 
-    ::
+        ::
 
-        strel = np.array([[[0, 0, 0], [0, 0, 0], [0, 0, 0]],
-                          [[0, 0, 0], [1, 1, 1], [0, 0, 0]],
-                          [[0, 0, 0], [0, 0, 0], [0, 0, 0]]])
+            strel = np.array([[[0, 0, 0], [0, 0, 0], [0, 0, 0]],
+                              [[0, 0, 0], [1, 1, 1], [0, 0, 0]],
+                              [[0, 0, 0], [0, 0, 0], [0, 0, 0]]])
 
     Returns
     -------
-    values : NumPy ndarray
-        Array containing pore seed values.
+    seeds : ndarray
+        A numpy ndarry containing pore cross-sectional area values
 
     Notes
     -----
@@ -61,12 +54,12 @@ def spatially_correlated(target, weights=None, strel=None):
 
     Because is uses image analysis tools, it only works on Cubic networks.
 
-    This is the appproached used by Gostick et al [2]_ to create an anistropic
+    This is the appproached used by Gostick et al [1]_ to create an anistropic
     gas diffusion layer for fuel cell electrodes.
 
     References
     ----------
-    .. [2] J. Gostick et al, Pore network modeling of fibrous gas diffusion
+    .. [1] J. Gostick et al, Pore network modeling of fibrous gas diffusion
            layers for polymer electrolyte membrane fuel cells. J Power Sources
            v173, pp277–290 (2007)
 
@@ -92,9 +85,9 @@ def spatially_correlated(target, weights=None, strel=None):
             return im.flatten()
         w = _np.array(weights)
         strel = _np.zeros(w*2+1)
+        strel[w[0], w[1], :] = 1
         strel[:, w[1], w[2]] = 1
         strel[w[0], :, w[2]] = 1
-        strel[w[0], w[1], :] = 1
     im = spim.convolve(im, strel)
     # Convolution is no longer randomly distributed, so fit a gaussian
     # and find it's seeds

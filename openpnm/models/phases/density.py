@@ -1,7 +1,12 @@
-r"""
-"""
+from openpnm.utils import Docorator
 
 
+docstr = Docorator()
+
+
+@docstr.get_sections(base='models.phase.density',
+                     sections=['Returns'])
+@docstr.dedent
 def standard(target, mol_weight='pore.molecular_weight',
              molar_density='pore.molar_density'):
     r"""
@@ -9,21 +14,22 @@ def standard(target, mol_weight='pore.molecular_weight',
 
     Parameters
     ----------
-    target : OpenPNM Object
-        The object for which these values are being calculated.  This
-        controls the length of the calculated array, and also provides
-        access to other necessary thermofluid properties.
-
-    mol_weight : string
-        The dictionary key containing the molecular weight values (kg/mol)
-
-    molar_density : string
-        The dictionary key containing the molar density values (mol/m3)
+    %(models.target.parameters)s
+    mol_weight : str
+        Name of the dictionary key on ``target`` where the array containing
+        molecular weight values is stored
+    molar_density : str
+        Name of the dictionary key on ``target`` where the array containing
+        molar density values is stored
 
     Returns
     -------
-    value : NumPy ndarray
-        Array containing density values (kg/m3)
+    densities : ndarray
+        A numpy ndarray containing density values
+
+    Notes
+    -----
+    %(models.phase.SI_note)s
 
     """
     MW = target[mol_weight]
@@ -32,6 +38,7 @@ def standard(target, mol_weight='pore.molecular_weight',
     return value
 
 
+@docstr.dedent
 def ideal_gas(target, pressure='pore.pressure', temperature='pore.temperature',
               mol_weight='pore.molecular_weight'):
     r"""
@@ -39,24 +46,16 @@ def ideal_gas(target, pressure='pore.pressure', temperature='pore.temperature',
 
     Parameters
     ----------
-    target : OpenPNM Object
-        The object for which these values are being calculated.  This
-        controls the length of the calculated array, and also provides
-        access to other necessary thermofluid properties.
-
-    pressure : string
-        The dictionary key containing the pressure values (Pa)
-
-    temperature : string
-        The dictionary key containing the temperature values (K)
-
-    mol_weight : string
-        The dictionary key containing the molecular weight values (kg/mol)
+    %(models.target.parameters)s
+    %(models.phase.T)s
+    %(models.phase.P)s
+    mol_weight : str
+        Name of the dictionary key on ``target`` where the array containing
+        molecular weight values is stored
 
     Returns
     -------
-    value : NumPy ndarray
-        Array containing density values in [kg/m3]
+    %(models.phase.density.returns)s
 
     """
 
@@ -77,24 +76,15 @@ def water(target, temperature='pore.temperature', salinity='pore.salinity'):
 
     Parameters
     ----------
-    target : OpenPNM Object
-        The object for which these values are being calculated.  This
-        controls the length of the calculated array, and also provides
-        access to other necessary thermofluid properties.
-
-    temperature : string
-        The dictionary key containing the temperature values.  Temperature must
-        be in Kelvin for this emperical equation to work
-
-    salinity : string
-        The dictionary key containing the salinity values.  Salinity must be
-        expressed in g of salt per kg of solution (ppt).
-
+    %(models.target.parameters)s
+    %(models.phase.T)s
+    salinity : str
+        Name of the dictionary key on ``target`` where the array containing
+        salinity values is stored.
 
     Returns
     -------
-    value : NumPy ndarray
-        The density of water/seawater in [kg/m3]
+    %(models.phase.density.returns)s
 
     Notes
     -----

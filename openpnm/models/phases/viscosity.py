@@ -12,24 +12,22 @@ def water(target, temperature='pore.temperature', salinity='pore.salinity'):
 
     Parameters
     ----------
-    target : OpenPNM Object
+    target : GenericPhase
         The object for which these values are being calculated. This
         controls the length of the calculated array, and also provides
         access to other necessary thermofluid properties.
-
-    temperature : string
+    temperature : str
         The dictionary key containing the temperature values. Temperature must
         be in Kelvin for this emperical equation to work. Can be either a pore
         or throat array.
-
-    salinity : string
+    salinity : str
         The dictionary key containing the salinity values. Salinity must be
         expressed in g of salt per kg of solution (ppt). Can be either a
         pore or throat array, but must be consistent with ``temperature``.
 
     Returns
     -------
-    value : NumPy ndarray
+    value : ndarray
         Array containing viscosity of water/seawater in [kg/m.s]
 
     Notes
@@ -77,22 +75,20 @@ def reynolds(target, u0, b, temperature='pore.temperature'):
 
     Parameters
     ----------
-    target : OpenPNM Object
+    target : GenericPhase
         The object for which these values are being calculated.  This
         controls the length of the calculated array, and also provides
         access to other necessary thermofluid properties.
-
     u0, b : float, array_like
             Coefficients of the viscosity exponential model (mu = u0*Exp(-b*T)
             where T is the temperature in Kelvin
-
-    temperature : string
+    temperature : str
         The dictionary key containing the temperature values (K).  Can be
         either a pore or throat array.
 
     Returns
     -------
-    value : NumPy ndarray
+    value : ndarray
         Array containing viscosity values based on Reynolds model.
 
     [1] Reynolds O. (1886). Phil Trans Royal Soc London, v. 177, p.157.
@@ -112,26 +108,22 @@ def chung(target, temperature='pore.temperature',
 
     Parameters
     ----------
-    target : OpenPNM Object
+    target : GenericPhase
         The object for which these values are being calculated.  This
         controls the length of the calculated array, and also provides
         access to other necessary thermofluid properties.
-
-    temperatre: string
+    temperatre: str
         The dictionary key containing the temperature values (K)
-
-    critical_temperature : string
+    critical_temperature : str
         The dictionary key containing the temperature values (K)
-
-    mol_weight: string
+    mol_weight: str
         The dictionary key containing the molecular weight values (kg/mol)
-
-    critical_volume : string
+    critical_volume : str
         The dictionary key containing the critical volume values (m3/kmol)
 
     Returns
     -------
-    value : NumPy ndarray
+    value : ndarray
         Array containing viscosity values based on Chung model [kg/m.s].
 
     References

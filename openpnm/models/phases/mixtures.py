@@ -1,6 +1,11 @@
 import numpy as np
+from openpnm.utils import Docorator
 
 
+docstr = Docorator()
+
+
+@docstr.dedent
 def salinity(target, temperature='pore.temperature',
              concentration='pore.concentration'):
     r"""
@@ -8,19 +13,15 @@ def salinity(target, temperature='pore.temperature',
 
     Parameter
     ---------
-    target : OpenPNM Object
-        The object for which these values are being calculated.  This
-        controls the length of the calculated array, and also provides
-        access to other necessary thermofluid properties.
-    temperature : string
-        The dictionary key containing the temperature values in Kelvin.
+    %(models.target.parameters)s
+    %(models.phase.T)s
     concentration : string
         The dictionary key containing the concentration values, in SI units of
         mol/m3.
 
     Returns
     -------
-    salinity : ND-array
+    salinity : ndarray
         The salinity in g of solute per kg of solution.
 
     Notes
@@ -48,15 +49,13 @@ def salinity(target, temperature='pore.temperature',
     return S
 
 
+@docstr.dedent
 def mole_weighted_average(target, prop):
     r"""
 
     Parameters
     ----------
-    target : OpenPNM Mixture Object
-        The object for which these values are being calculated.  This
-        controls the length of the calculated array, and also provides
-        access to other necessary thermofluid properties.
+    %(models.target.parameters)s
     prop : string
         The dictionary key to the property to be averaged.
 
@@ -89,10 +88,7 @@ def fuller_diffusivity(target, molecular_weight='pore.molecular_weight',
 
     Parameters
     ----------
-    target : OpenPNM Mixture Object
-        The object for which these values are being calculated.  This
-        controls the length of the calculated array, and also provides
-        access to other necessary thermofluid properties.
+    %(models.target.parameters)s
     molecular_weight : string
         Dictionary key containing the molecular weight of each species.  The
         default is 'pore.molecular_weight'
@@ -100,12 +96,8 @@ def fuller_diffusivity(target, molecular_weight='pore.molecular_weight',
         Dictionary key containing the molar diffusion volume of each species.
         This is used by the Fuller correlation.  The default is
         'pore.molar_diffusion_volume'
-    temperature : string
-        Dictionary key contain the temperature of the mixture.  The default
-        is 'pore.temperature'
-    pressure : string
-        Dictionary key contain the pressure of the mixture.  The default
-        is 'pore.pressure'.
+    %(models.phase.T)s
+    %(models.phase.P)s
 
     Returns
     -------
@@ -126,6 +118,7 @@ def fuller_diffusivity(target, molecular_weight='pore.molecular_weight',
     return value
 
 
+@docstr.dedent
 def wilke_fuller_diffusivity(
         target,
         molecular_weight='pore.molecular_weight',
@@ -141,10 +134,7 @@ def wilke_fuller_diffusivity(
 
     Parameters
     ----------
-    target : OpenPNM Mixture Object
-        The object for which these values are being calculated.  This
-        controls the length of the calculated array, and also provides
-        access to other necessary thermofluid properties.
+    %(models.target.parameters)s
     molecular_weight : string
         Dictionary key containing the molecular weight of each species.  The
         default is 'pore.molecular_weight'
@@ -152,12 +142,8 @@ def wilke_fuller_diffusivity(
         Dictionary key containing the molar diffusion volume of each species.
         This is used by the Fuller correlation.  The default is
         'pore.molar_diffusion_volume'
-    temperature : string
-        Dictionary key containing the temperature of the mixture.  The default
-        is 'pore.temperature'
-    pressure : string
-        Dictionary key containing the pressure of the mixture.  The default
-        is 'pore.pressure'
+    %(models.phase.T)s
+    %(models.phase.P)s
 
     Returns
     -------
