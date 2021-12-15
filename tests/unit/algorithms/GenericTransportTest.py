@@ -54,7 +54,12 @@ class GenericTransportTest:
         alg.settings['quantity'] = 'pore.mole_fraction'
         alg.set_value_BC(pores=self.net.pores('top'), values=1)
         alg.set_value_BC(pores=self.net.pores('bottom'), values=0)
-        alg.run()
+        soln = alg.run()
+        # Check returned data type
+        from openpnm.algorithms._solution import SteadyStateSolution
+        assert isinstance(soln, SteadyStateSolution)
+        # Ensure solution object is attached to the algorithm
+        assert isinstance(self.alg.soln, SteadyStateSolution)
 
     def test_two_value_conditions(self):
         alg = op.algorithms.GenericTransport(network=self.net,
