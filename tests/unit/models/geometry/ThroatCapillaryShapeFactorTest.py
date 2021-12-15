@@ -13,7 +13,7 @@ class ThroatCapillaryShapeFactorTest:
         self.phys = op.physics.GenericPhysics(network=self.net,
                                               phase=self.air,
                                               geometry=self.geo)
-        self.geo['throat.area'] = 1.0
+        self.geo['throat.cross_sectional_area'] = 1.0
         self.geo['throat.perimeter'] = np.pi
         self.geo['throat.diameter'] = (4 / np.pi)**(0.5)
 
@@ -25,7 +25,7 @@ class ThroatCapillaryShapeFactorTest:
         self.geo.add_model(propname='throat.capillary_shape_factor',
                            model=mod,
                            throat_perimeter='throat.perimeter',
-                           throat_area='throat.area',
+                           throat_area='throat.cross_sectional_area',
                            regen_mode='normal')
         a = np.unique(self.geo['throat.capillary_shape_factor'])
         b = np.array(0.10132118, ndmin=1)
@@ -36,7 +36,7 @@ class ThroatCapillaryShapeFactorTest:
         self.geo.add_model(propname='throat.capillary_shape_factor',
                            model=mod,
                            throat_perimeter='throat.perimeter',
-                           throat_area='throat.area',
+                           throat_area='throat.cross_sectional_area',
                            throat_diameter='throat.diameter',
                            regen_mode='normal')
         a = np.unique(self.geo['throat.capillary_shape_factor'])

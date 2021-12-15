@@ -86,7 +86,7 @@ def hagen_poiseuille(
 def hagen_poiseuille_power_law(
     target,
     pore_area="pore.area",
-    throat_area="throat.area",
+    throat_area="throat.cross_sectional_area",
     pore_viscosity_min="pore.viscosity_min",
     throat_viscosity_min="throat.viscosity_min",
     pore_viscosity_max="pore.viscosity_max",
