@@ -1,17 +1,13 @@
-import numpy as np
-import scipy.sparse.linalg
 import warnings
+import numpy as np
 import scipy.sparse.csgraph as spgr
-from copy import deepcopy
-from scipy.spatial import ConvexHull
-from scipy.spatial import cKDTree
-from openpnm.topotools import iscoplanar, is_fully_connected, dimensionality
+from openpnm.topotools import is_fully_connected
 from openpnm.algorithms import GenericAlgorithm
 from openpnm.algorithms import BCsMixin
 from openpnm.utils import logging, prettify_logger_message
 from openpnm.utils import Docorator, SettingsAttr
-from openpnm.utils import is_symmetric
 from openpnm.solvers import PardisoSpsolve
+from ._solution import SteadyStateSolution
 docstr = Docorator()
 logger = logging.getLogger(__name__)
 
@@ -222,6 +218,9 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
         in the ``settings`` attribute.
 
         """
+        # Initialize the solution object
+        self.soln = SteadyStateSolution(np.full(self.Np, fill_value=np.nan))
+        self.soln.is_converged = False
         logger.info('Running GenericTransport')
         solver = PardisoSpsolve() if solver is None else solver
         # Perform pre-solve validations
@@ -234,6 +233,7 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
         # Build A and b, then solve the system of equations
         self._update_A_and_b()
         self._run_special(solver=solver, x0=x0)
+        return self.soln
 
     def _run_special(self, solver, x0, w=1):
         # Make sure A,b are STILL well-defined
@@ -243,6 +243,9 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
         self.x = w * x_new + (1 - w) * self.x
         # Update A and b using the recent solution
         self._update_A_and_b()
+        # Update SteadyStateSolution object on algorithm
+        self.soln[:] = self.x
+        self.soln.is_converged = not bool(exit_code)
 
     def _update_A_and_b(self):
         r"""

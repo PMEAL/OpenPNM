@@ -25,8 +25,19 @@ def from_neighbor_throats(target, prop, mode='min', ignore_nans=True):
         The dictionary key of the array containing the throat property to be
         used in the calculation.
     mode : str
-        Controls how the pore property is calculated.  Options are 'min',
-        'max' and 'mean'.
+        Controls how the pore property is calculated. The default value is
+        'min'. Options are:
+
+            ===========  =====================================================
+            mode         meaning
+            ===========  =====================================================
+            'min'        Returns the value of the minimum property of the
+                         neighboring throats
+            'max'        Returns the value of the maximum property of the
+                         neighboring throats
+            'mean'       Returns the value of the mean property of the
+                         neighboring throats
+            ===========  =====================================================
 
     Returns
     -------
@@ -78,8 +89,20 @@ def from_neighbor_pores(target, prop, mode='min', ignore_nans=True):
         The dictionary key to the array containing the pore property to be
         used in the calculation.
     mode : str
-        Controls how the throat property is calculated.  Options are 'min',
-        'max' and 'mean'.
+        Controls how the pore property is calculated. The default value is
+        'min'. Options are:
+
+            ===========  =====================================================
+            mode         meaning
+            ===========  =====================================================
+            'min'        Returns the value of the minimum property of the
+                         neighboring pores
+            'max'        Returns the value of the maximum property of the
+                         neighboring pores
+            'mean'       Returns the value of the mean property of the
+                         neighboring pores
+            ===========  =====================================================
+
     ignore_nans : bool (default is ``True``)
         If ``True`` the result will ignore ``nans`` in the neighbors
 
