@@ -79,7 +79,7 @@ pnm_2_salome(cylinder_head, cylinder_tail, cylinder_r,
     """
 
     @classmethod
-    def export_data(cls, network, phases=[], filename='', explicit=False):
+    def export_data(cls, network, filename=None, explicit=False):
         r"""
         Saves the network data and writes a Salome .py instruction file.
 
@@ -87,8 +87,6 @@ pnm_2_salome(cylinder_head, cylinder_tail, cylinder_r,
         ----------
         network : GenericNetwork
             The network containing the desired data
-        phases : list[GenericPhase] (optional, default is None)
-            A list of phase objects whose data are to be included
 
         Notes
         -----
@@ -97,11 +95,17 @@ pnm_2_salome(cylinder_head, cylinder_tail, cylinder_r,
         ``Workspace`` object.
 
         """
-        project, network, phases = cls._parse_args(network=network,
-                                                   phases=phases)
-        net = network[0]
-        explicit = explicit
-        f = open(filename+'.py', 'w')
+        project, network, phases = cls._parse_args(network=network, phases=[])
+        net = network = network[0]
+
+        # Temporarily add endpoints to network so STL class works
+        network["throat.endpoints.head"] = network.coords[network.conns[:, 0]]
+        network["throat.endpoints.tail"] = network.coords[network.conns[:, 1]]
+
+        filename = network.name if filename is None else filename
+        filename = cls._parse_filename(filename=filename, ext='py')
+
+        f = open(filename, 'w')
         f.write(cls._header+'\n')
 
         x = net['throat.endpoints.head']

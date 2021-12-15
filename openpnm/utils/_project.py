@@ -522,14 +522,14 @@ class Project(list):
         if objtype.startswith('net'):
             obj = openpnm.network.GenericNetwork(project=self, name=name)
         elif objtype.startswith('geo'):
-            obj = openpnm.geometry.GenericGeometry(project=self, name=name,
+            obj = openpnm.geometry.GenericGeometry(network=self.network, name=name,
                                                    pores=[], throats=[])
         elif objtype.startswith('pha'):
-            obj = openpnm.phases.GenericPhase(project=self, name=name)
+            obj = openpnm.phases.GenericPhase(network=self.network, name=name)
         elif objtype.startswith('phy'):
-            obj = openpnm.physics.GenericPhysics(project=self, name=name)
+            obj = openpnm.physics.GenericPhysics(network=self.network, name=name)
         elif objtype.startswith('alg'):
-            obj = openpnm.algorithms.GenericAlgorithm(project=self, name=name)
+            obj = openpnm.algorithms.GenericAlgorithm(network=self.network, name=name)
         else:
             obj = openpnm.core.Base(project=self, name=name)
         return obj
