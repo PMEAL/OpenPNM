@@ -34,15 +34,14 @@ class Bravais(GenericNetwork):
         directions. The default is 1.
     mode : str
         The type of lattice to create. Options are:
-
-            'sc'
-                Simple cubic (Same as ``Cubic``)
-            'bcc'
-                Body-centered cubic lattice
-            'fcc'
-                Face-centered cubic lattice
-            'hcp'
-                Hexagonal close packed (Note Implemented Yet)
+            ===========  =====================================================
+            mode         meaning
+            ===========  =====================================================
+            'sc'         Simple cubic (Same as ``Cubic``)
+            'bcc'        body-centered cubic lattice
+            'fcc'        Face-centered cubic lattice
+            'hcp'        Hexagonal close packed (Not Implemented Yet)
+            ===========  =====================================================
 
     name : str
         An optional name for the object to help identify it. If not given,

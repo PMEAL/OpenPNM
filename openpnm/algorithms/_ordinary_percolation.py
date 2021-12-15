@@ -24,8 +24,15 @@ class OrdinaryPercolationSettings:
         inlets
     mode : str
         Controls whether pore or throat entry threshold values are used.
-        If ``'site'`` the pore entry is considered, if ``'bond'`` then
-        throat values are considered.
+        Options are:
+
+            ===========  =====================================================
+            mode         meaning
+            ===========  =====================================================
+            'site'       the pore entry is considered
+            'bond'       the throat values are considered.
+            ===========  =====================================================
+
     pore_entry_threshold : str
         The dictionary key for the pore entry pressure array
     throat_entry_threshold : str

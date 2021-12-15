@@ -27,11 +27,13 @@ def fcc(shape, spacing=1, mode='kdtree'):
     mode : str
         Dictate how neighbors are found.  Options are:
 
-        'kdtree'
-            Uses ``scipy.spatial.KDTree`` to find all neighbors within the
-            unit cell.
-        'triangulation'
-            Uses ``scipy.spatial.Delaunay`` to find all neighbors.
+            ===============  =====================================================
+            mode             meaning
+            ===============  =====================================================
+            'kdtree'         Uses ``scipy.spatial.KDTree`` to find all neighbors
+                             within the unit cell.
+            'triangulation'  Uses ``scipy.spatial.Delaunay`` to find all neighbors.
+            ===============  =====================================================
 
     Returns
     -------
