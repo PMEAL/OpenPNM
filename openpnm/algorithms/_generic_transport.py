@@ -451,8 +451,7 @@ class GenericTransport(GenericAlgorithm):
         self._validate_data_health()
         # Solve and apply under-relaxation
         x_new, exit_code = solver.solve(A=self.A, b=self.b, x0=x0)
-        quantity = self.settings['quantity']
-        self[quantity] = w * x_new + (1 - w) * self[quantity]
+        self.x = w * x_new + (1 - w) * self.x
         # Update A and b using the recent solution
         self._update_A_and_b()
 
