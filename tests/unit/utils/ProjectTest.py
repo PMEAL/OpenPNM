@@ -383,6 +383,11 @@ class ProjectTest:
         self.proj.export_data(phases=self.phase1, filename=fname,
                               filetype='mat')
         os.remove(fname+'.mat')
+        
+        with pytest.raises(Exception):
+            self.proj.export_data(phases=self.phase1, filename=fname,
+                                  filetype='blah')
+            
 
     def test_inspect_pores_and_throats(self):
         df = self.proj.inspect_locations(element='pores', indices=[0, 2, 3])
