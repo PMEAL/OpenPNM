@@ -47,7 +47,8 @@ class ScipyRK45(Integrator):
             "atol": self.atol,
             "rtol": self.rtol,
             "t_eval": saveat,
-            "verbose": self.verbose,
+            # FIXME: uncomment next line when/if scipy#11815 is merged
+            # "verbose": self.verbose,
         }
         sol = solve_ivp(rhs, tspan, x0, method="RK45", **options)
         if sol.success:
