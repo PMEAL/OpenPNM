@@ -169,7 +169,7 @@ class JSONGraphFormatTest:
         length = 1.73205080757
         squared_radius = 5.169298742047715
         assert net['throat.length'] == length
-        assert net['throat.area'] == np.pi * squared_radius
+        assert net['throat.cross_sectional_area'] == np.pi * squared_radius
         assert np.array_equal(net['throat.conns'], np.array([[0, 1]]))
         assert net['throat.diameter'] == 2.0 * np.sqrt(squared_radius)
         assert net['throat.volume'] == np.pi * squared_radius * length

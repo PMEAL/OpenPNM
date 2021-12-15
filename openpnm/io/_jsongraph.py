@@ -174,7 +174,7 @@ class JSONGraphFormat(GenericIO):
         geom = Imported(network=network)
 
         # Define derived throat properties
-        geom.add_model(propname='throat.area',
+        geom.add_model(propname='throat.cross_sectional_area',
                        model=gmods.throat_cross_sectional_area.cylinder)
         geom.add_model(propname='throat.volume',
                        model=gmods.throat_volume.cylinder)
