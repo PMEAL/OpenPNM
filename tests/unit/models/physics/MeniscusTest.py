@@ -10,7 +10,7 @@ class MeniscusTest:
         self.geo = op.geometry.SpheresAndCylinders(network=self.net,
                                                    pores=self.net.pores(),
                                                    throats=self.net.throats())
-        self.phase = op.phases.Water(network=self.net)
+        self.phase = op.phase.Water(network=self.net)
         self.phys = op.physics.Standard(network=self.net,
                                         phase=self.phase,
                                         geometry=self.geo)

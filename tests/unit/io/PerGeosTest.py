@@ -41,7 +41,7 @@ class PerGeosTest:
 
     def test_save_PerGeos(self, tmpdir):
         net = op.network.Cubic(shape=[5, 5, 5])
-        water = op.phases.Water(network=net)
+        water = op.phase.Water(network=net)
         fname = tmpdir.join(net.project.name)
         len_before = len(tmpdir.listdir())
         op.io.PerGeos.export_data(network=net, phases=water, filename=fname)

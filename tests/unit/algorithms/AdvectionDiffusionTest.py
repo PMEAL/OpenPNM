@@ -17,7 +17,7 @@ class AdvectionDiffusionTest:
         self.geo['throat.conduit_lengths.throat'] = 0.6
         self.geo['throat.conduit_lengths.pore2'] = 0.1
 
-        self.phase = op.phases.GenericPhase(network=self.net)
+        self.phase = op.phase.GenericPhase(network=self.net)
         self.phys = op.physics.GenericPhysics(network=self.net,
                                               phase=self.phase,
                                               geometry=self.geo)

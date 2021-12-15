@@ -24,7 +24,7 @@ def test_thermal_conduction():
 #    boun['pore.area'] = Lc**2
 #    boun['pore.diameter'] = 1e-25
 #    # Create Phase object and associate with a Physics object
-#    Cu = op.phases.GenericPhase(network=pn)
+#    Cu = op.phase.GenericPhase(network=pn)
 #    Cu['pore.thermal_conductivity'] = 1.0  # W/m.K
 #    phys1 = op.physics.GenericPhysics(network=pn, phase=Cu, geometry=geom)
 #    phys2 = op.physics.GenericPhysics(network=pn, phase=Cu, geometry=boun)
@@ -58,7 +58,7 @@ def test_open_air_diffusivity():
     pass
 #    pn = op.network.Cubic([5, 5, 5], spacing=1)
 #    pn.add_boundary_pores()
-#    air = op.phases.Air(network=pn)
+#    air = op.phase.Air(network=pn)
 #    Dab = np.mean(air['pore.diffusivity'])
 #    c = np.mean(air['pore.molar_density'])
 #    air['throat.diffusive_conductance'] = Dab * c
@@ -82,7 +82,7 @@ def test_Darcy_alg():
 #    # Generate Geometry objects for internal and boundary pores
 #    geom = op.geometry.SpheresAndCylinders(network=pn, pores=pn.Ps, throats=pn.Ts)
 #    # Create Phase object and associate with a Physics object
-#    air = op.phases.Air(network=pn)
+#    air = op.phase.Air(network=pn)
 #    phys = op.physics.GenericPhysics(network=pn, phase=air, geometry=geom)
 #    mod = op.models.physics.hydraulic_conductance.hagen_poiseuille
 #    phys.add_model(propname='throat.hydraulic_conductance',

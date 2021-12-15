@@ -62,7 +62,7 @@ class UtilsTest:
         geom = op.geometry.SpheresAndCylinders(network=net,
                                                pores=net.Ps,
                                                throats=net.Ts)
-        air = op.phases.Air(network=net)
+        air = op.phase.Air(network=net)
         _ = op.physics.Standard(network=net, phase=air, geometry=geom)
         fd = op.algorithms.FickianDiffusion(network=net, phase=air)
         fd.set_value_BC(pores=net.pores("left"), values=1.0)
@@ -74,7 +74,7 @@ class UtilsTest:
         geom = op.geometry.SpheresAndCylinders(network=net,
                                                pores=net.Ps,
                                                throats=net.Ts)
-        air = op.phases.Air(network=net)
+        air = op.phase.Air(network=net)
         phys = op.physics.Standard(network=net, phase=air, geometry=geom)
         ad = op.algorithms.AdvectionDiffusion(network=net, phase=air)
         ad.set_value_BC(pores=net.pores("left"), values=1.0)

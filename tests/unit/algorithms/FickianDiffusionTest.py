@@ -8,7 +8,7 @@ class FickianDiffusionTest:
         self.geo = op.geometry.SpheresAndCylinders(network=self.net,
                                              pores=self.net.Ps,
                                              throats=self.net.Ts)
-        self.phase = op.phases.Air(network=self.net)
+        self.phase = op.phase.Air(network=self.net)
         self.phase['pore.mole_fraction'] = 0
         self.phys = op.physics.GenericPhysics(network=self.net,
                                               phase=self.phase,

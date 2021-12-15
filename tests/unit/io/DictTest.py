@@ -23,10 +23,10 @@ class DictTest:
         self.geo_2['pore.boo'] = 1
         self.geo_2['throat.boo'] = 1
 
-        self.phase_1 = op.phases.GenericPhase(network=self.net)
+        self.phase_1 = op.phase.GenericPhase(network=self.net)
         self.phase_1['pore.bar'] = 2
         self.phase_1['throat.bar'] = 2
-        self.phase_2 = op.phases.GenericPhase(network=self.net)
+        self.phase_2 = op.phase.GenericPhase(network=self.net)
         self.phase_2['pore.bar'] = 2
         self.phase_2['throat.bar'] = 2
 
@@ -61,7 +61,7 @@ class DictTest:
     def test_to_dict_missing_all_physics(self):
         net = op.network.Cubic(shape=[4, 4, 4])
         op.geometry.GenericGeometry(network=net, pores=net.Ps, throats=net.Ts)
-        phase = op.phases.GenericPhase(network=net)
+        phase = op.phase.GenericPhase(network=net)
 
         Dict.to_dict(network=net, phases=[phase], flatten=True,
                      interleave=True, categorize_by=[])

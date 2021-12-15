@@ -10,8 +10,8 @@ class GenericIOTest:
     def setup_class(self):
         self._count = 0
         self.net = op.network.Cubic(shape=[5, 5, 5])
-        self.phase = op.phases.GenericPhase(network=self.net)
-        self.phase2 = op.phases.GenericPhase(network=self.net)
+        self.phase = op.phase.GenericPhase(network=self.net)
+        self.phase2 = op.phase.GenericPhase(network=self.net)
 
     def teardown_class(self):
         ws = op.Workspace()

@@ -13,7 +13,7 @@ class TransientReactiveTransportTest:
                                                pores=self.net.Ps,
                                                throats=self.net.Ts)
         self.geo['pore.volume'] = 1e-12
-        self.phase = op.phases.GenericPhase(network=self.net)
+        self.phase = op.phase.GenericPhase(network=self.net)
         self.phys = op.physics.GenericPhysics(network=self.net,
                                               phase=self.phase,
                                               geometry=self.geo)

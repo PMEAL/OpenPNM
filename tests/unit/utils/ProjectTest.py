@@ -20,8 +20,8 @@ class ProjectTest:
         Ts = ~self.net.to_mask(throats=Ts)
         self.geo2 = op.geometry.GenericGeometry(network=self.net, pores=Ps,
                                                 throats=Ts)
-        self.phase1 = op.phases.GenericPhase(network=self.net)
-        self.phase2 = op.phases.GenericPhase(network=self.net)
+        self.phase1 = op.phase.GenericPhase(network=self.net)
+        self.phase2 = op.phase.GenericPhase(network=self.net)
         self.phys11 = op.physics.GenericPhysics(network=self.net,
                                                 phase=self.phase1,
                                                 geometry=self.geo1)
