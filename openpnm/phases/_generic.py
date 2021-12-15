@@ -48,6 +48,10 @@ class GenericPhase(ParamMixin, Base, ModelsMixin, LabelMixin):
         self['pore.pressure'] = 101325.0
 
     def __getitem__(self, key):
+        # If the key is a just a numerical value, the kick it directly back
+        # This allows one to do either value='pore.blah' or value=1.0
+        if isinstance(key, (int, float, bool, complex)):
+            return key
         element, prop = key.split('.', 1)
         # Deal with special keys first
         if prop == '_id':

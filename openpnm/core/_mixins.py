@@ -15,6 +15,11 @@ class ParamMixin:
         self._params._value = "Values"
 
     def __getitem__(self, key):
+        # If the key is a just a numerical value, the kick it directly back
+        # This allows one to do either value='pore.blah' or value=1.0
+        if isinstance(key, (int, float, bool, complex)):
+            return key
+
         if key.startswith('param'):
             try:
                 vals = self._params[key]

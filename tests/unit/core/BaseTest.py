@@ -699,6 +699,16 @@ class BaseTest:
         with pytest.raises(KeyError):
             _ = self.geo['pore.blah']
 
+    def test_getitem_with_numeric_value(self):
+        assert self.geo[5.0] == 5.0
+        assert self.net[44] == 44
+        assert self.phase1[True] == True
+        assert self.phase2[False] == False
+        assert self.phys1[0.1] == 0.1
+        assert self.phys2[4j] == 4j
+        a = op.algorithms.GenericTransport(network=self.net, phase=self.phase1)
+        assert a[0] == 0
+
     def test_interpolate_data(self):
         self.geo['throat.tester'] = np.linspace(0, 1.0, self.geo.network.Nt)
         self.geo['pore.tester'] = np.linspace(0, 1.0, self.geo.network.Np)
