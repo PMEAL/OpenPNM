@@ -1,4 +1,4 @@
-from openpnm.phases.mixtures import IdealGas, species
+from openpnm.phase.mixtures import IdealGas, species
 import openpnm.models as mods
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)
@@ -19,10 +19,10 @@ class HumidAir(IdealGas):
         self.set_mole_fraction(component=O2, values=0.209)
         self.set_mole_fraction(component=H2O, values=0.000)
         self.add_model(propname='pore.vapor_pressure',
-                       model=mods.phases.vapor_pressure.water)
+                       model=mods.phase.vapor_pressure.water)
 #        self.add_model(propname='pore.mole_fraction.'+H2O.name,
 #                       model=mods.misc.fraction,
 #                       numerator='pore.vapor_pressure',
 #                       denominator='pore.pressure')
         self.add_model(propname='pore.diffusivity',
-                       model=mods.phases.mixtures.wilke_fuller_diffusivity)
+                       model=mods.phase.mixtures.wilke_fuller_diffusivity)

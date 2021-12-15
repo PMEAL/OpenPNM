@@ -37,9 +37,9 @@ class Air(GenericPhase):
         self['pore.contact_angle'] = 180.0
         self['pore.surface_tension'] = 0.072
         self.add_model(propname='pore.molar_density',
-                       model=mods.phases.molar_density.ideal_gas)
+                       model=mods.phase.molar_density.ideal_gas)
         self.add_model(propname='pore.diffusivity',
-                       model=mods.phases.diffusivity.fuller,
+                       model=mods.phase.diffusivity.fuller,
                        MA=0.032, MB=0.028,
                        vA=16.6, vB=17.9)
         self.add_model(propname='pore.thermal_conductivity',

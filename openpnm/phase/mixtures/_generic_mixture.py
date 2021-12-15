@@ -3,7 +3,7 @@ import numpy as np
 from chemicals import Vm_to_rho, rho_to_Vm
 from chemicals import numba_vectorized
 from chemicals import R, k
-from openpnm.phases import GenericPhase as GenericPhase
+from openpnm.phase import GenericPhase as GenericPhase
 from openpnm.utils import HealthDict, PrintableList, SubDict
 from openpnm.utils import Docorator, SettingsAttr
 from openpnm.utils import logging

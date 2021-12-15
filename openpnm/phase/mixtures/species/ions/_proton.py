@@ -1,4 +1,4 @@
-from openpnm.phases import mixtures
+from openpnm.phase import mixtures
 import openpnm.models as mods
 
 
@@ -18,7 +18,7 @@ class Proton(mixtures.GenericSpecies):
     Examples
     --------
     >>> import openpnm as op
-    >>> import openpnm.phases.mixtures as mixtures
+    >>> import openpnm.phase.mixtures as mixtures
     >>> pn = op.network.Cubic(shape=[5, 5, 5])
     >>> H = mixtures.species.ions.Proton(network=pn)
 

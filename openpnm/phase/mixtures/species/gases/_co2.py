@@ -1,4 +1,4 @@
-from openpnm.phases import GenericPhase
+from openpnm.phase import GenericPhase
 import openpnm.models as mods
 
 
@@ -18,7 +18,7 @@ class CO2(GenericPhase):
     Examples
     --------
     >>> import openpnm as op
-    >>> import openpnm.phases.mixtures as mixtures
+    >>> import openpnm.phase.mixtures as mixtures
     >>> pn = op.network.Cubic(shape=[5, 5, 5])
     >>> CO2 = mixtures.species.gases.CO2(network=pn)
 

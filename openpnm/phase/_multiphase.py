@@ -53,7 +53,7 @@ class MultiPhase(GenericPhase):
     --------
     >>> import scipy as sp
     >>> import openpnm as op
-    >>> from openpnm.phases import Air, Water, MultiPhase
+    >>> from openpnm.phase import Air, Water, MultiPhase
 
     >>> net = op.network.Cubic(shape=[5, 5, 5])
     >>> air = Air(network=net, name='air')  # Create two pure phases
@@ -160,7 +160,7 @@ class MultiPhase(GenericPhase):
         Examples
         --------
         >>> import openpnm as op
-        >>> from openpnm.phases import Air, Water, MultiPhase
+        >>> from openpnm.phase import Air, Water, MultiPhase
         >>> from openpnm.models.misc import constant
 
         >>> net = op.network.Cubic(shape=[5, 5, 5])
@@ -259,9 +259,9 @@ class MultiPhase(GenericPhase):
         --------
         >>> import openpnm as op
         >>> net = op.network.Cubic(shape=[5, 5, 5])
-        >>> air = op.phases.Air(network=net, name='air')
-        >>> water = op.phases.Water(network=net, name='water')
-        >>> mphase = op.phases.MultiPhase(network=net, phases=[air, water])
+        >>> air = op.phase.Air(network=net, name='air')
+        >>> water = op.phase.Water(network=net, name='water')
+        >>> mphase = op.phase.MultiPhase(network=net, phases=[air, water])
         >>> mphase._format_interface_prop(propname="throat.foo", phases=[air, water])
         'throat.foo.air:water'
 

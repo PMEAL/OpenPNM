@@ -32,14 +32,14 @@ class Mercury(GenericPhase):
         self['pore.electrical_conductivity'] = 1e6
         self['pore.diffusivity'] = 1e-15
         self.add_model(propname='pore.vapor_pressure',
-                       model=mods.phases.vapor_pressure.antoine,
+                       model=mods.phase.vapor_pressure.antoine,
                        A=9.85767, B=3007.129, C=-10.001)
         self.add_model(propname='pore.density',
                        model=mods.misc.linear,
                        prop='pore.temperature',
                        b=14280.9, m=-2.47004)
         self.add_model(propname='pore.molar_density',
-                       model=mods.phases.molar_density.standard)
+                       model=mods.phase.molar_density.standard)
         self.add_model(propname='pore.surface_tension',
                        model=mods.misc.linear,
                        prop='pore.temperature',
