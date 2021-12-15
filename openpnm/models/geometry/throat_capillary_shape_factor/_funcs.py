@@ -2,6 +2,9 @@ import numpy as _np
 from openpnm.utils import Docorator
 
 
+__all__ = ["compactness",
+           "mason_morrow",
+           "jenkins_rao"]
 docstr = Docorator()
 
 

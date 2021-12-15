@@ -1,7 +1,11 @@
 import numpy as _np
 from openpnm.utils import Docorator
 
-
+__all__ = ["sphere",
+           "circle",
+           "cube",
+           "square"
+           ]
 docstr = Docorator()
 
 
