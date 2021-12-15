@@ -2,6 +2,7 @@ from transforms3d import _gohlketransforms as tr
 from openpnm.utils import Docorator
 
 
+__all__ = ["pore_to_pore"]
 docstr = Docorator()
 
 

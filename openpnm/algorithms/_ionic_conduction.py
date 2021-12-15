@@ -22,8 +22,7 @@ class IonicConductionSettings:
     quantity = 'pore.potential'
     conductance = 'throat.ionic_conductance'
     charge_conservation = 'electroneutrality'
-    cache_A = False
-    cache_b = False
+    cache = False
 
 
 class IonicConduction(ReactiveTransport):
