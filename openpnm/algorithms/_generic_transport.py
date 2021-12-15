@@ -513,7 +513,7 @@ class GenericTransport(GenericAlgorithm):
 
         # Fetch phase/geometries/physics
         prj = self.network.project
-        phase = prj.phases(self.settings.phase)
+        phase = prj.phase(self.settings.phase)
         geometries = prj.geometries().values()
         physics = prj.physics().values()
 
@@ -614,7 +614,7 @@ class GenericTransport(GenericAlgorithm):
             raise Exception('Must specify either pores or throats')
 
         network = self.project.network
-        phase = self.project.phases()[self.settings['phase']]
+        phase = self.project.phase()[self.settings['phase']]
         g = phase[self.settings['conductance']]
         quantity = self[self.settings['quantity']]
 

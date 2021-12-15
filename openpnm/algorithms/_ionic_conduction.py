@@ -45,7 +45,7 @@ class IonicConduction(ReactiveTransport):
 
     def _charge_conservation_eq_source_term(self, e_alg):
         # Source term for Poisson or charge conservation (electroneutrality) eq
-        phase = self.project.phases()[self.settings['phase']]
+        phase = self.project.phase()[self.settings['phase']]
         Ps = (self['pore.all'] * np.isnan(self['pore.bc_value'])
               * np.isnan(self['pore.bc_rate']))
         mod = gst.charge_conservation

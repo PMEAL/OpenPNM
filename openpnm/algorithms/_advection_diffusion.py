@@ -88,7 +88,7 @@ class AdvectionDiffusion(ReactiveTransport):
 
         # Calculating A[i,i] values to ensure the outflow condition
         network = self.project.network
-        phase = self.project.phases()[self.settings['phase']]
+        phase = self.project.phase()[self.settings['phase']]
         throats = network.find_neighbor_throats(pores=pores)
         C12 = network.conns[throats]
         P12 = phase[self.settings['pressure']][C12]
@@ -155,7 +155,7 @@ if __name__ == "__main__":
     import openpnm as op
     pn = op.network.Cubic(shape=[10, 10, 1])
     geo = op.geometry.SpheresAndCylinders(network=pn, pores=pn.Ps, throats=pn.Ts)
-    air = op.phases.Air(network=pn)
+    air = op.phase.Air(network=pn)
     phys = op.physics.Standard(network=pn, phase=air, geometry=geo)
     flow = op.algorithms.StokesFlow(network=pn, phase=air)
     flow.set_value_BC(pores=pn.pores('left'), values=1)
