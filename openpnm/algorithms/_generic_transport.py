@@ -31,18 +31,15 @@ class GenericTransportSettings:
         The name of the pore-scale transport conductance values. These are
         typically calculated by a model attached to a *Physics* object
         associated with the given *Phase*.
-    cache_A : bool
+    cache : bool
         If ``True``, A matrix is cached and rather than getting rebuilt.
-    cache_b : bool
-        If ``True``, b vector is cached and rather than getting rebuilt.
 
     """
     prefix = 'transport'
     phase = ''
     quantity = ''
     conductance = ''
-    cache_A = True
-    cache_b = True
+    cache = True
     variable_props = []
 
 
@@ -346,10 +343,10 @@ class GenericTransport(GenericAlgorithm):
         # FIXME: this needs to be properly addressed (see issue #1548)
         try:
             if gvals in self._get_iterative_props():
-                self.settings._update({"cache_A": False, "cache_b": False})
+                self.settings._update({"cache": False})
         except AttributeError:
             pass
-        if not self.settings['cache_A']:
+        if not self.settings['cache']:
             self._pure_A = None
         if self._pure_A is None:
             phase = self.project[self.settings.phase]
@@ -364,11 +361,8 @@ class GenericTransport(GenericAlgorithm):
         source terms. This method is trivial an basically creates a column
         vector of 0's.
         """
-        if not self.settings['cache_b']:
-            self._pure_b = None
-        if self._pure_b is None:
-            b = np.zeros(self.Np, dtype=float)
-            self._pure_b = b
+        b = np.zeros(self.Np, dtype=float)
+        self._pure_b = b
         self.b = self._pure_b.copy()
 
     @property
@@ -555,7 +549,7 @@ class GenericTransport(GenericAlgorithm):
         # Raise Exception otherwise if root cannot be found
         msg = ("Found NaNs in A matrix but couldn't locate the root cause."
                " It's likely that disabling caching of A matrix via"
-               " `alg.settings['cache_A'] = False` after instantiating the"
+               " `alg.settings['cache'] = False` after instantiating the"
                " algorithm object fixes the problem.")
         raise Exception(msg)
 
