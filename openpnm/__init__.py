@@ -19,7 +19,7 @@ from . import utils
 from . import core
 from . import network
 from . import geometry
-from . import phases
+from . import phase
 from . import physics
 from . import models
 from . import solvers

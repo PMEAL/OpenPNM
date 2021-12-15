@@ -1,4 +1,4 @@
-from openpnm.phases import GenericPhase
+from openpnm.phase import GenericPhase
 import openpnm.models as mods
 
 

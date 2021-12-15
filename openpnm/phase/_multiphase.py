@@ -1,6 +1,6 @@
 import numpy as np
 import openpnm.models.misc as misc
-from openpnm.phases import GenericPhase as GenericPhase
+from openpnm.phase import GenericPhase as GenericPhase
 from openpnm.utils import logging, SettingsAttr, Docorator, TypedList
 
 
