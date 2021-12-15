@@ -237,22 +237,21 @@ class ReactiveTransport(GenericTransport):
         xold = self.x
         dx = self.x - xold
         condition = TerminationCondition(f_rtol=f_rtol, x_rtol=x_rtol)
-        # Store the solution as a SteadyStateSolution object on algorithm
-        self.soln = SteadyStateSolution(self.x)
 
         for i in range(maxiter):
             self.soln.num_iter = i + 1
             res = self._get_residual()
-            self.soln.is_converged = bool(condition.check(f=res, x=xold, dx=dx))
-            if self.soln.is_converged:
+            is_converged = bool(condition.check(f=res, x=xold, dx=dx))
+            if is_converged:
+                self.soln.is_converged = is_converged
                 logger.info(f'Solution converged, residual norm: {norm(res):.4e}')
                 return
             super()._run_special(solver=solver, x0=xold, w=w)
             dx = self.x - xold
             xold = self.x
-            self.soln[:] = self.x
             logger.info(f'Iteration #{i:<4d} | Residual norm: {norm(res):.4e}')
 
+        self.soln.is_converged = False
         logger.critical(f"{self.name} didn't converge after {maxiter} iterations")
 
     def _update_A_and_b(self):

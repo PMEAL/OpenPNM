@@ -429,6 +429,9 @@ class GenericTransport(GenericAlgorithm):
         in the ``settings`` attribute.
 
         """
+        # Initialize the solution object
+        self.soln = SteadyStateSolution(np.full(self.Np, fill_value=np.nan))
+        self.soln.is_converged = False
         logger.info('Running GenericTransport')
         solver = PardisoSpsolve() if solver is None else solver
         # Perform pre-solve validations
@@ -451,8 +454,8 @@ class GenericTransport(GenericAlgorithm):
         self.x = w * x_new + (1 - w) * self.x
         # Update A and b using the recent solution
         self._update_A_and_b()
-        # Store the solution as a SteadyStateSolution object on algorithm
-        self.soln = SteadyStateSolution(self.x)
+        # Update SteadyStateSolution object on algorithm
+        self.soln[:] = self.x
         self.soln.is_converged = not bool(exit_code)
 
     def _update_A_and_b(self):

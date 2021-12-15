@@ -59,7 +59,7 @@ class GenericTransportTest:
         from openpnm.algorithms._solution import SteadyStateSolution
         assert isinstance(soln, SteadyStateSolution)
         # Ensure solution object is attached to the algorithm
-        assert isinstance(self.alg.soln, SteadyStateSolution)
+        assert isinstance(alg.soln, SteadyStateSolution)
 
     def test_two_value_conditions(self):
         alg = op.algorithms.GenericTransport(network=self.net,
