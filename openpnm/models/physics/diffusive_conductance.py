@@ -138,7 +138,7 @@ def mixed_diffusion(target,
 @_doctxt
 def taylor_aris_diffusion(target,
                           pore_area="pore.area",
-                          throat_area="throat.area",
+                          throat_area="throat.cross_sectional_area",
                           pore_diffusivity="pore.diffusivity",
                           throat_diffusivity="throat.diffusivity",
                           pore_pressure="pore.pressure",

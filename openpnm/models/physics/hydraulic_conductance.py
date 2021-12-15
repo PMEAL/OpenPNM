@@ -193,7 +193,7 @@ def valvatne_blunt(
     pore_shape_factor="pore.shape_factor",
     throat_shape_factor="throat.shape_factor",
     pore_area="pore.area",
-    throat_area="throat.area",
+    throat_area="throat.cross_sectional_area",
     conduit_lengths="throat.conduit_lengths",
 ):
     r"""
