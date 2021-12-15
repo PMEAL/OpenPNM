@@ -160,60 +160,40 @@ T_1 = sol_1[:, -1]
 C_1 = sol_2[:, -1]
 
 # %% Build RHS manually
-# write function that build rhs of multiphysics problem
-# add variable props...
-# redo this problem but _buil_rhs() accepts list of algs
-start = timeit.timeit()
+# add variable props to algs
+tfd.set_variable_props('pore.temperature')
+tfc.set_variable_props('pore.concentration')
 
-def _build_rhs():
+def _build_rhs(algs):
     
     def ode_func(t, y):
         
-        # get concentration and temperature
-        T = y[0:tfc.Np]
-        C = y[tfc.Np:]
-        
-        # store current values
-        tfd.x = C
-        tfc.x = T
-        
-        # fourier conduction algorithm
-        tfc._update_iterative_props()
-        tfc._build_A()
-        tfc._build_b()
-        tfc._apply_BCs()
-        tfc._apply_sources()
-        V_tfc = geo[tfc.settings['pore_volume']]
-        
-        A = tfc.A.tocsc()
-        b = tfc.b
-        rhs_tfc = (-A.dot(T) + b)/V_tfc
-        
-        # fickian diffusion algorithm
-        tfd._update_iterative_props()
-        tfd._build_A()
-        tfd._build_b()
-        tfd._apply_BCs()
-        tfd._apply_sources()
-        V_tfd = geo[tfd.settings['pore_volume']]
-        
-        A = tfd.A.tocsc()
-        b = tfd.b
-        rhs_tfd = (-A.dot(C) + b)/V_tfd
-        
-        # create stack
-        rhs = np.hstack((rhs_tfc, rhs_tfd))
-        proj = tfc.project
-        phase = proj.phases(tfc.settings.phase)      
-        print(phase['throat.diffusive_conductance'].mean())
-        print(T.mean())
+        # initialize rhs
+        rhs = []
+        for i, alg in enumerate(algs):
+            # get x from y, assume alg.Np is same for all algs
+            x = y[i*tfc.Np:(i+1)*tfc.Np]
+            # store x onto algorithm
+            alg.x = x
+            # build A and b
+            alg._update_iterative_props()
+            alg._build_A()
+            alg._build_b()
+            alg._apply_BCs()
+            alg._apply_sources()
+            A = alg.A.tocsc()
+            b = alg.b
+            V = geo[alg.settings['pore_volume']]
+            rhs_alg = np.hstack(-A.dot(x) + b)/V
+            rhs = np.hstack((rhs, rhs_alg))
 
         return rhs
        
     return ode_func
 
 # call solve_ivp and pass function that builds rhs as dydt
-rhs = _build_rhs()
+algs = [tfc, tfd]
+rhs = _build_rhs(algs)
 T0 = np.ones(tfc.Np) * 300
 T0[net.pores('left')] = 400
 c0 = np.ones(tfd.Np)*50
