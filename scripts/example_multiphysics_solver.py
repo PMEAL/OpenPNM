@@ -127,7 +127,7 @@ c0[net.pores('left')] = 100
 
 # time
 t_initial = 0
-t_final = 2000
+t_final = 50
 t_step = 5
 n_steps = int((t_final - t_initial)/t_step) + 1
 t = np.linspace(t_initial, t_final, n_steps)
@@ -202,16 +202,18 @@ c0[net.pores('left')] = 100
 y0 = np.hstack((T0, c0)) # ICs must include boundary condition
 tspan = [0, t_final]
 rtol = 1e-5
-sol = sp.integrate.solve_ivp(fun=rhs, t_span=tspan, y0=y0, method="RK45", t_eval=t, rtol=rtol)
+# sol = sp.integrate.solve_ivp(fun=rhs, t_span=tspan, y0=y0, method="RK45", t_eval=t, rtol=rtol)
+tmp = op.algorithms.TransientMultiphysics(algorithms=[tfc, tfd])
+sol = tmp.run(y0, tspan, saveat=t)
 
 # plot
-T_2 = sol.y[0:net.Np, -1]
-C_2 = sol.y[net.Np:, -1]
-C_2_avg = sol.y[net.Np:, 0:][not_BC_pores].mean(axis=0)
+# T_2 = sol.y[0:net.Np, -1]
+# C_2 = sol.y[net.Np:, -1]
+# C_2_avg = sol.y[net.Np:, 0:][not_BC_pores].mean(axis=0)
+T_2 = sol.T.transpose()[0:net.Np, -1]
+C_2 = sol.T.transpose()[net.Np:, -1]
+C_2_avg = sol.T.transpose()[net.Np:, 0:][not_BC_pores].mean(axis=0)
 
-end = timeit.timeit()
-
-print('time:', end - start)
 # %% Pure Fickian Diffusion and Pure Fourier Conduction
 air.remove_model(propname='pore.diffusivity')
 air.add_model(propname='pore.diffusivity',
@@ -252,12 +254,12 @@ ax2.set_ylabel('Average Concentration (mol/m3)')
 ax2.set_title('Only Diffusion')
 
 # plot average concentration from pure fourier conduction
-fig2, ax2 = plt.subplots()
-ax2.plot(t, T_pure, time, T_pure_comsol)
-ax2.legend(('OpenPNM', 'COMSOL'))
-ax2.set_xlabel('Time (s)')
-ax2.set_ylabel('Average Temperature (mol/m3)')
-ax2.set_title('Only Conduction')
+fig3, ax3 = plt.subplots()
+ax3.plot(t, T_pure, time, T_pure_comsol)
+ax3.legend(('OpenPNM', 'COMSOL'))
+ax3.set_xlabel('Time (s)')
+ax3.set_ylabel('Average Temperature (mol/m3)')
+ax3.set_title('Only Conduction')
 
 plt.figure(1)
 fig, ax = plt.subplots(ncols=2)
