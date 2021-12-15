@@ -5,11 +5,10 @@ from openpnm.models.physics import source_terms
 # %% Initialization: create Workspace and project objects.
 ws = op.Workspace()
 ws.settings.loglevel = 50
-proj = ws.new_project()
 np.random.seed(9)
 
 # %% Create network, geometry, phase, and physics objects
-pn = op.network.Cubic(shape=[10, 10, 10], spacing=1e-4, project=proj)
+pn = op.network.Cubic(shape=[10, 10, 10], spacing=1e-4)
 geo = op.geometry.SpheresAndCylinders(network=pn, pores=pn.Ps, throats=pn.Ts)
 air = op.phases.Air(network=pn, name='air')
 water = op.phases.Water(network=pn, name='h2o')
@@ -33,7 +32,7 @@ sf.set_value_BC(pores=pn.pores('left'), values=101325)
 sf.run()
 water.update(sf.results())
 # calculate absolute permeability in x direction
-perm = op.metrics.AbsolutePermeability(network=pn, project=proj)
+perm = op.metrics.AbsolutePermeability(network=pn)
 K = perm.run()
 # K 7.51015925e-13
 # %% Perform reaction-diffusion simulation
@@ -60,8 +59,8 @@ fd.set_value_BC(pores=pn.pores('left'), values=1)
 fd.set_value_BC(pores=pn.pores('right'), values=0)
 fd.run()
 # calculate formation factor in x direction
-FF = op.metrics.FormationFactor(network=pn, project=proj)
+FF = op.metrics.FormationFactor(network=pn)
 F = FF.run()
 # F 20.53387084881872
 # %% Output network and the phases to a VTP file for visualization in Paraview
-proj.export_data(phases=[hg, air, water], filename='output.vtp')
+pn.project.export_data(phases=[hg, air, water], filename='output.vtp')
