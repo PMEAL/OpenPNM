@@ -8,9 +8,10 @@ from openpnm.models.misc import from_neighbor_pores
 class SalomeTest:
 
     def setup_class(self):
+        np.random.seed(10)
         self.net = op.network.Cubic(shape=[2, 2, 2])
         self.net["pore.diameter"] = 0.5 + np.random.rand(self.net.Np) * 0.5
-        Dt = from_neighbor_pores(target=self.net, prop="pore.diameter", mode="min") * 0.5
+        Dt = from_neighbor_pores(target=self.net, prop="pore.diameter") * 0.5
         self.net["throat.diameter"] = Dt
         self.net["throat.length"] = 1.0
 
