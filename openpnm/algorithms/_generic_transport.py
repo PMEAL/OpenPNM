@@ -549,7 +549,7 @@ class GenericTransport(GenericAlgorithm):
         # Raise Exception otherwise if root cannot be found
         msg = ("Found NaNs in A matrix but couldn't locate the root cause."
                " It's likely that disabling caching of A matrix via"
-               " `alg.settings['cache_A'] = False` after instantiating the"
+               " `alg.settings['cache'] = False` after instantiating the"
                " algorithm object fixes the problem.")
         raise Exception(msg)
 
