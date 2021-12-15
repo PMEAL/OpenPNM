@@ -18,7 +18,7 @@ def test_thermal_conduction():
 #    geom['pore.area'] = Lc**2
 #    geom['pore.diameter'] = Lc
 #    geom['throat.length'] = 1e-25
-#    geom['throat.area'] = Lc**2
+#    geom['throat.cross_sectional_area'] = Lc**2
 #    Ps = pn.pores('*boundary')
 #    boun = op.geometry.GenericGeometry(network=pn, pores=Ps)
 #    boun['pore.area'] = Lc**2
