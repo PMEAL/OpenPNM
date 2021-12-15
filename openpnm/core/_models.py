@@ -346,8 +346,11 @@ class ModelsMixin:
         if propnames is None:  # If no props given, then regenerate them all
             propnames = self.models.dependency_list()
             # If some props are to be excluded, remove them from list
-            exclude.extend([k for k, v in self.models.items()
-                            if v['regen_mode'] == 'explicit'])
+            for k, v in self.models.items():
+                if 'regen_mode' not in v:
+                    pass
+                elif v['regen_mode'] == 'explicit':
+                    exclude.extend([k])
             propnames = [i for i in propnames if i not in exclude]
         # Re-order given propnames according to dependency tree
         self_models = self.models.dependency_list()
