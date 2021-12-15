@@ -11737,37 +11737,39 @@ should be added or removed (see <code class="docutils literal notranslate"><span
 <li><p><strong>throats</strong> (<em>array_like</em>) – A list of throat indices or a boolean mask of where given label
 should be added or removed (see <code class="docutils literal notranslate"><span class="pre">mode</span></code>)</p></li>
 <li><p><strong>mode</strong> (<em>str</em>) – <p>Controls how the labels are handled.  Options are:</p>
-<ul>
-<li><dl class="simple">
-<dt>’add’ (default)</dt><dd><p>Adds the given label to the specified locations while
-keeping existing labels</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>’overwrite’</dt><dd><p>Removes existing label from all locations before
-adding the label in the specified locations</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>’remove’</dt><dd><p>Removes the given label from the specified locations
-leaving the remainder intact</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>’purge’</dt><dd><p>Removes the specified label from the object completely</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>’clear’</dt><dd><p>Sets all the labels to <code class="docutils literal notranslate"><span class="pre">False</span></code> but does not remove the label
-array</p>
-</dd>
-</dl>
-</li>
-</ul>
+<table class="table">
+<colgroup>
+<col style="width: 17%" />
+<col style="width: 83%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>mode</p></th>
+<th class="head"><p>description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>’add’</p></td>
+<td><p>(default) Adds the given label to the specified
+locations while keeping existing labels</p></td>
+</tr>
+<tr class="row-odd"><td><p>’overwrite’</p></td>
+<td><p>Removes existing label from all locations before
+adding the label in the specified locations</p></td>
+</tr>
+<tr class="row-even"><td><p>’remove’</p></td>
+<td><p>Removes the given label from the specified locations
+leaving the remainder intact</p></td>
+</tr>
+<tr class="row-odd"><td><p>’purge’</p></td>
+<td><p>Removes the specified label from the object completely.
+This ignores the <code class="docutils literal notranslate"><span class="pre">pores</span></code> and <code class="docutils literal notranslate"><span class="pre">throats</span></code> arguments.</p></td>
+</tr>
+<tr class="row-even"><td><p>’clear’</p></td>
+<td><p>Sets all the labels to <code class="docutils literal notranslate"><span class="pre">False</span></code> but does not remove
+the label array</p></td>
+</tr>
+</tbody>
+</table>
 </p></li>
 </ul>
 </dd>

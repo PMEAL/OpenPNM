@@ -226,6 +226,15 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">settings</span> <span class="o">=</span> <span class="n">SettingsAttr</span><span class="p">(</span><span class="n">AdvectionDiffusionSettings</span><span class="p">,</span> <span class="n">settings</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">settings</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
+    <span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+    <span class="k">def</span> <span class="nf">_get_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Dataclass-like attribute for storing settings</span>
+
+<span class="sd">        %(AdvectionDiffusionSettings.parameters)s</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_get_settings</span><span class="p">()</span>
+
 <div class="viewcode-block" id="AdvectionDiffusion.set_outflow_BC"><a class="viewcode-back" href="../../../modules/generated/openpnm.algorithms.AdvectionDiffusion.set_outflow_BC.html#openpnm.algorithms.AdvectionDiffusion.set_outflow_BC">[docs]</a>    <span class="k">def</span> <span class="nf">set_outflow_BC</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;merge&#39;</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Adds outflow boundary condition to the selected pores</span>

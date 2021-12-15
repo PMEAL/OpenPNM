@@ -231,7 +231,11 @@
 
 
 <div class="viewcode-block" id="TypedList"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.TypedList.html#openpnm.utils.TypedList">[docs]</a><span class="k">class</span> <span class="nc">TypedList</span><span class="p">(</span><span class="n">TypedMixin</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Brief explanation of &#39;TypedSet&#39;&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A list that enforces all elements have the same type.</span>
+
+<span class="sd">    The allowed type or types are set during</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ind</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
@@ -252,7 +256,13 @@
 
 
 <div class="viewcode-block" id="SettingsAttr"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.SettingsAttr.html#openpnm.utils.SettingsAttr">[docs]</a><span class="k">class</span> <span class="nc">SettingsAttr</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Brief explanation of &#39;SettingsAttr&#39;&quot;&quot;&quot;</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A custom data class that hold settings for objects.</span>
+
+<span class="sd">    The main function of this custom class is to enforce the datatype of</span>
+<span class="sd">    values that are assigned to ensure they remain consistent.  For instance</span>
+<span class="sd">    if ``obj.foo = &quot;bar&quot;``, then ``obj.foo = 456`` will fail.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>

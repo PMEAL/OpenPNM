@@ -11727,7 +11727,10 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="openpnm.utils.SettingsAttr">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">openpnm.utils.</span></span><span class="sig-name descname"><span class="pre">SettingsAttr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/_settings.html#SettingsAttr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.SettingsAttr" title="Permalink to this definition">¶</a></dt>
-<dd><p>Brief explanation of ‘SettingsAttr’</p>
+<dd><p>A custom data class that hold settings for objects.</p>
+<p>The main function of this custom class is to enforce the datatype of
+values that are assigned to ensure they remain consistent.  For instance
+if <code class="docutils literal notranslate"><span class="pre">obj.foo</span> <span class="pre">=</span> <span class="pre">&quot;bar&quot;</span></code>, then <code class="docutils literal notranslate"><span class="pre">obj.foo</span> <span class="pre">=</span> <span class="pre">456</span></code> will fail.</p>
 </dd></dl>
 
 </section>

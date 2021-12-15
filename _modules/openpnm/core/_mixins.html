@@ -436,7 +436,7 @@
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        label : str</span>
-<span class="sd">                The label to apply to the specified locations</span>
+<span class="sd">            The label to apply to the specified locations</span>
 <span class="sd">        pores : array_like</span>
 <span class="sd">            A list of pore indices or a boolean mask of where given label</span>
 <span class="sd">            should be added or removed (see ``mode``)</span>
@@ -446,20 +446,24 @@
 <span class="sd">        mode : str</span>
 <span class="sd">            Controls how the labels are handled.  Options are:</span>
 
-<span class="sd">            * &#39;add&#39; (default)</span>
-<span class="sd">                Adds the given label to the specified locations while</span>
-<span class="sd">                keeping existing labels</span>
-<span class="sd">            * &#39;overwrite&#39;</span>
-<span class="sd">                Removes existing label from all locations before</span>
-<span class="sd">                adding the label in the specified locations</span>
-<span class="sd">            * &#39;remove&#39;</span>
-<span class="sd">                Removes the given label from the specified locations</span>
-<span class="sd">                leaving the remainder intact</span>
-<span class="sd">            * &#39;purge&#39;</span>
-<span class="sd">                Removes the specified label from the object completely</span>
-<span class="sd">            * &#39;clear&#39;</span>
-<span class="sd">                Sets all the labels to ``False`` but does not remove the label</span>
-<span class="sd">                array</span>
+<span class="sd">            =========== ======================================================</span>
+<span class="sd">            mode        description</span>
+<span class="sd">            =========== ======================================================</span>
+<span class="sd">            &#39;add&#39;       (default) Adds the given label to the specified</span>
+<span class="sd">                        locations while keeping existing labels</span>
+
+<span class="sd">            &#39;overwrite&#39; Removes existing label from all locations before</span>
+<span class="sd">                        adding the label in the specified locations</span>
+
+<span class="sd">            &#39;remove&#39;    Removes the given label from the specified locations</span>
+<span class="sd">                        leaving the remainder intact</span>
+
+<span class="sd">            &#39;purge&#39;     Removes the specified label from the object completely.</span>
+<span class="sd">                        This ignores the ``pores`` and ``throats`` arguments.</span>
+
+<span class="sd">            &#39;clear&#39;     Sets all the labels to ``False`` but does not remove</span>
+<span class="sd">                        the label array</span>
+<span class="sd">            =========== ======================================================</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_parse_mode</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>

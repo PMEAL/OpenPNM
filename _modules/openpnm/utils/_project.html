@@ -429,15 +429,19 @@
 <span class="sd">        If no Phase object can be found, then an Exception is raised.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># If received algorithm, tell user to use alg.settings.phase</span>
+        <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">_isa</span><span class="p">(</span><span class="s1">&#39;algorithm&#39;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;The name(s) of the associated phase(s) with algorithm&quot;</span>
+                            <span class="s2">&quot; objects can be found via &#39;alg.settings.phase&#39;&quot;</span><span class="p">)</span>
         <span class="c1"># If received phase, just return self</span>
         <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">_isa</span><span class="p">(</span><span class="s1">&#39;phase&#39;</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">obj</span>
         <span class="c1"># Otherwise find it using bottom-up approach (i.e. look in phase keys)</span>
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">phases</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-            <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;pore.&#39;</span> <span class="o">+</span> <span class="n">obj</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">item</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="s1">&#39;throat.&#39;</span> <span class="o">+</span> <span class="n">obj</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">item</span><span class="p">):</span>
+            <span class="k">if</span> <span class="p">(</span><span class="sa">f</span><span class="s1">&#39;pore.</span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span> <span class="ow">in</span> <span class="n">item</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="sa">f</span><span class="s1">&#39;throat.</span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span> <span class="ow">in</span> <span class="n">item</span><span class="p">):</span>
                 <span class="k">return</span> <span class="n">item</span>
         <span class="c1"># If all else fails, throw an exception</span>
-        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Cannot find a phase associated with &#39;</span><span class="o">+</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="p">)</span></div>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Cannot find a phase associated with </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Project.find_geometry"><a class="viewcode-back" href="../../../modules/generated/openpnm.utils.Project.find_geometry.html#openpnm.utils.Project.find_geometry">[docs]</a>    <span class="k">def</span> <span class="nf">find_geometry</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">physics</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
