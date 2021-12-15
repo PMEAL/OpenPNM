@@ -16,8 +16,7 @@ cubes_and_cuboids = {
         },
 	'pore.diameter': {
 		'model': mods.misc.product,
-        'prop1': 'pore.max_size',
-		'prop2': 'pore.seed',
+        'props': ['pore.max_size', 'pore.seed'],
         'regen_mode': 'deferred',
 		},
 	'pore.volume': {

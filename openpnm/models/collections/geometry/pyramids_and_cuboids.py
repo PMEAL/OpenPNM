@@ -16,14 +16,12 @@ pyramids_and_cuboids = {
 		},
 	'pore.diameter': {
 		'model': mods.misc.product,
-		'prop1': 'pore.max_size',
-        'prop2': 'pore.seed',
+		'props': ['pore.max_size', 'pore.seed'],
         'regen_mode': 'deferred',
         },
 	'pore.volume': {
 		'model': mods.geometry.pore_volume.sphere,
 		'pore_diameter': 'pore.diameter',
-        'regen_mode': 'explicit',
         'regen_mode': 'deferred',
         },
 	'throat.max_size': {

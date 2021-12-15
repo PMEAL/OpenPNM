@@ -15,8 +15,7 @@ cones_and_cylinders = {
 		},
 	'pore.diameter': {
 		'model': mods.misc.product,
-		'prop1': 'pore.max_size',
-        'prop2': 'pore.seed',
+		'props': ['pore.max_size', 'pore.seed'],
         },
 	'pore.volume': {
 		'model': mods.geometry.pore_volume.sphere,
