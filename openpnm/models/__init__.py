@@ -40,6 +40,7 @@ __all__ = [
     'geometry',
     'phases',
     'physics',
+    'collections',
 ]
 
 from . import misc
@@ -47,3 +48,4 @@ from . import network
 from . import geometry
 from . import phases
 from . import physics
+from . import collections
