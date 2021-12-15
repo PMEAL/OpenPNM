@@ -412,7 +412,7 @@ class GenericTransport(GenericAlgorithm):
             self.A.setdiag(datadiag)
             self.A.eliminate_zeros()
 
-    def run(self, solver=None, x0=None):
+    def run(self, solver=None, x0=None, verbose=True):
         r"""
         Builds the A and b matrices, and calls the solver specified in the
         ``settings`` attribute.
@@ -443,10 +443,10 @@ class GenericTransport(GenericAlgorithm):
         self["pore.initial_guess"] = x0
         # Build A and b, then solve the system of equations
         self._update_A_and_b()
-        self._run_special(solver=solver, x0=x0)
+        self._run_special(solver=solver, x0=x0, verbose=verbose)
         return self.soln
 
-    def _run_special(self, solver, x0, w=1):
+    def _run_special(self, solver, x0, w=1, verbose=None):
         # Make sure A,b are STILL well-defined
         self._validate_data_health()
         # Solve and apply under-relaxation
