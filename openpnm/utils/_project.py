@@ -595,10 +595,8 @@ class Project(list):
             else:
                 raise Exception('File type not given')
         else:
-            temp2 = {"hdf5", "xdmf", "vtk", "pickle", "csv", "mat"}
-            if filetype in temp2:
-                print('filetype is supported')
-            else:
+            valid_filetypes = {"hdf5", "xdmf", "vtk", "pickle", "csv", "mat"}
+            if filetype not in valid_filetypes:
                 raise Exception('File type is not supported')
         # Fetch correct io class, using case insensitive look-up
         def igetattr(obj, attr):
