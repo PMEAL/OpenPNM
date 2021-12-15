@@ -8,6 +8,7 @@ import pytest
 class COMSOLTest:
 
     def setup_class(self):
+        np.random.seed(10)
         self.net2d = op.network.Cubic(shape=[3, 4])
         self.net2d["pore.diameter"] = np.random.rand(self.net2d.Np)
         self.net2d["throat.diameter"] = np.random.rand(self.net2d.Nt)
