@@ -4,7 +4,7 @@ import numpy as np
 from numpy.testing import assert_approx_equal
 
 
-class ThroatSurfaceAreaTest:
+class ThroatCrossSectionalAreaTest:
     def setup_class(self):
         self.net = op.network.Cubic(shape=[5, 5, 5], spacing=1.0)
         self.geo = op.geometry.GenericGeometry(network=self.net,
@@ -45,7 +45,7 @@ class ThroatSurfaceAreaTest:
 
 if __name__ == '__main__':
 
-    t = ThroatSurfaceAreaTest()
+    t = ThroatCrossSectionalAreaTest()
     self = t
     t.setup_class()
     for item in t.__dir__():
