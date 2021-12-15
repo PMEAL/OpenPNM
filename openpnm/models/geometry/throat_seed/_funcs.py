@@ -1,9 +1,8 @@
-r"""
-Throat Seed
-...........
-
-"""
 from openpnm.models import misc as _misc
+
+
+__all__ = ["random",
+           "from_neighbor_pores"]
 
 
 def random(target, seed=None, num_range=[0, 1]):

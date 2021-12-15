@@ -7,10 +7,12 @@ __all__ = [
     "spheres_and_cylinders",
     "circles_and_rectangles",
     "cones_and_cylinders",
+    "trapezoids_and_rectangles",
     "pyramids_and_cuboids",
     "cubes_and_cuboids",
     "squares_and_rectangles",
     "intersecting_cones",
+    "intersecting_trapezoids",
     "intersecting_pyramids",
     "ncylinders_in_series"
 ]

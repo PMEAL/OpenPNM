@@ -1,11 +1,13 @@
-r"""
-Pore Cross Sectional Area
-.........................
-
-"""
 from numpy import pi as _pi
 from openpnm.utils import Docorator
 
+__all__ = [
+    "cone",
+    "sphere",
+    "cube",
+    "circle",
+    "square"
+]
 
 docstr = Docorator()
 

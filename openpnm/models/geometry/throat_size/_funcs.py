@@ -3,6 +3,12 @@ from openpnm.models import misc as _misc
 from openpnm.utils import Docorator
 
 
+__all__ = ["weibull",
+           "normal",
+           "generic_distribution",
+           "random",
+           "from_neighbor_pores",
+           "equivalent_diameter"]
 docstr = Docorator()
 
 

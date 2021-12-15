@@ -3,6 +3,9 @@ import scipy as _sp
 from openpnm.models import misc as _misc
 from openpnm.utils import Docorator
 
+__all__ = ["random",
+           "spatially_correlated"
+           ]
 
 docstr = Docorator()
 
