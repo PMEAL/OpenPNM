@@ -25,6 +25,7 @@ mip.run()
 hg.update(mip.results(Pc=70000))
 # mip.plot_intrusion_curve()
 
+
 # %% Perform Stokes flow simulation
 sf = op.algorithms.StokesFlow(network=pn, phase=water)
 sf.set_value_BC(pores=pn.pores('right'), values=0)

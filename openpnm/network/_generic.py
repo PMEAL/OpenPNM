@@ -502,7 +502,7 @@ class GenericNetwork(ParamMixin, Base, ModelsMixin, LabelMixin):
         return Ts
 
     def find_neighbor_pores(self, pores, mode='union', flatten=True,
-                            include_input=False):
+                            include_input=False, asmask=False):
         r"""
         Returns a list of pores that are direct neighbors to the given pore(s)
 
@@ -539,6 +539,11 @@ class GenericNetwork(ParamMixin, Base, ModelsMixin, LabelMixin):
                 is also known as 'intersection' in set theory and
                 (somtimes) as 'all' in boolean logic. Both keywords are
                 accepted and treated as 'and'.
+
+        asmask : boolean
+            If ``False`` (default), the returned result is a list of the
+            neighboring pores as indices. If ``True``, the returned result is a
+            boolean mask. (Useful for labelling)
 
         Returns
         -------
@@ -591,9 +596,16 @@ class GenericNetwork(ParamMixin, Base, ModelsMixin, LabelMixin):
                                                   am=self._am['lil'],
                                                   flatten=flatten,
                                                   include_input=include_input)
-        return neighbors
+        if asmask is False:
+            return neighbors
+        elif flatten is True:
+            neighbors = self._tomask(element='pore', indices=neighbors)
+            return neighbors
+        else:
+            raise Exception('Cannot create mask on an unflattened output')
 
-    def find_neighbor_throats(self, pores, mode='union', flatten=True):
+    def find_neighbor_throats(self, pores, mode='union', flatten=True,
+                              asmask=False):
         r"""
         Returns a list of throats neighboring the given pore(s)
 
@@ -624,6 +636,11 @@ class GenericNetwork(ParamMixin, Base, ModelsMixin, LabelMixin):
                 is also known as 'intersection' in set theory and
                 (somtimes) as 'all' in boolean logic. Both keywords are
                 accepted and treated as 'and'.
+
+        asmask : boolean
+            If ``False`` (default), the returned result is a list of the
+            neighboring throats as indices. If ``True``, the returned result is a
+            boolean mask. (Useful for labelling)
 
         Returns
         -------
@@ -667,7 +684,13 @@ class GenericNetwork(ParamMixin, Base, ModelsMixin, LabelMixin):
             am = self.create_adjacency_matrix(fmt='coo', triu=True)
             neighbors = topotools.find_neighbor_bonds(sites=pores, logic=mode,
                                                       am=am, flatten=True)
-        return neighbors
+        if asmask is False:
+            return neighbors
+        elif flatten is True:
+            neighbors = self._tomask(element='throat', indices=neighbors)
+            return neighbors
+        else:
+            raise Exception('Cannot create mask on an unflattened output')
 
     def _find_neighbors(self, pores, element, **kwargs):
         element = self._parse_element(element=element, single=True)
