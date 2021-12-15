@@ -45,6 +45,15 @@ class AdvectionDiffusion(ReactiveTransport):
         self.settings = SettingsAttr(AdvectionDiffusionSettings, settings)
         super().__init__(settings=self.settings, **kwargs)
 
+    @docstr.dedent
+    def _get_settings(self):
+        r"""
+        Dataclass-like attribute for storing settings
+
+        %(AdvectionDiffusionSettings.parameters)s
+        """
+        return super()._get_settings()
+
     def set_outflow_BC(self, pores, mode='merge'):
         r"""
         Adds outflow boundary condition to the selected pores
