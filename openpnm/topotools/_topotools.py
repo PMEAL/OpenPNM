@@ -1102,7 +1102,7 @@ def trim_occluded_throats(network, mask='all'):
     mask : str
         Applies routine only to throats with this label
     """
-    occluded_ts = network['throat.area'] == 0
+    occluded_ts = network['throat.cross_sectional_area'] == 0
     if np.sum(occluded_ts) > 0:
         occluded_ts *= network["throat."+mask]
         trim(network=network, throats=occluded_ts)

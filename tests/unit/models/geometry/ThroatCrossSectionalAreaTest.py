@@ -19,27 +19,27 @@ class ThroatCrossSectionalAreaTest:
         self.geo['throat.diameter'] = 0.1
 
     def test_sphere(self):
-        self.geo.add_model(propname='throat.area',
+        self.geo.add_model(propname='throat.cross_sectional_area',
                            model=mods.cylinder,
                            regen_mode='normal')
         a = np.array([0.007853981])
-        b = np.unique(self.geo['throat.area'])
+        b = np.unique(self.geo['throat.cross_sectional_area'])
         assert_approx_equal(a, b)
 
     def test_cube(self):
-        self.geo.add_model(propname='throat.area',
+        self.geo.add_model(propname='throat.cross_sectional_area',
                            model=mods.cuboid,
                            regen_mode='normal')
         a = np.array([0.01])
-        b = np.unique(self.geo['throat.area'])
+        b = np.unique(self.geo['throat.cross_sectional_area'])
         assert_approx_equal(a, b)
 
     def test_rectangle(self):
-        self.geo.add_model(propname='throat.area',
+        self.geo.add_model(propname='throat.cross_sectional_area',
                            model=mods.rectangle,
                            regen_mode='normal')
         a = np.array([0.1])
-        b = np.unique(self.geo['throat.area'])
+        b = np.unique(self.geo['throat.cross_sectional_area'])
         assert_approx_equal(a, b)
 
 

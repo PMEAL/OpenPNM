@@ -51,7 +51,7 @@ from_neighbor_pores.__doc__ = _misc.from_neighbor_pores.__doc__
 
 
 @docstr.dedent
-def equivalent_diameter(target, throat_area='throat.area',
+def equivalent_diameter(target, throat_area='throat.cross_sectional_area',
                         throat_shape='circle'):
     r"""
     Calculates the diameter of a cirlce or edge-length of a sqaure with same
