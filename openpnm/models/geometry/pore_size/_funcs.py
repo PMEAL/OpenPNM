@@ -3,6 +3,14 @@ from openpnm.utils import logging as _logging
 from openpnm.models import misc as _misc
 import numpy as _np
 
+__all__ = ["weibull",
+           "normal",
+           "random",
+           "generic_distribution",
+           "from_neighbor_throats",
+           "largest_sphere",
+           "equivalent_diameter"
+           ]
 
 _logger = _logging.getLogger(__name__)
 docstr = Docorator()

@@ -2,6 +2,9 @@ from numpy import pi as _pi
 from openpnm.utils import Docorator
 
 
+_all__ = ["cylinder",
+          "cuboid",
+          "rectangle"]
 docstr = Docorator()
 docstr.params['models.geometry.throat_cross_sectional_area.returns'] = \
     r"""areas : ndarray

@@ -2,6 +2,12 @@ import numpy as _np
 from openpnm.utils import Docorator
 
 
+__all__ = ["cylinder",
+           "cuboid",
+           "rectangle",
+           "extrusion",
+           "lens",
+           "pendular_ring"]
 docstr = Docorator()
 
 
