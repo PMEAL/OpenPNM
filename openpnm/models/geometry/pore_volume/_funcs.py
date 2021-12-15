@@ -2,7 +2,12 @@ import numpy as np
 from numpy import pi as _pi
 from openpnm.utils import Docorator
 
-
+__all__ = ["sphere",
+           "cube",
+           "circle",
+           "square",
+           "effective"
+           ]
 docstr = Docorator()
 
 
