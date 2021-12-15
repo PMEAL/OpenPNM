@@ -1,10 +1,12 @@
 import os
 import py
+import pytest
 import numpy as np
 import openpnm as op
 from openpnm.models.misc import from_neighbor_pores
 
 
+@pytest.mark.skip(reason="'netgen' is only available on conda")
 class STLTest:
 
     def setup_class(self):

@@ -11,7 +11,7 @@ classes losses lots of vital information about the simulation, such as
 pore scale-models and parameters.
 
 """
-from ._generic import GenericIO
+from ._generic_io import GenericIO
 from ._pickle import Pickle
 from ._dict import Dict
 from ._vtk import VTK

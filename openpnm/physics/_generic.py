@@ -89,17 +89,18 @@ class GenericPhysics(ParamMixin, Subdomain, ModelsMixin):
         mode : str
             Options are:
 
-            * 'add' (default)
-                If the physics does not presently have an associated phase,
-                this will create associations, but no pore or throat
-                locations will assigned.  This must be done using the
-                ``set_geometry`` method.
-            * 'drop'
-                Associations with the existing phase will be removed.
-            * 'move'
-                Associations will be made with the new phase, and the pore
-                and throat locations from the current phase will be
-                transferred to the new one.
+            ===========  =====================================================
+            mode         meaning
+            ===========  =====================================================
+            'add'        If the physics does not presently have an associated
+                         phase, this will create associations, but no pore or
+                         throat locations will assigned. This must be done
+                         using the ``set_geometry`` method.
+            'drop'       Associations with the existing phase will be removed.
+            'move'       Associations will be made with the new phase, and the pore
+                         and throat locations from the current phase will be
+                         transferred to the new one.
+            ===========  =====================================================
 
         Notes
         -----
@@ -165,17 +166,17 @@ class GenericPhysics(ParamMixin, Subdomain, ModelsMixin):
         mode : str
             Controls how the assignment is done. Options are:
 
-            * 'add' (default)
-                If the physics does not presently have an associated
-                geometry, this will create associations, otherwise an
-                Exception is raised
-            * 'drop'
-                Associations with the current geometry will be removed
-            * 'move'
-                Associations will be made with the provided geometry, and
-                the pore and throat locations from the current geometry will
-                be transferred to the new one.
-
+            ===========  =====================================================
+            mode         meaning
+            ===========  =====================================================
+            'add'        If the physics does not presently have an associated
+                         geometry, this will create associations, otherwise an
+                         Exception is raised.(default)
+            'drop'       Associations with the current geometry will be removed
+            'move'       Associations will be made with the provided geometry,
+                         and the pore and throat locations from the current
+                         geometry will be transferred to the new one.
+            ===========  =====================================================
         See Also
         --------
         set_locations
