@@ -32,3 +32,5 @@ from ._mixed_ip_coop import *
 
 from ._ionic_conduction import *
 from ._transient_ionic_conduction import *
+
+from ._transient_multiphysics import *
