@@ -239,11 +239,14 @@ def crop(network, shape, mode='full'):
     mode : str
         Controls how vertices to be trimmed is determined. Options are:
 
-            * 'full':
-                Any vertices lying outside the domain are trimmed
-            * 'mixed'
-                Vertices with at least one neighbor lying inside the domain
-                are kept
+            ===========  =====================================================
+            mode         meaning
+            ===========  =====================================================
+            'full'       Any vertices lying outside the domain are trimmed
+            'mixed'      Vertices with at least one neighbor lying inside
+                         the domain are kept
+            ===========  =====================================================
+
     """
     Pdrop = isoutside(network['vert.coords'], shape=shape, thresh=0)
     if mode == 'full':
