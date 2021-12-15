@@ -202,7 +202,7 @@ class PerGeos(GenericIO):
 
 
 def from_pergeos(filename, network=None):
-    project = PerGeos.load_project(filename=filename, network=network)
+    project = PerGeos.import_data(filename=filename, network=network)
     return project
 
 
