@@ -121,6 +121,11 @@ class GenericNetwork(ParamMixin, Base, ModelsMixin, LabelMixin):
         super().__setitem__(key, value)
 
     def __getitem__(self, key):
+        # If the key is a just a numerical value, the kick it directly back
+        # This allows one to do either value='pore.blah' or value=1.0
+        if isinstance(key, (int, float, bool, complex)):
+            return key
+
         element, prop = key.split('.', 1)
         # Deal with special keys first
         if key.split('.')[-1] == self.name:
@@ -420,22 +425,24 @@ class GenericNetwork(ParamMixin, Base, ModelsMixin, LabelMixin):
             throat, in the order they were sent.
         mode : str
             Specifies logic to filter the resulting list. Options are:
-                **'or'** : (default) All neighbors of the input pores.
-                This is also known as the 'union' in set theory or 'any'
-                in boolean logic. Both keywords are accepted and treated
-                as 'or'.
-                **'xor'** : Only neighbors of one and only one input pore.
-                This is useful for counting the pores that are not shared
-                by any of the input pores. This is known as 'exclusive_or'
-                in set theory, and is an accepted input.
-                **'xnor'** : Neighbors that are shared by two or more
-                input pores. This is equivalent to counting all neighbors
-                with 'or', minus those found with 'xor', and is useful for
-                finding neighbors that the inputs have in common.
-                **'and'** : Only neighbors shared by all input pores. This
-                is also known as 'intersection' in set theory and
-                (somtimes) as 'all' in boolean logic. Both keywords are
-                accepted and treated as 'and'.
+
+            ===========  =====================================================
+            mode         meaning
+            ===========  =====================================================
+            'or'         All neighbors of the input pores. Also accepts 'any'
+                         and 'union'.
+            'xor'        Only neighbors of one and only one input pore. This
+                         is useful for counting the pores that are not shared
+                         by any of the input pores. Also accepts
+                         'exclusive_or'.
+            'xnor'       Neighbors that are shared by two or more input pores.
+                         This is equivalent to counting all neighbors
+                         with 'or', minus those found with 'xor', and is
+                         useful for finding neighbors that the inputs have
+                         in common.
+            'and'        Only neighbors shared by all input pores. Also
+                         accepts 'intersection' and 'all'
+            ===========  =====================================================
 
         Returns
         -------
@@ -502,7 +509,7 @@ class GenericNetwork(ParamMixin, Base, ModelsMixin, LabelMixin):
         return Ts
 
     def find_neighbor_pores(self, pores, mode='union', flatten=True,
-                            include_input=False):
+                            include_input=False, asmask=False):
         r"""
         Returns a list of pores that are direct neighbors to the given pore(s)
 
@@ -523,22 +530,29 @@ class GenericNetwork(ParamMixin, Base, ModelsMixin, LabelMixin):
             include N, even if this flag is ``True``.
         mode : str
             Specifies logic to filter the resulting list. Options are:
-                **'or'** : (default) All neighbors of the input pores.
-                This is also known as the 'union' in set theory or 'any'
-                in boolean logic. Both keywords are accepted and treated
-                as 'or'.
-                **'xor'** : Only neighbors of one and only one input pore.
-                This is useful for counting the pores that are not shared
-                by any of the input pores. This is known as 'exclusive_or'
-                in set theory, and is an accepted input.
-                **'xnor'** : Neighbors that are shared by two or more
-                input pores. This is equivalent to counting all neighbors
-                with 'or', minus those found with 'xor', and is useful for
-                finding neighbors that the inputs have in common.
-                **'and'** : Only neighbors shared by all input pores. This
-                is also known as 'intersection' in set theory and
-                (somtimes) as 'all' in boolean logic. Both keywords are
-                accepted and treated as 'and'.
+
+            ===========  =====================================================
+            mode         meaning
+            ===========  =====================================================
+            'or'         All neighbors of the input pores. Also accepts 'any'
+                         and 'union'.
+            'xor'        Only neighbors of one and only one input pore. This
+                         is useful for counting the pores that are not shared
+                         by any of the input pores. Also accepts
+                         'exclusive_or'.
+            'xnor'       Neighbors that are shared by two or more input pores.
+                         This is equivalent to counting all neighbors
+                         with 'or', minus those found with 'xor', and is
+                         useful for finding neighbors that the inputs have
+                         in common.
+            'and'        Only neighbors shared by all input pores. Also
+                         accepts 'intersection' and 'all'
+            ===========  =====================================================
+
+        asmask : boolean
+            If ``False`` (default), the returned result is a list of the
+            neighboring pores as indices. If ``True``, the returned result is a
+            boolean mask. (Useful for labelling)
 
         Returns
         -------
@@ -591,9 +605,16 @@ class GenericNetwork(ParamMixin, Base, ModelsMixin, LabelMixin):
                                                   am=self._am['lil'],
                                                   flatten=flatten,
                                                   include_input=include_input)
-        return neighbors
+        if asmask is False:
+            return neighbors
+        elif flatten is True:
+            neighbors = self._tomask(element='pore', indices=neighbors)
+            return neighbors
+        else:
+            raise Exception('Cannot create mask on an unflattened output')
 
-    def find_neighbor_throats(self, pores, mode='union', flatten=True):
+    def find_neighbor_throats(self, pores, mode='union', flatten=True,
+                              asmask=False):
         r"""
         Returns a list of throats neighboring the given pore(s)
 
@@ -608,22 +629,29 @@ class GenericNetwork(ParamMixin, Base, ModelsMixin, LabelMixin):
             they were sent.
         mode : str
             Specifies logic to filter the resulting list. Options are:
-                **'or'** : (default) All neighbors of the input pores.
-                This is also known as the 'union' in set theory or 'any'
-                in boolean logic. Both keywords are accepted and treated
-                as 'or'.
-                **'xor'** : Only neighbors of one and only one input pore.
-                This is useful for counting the pores that are not shared
-                by any of the input pores. This is known as 'exclusive_or'
-                in set theory, and is an accepted input.
-                **'xnor'** : Neighbors that are shared by two or more
-                input pores. This is equivalent to counting all neighbors
-                with 'or', minus those found with 'xor', and is useful for
-                finding neighbors that the inputs have in common.
-                **'and'** : Only neighbors shared by all input pores. This
-                is also known as 'intersection' in set theory and
-                (somtimes) as 'all' in boolean logic. Both keywords are
-                accepted and treated as 'and'.
+
+            ===========  =====================================================
+            mode         meaning
+            ===========  =====================================================
+            'or'         All neighbors of the input throats. Also accepts 'any'
+                         and 'union'.
+            'xor'        Only neighbors of one and only one input throats. This
+                         is useful for counting the pores that are not shared
+                         by any of the input pores. Also accepts
+                         'exclusive_or'.
+            'xnor'       Neighbors that are shared by two or more input
+                         throats. This is equivalent to counting all neighbors
+                         with 'or', minus those found with 'xor', and is
+                         useful for finding neighbors that the inputs have
+                         in common.
+            'and'        Only neighbors shared by all input throats. Also
+                         accepts 'intersection' and 'all'
+            ===========  =====================================================
+
+        asmask : boolean
+            If ``False`` (default), the returned result is a list of the
+            neighboring throats as indices. If ``True``, the returned result is a
+            boolean mask. (Useful for labelling)
 
         Returns
         -------
@@ -667,7 +695,13 @@ class GenericNetwork(ParamMixin, Base, ModelsMixin, LabelMixin):
             am = self.create_adjacency_matrix(fmt='coo', triu=True)
             neighbors = topotools.find_neighbor_bonds(sites=pores, logic=mode,
                                                       am=am, flatten=True)
-        return neighbors
+        if asmask is False:
+            return neighbors
+        elif flatten is True:
+            neighbors = self._tomask(element='throat', indices=neighbors)
+            return neighbors
+        else:
+            raise Exception('Cannot create mask on an unflattened output')
 
     def _find_neighbors(self, pores, element, **kwargs):
         element = self._parse_element(element=element, single=True)
@@ -693,22 +727,24 @@ class GenericNetwork(ParamMixin, Base, ModelsMixin, LabelMixin):
             ``True`` the sum total number of is counted.
         mode : str
             The logic to apply to the returned count of pores:
-                **'or'** : (default) All neighbors of the input pores.
-                This is also known as the 'union' in set theory or 'any'
-                in boolean logic. Both keywords are accepted and treated
-                as 'or'.
-                **'xor'** : Only neighbors of one and only one input pore.
-                This is useful for counting the pores that are not shared
-                by any of the input pores. This is known as 'exclusive_or'
-                in set theory, and is an accepted input.
-                **'xnor'** : Neighbors that are shared by two or more
-                input pores. This is equivalent to counting all neighbors
-                with 'or', minus those found with 'xor', and is useful for
-                finding neighbors that the inputs have in common.
-                **'and'** : Only neighbors shared by all input pores. This
-                is also known as 'intersection' in set theory and
-                (somtimes) as 'all' in boolean logic. Both keywords are
-                accepted and treated as 'and'.
+
+            ===========  =====================================================
+            mode         meaning
+            ===========  =====================================================
+            'or'         All neighbors of the input pores. Also accepts 'any'
+                         and 'union'.
+            'xor'        Only neighbors of one and only one input pore. This
+                         is useful for counting the pores that are not shared
+                         by any of the input pores. Also accepts
+                         'exclusive_or'.
+            'xnor'       Neighbors that are shared by two or more input pores.
+                         This is equivalent to counting all neighbors
+                         with 'or', minus those found with 'xor', and is
+                         useful for finding neighbors that the inputs have
+                         in common.
+            'and'        Only neighbors shared by all input pores. Also
+                         accepts 'intersection' and 'all'
+            ===========  =====================================================
 
         Returns
         -------

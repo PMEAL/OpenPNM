@@ -22,9 +22,9 @@ from . import geometry
 from . import phase
 from . import physics
 from . import models
+from . import algorithms
 from . import solvers
 from . import integrators
-from . import algorithms
 from . import materials
 from . import topotools
 from . import io

@@ -448,11 +448,6 @@ class InvasionPercolation(GenericAlgorithm):
 
         """
         from numba import njit
-        try:
-            from numba.core.errors import NumbaPendingDeprecationWarning
-        except ModuleNotFoundError:
-            from numba.errors import NumbaPendingDeprecationWarning
-        warnings.simplefilter('ignore', category=NumbaPendingDeprecationWarning)
 
         @njit
         def wrapper(queue, t_sorted, t_order, t_inv, p_inv, p_inv_t, conns,

@@ -79,7 +79,7 @@ class TransientMultiphysicsNernstPlanckSolverTest:
         # Define settings for algorithms
         setts1 = {'solver_max_iter': 5, 'solver_tol': 1e-08,
                   'solver_rtol': 1e-08, 'nlin_max_iter': 10,
-                  'cache_A': False, 'cache_b': False}
+                  'cache': False}
         setts2 = {'g_tol': 1e-4, 'g_max_iter': 100, 't_output': 1000,
                   't_step': 500, 't_final': 20000, 't_scheme': 'implicit'}
 

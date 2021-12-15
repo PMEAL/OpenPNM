@@ -2,6 +2,7 @@ import numpy as _np
 from openpnm.utils import Docorator
 
 
+__all__ = ["pore_coords"]
 docstr = Docorator()
 
 

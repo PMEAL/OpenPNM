@@ -50,6 +50,10 @@ class GenericPhysicsTest:
         with pytest.raises(Exception):
             _ = phys.project.find_geometry(phys)
 
+    def test_instantiate_without_network_fails(self):
+        with pytest.raises(TypeError):
+            op.physics.GenericPhysics()
+
     def test_instantiate_with_pores_and_throats(self):
         net = op.network.Cubic(shape=[3, 3, 3])
         _ = op.geometry.GenericGeometry(network=net,

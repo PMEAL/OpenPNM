@@ -63,17 +63,20 @@ class AdvectionDiffusion(ReactiveTransport):
         pores : array_like
             The pore indices where the condition should be applied
         mode : str, optional
-            Controls how the boundary conditions are applied. Options are:
+            Controls how the boundary conditions are applied. The default value
+            is 'merge'. Options are:
 
-                'merge' (default)
-                    Adds supplied boundary conditions to already existing
-                    conditions, and also overwrites any existing values.
-                    If at rate or value BC exists at the given locations,
-                    these are deleted, and outflow conditions are given
-                    priority.
-                'overwrite'
-                    Deletes all boundary conditions of the given type then
-                    adds the specified new ones.
+            ===========  =====================================================
+            mode         meaning
+            ===========  =====================================================
+            'merge'      Adds supplied boundary conditions to already existing
+                         conditions, and also overwrites any existing values.
+                         If at rate or value BC exists at the given locations,
+                         these are deleted, and outflow conditions are given
+                         priority.
+            'overwrite'  Deletes all boundary conditions of the given type then
+                         adds the specified new ones.
+            ===========  =====================================================
 
         Notes
         -----

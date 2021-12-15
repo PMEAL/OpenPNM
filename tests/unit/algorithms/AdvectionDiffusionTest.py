@@ -32,7 +32,7 @@ class AdvectionDiffusionTest:
         self.phase.update(self.sf.results())
 
         self.ad = AdvectionDiffusion(network=self.net, phase=self.phase)
-        self.ad.settings._update({"cache_A": False, "cache_b": False})
+        self.ad.settings._update({"cache": False})
         self.ad.set_value_BC(pores=self.net.pores('right'), values=2)
         self.ad.set_value_BC(pores=self.net.pores('left'), values=0)
 
@@ -144,7 +144,7 @@ class AdvectionDiffusionTest:
 
     def test_outflow_BC(self):
         ad = AdvectionDiffusion(network=self.net, phase=self.phase)
-        ad.settings["cache_A"] = False
+        ad.settings["cache"] = False
         ad.set_value_BC(pores=self.net.pores('right'), values=2)
 
         for s_scheme in ['upwind', 'hybrid', 'powerlaw', 'exponential']:
@@ -182,7 +182,7 @@ class AdvectionDiffusionTest:
 
     def test_outflow_BC_rigorous(self):
         ad = AdvectionDiffusion(network=self.net, phase=self.phase)
-        ad.settings["cache_A"] = False
+        ad.settings["cache"] = False
         # Add source term so we get a non-uniform concentration profile
         self.phys["pore.A1"] = -5e-16
         linear = op.models.physics.generic_source_term.linear
@@ -214,7 +214,7 @@ class AdvectionDiffusionTest:
 
     def test_rate(self):
         ad = AdvectionDiffusion(network=self.net, phase=self.phase)
-        ad.settings["cache_A"] = False
+        ad.settings["cache"] = False
         ad.set_value_BC(pores=self.net.pores('right'), values=2)
         ad.set_value_BC(pores=self.net.pores('left'), values=0)
 

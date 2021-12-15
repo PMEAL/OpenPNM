@@ -78,7 +78,7 @@ phys.add_model(propname='throat.ad_dif_mig_conductance.' + Cl.name,
 
 # settings for algorithms
 setts1 = {'solver_max_iter': 5, 'solver_tol': 1e-08, 'solver_rtol': 1e-08,
-          'nlin_max_iter': 10, 'cache_A': False, 'cache_b': False}
+          'nlin_max_iter': 10, 'cache': False}
 setts2 = {'g_tol': 1e-4, 'g_max_iter': 4, 't_output': 5000, 't_step': 500,
           't_final': 20000, 't_scheme': 'implicit'}
 

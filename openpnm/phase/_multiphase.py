@@ -382,9 +382,18 @@ class MultiPhase(GenericPhase):
         Parameters
         ----------
         mode : str
-            Interpolation method, ex. 'mean' sets the throat occupancy as
-            the average of that in adjacent pores, while 'min' sets it to
-            the minimum of the two. Options are 'mean', 'min', and 'max'.
+            Interpolation method. Options are:
+
+            ===========  =====================================================
+            mode         meaning
+            ===========  =====================================================
+            'mean'       sets the throat occupancy as the average of that in
+                         adjacent pores.
+            'min'        sets the throat occupancy as the minimum value of
+                         that in adjacent pores.
+            'max'        sets the throat occupancy as the maximum value of
+                         that in adjacent pores.
+            ===========  =====================================================
 
         """
         self.settings['throat_occupancy'] = 'automatic'

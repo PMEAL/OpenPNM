@@ -15,6 +15,11 @@ class ParamMixin:
         self._params._value = "Values"
 
     def __getitem__(self, key):
+        # If the key is a just a numerical value, the kick it directly back
+        # This allows one to do either value='pore.blah' or value=1.0
+        if isinstance(key, (int, float, bool, complex)):
+            return key
+
         if key.startswith('param'):
             try:
                 vals = self._params[key]
@@ -192,23 +197,22 @@ class LabelMixin:
             Controls how the query should be performed.  Only applicable
             when ``pores`` or ``throats`` are specified:
 
-            **'or', 'union', 'any'**: (default) Returns the labels that are
-            assigned to *any* of the given locations.
-
-            **'and', 'intersection', 'all'**: Labels that are present on *all*
-            the given locations.
-
-            **'xor', 'exclusive_or'** : Labels that are present on *only one*
-            of the given locations.
-
-            **'nor', 'none', 'not'**: Labels that are *not* present on any of
-            the given locations.
-
-            **'nand'**: Labels that are present on *all but one* of the given
-            locations
-
-            **'xnor'**: Labels that are present on *more than one* of the given
-            locations.  'nxor' is also accepted.
+            ==============  =====================================================
+            mode            meaning
+            ==============  =====================================================
+            'or'            Returns the labels that are assigned to *any* of the
+                            given locations. Also accepts 'union' and 'any'
+            'and'           Labels that are present on all the given locations.
+                            also accepts 'intersection' and 'all'
+            'xor'           Labels that are present on *only one*
+                            of the given locations.Also accepts 'exclusive_or'
+            'nor'           Labels that are *not* present on any of
+                            the given locations. Also accepts 'not' and 'none'
+            'nand'          Labels that are present on *all but one* of the given
+                            locations
+            'xnor'          Labels that are present on *more than one* of the given
+                            locations.
+            ==============  =====================================================
 
         Returns
         -------
@@ -385,24 +389,22 @@ class LabelMixin:
 
         mode : str
             Specifies how the query should be performed.  The options are:
-
-            **'or', 'union', 'any'** : (default) Pores with *one or more* of
-            the given labels are returned.
-
-            **'and', 'intersection', 'all'** : Pores with *all* of the given
-            labels are returned.
-
-            **'xor', 'exclusive_or'** : Pores with *only one* of the given
-            labels are returned.
-
-            **'nor', 'none', 'not'** : Pores with *none* of the given labels
-            are returned.
-
-            **'nand'** : Pores with *not all* of the given labels are
-            returned.
-
-            **'xnor'** : Pores with *more than one* of the given labels are
-            returned.
+            ==============  =====================================================
+            mode            meaning
+            ==============  =====================================================
+            'or'            Pores with *one or more* of the given labels are
+                            returned. Also accepts 'union' and 'any'.
+            'and'           Pores with all of the given labels are returned.
+                            Also accepts 'intersection' and 'all'.
+            'xor'           Pores with *only one* of the given labels are returned.
+                            Also accepts 'exclusive_or'.
+            'nor'           Pores with *none* of the given labels are returned.
+                            Also accepts 'not' and 'none'.
+            'nand'          Pores with *not all* of the given labels are
+                            returned.
+            'xnor'          Pores with *more than one* of the given labels are
+                            returned.
+            ==============  =====================================================
 
         asmask : bool
             If ``True`` then a boolean array of length Np is returned with
@@ -467,23 +469,22 @@ class LabelMixin:
         mode : str
             Specifies how the query should be performed.  The options are:
 
-            **'or', 'union', 'any'** : (default) Throats with *one or more* of
-            the given labels are returned.
-
-            **'and', 'intersection', 'all'** : Throats with *all* of the given
-            labels are returned.
-
-            **'xor', 'exclusive_or'** : Throats with *only one* of the given
-            labels are returned.
-
-            **'nor', 'none', 'not'** : Throats with *none* of the given labels
-            are returned.
-
-            **'nand'** : Throats with *not all* of the given labels are
-            returned.
-
-            **'xnor'** : Throats with *more than one* of the given labels are
-            returned.
+            ==============  =====================================================
+            mode            meaning
+            ==============  =====================================================
+            'or'            Throats with *one or more* of the given labels are
+                            returned. Also accepts 'union' and 'any'.
+            'and'           Throats with all of the given labels are returned.
+                            Also accepts 'intersection' and 'all'.
+            'xor'           Throats with *only one* of the given labels are returned.
+                            Also accepts 'exclusive_or'.
+            'nor'           Throats with *none* of the given labels are returned.
+                            Also accepts 'not' and 'none'.
+            'nand'          Throats with *not all* of the given labels are
+                            returned.
+            'xnor'          Throats with *more than one* of the given labels are
+                            returned.
+            ==============  =====================================================
 
         asmask : bool
             If ``True`` then a boolean array of length Nt is returned with
@@ -536,26 +537,25 @@ class LabelMixin:
             The labels to apply as a filter
 
         mode : str
+            Controls how the filter is applied. The default value is
+            'or'. Options include:
 
-            Controls how the filter is applied.  Options include:
-
-            **'or', 'union', 'any'**: (default) Returns a list of the given
-            locations where *any* of the given labels exist.
-
-            **'and', 'intersection', 'all'**: Only locations where *all* the
-            given labels are found.
-
-            **'xor', 'exclusive_or'**: Only locations where exactly *one* of
-            the given labels are found.
-
-            **'nor', 'none', 'not'**: Only locations where *none* of the given
-            labels are found.
-
-            **'nand'** : Only locations with *some but not all* of the given
-            labels are returned.
-
-            **'xnor'** : Only locations with *more than one* of the given
-            labels are returned.
+            ===========  =====================================================
+            mode         meaning
+            ===========  =====================================================
+            'or'         Returns a list of the given locations where *any* of
+                         the given labels exist. Also accepts 'union' and 'any'.
+            'and'        Only locations where *all* the given labels are
+                         found. Also accepts 'intersection' and 'all'.
+            'xor'        Only locations where exactly *one* of the given
+                         labels are found.
+            'nor'        Only locations where *none* of the given labels are
+                         found. Also accepts 'none' and 'not'
+            'nand'       Only locations with *some but not all* of the given
+                         labels are returned
+            'xnor'       Only locations with *more than one* of the given
+                         labels are returned
+            ===========  =====================================================
 
         Returns
         -------
@@ -613,23 +613,23 @@ class LabelMixin:
         mode : str, optional
             Specifies how the count should be performed.  The options are:
 
-            **'or', 'union', 'any'** : (default) Pores with *one or more* of
-            the given labels are counted.
+            ==============  =====================================================
+            mode            meaning
+            ==============  =====================================================
+            'or'            Pores with *one or more* of the given labels are
+                            counted. Also accepts 'union' and 'any'.
+            'and'           Pores with all of the given labels are returned.
+                            Also accepts 'intersection' and 'all'.
+            'xor'           Pores with *only one* of the given labels are
+                            counted. Also accepts 'exclusive_or'.
+            'nor'           Pores with *none* of the given labels are counted.
+                            Also accepts 'not' and 'none'.
+            'nand'          Pores with *not all* of the given labels are
+                            counted.
+            'xnor'          Pores with *more than one* of the given labels are
+                            counted.
+            ==============  =====================================================
 
-            **'and', 'intersection', 'all'** : Pores with *all* of the given
-            labels are counted.
-
-            **'xor', 'exclusive_or'** : Pores with *only one* of the given
-            labels are counted.
-
-            **'nor', 'none', 'not'** : Pores with *none* of the given labels
-            are counted.
-
-            **'nand'** : Pores with *some but not all* of the given labels are
-            counted.
-
-            **'xnor'** : Pores with *more than one* of the given labels are
-            counted.
 
         Returns
         -------
@@ -679,23 +679,22 @@ class LabelMixin:
         mode : str, optional
             Specifies how the count should be performed.  The options are:
 
-            **'or', 'union', 'any'** : (default) Throats with *one or more* of
-            the given labels are counted.
-
-            **'and', 'intersection', 'all'** : Throats with *all* of the given
-            labels are counted.
-
-            **'xor', 'exclusive_or'** : Throats with *only one* of the given
-            labels are counted.
-
-            **'nor', 'none', 'not'** : Throats with *none* of the given labels
-            are counted.
-
-            **'nand'** : Throats with *some but not all* of the given labels
-            are counted.
-
-            **'xnor'** : Throats with *more than one* of the given labels are
-            counted.
+            ==============  =====================================================
+            mode            meaning
+            ==============  =====================================================
+            'or'            Throats with *one or more* of the given labels are
+                            counted. Also accepts 'union' and 'any'.
+            'and'           Throats with all of the given labels are returned.
+                            Also accepts 'intersection' and 'all'.
+            'xor'           Throats with *only one* of the given labels are
+                            counted. Also accepts 'exclusive_or'.
+            'nor'           Throats with *none* of the given labels are counted.
+                            Also accepts 'not' and 'none'.
+            'nand'          Throats with *not all* of the given labels are
+                            counted.
+            'xnor'          Throats with *more than one* of the given labels are
+                            counted.
+            ==============  =====================================================
 
         Returns
         -------

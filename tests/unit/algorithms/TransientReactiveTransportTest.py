@@ -46,9 +46,10 @@ class TransientReactiveTransportTest:
     def test_transient_solution(self):
         out = self.alg.run(x0=0, tspan=(0, 1), saveat=0.1)
         # Test datatype
-        assert isinstance(out, op.integrators.TransientSolution)
+        from openpnm.algorithms._solution import TransientSolution
+        assert isinstance(out, TransientSolution)
         # Ensure solution object is attached to the algorithm
-        assert isinstance(self.alg.soln, op.integrators.TransientSolution)
+        assert isinstance(self.alg.soln, TransientSolution)
         # Test shape
         nt.assert_array_equal(self.alg.soln.shape, (self.alg.Np, 11))
         # Test stored time points
