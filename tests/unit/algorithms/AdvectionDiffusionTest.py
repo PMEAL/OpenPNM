@@ -32,7 +32,7 @@ class AdvectionDiffusionTest:
         self.phase.update(self.sf.results())
 
         self.ad = AdvectionDiffusion(network=self.net, phase=self.phase)
-        self.ad.settings._update({"cache_A": False, "cache_b": False})
+        self.ad.settings._update({"cache": False})
         self.ad.set_value_BC(pores=self.net.pores('right'), values=2)
         self.ad.set_value_BC(pores=self.net.pores('left'), values=0)
 
