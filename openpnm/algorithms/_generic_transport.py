@@ -346,7 +346,7 @@ class GenericTransport(GenericAlgorithm):
                 self.settings._update({"cache": False})
         except AttributeError:
             pass
-        if not self.settings['cache_A']:
+        if not self.settings['cache']:
             self._pure_A = None
         if self._pure_A is None:
             phase = self.project[self.settings.phase]
