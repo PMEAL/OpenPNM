@@ -1,16 +1,12 @@
-import numpy as np
-import scipy.sparse.linalg
 import warnings
+import numpy as np
 import scipy.sparse.csgraph as spgr
-from copy import deepcopy
-from scipy.spatial import ConvexHull
-from scipy.spatial import cKDTree
-from openpnm.topotools import iscoplanar, is_fully_connected, dimensionality
+from openpnm.topotools import is_fully_connected
 from openpnm.algorithms import GenericAlgorithm
 from openpnm.utils import logging, prettify_logger_message
 from openpnm.utils import Docorator, SettingsAttr
-from openpnm.utils import is_symmetric
 from openpnm.solvers import PardisoSpsolve
+from ._solution import SteadyStateSolution
 docstr = Docorator()
 logger = logging.getLogger(__name__)
 
@@ -445,6 +441,7 @@ class GenericTransport(GenericAlgorithm):
         # Build A and b, then solve the system of equations
         self._update_A_and_b()
         self._run_special(solver=solver, x0=x0)
+        return self.soln
 
     def _run_special(self, solver, x0, w=1):
         # Make sure A,b are STILL well-defined
@@ -454,6 +451,9 @@ class GenericTransport(GenericAlgorithm):
         self.x = w * x_new + (1 - w) * self.x
         # Update A and b using the recent solution
         self._update_A_and_b()
+        # Store the solution as a SteadyStateSolution object on algorithm
+        self.soln = SteadyStateSolution(self.x)
+        self.soln.is_converged = not bool(exit_code)
 
     def _update_A_and_b(self):
         r"""
