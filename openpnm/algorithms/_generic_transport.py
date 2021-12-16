@@ -218,18 +218,17 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
         in the ``settings`` attribute.
 
         """
-        # Initialize the solution object
-        self.soln = SteadyStateSolution(np.full(self.Np, fill_value=np.nan))
-        self.soln.is_converged = False
         logger.info('Running GenericTransport')
         solver = PardisoSpsolve() if solver is None else solver
         # Perform pre-solve validations
         self._validate_settings()
         self._validate_data_health()
         # Write x0 to algorithm the obj (needed by _update_iterative_props)
-        x0 = np.zeros_like(self.b) if x0 is None else x0
-        self[self.settings["quantity"]] = x0
+        self.x = x0 = np.zeros_like(self.b) if x0 is None else x0
         self["pore.initial_guess"] = x0
+        # Initialize the solution object
+        self.soln = SteadyStateSolution(x0)
+        self.soln.is_converged = False
         # Build A and b, then solve the system of equations
         self._update_A_and_b()
         self._run_special(solver=solver, x0=x0, verbose=verbose)
@@ -297,7 +296,7 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
         self._validate_geometry_health()
 
         # Fetch phase/geometries/physics
-        prj = self.network.project
+        prj = self.project
         phase = prj.phases(self.settings.phase)
         geometries = prj.geometries().values()
         physics = prj.physics().values()
@@ -330,6 +329,20 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
                        " if you call `regenerate_models` on the following"
                        f" object(s): {', '.join(root_objs)}")
                 raise Exception(msg)
+
+        # Raise Exception for throats without an assigned conductance model
+        conductance = self.settings.conductance
+        g = phase[conductance]
+        Ts_nan = self.Ts[np.isnan(g)]
+        Ts_with_model = []
+        for obj in prj:
+            if conductance in obj.keys():
+                Ts_with_model.extend(obj.throats(to_global=True))
+        if not np.in1d(Ts_nan, Ts_with_model).all():
+            x = np.arange(500)
+            msg = ("Found NaNs in A matrix, possibly because some throats"
+                   f" don't have an assigned conductance model: {conductance}")
+            raise Exception(msg)
 
         # Raise Exception for unaccounted properties
         if unaccounted_nans:
