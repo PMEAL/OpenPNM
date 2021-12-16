@@ -18,10 +18,10 @@ class StatoilTest:
         ws = op.Workspace()
         ws.clear()
 
-    def test_load_F42A(self):
+    def test_load_F42A(self, tmpdir):
         path = Path(os.path.realpath(__file__),
                     '../../../fixtures/ICL-SandPack(F42A)')
-        project = op.io.Statoil.import_data(path=path.resolve(), prefix='F42A')
+        project = op.io.from_statoil(path=path.resolve(), prefix='F42A')
         assert len(project) == 1
         net = project.network
         assert net.Np == 1246
@@ -30,10 +30,10 @@ class StatoilTest:
         assert np.shape(net['throat.conns']) == (2654, 2)
         assert 'pore.radius' in net.keys()
 
-    def test_load_Berea(self):
+    def test_load_Berea(self, tmpdir):
         path = Path(os.path.realpath(__file__),
                     '../../../fixtures/ICL-Sandstone(Berea)')
-        project = op.io.Statoil.import_data(path=path, prefix='Berea')
+        project = op.io.from_statoil(path=path, prefix='Berea')
         assert len(project) == 1
         net = project.network
         assert net.Np == 6298

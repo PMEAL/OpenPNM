@@ -28,7 +28,7 @@ class PoreSpy(GenericIO):
         if isinstance(filename, dict):
             net = filename
         else:
-            filename = cls._parse_filename(filename=filename, ext='dict')
+            filename = cls._parse_filename(filename=filename)
             with open(filename, mode='rb') as f:
                 net = pk.load(f)
 

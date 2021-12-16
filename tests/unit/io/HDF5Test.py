@@ -74,8 +74,8 @@ class HDF5Test:
         fname = tmpdir.join(self.net.project.name)
         f = op.io.to_hdf5(network=[self.net], filename=fname,
                           interleave=False)
-        op.io.HDF5.print_levels(f)
-        op.io.HDF5.print_flattened(f)
+        op.io.print_hdf5(f)
+        op.io.print_hdf5(f, flat=True)
         f.close()
         os.remove(fname.dirpath().join(self.net.project.name + '.hdf'))
 

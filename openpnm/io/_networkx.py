@@ -201,7 +201,8 @@ from_networkx.__doc__ = NetworkX.import_data.__doc__
 
 
 def to_networkx(network):
-    NetworkX.export_data(network=network)
+    G = NetworkX.export_data(network=network)
+    return G
 
 
 to_networkx.__doc__ = NetworkX.export_data.__doc__

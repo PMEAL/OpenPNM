@@ -337,17 +337,17 @@ class Statoil(GenericIO):
 
 
 def from_statoil(path, prefix, network=None):
-    Statoil.import_data(path=path, prefix=prefix, network=network)
+    project = Statoil.import_data(path=path, prefix=prefix, network=network)
+    return project
 
 
 from_statoil.__doc__ = Statoil.import_data.__doc__
 
 
 def to_statoil(network, shape, prefix=None, path=None, Pin=None, Pout=None):
-    project = Statoil.export_data(network=network, shape=shape,
-                                  prefix=prefix, path=path,
-                                  Pin=Pin, Pout=Pout)
-    return project
+    Statoil.export_data(network=network, shape=shape,
+                        prefix=prefix, path=path,
+                        Pin=Pin, Pout=Pout)
 
 
 to_statoil.__doc__ = Statoil.import_data.__doc__
