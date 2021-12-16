@@ -1,3 +1,4 @@
+import os
 import openpnm as op
 from pathlib import Path
 import pickle
@@ -6,7 +7,7 @@ import pickle
 class PoreSpyTest:
 
     def setup_class(self):
-        self.path = Path('berea.net')
+        self.path = os.path.join(Path(__file__).parent.resolve(), "berea.net")
         with open(self.path, 'rb') as f:
             self.net = pickle.load(f)
 
@@ -30,5 +31,5 @@ if __name__ == '__main__':
     t.setup_class()
     for item in t.__dir__():
         if item.startswith('test'):
-            print('running test: '+item)
+            print(f'Running test: {item}')
             t.__getattribute__(item)()
