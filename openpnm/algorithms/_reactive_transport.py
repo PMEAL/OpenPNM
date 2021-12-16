@@ -275,7 +275,8 @@ class ReactiveTransport(GenericTransport):
             self._f0_norm = norm(res)
         f_rtol = self.settings.f_rtol
         norm_reduction = norm(res) / self._f0_norm / f_rtol
-        return (1 - max(np.log10(norm_reduction), 0) / np.log10(1/f_rtol)) * 100
+        progress = (1 - max(np.log10(norm_reduction), 0) / np.log10(1/f_rtol)) * 100
+        return max(0, progress)
 
     def _update_A_and_b(self):
         r"""

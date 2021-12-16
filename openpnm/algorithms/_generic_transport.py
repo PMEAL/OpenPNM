@@ -128,7 +128,7 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
         # FIXME: this needs to be properly addressed (see issue #1548)
         try:
             if gvals in self._get_iterative_props():
-                self.settings._update({"cache": False})
+                self.settings.cache = False
         except AttributeError:
             pass
         if not self.settings['cache']:
