@@ -335,80 +335,19 @@ class Statoil(GenericIO):
 
         return network.project
 
-    @classmethod
-    def add_reservoir_pore(cls, network, pores, offset=0.1):
-        r"""
 
-        Parameters
-        ----------
-        network : GenericNetwork
-            The network to which the reservoir pore should be added
-        pores : array_like
-            The pores to which the reservoir pore should be connected to
-        offset : scalar
-            Controls the distance which the reservoir is offset from the given
-            ``pores``.  The total displacement is found from the network
-            dimension normal to given ``pores``, multiplied by ``offset``.
-
-        """
-
-        # Check if a label was given and fetch actual indices
-        if isinstance(pores, str):
-            # Convert 'face' into 'pore.face' if necessary
-            if not pores.startswith('pore.'):
-                pores = 'pore.' + pores
-            pores = network.pores(pores)
-        # Find coordinates of pores on given face
-        coords = network['pore.coords'][pores]
-        # Normalize the coordinates based on full network size
-        c_norm = coords/network['pore.coords'].max(axis=0)
-        # Identify axis of face by looking for dim with smallest delta
-        diffs = np.amax(c_norm - np.average(c_norm, axis=0), axis=0)
-        ax = np.where(diffs == diffs.min())[0][0]
-        # Add new pore at center of domain
-        new_coord = network['pore.coords'].mean(axis=0)
-        domain_half_length = np.ptp(network['pore.coords'][:, ax])/2
-        if coords[:, ax].mean() < network['pore.coords'][:, ax].mean():
-            new_coord[ax] = new_coord[ax] - domain_half_length*(1 + offset)
-        if coords[:, ax].mean() > network['pore.coords'][:, ax].mean():
-            new_coord[ax] = new_coord[ax] + domain_half_length*(1 + offset)
-        Ps = np.arange(network.Np, network.Np + 1)
-        extend(network=network, coords=[new_coord], labels=['reservoir'])
-        conns = [[P, network.Np-1] for P in pores]
-        Ts = np.arange(network.Nt, network.Nt + len(conns))
-        extend(network=network, conns=conns, labels=['reservoir'])
-        # Compute the geometrical properties of the reservoir pore and throats
-        # Confirm if network has any geometry props on it
-        props = {'throat.length', 'pore.diameter', 'throat.volume'}
-        if len(set(network.keys()).intersection(props)) > 0:
-            raise Exception('Geometrical properties should be moved to a ' +
-                            'geometry object first')
-            # or just do this?:  geo = Imported(network=network)
-        geo = GenericGeometry(network=network, pores=Ps, throats=Ts)
-        geo.add_model(propname='pore.diameter',
-                      model=mods.geometry.pore_size.largest_sphere)
-        geo.add_model(propname='throat.diameter_temp',
-                      model=mods.geometry.throat_size.from_neighbor_pores,
-                      mode='min')
-        geo.add_model(propname='throat.diameter',
-                      model=mods.misc.scaled,
-                      prop='throat.diameter_temp', factor=0.5)
-        geo.add_model(propname='throat.volume',
-                      model=mods.geometry.throat_volume.cylinder)
+def from_statoil(path, prefix, network=None):
+    Statoil.import_data(path=path, prefix=prefix, network=network)
 
 
-def get_domain_shape(network, pore_diameter='pore.diameter'):
-    xmin, ymin, zmin = np.amin(network['pore.coords'], axis=0)
-    xmax, ymax, zmax = np.amax(network['pore.coords'], axis=0)
-    mins = []
-    for axis, val in enumerate([xmin, ymin, zmin]):
-        inds = np.where(network['pore.coords'][:, axis] == val)
-        Rp = np.amax(network[pore_diameter][inds])/2
-        mins.append(val - max(0, Rp))
-    maxes = []
-    for axis, val in enumerate([xmax, ymax, zmax]):
-        inds = np.where(network['pore.coords'][:, axis] == val)
-        Rp = np.amax(network[pore_diameter][inds])/2
-        maxes.append(val + max(0, Rp))
-    shape = np.array(maxes) - np.array(mins)
-    return shape
+from_statoil.__doc__ = Statoil.import_data.__doc__
+
+
+def to_statoil(network, shape, prefix=None, path=None, Pin=None, Pout=None):
+    project = Statoil.export_data(network=network, shape=shape,
+                                  prefix=prefix, path=path,
+                                  Pin=Pin, Pout=Pout)
+    return project
+
+
+to_statoil.__doc__ = Statoil.import_data.__doc__

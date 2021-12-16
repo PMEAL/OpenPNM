@@ -1880,3 +1880,77 @@ def filter_pores_by_z(network, pores, z=1):
     return hits
 
 end_all()
+
+
+def add_reservoir_pore(cls, network, pores, offset=0.1):
+        r"""
+        Adds a single pore connected to all ``pores`` to act as a reservoir
+
+        This function is mostly needed to make network compatible with the
+        Statoil file format, which requires reservoir pores on the inlet and
+        outlet faces.
+
+        Parameters
+        ----------
+        network : GenericNetwork
+            The network to which the reservoir pore should be added
+        pores : array_like
+            The pores to which the reservoir pore should be connected to
+        offset : scalar
+            Controls the distance which the reservoir is offset from the given
+            ``pores``.  The total displacement is found from the network
+            dimension normal to given ``pores``, multiplied by ``offset``.
+
+        Returns
+        -------
+        project : list
+            An OpenPNM project object with a new geometry object added to
+            represent the newly added pore and throats.
+
+        """
+        from openpnm.geometry import GenericGeometry
+        import openpnm.models.geometry as mods
+        # Check if a label was given and fetch actual indices
+        if isinstance(pores, str):
+            # Convert 'face' into 'pore.face' if necessary
+            if not pores.startswith('pore.'):
+                pores = 'pore.' + pores
+            pores = network.pores(pores)
+        # Find coordinates of pores on given face
+        coords = network['pore.coords'][pores]
+        # Normalize the coordinates based on full network size
+        c_norm = coords/network['pore.coords'].max(axis=0)
+        # Identify axis of face by looking for dim with smallest delta
+        diffs = np.amax(c_norm - np.average(c_norm, axis=0), axis=0)
+        ax = np.where(diffs == diffs.min())[0][0]
+        # Add new pore at center of domain
+        new_coord = network['pore.coords'].mean(axis=0)
+        domain_half_length = np.ptp(network['pore.coords'][:, ax])/2
+        if coords[:, ax].mean() < network['pore.coords'][:, ax].mean():
+            new_coord[ax] = new_coord[ax] - domain_half_length*(1 + offset)
+        if coords[:, ax].mean() > network['pore.coords'][:, ax].mean():
+            new_coord[ax] = new_coord[ax] + domain_half_length*(1 + offset)
+        Ps = np.arange(network.Np, network.Np + 1)
+        extend(network=network, coords=[new_coord], labels=['reservoir'])
+        conns = [[P, network.Np-1] for P in pores]
+        Ts = np.arange(network.Nt, network.Nt + len(conns))
+        extend(network=network, conns=conns, labels=['reservoir'])
+        # Compute the geometrical properties of the reservoir pore and throats
+        # Confirm if network has any geometry props on it
+        props = {'throat.length', 'pore.diameter', 'throat.volume'}
+        if len(set(network.keys()).intersection(props)) > 0:
+            raise Exception('Geometrical properties should be moved to a ' +
+                            'geometry object first')
+            # or just do this?:  geo = Imported(network=network)
+        geo = GenericGeometry(network=network, pores=Ps, throats=Ts)
+        geo.add_model(propname='pore.diameter',
+                      model=mods.geometry.pore_size.largest_sphere)
+        geo.add_model(propname='throat.diameter_temp',
+                      model=mods.geometry.throat_size.from_neighbor_pores,
+                      mode='min')
+        geo.add_model(propname='throat.diameter',
+                      model=mods.misc.scaled,
+                      prop='throat.diameter_temp', factor=0.5)
+        geo.add_model(propname='throat.volume',
+                      model=mods.geometry.throat_volume.cylinder)
+        return network.project

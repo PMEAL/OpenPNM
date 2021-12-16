@@ -25,7 +25,7 @@ class JSONGraph(GenericIO):
     """
 
     @classmethod
-    def __validate_json__(self, json_file):
+    def _validate_json(self, json_file):
         import jsonschema
         # Validate name of schema file
         relative_path = '../../utils/jgf_schema.pkl'
@@ -137,7 +137,7 @@ class JSONGraph(GenericIO):
         # Load and validate input JSON
         with open(filename, 'r') as file:
             json_file = json.load(file)
-            if not cls.__validate_json__(json_file):
+            if not cls._validate_json(json_file):
                 raise Exception('FIle is not in the JSON Graph Format')
 
         # Extract graph metadata from JSON

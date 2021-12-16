@@ -6,6 +6,7 @@ import pytest
 import numpy as np
 import openpnm as op
 from pathlib import Path
+from openpnm.io._jsongraph import JSONGraph as jgf
 
 
 class JSONGraphTest:
@@ -25,13 +26,11 @@ class JSONGraphTest:
 
     def test_validation_success(self):
         json_obj = {'graph': {'nodes': [{'id': "0"}]}}  # 'id' is a string
-        jgf = op.io.JSONGraph()
-        assert jgf.__validate_json__(json_obj)
+        assert jgf._validate_json(json_obj)
 
     def test_validation_failure(self):
         json_obj = {'graph': {'nodes': [{'id': 0}]}}    # 'id' is not a string
-        jgf = op.io.JSONGraph()
-        assert not jgf.__validate_json__(json_obj)
+        assert not jgf._validate_json(json_obj)
 
     def test_save_failure(self):
         path = Path(os.path.realpath(__file__),

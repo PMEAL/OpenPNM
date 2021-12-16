@@ -89,7 +89,20 @@ class HDF5(GenericIO):
                                  dtype=arr.dtype, data=arr)
         return f
 
-    def print_levels(f):
+
+def print_hdf5(f, flat=False):
+    r"""
+    Given an hdf5 file handle, prints to console in a human readable manner
+
+    Parameters
+    ----------
+    f : file handle
+        The hdf5 file to print
+    flat : bool
+        Flag to indicate if print should be nested or flat.  The default is
+        ``flat==False`` resulting in a nested view.
+    """
+    if flat is False:
         def print_level(f, p='', indent='-'):
             for item in f.keys():
                 if hasattr(f[item], 'keys'):
@@ -100,8 +113,7 @@ class HDF5(GenericIO):
             return(p)
         p = print_level(f)
         print(p)
-
-    def print_flattened(f):
+    else:
         f.visit(print)
 
 
