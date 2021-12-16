@@ -33,7 +33,7 @@ Now that the project is setup we can export it:
 
 .. code-block:: python
 
-    >>> op.io.VTK.export_data(network=pn, phases=water, filename='test_file')
+    >>> op.io.to_vtk(network=pn, phases=water, filename='test_file')
 
 This will create a file in your current working directory called 'test_file.vtp'.  There are several things to note about this line.  Firstly,  the 'vtp' file extension is used rather than 'vtk'. The last letter indicates the type of data in the file, where 'p' indicates PolyData.  The VTK accronym stands for Visualization Tool Kit, which is a general reference to all similar files.  Secondly, current working directory can be found from the interactive python terminal by importing the ``os`` package, and typing ``os.get_cwd()``.  Finally, sending Phase data to the VTK file is optional, and you must specify which phase data to write.
 

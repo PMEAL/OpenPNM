@@ -50,7 +50,7 @@ class Settings:
     throat_diameter = 'inscribed_diameter'
 
 
-pn, geo = op.io.PoreSpy.import_data(snow.network, settings=Settings)
+pn, geo = op.io.from_porespy(snow.network, settings=Settings)
 h = pn.check_network_health()
 op.topotools.trim(network=pn, pores=h['disconnected_pores'])
 gas = op.phase.GenericPhase(network=pn)

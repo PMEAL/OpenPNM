@@ -17,14 +17,15 @@ class MARockTest:
     def test_load_MARock(self, tmpdir):
         path = Path(os.path.realpath(__file__),
                     '../../../fixtures/3DMA-Castlegate')
-        project = op.io.MARock.import_data(path=path)
+        project = op.io.from_marock(path=path)
         assert len(project) == 1
         net = project.network
+        print(net.props())
         assert net.Np == 9915
         assert net.Nt == 21805
         a = {'pore.ID_number', 'pore.boundary_type', 'pore.coordination',
-             'pore.coords', 'pore.volume', 'throat.area', 'throat.conns',
-             'throat.coords'}
+             'pore.coords', 'pore.volume', 'throat.conns',
+             'throat.coords', 'throat.cross_sectional_area'}
         assert a.issubset(net.props())
 
 

@@ -14,7 +14,7 @@ class DiffusiveConductanceTest:
         self.geo['pore.diameter'] = 1.0
         self.geo['throat.diameter'] = 0.5
         self.geo['pore.area'] = 1.0
-        self.geo['throat.area'] = 1.0
+        self.geo['throat.cross_sectional_area'] = 1.0
         self.phase = op.phase.GenericPhase(network=self.net)
         self.phase['pore.diffusivity'] = 1.3
         self.phase['pore.molecular_weight'] = 0.029

@@ -1,3 +1,4 @@
+import sys
 import numpy as np
 from numpy.linalg import norm
 from scipy.optimize.nonlin import TerminationCondition
@@ -242,6 +243,7 @@ class ReactiveTransport(GenericTransport):
             "total": 100,
             "desc": f"{self.name} : Newton iterations",
             "disable": not verbose,
+            "file": sys.stdout,
             "leave": False
         }
 

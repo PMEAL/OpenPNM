@@ -94,7 +94,7 @@ def rectangle(target, throat_length='throat.length',
 
 @docstr.dedent
 def extrusion(target, throat_length='throat.length',
-              throat_area='throat.area'):
+              throat_area='throat.cross_sectional_area'):
     r"""
     Calculate throat volume from the throat area and the throat length. This
     method is useful for abnormal shaped throats.

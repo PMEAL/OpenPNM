@@ -15,7 +15,7 @@ class PoreVolumeTest:
                                               phase=self.air,
                                               geometry=self.geo)
         self.geo['pore.diameter'] = 1.05
-        self.geo['throat.area'] = 0.1
+        self.geo['throat.cross_sectional_area'] = 0.1
 
     def test_sphere(self):
         self.geo.add_model(propname='pore.volume',

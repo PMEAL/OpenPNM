@@ -2,8 +2,8 @@ import re
 import numpy as np
 from openpnm.io._pandas import Pandas
 from openpnm.io import GenericIO, Dict
-from openpnm.utils import logging, Workspace
-logger = logging.getLogger(__name__)
+from openpnm.utils import Workspace
+
 ws = Workspace()
 
 
@@ -130,3 +130,19 @@ class CSV(GenericIO):
         project = Dict.from_dict(dct, project=project, delim=delim)
 
         return project
+
+
+def from_csv(filename, project=None, delim=' | '):
+    project = CSV.import_data(filename=filename, project=project, delim=delim)
+    return project
+
+
+from_csv.__doc__ = CSV.import_data.__doc__
+
+
+def to_csv(network, phases=[], filename='', delim=' | '):
+    CSV.export_data(network=network, phases=phases,
+                    filename=filename, delim=delim)
+
+
+to_csv.__doc__ = CSV.export_data.__doc__
