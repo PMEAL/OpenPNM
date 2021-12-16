@@ -38,12 +38,12 @@ __all__ = [
     'misc',
     'network',
     'geometry',
-    'phases',
+    'phase',
     'physics',
 ]
 
 from . import misc
 from . import network
 from . import geometry
-from . import phases
+from . import phase
 from . import physics

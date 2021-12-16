@@ -15,7 +15,7 @@ class DiffusiveConductanceTest:
         self.geo['throat.diameter'] = 0.5
         self.geo['pore.area'] = 1.0
         self.geo['throat.cross_sectional_area'] = 1.0
-        self.phase = op.phases.GenericPhase(network=self.net)
+        self.phase = op.phase.GenericPhase(network=self.net)
         self.phase['pore.diffusivity'] = 1.3
         self.phase['pore.molecular_weight'] = 0.029
         self.phase['pore.temperature'] = 345.0
@@ -45,7 +45,7 @@ class DiffusiveConductanceTest:
     def test_generic_diffusive_partial_domain(self):
         net = op.network.Cubic(shape=[5, 5, 5])
         geo = op.geometry.GenericGeometry(network=net, pores=net.Ps, throats=net.Ts[0:5])
-        phase = op.phases.GenericPhase(network=net)
+        phase = op.phase.GenericPhase(network=net)
         phase['pore.diffusivity'] = 1.3
         geo['throat.diffusive_size_factors'] = 0.5
         phys = op.physics.GenericPhysics(network=net, phase=phase, geometry=geo)
@@ -87,9 +87,9 @@ class DiffusiveConductanceTest:
         net = op.network.Cubic(shape=[1, 6, 1])
         geom = op.geometry.GenericGeometry(network=net, pores=net.Ps, throats=net.Ts)
         geom['throat.diffusive_size_factors'] = self.size_factors_dict
-        air = op.phases.Air(network=net)
-        water = op.phases.Water(network=net)
-        m = op.phases.MultiPhase(network=net, phases=[air, water])
+        air = op.phase.Air(network=net)
+        water = op.phase.Water(network=net)
+        m = op.phase.MultiPhase(network=net, phases=[air, water])
         m.set_occupancy(phase=air, pores=[0, 1, 2])
         m.set_occupancy(phase=water, pores=[3, 4, 5])
         const = op.models.misc.constant

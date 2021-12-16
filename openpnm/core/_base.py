@@ -58,7 +58,7 @@ class Base(dict):
     Notes
     -----
     This ``Base`` class is used as the template for all other OpenPNM objects,
-    including Networks, Geometries, Phases, Physics, and Algorithms. This
+    including Networks, Geometries, Phase, Physics, and Algorithms. This
     class is a subclass of the standard ``dict`` so has the usual methods such
     as ``pop`` and ``keys``, and has extra methods for working specifically
     with OpenPNM data.

@@ -340,7 +340,7 @@ class TopotoolsTest:
 
     def test_extend_phase_present(self):
         pn = op.network.Cubic(shape=[2, 2, 1])
-        air = op.phases.Air(network=pn)
+        air = op.phase.Air(network=pn)
         air['pore.test_float'] = 1.0
         air['pore.test_int'] = 1
         air['pore.test_bool'] = True
@@ -453,7 +453,7 @@ class TopotoolsTest:
         Ts = pn.find_neighbor_throats(5)
         op.topotools.trim(network=pn, throats=Ts)
         assert op.topotools.is_fully_connected(pn) is False
-        phase = op.phases.GenericPhase(network=pn)
+        phase = op.phase.GenericPhase(network=pn)
         phase['throat.diffusive_conductance'] = 1.0
         alg = op.algorithms.FickianDiffusion(network=pn, phase=phase)
         alg.set_value_BC(pores=[0, 1, 2, 3], values=1.0)

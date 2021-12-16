@@ -7,12 +7,12 @@ from numpy.testing import assert_approx_equal
 class VaporPressureTest:
     def setup_class(self):
         self.net = op.network.Cubic(shape=[3, 3, 3])
-        self.phase = op.phases.GenericPhase(network=self.net)
+        self.phase = op.phase.GenericPhase(network=self.net)
         self.phase['pore.temperature'] = 300*np.ones(self.phase.Np,)
         self.phase['pore.salinity'] = np.zeros((self.phase.Np,))
 
     def test_antoine(self):
-        f = op.models.phases.vapor_pressure.antoine
+        f = op.models.phase.vapor_pressure.antoine
         self.phase.add_model(propname='pore.test',
                              model=f,
                              temperature='pore.temperature',
@@ -24,7 +24,7 @@ class VaporPressureTest:
                             3607.8508)
 
     def test_water(self):
-        f = op.models.phases.vapor_pressure.water
+        f = op.models.phase.vapor_pressure.water
         self.phase.add_model(propname='pore.test',
                              model=f,
                              temperature='pore.temperature',
@@ -34,7 +34,7 @@ class VaporPressureTest:
                             3536.0130)
 
     def test_water_no_salinity(self):
-        f = op.models.phases.vapor_pressure.water
+        f = op.models.phase.vapor_pressure.water
         del self.phase['pore.salinity']
         self.phase.add_model(propname='pore.test',
                              model=f,

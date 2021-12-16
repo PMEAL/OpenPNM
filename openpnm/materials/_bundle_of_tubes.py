@@ -2,7 +2,7 @@ import numpy as np
 from openpnm.network import Cubic
 from openpnm.utils import logging, Project, prettify_logger_message
 from openpnm.geometry import GenericGeometry
-from openpnm.phases import GenericPhase
+from openpnm.phase import GenericPhase
 from openpnm.topotools import trim
 import openpnm.models as mods
 logger = logging.getLogger(__name__)

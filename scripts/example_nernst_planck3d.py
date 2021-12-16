@@ -8,7 +8,7 @@ equations. Computers & Geosciences, 104505.
 
 """
 import openpnm as op
-from openpnm.phases import mixtures
+from openpnm.phase import mixtures
 import numpy as np
 
 

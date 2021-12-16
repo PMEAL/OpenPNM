@@ -11,7 +11,7 @@ class GenericTransportTest:
         self.geo = op.geometry.SpheresAndCylinders(network=self.net,
                                              pores=self.net.Ps,
                                              throats=self.net.Ts)
-        self.phase = op.phases.Air(network=self.net)
+        self.phase = op.phase.Air(network=self.net)
         self.phase['pore.mole_fraction'] = 0
         self.phys = op.physics.GenericPhysics(network=self.net,
                                               phase=self.phase,
@@ -27,7 +27,7 @@ class GenericTransportTest:
     def test_undefined_elements(self):
         net = op.network.Cubic(shape=[3, 3, 3])
         geom = op.geometry.GenericGeometry(network=net, pores=net.Ps)
-        phase = op.phases.GenericPhase(network=net)
+        phase = op.phase.GenericPhase(network=net)
         phys = op.physics.GenericPhysics(network=net, phase=phase, geometry=geom)
         phys["throat.conductance"] = 1.0
         alg = op.algorithms.GenericTransport(network=net, phase=phase)
@@ -175,9 +175,9 @@ class GenericTransportTest:
     def test_rate_Nt_by_2_conductance(self):
         net = op.network.Cubic(shape=[1, 6, 1])
         geom = op.geometry.SpheresAndCylinders(network=net, pores=net.Ps, throats=net.Ts)
-        air = op.phases.Air(network=net)
-        water = op.phases.Water(network=net)
-        m = op.phases.MultiPhase(network=net, phases=[air, water])
+        air = op.phase.Air(network=net)
+        water = op.phase.Water(network=net)
+        m = op.phase.MultiPhase(network=net, phases=[air, water])
         m.set_occupancy(phase=air, pores=[0, 1, 2])
         m.set_occupancy(phase=water, pores=[3, 4, 5])
         const = op.models.misc.constant
@@ -305,7 +305,7 @@ class GenericTransportTest:
     def test_network_continuity(self):
         net = op.network.Cubic([5, 1, 1])
         op.topotools.trim(network=net, pores=[2])
-        phase = op.phases.GenericPhase(network=net)
+        phase = op.phase.GenericPhase(network=net)
         phase['throat.diffusive_conductance'] = 1.0
         alg = op.algorithms.FickianDiffusion(network=net, phase=phase)
         alg.set_value_BC(pores=0, values=1)

@@ -14,7 +14,7 @@ top and the bottom of the network.
 """
 import openpnm as op
 from openpnm.network import Cubic
-from openpnm.phases import Air, Water, MultiPhase
+from openpnm.phase import Air, Water, MultiPhase
 from openpnm.geometry import SpheresAndCylinders
 from openpnm.physics import Standard
 from openpnm.models.misc import constant

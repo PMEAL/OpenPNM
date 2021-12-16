@@ -158,7 +158,7 @@ if __name__ == "__main__":
     import openpnm as op
     pn = op.network.Cubic(shape=[10, 10, 1])
     geo = op.geometry.SpheresAndCylinders(network=pn, pores=pn.Ps, throats=pn.Ts)
-    air = op.phases.Air(network=pn)
+    air = op.phase.Air(network=pn)
     phys = op.physics.Standard(network=pn, phase=air, geometry=geo)
     flow = op.algorithms.StokesFlow(network=pn, phase=air)
     flow.set_value_BC(pores=pn.pores('left'), values=1)

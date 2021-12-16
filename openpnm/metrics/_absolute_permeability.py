@@ -1,5 +1,5 @@
 from openpnm.utils import logging, Workspace, SettingsAttr, Docorator
-from openpnm.phases import GenericPhase
+from openpnm.phase import GenericPhase
 from openpnm.physics import GenericPhysics
 from openpnm.algorithms import StokesFlow
 from openpnm.metrics import GenericTransportMetrics

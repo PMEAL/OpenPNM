@@ -1,5 +1,5 @@
 # from collections import ChainMap  # Might use eventually
-from openpnm.phases.mixtures import GenericMixture
+from openpnm.phase.mixtures import GenericMixture
 import openpnm.models as mods
 from openpnm.utils import logging, Docorator
 docstr = Docorator()
@@ -23,5 +23,5 @@ class IdealGas(GenericMixture):
         self.settings._update(settings)
 
         self.add_model(propname='pore.molar_density',
-                       model=mods.phases.molar_density.ideal_gas,
+                       model=mods.phase.molar_density.ideal_gas,
                        regen_mode='deferred')

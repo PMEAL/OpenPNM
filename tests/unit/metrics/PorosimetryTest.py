@@ -11,7 +11,7 @@ class PorosimetryTest:
         self.geo = op.geometry.SpheresAndCylinders(network=self.net,
                                              pores=self.net.Ps,
                                              throats=self.net.Ts)
-        self.hg = op.phases.Mercury(network=self.net)
+        self.hg = op.phase.Mercury(network=self.net)
         self.phys = op.physics.GenericPhysics(network=self.net,
                                               phase=self.hg,
                                               geometry=self.geo)

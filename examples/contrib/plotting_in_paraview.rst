@@ -16,7 +16,7 @@ Assume the following project has been created and you wish to visualize it:
     >>> import openpnm as op
     >>> pn = op.network.Cubic(shape=[5, 5, 5])
     >>> geo = op.geometry.SpheresAndCylinders(network=pn, pores=pn.Ps, throats=pn.Ts)
-    >>> water = op.phases.Water(network=pn)
+    >>> water = op.phase.Water(network=pn)
     >>> phys = op.physics.Standard(network=pn, phase=water, geometry=geo)
 
 Now we can export it into a variety of formats using the ``io`` module, but the

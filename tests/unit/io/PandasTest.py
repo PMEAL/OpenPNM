@@ -23,10 +23,10 @@ class PandasTest:
         self.geo_2['pore.boo'] = 1
         self.geo_2['throat.boo'] = 1
 
-        self.phase_1 = op.phases.GenericPhase(network=self.net)
+        self.phase_1 = op.phase.GenericPhase(network=self.net)
         self.phase_1['pore.bar'] = 2
         self.phase_1['throat.bar'] = 2
-        self.phase_2 = op.phases.GenericPhase(network=self.net)
+        self.phase_2 = op.phase.GenericPhase(network=self.net)
         self.phase_2['pore.bar'] = 2
         self.phase_2['throat.bar'] = 2
 
