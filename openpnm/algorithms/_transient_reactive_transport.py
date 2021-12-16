@@ -107,6 +107,7 @@ class TransientReactiveTransport(ReactiveTransport):
 
         Examples
         --------
+        >>> import openpnm as op
         >>> net = op.network.Cubic([1, 2, 3])
         >>> geo = op.geometry.SpheresAndCylinders(network=net, pores=net.Ps, throats=net.Ts)
         >>> air = op.phases.Air(network=net)
