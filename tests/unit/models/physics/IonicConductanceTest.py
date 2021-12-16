@@ -14,7 +14,7 @@ class IonicConductanceTest:
         self.geo['pore.diameter'] = 1.12
         self.geo['throat.diameter'] = 0.56
         self.geo['pore.area'] = 1.0
-        self.geo['throat.area'] = 1.0
+        self.geo['throat.cross_sectional_area'] = 1.0
         self.geo['pore.volume'] = 1.0
         self.geo['throat.volume'] = 1.0
         self.geo["throat.diffusive_size_factors"] = {

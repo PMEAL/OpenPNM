@@ -308,8 +308,8 @@ class Statoil(GenericIO):
         net['pore.radius'] = np.array(node2['pore.radius'])
         net['pore.shape_factor'] = np.array(node2['pore.shape_factor'])
         net['pore.clay_volume'] = np.array(node2['pore.clay_volume'])
-        net['throat.area'] = ((net['throat.radius']**2)
-                              / (4.0*net['throat.shape_factor']))
+        net['throat.cross_sectional_area'] = ((net['throat.radius']**2)
+                                              / (4.0*net['throat.shape_factor']))
         net['pore.area'] = ((net['pore.radius']**2)
                             / (4.0*net['pore.shape_factor']))
 

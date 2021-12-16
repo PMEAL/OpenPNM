@@ -16,7 +16,7 @@ class BaseTest:
         self.geo.add_model(propname='pore.volume',
                            model=op.models.geometry.pore_volume.sphere)
         self.geo['throat.diameter'] = np.random.rand(self.net.Nt)
-        self.geo.add_model(propname='throat.area',
+        self.geo.add_model(propname='throat.cross_sectional_area',
                            model=op.models.geometry.throat_cross_sectional_area.cylinder)
         self.geo.regenerate_models()
         self.geo['throat.label1'] = False
@@ -343,11 +343,11 @@ class BaseTest:
     def test_props_all(self):
         a = self.geo.props()
         assert sorted(a) == ['pore.diameter', 'pore.volume',
-                             'throat.area', 'throat.diameter']
+                             'throat.cross_sectional_area', 'throat.diameter']
 
     def test_props_models(self):
         a = self.geo.props(mode='models')
-        b = ['pore.volume', 'throat.area']
+        b = ['pore.volume', 'throat.cross_sectional_area']
         assert sorted(a) == sorted(b)
 
     def test_props_constants(self):

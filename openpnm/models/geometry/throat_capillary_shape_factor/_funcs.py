@@ -12,7 +12,7 @@ docstr = Docorator()
                      sections=['Parameters', 'Returns'])
 @docstr.dedent
 def compactness(target, throat_perimeter='throat.perimeter',
-                throat_area='throat.area'):
+                throat_area='throat.cross_sectional_area'):
     r"""
     Mortensen et al. have shown that the Hagen-Poiseuille hydraluic resistance
     is linearly dependent on the compactness. Defined as perimeter^2/area.
@@ -68,7 +68,7 @@ def compactness(target, throat_perimeter='throat.perimeter',
 
 
 def mason_morrow(target, throat_perimeter='throat.perimeter',
-                 throat_area='throat.area'):
+                 throat_area='throat.cross_sectional_area'):
     r"""
     Mason and Morrow relate the capillary pressure to the shape factor in a
     similar way to Mortensen but for triangles.
@@ -98,7 +98,7 @@ def mason_morrow(target, throat_perimeter='throat.perimeter',
 
 
 def jenkins_rao(target, throat_perimeter='throat.perimeter',
-                throat_area='throat.area',
+                throat_area='throat.cross_sectional_area',
                 throat_diameter='throat.indiameter'):
     r"""
     Jenkins and Rao relate the capillary pressure in an eliptical throat to
