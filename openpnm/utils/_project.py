@@ -525,7 +525,7 @@ class Project(list):
             obj = openpnm.geometry.GenericGeometry(network=self.network, name=name,
                                                    pores=[], throats=[])
         elif objtype.startswith('pha'):
-            obj = openpnm.phase.GenericPhase(project=self, name=name)
+            obj = openpnm.phase.GenericPhase(network=self.network, name=name)
         elif objtype.startswith('phy'):
             obj = openpnm.physics.GenericPhysics(network=self.network, name=name)
         elif objtype.startswith('alg'):

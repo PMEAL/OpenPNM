@@ -86,7 +86,7 @@ if __name__ == '__main__':
     t.setup_class()
     for item in t.__dir__():
         if item.startswith('test'):
-            print('running test: '+item)
+            print(f'Running test: {item}')
             try:
                 t.__getattribute__(item)()
             except TypeError:
