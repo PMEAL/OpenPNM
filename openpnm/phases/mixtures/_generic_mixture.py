@@ -126,10 +126,15 @@ class GenericMixture(GenericPhase):
 
         Parameters
         ----------
-        mode : str {'all' (default), 'update'}
-            If 'all' then all concentrations will be updated based on the
-            current mole fractions.  If 'update', then only concentrations
-            that are missing or filled with *nans* will be updated.
+        mode : str
+            ===========  =====================================================
+            mode         meaning
+            ===========  =====================================================
+            'all'        all concentrations will be updated based on the
+                         current mole fractions. (default)
+            'update'     only concentrations that are missing or filled with
+                         *nans* will be updated.
+            ===========  =====================================================
 
         Notes
         -----
@@ -307,8 +312,14 @@ class GenericMixture(GenericPhase):
         component : GenericPhase
             The phase object of the component to add.  Can also be a list
             of phases to add more than one at a time.
-        mode : str {'add', 'remove'}
-            Indicates whether to add or remove the give component(s)
+        mode : str
+
+            ===========  =====================================================
+            mode         meaning
+            ===========  =====================================================
+            'add'        Adds the given components
+            'remove'     Removes the given components
+            ===========  =====================================================
 
         """
         if mode == 'add':

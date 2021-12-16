@@ -8,6 +8,7 @@ ipython
 jsonschema
 json_tricks
 matplotlib
+netgen
 networkx
 numba
 numpy

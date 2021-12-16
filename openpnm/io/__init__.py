@@ -11,24 +11,24 @@ classes losses lots of vital information about the simulation, such as
 pore scale-models and parameters.
 
 """
-from ._generic import GenericIO
-from ._pickle import Pickle
+
+from ._generic_io import GenericIO
+from ._pickle import Pickle, to_pickle, from_pickle
 from ._dict import Dict
-from ._vtk import VTK
-from ._csv import CSV
-from ._networkx import NetworkX
-from ._mat import MAT
-from ._imorph import iMorph
-from ._marock import MARock
-from ._statoil import Statoil
-from ._pergeos import PerGeos
-from ._porespy import PoreSpy
-from ._pandas import Pandas
-from ._hdf5 import HDF5
-from ._xdmf import XDMF
-from ._jsongraph import JSONGraphFormat
-from ._stl import STL
-from ._comsol import COMSOL
-from ._salome import Salome
+from ._vtk import to_vtk, from_vtk
+from ._csv import to_csv, from_csv
+from ._networkx import to_networkx, from_networkx
+from ._mat import to_matlab, from_matlab
+from ._marock import from_marock
+from ._statoil import to_statoil, from_statoil
+from ._pergeos import to_pergeos, from_pergeos
+from ._porespy import from_porespy
+from ._pandas import to_pandas
+from ._hdf5 import to_hdf5, print_hdf5
+from ._xdmf import to_xdmf
+from ._jsongraph import to_jsongraph, from_jsongraph
+from ._stl import to_stl
+from ._comsol import to_comsol
+from ._salome import to_salome
 from ._pnm import PNM
-from ._paraview import ParaView
+from ._paraview import ParaView, to_paraview

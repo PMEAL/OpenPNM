@@ -54,7 +54,12 @@ class GenericTransportTest:
         alg.settings['quantity'] = 'pore.mole_fraction'
         alg.set_value_BC(pores=self.net.pores('top'), values=1)
         alg.set_value_BC(pores=self.net.pores('bottom'), values=0)
-        alg.run()
+        soln = alg.run()
+        # Check returned data type
+        from openpnm.algorithms._solution import SteadyStateSolution
+        assert isinstance(soln, SteadyStateSolution)
+        # Ensure solution object is attached to the algorithm
+        assert isinstance(alg.soln, SteadyStateSolution)
 
     def test_two_value_conditions(self):
         alg = op.algorithms.GenericTransport(network=self.net,
@@ -101,25 +106,25 @@ class GenericTransportTest:
         assert np.isfinite(alg['pore.bc_rate']).sum() == 2
         assert np.isfinite(alg['pore.bc_value']).sum() == 1
 
-    def test_cache_A(self):
+    def test_cache(self):
         alg = op.algorithms.GenericTransport(network=self.net,
                                              phase=self.phase)
         alg.settings['conductance'] = 'throat.diffusive_conductance'
         alg.settings['quantity'] = 'pore.mole_fraction'
         alg.set_rate_BC(pores=self.net.pores('bottom'), values=1)
         alg.set_value_BC(pores=self.net.pores('top'), values=0)
-        alg.settings["cache_A"] = True
+        alg.settings["cache"] = True
         alg.run()
         x_before = alg["pore.mole_fraction"].mean()
         self.phys["throat.diffusive_conductance"][1] = 50.0
         alg.run()
         x_after = alg["pore.mole_fraction"].mean()
-        # When cache_A is True, A is not recomputed, hence x == y
+        # When cache is True, A is not recomputed, hence x == y
         assert x_before == x_after
-        alg.settings["cache_A"] = False
+        alg.settings["cache"] = False
         alg.run()
         x_after = alg["pore.mole_fraction"].mean()
-        # When cache_A is False, A must be recomputed, hence x!= y
+        # When cache is False, A must be recomputed, hence x!= y
         assert x_before != x_after
         # Revert back changes to objects
         self.setup_class()
@@ -172,7 +177,7 @@ class GenericTransportTest:
         geom = op.geometry.SpheresAndCylinders(network=net, pores=net.Ps, throats=net.Ts)
         air = op.phases.Air(network=net)
         water = op.phases.Water(network=net)
-        m = op.phases.MultiPhase(phases=[air, water], project=net.project)
+        m = op.phases.MultiPhase(network=net, phases=[air, water])
         m.set_occupancy(phase=air, pores=[0, 1, 2])
         m.set_occupancy(phase=water, pores=[3, 4, 5])
         const = op.models.misc.constant
@@ -254,7 +259,7 @@ class GenericTransportTest:
                                              phase=self.phase)
         alg.settings['conductance'] = 'throat.diffusive_conductance'
         alg.settings['quantity'] = 'pore.concentration'
-        alg.settings['cache_A'] = False
+        alg.settings['cache'] = False
         alg.set_value_BC(pores=self.net.pores('top'), values=1)
         alg.set_value_BC(pores=self.net.pores('bottom'), values=0)
         # Check if the method can catch NaNs in data

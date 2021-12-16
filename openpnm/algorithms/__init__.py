@@ -6,6 +6,7 @@ The ``algorithms`` module contains classes for conducting transport
 simulations on pore networks.
 
 """
+from ._mixins import *
 
 from ._generic_algorithm import *
 from ._generic_transport import *

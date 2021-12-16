@@ -14,7 +14,7 @@ class DiffusiveConductanceTest:
         self.geo['pore.diameter'] = 1.0
         self.geo['throat.diameter'] = 0.5
         self.geo['pore.area'] = 1.0
-        self.geo['throat.area'] = 1.0
+        self.geo['throat.cross_sectional_area'] = 1.0
         self.phase = op.phases.GenericPhase(network=self.net)
         self.phase['pore.diffusivity'] = 1.3
         self.phase['pore.molecular_weight'] = 0.029
@@ -89,7 +89,7 @@ class DiffusiveConductanceTest:
         geom['throat.diffusive_size_factors'] = self.size_factors_dict
         air = op.phases.Air(network=net)
         water = op.phases.Water(network=net)
-        m = op.phases.MultiPhase(phases=[air, water], project=net.project)
+        m = op.phases.MultiPhase(network=net, phases=[air, water])
         m.set_occupancy(phase=air, pores=[0, 1, 2])
         m.set_occupancy(phase=water, pores=[3, 4, 5])
         const = op.models.misc.constant

@@ -1,4 +1,5 @@
 import numpy as np
+import openpnm as op
 from openpnm.io import GenericIO
 
 
@@ -15,30 +16,31 @@ class COMSOL(GenericIO):
     """
 
     @classmethod
-    def export_data(cls, network, phases=[], filename=''):
+    def export_data(cls, network, filename=None):
         r"""
         Saves the network and geometry data from the given objects into the
-        specified file. This exports in 2D only where throats and pores have
-        rectangular and circular shapes, respectively.
+        specified file. This exports in 2D only where throats and pores
+        have rectangular and circular shapes, respectively.
 
         Parameters
         ----------
         network : GenericNetwork
             The network containing the desired data
 
-        phases : list[GenericPhase]s (optional, default is none)
-
         Notes
         -----
-        This method only saves the network and geometry data, not any of the
-        pore-scale models or other attributes.  To save an actual OpenPNM
-        Project use the ``Workspace`` object.
+        This method only saves the network and geometry data, not any of
+        the pore-scale models or other attributes. To save an actual
+        OpenPNM Project use the ``Workspace`` object.
 
         """
-        project, network, phases = cls._parse_args(network=network,
-                                                   phases=phases)
+        if op.topotools.dimensionality(network).sum() == 3:
+            raise Exception("COMSOL I/O class only works for 2D networks!")
+
+        project, network, phases = cls._parse_args(network=network, phases=[])
         network = network[0]
-        f = open(filename+'.mphtxt', 'w')
+        filename = network.name if filename is None else filename
+        f = open(f"{filename}.mphtxt", 'w')
 
         header(file=f, Nr=network.Nt, Nc=network.Np)
 
@@ -65,6 +67,13 @@ class COMSOL(GenericIO):
         circles(file=f, centers=c_c, radii=c_r)
 
         f.close()
+
+
+def to_comsol(network, filename=None):
+    COMSOL.export_data(network=network, filename=filename)
+
+
+to_comsol.__doc__ = COMSOL.export_data.__doc__
 
 
 def header(file, Nr, Nc):

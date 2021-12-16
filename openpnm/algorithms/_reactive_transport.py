@@ -1,9 +1,11 @@
+import sys
 import numpy as np
 from numpy.linalg import norm
 from scipy.optimize.nonlin import TerminationCondition
 from openpnm.algorithms import GenericTransport
 from openpnm.utils import logging
 from openpnm.utils import TypedList, Docorator, SettingsAttr
+from tqdm import tqdm
 docstr = Docorator()
 logger = logging.getLogger(__name__)
 
@@ -202,7 +204,7 @@ class ReactiveTransport(GenericTransport):
             self.A.setdiag(diag)
             self.b[Ps] += S2[Ps]
 
-    def _run_special(self, solver, x0):
+    def _run_special(self, solver, x0, verbose=True):
         r"""
         Repeatedly updates ``A``, ``b``, and the solution guess within
         according to the applied source term then calls ``_solve`` to
@@ -237,17 +239,43 @@ class ReactiveTransport(GenericTransport):
         dx = self.x - xold
         condition = TerminationCondition(f_rtol=f_rtol, x_rtol=x_rtol)
 
-        for i in range(maxiter):
-            res = self._get_residual()
-            self.is_converged = condition.check(f=res, x=xold, dx=dx)
-            if self.is_converged:
-                logger.info(f'Solution converged, residual norm: {norm(res):.4e}')
-                return
-            super()._run_special(solver=solver, x0=xold, w=w)
-            dx = self.x - xold
-            xold = self.x
-            logger.info(f'Iteration #{i:<4d} | Residual norm: {norm(res):.4e}')
+        tqdm_settings = {
+            "total": 100,
+            "desc": f"{self.name} : Newton iterations",
+            "disable": not verbose,
+            "file": sys.stdout,
+            "leave": False
+        }
+
+        with tqdm(**tqdm_settings) as pbar:
+            for i in range(maxiter):
+                self.soln.num_iter = i + 1
+                res = self._get_residual()
+                progress = self._get_progress(res)
+                pbar.update(progress - pbar.n)
+                is_converged = bool(condition.check(f=res, x=xold, dx=dx))
+                if is_converged:
+                    pbar.update(100 - pbar.n)
+                    self.soln.is_converged = is_converged
+                    logger.info(f'Solution converged, residual norm: {norm(res):.4e}')
+                    return
+                super()._run_special(solver=solver, x0=xold, w=w)
+                dx = self.x - xold
+                xold = self.x
+                logger.info(f'Iteration #{i:<4d} | Residual norm: {norm(res):.4e}')
+
+        self.soln.is_converged = False
         logger.critical(f"{self.name} didn't converge after {maxiter} iterations")
+
+    def _get_progress(self, res):
+        """
+        Returns an approximate value for completion percent of Newton iterations.
+        """
+        if not hasattr(self, "_f0_norm"):
+            self._f0_norm = norm(res)
+        f_rtol = self.settings.f_rtol
+        norm_reduction = norm(res) / self._f0_norm / f_rtol
+        return (1 - max(np.log10(norm_reduction), 0) / np.log10(1/f_rtol)) * 100
 
     def _update_A_and_b(self):
         r"""

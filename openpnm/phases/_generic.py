@@ -35,21 +35,23 @@ class GenericPhase(ParamMixin, Base, ModelsMixin, LabelMixin):
 
     """
 
-    def __init__(self, settings=None, **kwargs):
+    def __init__(self, network, settings=None, **kwargs):
         self.settings = SettingsAttr(PhaseSettings, settings)
-        super().__init__(settings=self.settings, **kwargs)
+        super().__init__(network=network, settings=self.settings, **kwargs)
 
         # If project has a network object, adjust pore and throat array sizes
-        network = self.project.network
-        if network:
-            self['pore.all'] = ones((network.Np, ), dtype=bool)
-            self['throat.all'] = ones((network.Nt, ), dtype=bool)
+        self['pore.all'] = ones((network.Np, ), dtype=bool)
+        self['throat.all'] = ones((network.Nt, ), dtype=bool)
 
         # Set standard conditions on the fluid to get started
         self['pore.temperature'] = 298.0
         self['pore.pressure'] = 101325.0
 
     def __getitem__(self, key):
+        # If the key is a just a numerical value, the kick it directly back
+        # This allows one to do either value='pore.blah' or value=1.0
+        if isinstance(key, (int, float, bool, complex)):
+            return key
         element, prop = key.split('.', 1)
         # Deal with special keys first
         if prop == '_id':
