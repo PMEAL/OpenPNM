@@ -70,6 +70,7 @@ class FormationFactor(GenericTransportMetrics):
     >>> import openpnm as op
     >>> import numpy as np
     >>> np.random.seed(5)
+    >>> op.Workspace().settings.loglevel = 50
     >>> pn = op.network.Cubic(shape=[10, 10, 10], spacing=1e-5)
     >>> geo = op.geometry.SpheresAndCylinders(network=pn, pores=pn.Ps, throats=pn.Ts)
 
