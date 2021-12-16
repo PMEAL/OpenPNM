@@ -1,37 +1,26 @@
 import openpnm as op
 from pathlib import Path
 import pickle
-import os
-import py
 
 
 class PoreSpyTest:
 
     def setup_class(self):
-        try:  # This try-except required for differences in windows vs github
-            path = Path(os.path.realpath(__file__),
-                        '../../../tests/fixtures/berea.net')
-            with open(path, 'rb') as f:
-                self.net = pickle.load(f)
-        except:
-            path = Path(os.path.realpath(__file__),
-                        '../../../../tests/fixtures/berea.net')
-            with open(path, 'rb') as f:
-                self.net = pickle.load(f)
+        self.path = Path('berea.net')
+        with open(self.path, 'rb') as f:
+            self.net = pickle.load(f)
 
-    def test_load_PoreSpy_from_pickle(self, tmpdir):
+    def test_load_PoreSpy_from_pickle(self):
         proj = op.io.from_porespy(self.net)
         net = proj.network
         assert net.Np == 1637
         assert net.Nt == 2785
 
-    def test_load_PoreSpy_from_file(self, tmpdir):
-        try:  # This try-except required for differences in windows vs github
-            proj = op.io.from_porespy(filename=Path(os.path.realpath(__file__),
-                       '../../../tests/fixtures/berea.net'))
-        except:
-            proj = op.io.from_porespy(filename=Path(os.path.realpath(__file__),
-                       '../../../../tests/fixtures/berea.net'))
+    def test_load_PoreSpy_from_file(self):
+        proj = op.io.from_porespy(filename=self.path)
+        net = proj.network
+        assert net.Np == 1637
+        assert net.Nt == 2785
 
 
 if __name__ == '__main__':
@@ -42,7 +31,4 @@ if __name__ == '__main__':
     for item in t.__dir__():
         if item.startswith('test'):
             print('running test: '+item)
-            try:
-                t.__getattribute__(item)()
-            except TypeError:
-                t.__getattribute__(item)(tmpdir=py.path.local())
+            t.__getattribute__(item)()
