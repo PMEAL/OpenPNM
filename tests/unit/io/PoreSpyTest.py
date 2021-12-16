@@ -8,10 +8,16 @@ import py
 class PoreSpyTest:
 
     def setup_class(self):
-        path = Path(os.path.realpath(__file__),
-            '../../../../tests/fixtures/berea.net')
-        with open(path, 'rb') as f:
-            self.net = pickle.load(f)
+        try:  # This try-except required for differences in windows vs github
+            path = Path(os.path.realpath(__file__),
+                        '../../../tests/fixtures/berea.net')
+            with open(path, 'rb') as f:
+                self.net = pickle.load(f)
+        except FileNotFoundError:
+            path = Path(os.path.realpath(__file__),
+                        '../../../../tests/fixtures/berea.net')
+            with open(path, 'rb') as f:
+                self.net = pickle.load(f)
 
     def test_load_PoreSpy_from_pickle(self, tmpdir):
         proj = op.io.from_porespy(self.net)
@@ -20,8 +26,12 @@ class PoreSpyTest:
         assert net.Nt == 2785
 
     def test_load_PoreSpy_from_file(self, tmpdir):
-        proj = op.io.from_porespy(filename=Path(os.path.realpath(__file__),
-            '../../../../tests/fixtures/berea.net'))
+        try:  # This try-except required for differences in windows vs github
+            proj = op.io.from_porespy(filename=Path(os.path.realpath(__file__),
+                       '../../../tests/fixtures/berea.net'))
+        except FileNotFoundError:
+            proj = op.io.from_porespy(filename=Path(os.path.realpath(__file__),
+                       '../../../../tests/fixtures/berea.net'))
 
 
 if __name__ == '__main__':
