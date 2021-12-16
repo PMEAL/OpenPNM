@@ -70,7 +70,6 @@ class FormationFactor(GenericTransportMetrics):
     >>> import openpnm as op
     >>> import numpy as np
     >>> np.random.seed(5)
-    >>> op.Workspace().settings.loglevel = 50
     >>> pn = op.network.Cubic(shape=[10, 10, 10], spacing=1e-5)
     >>> geo = op.geometry.SpheresAndCylinders(network=pn, pores=pn.Ps, throats=pn.Ts)
 
@@ -87,7 +86,7 @@ class FormationFactor(GenericTransportMetrics):
         self.settings = SettingsAttr(FormationFactorSettings, settings)
         super().__init__(settings=self.settings, **kwargs)
 
-    def run(self):
+    def run(self, verbose=False):
         r"""
         Execute the diffusion simulations in the principle directions.
 
@@ -105,7 +104,7 @@ class FormationFactor(GenericTransportMetrics):
         Diff = FickianDiffusion(network=self.project.network, phase=phase)
         Diff.set_value_BC(pores=inlet, values=1.0)
         Diff.set_value_BC(pores=outlet, values=0.0)
-        Diff.run()
+        Diff.run(verbose=verbose)
         phase.update(Diff.results())
         Deff = self._calc_eff_prop(inlets=inlet, outlets=outlet,
                                    domain_area=self.settings['area'],
