@@ -117,3 +117,12 @@ class STL(GenericIO):
 
         # Remove endpoints label from network
         del network["throat.endpoints"]
+
+
+def to_stl(network, filename=None, maxsize='auto', fileformat='STL Format',
+           logger_level=0):
+    STL.export_data(network, filename=filename, maxsize=maxsize,
+                    fileformat=fileformat, logger_level=logger_level)
+
+
+to_stl.__doc__ = STL.export_data.__doc__

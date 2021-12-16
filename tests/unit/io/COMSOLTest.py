@@ -21,12 +21,12 @@ class COMSOLTest:
         os.remove(f"{self.net2d.name}.mphtxt")
 
     def test_export_data_2d_network(self):
-        op.io.COMSOL.export_data(network=self.net2d)
+        op.io.to_comsol(network=self.net2d)
         assert os.path.isfile(f"{self.net2d.name}.mphtxt")
 
     def test_export_data_3d_network(self):
         with pytest.raises(Exception):
-            op.io.COMSOL.export_data(network=self.net3d)
+            op.io.to_comsol(network=self.net3d)
 
 
 if __name__ == '__main__':

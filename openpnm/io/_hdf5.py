@@ -107,9 +107,9 @@ class HDF5(GenericIO):
 
 def to_hdf5(network=None, phases=[], element=['pore', 'throat'],
             filename='', interleave=True, flatten=False, categorize_by=[]):
-    HDF5.export_data(network=network, phases=phases, element=element,
-                     filename=filename, interleave=interleave,
-                     flatten=flatten, categorize_by=categorize_by)
+    return HDF5.export_data(network=network, phases=phases, element=element,
+                            filename=filename, interleave=interleave,
+                            flatten=flatten, categorize_by=categorize_by)
 
 
 to_hdf5.__doc__ = HDF5.export_data.__doc__

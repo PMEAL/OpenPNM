@@ -99,7 +99,8 @@ class Pandas(GenericIO):
 
 
 def to_pandas(network, phases=[], filename='', join=False, delim=' | '):
-    Pandas.export_data(network=network, phases=phases, join=join, delim=delim)
+    return Pandas.export_data(network=network, phases=phases,
+                              join=join, delim=delim)
 
 
 to_pandas.__doc__ = Pandas.export_data.__doc__

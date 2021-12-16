@@ -8,7 +8,7 @@ import openpnm as op
 from pathlib import Path
 
 
-class JSONGraphFormatTest:
+class JSONGraphTest:
 
     def setup_class(self):
         ws = op.Workspace()
@@ -25,12 +25,12 @@ class JSONGraphFormatTest:
 
     def test_validation_success(self):
         json_obj = {'graph': {'nodes': [{'id': "0"}]}}  # 'id' is a string
-        jgf = op.io.JSONGraphFormat()
+        jgf = op.io.JSONGraph()
         assert jgf.__validate_json__(json_obj)
 
     def test_validation_failure(self):
         json_obj = {'graph': {'nodes': [{'id': 0}]}}    # 'id' is not a string
-        jgf = op.io.JSONGraphFormat()
+        jgf = op.io.JSONGraph()
         assert not jgf.__validate_json__(json_obj)
 
     def test_save_failure(self):
@@ -44,7 +44,7 @@ class JSONGraphFormatTest:
 
         # Ensure an exception was thrown
         with pytest.raises(Exception) as e_info:
-            op.io.JSONGraphFormat.export_data(net, filename=filename)
+            op.io.to_jsongraph(net, filename=filename)
         expected_error = 'Error - network is missing one of:'
         assert expected_error in str(e_info.value)
 
@@ -52,7 +52,7 @@ class JSONGraphFormatTest:
         path = Path(os.path.realpath(__file__),
                     '../../../fixtures/JSONGraphFormat')
         filename = Path(path.resolve(), 'save_success.json')
-        op.io.JSONGraphFormat.export_data(self.net, filename=filename)
+        op.io.to_jsongraph(self.net, filename=filename)
 
         # Read newly created file
         with open(filename, 'r') as file:
@@ -142,14 +142,14 @@ class JSONGraphFormatTest:
 
         # Ensure an exception was thrown
         with pytest.raises(Exception):
-            op.io.JSONGraphFormat.load(filename)
+            op.io.from_jsongraph(filename)
 
     def test_load_success(self):
         # Load JSON file and ensure project integrity
         path = Path(os.path.realpath(__file__),
                     '../../../fixtures/JSONGraphFormat')
         filename = Path(path.resolve(), 'valid.json')
-        project = op.io.JSONGraphFormat.import_data(filename)
+        project = op.io.from_jsongraph(filename)
         assert len(project) == 2
 
         # Ensure overal network properties
@@ -180,7 +180,7 @@ class JSONGraphFormatTest:
 
 if __name__ == '__main__':
     # All the tests in this file can be run with 'playing' this file
-    t = JSONGraphFormatTest()
+    t = JSONGraphTest()
     self = t  # For interacting with the tests at the command line
     tmpdir = py.path.local()
     t.setup_class()

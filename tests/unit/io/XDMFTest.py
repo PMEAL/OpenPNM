@@ -62,7 +62,7 @@ class XDMFTest:
 
     def test_save(self, tmpdir):
         fname = tmpdir.join('test_file')
-        op.io.XDMF.export_data(network=self.net, phases=self.phase_1, filename=fname)
+        op.io.to_xdmf(network=self.net, phases=self.phase_1, filename=fname)
         os.remove(tmpdir.join('test_file.hdf'))
         os.remove(tmpdir.join('test_file.xmf'))
 

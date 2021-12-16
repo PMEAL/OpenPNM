@@ -69,6 +69,13 @@ class COMSOL(GenericIO):
         f.close()
 
 
+def to_comsol(network, filename=None):
+    COMSOL.export_data(network=network, filename=filename)
+
+
+to_comsol.__doc__ = COMSOL.export_data.__doc__
+
+
 def header(file, Nr, Nc):
     f = file
 

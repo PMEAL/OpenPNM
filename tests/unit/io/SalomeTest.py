@@ -20,9 +20,9 @@ class SalomeTest:
         os.remove("salome_custom.py")
 
     def test_export_data_salome(self):
-        op.io.Salome.export_data(network=self.net)
+        op.io.to_salome(network=self.net)
         assert os.path.isfile(f"{self.net.name}.py")
-        op.io.Salome.export_data(network=self.net, filename="salome_custom")
+        op.io.to_salome(network=self.net, filename="salome_custom")
         assert os.path.isfile("salome_custom.py")
 
 
