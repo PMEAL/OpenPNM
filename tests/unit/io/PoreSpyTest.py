@@ -13,7 +13,7 @@ class PoreSpyTest:
                         '../../../tests/fixtures/berea.net')
             with open(path, 'rb') as f:
                 self.net = pickle.load(f)
-        except FileNotFoundError:
+        except:
             path = Path(os.path.realpath(__file__),
                         '../../../../tests/fixtures/berea.net')
             with open(path, 'rb') as f:
@@ -29,7 +29,7 @@ class PoreSpyTest:
         try:  # This try-except required for differences in windows vs github
             proj = op.io.from_porespy(filename=Path(os.path.realpath(__file__),
                        '../../../tests/fixtures/berea.net'))
-        except FileNotFoundError:
+        except:
             proj = op.io.from_porespy(filename=Path(os.path.realpath(__file__),
                        '../../../../tests/fixtures/berea.net'))
 
