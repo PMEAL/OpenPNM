@@ -22,9 +22,9 @@ class STLTest:
         os.remove("custom_stl.stl")
 
     def test_export_data_stl(self):
-        op.io.STL.export_data(network=self.net)
+        op.io.to_stl(network=self.net)
         assert os.path.isfile(f"{self.net.name}.stl")
-        op.io.STL.export_data(network=self.net, filename="custom_stl")
+        op.io.to_stl(network=self.net, filename="custom_stl")
         assert os.path.isfile("custom_stl.stl")
 
 

@@ -65,13 +65,13 @@ class VTKTest:
 
     def test_save_network(self, tmpdir):
         fname = Path(tmpdir,  'test_save_vtk_1.vtp')
-        op.io.VTK.export_data(network=self.net, filename=fname)
+        op.io.to_vtk(network=self.net, filename=fname)
         assert fname.is_file()
         os.remove(fname)
 
     def test_save_network_and_phases(self, tmpdir):
         fname = Path(tmpdir,  'test_save_vtk_2.vtp')
-        op.io.VTK.export_data(network=self.net, phases=self.phase_1, filename=fname)
+        op.io.to_vtk(network=self.net, phases=self.phase_1, filename=fname)
         assert fname.is_file()
         os.remove(fname)
 
@@ -79,7 +79,7 @@ class VTKTest:
         path = Path(os.path.realpath(__file__),
                     '../../../fixtures/VTK-VTP')
         fname = Path(path.resolve(), 'test_save_vtk_1.vtp')
-        project = op.io.VTK.import_data(filename=fname)
+        project = op.io.from_vtk(filename=fname)
         assert len(project) == 1
         net = project.network
         assert net.Np == 8
@@ -91,7 +91,7 @@ class VTKTest:
         path = Path(os.path.realpath(__file__),
                     '../../../fixtures/VTK-VTP')
         fname = Path(path.resolve(), 'test_save_vtk_2.vtp')
-        project = op.io.VTK.import_data(filename=fname)
+        project = op.io.from_vtk(filename=fname)
         assert len(project) == 2
         net = project.network
         assert net.Np == 8

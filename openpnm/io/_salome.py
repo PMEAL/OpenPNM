@@ -148,3 +148,10 @@ pnm_2_salome(cylinder_head, cylinder_tail, cylinder_r,
         f.write(cls._footer)
 
         f.close()
+
+
+def to_salome(network, filename=None, explicit=False):
+    Salome.export_data(network=network, filename=filename, explicit=explicit)
+
+
+to_salome.__doc__ = Salome.export_data.__doc__

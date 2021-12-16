@@ -126,3 +126,11 @@ class MARock(GenericIO):
         trim(network=network, throats=ind)
 
         return project
+
+
+def from_marock(path, voxel_size=1, project=None):
+    project = MARock.import_data(path=path, voxel_size=voxel_size, project=project)
+    return project
+
+
+from_marock.__doc__ = MARock.import_data.__doc__

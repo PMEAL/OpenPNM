@@ -2,7 +2,6 @@ import openpnm as op
 import pytest
 import py
 import os
-from openpnm.io import Pandas
 
 
 class PandasTest:
@@ -60,14 +59,14 @@ class PandasTest:
         ws.clear()
 
     def test_to_dataframe_not_joined(self):
-        df = Pandas.export_data(network=self.net, phases=[self.phase_1],
-                                 join=False)
+        df = op.io.to_pandas(network=self.net, phases=[self.phase_1],
+                              join=False)
         assert len(df.pore.keys()) == 22
         assert len(df.throat.keys()) == 13
 
     def test_to_dataframe_joined(self):
-        df = Pandas.export_data(network=self.net, phases=[self.phase_1],
-                                 join=True)
+        df = op.io.to_pandas(network=self.net, phases=[self.phase_1],
+                             join=True)
         assert len(df.keys()) == 35
 
 
