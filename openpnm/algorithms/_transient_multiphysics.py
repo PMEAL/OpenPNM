@@ -2,6 +2,7 @@ import numpy as np
 from openpnm.utils import logging, SettingsAttr
 from openpnm.integrators import ScipyRK45
 from openpnm.algorithms import TransientReactiveTransport
+from openpnm.algorithms import GenericAlgorithm
 logger = logging.getLogger(__name__)
 
 class TransientMultiphysicsSettings:
@@ -14,7 +15,7 @@ class TransientMultiphysicsSettings:
     """
     algorithms = []
 
-class TransientMultiphysics:
+class TransientMultiphysics(GenericAlgorithm):
     r"""
     
     A class for transient multiphysics simulations
