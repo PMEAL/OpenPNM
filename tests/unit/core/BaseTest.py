@@ -16,7 +16,7 @@ class BaseTest:
         self.geo.add_model(propname='pore.volume',
                            model=op.models.geometry.pore_volume.sphere)
         self.geo['throat.diameter'] = np.random.rand(self.net.Nt)
-        self.geo.add_model(propname='throat.area',
+        self.geo.add_model(propname='throat.cross_sectional_area',
                            model=op.models.geometry.throat_cross_sectional_area.cylinder)
         self.geo.regenerate_models()
         self.geo['throat.label1'] = False
@@ -343,11 +343,11 @@ class BaseTest:
     def test_props_all(self):
         a = self.geo.props()
         assert sorted(a) == ['pore.diameter', 'pore.volume',
-                             'throat.area', 'throat.diameter']
+                             'throat.cross_sectional_area', 'throat.diameter']
 
     def test_props_models(self):
         a = self.geo.props(mode='models')
-        b = ['pore.volume', 'throat.area']
+        b = ['pore.volume', 'throat.cross_sectional_area']
         assert sorted(a) == sorted(b)
 
     def test_props_constants(self):
@@ -698,6 +698,16 @@ class BaseTest:
         self.geo.pop('pore.blah', None)
         with pytest.raises(KeyError):
             _ = self.geo['pore.blah']
+
+    def test_getitem_with_numeric_value(self):
+        assert self.geo[5.0] == 5.0
+        assert self.net[44] == 44
+        assert self.phase1[True] == True
+        assert self.phase2[False] == False
+        assert self.phys1[0.1] == 0.1
+        assert self.phys2[4j] == 4j
+        a = op.algorithms.GenericTransport(network=self.net, phase=self.phase1)
+        assert a[0] == 0
 
     def test_interpolate_data(self):
         self.geo['throat.tester'] = np.linspace(0, 1.0, self.geo.network.Nt)

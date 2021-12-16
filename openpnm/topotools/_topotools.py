@@ -542,10 +542,14 @@ def clone_pores(network, pores, labels=['clone'], mode='parents'):
     mode : str
         Controls the connections between parents and clones.  Options are:
 
-        - 'parents': (Default) Each clone is connected only to its parent
-        - 'siblings': Clones are only connected to each other in the same
-                      manner as parents were connected
-        - 'isolated': No connections between parents or siblings
+            ===========  =====================================================
+            mode         meaning
+            ===========  =====================================================
+            'parents'    Each clone is connected only to its parent.(Default)
+            'siblings'   Clones are only connected to each other in the same
+                         manner as parents were connected.
+            'isolated'   No connections between parents or siblings
+            ===========  =====================================================
 
     """
     if isinstance(labels, str):
@@ -792,7 +796,14 @@ def stitch_pores(network, pores1, pores2, mode='gabriel'):
         The pore indices of the disconnected clusters to be joined
     mode : str
         Dictates which tesselation method is used to identify which pores to
-        stitch together.  Options are 'gabriel' (default) or 'delaunay'.
+        stitch together.  Options are:
+
+            ===========  =====================================================
+            mode         meaning
+            ===========  =====================================================
+            'gabriel'    Uses the gabriel tesselation method
+            'delaunay'   Uses the delaunay tesselation method
+            ===========  =====================================================
 
     Returns
     -------
@@ -1102,7 +1113,7 @@ def trim_occluded_throats(network, mask='all'):
     mask : str
         Applies routine only to throats with this label
     """
-    occluded_ts = network['throat.area'] == 0
+    occluded_ts = network['throat.cross_sectional_area'] == 0
     if np.sum(occluded_ts) > 0:
         occluded_ts *= network["throat."+mask]
         trim(network=network, throats=occluded_ts)

@@ -61,10 +61,10 @@ class ThroatSizeTest:
         del self.geo['throat.diameter'], self.geo.models['throat.diameter']
 
     def test_equivalent_diameter(self):
-        self.geo['throat.area'] = 1.0
+        self.geo['throat.cross_sectional_area'] = 1.0
         self.geo.add_model(propname='throat.diameter',
                            model=gm.throat_size.equivalent_diameter,
-                           throat_area='throat.area',
+                           throat_area='throat.cross_sectional_area',
                            throat_shape='circle')
         a = np.unique(self.geo['throat.diameter'])
         b = np.array(1.12837917, ndmin=1)
@@ -72,7 +72,7 @@ class ThroatSizeTest:
         del self.geo['throat.diameter'], self.geo.models['throat.diameter']
         self.geo.add_model(propname='throat.diameter',
                            model=gm.throat_size.equivalent_diameter,
-                           throat_area='throat.area',
+                           throat_area='throat.cross_sectional_area',
                            throat_shape='square')
         a = np.unique(self.geo['throat.diameter'])
         b = np.array(1.0, ndmin=1)

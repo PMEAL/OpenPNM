@@ -169,7 +169,7 @@ class ReactiveTransportTest:
         self.alg.settings._update({'relaxation_quantity': 20.0,
                                    'newton_maxiter': 25})
         self.alg.run()
-        assert not self.alg.is_converged
+        assert not self.alg.soln.is_converged
 
     # FIXME: we no longer want to throw exception when maxiter is reached
     def test_check_divergence_if_maxiter_reached(self):
