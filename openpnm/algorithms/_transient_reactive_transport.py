@@ -111,7 +111,7 @@ class TransientReactiveTransport(ReactiveTransport):
         >>> net = op.network.Cubic([1, 2, 3])
         >>> geo = op.geometry.SpheresAndCylinders(network=net, pores=net.Ps, throats=net.Ts)
         >>> air = op.phases.Air(network=net)
-        >>> phys = op.physics.Standard(network=net, geometry=geo)
+        >>> phys = op.physics.Standard(network=net, geometry=geo, phase=air)
         >>> trt = op.algorithms.TransientReactiveTransport(network=net, phase=air)
         >>> func = lambda t, y: print(t)
         >>> trt.set_callback(func)
