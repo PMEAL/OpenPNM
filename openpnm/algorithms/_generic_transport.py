@@ -226,6 +226,7 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
         # Write x0 to algorithm the obj (needed by _update_iterative_props)
         self.x = x0 = np.zeros_like(self.b) if x0 is None else x0
         self["pore.initial_guess"] = x0
+        self._validate_x0()
         # Initialize the solution object
         self.soln = SteadyStateSolution(x0)
         self.soln.is_converged = False
@@ -255,6 +256,14 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
         self._build_b()
         self._apply_BCs()
 
+    def _validate_x0(self):
+        """
+        Ensures x0 doesn't contain any nans/infs.
+        """
+        x0 = self["pore.initial_guess"]
+        if not np.isfinite(x0).all():
+            raise Exception("x0 contains Inf/NaN values")
+
     def _validate_settings(self):
         if self.settings['quantity'] is None:
             raise Exception("'quantity' hasn't been defined on this algorithm")
@@ -264,6 +273,9 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
             raise Exception("'phase' hasn't been defined on this algorithm")
 
     def _validate_geometry_health(self):
+        """
+        Ensures the geometry doesn't contain nans.
+        """
         h = self.project.check_geometry_health()
         issues = [k for k, v in h.items() if v]
         if issues:
@@ -273,6 +285,10 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
             raise Exception(msg)
 
     def _validate_topology_health(self):
+        """
+        Ensures the network is not clustered, and if it is, they're at
+        least connected to a boundary condition pore.
+        """
         Ps = ~np.isnan(self['pore.bc_rate']) + ~np.isnan(self['pore.bc_value'])
         if not is_fully_connected(network=self.network, pores_BC=Ps):
             msg = ("Your network is clustered. Run h = net.check_network_"
@@ -280,9 +296,25 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
                    "trim_pores']) to make your network fully connected.")
             raise Exception(msg)
 
+    def _validate_conductance_model_health(self):
+        """
+        Ensures all throats have a conductance model assigned.
+        """
+        conductance = self.settings.conductance
+        g = self.project.phases(self.settings.phase)[conductance]
+        Ts_nan = self.Ts[np.isnan(g)]
+        Ts_with_model = []
+        for obj in self.project:
+            if conductance in obj.keys():
+                Ts_with_model.extend(obj.throats(to_global=True))
+        if not np.in1d(Ts_nan, Ts_with_model).all():
+            msg = ("Found NaNs in A matrix, possibly because some throats"
+                   f" don't have conductance model assigned: {conductance}")
+            raise Exception(msg)
+
     def _validate_data_health(self):
-        r"""
-        Check whether A and b are well-defined, i.e. doesn't contain nans.
+        """
+        Checks whether A and b are well-defined, i.e. doesn't contain nans.
         """
         import networkx as nx
         from pandas import unique
@@ -331,18 +363,7 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
                 raise Exception(msg)
 
         # Raise Exception for throats without an assigned conductance model
-        conductance = self.settings.conductance
-        g = phase[conductance]
-        Ts_nan = self.Ts[np.isnan(g)]
-        Ts_with_model = []
-        for obj in prj:
-            if conductance in obj.keys():
-                Ts_with_model.extend(obj.throats(to_global=True))
-        if not np.in1d(Ts_nan, Ts_with_model).all():
-            x = np.arange(500)
-            msg = ("Found NaNs in A matrix, possibly because some throats"
-                   f" don't have an assigned conductance model: {conductance}")
-            raise Exception(msg)
+        self._validate_conductance_model_health()
 
         # Raise Exception for unaccounted properties
         if unaccounted_nans:
