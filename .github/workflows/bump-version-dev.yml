@@ -49,6 +49,6 @@ jobs:
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
 
-        # commit version bump to dev
-        git commit -m "Bump version number" -a
+        # Commit version bump to dev ([no ci] to avoid infinite loop)
+        git commit -m "Bump version number [no ci]" -a
         git push "${remote_repo}" dev
