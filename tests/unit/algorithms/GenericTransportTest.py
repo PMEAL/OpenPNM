@@ -314,6 +314,17 @@ class GenericTransportTest:
         alg.set_value_BC(pores=3, values=0)
         alg.run()
 
+    def test_x0_is_nan(self):
+        alg = op.algorithms.GenericTransport(network=self.net,
+                                             phase=self.phase)
+        alg.settings['conductance'] = 'throat.diffusive_conductance'
+        alg.settings['quantity'] = 'pore.mole_fraction'
+        alg.set_value_BC(pores=self.net.pores('top'), values=1)
+        alg.set_value_BC(pores=self.net.pores('bottom'), values=0)
+        x0 = np.zeros(alg.Np)
+        x0[5] = np.nan
+        with pytest.raises(Exception):
+            alg.run(x0=x0)
 
     def teardown_class(self):
         ws = op.Workspace()
