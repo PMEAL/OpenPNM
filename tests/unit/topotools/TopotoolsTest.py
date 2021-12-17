@@ -586,6 +586,21 @@ class TopotoolsTest:
         with pytest.raises(Exception):
             _ = op.topotools.get_spacing(net)
 
+    def test_find_interface_throats(self):
+        net = op.network.Cubic([5, 1, 1])
+        with pytest.raises(Exception):
+            op.topotools.find_interface_throats(net, [1, 2, 3], [3, 4, 5])
+        # Test pores that do have an interface
+        Ts_int = op.topotools.find_interface_throats(net, 0, 1)
+        assert_allclose(Ts_int, np.array([0]))
+        # Test pores without an interface
+        Ts_int = op.topotools.find_interface_throats(net, 2, 4)
+        assert_allclose(Ts_int, np.array([]))
+        # Test calling the function with labels
+        net["pore.internal"] = ~net["pore.surface"]
+        Ts_int = op.topotools.find_interface_throats(net, "internal", "surface")
+        assert_allclose(Ts_int, np.array([0, 3]))
+
 
 if __name__ == '__main__':
 
