@@ -1,4 +1,4 @@
-name: Bump Version Number
+name: Bump Version Number (release)
 
 on:
   push:
