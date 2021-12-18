@@ -14,7 +14,7 @@ class GenericSourceTermTest:
         Ts = self.net.Ts
         self.geo = op.geometry.GenericGeometry(network=self.net, pores=Ps,
                                                throats=Ts)
-        self.phase = op.phases.GenericPhase(network=self.net)
+        self.phase = op.phase.GenericPhase(network=self.net)
         self.phys = op.physics.GenericPhysics(network=self.net,
                                               phase=self.phase,
                                               geometry=self.geo)

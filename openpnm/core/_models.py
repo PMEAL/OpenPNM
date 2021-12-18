@@ -278,20 +278,23 @@ class ModelsMixin:
             Controls how/when the model is run (See Notes for more details).
             Options are:
 
-            *'normal'* -  (default) The model is run directly upon being
-            assiged, and also run every time ``regenerate_models`` is called.
+            ===========  =====================================================
+            mode         meaning
+            ===========  =====================================================
+            'normal'     The model is run directly upon being
+                         assigned, and also run every time ``regenerate_models``
+                         is called.
+            'constant'   The model is run directly upon being assigned, but
+                         is not called again, thus making its data act like a
+                         constant. If, however, the data is deleted from the
+                         object it will be regenerated again.
+            'deferred'   Is not run upon being assigned, but is run the first
+                         time that ``regenerate_models`` is called.
+            'explicit'   Is only run if the model name is explicitly passed
+                         to the ``regenerate_models`` method.  This allows
+                         full control of when the model is run.
+            ===========  =====================================================
 
-            *'constant'* -  The model is run directly upon being assigned, but
-            is not called again, thus making it's data act like a constant.
-            If, however, the data is deleted from the object it will be
-            regenerated again.
-
-            *'deferred'* - Is not run upon being assigned, but is run the first
-            time that ``regenerate_models`` is called.
-
-            *'explicit'* - Is only run if the model name is explicitly passed
-            to the ``regenerate_models`` method.  This allows full control
-            of when the model is run.
 
         """
         if propname in kwargs.values():  # Prevent infinite loops of look-ups
@@ -346,8 +349,11 @@ class ModelsMixin:
         if propnames is None:  # If no props given, then regenerate them all
             propnames = self.models.dependency_list()
             # If some props are to be excluded, remove them from list
-            exclude.extend([k for k, v in self.models.items()
-                            if v['regen_mode'] == 'explicit'])
+            for k, v in self.models.items():
+                if 'regen_mode' not in v:
+                    pass
+                elif v['regen_mode'] == 'explicit':
+                    exclude.extend([k])
             propnames = [i for i in propnames if i not in exclude]
         # Re-order given propnames according to dependency tree
         self_models = self.models.dependency_list()
@@ -410,11 +416,13 @@ class ModelsMixin:
         mode : list[str]
             Controls what is removed. Options are:
 
-            *'model'* : Removes the model but not any numerical data that may
-            already exist.
-
-            *'data'* : Removes the data but leaves the model.
-
+            ===========  =====================================================
+            mode         meaning
+            ===========  =====================================================
+            'model'      Removes the model but not any numerical data that may
+                         already exist.
+            data'        Removes the data but leaves the model.
+            ===========  =====================================================
         The default is both.
 
         """

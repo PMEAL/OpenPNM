@@ -28,8 +28,14 @@ def ispercolating(am, inlets, outlets, mode='site'):
         An array of indices indicating which sites are part of the outlets
 
     mode : str
-        Indicates which type of percolation to apply, either `'site'` or
-        `'bond'`
+        Indicates which type of percolation to apply,. Options are:
+
+            ===========  =====================================================
+            mode         meaning
+            ===========  =====================================================
+            'site'       Applies site percolation
+            'bond'       Applies bond percolation
+            ===========  =====================================================
 
     """
     if am.format != 'coo':

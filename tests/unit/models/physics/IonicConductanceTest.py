@@ -1,6 +1,6 @@
 import numpy as np
 import openpnm as op
-from openpnm.phases import mixtures
+from openpnm.phase import mixtures
 from numpy.testing import assert_allclose
 
 
@@ -14,13 +14,13 @@ class IonicConductanceTest:
         self.geo['pore.diameter'] = 1.12
         self.geo['throat.diameter'] = 0.56
         self.geo['pore.area'] = 1.0
-        self.geo['throat.area'] = 1.0
+        self.geo['throat.cross_sectional_area'] = 1.0
         self.geo['pore.volume'] = 1.0
         self.geo['throat.volume'] = 1.0
         self.geo["throat.diffusive_size_factors"] = {
             "pore1": 0.123, "throat": 0.981, "pore2": 0.551
         }
-        self.phase = op.phases.GenericPhase(network=self.net)
+        self.phase = op.phase.GenericPhase(network=self.net)
         self.phase['pore.permittivity'] = 78.0
         self.phys = op.physics.GenericPhysics(network=self.net,
                                               phase=self.phase,

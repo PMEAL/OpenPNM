@@ -163,6 +163,13 @@ class XDMF(GenericIO):
             file.write(ET.tostring(root).decode("utf-8"))
 
 
+def to_xdmf(network, phases=[], filename=''):
+    XDMF.export_data(network=network, phases=phases, filename=filename)
+
+
+to_xdmf.__doc__ = XDMF.export_data.__doc__
+
+
 def create_root(Name):
     return ET.Element(Name)
 

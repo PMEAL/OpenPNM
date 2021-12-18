@@ -190,3 +190,19 @@ class NetworkX(GenericIO):
                 nx.set_edge_attributes(G, name=prop[7:], values=val)
 
         return G
+
+
+def from_networkx(G, project=None):
+    project = NetworkX.import_data(G=G, project=project)
+    return project
+
+
+from_networkx.__doc__ = NetworkX.import_data.__doc__
+
+
+def to_networkx(network):
+    G = NetworkX.export_data(network=network)
+    return G
+
+
+to_networkx.__doc__ = NetworkX.export_data.__doc__

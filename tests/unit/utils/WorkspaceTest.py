@@ -10,7 +10,7 @@ class WorkspaceTest:
         self.ws = op.Workspace()
         self.ws.clear()
         self.net = op.network.Cubic(shape=[5, 5, 5])
-        self.phase = op.phases.Air(network=self.net)
+        self.phase = op.phase.Air(network=self.net)
 
     def test_new_project_no_name(self):
         proj = self.ws.new_project()
@@ -51,7 +51,7 @@ class WorkspaceTest:
     # def test_save_and_load_project(self):
     #     proj = self.ws.new_project('test_proj')
     #     net = op.network.Cubic(shape=[3, 3, 3], project=proj)
-    #     op.phases.Air(network=net)
+    #     op.phase.Air(network=net)
     #     self.ws.save_project(proj)
     #     assert proj.name in self.ws.keys()
     #     self.ws.close_project(proj)
@@ -72,7 +72,7 @@ class WorkspaceTest:
     #     self.ws.clear()
     #     proj = self.ws.new_project(name='test')
     #     pn = op.network.Cubic(shape=[3, 3, 3], project=proj)
-    #     op.phases.Air(network=pn)
+    #     op.phase.Air(network=pn)
     #     self.ws.save_project(proj, filename='test.pnm')
     #     self.ws.load_project('test.pnm')
     #     assert set(self.ws.keys()) == set(['test', 'proj_01'])
@@ -81,7 +81,7 @@ class WorkspaceTest:
     # def test_save_and_load_project_from_pickled_list(self):
     #     proj = self.ws.new_project()
     #     pn = op.network.Cubic(shape=[3, 3, 3], project=proj)
-    #     air = op.phases.Air(network=pn)
+    #     air = op.phase.Air(network=pn)
     #     pickle.dump([pn, air], open('test.pnm', 'wb'))
     #     self.ws.clear()
     #     self.ws.load_project('test.pnm')

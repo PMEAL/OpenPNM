@@ -15,7 +15,7 @@ class GenericPhysicsTest:
         mgr.clear()
 
     def test_instantiate_normally(self):
-        phase = op.phases.GenericPhase(network=self.net)
+        phase = op.phase.GenericPhase(network=self.net)
         phys = op.physics.GenericPhysics(network=self.net,
                                          phase=phase,
                                          geometry=self.geo)
@@ -23,7 +23,7 @@ class GenericPhysicsTest:
         assert phys.Nt == self.geo.Nt
 
     def test_instantiate_with_phase_only(self):
-        phase = op.phases.GenericPhase(network=self.net)
+        phase = op.phase.GenericPhase(network=self.net)
         phys = op.physics.GenericPhysics(network=self.net,
                                          phase=phase)
         assert phys.project is not None
@@ -32,7 +32,7 @@ class GenericPhysicsTest:
             _ = phys.project.find_geometry(phys)
 
     def test_instantiate_with_geometry_only(self):
-        phase = op.phases.GenericPhase(network=self.net)
+        phase = op.phase.GenericPhase(network=self.net)
         phys = op.physics.GenericPhysics(network=self.net,
                                          geometry=self.geo)
         assert phys.project is not None
@@ -42,7 +42,7 @@ class GenericPhysicsTest:
             phys.project.find_geometry(phys)
 
     def test_instantiate_with_only_network(self):
-        _ = op.phases.GenericPhase(network=self.net)
+        _ = op.phase.GenericPhase(network=self.net)
         phys = op.physics.GenericPhysics(network=self.net)
         assert phys.project is not None
         with pytest.raises(Exception):
@@ -50,12 +50,16 @@ class GenericPhysicsTest:
         with pytest.raises(Exception):
             _ = phys.project.find_geometry(phys)
 
+    def test_instantiate_without_network_fails(self):
+        with pytest.raises(TypeError):
+            op.physics.GenericPhysics()
+
     def test_instantiate_with_pores_and_throats(self):
         net = op.network.Cubic(shape=[3, 3, 3])
         _ = op.geometry.GenericGeometry(network=net,
                                         pores=net.Ps,
                                         throats=net.Ts)
-        phase = op.phases.GenericPhase(network=net)
+        phase = op.phase.GenericPhase(network=net)
         phys = op.physics.GenericPhysics(network=net,
                                          phase=phase,
                                          pores=net.Ps,
@@ -65,7 +69,7 @@ class GenericPhysicsTest:
 
     def test_set_phase_after_instantiation(self):
         phys = op.physics.GenericPhysics(network=self.net)
-        phase = op.phases.GenericPhase(network=self.net)
+        phase = op.phase.GenericPhase(network=self.net)
         assert 'pore.' + phys.name not in phase.keys()
         phys.set_phase(phase=phase, mode='add')
         assert 'pore.' + phys.name in phase.keys()
@@ -73,7 +77,7 @@ class GenericPhysicsTest:
         assert 'pore.' + phys.name not in phase.keys()
 
     def test_set_geom_after_instantiation(self):
-        phase = op.phases.GenericPhase(network=self.net)
+        phase = op.phase.GenericPhase(network=self.net)
         phys = op.physics.GenericPhysics(network=self.net, phase=phase)
         assert phase['pore.'+phys.name].sum() == 0
         phys.set_geometry(geometry=self.geo)
@@ -82,8 +86,8 @@ class GenericPhysicsTest:
     def test_set_phase_and_geometry_from_different_project(self):
         net2 = op.network.Cubic(shape=[5, 5, 5])
         geo2 = op.geometry.GenericGeometry(network=net2)
-        phase2 = op.phases.GenericPhase(network=net2)
-        phase = op.phases.GenericPhase(network=self.net)
+        phase2 = op.phase.GenericPhase(network=net2)
+        phase = op.phase.GenericPhase(network=self.net)
         phys = op.physics.GenericPhysics(network=self.net)
         with pytest.raises(Exception):
             _ = phys.set_phase(phase=phase2)
@@ -95,8 +99,8 @@ class GenericPhysicsTest:
         net = op.network.Cubic(shape=[3, 3, 3])
         geo = op.geometry.GenericGeometry(network=net, pores=net.Ps,
                                           throats=net.Ts)
-        phase1 = op.phases.GenericPhase(network=net)
-        phase2 = op.phases.GenericPhase(network=net)
+        phase1 = op.phase.GenericPhase(network=net)
+        phase2 = op.phase.GenericPhase(network=net)
         phys = op.physics.GenericPhysics(network=net, phase=phase1,
                                          geometry=geo)
         phys.set_phase(phase=phase2, mode='move')
@@ -107,8 +111,8 @@ class GenericPhysicsTest:
         net = op.network.Cubic(shape=[3, 3, 3])
         geo = op.geometry.GenericGeometry(network=net, pores=net.Ps,
                                           throats=net.Ts)
-        phase1 = op.phases.GenericPhase(network=net)
-        phase2 = op.phases.GenericPhase(network=net)
+        phase1 = op.phase.GenericPhase(network=net)
+        phase2 = op.phase.GenericPhase(network=net)
         phys = op.physics.GenericPhysics(network=net, phase=phase1,
                                          geometry=geo)
         phys.set_phase(mode='drop')
@@ -122,7 +126,7 @@ class GenericPhysicsTest:
         net = op.network.Cubic(shape=[3, 3, 3])
         geo = op.geometry.GenericGeometry(network=net, pores=net.Ps,
                                           throats=net.Ts)
-        phase = op.phases.GenericPhase(network=net)
+        phase = op.phase.GenericPhase(network=net)
         phys = op.physics.GenericPhysics(network=net, phase=phase,
                                          geometry=geo)
         assert phys.Np == 27
@@ -143,7 +147,7 @@ class GenericPhysicsTest:
         net = op.network.Cubic(shape=[3, 3, 3])
         geo = op.geometry.GenericGeometry(network=net, pores=net.Ps,
                                           throats=net.Ts)
-        phase = op.phases.GenericPhase(network=net)
+        phase = op.phase.GenericPhase(network=net)
         phys = op.physics.GenericPhysics(network=net, phase=phase,
                                          geometry=geo)
         assert phys.Np == 27
@@ -157,8 +161,8 @@ class GenericPhysicsTest:
         net = op.network.Cubic(shape=[3, 3, 3])
         geo = op.geometry.GenericGeometry(network=net, pores=net.Ps,
                                           throats=net.Ts)
-        phase1 = op.phases.GenericPhase(network=net)
-        phase2 = op.phases.GenericPhase(network=net)
+        phase1 = op.phase.GenericPhase(network=net)
+        phase2 = op.phase.GenericPhase(network=net)
         phys = op.physics.GenericPhysics(network=net, phase=phase1,
                                          geometry=geo)
         assert phys.Np == 27
@@ -173,8 +177,8 @@ class GenericPhysicsTest:
         net = op.network.Cubic(shape=[3, 3, 3])
         geo = op.geometry.GenericGeometry(network=net, pores=net.Ps,
                                           throats=net.Ts)
-        phase1 = op.phases.GenericPhase(network=net)
-        phase2 = op.phases.GenericPhase(network=net)
+        phase1 = op.phase.GenericPhase(network=net)
+        phase2 = op.phase.GenericPhase(network=net)
         phys = op.physics.GenericPhysics(network=net, phase=phase1,
                                          geometry=geo)
         assert phys.Np == 27
@@ -199,7 +203,7 @@ class GenericPhysicsTest:
         pn = op.network.Cubic([6, 1, 1])
         g1 = op.geometry.GenericGeometry(network=pn, pores=[0, 1, 2])
         g2 = op.geometry.GenericGeometry(network=pn, pores=[3, 4, 5])
-        air = op.phases.Air(network=pn)
+        air = op.phase.Air(network=pn)
         phys1 = op.physics.GenericPhysics(network=pn, phase=air, geometry=g1)
         phys2 = op.physics.GenericPhysics(network=pn, phase=air)
         phys2.set_geometry(geometry=g1, mode='move')

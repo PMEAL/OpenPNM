@@ -13,7 +13,7 @@ class Ad_diff_ConductanceTest:
         self.geo['throat.conduit_lengths.pore1'] = 0.15
         self.geo['throat.conduit_lengths.throat'] = 0.6
         self.geo['throat.conduit_lengths.pore2'] = 0.25
-        self.phase = op.phases.GenericPhase(network=self.net)
+        self.phase = op.phase.GenericPhase(network=self.net)
         self.phase["pore.pressure"] = np.arange(self.net.Np, dtype=float)
         self.phys = op.physics.GenericPhysics(network=self.net,
                                               phase=self.phase,

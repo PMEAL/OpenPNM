@@ -13,18 +13,16 @@ methods, occasionally with basic embedded examples on how to use them.
 
 """
 
-from .__version__ import __version__
-
 from . import utils
 from . import core
 from . import network
 from . import geometry
-from . import phases
+from . import phase
 from . import physics
 from . import models
+from . import algorithms
 from . import solvers
 from . import integrators
-from . import algorithms
 from . import materials
 from . import topotools
 from . import io
@@ -34,3 +32,5 @@ from .utils import Workspace, Project
 
 import numpy as _np
 _np.seterr(divide='ignore', invalid='ignore')
+
+__version__ = utils._get_version()

@@ -527,7 +527,7 @@ def general_symbolic(target, eqn, x, **kwargs):
     >>> import numpy as np
     >>> import sympy
     >>> pn = op.network.Cubic(shape=[5, 5, 5], spacing=0.0001)
-    >>> water = op.phases.Water(network=pn)
+    >>> water = op.phase.Water(network=pn)
     >>> water['pore.a'] = 1
     >>> water['pore.b'] = 2
     >>> water['pore.c'] = 3

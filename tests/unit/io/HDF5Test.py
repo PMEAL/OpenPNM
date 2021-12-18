@@ -23,10 +23,10 @@ class HDF5Test:
         self.geo_2['pore.boo'] = 1
         self.geo_2['throat.boo'] = 1
 
-        self.phase_1 = op.phases.GenericPhase(network=self.net)
+        self.phase_1 = op.phase.GenericPhase(network=self.net)
         self.phase_1['pore.bar'] = 2
         self.phase_1['throat.bar'] = 2
-        self.phase_2 = op.phases.GenericPhase(network=self.net)
+        self.phase_2 = op.phase.GenericPhase(network=self.net)
         self.phase_2['pore.bar'] = 2
         self.phase_2['throat.bar'] = 2
 
@@ -62,9 +62,9 @@ class HDF5Test:
 
     def test_to_hdf5(self, tmpdir):
         fname = tmpdir.join(self.net.project.name)
-        f = op.io.HDF5.export_data(network=[self.net],
-                               phases=[self.phase_1, self.phase_2],
-                               filename=fname)
+        f = op.io.to_hdf5(network=[self.net],
+                          phases=[self.phase_1, self.phase_2],
+                          filename=fname)
         assert list(f.keys()) == ['net_01', 'phase_01', 'phase_02']
         filename = f.filename
         f.close()
@@ -72,10 +72,10 @@ class HDF5Test:
 
     def test_print(self, tmpdir):
         fname = tmpdir.join(self.net.project.name)
-        f = op.io.HDF5.export_data(network=[self.net], filename=fname,
-                               interleave=False)
-        op.io.HDF5.print_levels(f)
-        op.io.HDF5.print_flattened(f)
+        f = op.io.to_hdf5(network=[self.net], filename=fname,
+                          interleave=False)
+        op.io.print_hdf5(f)
+        op.io.print_hdf5(f, flat=True)
         f.close()
         os.remove(fname.dirpath().join(self.net.project.name + '.hdf'))
 

@@ -13,7 +13,7 @@ class SolversTest:
         self.geom = op.geometry.SpheresAndCylinders(network=self.net,
                                               pores=self.net.Ps,
                                               throats=self.net.Ts)
-        self.phase = op.phases.GenericPhase(network=self.net)
+        self.phase = op.phase.GenericPhase(network=self.net)
         self.phys = op.physics.GenericPhysics(
             network=self.net, phase=self.phase, geometry=self.geom)
         self.phys['throat.conductance'] = np.linspace(1, 5, num=self.net.Nt)

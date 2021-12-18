@@ -24,10 +24,10 @@ class MATTest:
         self.geo_2['pore.boo'] = 1
         self.geo_2['throat.boo'] = 1
 
-        self.phase_1 = op.phases.GenericPhase(network=self.net)
+        self.phase_1 = op.phase.GenericPhase(network=self.net)
         self.phase_1['pore.bar'] = 2
         self.phase_1['throat.bar'] = 2
-        self.phase_2 = op.phases.GenericPhase(network=self.net)
+        self.phase_2 = op.phase.GenericPhase(network=self.net)
         self.phase_2['pore.bar'] = 2
         self.phase_2['throat.bar'] = 2
 
@@ -61,8 +61,8 @@ class MATTest:
 
     def test_save_and_load(self, tmpdir):
         fname = tmpdir.join('test_file')
-        op.io.MAT.export_data(network=self.net, phases=self.phase_1, filename=fname)
-        project = op.io.MAT.import_data(fname)
+        op.io.to_matlab(network=self.net, phases=self.phase_1, filename=fname)
+        project = op.io.from_matlab(fname)
         assert len(project) == 2
         net = project.network
         assert net is None  # Since all classes are Base
