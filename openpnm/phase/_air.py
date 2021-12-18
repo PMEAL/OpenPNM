@@ -9,7 +9,7 @@ docstr = Docorator()
 @docstr.dedent
 class Air(GenericPhase):
     r"""
-    Creates a Phase object with preset models and values for air.
+    Creates a Phase object with preset models and values for air
 
     Parameters
     ----------

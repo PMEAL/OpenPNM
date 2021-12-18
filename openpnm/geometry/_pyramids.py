@@ -9,7 +9,9 @@ docstr = Docorator()
 @docstr.dedent
 class PyramidsAndCuboids(GenericGeometry):
     r"""
-
+    Pores are treated as 4-sided pyramids and throats as elongated cuboids
+    for transport conductance. Pores are treated as spheres for all other
+    properties such as volume and surface area.
 
     Parameters
     ----------

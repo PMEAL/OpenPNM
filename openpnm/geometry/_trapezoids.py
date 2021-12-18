@@ -9,7 +9,7 @@ docstr = Docorator()
 @docstr.dedent
 class TrapezoidsAndRectangles(GenericGeometry):
     r"""
-
+    2D representation of cones and cylinders suitable for 2D simulations
 
     Parameters
     ----------

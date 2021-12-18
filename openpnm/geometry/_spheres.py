@@ -9,6 +9,7 @@ docstr = Docorator()
 @docstr.dedent
 class SpheresAndCylinders(GenericGeometry):
     r"""
+    Pores are treated as spheres and throats as cylinders.
 
     Parameters
     ----------

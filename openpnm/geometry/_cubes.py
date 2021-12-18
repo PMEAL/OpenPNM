@@ -9,7 +9,7 @@ docstr = Docorator()
 @docstr.dedent
 class CubesAndCuboids(GenericGeometry):
     r"""
-
+    Pores are treated as cubes and throats as elongated cuboids
 
     Parameters
     ----------

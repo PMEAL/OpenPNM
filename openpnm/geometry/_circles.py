@@ -9,6 +9,7 @@ docstr = Docorator()
 @docstr.dedent
 class CirclesAndRectangles(GenericGeometry):
     r"""
+    2D representation of spheres and cylinders suitable for 2D simulations
 
     Parameters
     ----------

@@ -9,6 +9,7 @@ docstr = Docorator()
 @docstr.dedent
 class SquaresAndRectangles(GenericGeometry):
     r"""
+    2D representation of cubes and cuboids suitable for 2D simulations
 
 
     Parameters

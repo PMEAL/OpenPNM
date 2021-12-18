@@ -9,7 +9,9 @@ docstr = Docorator()
 @docstr.dedent
 class ConesAndCylinders(GenericGeometry):
     r"""
-
+    Pores are treated as cones and throats as cylinders for transport
+    conductance. Pores are treated as spheres for all other properties such
+    as volume and surface area.
 
     Parameters
     ----------
