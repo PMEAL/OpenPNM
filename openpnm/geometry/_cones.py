@@ -21,5 +21,5 @@ class ConesAndCylinders(GenericGeometry):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.models.updates(cones_and_cylinders)
+        self.models.update(cones_and_cylinders)
         self.regenerate_models()

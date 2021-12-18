@@ -22,18 +22,18 @@ class ModelsTest:
                                               throats=net.Ts)
 
         s = geo.models.__str__().split('\n')
-        assert len(s) == 61
-        assert s.count('―'*85) == 14
+        assert len(s) == 55
+        assert s.count('―'*85) == 13
 
     def test_regenerate_models(self):
         a = len(self.geo.props())
-        assert a == 16
+        assert a == 15
         self.geo.clear(mode='props')
         a = len(self.geo.props())
         assert a == 0
         self.geo.regenerate_models()
         a = len(self.geo.props())
-        assert a == 16
+        assert a == 15
 
     def test_dependency_graph(self):
         constant = op.models.misc.constant
@@ -147,20 +147,21 @@ class ModelsTest:
         geo = op.geometry.SpheresAndCylinders(network=pn, pores=pn.Ps, throats=pn.Ts)
         phase = op.phase.Water(network=pn)
         phys = op.physics.Standard(network=pn, phase=phase, geometry=geo)
-        len_phase = 23
+        len_phase = len(phase)
+        len_phys = len(phys)
         phase.clear(mode='model_data')
         phys.clear()
         ws = op.Workspace()
         loglevel = ws.settings["loglevel"]
         ws.settings["loglevel"] = 50
         assert len(phys) == 2
-        assert len(phase) == 13
+        assert len(phase) == 6
         phys.regenerate_models(propnames=None, deep=False)
-        assert len(phys) == 8
+        assert len(phys) == 7
         # Note that 2 new models were added to the phase during interpolation
         assert len(phase) < len_phase
         phase.clear(mode='model_data')
-        assert len(phase) == 13
+        assert len(phase) == 6
         phys.regenerate_models(propnames=None, deep=True)
         assert len(phase) < len_phase
         ws.settings["loglevel"] = loglevel
@@ -182,16 +183,21 @@ class ModelsTest:
 
     def test_regen_mode_default_value(self):
         pn = op.network.Cubic(shape=[3, 3, 3], spacing=1e-4)
-        geo = op.geometry.SpheresAndCylinders(network=pn, pores=pn.Ps, throats=pn.Ts,
-                                              settings={'regen_mode': 'deferred'})
+        geo = op.geometry.SpheresAndCylinders(network=pn,
+                                              pores=pn.Ps,
+                                              throats=pn.Ts,)
+        assert len(geo.props()) == 15
+        geo.clear()
         assert len(geo.props()) == 0
         geo.regenerate_models()
-        assert len(geo.props()) == 16
+        assert len(geo.props()) == 15
 
     def test_automatic_running_on_models_when_missing_data(self):
         pn = op.network.Cubic(shape=[3, 3, 3], spacing=1e-4)
-        geo = op.geometry.SpheresAndCylinders(network=pn, pores=pn.Ps, throats=pn.Ts,
-                                        settings={'regen_mode': 'deferred'})
+        geo = op.geometry.SpheresAndCylinders(network=pn,
+                                              pores=pn.Ps,
+                                              throats=pn.Ts,)
+        geo.clear()
         assert len(geo) == 2
         _ = geo['pore.seed']
         assert len(geo) == 3
