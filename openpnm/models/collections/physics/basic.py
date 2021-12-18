@@ -1,4 +1,4 @@
-import openpnm.models as mods
+import openpnm.models.physics as mods
 
 basic = {
     'throat.hydraulic_conductance': {

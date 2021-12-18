@@ -1,5 +1,5 @@
 from openpnm.models.collections.phase import water
-from openpnm.phases import GenericPhase
+from openpnm.phase import GenericPhase
 from openpnm.utils import Docorator
 
 

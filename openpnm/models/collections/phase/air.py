@@ -44,11 +44,11 @@ air = {
         'regen_mode': 'deferred',
         },
     'pore.molar_density': {
-        'model': mods.phases.molar_density.ideal_gas,
+        'model': mods.phase.molar_density.ideal_gas,
         'regen_mode': 'deferred',
         },
     'pore.diffusivity': {
-        'model': mods.phases.diffusivity.fuller,
+        'model': mods.phase.diffusivity.fuller,
         'MA': 0.032,
         'MB': 0.028,
         'vA': 16.6,

@@ -1,5 +1,5 @@
 from openpnm.models.collections.phase import mercury
-from openpnm.phases import GenericPhase
+from openpnm.phase import GenericPhase
 import openpnm.models as mods
 
 

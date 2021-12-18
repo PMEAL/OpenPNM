@@ -2,11 +2,19 @@ import openpnm.models as mods
 
 mercury = {
     'pore.vapor_pressure': {
-        'model': mods.phases.vapor_pressure.antoine,
+        'model': mods.phase.vapor_pressure.antoine,
         'A': 9.85767,
         'B': 3007.129,
         'C': -10.001,
         'regen_mode': 'deferred',
+        },
+    'throat.contact_angle': {
+        'model': mods.misc.constant,
+        'value': 140,
+        },
+    'pore.molecular_weight': {
+        'model': mods.misc.constant,
+        'value': 200.59,
         },
     'pore.density': {
         'model': mods.misc.linear,
@@ -16,7 +24,7 @@ mercury = {
         'regen_mode': 'deferred',
         },
     'pore.molar_density': {
-        'model': mods.phases.molar_density.standard,
+        'model': mods.phase.molar_density.standard,
         'regen_mode': 'deferred',
         },
     'pore.surface_tension': {
