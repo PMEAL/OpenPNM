@@ -23,6 +23,11 @@ class ModelsDict(PrintableDict):
 
     """
 
+    def update(self, models):
+        target = self._find_parent()
+        for item in models.keys():
+            target.add_model(propname=item, **models[item])
+
     def _find_parent(self):
         r"""
         Finds and returns the parent object to self.
