@@ -22,7 +22,7 @@ class ModelsTest:
                                               throats=net.Ts)
 
         s = geo.models.__str__().split('\n')
-        assert len(s) == 55
+        assert len(s) == 57
         assert s.count('―'*85) == 13
 
     def test_regenerate_models(self):
@@ -157,7 +157,7 @@ class ModelsTest:
         assert len(phys) == 2
         assert len(phase) == 6
         phys.regenerate_models(propnames=None, deep=False)
-        assert len(phys) == 7
+        assert len(phys) == 8
         # Note that 2 new models were added to the phase during interpolation
         assert len(phase) < len_phase
         phase.clear(mode='model_data')
