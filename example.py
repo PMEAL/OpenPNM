@@ -2,7 +2,7 @@ import numpy as np
 import openpnm as op
 from openpnm.models.physics import source_terms
 
-# %% Initialization: create Workspace and project objects.
+# %% Initialization: Create Workspace and project objects.
 ws = op.Workspace()
 ws.settings.loglevel = 50
 np.random.seed(9)
