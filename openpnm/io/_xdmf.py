@@ -127,7 +127,8 @@ class XDMF(GenericIO):
                     ):
                         attr_type = 'Scalar'
                         shape = D[item].shape
-                        dims = (''.join([str(i) + ' ' for i in list(shape)[::-1]]))
+                        #dims = (''.join([str(i) + ' ' for i in list(shape)[::-1]]))
+                        dims = (' '.join([str(i) for i in shape]))
                         if '@' in item:
                             item = item.split('@')[0]+'@t'
                             hdf_loc = fname_hdf + ":" + item
