@@ -1,21 +1,26 @@
 import numpy as np
-from openpnm.utils import logging, SettingsAttr
+from openpnm.utils import logging, SettingsAttr, Docorator
 from openpnm.integrators import ScipyRK45
-from openpnm.algorithms import TransientReactiveTransport
 from openpnm.algorithms import GenericAlgorithm
 logger = logging.getLogger(__name__)
+docstr = Docorator()
 
-class TransientMultiphysicsSettings:
+
+@docstr.dedent
+class TransientMultiPhysicsSettings:
     r"""
 
     Parameters
     ----------
-    ...
+    %(GenericAlgorithmSettings.parameters)s
+    algorithms: list
+        List of transient algorithm objects to be solved in a coupled manner
 
     """
     algorithms = []
 
-class TransientMultiphysics(GenericAlgorithm):
+@docstr.dedent
+class TransientMultiPhysics(GenericAlgorithm):
     r"""
     
     A class for transient multiphysics simulations
@@ -23,16 +28,18 @@ class TransientMultiphysics(GenericAlgorithm):
     """
     
     def __init__(self, algorithms, settings=None, **kwargs):
-        self.algorithms = algorithms # temporarily until I get settings to work
-        self.settings = SettingsAttr(TransientMultiphysicsSettings, settings)
-        
+        self.settings = SettingsAttr(TransientMultiPhysicsSettings, settings)
+        self.settings.algorithms = [alg.name for alg in algorithms]
+        self._algs = algorithms
+        super().__init__(settings=self.settings, **kwargs)
+         
     def run(self, x0, tspan, saveat=None, integrator=None):
         """
         Runs all of the transient algorithms simultaneoulsy and returns the 
         solution.
 
-        Parameters
-        ----------
+        Parameters steal from transient reactive transport
+        ---------- 
         x0 : ndarray or float
             Array (or scalar) containing initial condition values.
         tspan : array_like
@@ -61,13 +68,13 @@ class TransientMultiphysics(GenericAlgorithm):
             saveat = np.hstack((saveat, [tspan[1]]))
         integrator = ScipyRK45() if integrator is None else integrator
         # for each algorithm
-        algs = self.algorithms
+        algs = self._algs
         for i, alg in enumerate(algs):            
             # Perform pre-solve validations
             alg._validate_settings()
             alg._validate_data_health()
             # Write x0 to algorithm the obj (needed by _update_iterative_props)
-            x0_i = self._get_x0(x0, i) # write helper method _get_x0
+            x0_i = self._get_x0(x0, i)
             alg['pore.ic'] = x0_i = np.ones(alg.Np, dtype=float) * x0_i
             alg._merge_inital_and_boundary_values()
         # Build RHS (dx/dt = RHS), then integrate the system of ODEs
@@ -91,7 +98,6 @@ class TransientMultiphysics(GenericAlgorithm):
                 x = self._get_x0(y, i) # again use helper function
                 # store x onto algorithm,
                 alg.x = x
-                # alg[alg.settings["quantity"]] = x
                 # build A and b
                 alg._update_A_and_b()
                 A = alg.A.tocsc()
