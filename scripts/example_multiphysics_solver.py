@@ -204,7 +204,7 @@ y0 = np.hstack((T0, c0)) # ICs must include boundary condition
 tspan = [0, t_final]
 rtol = 1e-5
 # sol = sp.integrate.solve_ivp(fun=rhs, t_span=tspan, y0=y0, method="RK45", t_eval=t, rtol=rtol)
-tmp = op.algorithms.TransientMultiPhysics(algorithms=[tfc, tfd], network=net)
+tmp = op.contrib.TransientMultiPhysics(algorithms=[tfc, tfd], network=net)
 sol = tmp.run(y0, tspan, saveat=t)
 
 # plot
