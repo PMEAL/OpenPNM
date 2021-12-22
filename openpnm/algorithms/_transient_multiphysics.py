@@ -106,6 +106,10 @@ class TransientMultiphysics(GenericAlgorithm):
         return ode_func
     
     def _get_x0(self, x0, i):
-        Np = self.algorithms[0].Np # fix when we change settings
-        x0 = x0[i*Np:(i+1)*Np] 
+        algs = self._algs
+        tmp = [alg.Np for alg in algs]
+        idx_end = np.cumsum(tmp)
+        idx_start = np.hstack((0, idx_end[:-1]))
+        x0 = x0[idx_start[i]:idx_end[i]]
         return x0
+    
