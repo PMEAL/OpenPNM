@@ -1,10 +1,10 @@
-from openpnm.phases import mixtures
+from openpnm.phase import mixtures
 import openpnm.models as mods
 
 
-class Cl(mixtures.GenericSpecies):
+class O2(mixtures.GenericSpecies):
     r"""
-    Creates Phase object with preset models and values for Cl ions
+    Creates Phase object with preset models and values for O2 gas
 
     Parameters
     ----------
@@ -18,16 +18,15 @@ class Cl(mixtures.GenericSpecies):
     Examples
     --------
     >>> import openpnm as op
-    >>> import openpnm.phases.mixtures as mixtures
+    >>> import openpnm.phase.mixtures as mixtures
     >>> pn = op.network.Cubic(shape=[5, 5, 5])
-    >>> Cl = mixtures.species.ions.Cl(network=pn)
+    >>> O2 = mixtures.species.gases.O2(network=pn)
 
     """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.pop('pore.temperature', None)
+        self.pop('pore.pressure', None)
 
-        self['pore.molecular_weight'] = 0.03545  # kg/mol
-        self['pore.diffusivity'] = 2.03e-09  # m2/s
-        self['throat.diffusivity'] = 2.03e-09  # m2/s
-        self['pore.valence'] = -1
-        self['throat.valence'] = -1
+        self['pore.molecular_weight'] = 0.032  # kg/mol
+        self['pore.molar_diffusion_volume'] = 16.6  # ??

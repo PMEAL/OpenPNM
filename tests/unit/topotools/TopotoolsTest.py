@@ -340,7 +340,7 @@ class TopotoolsTest:
 
     def test_extend_phase_present(self):
         pn = op.network.Cubic(shape=[2, 2, 1])
-        air = op.phases.Air(network=pn)
+        air = op.phase.Air(network=pn)
         air['pore.test_float'] = 1.0
         air['pore.test_int'] = 1
         air['pore.test_bool'] = True
@@ -453,7 +453,7 @@ class TopotoolsTest:
         Ts = pn.find_neighbor_throats(5)
         op.topotools.trim(network=pn, throats=Ts)
         assert op.topotools.is_fully_connected(pn) is False
-        phase = op.phases.GenericPhase(network=pn)
+        phase = op.phase.GenericPhase(network=pn)
         phase['throat.diffusive_conductance'] = 1.0
         alg = op.algorithms.FickianDiffusion(network=pn, phase=phase)
         alg.set_value_BC(pores=[0, 1, 2, 3], values=1.0)
@@ -585,6 +585,21 @@ class TopotoolsTest:
         net.add_boundary_pores()
         with pytest.raises(Exception):
             _ = op.topotools.get_spacing(net)
+
+    def test_find_interface_throats(self):
+        net = op.network.Cubic([5, 1, 1])
+        with pytest.raises(Exception):
+            op.topotools.find_interface_throats(net, [1, 2, 3], [3, 4, 5])
+        # Test pores that do have an interface
+        Ts_int = op.topotools.find_interface_throats(net, 0, 1)
+        assert_allclose(Ts_int, np.array([0]))
+        # Test pores without an interface
+        Ts_int = op.topotools.find_interface_throats(net, 2, 4)
+        assert_allclose(Ts_int, np.array([]))
+        # Test calling the function with labels
+        net["pore.internal"] = ~net["pore.surface"]
+        Ts_int = op.topotools.find_interface_throats(net, "internal", "surface")
+        assert_allclose(Ts_int, np.array([0, 3]))
 
 
 if __name__ == '__main__':

@@ -30,7 +30,7 @@ model based on a simple 2nd order polynomial:
 >>> import openpnm as op
 >>> import numpy as np
 >>> pn = op.network.Cubic([5, 5, 5])
->>> oil = op.phases.GenericPhase(network=pn)
+>>> oil = op.phase.GenericPhase(network=pn)
 
 Now add the pore-scale model for viscosity from the ``models`` module:
 

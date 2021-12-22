@@ -1,10 +1,10 @@
-from openpnm.phases import GenericPhase
+from openpnm.phase import mixtures
 import openpnm.models as mods
 
 
-class CO2(GenericPhase):
+class H2(mixtures.GenericSpecies):
     r"""
-    Creates Phase object with preset models and values for CO2 gas
+    Creates Phase object with preset models and values for Na ions
 
     Parameters
     ----------
@@ -18,13 +18,13 @@ class CO2(GenericPhase):
     Examples
     --------
     >>> import openpnm as op
-    >>> import openpnm.phases.mixtures as mixtures
+    >>> import openpnm.phase.mixtures as mixtures
     >>> pn = op.network.Cubic(shape=[5, 5, 5])
-    >>> CO2 = mixtures.species.gases.CO2(network=pn)
+    >>> H2 = mixtures.species.gases.H2(network=pn)
 
     """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        self['pore.molecular_weight'] = 0.04401  # kg/mol
+        self['pore.molecular_weight'] = 0.002016  # kg/mol
         self['pore.molar_diffusion_volume'] = 17.9  # Wrong

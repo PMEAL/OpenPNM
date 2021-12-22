@@ -1,10 +1,10 @@
-from openpnm.phases import mixtures
+from openpnm.phase import mixtures
 import openpnm.models as mods
 
 
-class N2(mixtures.GenericSpecies):
+class H2O(mixtures.GenericSpecies):
     r"""
-    Creates Phase object with preset models and values for N2 gas
+    Creates Phase object with preset models and values for H2O ions
 
     Parameters
     ----------
@@ -18,15 +18,13 @@ class N2(mixtures.GenericSpecies):
     Examples
     --------
     >>> import openpnm as op
-    >>> import openpnm.phases.mixtures as mixtures
+    >>> import openpnm.phase.mixtures as mixtures
     >>> pn = op.network.Cubic(shape=[5, 5, 5])
-    >>> N2 = mixtures.species.gases.N2(network=pn)
+    >>> H2O = mixtures.species.liquids.H2O(network=pn)
 
     """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.pop('pore.temperature', None)
-        self.pop('pore.pressure', None)
 
-        self['pore.molecular_weight'] = 0.0280  # kg/mol
-        self['pore.molar_diffusion_volume'] = 17.9  # ??
+        self['pore.molecular_weight'] = 0.0291
+        self['pore.molar_diffusion_volume'] = 17.9  # Wrong

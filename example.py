@@ -2,7 +2,7 @@ import numpy as np
 import openpnm as op
 from openpnm.models.physics import source_terms
 
-# %% Initialization: create Workspace and project objects.
+# %% Initialization: Create Workspace and project objects.
 ws = op.Workspace()
 ws.settings.loglevel = 50
 np.random.seed(9)
@@ -10,9 +10,9 @@ np.random.seed(9)
 # %% Create network, geometry, phase, and physics objects
 pn = op.network.Cubic(shape=[10, 10, 10], spacing=1e-4)
 geo = op.geometry.SpheresAndCylinders(network=pn, pores=pn.Ps, throats=pn.Ts)
-air = op.phases.Air(network=pn, name='air')
-water = op.phases.Water(network=pn, name='h2o')
-hg = op.phases.Mercury(network=pn, name='hg')
+air = op.phase.Air(network=pn, name='air')
+water = op.phase.Water(network=pn, name='h2o')
+hg = op.phase.Mercury(network=pn, name='hg')
 phys_air = op.physics.Standard(network=pn, phase=air, geometry=geo)
 phys_water = op.physics.Standard(network=pn, phase=water, geometry=geo)
 phys_hg = op.physics.Standard(network=pn, phase=hg, geometry=geo)

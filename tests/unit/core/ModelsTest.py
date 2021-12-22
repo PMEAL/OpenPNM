@@ -37,7 +37,7 @@ class ModelsTest:
 
     def test_dependency_graph(self):
         constant = op.models.misc.constant
-        phase = op.phases.GenericPhase(network=self.net)
+        phase = op.phase.GenericPhase(network=self.net)
         phase.add_model(propname="pore.foo", model=constant, value=1.0)
         phys = op.physics.GenericPhysics(network=self.net,
                                          phase=phase,
@@ -132,7 +132,7 @@ class ModelsTest:
     def test_regenerate_models_on_phase_with_deep(self):
         pn = op.network.Cubic(shape=[5, 5, 5])
         geo = op.geometry.SpheresAndCylinders(network=pn, pores=pn.Ps, throats=pn.Ts)
-        phase = op.phases.Water(network=pn)
+        phase = op.phase.Water(network=pn)
         phys = op.physics.Standard(network=pn, phase=phase, geometry=geo)
         phase.clear(mode='model_data')
         phys.clear()
@@ -145,7 +145,7 @@ class ModelsTest:
     def test_regenerate_models_on_physics_with_deep(self):
         pn = op.network.Cubic(shape=[5, 5, 5])
         geo = op.geometry.SpheresAndCylinders(network=pn, pores=pn.Ps, throats=pn.Ts)
-        phase = op.phases.Water(network=pn)
+        phase = op.phase.Water(network=pn)
         phys = op.physics.Standard(network=pn, phase=phase, geometry=geo)
         len_phase = 23
         phase.clear(mode='model_data')

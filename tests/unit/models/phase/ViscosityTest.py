@@ -6,7 +6,7 @@ from numpy.testing import assert_approx_equal
 class ViscosityTest:
     def setup_class(self):
         self.net = op.network.Cubic(shape=[3, 3, 3])
-        self.phase = op.phases.GenericPhase(network=self.net)
+        self.phase = op.phase.GenericPhase(network=self.net)
         self.phase['pore.temperature'] = 298.0  # K
         self.phase['pore.molecular_weight'] = 0.018  # kg/mol
         self.phase['pore.critical_temperature'] = 647.15  # K
@@ -15,14 +15,14 @@ class ViscosityTest:
 
     def test_water(self):
         self.phase.add_model(propname='pore.viscosity',
-                             model=op.models.phases.viscosity.water)
+                             model=op.models.phase.viscosity.water)
         self.phase.regenerate_models()
         assert_approx_equal(self.phase['pore.viscosity'].mean(),
                             0.0008931909)
 
     def test_reynolds(self):
         self.phase.add_model(propname='pore.viscosity',
-                             model=op.models.phases.viscosity.reynolds,
+                             model=op.models.phase.viscosity.reynolds,
                              u0=0.001,
                              b=0.001)
         self.phase.regenerate_models()
@@ -31,7 +31,7 @@ class ViscosityTest:
 
     def test_chung(self):
         self.phase.add_model(propname='pore.viscosity',
-                             model=op.models.phases.viscosity.chung)
+                             model=op.models.phase.viscosity.chung)
         self.phase.regenerate_models()
         assert_approx_equal(self.phase['pore.viscosity'].mean(),
                             6.47289919e-05)

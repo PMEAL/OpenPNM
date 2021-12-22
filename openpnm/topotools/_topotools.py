@@ -1890,6 +1890,39 @@ def filter_pores_by_z(network, pores, z=1):
     hits = pores[orphans]
     return hits
 
+
+def find_interface_throats(network, P1, P2):
+    """
+    Finds all throats between two sets pores with the given labels.
+
+    Parameters
+    ----------
+    network : GenericNetwork
+        The network on which the query is to be performed
+    P1 : array_like str
+        The (label of) first set of pores
+    P2 : array_like or str
+        The (label of) second set of pores
+
+    Returns
+    -------
+    ndarray
+        List of interface throats between the two given sets of pores
+
+    Notes
+    -----
+    This method requires that the two labels do not share any pores.
+
+    """
+    P1 = network.pores(P1) if isinstance(P1, str) else P1
+    P2 = network.pores(P2) if isinstance(P2, str) else P2
+    if np.intersect1d(P1, P2).size != 0:
+        raise Exception("P1 and P2 must not share any pores.")
+    Ts1 = network.find_neighbor_throats(pores=P1, mode="xor")
+    Ts2 = network.find_neighbor_throats(pores=P2, mode="xor")
+    return np.intersect1d(Ts1, Ts2)
+
+
 end_all()
 
 

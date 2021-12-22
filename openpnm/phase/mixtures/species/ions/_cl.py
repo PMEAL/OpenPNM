@@ -1,10 +1,10 @@
-from openpnm.phases import mixtures
+from openpnm.phase import mixtures
 import openpnm.models as mods
 
 
-class Proton(mixtures.GenericSpecies):
+class Cl(mixtures.GenericSpecies):
     r"""
-    Creates Phase object with preset models and values for H^+ ions
+    Creates Phase object with preset models and values for Cl ions
 
     Parameters
     ----------
@@ -18,13 +18,16 @@ class Proton(mixtures.GenericSpecies):
     Examples
     --------
     >>> import openpnm as op
-    >>> import openpnm.phases.mixtures as mixtures
+    >>> import openpnm.phase.mixtures as mixtures
     >>> pn = op.network.Cubic(shape=[5, 5, 5])
-    >>> H = mixtures.species.ions.Proton(network=pn)
+    >>> Cl = mixtures.species.ions.Cl(network=pn)
 
     """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        self['pore.molecular_weight'] = 0.0291
-        self['pore.diffusivity'] = 0.1
+        self['pore.molecular_weight'] = 0.03545  # kg/mol
+        self['pore.diffusivity'] = 2.03e-09  # m2/s
+        self['throat.diffusivity'] = 2.03e-09  # m2/s
+        self['pore.valence'] = -1
+        self['throat.valence'] = -1

@@ -1,4 +1,4 @@
-from openpnm.phases.mixtures import GenericMixture, species
+from openpnm.phase.mixtures import GenericMixture, species
 from openpnm import models as mods
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)
@@ -24,13 +24,13 @@ class SalineWater(GenericMixture):
                        props=['pore.concentration.Na_'+self.name,
                               'pore.concentration.Cl_'+self.name])
         self.add_model(propname='pore.salinity',
-                       model=mods.phases.mixtures.salinity,
+                       model=mods.phase.mixtures.salinity,
                        concentration='pore.concentration.Na_'+self.name)
         self.add_model(propname='pore.mass_density',
-                       model=mods.phases.density.water,
+                       model=mods.phase.density.water,
                        salinity='pore.salinity')
         self.add_model(propname='pore.viscosity',
-                       model=mods.phases.viscosity.water,
+                       model=mods.phase.viscosity.water,
                        salinity='pore.salinity')
         self.add_model(propname='pore.permittivity',
-                       model=mods.phases.permittivity.water)
+                       model=mods.phase.permittivity.water)

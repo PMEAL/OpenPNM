@@ -1,4 +1,4 @@
-from openpnm.phases import GenericPhase
+from openpnm.phase import GenericPhase
 import openpnm.models as mods
 from openpnm.utils import Docorator
 
@@ -28,16 +28,16 @@ class Water(GenericPhase):
         self['pore.diffusivity'] = 1e-9
 
         self.add_model(propname='pore.density',
-                       model=mods.phases.density.water)
+                       model=mods.phase.density.water)
         self.add_model(propname='pore.molar_density',
-                       model=mods.phases.molar_density.standard)
+                       model=mods.phase.molar_density.standard)
         self.add_model(propname='pore.surface_tension',
-                       model=mods.phases.surface_tension.water)
+                       model=mods.phase.surface_tension.water)
         self.add_model(propname='pore.thermal_conductivity',
-                       model=mods.phases.thermal_conductivity.water)
+                       model=mods.phase.thermal_conductivity.water)
         self.add_model(propname='pore.vapor_pressure',
-                       model=mods.phases.vapor_pressure.antoine,
+                       model=mods.phase.vapor_pressure.antoine,
                        A=8.088, B=1750.71, C=236.191)
         self.add_model(propname='pore.viscosity',
-                       model=mods.phases.viscosity.water)
+                       model=mods.phase.viscosity.water)
         self.regenerate_models()
