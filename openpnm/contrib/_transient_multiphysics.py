@@ -19,27 +19,28 @@ class TransientMultiPhysicsSettings:
     """
     algorithms = []
 
+
 @docstr.dedent
 class TransientMultiPhysics(GenericAlgorithm):
     r"""
-    
+
     A class for transient multiphysics simulations
-    
+
     """
-    
+
     def __init__(self, algorithms, settings=None, **kwargs):
         self.settings = SettingsAttr(TransientMultiPhysicsSettings, settings)
         self.settings.algorithms = [alg.name for alg in algorithms]
         self._algs = algorithms
         super().__init__(settings=self.settings, **kwargs)
-         
+
     def run(self, x0, tspan, saveat=None, integrator=None):
         """
-        Runs all of the transient algorithms simultaneoulsy and returns the 
+        Runs all of the transient algorithms simultaneoulsy and returns the
         solution.
 
         Parameters steal from transient reactive transport
-        ---------- 
+        ----------
         x0 : ndarray or float
             Array (or scalar) containing initial condition values.
         tspan : array_like
@@ -69,7 +70,7 @@ class TransientMultiPhysics(GenericAlgorithm):
         integrator = ScipyRK45() if integrator is None else integrator
         # for each algorithm
         algs = self._algs
-        for i, alg in enumerate(algs):            
+        for i, alg in enumerate(algs):
             # Perform pre-solve validations
             alg._validate_settings()
             alg._validate_data_health()
@@ -83,7 +84,7 @@ class TransientMultiPhysics(GenericAlgorithm):
         self.soln = integrator.solve(rhs, x0, tspan, saveat)
         # add solution to each algorithm
         for i, alg in enumerate(algs):
-            alg.soln = self.soln[i*alg.Np:(i+1)*alg.Np,:]
+            alg.soln = self.soln[i*alg.Np:(i+1)*alg.Np, :]
         return self.soln
 
     def _run_special(self, x0): ...
@@ -95,7 +96,7 @@ class TransientMultiPhysics(GenericAlgorithm):
             rhs = []
             for i, alg in enumerate(algs):
                 # get x from y, assume alg.Np is same for all algs
-                x = self._get_x0(y, i) # again use helper function
+                x = self._get_x0(y, i)  # again use helper function
                 # store x onto algorithm,
                 alg.x = x
                 # build A and b
@@ -106,11 +107,11 @@ class TransientMultiPhysics(GenericAlgorithm):
                 V = alg.network[alg.settings["pore_volume"]]
                 # calcualte rhs
                 rhs_alg = np.hstack(-A.dot(x) + b)/V
-                rhs = np.hstack((rhs, rhs_alg))    
+                rhs = np.hstack((rhs, rhs_alg))
             return rhs
 
         return ode_func
-    
+
     def _get_x0(self, x0, i):
         algs = self._algs
         tmp = [alg.Np for alg in algs]
@@ -118,4 +119,3 @@ class TransientMultiPhysics(GenericAlgorithm):
         idx_start = np.hstack((0, idx_end[:-1]))
         x0 = x0[idx_start[i]:idx_end[i]]
         return x0
-    
