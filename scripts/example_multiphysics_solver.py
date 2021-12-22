@@ -62,7 +62,7 @@ geo.add_model(propname='throat.diffusive_size_factors',
 # D_eff = Diff.run()
 # print(f"Effective diffusivity in x direction is: {D_eff}")
 
-air = op.phases.Air(network=net)
+air = op.phase.Air(network=net)
 phys = op.physics.GenericPhysics(network=net, phase=air, geometry=geo)
 
 # make diffusivity a function of temperature - ALREADY IS!!
