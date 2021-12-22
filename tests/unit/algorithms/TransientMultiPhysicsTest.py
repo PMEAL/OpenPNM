@@ -39,7 +39,7 @@ class TransientMultiPhysicsTest:
                            pore_diameter="pore.diameter",
                            throat_diameter="throat.diameter")
         # phase and physics
-        self.air = op.phases.Air(network=self.net)
+        self.air = op.phase.Air(network=self.net)
         self.phys = op.physics.GenericPhysics(network=self.net, 
                                               phase=self.air, 
                                               geometry=self.geo)
