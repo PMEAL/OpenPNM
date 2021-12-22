@@ -132,6 +132,10 @@ t_step = 5
 n_steps = int((t_final - t_initial)/t_step) + 1
 t = np.linspace(t_initial, t_final, n_steps)
 
+# add variable props to algs
+tfd.set_variable_props('pore.temperature')
+tfc.set_variable_props('pore.concentration')
+
 # %% For Loop Solution
 # solve multiphysics system assuming temperature change is small over t_step
 not_BC_pores = net.pores("left", mode='nor')  
@@ -160,9 +164,6 @@ T_1 = sol_1[:, -1]
 C_1 = sol_2[:, -1]
 
 # %% Build RHS manually
-# add variable props to algs
-tfd.set_variable_props('pore.temperature')
-tfc.set_variable_props('pore.concentration')
 
 def _build_rhs(algs):
     
