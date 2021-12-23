@@ -406,7 +406,7 @@ def plot_networkx(network,
 
     # Plot pores
     gplot = draw_networkx_nodes(G, ax=ax, pos=pos, nodelist=network.Ps.tolist(),
-                                alpha=alpha, node_color="w", edgecolors=node_color,
+                                alpha=alpha, node_color=node_color, edgecolors=node_color,
                                 node_size=node_size)
     # (Optionally) Plot throats
     if plot_throats:
