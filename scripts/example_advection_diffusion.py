@@ -7,7 +7,7 @@ equations.
 Computers & Geosciences, 104505.
 """
 import openpnm as op
-from openpnm.phases import mixtures
+from openpnm.phase import mixtures
 import numpy as np
 ws = op.Workspace()
 proj = ws.new_project()
@@ -80,8 +80,7 @@ phys.add_model(propname='throat.ad_dif_mig_conductance.' + Cl.name,
 
 # Settings for algorithms
 setts1 = {'solver_family': 'scipy', 'solver_max_iter': 5, 'solver_tol': 1e-08,
-          'solver_rtol': 1e-08, 'nlin_max_iter': 10, 'cache_A': False,
-          'cache_b': False}
+          'solver_rtol': 1e-08, 'nlin_max_iter': 10, 'cache': False}
 setts2 = {'g_tol': 1e-4, 'g_max_iter': 100}
 
 # Algorithms

@@ -94,8 +94,8 @@ class TransientReactiveTransport(ReactiveTransport):
 
         def ode_func(t, y):
             # TODO: add a cache mechanism
-            self[self.settings["quantity"]] = y
-            TransientReactiveTransport._update_A_and_b(self)
+            self.x = y
+            self._update_A_and_b()
             A = self.A.tocsc()
             b = self.b
             V = self.network[self.settings["pore_volume"]]

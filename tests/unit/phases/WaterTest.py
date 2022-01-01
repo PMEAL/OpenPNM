@@ -5,7 +5,7 @@ import numpy.testing as nptest
 class WaterTest:
     def setup_class(self):
         self.net = op.network.Cubic(shape=[5, 5, 5])
-        self.water = op.phases.Water(network=self.net)
+        self.water = op.phase.Water(network=self.net)
 
     def test_change_temperature(self):
         assert self.water['pore.temperature'][0] == 298.0

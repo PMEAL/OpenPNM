@@ -1,6 +1,6 @@
 import numpy as np
 import openpnm as op
-from openpnm.phases import mixtures
+from openpnm.phase import mixtures
 
 
 class MixtureTest:

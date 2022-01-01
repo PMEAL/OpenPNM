@@ -8,7 +8,7 @@ shape = np.array([10, 10, 10])
 spacing = 1.0
 net = op.network.Cubic(shape=[10, 10, 10], spacing=spacing)
 geom = op.geometry.SpheresAndCylinders(network=net, pores=net.Ps, throats=net.Ts)
-air = op.phases.Air(network=net)
+air = op.phase.Air(network=net)
 phys = op.physics.Standard(network=net, geometry=geom, phase=air)
 odiff = op.models.physics.diffusive_conductance.ordinary_diffusion
 phys.add_model(propname="throat.diffusive_conductance", model=odiff)
@@ -32,7 +32,7 @@ for spacing in spacings:
     np.random.seed(10)
     net = op.network.Cubic(shape=[10, 10, 10], spacing=spacing)
     geom = op.geometry.SpheresAndCylinders(network=net, pores=net.Ps, throats=net.Ts)
-    air = op.phases.Air(network=net)
+    air = op.phase.Air(network=net)
     phys = op.physics.Standard(network=net, geometry=geom, phase=air)
     phys.add_model(propname="throat.diffusive_conductance", model=mdiff)
     fd = op.algorithms.FickianDiffusion(network=net, phase=air)

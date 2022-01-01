@@ -11,7 +11,7 @@ class ReactiveTransportTest:
         self.net = op.network.Cubic(shape=[4, 4, 4])
         self.geo = op.geometry.GenericGeometry(
             network=self.net, pores=self.net.Ps, throats=self.net.Ts)
-        self.phase = op.phases.GenericPhase(network=self.net)
+        self.phase = op.phase.GenericPhase(network=self.net)
         self.phys = op.physics.GenericPhysics(
             network=self.net, phase=self.phase, geometry=self.geo)
         self.phys['throat.diffusive_conductance'] = 1e-15
@@ -169,7 +169,7 @@ class ReactiveTransportTest:
         self.alg.settings._update({'relaxation_quantity': 20.0,
                                    'newton_maxiter': 25})
         self.alg.run()
-        assert not self.alg.is_converged
+        assert not self.alg.soln.is_converged
 
     # FIXME: we no longer want to throw exception when maxiter is reached
     def test_check_divergence_if_maxiter_reached(self):

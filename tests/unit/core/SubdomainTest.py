@@ -53,7 +53,7 @@ class SubdomainTest:
         net = op.network.Cubic(shape=[3, 3, 3])
         geo = op.geometry.GenericGeometry(network=net, pores=net.Ps,
                                           throats=net.Ts)
-        phase = op.phases.GenericPhase(network=net)
+        phase = op.phase.GenericPhase(network=net)
         phys = op.physics.GenericPhysics(network=net, phase=phase,
                                           geometry=geo)
         geo.set_locations(pores=[0], mode='drop')
@@ -70,7 +70,7 @@ class SubdomainTest:
         pn = op.network.Cubic([6, 1, 1])
         g1 = op.geometry.GenericGeometry(network=pn, pores=[0, 1, 2])
         g2 = op.geometry.GenericGeometry(network=pn, pores=[3, 4, 5])
-        air = op.phases.Air(network=pn)
+        air = op.phase.Air(network=pn)
         phys1 = op.physics.GenericPhysics(network=pn)
         phys2 = op.physics.GenericPhysics(network=pn)
         with pytest.raises(Exception):

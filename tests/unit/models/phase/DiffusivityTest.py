@@ -5,13 +5,13 @@ from numpy.testing import assert_approx_equal
 class DiffusivityTest:
     def setup_class(self):
         self.net = op.network.Cubic(shape=[3, 3, 3])
-        self.phase = op.phases.GenericPhase(network=self.net)
+        self.phase = op.phase.GenericPhase(network=self.net)
         self.phase['pore.temperature'] = 298.0  # K
         self.phase['pore.pressure'] = 101325  # Pa
         self.phase['pore.viscosity'] = 1.75e-5  # Pa.s
 
     def test_fuller(self):
-        f = op.models.phases.diffusivity.fuller
+        f = op.models.phase.diffusivity.fuller
         self.phase.add_model(propname='pore.diffusivity',
                              model=f,
                              MA=0.032,
@@ -22,7 +22,7 @@ class DiffusivityTest:
         assert_approx_equal(self.phase['pore.diffusivity'].mean(), 2.06754784e-05)
 
     def test_fuller_scaling(self):
-        f = op.models.phases.diffusivity.fuller_scaling
+        f = op.models.phase.diffusivity.fuller_scaling
         self.phase.add_model(propname='pore.diffusivity',
                              model=f,
                              DABo=1.79712526e-05,
@@ -32,7 +32,7 @@ class DiffusivityTest:
         assert_approx_equal(self.phase['pore.diffusivity'].mean(), 2.06754784e-05)
 
     def test_tyn_calus(self):
-        f = op.models.phases.diffusivity.tyn_calus
+        f = op.models.phase.diffusivity.tyn_calus
         self.phase.add_model(propname='pore.diffusivity',
                              model=f,
                              VA=16.5,
@@ -43,7 +43,7 @@ class DiffusivityTest:
         assert_approx_equal(self.phase['pore.diffusivity'].mean(), 9.84851806e-05)
 
     def test_tyn_calus_scaling(self):
-        f = op.models.phases.diffusivity.tyn_calus_scaling
+        f = op.models.phase.diffusivity.tyn_calus_scaling
         self.phase.add_model(propname='pore.diffusivity',
                              model=f,
                              DABo=5.26300839e-05,

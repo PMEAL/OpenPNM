@@ -62,7 +62,7 @@ class UtilsTest:
         geom = op.geometry.SpheresAndCylinders(network=net,
                                                pores=net.Ps,
                                                throats=net.Ts)
-        air = op.phases.Air(network=net)
+        air = op.phase.Air(network=net)
         _ = op.physics.Standard(network=net, phase=air, geometry=geom)
         fd = op.algorithms.FickianDiffusion(network=net, phase=air)
         fd.set_value_BC(pores=net.pores("left"), values=1.0)
@@ -74,7 +74,7 @@ class UtilsTest:
         geom = op.geometry.SpheresAndCylinders(network=net,
                                                pores=net.Ps,
                                                throats=net.Ts)
-        air = op.phases.Air(network=net)
+        air = op.phase.Air(network=net)
         phys = op.physics.Standard(network=net, phase=air, geometry=geom)
         ad = op.algorithms.AdvectionDiffusion(network=net, phase=air)
         ad.set_value_BC(pores=net.pores("left"), values=1.0)
@@ -87,7 +87,7 @@ class UtilsTest:
         sf.run()
         air.update(sf.results())
         phys.regenerate_models()
-        ad.settings._update({"cache_A": False, "cache_b": False})
+        ad.settings._update({"cache": False})
         ad._build_A()
         # Non-uniform pressure field --> positive advection --> non-symmetric
         assert not op.utils.misc.is_symmetric(ad.A)

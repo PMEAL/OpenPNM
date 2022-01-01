@@ -12,7 +12,7 @@ class MultiPhaseModelsTest:
         Ts = self.net.Ts
         self.geo = op.geometry.GenericGeometry(network=self.net, pores=Ps,
                                                throats=Ts)
-        self.phase = op.phases.GenericPhase(network=self.net)
+        self.phase = op.phase.GenericPhase(network=self.net)
         self.phase['pore.occupancy'] = np.ones(self.net.Np)
         self.phase['throat.occupancy'] = np.ones(self.net.Nt)
         self.phase['pore.occupancy'][[6, 7, 19, 25]] = 0

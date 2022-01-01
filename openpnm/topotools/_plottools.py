@@ -406,7 +406,7 @@ def plot_networkx(network,
 
     # Plot pores
     gplot = draw_networkx_nodes(G, ax=ax, pos=pos, nodelist=network.Ps.tolist(),
-                                alpha=alpha, node_color="w", edgecolors=node_color,
+                                alpha=alpha, node_color=node_color, edgecolors=node_color,
                                 node_size=node_size)
     # (Optionally) Plot throats
     if plot_throats:
@@ -577,9 +577,9 @@ def plot_tutorial(network,
     """
     import networkx as nx
     import matplotlib.pyplot as plt
-    from openpnm.io import NetworkX
+    from openpnm.io import to_networkx
 
-    G = NetworkX.export_data(network=network)
+    G = to_networkx(network=network)
     pos = {i: network['pore.coords'][i, 0:2] for i in network.Ps}
     labels = {i: i for i in network.Ps}
     edge_labels = {tuple(network['throat.conns'][i, :]): i for i in network.Ts}

@@ -1,4 +1,4 @@
-name: Bump Version Number
+name: Bump Version Number (release)
 
 on:
   push:
@@ -68,7 +68,7 @@ jobs:
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
 
-        # commit version bump to release
+        # Commit version bump to release
         git commit -m "Bump version number" -a
         git push "${remote_repo}" release
 

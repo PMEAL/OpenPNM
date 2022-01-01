@@ -11,8 +11,8 @@ class OrdinaryPercolationTest:
         self.geo = op.geometry.SpheresAndCylinders(network=self.net,
                                              pores=self.net.Ps,
                                              throats=self.net.Ts)
-        self.water = op.phases.Water(network=self.net)
-        self.air = op.phases.Air(network=self.net)
+        self.water = op.phase.Water(network=self.net)
+        self.air = op.phase.Air(network=self.net)
         self.phys = op.physics.GenericPhysics(network=self.net,
                                               phase=self.water,
                                               geometry=self.geo)

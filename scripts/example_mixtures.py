@@ -1,5 +1,5 @@
 import openpnm as op
-from openpnm.phases import mixtures
+from openpnm.phase import mixtures
 
 
 ws = op.Workspace()
@@ -15,7 +15,7 @@ air.set_mole_fraction(N2, 0.79)
 air.set_mole_fraction(O2, 0.21)
 
 air.add_model(propname='pore.diffusivity.pure_O2',
-              model=op.models.phases.mixtures.fuller_diffusivity)
+              model=op.models.phase.mixtures.fuller_diffusivity)
 air.add_model(propname='pore.viscosity',
               model=op.models.misc.polynomial,
               prop='pore.temperature',

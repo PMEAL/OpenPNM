@@ -28,3 +28,8 @@ TIME STAMP : %(asctime)s\
 
 logging.basicConfig(level=logging.WARNING, format=log_format)
 del log_format
+
+
+def _get_version():
+    from openpnm.__version__ import __version__
+    return __version__.strip(".dev0")

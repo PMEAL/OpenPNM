@@ -10,12 +10,12 @@ class PoreAreaTest:
         self.geo = op.geometry.GenericGeometry(network=self.net,
                                                pores=self.net.Ps,
                                                throats=self.net.Ts)
-        self.air = op.phases.Air(network=self.net)
+        self.air = op.phase.Air(network=self.net)
         self.phys = op.physics.GenericPhysics(network=self.net,
                                               phase=self.air,
                                               geometry=self.geo)
         self.geo['pore.diameter'] = 1.0
-        self.geo['throat.area'] = 0.1
+        self.geo['throat.cross_sectional_area'] = 0.1
 
     def test_sphere(self):
         self.geo.add_model(propname='pore.area',

@@ -58,7 +58,7 @@ class Base(dict):
     Notes
     -----
     This ``Base`` class is used as the template for all other OpenPNM objects,
-    including Networks, Geometries, Phases, Physics, and Algorithms. This
+    including Networks, Geometries, Phase, Physics, and Algorithms. This
     class is a subclass of the standard ``dict`` so has the usual methods such
     as ``pop`` and ``keys``, and has extra methods for working specifically
     with OpenPNM data.
@@ -91,7 +91,10 @@ class Base(dict):
         self.update({'throat.all': np.ones(shape=(Nt, ), dtype=bool)})
 
     def __repr__(self):
-        return f'<{self.__class__.__module__} object at {hex(id(self))}>'
+        module = self.__module__
+        module = ".".join([x for x in module.split(".") if not x.startswith("_")])
+        cname = self.__class__.__name__
+        return f'<{module}.{cname} at {hex(id(self))}>'
 
     def __eq__(self, other):
         return hex(id(self)) == hex(id(other))
@@ -179,6 +182,11 @@ class Base(dict):
                 raise Exception('Provided array is wrong length for ' + key)
 
     def __getitem__(self, key):
+        # If the key is a just a numerical value, the kick it directly back
+        # This allows one to do either value='pore.blah' or value=1.0
+        if isinstance(key, (int, float, bool, complex)):
+            return key
+
         element, prop = key.split('.', 1)
 
         if key in self.keys():
@@ -298,14 +306,19 @@ class Base(dict):
             and/or 'throat' arrays should be cleared.  The default is both.
         mode : str or List[str]
             This controls what is cleared from the object.  Options are:
-                **'props'** : Removes all numerical property values from
-                the object dictionary
-                **'model_data'** : Removes only numerical data that were
-                produced by an associated model
-                **'labels'** : Removes all labels from the object
-                dictionary, except those relating to the pore and throat
-                locations of associated objects
-                **'all'** : Removes both 'props' and 'labels'
+
+            ============  =====================================================
+            mode          meaning
+            ============  =====================================================
+            'props'       Removes all numerical property values from
+                          the object dictionary
+            'model_data'  Removes only numerical data that were
+                          produced by an associated model
+            'labels'      Removes all labels from the object
+                          dictionary, except those relating to the pore
+                          and throat locations of associated objects
+            'all'         Removes both 'props' and 'labels'
+            ============  =====================================================
 
         Notes
         -----
@@ -373,16 +386,19 @@ class Base(dict):
         mode : str, optional
             Controls which keys are returned. Options are:
 
-                **'labels'**
-                    Limits the returned list of keys to only 'labels'
-                    (boolean arrays)
-                **'props'**
-                    Limits he return list of keys to only 'props'
-                    (numerical arrays).
-                **'all'**
-                    Returns both 'labels' and 'props'. This is equivalent
-                    to sending a list of both 'labels' and 'props'.
+            ===========  =====================================================
+            mode         meaning
+            ===========  =====================================================
+            'labels'     Limits the returned list of keys to only 'labels'
+                         (boolean arrays)
+            'props'      Limits he return list of keys to only 'props'
+                         (numerical arrays).
+            'all'        Returns both 'labels' and 'props'. This is equivalent
+                         to sending a list of both 'labels' and 'props'.
+            ===========  =====================================================
 
+            Notes
+            -----
             If no mode is specified then the normal KeysView object is
             returned.
         deep : bool
@@ -449,13 +465,17 @@ class Base(dict):
             returned.  If no element is given, both are returned
         mode : str, optional
             Controls what type of properties are returned.  Options are:
-                **'all'** : Returns all properties on the object (default)
 
-                **'models'** : Returns only properties that are associated with a
-                model
+            ===========  =====================================================
+            mode         meaning
+            ===========  =====================================================
+            'all'        Returns all properties on the object (default)
+            'models'     Returns only properties that are associated with a
+                         model
+            'constants'  returns data values that were *not* generated by
+                         a model, but manaully created.
+            ===========  =====================================================
 
-                **'constants'** : returns data values that were *not* generated by
-                a model, but manaully created.
         deep : bool
             If set to ``True`` then the props on all associated subdomain
             objects are returned as well.
@@ -687,9 +707,9 @@ class Base(dict):
         if self._isa() in ['network', 'geometry']:
             subdomains = list(proj.geometries().values())
         elif self._isa() in ['phase', 'physics']:
-            subdomains= list(proj.find_physics(phase=self))
+            subdomains = list(proj.find_physics(phase=self))
         elif self._isa() in ['algorithm', 'base']:
-            subdomains= [self]
+            subdomains = [self]
         else:
             raise Exception('Unrecognized object type, cannot find dependents')
 
@@ -712,11 +732,14 @@ class Base(dict):
 
         # Let's start by handling the easy cases first
         if not any([a is None for a in arrs]):
+            # If any arrays are more than 1 column, then make they all are
+            if np.any(np.array([a.ndim for a in arrs]) > 1):
+                arrs = [np.atleast_2d(a).T if a.ndim == 1 else a for a in arrs]
             # All objs are present and array found on all objs
             try:
                 W = max([a.shape[1] for a in arrs])  # Width of array
                 shape = [N, W]
-            except:
+            except IndexError:
                 shape = [N, ]
             types = [a.dtype for a in arrs]
             if len(set(types)) == 1:
@@ -775,7 +798,7 @@ class Base(dict):
 
     def interpolate_data(self, propname, mode='mean'):
         r"""
-        Determines a pore (or throat) property as the average of it's
+        Determines a pore (or throat) property as the average of its
         neighboring throats (or pores)
 
         Parameters
@@ -783,8 +806,19 @@ class Base(dict):
         propname: str
             The dictionary key to the values to be interpolated.
         mode : str
-            The method used for interpolation.  Options are 'mean' (default),
-            'min', and 'max'.
+            The method used for interpolation. The default value is 'mean'
+            Options are:
+
+            ===========  =====================================================
+            mode         meaning
+            ===========  =====================================================
+            'mean'       returns the pore (or throat) property as the average
+                         of its neighboring throats (or pores)
+            'min'        returns the pore (or throat) property as the minimum
+                         of its neighboring throats (or pores)
+            'max'        returns the pore (or throat) property as the maximum
+                         of its neighboring throats (or pores)
+            ===========  =====================================================
 
         Returns
         -------
@@ -825,16 +859,19 @@ class Base(dict):
         mode : string
             How interpolation should be peformed for missing values. If values
             are present for both pores and throats, then this argument is
-            ignored.  The ``interpolate`` data method is used.  Options are:
+            ignored.  The ``interpolate`` data method is used. The default
+            value is 'mean'. Options are:
 
-                * 'mean' (default)
-
-                **'mean'** (default):
-                    Finds the mean value of the neighboring pores (or throats)
-                * 'min'
-                    Finds the minimum of the neighboring pores (or throats)
-                * 'max'
-                    Finds the maximum of the neighboring pores (or throats)
+            ===========  =====================================================
+            mode         meaning
+            ===========  =====================================================
+            'mean'       Finds the mean value of the neighboring pores
+                         (or throats)
+            'min'        Finds the minimum of the neighboring pores
+                         (or throats)
+            'max'        Finds the maximum of the neighboring pores
+                         (or throats)
+            ===========  =====================================================
 
         Returns
         -------
@@ -1140,9 +1177,12 @@ class Base(dict):
         return element + '.' + propname.split('.')[-1]
 
     def __str__(self):
+        module = self.__module__
+        module = ".".join([x for x in module.split(".") if not x.startswith("_")])
+        cname = self.__class__.__name__
         horizontal_rule = '―' * 78
         lines = [horizontal_rule]
-        lines.append(self.__module__.replace('__', '') + ' : ' + self.name)
+        lines.append(f"{module}.{cname} : {self.name}")
         lines.append(horizontal_rule)
         lines.append("{0:<5s} {1:<45s} {2:<10s}".format('#',
                                                         'Properties',

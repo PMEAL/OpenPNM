@@ -22,7 +22,7 @@ net = op.network.Cubic(shape=[4, 3, 3], spacing=1e-4, project=proj)
 geo = op.geometry.SpheresAndCylinders(network=net, pores=net.Ps, throats=net.Ts)
 
 # Phase
-phase = op.phases.Water(network=net)
+phase = op.phase.Water(network=net)
 
 # Export the network
 if export:

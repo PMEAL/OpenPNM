@@ -117,6 +117,9 @@ venv.bak/
 .spyderproject
 .spyproject
 
+# vscode settings
+.vscode
+
 # Rope project settings
 .ropeproject
 
@@ -151,4 +154,6 @@ public/
 
 # Sphinx docs
 **/generated
-
+openpnm/core/.DS_Store
+*/.DS_Store
+*.DS_Store

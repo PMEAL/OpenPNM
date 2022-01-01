@@ -50,7 +50,11 @@ class TypedSet(TypedMixin, set):
 
 
 class TypedList(TypedMixin, list):
-    """Brief explanation of 'TypedSet'"""
+    """
+    A list that enforces all elements have the same type.
+
+    The allowed type or types are set during
+    """
 
     def __setitem__(self, ind, value):
         self._check_type(value)
@@ -71,7 +75,13 @@ class TypedList(TypedMixin, list):
 
 
 class SettingsAttr:
-    """Brief explanation of 'SettingsAttr'"""
+    r"""
+    A custom data class that hold settings for objects.
+
+    The main function of this custom class is to enforce the datatype of
+    values that are assigned to ensure they remain consistent.  For instance
+    if ``obj.foo = "bar"``, then ``obj.foo = 456`` will fail.
+    """
 
     def __init__(self, *args):
         for i, item in enumerate(args):

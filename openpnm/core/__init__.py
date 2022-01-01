@@ -14,7 +14,7 @@ object inherit from ``Base`` so possess these methods.
 
 ----
 
-``Base`` objects, Networks, Phases, Algorithms, are assigned to all locations
+``Base`` objects, Networks, Phase, Algorithms, are assigned to all locations
 in the domain.  The ``Subdomain`` class is a direct descendent of ``Base``
 which has the added ability to be assigned to a subset of the domain.  Objects
 that inherit from ``Subdomain`` are Geomery and Physics.

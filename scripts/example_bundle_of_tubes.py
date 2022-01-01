@@ -19,7 +19,7 @@ net, geo, phase = BundleOfTubes(
     settings={'adjust_psd': 'normalize', 'seed': 0}
 )
 
-hg = op.phases.Mercury(network=net)
+hg = op.phase.Mercury(network=net)
 phys = op.physics.Classic(network=net, phase=hg, geometry=geo)
 
 mip = op.algorithms.Porosimetry(network=net, phase=hg)
