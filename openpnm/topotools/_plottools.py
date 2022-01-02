@@ -380,7 +380,7 @@ def plot_networkx(network,
     G = Graph()
     pos = {network.Ps[i]: [x[i], y[i]] for i in range(network.Np)}
     if not np.isfinite(node_size).all():
-        raise Exception('nan/inf values found in network["pore.diameter"]')
+        node_size[~np.isfinite(node_size)] = np.nanmin(node_size)
     node_color = np.array(['k'] * len(network.Ps))
 
     if labels:

@@ -1,3 +1,4 @@
+# %% Imports
 import numpy as np
 import openpnm as op
 from openpnm.models.physics import source_terms
