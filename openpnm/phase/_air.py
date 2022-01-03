@@ -1,4 +1,4 @@
-from openpnm.phases import GenericPhase, GasMixture, GasByName
+from openpnm.phase import GenericPhase, GasMixture, GasByName
 import openpnm.models as mods
 from openpnm.utils import Docorator, Workspace
 

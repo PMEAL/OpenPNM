@@ -170,6 +170,14 @@ def gas_mixture_LJ_collision_integral(
         temperature='pore.temperature',
         epsilon='pore.LJ_epsilon',
         ):
+    r"""
+    Calculates the collision integral for a single species
+
+    Parameters
+    ----------
+    %(models.target.parameters)s
+    %(models.phase.T)s
+    """
     T = target[temperature]
     eAB = target[epsilon]
     A = 1.06036
@@ -186,13 +194,20 @@ def gas_mixture_LJ_collision_integral(
 
 
 def gas_mixture_LJ_epsilon(target):
+    r"""
+    Calculates the effective molecular diameter for a binary mixture
+    """
     es = [c['param.lennard_jones_epsilon'] for c in target.components.values()]
     eAB = np.sqrt(np.prod(es))
     return eAB
 
 
 def gas_mixture_LJ_sigma(target):
+    r"""
+    Calculates the effective collision integral for a binary mixture
+    """
     ss = [c['param.lennard_jones_sigma'] for c in target.components.values()]
+    assert len(ss) == 2
     sAB = np.mean(ss)
     return sAB
 
@@ -204,19 +219,33 @@ def gas_mixture_diffusivity(
     sigma='pore.LJ_sigma',
     omega='pore.LJ_omega',
 ):
-    MW = [c['param.molecular_weight'] for c in target.components.values()]
-    MWAB = 2/np.sum(1/np.array(MW))
+    r"""
+    Estimates the diffusivity of A in binary mixture using the Lennard-Jones
+
+    Parameters
+    ----------
+    %(models.target.parameters)s
+    %(models.phase.T)s
+    %(models.phase.P)s
+    sigma : str
+        Dictionary key pointing to the Lennard-Jones molecular diameter values
+    omega : str
+        Dictionary key pointing to the Lennard-Jones collision integral values
+    """
+    MW = np.array([c['param.molecular_weight'] for c in target.components.values()])
+    assert len(MW) == 2
+    MWAB = 2/np.sum(1/np.array(MW*1000))
     T = target[temperature]
-    P = target[pressure]
+    P = target[pressure] / 101325  # convert to bar
     sAB = target[sigma]
     Omega = target[omega]
-    DAB = 0.00266*T*1.5/(P*MWAB**0.5*sAB**2*Omega)*101.325  # Convert to m2/s
+    DAB = 0.00266 * (T**1.5) / (P * MWAB**0.5 * sAB**2 * Omega) * 1e-4
     return DAB
 
 
 def fuller_mixture(target,
-                   molecular_weight='pore.molecular_weight',
-                   molar_diffusion_volume='pore.molar_diffusion_volume',
+                   molecular_weight='param.molecular_weight',
+                   molar_diffusion_volume='param.molar_diffusion_volume',
                    temperature='pore.temperature',
                    pressure='pore.pressure'):
     r"""
@@ -250,7 +279,7 @@ def fuller_mixture(target,
     vA = species_A[molar_diffusion_volume]
     vB = species_B[molar_diffusion_volume]
     MAB = 1e3*2*(1.0/MA + 1.0/MB)**(-1)
-    P = P*1e-5
+    P = P/101325
     value = 0.00143*T**1.75/(P*(MAB**0.5)*(vA**(1./3) + vB**(1./3))**2)*1e-4
     return value
 

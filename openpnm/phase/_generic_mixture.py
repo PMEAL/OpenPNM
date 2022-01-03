@@ -1,6 +1,6 @@
 import numpy as np
-from openpnm.phases import GenericPhase
-import openpnm.models.phases as mods
+from openpnm.phase import GenericPhase
+import openpnm.models.phase as mods
 from openpnm.utils import HealthDict, PrintableList, SubDict
 from openpnm.utils import Docorator, SettingsAttr
 from openpnm.utils import logging
@@ -53,8 +53,10 @@ class GenericMixture(GenericPhase):
         # Add any supplied phases to the phases list
         for comp in components:
             self.set_component(comp)
-            self.set_mole_fraction(comp, np.nan)
-        self['pore.mole_fraction.all'] = np.nan
+            # self.set_mole_fraction(comp, np.nan)
+
+        self.add_model(propname='pore.mole_fraction.all',
+                       model=mods.mixtures.mole_summation)
 
     def __getitem__(self, key):
         try:
@@ -103,165 +105,165 @@ class GenericMixture(GenericPhase):
         lines = '\n'.join((lines, horizontal_rule))
         return lines
 
-    def _update_total_molfrac(self):
-        temp = np.zeros((self.Np, ), dtype=float)
-        comps = list(self.components.values())
-        for item in comps:
-            temp += self['pore.mole_fraction.' + item.name]
-        self['pore.mole_fraction.all'] = temp
+    # def _update_total_molfrac(self):
+    #     temp = np.zeros((self.Np, ), dtype=float)
+    #     comps = list(self.components.values())
+    #     for item in comps:
+    #         temp += self['pore.mole_fraction.' + item.name]
+    #     self['pore.mole_fraction.all'] = temp
 
-    def _reset_molfracs(self):
-        for item in self.settings['components']:
-            self['pore.mole_fraction.'+item] = np.nan
-        self['pore.mole_fraction.all'] = np.nan
+    # def _reset_molfracs(self):
+    #     for item in self.settings['components']:
+    #         self['pore.mole_fraction.'+item] = np.nan
+    #     self['pore.mole_fraction.all'] = np.nan
 
-    def update_concentrations(self, mode='all'):
-        r"""
-        Updates all unspecified concentrations from mole fractions and molar
-        density.
+    # def update_concentrations(self, mode='all'):
+    #     r"""
+    #     Updates all unspecified concentrations from mole fractions and molar
+    #     density.
 
-        Parameters
-        ----------
-        mode : str {'all' (default), 'update'}
-            If 'all' then all concentrations will be updated based on the
-            current mole fractions.  If 'update', then only concentrations
-            that are missing or filled with *nans* will be updated.
+    #     Parameters
+    #     ----------
+    #     mode : str {'all' (default), 'update'}
+    #         If 'all' then all concentrations will be updated based on the
+    #         current mole fractions.  If 'update', then only concentrations
+    #         that are missing or filled with *nans* will be updated.
 
-        Notes
-        -----
-        This function requires that molar density be defined on the mixture.
+    #     Notes
+    #     -----
+    #     This function requires that molar density be defined on the mixture.
 
-        """
-        if 'pore.molar_density' not in self.keys():
-            raise Exception("Cannot update concentration without "
-                            + "\'pore.molar_density\'")
-        comps = self.settings['components'].copy()
-        for item in comps:
-            c = self['pore.mole_fraction.' + item] * self['pore.molar_density']
-            if mode == 'all':
-                self['pore.concentration.' + item] = c
-            elif mode == 'update':
-                if 'pore.concentration.' + item not in self.items():
-                    self['pore.concentration.' + item] = c
+    #     """
+    #     if 'pore.molar_density' not in self.keys():
+    #         raise Exception("Cannot update concentration without "
+    #                         + "\'pore.molar_density\'")
+    #     comps = self.settings['components'].copy()
+    #     for item in comps:
+    #         c = self['pore.mole_fraction.' + item] * self['pore.molar_density']
+    #         if mode == 'all':
+    #             self['pore.concentration.' + item] = c
+    #         elif mode == 'update':
+    #             if 'pore.concentration.' + item not in self.items():
+    #                 self['pore.concentration.' + item] = c
 
-    def update_mole_fractions(self, free_comp=None):
-        r"""
-        Updates mole fraction values so the sum of all mole fractions is
-        1.0 in each pore.
+    # def update_mole_fractions(self, free_comp=None):
+    #     r"""
+    #     Updates mole fraction values so the sum of all mole fractions is
+    #     1.0 in each pore.
 
-        Parameters
-        ----------
-        free_comp : OpenPNM object
-            Specifies which component's mole fraction should be adjusted to
-            enforce the sum of all mole fractions to equal 1.0.  See ``Notes``
-            for more details.
+    #     Parameters
+    #     ----------
+    #     free_comp : OpenPNM object
+    #         Specifies which component's mole fraction should be adjusted to
+    #         enforce the sum of all mole fractions to equal 1.0.  See ``Notes``
+    #         for more details.
 
-        Notes
-        -----
-        If ``free_comp`` is not given then a search is conducted to find a
-        component whose mole fractions are *nans* and this component is
-        treated as ``free_comp``.
+    #     Notes
+    #     -----
+    #     If ``free_comp`` is not given then a search is conducted to find a
+    #     component whose mole fractions are *nans* and this component is
+    #     treated as ``free_comp``.
 
-        If more than one component, or *no* components, is/are found during
-        this search, an attempt is made to determine mole fractions from
-        the concentrations, such that $x_i = C_i/C_total$.
+    #     If more than one component, or *no* components, is/are found during
+    #     this search, an attempt is made to determine mole fractions from
+    #     the concentrations, such that $x_i = C_i/C_total$.
 
-        """
-        # Parse the free_comp argument
-        if hasattr(free_comp, 'name'):  # Get name if give openpnm object
-            free_comp = free_comp.name
-        if free_comp is not None:  # Set the component's mole fraction to nan
-            self['pore.mole_fraction.' + free_comp] = np.nan
-        # Scan the list of components and find if any have nans
-        comps = self.settings['components'].copy()
-        hasnans = []
-        for item in comps:
-            # If component not found, give it nans
-            if 'pore.mole_fraction.'+item not in self.keys():
-                self['pore.mole_fraction.'+item] = np.nan
-            hasnans.append(np.any(np.isnan(self['pore.mole_fraction.' + item])))
-        # If only one has nans then update it's mole fraction to make sum = 1.0
-        if hasnans.count(True) == 1:
-            # Remove free_comp from list
-            comp = comps.pop(hasnans.index(True))
-            # Set comp with nans to 1.0, then deduct other mole fracs
-            self['pore.mole_fraction.'+comp] = 1.0
-            for item in comps:
-                self['pore.mole_fraction.' + comp] -= \
-                    self['pore.mole_fraction.' + item]
-        # If all or none of the components have values, then use concentrations
-        else:
-            # First find total concentration of all components
-            total_conc = 0.0
-            try:
-                for item in comps:
-                    total_conc += self['pore.concentration.' + item]
-                # Then find mole fractions as C_i/C_total
-                for item in comps:
-                    mf = self['pore.concentration.' + item] / total_conc
-                    self['pore.mole_fraction.' + item] = mf
-            except KeyError:
-                logger.warning("Insufficient concentrations defined, cannot "
-                               + "recalculate mole fractions")
-        self._update_total_molfrac()
-        self.regenerate_models(['pore.molar_mass'])
+    #     """
+    #     # Parse the free_comp argument
+    #     if hasattr(free_comp, 'name'):  # Get name if give openpnm object
+    #         free_comp = free_comp.name
+    #     if free_comp is not None:  # Set the component's mole fraction to nan
+    #         self['pore.mole_fraction.' + free_comp] = np.nan
+    #     # Scan the list of components and find if any have nans
+    #     comps = self.settings['components'].copy()
+    #     hasnans = []
+    #     for item in comps:
+    #         # If component not found, give it nans
+    #         if 'pore.mole_fraction.'+item not in self.keys():
+    #             self['pore.mole_fraction.'+item] = np.nan
+    #         hasnans.append(np.any(np.isnan(self['pore.mole_fraction.' + item])))
+    #     # If only one has nans then update it's mole fraction to make sum = 1.0
+    #     if hasnans.count(True) == 1:
+    #         # Remove free_comp from list
+    #         comp = comps.pop(hasnans.index(True))
+    #         # Set comp with nans to 1.0, then deduct other mole fracs
+    #         self['pore.mole_fraction.'+comp] = 1.0
+    #         for item in comps:
+    #             self['pore.mole_fraction.' + comp] -= \
+    #                 self['pore.mole_fraction.' + item]
+    #     # If all or none of the components have values, then use concentrations
+    #     else:
+    #         # First find total concentration of all components
+    #         total_conc = 0.0
+    #         try:
+    #             for item in comps:
+    #                 total_conc += self['pore.concentration.' + item]
+    #             # Then find mole fractions as C_i/C_total
+    #             for item in comps:
+    #                 mf = self['pore.concentration.' + item] / total_conc
+    #                 self['pore.mole_fraction.' + item] = mf
+    #         except KeyError:
+    #             logger.warning("Insufficient concentrations defined, cannot "
+    #                            + "recalculate mole fractions")
+    #     self._update_total_molfrac()
+    #     self.regenerate_models(['pore.molar_mass'])
 
-    def set_concentration(self, component, values=[]):
-        r"""
-        Specify the concentration of a component in each pore
+    # def set_concentration(self, component, values=[]):
+    #     r"""
+    #     Specify the concentration of a component in each pore
 
-        Parameters
-        ----------
-        component : GenericPhase or name
-            The phase object of the component whose concentration is being
-            specified
-        values : array_like
-            The concentration of the given ``component`` in each pore.  This
-            array must be *Np*-long, with one value for each pore in the
-            network.  If a scalar is received it is applied to all pores.
+    #     Parameters
+    #     ----------
+    #     component : GenericPhase or name
+    #         The phase object of the component whose concentration is being
+    #         specified
+    #     values : array_like
+    #         The concentration of the given ``component`` in each pore.  This
+    #         array must be *Np*-long, with one value for each pore in the
+    #         network.  If a scalar is received it is applied to all pores.
 
-        See Also
-        --------
-        set_mole_fraction
+    #     See Also
+    #     --------
+    #     set_mole_fraction
 
-        """
-        if isinstance(component, str):
-            component = self.components[component]
-        Pvals = np.array(values, ndmin=1)
-        if component not in self.components.values():
-            raise Exception('Given component not part of mixture')
-        if Pvals.size:
-            key = 'pore.concentration.' + component.name
-            super().__setitem__(key, Pvals)
+    #     """
+    #     if isinstance(component, str):
+    #         component = self.components[component]
+    #     Pvals = np.array(values, ndmin=1)
+    #     if component not in self.components.values():
+    #         raise Exception('Given component not part of mixture')
+    #     if Pvals.size:
+    #         key = 'pore.concentration.' + component.name
+    #         super().__setitem__(key, Pvals)
 
-    def set_mole_fraction(self, component, values=[]):
-        r"""
-        Specify mole fraction of each component in each pore
+    # def set_mole_fraction(self, component, values=[]):
+    #     r"""
+    #     Specify mole fraction of each component in each pore
 
-        Parameters
-        ----------
-        components : GenericPhase or name string
-            The phase whose mole fraction is being specified
-        values : array_like
-            The mole fraction of the given ``component`` in each pore.  This
-            array must be *Np*-long, with one value between 0 and 1 for each
-            pore in the network.  If a scalar is received it is applied to
-            all pores.
+    #     Parameters
+    #     ----------
+    #     components : GenericPhase or name string
+    #         The phase whose mole fraction is being specified
+    #     values : array_like
+    #         The mole fraction of the given ``component`` in each pore.  This
+    #         array must be *Np*-long, with one value between 0 and 1 for each
+    #         pore in the network.  If a scalar is received it is applied to
+    #         all pores.
 
-        """
-        # Parse the input args
-        if isinstance(component, str):
-            component = self.components[component]
-        Pvals = np.array(values, ndmin=1)
-        # If given component not part of mixture, set it
-        if component.name not in self.settings['components']:
-            self.set_component(component)
-        if np.any(Pvals > 1.0) or np.any(Pvals < 0.0):
-            logger.warning('Received values contain mole fractions outside '
-                           + 'the range of 0 to 1')
-        if Pvals.size:
-            self['pore.mole_fraction.' + component.name] = Pvals
-        self._update_total_molfrac()
+    #     """
+    #     # Parse the input args
+    #     if isinstance(component, str):
+    #         component = self.components[component]
+    #     Pvals = np.array(values, ndmin=1)
+    #     # If given component not part of mixture, set it
+    #     if component.name not in self.settings['components']:
+    #         self.set_component(component)
+    #     if np.any(Pvals > 1.0) or np.any(Pvals < 0.0):
+    #         logger.warning('Received values contain mole fractions outside '
+    #                        + 'the range of 0 to 1')
+    #     if Pvals.size:
+    #         self['pore.mole_fraction.' + component.name] = Pvals
+    #     self._update_total_molfrac()
 
     def _del_comps(self, components):
         if not isinstance(components, list):
@@ -344,55 +346,39 @@ class LiquidMixture(GenericMixture):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.add_model(propname='pore.molecular_weight',
-                       model=mods.mixture.mixture_molecular_weight,
-                       regen_mode='deferred')
+                       model=mods.mixture.mixture_molecular_weight,)
         self.add_model(propname='pore.viscosity',
-                       model=mods.viscosity.liquid_mixture_viscosity,
-                       regen_mode='deferred')
+                       model=mods.viscosity.liquid_mixture_viscosity,)
         self.add_model(propname='pore.critical_volume',
-                       model=mods.critical_properties.liquid_mixture_critical_volume,
-                       regen_mode='deferred')
+                       model=mods.critical_properties.liquid_mixture_critical_volume,)
         self.add_model(propname='pore.critical_temperature',
-                       model=mods.critical_properties.liquid_mixture_critical_temperature,
-                       regen_mode='deferred')
+                       model=mods.critical_properties.liquid_mixture_critical_temperature,)
         self.add_model(propname='pore.acentric_factor',
-                       model=mods.critical_properties.mixture_acentric_factor,
-                       regen_mode='deferred')
+                       model=mods.critical_properties.mixture_acentric_factor,)
         self.add_model(propname='pore.density',
-                       model=mods.density.liquid_mixture_density,
-                       regen_mode='deferred')
+                       model=mods.density.liquid_mixture_density,)
         self.add_model(propname='pore.thermal_conductivity',
-                       model=mods.thermal_conductivity.liquid_mixture_thermal_conductivity,
-                       regen_mode='deferred')
+                       model=mods.thermal_conductivity.liquid_mixture_thermal_conductivity,)
         self.add_model(propname='pore.heat_capacity',
-                       model=mods.heat_capacity.mixture_heat_capacity,
-                       regen_mode='deferred')
+                       model=mods.heat_capacity.mixture_heat_capacity,)
 
 
 class GasMixture(GenericMixture):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.add_model(propname='pore.molecular_weight',
-                       model=mods.mixtures.mixture_molecular_weight,
-                       regen_mode='deferred')
+                       model=mods.mixtures.mixture_molecular_weight,)
         self.add_model(propname='pore.gas_viscosity',
-                       model=mods.viscosity.gas_mixture_viscosity,
-                       regen_mode='deferred')
+                       model=mods.viscosity.gas_mixture_viscosity,)
         self.add_model(propname='pore.thermal_conductivity',
-                       model=mods.thermal_conductivity.gas_mixture_thermal_conductivity,
-                       regen_mode='deferred')
+                       model=mods.thermal_conductivity.gas_mixture_thermal_conductivity,)
         self.add_model(propname='pore.heat_capacity',
-                       model=mods.heat_capacity.mixture_heat_capacity,
-                       regen_mode='deferred')
+                       model=mods.heat_capacity.mixture_heat_capacity,)
         self.add_model(propname='pore.LJ_epsilon',
-                       model=mods.diffusivity.gas_mixture_LJ_epsilon,
-                       regen_mode='deferred')
+                       model=mods.diffusivity.gas_mixture_LJ_epsilon,)
         self.add_model(propname='pore.LJ_sigma',
-                       model=mods.diffusivity.gas_mixture_LJ_sigma,
-                       regen_mode='deferred')
+                       model=mods.diffusivity.gas_mixture_LJ_sigma,)
         self.add_model(propname='pore.LJ_omega',
-                       model=mods.diffusivity.gas_mixture_LJ_collision_integral,
-                       regen_mode='deferred')
+                       model=mods.diffusivity.gas_mixture_LJ_collision_integral,)
         self.add_model(propname='pore.diffusivity',
-                       model=mods.diffusivity.gas_mixture_diffusivity,
-                       regen_mode='deferred')
+                       model=mods.diffusivity.gas_mixture_diffusivity,)

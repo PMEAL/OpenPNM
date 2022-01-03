@@ -1,7 +1,7 @@
-from openpnm.phases import GenericSpecies
+from openpnm.phase import GenericSpecies
 import chemicals as chem
 from chemicals.utils import k
-import openpnm.models.phases as mods
+import openpnm.models.phase as mods
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 

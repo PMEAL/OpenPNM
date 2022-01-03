@@ -161,11 +161,24 @@ def liquid_viscosity(target, temperature='pore.temperature'):
 
 
 def gas_viscosity(target, temperature='pore.temperature'):
+    r"""
+    Estimates the gas viscosity using the model of Gharagheizi et al
+
+    Parameters
+    ----------
+    %(models.target.parameters)s
+    %(models.phase.T)s
+
+    Returns
+    -------
+    vals : ndarray
+        An numpy ndarray containing the viscosity values
+    """
     T = target[temperature]
     MW = target['param.molecular_weight']
     Tc = target['param.critical_temperature']
     Pc = target['param.critical_pressure']
-    muG = numba_vectorized.viscosity_gas_Gharagheizi(T, Tc, Pc, MW)
+    muG = numba_vectorized.viscosity_gas_Gharagheizi(T, Tc, Pc, MW*1000)
     return muG
 
 

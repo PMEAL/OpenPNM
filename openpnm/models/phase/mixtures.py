@@ -6,8 +6,11 @@ docstr = Docorator()
 
 
 @docstr.dedent
-def salinity(target, temperature='pore.temperature',
-             concentration='pore.concentration'):
+def salinity(
+    target,
+    temperature='pore.temperature',
+    concentration='pore.concentration',
+    ):
     r"""
     Calculates the salinity in g salt per kg of solution from concentration
 
@@ -15,7 +18,7 @@ def salinity(target, temperature='pore.temperature',
     ---------
     %(models.target.parameters)s
     %(models.phase.T)s
-    concentration : string
+    concentration : str
         The dictionary key containing the concentration values, in SI units of
         mol/m3.
 
@@ -50,6 +53,19 @@ def salinity(target, temperature='pore.temperature',
 
 
 def mixture_molecular_weight(target):
+    r"""
+    Computes the average molecular weight of a mixture based on mode fractions
+
+    Parameters
+    ----------
+    %(models.target.parameters)s
+
+    Returns
+    -------
+    vals : ndarray
+        An ND-array containing the mole fraction weighted average molecular
+        weight
+    """
     xs = [target['pore.mole_fraction.' + c.name] for c in target.components.values()]
     MWs = [c['param.molecular_weight'] for c in target.components.values()]
     MW = np.zeros_like(xs[0])
@@ -61,12 +77,13 @@ def mixture_molecular_weight(target):
 @docstr.dedent
 def mole_weighted_average(target, prop):
     r"""
+    Computes the mole fraction weighted average of the given property
 
     Parameters
     ----------
     %(models.target.parameters)s
     prop : string
-        The dictionary key to the property to be averaged.
+        The dictionary key to the property to be averaged
 
     Returns
     -------
@@ -84,3 +101,26 @@ def mole_weighted_average(target, prop):
             temp = item[prop]
             vals += temp*frac
     return vals
+
+
+@docstr.dedent
+def mole_summation(target):
+    r"""
+    Computes total mole fraction in each pore given component values
+
+    Parameters
+    ----------
+    %(models.target.parameters)s
+
+    Returns
+    -------
+    vals : ND-array
+        An ND-array containing the total mole fraction.  Note that this is not
+        guaranteed to sum to 1.0.
+    """
+    xs = [target['pore.mole_fraction.' + c.name] for c in target.components.values()]
+    if len(xs) > 0:
+        xs = np.sum(xs, axis=0)
+    else:
+        xs = np.nan
+    return xs
