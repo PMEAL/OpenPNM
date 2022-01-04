@@ -1,4 +1,5 @@
 import openpnm as op
+import numpy as np
 
 
 class MixtureTest:
@@ -7,8 +8,10 @@ class MixtureTest:
         ws.clear()
         self.net = op.network.Cubic(shape=[10, 10, 10])
         self.net = op.network.Cubic(shape=[10, 10, 10])
-        self.N2 = op.phase.GasByName(network=self.net, species='n2', name='pure_N2')
-        self.O2 = op.phase.GasByName(network=self.net, species='o2', name='pure_O2')
+        self.N2 = op.phase.GasByName(network=self.net,
+                                     species='n2', name='pure_N2')
+        self.O2 = op.phase.GasByName(network=self.net,
+                                     species='o2', name='pure_O2')
         self.air = op.phase.GasMixture(network=self.net,
                                        components=[self.N2, self.O2],
                                        name='air_mixture')
@@ -18,6 +21,18 @@ class MixtureTest:
         b = self.air.props(deep=True)
         assert len(b) > len(a)
 
+    def test_set_component(self):
+        self.CO2 = op.phase.GasByName(network=self.net, species='co2',
+                                     name='pure_CO2')
+        self.air.set_component(self.CO2)
+        self.air['pore.mole_fraction.pure_N2'] = 0.79
+        self.air['pore.mole_fraction.pure_O2'] = 0.20
+        self.air['pore.mole_fraction.pure_CO2'] = 0.01
+        self.air.regenerate_models('pore.mole_fraction.all')
+        assert np.all(self.air['pore.mole_fraction.all'] == 1)
+        assert len(self.air.components) == 3
+        self.air.set_component(self.CO2, mode='remove')
+        assert len(self.air.components) == 2
 
     def test_check_health(self):
         self.air['pore.mole_fraction.pure_N2'] = 0.79
