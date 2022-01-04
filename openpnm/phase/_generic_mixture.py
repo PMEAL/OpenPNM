@@ -97,12 +97,14 @@ class GenericMixture(GenericPhase):
 
     def __str__(self):
         horizontal_rule = '―' * 78
-        lines = super().__str__()
+        temp = super().__str__().split(horizontal_rule)
+        lines = ''
         lines = '\n'.join((lines, 'Component Phases', horizontal_rule))
         for item in self.components.values():
             lines = '\n'.join((lines, item.__module__.replace('__', '')
                                + ' : ' + item.name))
-        lines = '\n'.join((lines, horizontal_rule))
+        temp.insert(2, lines + '\n')
+        lines = horizontal_rule.join(temp)
         return lines
 
     def _del_comps(self, components):
