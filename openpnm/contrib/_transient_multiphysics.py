@@ -59,7 +59,10 @@ class TransientMultiPhysics(GenericAlgorithm):
             The solution object, which is basically a numpy array with
             the added functionality that it can be called to return the
             solution at intermediate times (i.e., those not stored in the
-            solution object).
+            solution object). In the case of multiphysics, the solution object
+            is a combined array of solutions for each physics. The solution 
+            for each physics is available on each algorithm object 
+            independently. 
 
         """
         logger.info('Running TransientMultiphysics')
