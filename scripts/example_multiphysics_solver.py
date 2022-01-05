@@ -4,16 +4,17 @@ import openpnm as op
 import pandas as pd
 import matplotlib.pyplot as plt
 import openpnm.models.geometry.diffusive_size_factors as gd
-import timeit
 
 np.random.seed(10)
 
 # %% Test scipy's solve_ivp
 # FOR EXAMPLE: solve dy / dt = y^2 + y
 
+
 def fun(t, y):
-    
+
     return y
+
 
 sol = sp.integrate.solve_ivp(fun, t_span=(0, 10), y0=np.array([5]))
 
@@ -25,35 +26,35 @@ plt.plot(t, y)
 # %% Set up for the solvers
 Nx = 100
 shape = [Nx, Nx, 1]
-spacing = 1e-2 #1/Nx # adjust 
+spacing = 1e-2  # 1/Nx adjust
 net = op.network.Cubic(shape=shape, spacing=spacing)
 # geo = op.geometry.CirclesAndRectangles(network=net, pores=net.Ps, throats=net.Ts)
 # 2d square geometry
 geo = op.geometry.GenericGeometry(network=net, pores=net.Ps, throats=net.Ts)
 geo.add_model(propname='pore.diameter',
-               model=op.models.misc.constant,
-               value=spacing)
+              model=op.models.misc.constant,
+              value=spacing)
 geo.add_model(propname='throat.length',
-               model=op.models.misc.constant,
-               value=1e-15)
+              model=op.models.misc.constant,
+              value=1e-15)
 geo.add_model(propname='throat.diameter',
-               model=op.models.misc.constant,
-               value=spacing)
+              model=op.models.misc.constant,
+              value=spacing)
 Ndim = op.topotools.dimensionality(network=net).sum()
 geo.add_model(propname='pore.cross_sectional_area',
-               model=op.models.misc.constant,
-               value=spacing**(Ndim-1))
+              model=op.models.misc.constant,
+              value=spacing**(Ndim-1))
 geo.add_model(propname='throat.cross_sectional_area',
-               model=op.models.misc.constant,
-               value=spacing**(Ndim-1))
+              model=op.models.misc.constant,
+              value=spacing**(Ndim-1))
 geo.add_model(propname='pore.volume',
-               model=op.models.misc.constant,
-               value=spacing**Ndim)
+              model=op.models.misc.constant,
+              value=spacing**Ndim)
 mod = gd.squares_and_rectangles if Ndim == 2 else gd.cubes_and_cuboids
 geo.add_model(propname='throat.diffusive_size_factors',
-               model=mod,
-               pore_diameter="pore.diameter",
-               throat_diameter="throat.diameter")
+              model=mod,
+              pore_diameter="pore.diameter",
+              throat_diameter="throat.diameter")
 
 # Diff = op.metrics.EffectiveDiffusivity(network=net)
 # # Diff.settings._update({
@@ -68,7 +69,7 @@ phys = op.physics.GenericPhysics(network=net, phase=air, geometry=geo)
 # make diffusivity a function of temperature - ALREADY IS!!
 air['pore.temperature'] = 300
 air.add_model(propname='pore.diffusivity',
-              model=op.models.misc.linear, 
+              model=op.models.misc.linear,
               m=1.860793056e-06,
               b=-0.0005375624384,
               prop='pore.temperature')
@@ -77,7 +78,7 @@ air.add_model(propname='pore.diffusivity',
               model=op.models.misc.constant,
               value=2.067547840000001e-04)
 '''
-phys.add_model(propname='throat.diffusive_conductance', 
+phys.add_model(propname='throat.diffusive_conductance',
                model=op.models.physics.diffusive_conductance.generic_diffusive)
 
 air.remove_model(propname='pore.thermal_conductivity')
@@ -87,13 +88,13 @@ air.add_model(propname='pore.thermal_conductivity',
               regen_mode='constant')
 
 phys.add_model(propname='throat.thermal_conductance',
-               model=op.models.physics.thermal_conductance.generic_thermal) 
+               model=op.models.physics.thermal_conductance.generic_thermal)
 
 tfd_settings = {
     "conductance": "throat.diffusive_conductance",
     "quantity": "pore.concentration",
     "cache_A": False,
-    "cache_b": False  
+    "cache_b": False
 }
 
 tfc_settings = {
@@ -101,7 +102,7 @@ tfc_settings = {
     "quantity": "pore.temperature",
     "pore_volume": "pore.heat_capacity",
     "cache_A": False,
-    "cache_b": False  
+    "cache_b": False
 }
 
 pardiso = op.solvers.PardisoSpsolve()
@@ -138,7 +139,7 @@ tfc.set_variable_props('pore.concentration')
 
 # %% For Loop Solution
 # solve multiphysics system assuming temperature change is small over t_step
-not_BC_pores = net.pores("left", mode='nor')  
+not_BC_pores = net.pores("left", mode='nor')
 t_prev = 0
 C_1_avg = [c0[not_BC_pores].mean()]
 for ti in t:
@@ -151,8 +152,8 @@ for ti in t:
     # Solve for temperature first... add while loop
     # temperature dependent thermal conductivity
     sol_1 = tfc.run(x0=T0, tspan=tspan, integrator=rk45, saveat=tout)
-    air.regenerate_models() # update diffusivuty
-    phys.regenerate_models() # update diffusive conductance because tfd does not have iterative props
+    air.regenerate_models()  # update diffusivuty
+    phys.regenerate_models()  # update diffusive conductance
     sol_2 = tfd.run(x0=c0, tspan=tspan, integrator=rk45, saveat=tout)
     # update initial coniditions
     T0 = sol_1[:, 1]
@@ -165,10 +166,11 @@ C_1 = sol_2[:, -1]
 
 # %% Build RHS manually
 
+
 def _build_rhs(algs):
-    
+
     def ode_func(t, y):
-        
+
         # initialize rhs
         rhs = []
         for i, alg in enumerate(algs):
@@ -189,8 +191,9 @@ def _build_rhs(algs):
             rhs = np.hstack((rhs, rhs_alg))
 
         return rhs
-       
+
     return ode_func
+
 
 # call solve_ivp and pass function that builds rhs as dydt
 algs = [tfc, tfd]
@@ -200,10 +203,17 @@ T0[net.pores('left')] = 400
 c0 = np.ones(tfd.Np)*50
 c0[net.pores('left')] = 100
 
-y0 = np.hstack((T0, c0)) # ICs must include boundary condition
+y0 = np.hstack((T0, c0))  # ICs must include boundary condition
 tspan = [0, t_final]
 rtol = 1e-5
-# sol = sp.integrate.solve_ivp(fun=rhs, t_span=tspan, y0=y0, method="RK45", t_eval=t, rtol=rtol)
+'''
+sol = sp.integrate.solve_ivp(fun=rhs,
+                             t_span=tspan,
+                             y0=y0,
+                             method="RK45",
+                             t_eval=t,
+                             rtol=rtol)
+'''
 tmp = op.contrib.TransientMultiPhysics(algorithms=[tfc, tfd], network=net)
 sol = tmp.run(y0, tspan, saveat=t)
 
@@ -229,8 +239,9 @@ C_pure = sol_tfd.T[:, 0:][:, not_BC_pores].mean(axis=1)
 T_pure = sol_tfc.T[:, 0:][:, not_BC_pores].mean(axis=1)
 
 # %% Import COMSOL data and make plots
-io = r'C:\Users\mmcka\OneDrive - University of Waterloo\UW files\code\MultiphysicsSolver\heat&mass.xlsx'
-df = pd.read_excel(io, sheet_name=['Coupled','Diffusion', 'Conduction'])
+io = r'C:\Users\mmcka\OneDrive - University of Waterloo\UW files\code' + \
+    r'\MultiphysicsSolver\heat&mass.xlsx'
+df = pd.read_excel(io, sheet_name=['Coupled', 'Diffusion', 'Conduction'])
 time = np.asarray(df['Coupled'].iloc[0:, 0])
 C_3_avg = np.asarray(df['Coupled'].iloc[0:, 1])
 C_pure_comsol = np.asarray(df['Diffusion'].iloc[0:, 1])
@@ -264,8 +275,8 @@ ax3.set_title('Only Conduction')
 
 plt.figure(1)
 fig, ax = plt.subplots(ncols=2)
-im_1 = ax[0].imshow(T_1.reshape((Nx,Nx)))
-im_2 = ax[1].imshow(C_1.reshape((Nx,Nx)))
+im_1 = ax[0].imshow(T_1.reshape((Nx, Nx)))
+im_2 = ax[1].imshow(C_1.reshape((Nx, Nx)))
 fig.colorbar(im_1, ax=ax[0], fraction=0.046, pad=0.04)
 fig.colorbar(im_2, ax=ax[1], fraction=0.046, pad=0.04)
 ax[0].title.set_text('Temperature (K)')
@@ -277,8 +288,8 @@ fig.suptitle('For Loop', y=0.85)
 
 plt.figure(2)
 fig, ax = plt.subplots(ncols=2)
-im_1 = ax[0].imshow(T_2.reshape((Nx,Nx)))
-im_2 = ax[1].imshow(C_2.reshape((Nx,Nx)))
+im_1 = ax[0].imshow(T_2.reshape((Nx, Nx)))
+im_2 = ax[1].imshow(C_2.reshape((Nx, Nx)))
 fig.colorbar(im_1, ax=ax[0], fraction=0.046, pad=0.04)
 fig.colorbar(im_2, ax=ax[1], fraction=0.046, pad=0.04)
 ax[0].title.set_text('Temperature (K)')
@@ -295,8 +306,8 @@ print(T_error.max(), C_error.max())
 
 plt.figure(3)
 fig, ax = plt.subplots(ncols=2)
-im_1 = ax[0].imshow(T_error.reshape((Nx,Nx)))
-im_2 = ax[1].imshow(C_error.reshape((Nx,Nx)))
+im_1 = ax[0].imshow(T_error.reshape((Nx, Nx)))
+im_2 = ax[1].imshow(C_error.reshape((Nx, Nx)))
 fig.colorbar(im_1, ax=ax[0], fraction=0.046, pad=0.04)
 fig.colorbar(im_2, ax=ax[1], fraction=0.046, pad=0.04)
 ax[0].title.set_text('Temperature (K)')
