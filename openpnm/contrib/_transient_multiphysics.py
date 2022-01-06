@@ -23,9 +23,7 @@ class TransientMultiPhysicsSettings:
 @docstr.dedent
 class TransientMultiPhysics(GenericAlgorithm):
     r"""
-
-    A class for transient multiphysics simulations
-
+    A subclass for transient multiphysics simulations.
     """
 
     def __init__(self, algorithms, settings=None, **kwargs):
@@ -60,9 +58,9 @@ class TransientMultiPhysics(GenericAlgorithm):
             the added functionality that it can be called to return the
             solution at intermediate times (i.e., those not stored in the
             solution object). In the case of multiphysics, the solution object
-            is a combined array of solutions for each physics. The solution 
-            for each physics is available on each algorithm object 
-            independently. 
+            is a combined array of solutions for each physics. The solution
+            for each physics is available on each algorithm object
+            independently.
 
         """
         logger.info('Running TransientMultiphysics')
@@ -71,9 +69,7 @@ class TransientMultiPhysics(GenericAlgorithm):
         if (saveat is not None) and (tspan[1] not in saveat):
             saveat = np.hstack((saveat, [tspan[1]]))
         integrator = ScipyRK45() if integrator is None else integrator
-        # for each algorithm
-        algs = self._algs
-        for i, alg in enumerate(algs):
+        for i, alg in enumerate(self._algs):
             # Perform pre-solve validations
             alg._validate_settings()
             alg._validate_data_health()
@@ -82,33 +78,47 @@ class TransientMultiPhysics(GenericAlgorithm):
             alg['pore.ic'] = x0_i = np.ones(alg.Np, dtype=float) * x0_i
             alg._merge_inital_and_boundary_values()
         # Build RHS (dx/dt = RHS), then integrate the system of ODEs
-        rhs = self._build_rhs(algs)
+        rhs = self._build_rhs()
         # Integrate RHS using the given solver
         self.soln = integrator.solve(rhs, x0, tspan, saveat)
-        # add solution to each algorithm
-        for i, alg in enumerate(algs):
+        # Attach solution to each algorithm
+        for i, alg in enumerate(self._algs):
+            # FIXME: alg.soln needs to be a proper TransientSolution object
+            # not just a slice of the composite TransientSolution.
             alg.soln = self.soln[i*alg.Np:(i+1)*alg.Np, :]
         return self.soln
 
     def _run_special(self, x0): ...
 
-    def _build_rhs(self, algs):
+    def _build_rhs(self):
+        """
+        Returns a function handle, which calculates dy/dt = rhs(y, t).
 
+        Notes
+        -----
+        ``y`` is a composite array that contains ALL the variables that
+        the multiphysics algorithm solves for, e.g., if the constituent
+        algorithms are ``TransientFickianDiffusion``, and
+        ``TransientFourierConduction``, ``y[0:Np-1]`` refers to the
+        concentration, and ``[Np:2*Np-1]`` refers to the temperature
+        values.
+
+        """
         def ode_func(t, y):
-            # initialize rhs
+            # Initialize RHS
             rhs = []
-            for i, alg in enumerate(algs):
-                # get x from y, assume alg.Np is same for all algs
+            for i, alg in enumerate(self._algs):
+                # Get x from y, assume alg.Np is same for all algs
                 x = self._get_x0(y, i)  # again use helper function
-                # store x onto algorithm,
+                # Store x onto algorithm,
                 alg.x = x
-                # build A and b
+                # Build A and b
                 alg._update_A_and_b()
                 A = alg.A.tocsc()
                 b = alg.b
-                # retrieve volume
+                # Retrieve volume
                 V = alg.network[alg.settings["pore_volume"]]
-                # calcualte rhs
+                # Calcualte RHS
                 rhs_alg = np.hstack(-A.dot(x) + b)/V
                 rhs = np.hstack((rhs, rhs_alg))
             return rhs
@@ -116,8 +126,7 @@ class TransientMultiPhysics(GenericAlgorithm):
         return ode_func
 
     def _get_x0(self, x0, i):
-        algs = self._algs
-        tmp = [alg.Np for alg in algs]
+        tmp = [alg.Np for alg in self._algs]
         idx_end = np.cumsum(tmp)
         idx_start = np.hstack((0, idx_end[:-1]))
         x0 = x0[idx_start[i]:idx_end[i]]
