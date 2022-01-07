@@ -116,15 +116,15 @@ for ti in t:
     c0 = sol_2[:, 1]
     C_1_avg.append(c0[not_BC_pores].mean())
 
-# Note: dual coupling, time step needs to be small, hamed benchamrk solution
+# Note: dual coupling, time step needs to be small, Hamed benchamrk solution
 T_1 = sol_1[:, -1]
 C_1 = sol_2[:, -1]
 
-
 # %% Build RHS manually
 def _build_rhs(algs):
-    """Time-derivative of the variables being solved (T and c): dydt = RHS"""
-
+    """
+    Time-derivative of the variables being solved (T and c): dydt = RHS
+    """
     def ode_func(t, y):
         # initialize rhs
         rhs = []
@@ -532,7 +532,7 @@ ax1.set_xlabel('Time (s)')
 ax1.set_ylabel('Concentration mol/m3')
 ax1.set_title('Average Concentration')
 
-# plot average concentration from pure fickian diffusion
+# Plot average concentration from pure fickian diffusion
 fig2, ax2 = plt.subplots()
 ax2.plot(t, C_pure, time, C_pure_comsol)
 ax2.legend(('OpenPNM', 'COMSOL'))
@@ -540,7 +540,7 @@ ax2.set_xlabel('Time (s)')
 ax2.set_ylabel('Average Concentration (mol/m3)')
 ax2.set_title('Only Diffusion')
 
-# plot average concentration from pure fourier conduction
+# Plot average concentration from pure fourier conduction
 fig3, ax3 = plt.subplots()
 ax3.plot(t, T_pure, time, T_pure_comsol)
 ax3.legend(('OpenPNM', 'COMSOL'))
