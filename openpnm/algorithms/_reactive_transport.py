@@ -154,7 +154,7 @@ class ReactiveTransport(GenericTransport):
             self[propname][pores] = False
 
     def _update_iterative_props(self):
-        """r
+        """
         Regenerates phase, geometries, and physics objects using the
         current value of ``quantity``.
 
@@ -183,7 +183,7 @@ class ReactiveTransport(GenericTransport):
             phys.regenerate_models(iterative_props)
 
     def _apply_sources(self):
-        """r
+        """
         Updates ``A`` and ``b``, applying source terms to specified pores.
 
         Notes
@@ -265,7 +265,7 @@ class ReactiveTransport(GenericTransport):
                 logger.info(f'Iteration #{i:<4d} | Residual norm: {norm(res):.4e}')
 
         self.soln.is_converged = False
-        logger.critical(f"{self.name} didn't converge after {maxiter} iterations")
+        logger.warning(f"{self.name} didn't converge after {maxiter} iterations")
 
     def _get_progress(self, res):
         """
