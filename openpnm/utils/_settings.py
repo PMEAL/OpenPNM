@@ -1,6 +1,5 @@
 import logging
 from copy import deepcopy
-from traits.api import HasTraits, Trait
 from openpnm.utils import PrintableDict
 
 
@@ -23,6 +22,8 @@ class TypedMixin:
             self._set_types()
 
     def _get_types(self):
+        if not hasattr(self, '_types'):
+            self._types = []
         if self._types == []:
             self._types = list(set([type(i) for i in self]))
         return self._types
@@ -117,7 +118,6 @@ class SettingsAttr:
         if settings is None:
             return
         if isinstance(settings, dict):
-            logger.warn('Specifying settings via dicts is deprecated')
             docs = False
             for k, v in settings.items():
                 if override:

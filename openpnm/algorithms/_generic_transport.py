@@ -224,7 +224,7 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
         self._validate_settings()
         self._validate_data_health()
         # Write x0 to algorithm the obj (needed by _update_iterative_props)
-        self.x = x0 = np.zeros_like(self.b) if x0 is None else x0
+        self.x = x0 = np.zeros_like(self.b) if x0 is None else x0.copy()
         self["pore.initial_guess"] = x0
         self._validate_x0()
         # Initialize the solution object
@@ -241,7 +241,9 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
         # Solve and apply under-relaxation
         x_new, exit_code = solver.solve(A=self.A, b=self.b, x0=x0)
         self.x = w * x_new + (1 - w) * self.x
-        # Update A and b using the recent solution
+        # Update A and b using the recent solution otherwise, for iterative
+        # algorithms, residual will be incorrectly calculated ~0, since A & b
+        # are outdated
         self._update_A_and_b()
         # Update SteadyStateSolution object on algorithm
         self.soln[:] = self.x

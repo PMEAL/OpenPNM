@@ -27,6 +27,7 @@ from . import materials
 from . import topotools
 from . import io
 from . import metrics
+from . import contrib
 
 from .utils import Workspace, Project
 
