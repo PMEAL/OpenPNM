@@ -73,6 +73,8 @@ class TransientReactiveTransport(ReactiveTransport):
         logger.info('Running TransientTransport')
         if np.isscalar(saveat):
             saveat = np.arange(*tspan, saveat)
+        # FIXME: why do we forcibly add tspan[1] to saveat even if the user
+        # didn't want to?
         if (saveat is not None) and (tspan[1] not in saveat):
             saveat = np.hstack((saveat, [tspan[1]]))
         integrator = ScipyRK45() if integrator is None else integrator
@@ -91,7 +93,15 @@ class TransientReactiveTransport(ReactiveTransport):
     def _run_special(self, x0): ...
 
     def _build_rhs(self):
+        """
+        Returns a function handle, which calculates dy/dt = rhs(y, t).
 
+        Notes
+        -----
+        ``y`` is the variable that the algorithms solves for, e.g., for
+        ``TransientFickianDiffusion``, it would be concentration.
+
+        """
         def ode_func(t, y):
             # TODO: add a cache mechanism
             self.x = y
