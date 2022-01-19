@@ -7,7 +7,7 @@ from openpnm.algorithms import BCsMixin
 from openpnm.utils import logging, prettify_logger_message
 from openpnm.utils import Docorator, SettingsAttr, Workspace
 from ._solution import SteadyStateSolution
-import openpnm.solvers as solvers
+import openpnm as op
 docstr = Docorator()
 logger = logging.getLogger(__name__)
 ws = Workspace()
@@ -220,7 +220,7 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
 
         """
         logger.info('Running GenericTransport')
-        solver = getattr(solvers,ws.settings.default_solver) if solver is None else solver
+        solver = getattr(op.solvers,ws.settings.default_solver) if solver is None else solver
         # Perform pre-solve validations
         self._validate_settings()
         self._validate_data_health()
