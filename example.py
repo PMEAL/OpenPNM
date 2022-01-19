@@ -50,7 +50,6 @@ phys_air.add_model(
 )
 # Set up Fickian diffusion simulation
 rxn = op.algorithms.FickianDiffusion(network=pn, phase=air)
-rxn.settings['solver'] = 'spsolve'
 Ps = pn.find_nearby_pores(pores=50, r=5e-4, flatten=True)
 rxn.set_source(propname='pore.2nd_order_rxn', pores=Ps)
 rxn.set_value_BC(pores=pn.pores('top'), values=1)
