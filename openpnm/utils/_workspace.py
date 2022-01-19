@@ -30,7 +30,7 @@ class WorkspaceSettings(SettingsAttr):
                 may be unable to continue running.
         ======= ==============================================================
     """
-
+    default_solver = 'ScipySpsolve'
     @property
     def loglevel(self):
         logger = logging.getLogger()

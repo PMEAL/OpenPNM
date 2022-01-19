@@ -5,9 +5,10 @@ from openpnm.topotools import is_fully_connected
 from openpnm.algorithms import GenericAlgorithm
 from openpnm.algorithms import BCsMixin
 from openpnm.utils import logging, prettify_logger_message
-from openpnm.utils import Docorator, SettingsAttr
-from openpnm.solvers import PardisoSpsolve
+from openpnm.utils import Docorator, SettingsAttr, getattr
 from ._solution import SteadyStateSolution
+import openpnm.utils._workspace as ws
+import openpnm.solvers as solvers
 docstr = Docorator()
 logger = logging.getLogger(__name__)
 
@@ -219,7 +220,7 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
 
         """
         logger.info('Running GenericTransport')
-        solver = PardisoSpsolve() if solver is None else solver
+        solver = getattr(solvers,ws.settings.default_solver) if solver is None else solver
         # Perform pre-solve validations
         self._validate_settings()
         self._validate_data_health()
