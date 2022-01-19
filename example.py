@@ -5,6 +5,8 @@ from openpnm.models.physics import source_terms
 
 # %% Initialization: Create Workspace and project objects.
 ws = op.Workspace()
+# changing the default solver to PardisoSpsolve (optional)
+ws.settings.default_solver='PardisoSpsolve'
 ws.settings.loglevel = 50
 np.random.seed(9)
 

@@ -220,7 +220,7 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
 
         """
         logger.info('Running GenericTransport')
-        solver = getattr(op.solvers,ws.settings.default_solver) if solver is None else solver
+        solver = getattr(op.solvers,ws.settings.default_solver)() if solver is None else solver
         # Perform pre-solve validations
         self._validate_settings()
         self._validate_data_health()
@@ -240,7 +240,7 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
         # Make sure A,b are STILL well-defined
         self._validate_data_health()
         # Solve and apply under-relaxation
-        x_new, exit_code = solver.solve(self,A=self.A, b=self.b, x0=x0)
+        x_new, exit_code = solver.solve(A=self.A, b=self.b, x0=x0)
         self.x = w * x_new + (1 - w) * self.x
         # Update A and b using the recent solution otherwise, for iterative
         # algorithms, residual will be incorrectly calculated ~0, since A & b
