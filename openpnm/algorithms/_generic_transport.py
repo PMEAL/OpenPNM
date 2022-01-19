@@ -5,12 +5,12 @@ from openpnm.topotools import is_fully_connected
 from openpnm.algorithms import GenericAlgorithm
 from openpnm.algorithms import BCsMixin
 from openpnm.utils import logging, prettify_logger_message
-from openpnm.utils import Docorator, SettingsAttr, getattr
+from openpnm.utils import Docorator, SettingsAttr, Workspace
 from ._solution import SteadyStateSolution
-import openpnm.utils._workspace as ws
 import openpnm.solvers as solvers
 docstr = Docorator()
 logger = logging.getLogger(__name__)
+ws = Workspace()
 
 __all__ = ['GenericTransport', 'GenericTransportSettings']
 
