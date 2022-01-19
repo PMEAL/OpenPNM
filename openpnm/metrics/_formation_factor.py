@@ -105,7 +105,6 @@ class FormationFactor(GenericTransportMetrics):
         Diff.set_value_BC(pores=inlet, values=1.0)
         Diff.set_value_BC(pores=outlet, values=0.0)
         Diff.run(verbose=verbose)
-        phase.update(Diff.results())
         Deff = self._calc_eff_prop(inlets=inlet, outlets=outlet,
                                    domain_area=self.settings['area'],
                                    domain_length=self.settings['length'],

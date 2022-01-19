@@ -70,7 +70,6 @@ class AbsolutePermeability(GenericTransportMetrics):
         perm.set_value_BC(pores=inlet, values=1)
         perm.set_value_BC(pores=outlet, values=0)
         perm.run()
-        phase.update(perm.results())
         K = self._calc_eff_prop(inlets=inlet, outlets=outlet,
                                 domain_area=self.settings['area'],
                                 domain_length=self.settings['length'],
