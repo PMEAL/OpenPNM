@@ -298,7 +298,7 @@ class ReactiveTransport(GenericTransport):
         # Generate global dependency graph
         dg = nx.compose_all([x.models.dependency_graph(deep=True)
                              for x in [phase, *geometries, *physics]])
-        base = [self.settings["quantity"]] + self.settings["variable_props"]
+        base = self.settings["variable_props"].add(self.settings["quantity"])
         # Find all props downstream that depend on base props
         dg = nx.DiGraph(nx.edge_dfs(dg, source=base))
         if len(dg.nodes) == 0:
