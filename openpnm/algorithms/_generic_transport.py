@@ -7,7 +7,7 @@ from openpnm.algorithms import BCsMixin
 from openpnm.utils import logging, prettify_logger_message
 from openpnm.utils import Docorator, SettingsAttr
 from openpnm.solvers import PardisoSpsolve
-from ._solution import SteadyStateSolution
+from ._solution import SteadyStateSolution, SolutionContainer
 docstr = Docorator()
 logger = logging.getLogger(__name__)
 
@@ -228,7 +228,8 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
         self["pore.initial_guess"] = x0
         self._validate_x0()
         # Initialize the solution object
-        self.soln = SteadyStateSolution(x0)
+        self.soln = SolutionContainer()
+        self.soln[self.settings['quantity']] = SteadyStateSolution(x0)
         self.soln.is_converged = False
         # Build A and b, then solve the system of equations
         self._update_A_and_b()
