@@ -247,7 +247,7 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
         # are outdated
         self._update_A_and_b()
         # Update SteadyStateSolution object on algorithm
-        self.soln[:] = self.x
+        self.soln[self.settings['quantity']][:] = self.x
         self.soln.is_converged = not bool(exit_code)
 
     def _update_A_and_b(self):
