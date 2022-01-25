@@ -220,7 +220,9 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
 
         """
         logger.info('Running GenericTransport')
-        solver = getattr(op.solvers,ws.settings.default_solver)() if solver is None else solver
+        solver = getattr(op.solvers, ws.settings.default_solver) \
+            if solver is None else solver
+        solver = solver()  # Instantiate the fetched solver class
         # Perform pre-solve validations
         self._validate_settings()
         self._validate_data_health()
