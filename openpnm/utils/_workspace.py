@@ -7,7 +7,8 @@ from openpnm.utils import SettingsAttr
 logger = logging.getLogger(__name__)
 __all__ = [
     'Workspace',
-    ]
+]
+
 
 class WorkspaceSettings(SettingsAttr):
     r"""
@@ -30,6 +31,7 @@ class WorkspaceSettings(SettingsAttr):
                 may be unable to continue running.
         ======= ==============================================================
     """
+    default_solver = 'PardisoSpsolve'
 
     @property
     def loglevel(self):

@@ -1,15 +1,15 @@
-import warnings
 import numpy as np
 import scipy.sparse.csgraph as spgr
 from openpnm.topotools import is_fully_connected
 from openpnm.algorithms import GenericAlgorithm
 from openpnm.algorithms import BCsMixin
 from openpnm.utils import logging, prettify_logger_message
-from openpnm.utils import Docorator, SettingsAttr, TypedSet
-from openpnm.solvers import PardisoSpsolve
+from openpnm.utils import Docorator, SettingsAttr, TypedSet, Workspace
+from openpnm import solvers
 from ._solution import SteadyStateSolution, SolutionContainer
 docstr = Docorator()
 logger = logging.getLogger(__name__)
+ws = Workspace()
 
 __all__ = ['GenericTransport', 'GenericTransportSettings']
 
@@ -219,7 +219,9 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
 
         """
         logger.info('Running GenericTransport')
-        solver = PardisoSpsolve() if solver is None else solver
+        solver = getattr(solvers, ws.settings.default_solver) \
+            if solver is None else solver
+        solver = solver()  # Instantiate the fetched solver class
         # Perform pre-solve validations
         self._validate_settings()
         self._validate_data_health()
