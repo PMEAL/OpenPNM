@@ -2,6 +2,7 @@ import numpy as np
 from openpnm.algorithms import ReactiveTransport
 from openpnm.utils import logging, Docorator, SettingsAttr
 from openpnm.integrators import ScipyRK45
+from openpnm.algorithms._solution import SolutionContainer
 docstr = Docorator()
 logger = logging.getLogger(__name__)
 
@@ -87,7 +88,10 @@ class TransientReactiveTransport(ReactiveTransport):
         # Build RHS (dx/dt = RHS), then integrate the system of ODEs
         rhs = self._build_rhs()
         # Integrate RHS using the given solver
-        self.soln = integrator.solve(rhs, x0, tspan, saveat)
+        soln = integrator.solve(rhs, x0, tspan, saveat)
+        # Return solution as dictionary
+        self.soln = SolutionContainer()
+        self.soln[self.settings['quantity']] = soln
         return self.soln
 
     def _run_special(self, x0): ...
