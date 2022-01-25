@@ -95,11 +95,11 @@ tmp = op.contrib.TransientMultiPhysics(algorithms=[tfc, tfd], network=net)
 sol = tmp.run(y0, tspan, saveat=t)
 
 # plot
-T = sol[0:net.Np, -1]
-C = sol[net.Np:, -1]
+T = sol['pore.temperature']
+C = sol['pore.concentration']
 
 not_BC_pores = net.pores("left", mode='nor')
-C_avg = sol[net.Np:, 0:][not_BC_pores].mean(axis=0)
+C_avg = C[not_BC_pores].mean(axis=0)
 
 # Load COMSOL data from .npz file
 time = np.linspace(0, 2000, 401)
@@ -109,8 +109,8 @@ C_comsol = data['a']
 # Plot concentration and temperature profiles
 plt.figure(1)
 fig, ax = plt.subplots(ncols=2)
-im_1 = ax[0].imshow(T.reshape((Nx, Nx)))
-im_2 = ax[1].imshow(C.reshape((Nx, Nx)))
+im_1 = ax[0].imshow(T[:, -1].reshape((Nx, Nx)))
+im_2 = ax[1].imshow(C[:, -1].reshape((Nx, Nx)))
 fig.colorbar(im_1, ax=ax[0], fraction=0.046, pad=0.04)
 fig.colorbar(im_2, ax=ax[1], fraction=0.046, pad=0.04)
 ax[0].title.set_text('Temperature (K)')

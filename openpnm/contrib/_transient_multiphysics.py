@@ -2,6 +2,7 @@ import numpy as np
 from openpnm.utils import logging, SettingsAttr, Docorator
 from openpnm.integrators import ScipyRK45
 from openpnm.algorithms import GenericAlgorithm
+from openpnm.algorithms._solution import SolutionContainer, TransientSolution
 logger = logging.getLogger(__name__)
 docstr = Docorator()
 
@@ -80,12 +81,16 @@ class TransientMultiPhysics(GenericAlgorithm):
         # Build RHS (dx/dt = RHS), then integrate the system of ODEs
         rhs = self._build_rhs()
         # Integrate RHS using the given solver
-        self.soln = integrator.solve(rhs, x0, tspan, saveat)
-        # Attach solution to each algorithm
+        soln = integrator.solve(rhs, x0, tspan, saveat)
+        # Return dictionary containing solution
+        self.soln = SolutionContainer()
         for i, alg in enumerate(self._algs):
-            # FIXME: alg.soln needs to be a proper TransientSolution object
-            # not just a slice of the composite TransientSolution.
-            alg.soln = self.soln[i*alg.Np:(i+1)*alg.Np, :]
+            # Slice soln and attach as TransientSolution object to each alg
+            t = soln.t
+            x = soln[i*alg.Np:(i+1)*alg.Np, :]
+            alg.soln = TransientSolution(t, x)
+            # Add solution of each alg to solution dictionary
+            self.soln[alg.settings['quantity']] = alg.soln
         return self.soln
 
     def _run_special(self, x0): ...
