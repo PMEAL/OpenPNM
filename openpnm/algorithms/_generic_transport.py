@@ -5,7 +5,7 @@ from openpnm.topotools import is_fully_connected
 from openpnm.algorithms import GenericAlgorithm
 from openpnm.algorithms import BCsMixin
 from openpnm.utils import logging, prettify_logger_message
-from openpnm.utils import Docorator, SettingsAttr
+from openpnm.utils import Docorator, SettingsAttr, TypedSet
 from openpnm.solvers import PardisoSpsolve
 from ._solution import SteadyStateSolution
 docstr = Docorator()
@@ -38,7 +38,7 @@ class GenericTransportSettings:
     quantity = ''
     conductance = ''
     cache = True
-    variable_props = []
+    variable_props = TypedSet()
 
 
 @docstr.get_sections(base='GenericTransport', sections=['Parameters'])
@@ -492,8 +492,8 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
         # Handle mode
         mode = self._parse_mode(mode, allowed=['merge', 'overwrite'], single=True)
         if mode == 'overwrite':
-            self.settings['variable_props'] = []
+            self.settings['variable_props'] = TypedSet()
         # parse each propname and append to variable_props in settings
         for variable_prop in variable_props:
             variable_prop = self._parse_prop(variable_prop, 'pore')
-            self.settings['variable_props'].append(variable_prop)
+            self.settings['variable_props'].add(variable_prop)
