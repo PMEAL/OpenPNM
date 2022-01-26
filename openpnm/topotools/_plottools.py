@@ -1,10 +1,16 @@
 import numpy as np
 import openpnm as op
 from tqdm import tqdm
-from auto_all import start_all, end_all
 
 
-start_all()
+__all__ = [
+    'plot_coordinates',
+    'plot_networkx',
+    'plot_vpython',
+    'plot_tutorial',
+    'plot_network_jupyter',
+    'generate_voxel_image',
+]
 
 
 def plot_connections(network,
@@ -885,5 +891,3 @@ def generate_voxel_image(network, pore_shape="sphere", throat_shape="cylinder",
         eps_old = eps
         max_dim = int(max_dim * 1.25)
     return im
-
-end_all()
