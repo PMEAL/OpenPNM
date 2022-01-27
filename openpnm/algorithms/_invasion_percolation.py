@@ -36,75 +36,23 @@ class IPSettings:
 
 class InvasionPercolation(GenericAlgorithm):
     r"""
-    A classic/basic invasion percolation algorithm optimized for speed.
+    A classic invasion percolation algorithm optimized for speed
 
     Parameters
     ----------
     network : GenericNetwork
-        The Network upon which the invasion will occur.
+        The Network upon which the invasion will occur
 
     Notes
     ----
-    This algorithm uses a binary heap to store all a list of all accessible
-    throats, sorted according to entry pressure.  This means that item [0] in
-    the heap is the most easily invaded throat, so looking up which throat
-    to invade next is computationally trivial.  In order to keep the list
-    sorted new throats to the list takes more time, however, the heap data
-    structure is very efficient at this.  Interested users can consult the
-    wikipedia page on `binary heaps
-    <https://en.wikipedia.org/wiki/Binary_heap>`_ for more information.
-
-
-    Examples
-    --------
-    Start by importing the usual packages:
-
-    >>> import openpnm as op
-    >>> import scipy as sp
-    >>> import matplotlib.pyplot as plt
-
-    Create 2D cubic network for easier visualizaiton:
-
-    >>> S = np.array([100, 100, 1])
-    >>> pn = op.network.Cubic(shape=S, spacing=0.0001, name='pn11')
-
-    Add a basic geometry:
-
-    >>> geom = op.geometry.SpheresAndCylinders(network=pn, pores=pn.Ps, throats=pn.Ts)
-
-    Create an invading phase, and attach the capillary pressure model:
-
-    >>> water = op.phase.Water(network=pn)
-    >>> water.add_model(propname='throat.entry_pressure',
-    ...                 model=op.models.physics.capillary_pressure.washburn)
-
-    Initialize an invasion percolation object and define inlets:
-
-    >>> ip = op.algorithms.InvasionPercolation(network=pn, phase=water)
-    >>> ip.set_inlets(pores=0)
-    >>> ip.run()
-
-    After running the algorithm the invading phase configuration at a given
-    saturation can be obtained and assigned to the phase object:
-
-    >>> water.update(ip.results(Snwp=0.5))
-
-    Because it was a 2D network it's easy to quickly visualize the invasion
-    pattern as an image for verification:
-
-    .. note::
-
-        Because the network is 2D and cubic, an image can be generated with
-        color corresponding to a value.  The following plots the entire
-        invasion sequence, and the water configuraiton at Snwp = 0.5.
-
-        ``plt.subplot(1, 2, 1)``
-
-        ``plt.imshow(np.reshape(ip['pore.invasion_sequence'], newshape=S[S > 1]))``
-
-        ``plt.subplot(1, 2, 2)``
-
-        ``plt.imshow(np.reshape(water['pore.occupancy'], newshape=S[S > 1]))``
+    This algorithm uses a `binary
+    heap <https://en.wikipedia.org/wiki/Binary_heap>`_ to store a list of all
+    accessible throats, sorted according to entry pressure.  This means that
+    item [0] in the heap is the most easily invaded throat that is currently
+    accessible by the invading fluid, so looking up which throat to invade
+    next is computationally trivial. In order to keep the list sorted,
+    adding new throats to the list takes more time; however, the heap data
+    structure is very efficient at this.
 
     """
     def __init__(self, phase, settings=None, **kwargs):
@@ -113,28 +61,44 @@ class InvasionPercolation(GenericAlgorithm):
         self.settings['phase'] = phase.name
         self['pore.invasion_sequence'] = -1
         self['throat.invasion_sequence'] = -1
+        self['pore.inlets'] = False
 
-    def set_inlets(self, pores=[], overwrite=False):
+    def set_inlets(self, pores=[], mode='overwrite'):
         r"""
 
         Parameters
         ----------
         pores : array_like
             The list of inlet pores from which the Phase can enter the Network
+        mode : str
+            Controls how the given inlets are added.  Options are:
+
+            ============ ======================================================
+            mode         description
+            ============ ======================================================
+            'add'        Sets the given ``pores`` to inlets, while keeping any
+                         already defined inlets
+            'overwrite'  Removes all existing inlets, then add the given
+                         ``pores``
+            ============ =======================================================
+
         """
-        if overwrite:
+        if mode == 'overwrite':
+            self['pore.inlets'] = False
             self['pore.invasion_sequence'] = -1
         self['pore.invasion_sequence'][pores] = 0
-
+        self['pore.inlets'] = True
 
     def run(self, n_steps=None):
         r"""
-        Performs the algorithm.
+        Performs the algorithm for the given number of steps
 
         Parameters
         ----------
         n_steps : int
-            The number of throats to invaded during this step
+            The number of throats to invade during the run.  This can be
+            used to incrementally invading the network, allowing for
+            simulations to occur between each call to ``run``.
 
         """
 
