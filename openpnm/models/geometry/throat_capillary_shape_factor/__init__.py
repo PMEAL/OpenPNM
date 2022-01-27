@@ -1,6 +1,6 @@
 r"""
-throat_capillary_shape_factor Models
--------------------------
+Throat Capillary Shape Factor Models
+------------------------------------
 
 This model contains a selection of functions for calculating capillary shape
 factor for throats.

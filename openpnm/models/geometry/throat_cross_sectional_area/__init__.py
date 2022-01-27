@@ -1,6 +1,6 @@
 r"""
-throat_cross_sectional_area Models
--------------------------
+Throat Cross-sectional Area Models
+----------------------------------
 
 This model contains a selection of functions for calculating
 throat cross-sectional area.
