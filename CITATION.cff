@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Gostick"
+  given-names: "Jeff"
+  orcid: "https://orcid.org/0000-0001-7736-7124"
+title: "OpenPNM"
+url: "https://github.com/PMEAL/OpenPNM"
+preferred-citation:
+  type: article
+  authors:
+  - family-names: "Gostick"
+    given-names: "Jeff"
+    orcid: "https://orcid.org/0000-0001-7736-7124"
+  doi: "10.1109/MCSE.2016.49"
+  journal: "Computing in Science & Engineering"
+  start: 60 # First page number
+  end: 74 # Last page number
+  title: "OpenPNM: a pore network modeling package"
+  year: 2016
