@@ -10,6 +10,7 @@ from openpnm.utils import logging, Workspace, prettify_logger_message
 logger = logging.getLogger(__name__)
 ws = Workspace()
 __all__ = [
+    'isoutside',
     'rotate_coords',
     'shear_coords',
     'trim',
