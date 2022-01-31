@@ -560,7 +560,7 @@ def general_symbolic(target, eqn, x, **kwargs):
 
 @_doctxt
 def butler_volmer_conc(
-    target, X, z, j0, c_ref, alpha_anode, alpha_cathode, stoich=1, z_elem=1,
+    target, X, z, j0, c_ref, alpha_anode, alpha_cathode, stoich=1, z_rds=1,
     reaction_order=1,
     temperature="pore.temperature",
     reaction_area="pore.reaction_area",
@@ -593,7 +593,7 @@ def butler_volmer_conc(
         Stoichimetry coefficient of the species in the redox reaction. If the
         species is being consumed, stoich is positive. If the species is
         being produced, stoich is negative.
-    z_elem : float
+    z_rds : float
         Number of electrons transferred in the rate determining step.
     reaction_order : float
         Reaction order, i.e. the exponent of the concentration term
@@ -634,8 +634,8 @@ def butler_volmer_conc(
     .. math::
         r = stoich j_0 A_{rxn} (\frac{ X }{ c_{ref} }) ^ {\nu}
         \Big(
-            \exp(  \frac{\alpha_a z_{elem} F}{RT} \eta )
-          - \exp( -\frac{\alpha_c z_{elem} F}{RT} \eta )
+            \exp(  \frac{\alpha_a z_{rds} F}{RT} \eta )
+          - \exp( -\frac{\alpha_c z_{rds} F}{RT} \eta )
         \Big)
 
     where:
@@ -651,6 +651,9 @@ def butler_volmer_conc(
 
     .. math::
         rate = S_{1} X + S_{2}
+    
+    Reference: Rahn, Christopher D. Wang, Chao-Yang. (2013). Battery Systems Engineering - 
+    3.2.1 The Butler-Volmer Equation. (pp. 27). John Wiley & Sons.
 
     """
     network = target.project.network
@@ -671,8 +674,8 @@ def butler_volmer_conc(
     # Linearize with respect to X (electrolyte concentration)
     eta = Vs - Ve - Voc
     cte = stoich * j0 * A_rxn / (z * F)
-    m1 = alpha_anode * z_elem * F / (R * T)
-    m2 = alpha_cathode * z_elem * F / (R * T)
+    m1 = alpha_anode * z_rds * F / (R * T)
+    m2 = alpha_cathode * z_rds * F / (R * T)
     fV = _np.exp(m1 * eta) - _np.exp(-m2 * eta)
     fC = (X / c_ref)**nu
     r = cte * fC * fV
@@ -685,7 +688,7 @@ def butler_volmer_conc(
 
 
 def butler_volmer_voltage(
-    target, X, z, j0, c_ref, alpha_anode, alpha_cathode, stoich=1, z_elem=1,
+    target, X, z, j0, c_ref, alpha_anode, alpha_cathode, stoich=1, z_rds=1,
     reaction_order=1,
     temperature="pore.temperature",
     reaction_area="pore.reaction_area",
@@ -718,7 +721,7 @@ def butler_volmer_voltage(
         Stoichimetry coefficient of the species in the redox reaction. If the
         species is being consumed, stoich is positive. If the species is
         being produced, stoich is negative.
-    z_elem : float
+    z_rds : float
         Number of electrons transferred in the rate determining step.
     electrolyte_concentration : str
         The dictionary key of the electrolyte concentrations [mol/m^3].
@@ -761,8 +764,8 @@ def butler_volmer_voltage(
     .. math::
         r = stoich j_0 A_{rxn} (\frac{ c }{ c_{ref} }) ^ {\nu}
         \Big(
-            \exp(  \frac{\alpha_a z_{elem} F}{RT} \eta )
-          - \exp( -\frac{\alpha_c z_{elem} F}{RT} \eta )
+            \exp(  \frac{\alpha_a z_{rds} F}{RT} \eta )
+          - \exp( -\frac{\alpha_c z_{rds} F}{RT} \eta )
         \Big)
 
     where:
@@ -778,7 +781,9 @@ def butler_volmer_voltage(
 
     .. math::
         rate = S_{1} X + S_{2}
-
+    
+    Reference: Rahn, Christopher D. Wang, Chao-Yang. (2013). Battery Systems Engineering - 
+    3.2.1 The Butler-Volmer Equation. (pp. 27). John Wiley & Sons.
     """
     network = target.project.network
     domain = target._domain
@@ -798,8 +803,8 @@ def butler_volmer_voltage(
     # Linearize with respect to X (electrolyte voltage)
     eta = Vs - X - Voc
     cte = stoich * j0 * A_rxn
-    m1 = alpha_anode * z_elem * F / (R * T)
-    m2 = alpha_cathode * z_elem * F / (R * T)
+    m1 = alpha_anode * z_rds * F / (R * T)
+    m2 = alpha_cathode * z_rds * F / (R * T)
     fV = _np.exp(m1 * eta) - _np.exp(-m2 * eta)
     dfVdV = -(m1 * _np.exp(m1 * eta) + m2 * _np.exp(-m2 * eta))
     fC = (c / c_ref)**nu
