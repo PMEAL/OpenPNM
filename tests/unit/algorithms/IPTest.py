@@ -21,20 +21,20 @@ class IPTest:
         alg.set_inlets(pores=self.net.pores("top"))
         assert np.sum(alg["pore.invasion_sequence"] == 0) == 100
 
-        alg.set_inlets(pores=self.net.pores("bottom"))
+        alg.set_inlets(pores=self.net.pores("bottom"), mode='add')
         assert np.sum(alg["pore.invasion_sequence"] == 0) == 200
 
-        alg.set_inlets(pores=self.net.pores("top"), overwrite=True)
+        alg.set_inlets(pores=self.net.pores("top"), mode='overwrite')
         assert np.sum(alg["pore.invasion_sequence"] == 0) == 100
 
-        alg.set_inlets(overwrite=True)
+        alg.set_inlets(mode='overwrite')
         assert np.sum(alg["pore.invasion_sequence"] == 0) == 0
 
     def test_run(self):
         alg = op.algorithms.InvasionPercolation(network=self.net, phase=self.water)
         alg.set_inlets(pores=self.net.pores("top"))
         alg.run()
-        assert alg["throat.invasion_sequence"].max() == (alg.Nt - 1)
+        assert alg["throat.invasion_sequence"].max() == alg.Nt
 
     def test_results(self):
         alg = op.algorithms.InvasionPercolation(network=self.net, phase=self.water)

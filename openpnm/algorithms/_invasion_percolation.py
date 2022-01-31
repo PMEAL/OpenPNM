@@ -63,7 +63,7 @@ class InvasionPercolation(GenericAlgorithm):
         self['throat.invasion_sequence'] = -1
         self['pore.inlets'] = False
 
-    def set_inlets(self, pores=[], mode='overwrite'):
+    def set_inlets(self, pores=[], mode='add'):
         r"""
 
         Parameters
@@ -83,6 +83,9 @@ class InvasionPercolation(GenericAlgorithm):
             ============ =======================================================
 
         """
+        mode = self._parse_mode(mode=mode,
+                                allowed=['add', 'overwrite'],
+                                single=True)
         if mode == 'overwrite':
             self['pore.inlets'] = False
             self['pore.invasion_sequence'] = -1
@@ -105,7 +108,7 @@ class InvasionPercolation(GenericAlgorithm):
         # Setup arrays and info
         phase = self.project[self.settings['phase']]
         self['throat.entry_pressure'] = phase[self.settings['entry_pressure']]
-        # Indices into t_entry giving a sorted list
+        # Generated indices into t_entry giving a sorted list
         self['throat.sorted'] = np.argsort(self['throat.entry_pressure'], axis=0)
         self['throat.order'] = 0
         self['throat.order'][self['throat.sorted']] = np.arange(0, self.Nt)
@@ -342,7 +345,7 @@ class InvasionPercolation(GenericAlgorithm):
     def get_intrusion_data(self):
         r"""
         Get the percolation data as the invader volume or number fraction vs
-        the capillary capillary pressure.
+        the capillary pressure.
 
         """
         if 'pore.invasion_pressure' not in self.props():
@@ -404,7 +407,7 @@ class InvasionPercolation(GenericAlgorithm):
         ``idx`` and ``indptr`` are properties are the network's incidence
         matrix, and are used to quickly find neighbor throats.
 
-        Numba doesn't like forein data types (i.e. GenericNetwork), and so
+        Numba doesn't like foreign data types (i.e. GenericNetwork), and so
         ``find_neighbor_throats`` method cannot be called in a jitted method.
 
         Nested wrapper is for performance issues (reduced OpenPNM import)
@@ -416,8 +419,8 @@ class InvasionPercolation(GenericAlgorithm):
         @njit
         def wrapper(queue, t_sorted, t_order, t_inv, p_inv, p_inv_t, conns,
                     idx, indptr, n_steps):
-            count = 0
-            while (len(queue) > 0) and (count < n_steps):
+            count = 1
+            while (len(queue) > 0) and (count < (n_steps + 1)):
                 # Find throat at the top of the queue
                 t = hq.heappop(queue)
                 # Extract actual throat number
@@ -448,11 +451,43 @@ class InvasionPercolation(GenericAlgorithm):
 
 if __name__ == '__main__':
     import openpnm as op
-    pn = op.network.Cubic(shape=[10, 10, 10], spacing=1e-4)
+    import matplotlib.pyplot as plt
+    pn = op.network.Cubic(shape=[5, 1, 1], spacing=1e-4)
     geo = op.geometry.SpheresAndCylinders(network=pn, pores=pn.Ps, throats=pn.Ts)
     water = op.phase.Water(network=pn, name='h2o')
     phys_water = op.physics.Standard(network=pn, phase=water, geometry=geo)
     ip = InvasionPercolation(network=pn, phase=water)
     ip.set_inlets(pn.pores('left'))
     ip.run()
-    ip.plot_intrusion_curve()
+    # ip.plot_intrusion_curve()
+    # %%
+    fig, ax = plt.subplots(1, 1)
+    ax.set_facecolor('grey')
+    ax = op.topotools.plot_coordinates(network=pn, c='w', ax=ax)
+    ax = op.topotools.plot_connections(network=pn,
+                                       throats=ip['throat.invasion_sequence'] < 300,
+                                       color_by=ip['throat.invasion_pressure'],
+                                       ax=ax)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
