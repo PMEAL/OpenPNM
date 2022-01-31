@@ -594,7 +594,7 @@ def butler_volmer_conc(
         species is being consumed, stoich is positive. If the species is
         being produced, stoich is negative.
     z_elem : float
-        Number of electrons transferred in the elementary reaction.
+        Number of electrons transferred in the rate determining step.
     reaction_order : float
         Reaction order, i.e. the exponent of the concentration term
     solid_voltage : str
@@ -719,7 +719,7 @@ def butler_volmer_voltage(
         species is being consumed, stoich is positive. If the species is
         being produced, stoich is negative.
     z_elem : float
-        Number of electrons transferred in the elementary reaction.
+        Number of electrons transferred in the rate determining step.
     electrolyte_concentration : str
         The dictionary key of the electrolyte concentrations [mol/m^3].
     reaction_order : float
