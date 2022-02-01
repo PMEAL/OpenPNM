@@ -10,10 +10,30 @@ import scipy.sparse as sparse
 import time as _time
 from collections import OrderedDict
 from docrep import DocstringProcessor
-from auto_all import start_all, end_all
 
 
-start_all()
+__all__ = [
+    'Docorator',
+    'PrintableList',
+    'PrintableDict',
+    'SubDict',
+    'NestedDict',
+    'HealthDict',
+    'tic',
+    'toc',
+    'unique_list',
+    'flat_list',
+    'sanitize_dict',
+    'methods_to_table',
+    'models_to_table',
+    'catch_module_not_found',
+    'ignore_warnings',
+    'is_symmetric',
+    'is_valid_propname',
+    'prettify_logger_message',
+    'remove_prop_deep',
+]
+
 
 class Docorator(DocstringProcessor):
     """Brief explanation of 'Docorator'"""
@@ -587,5 +607,3 @@ def remove_prop_deep(obj, propname):
         obj._parse_element(propname)
         if k.startswith(propname):
             del obj[k]
-
-end_all()
