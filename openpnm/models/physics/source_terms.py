@@ -560,7 +560,7 @@ def general_symbolic(target, eqn, x, **kwargs):
 
 @_doctxt
 def butler_volmer_conc(
-    target, X, z, j0, c_ref, alpha_anode, alpha_cathode, stoich=1, z_rds=1,
+    target, X, z, j0, c_ref, alpha_anode, alpha_cathode, z_rds=1,
     reaction_order=1,
     temperature="pore.temperature",
     reaction_area="pore.reaction_area",
@@ -589,10 +589,6 @@ def butler_volmer_conc(
         Anodic transfer coefficient.
     alpha_cathode : float
         Cathodic transfer coefficient.
-    stoich : float
-        Stoichimetry coefficient of the species in the redox reaction. If the
-        species is being consumed, stoich is positive. If the species is
-        being produced, stoich is negative.
     z_rds : float
         Number of electrons transferred in the rate determining step.
     reaction_order : float
@@ -632,7 +628,7 @@ def butler_volmer_conc(
     number of electrons transferred and F is the Faraday's constant.
 
     .. math::
-        r = stoich j_0 A_{rxn} (\frac{ X }{ c_{ref} }) ^ {\nu}
+        r =  j_0 A_{rxn} (\frac{ X }{ c_{ref} }) ^ {\nu}
         \Big(
             \exp(  \frac{\alpha_a z_{rds} F}{RT} \eta )
           - \exp( -\frac{\alpha_c z_{rds} F}{RT} \eta )
@@ -673,7 +669,7 @@ def butler_volmer_conc(
 
     # Linearize with respect to X (electrolyte concentration)
     eta = Vs - Ve - Voc
-    cte = stoich * j0 * A_rxn / (z * F)
+    cte = j0 * A_rxn / (z * F)
     m1 = alpha_anode * z_rds * F / (R * T)
     m2 = alpha_cathode * z_rds * F / (R * T)
     fV = _np.exp(m1 * eta) - _np.exp(-m2 * eta)
@@ -688,7 +684,7 @@ def butler_volmer_conc(
 
 
 def butler_volmer_voltage(
-    target, X, z, j0, c_ref, alpha_anode, alpha_cathode, stoich=1, z_rds=1,
+    target, X, z, j0, c_ref, alpha_anode, alpha_cathode, z_rds=1,
     reaction_order=1,
     temperature="pore.temperature",
     reaction_area="pore.reaction_area",
@@ -717,10 +713,6 @@ def butler_volmer_voltage(
         Anodic transfer coefficient.
     alpha_cathode : float
         Cathodic transfer coefficient.
-    stoich : float
-        Stoichimetry coefficient of the species in the redox reaction. If the
-        species is being consumed, stoich is positive. If the species is
-        being produced, stoich is negative.
     z_rds : float
         Number of electrons transferred in the rate determining step.
     electrolyte_concentration : str
@@ -762,7 +754,7 @@ def butler_volmer_voltage(
     number of electrons transferred and F is the Faraday's constant.
 
     .. math::
-        r = stoich j_0 A_{rxn} (\frac{ c }{ c_{ref} }) ^ {\nu}
+        r = j_0 A_{rxn} (\frac{ c }{ c_{ref} }) ^ {\nu}
         \Big(
             \exp(  \frac{\alpha_a z_{rds} F}{RT} \eta )
           - \exp( -\frac{\alpha_c z_{rds} F}{RT} \eta )
@@ -802,7 +794,7 @@ def butler_volmer_voltage(
 
     # Linearize with respect to X (electrolyte voltage)
     eta = Vs - X - Voc
-    cte = stoich * j0 * A_rxn
+    cte = j0 * A_rxn
     m1 = alpha_anode * z_rds * F / (R * T)
     m2 = alpha_cathode * z_rds * F / (R * T)
     fV = _np.exp(m1 * eta) - _np.exp(-m2 * eta)
