@@ -1,6 +1,6 @@
 r"""
-pore_seed Models
--------------------------
+Pore Seed Models
+----------------
 
 Generates pore seeds that are spatailly correlated with their neighbors.
 

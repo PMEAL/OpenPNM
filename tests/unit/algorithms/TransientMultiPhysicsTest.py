@@ -113,7 +113,7 @@ class TransientMultiPhysicsTest:
         self.tmp.run(y0, tspan, saveat=t)
 
     def test_concentration(self):
-        C = self.tmp.soln[self.net.Np:2*self.net.Np, :]
+        C = self.tmp.soln[self.tfd.settings['quantity']]
         C_avg = C[self.net.pores("left", mode='nor')].mean(axis=0)
         actual = C_avg
         desired = [50.00000000, 50.46652183, 51.00059257, 51.56467322,

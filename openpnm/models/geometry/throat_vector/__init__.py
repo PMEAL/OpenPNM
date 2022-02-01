@@ -1,6 +1,6 @@
 r"""
-throat_vector Model
--------------------------
+Throat Vector Model
+-------------------
 
 Calculates throat vector as straight path between connected pores
 

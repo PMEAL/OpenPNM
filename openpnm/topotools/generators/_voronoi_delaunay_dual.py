@@ -1,7 +1,5 @@
 import scipy.spatial as sptl
 import scipy.sparse as sprs
-from openpnm.topotools import isoutside, conns_to_am
-from openpnm.topotools.generators import tools
 import numpy as np
 
 
@@ -30,6 +28,8 @@ def voronoi_delaunay_dual(points, shape, crop=False):
         The Delaunay triangulation object produced ``scipy.spatial.Delaunay``
 
     """
+    from openpnm.topotools import isoutside, conns_to_am
+    from openpnm.topotools.generators import tools
     # Generate a set of base points if number was given
     points = tools.parse_points(points=points, shape=shape)
     mask = ~np.all(points == 0, axis=0)
