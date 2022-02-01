@@ -20,6 +20,8 @@ __all__ = [
     'vor_to_am',
     'conns_to_am',
     'drop_sites',
+    '_am_to_im',
+    '_im_to_am',
 ]
 
 

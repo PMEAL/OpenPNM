@@ -4,6 +4,7 @@ from tqdm import tqdm
 
 
 __all__ = [
+    'plot_connections',
     'plot_coordinates',
     'plot_networkx',
     'plot_vpython',
