@@ -15,12 +15,12 @@ methods, occasionally with basic embedded examples on how to use them.
 
 from . import utils
 from . import core
+from . import models
 from . import topotools
 from . import network
 from . import geometry
 from . import phase
 from . import physics
-from . import models
 from . import algorithms
 from . import solvers
 from . import integrators

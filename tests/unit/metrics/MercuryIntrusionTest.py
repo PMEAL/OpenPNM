@@ -8,8 +8,8 @@ class MercuryIntrusionTest:
     def setup_class(self):
         self.net = op.network.Cubic(shape=[15, 15, 15], spacing=0.0005)
         self.geo = op.geometry.SpheresAndCylinders(network=self.net,
-                                             pores=self.net.Ps,
-                                             throats=self.net.Ts)
+                                                   pores=self.net.Ps,
+                                                   throats=self.net.Ts)
 
     def test_run(self):
         mip = op.metrics.MercuryIntrusion(network=self.net)
@@ -25,12 +25,12 @@ class MercuryIntrusionTest:
         assert np.all(mip.pc_data == [1e1, 1e3, 1e5, 1e6])
         assert np.all(mip.snwp_data == [0.0, 0.1, 0.5, 0.9])
 
-    def test_plot_data(self):
-        mip = op.metrics.MercuryIntrusion(network=self.net)
-        mip.run()
-        mip.pc_data = [1e1, 1e3, 1e5, 1e6]
-        mip.snwp_data = [0.0, 0.1, 0.5, 0.9]
-        mip.plot_intrusion_curve()
+    # def test_plot_data(self):
+    #     mip = op.metrics.MercuryIntrusion(network=self.net)
+    #     mip.run()
+    #     mip.pc_data = [1e1, 1e3, 1e5, 1e6]
+    #     mip.snwp_data = [0.0, 0.1, 0.5, 0.9]
+    #     mip.plot_intrusion_curve()
 
 
 if __name__ == '__main__':
