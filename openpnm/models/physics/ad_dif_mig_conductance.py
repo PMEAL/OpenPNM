@@ -62,7 +62,8 @@ def ad_dif_mig(target,
     throat_valence = throat_valence + "." + ion
 
     network = target.project.network
-    throats = network.throats(target.name)
+    domain = target._domain
+    throats = domain.throats(target.name)
     phase = target.project.find_phase(target)
     cn = network["throat.conns"][throats]
     T = phase[throat_temperature][throats]
