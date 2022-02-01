@@ -19,10 +19,6 @@ class BaseTest:
         self.geo.add_model(propname='throat.cross_sectional_area',
                            model=op.models.geometry.throat_cross_sectional_area.cylinder)
         self.geo.regenerate_models()
-        self.geo['throat.label1'] = False
-        self.geo['throat.label2'] = False
-        self.geo['throat.label1'][0:6] = True
-        self.geo['throat.label2'][3:9] = True
         self.net1 = op.network.Cubic(shape=[3, 3, 3])
         self.geo1 = op.geometry.GenericGeometry(network=self.net1,
                                                 pores=self.net1.Ps,
@@ -135,20 +131,41 @@ class BaseTest:
         assert np.all(np.where(a)[0] == b)
 
     def test_throats_one_label(self):
+        self.geo['throat.label1'] = False
+        self.geo['throat.label1'][[0, 1, 2, 3, 4, 5]] = True
         a = self.net.throats(labels='label1')
         assert np.all(a == [0, 1, 2, 3, 4, 5])
+        self.geo.pop('throat.label1')
 
     def test_throats_two_labels_or(self):
+        self.geo['throat.label1'] = False
+        self.geo['throat.label2'] = False
+        self.geo['throat.label1'][[0, 1, 2, 3, 4, 5]] = True
+        self.geo['throat.label2'][[6, 7, 8]] = True
         a = self.net.throats(labels=['label1', 'label2'], mode='or')
         assert np.all(a == [0, 1, 2, 3, 4, 5, 6, 7, 8])
+        self.geo.pop('throat.label1')
+        self.geo.pop('throat.label2')
 
     def test_throats_two_labels_xnor(self):
+        self.geo['throat.label1'] = False
+        self.geo['throat.label2'] = False
+        self.geo['throat.label1'][[0, 1, 2, 3, 4, 5]] = True
+        self.geo['throat.label2'][[3, 4, 5, 6, 7, 8]] = True
         a = self.net.throats(labels=['label1', 'label2'], mode='xnor')
         assert np.all(a == [3, 4, 5])
+        self.geo.pop('throat.label1')
+        self.geo.pop('throat.label2')
 
     def test_throats_two_labels_xor(self):
+        self.geo['throat.label1'] = False
+        self.geo['throat.label2'] = False
+        self.geo['throat.label1'][[0, 1, 2, 3, 4, 5]] = True
+        self.geo['throat.label2'][[3, 4, 5, 6, 7, 8]] = True
         a = self.net.throats(labels=['label1', 'label2'], mode='xor')
         assert np.all(a == [0, 1, 2, 6, 7, 8])
+        self.geo.pop('throat.label1')
+        self.geo.pop('throat.label2')
 
     def test_filter_by_label_pores_no_label(self):
         Ps = self.net.pores(['top', 'bottom', 'front'])
@@ -215,8 +232,11 @@ class BaseTest:
         assert np.sum(a) == 9
 
     def test_tomask_throats(self):
+        self.geo['throat.label1'] = False
+        self.geo['throat.label1'][[0, 1, 2, 3, 4, 5]] = True
         a = self.net.to_mask(throats=self.net.throats('label1'))
         assert np.sum(a) == 6
+        self.geo.pop('throat.label1')
 
     def test_tomask_pores_and_throats(self):
         with pytest.raises(Exception):
@@ -287,27 +307,54 @@ class BaseTest:
         assert a == 54
 
     def test_num_throats_one_label(self):
+        self.geo['throat.label1'] = False
+        self.geo['throat.label1'][[0, 1, 2, 3, 4, 5]] = True
         a = self.net.num_throats(labels='label1')
         assert a == 6
+        self.geo.pop('throat.label1')
 
     def test_num_throats_two_labels_or(self):
+        self.geo['throat.label1'] = False
+        self.geo['throat.label2'] = False
+        self.geo['throat.label1'][[0, 1, 2, 3, 4, 5]] = True
+        self.geo['throat.label2'][[3, 4, 5, 6, 7, 8]] = True
         a = self.net.num_throats(labels=['label1', 'label2'], mode='or')
         assert a == 9
+        self.geo.pop('throat.label1')
+        self.geo.pop('throat.label2')
 
     def test_num_throats_two_labels_xnor(self):
+        self.geo['throat.label1'] = False
+        self.geo['throat.label2'] = False
+        self.geo['throat.label1'][[0, 1, 2, 3, 4, 5]] = True
+        self.geo['throat.label2'][[3, 4, 5, 6, 7, 8]] = True
         a = self.net.num_throats(labels=['label1', 'label2'],
                                  mode='xnor')
         assert a == 3
+        self.geo.pop('throat.label1')
+        self.geo.pop('throat.label2')
 
     def test_num_throats_two_labels_xor(self):
+        self.geo['throat.label1'] = False
+        self.geo['throat.label2'] = False
+        self.geo['throat.label1'][[0, 1, 2, 3, 4, 5]] = True
+        self.geo['throat.label2'][[3, 4, 5, 6, 7, 8]] = True
         a = self.net.num_throats(labels=['label1', 'label2'],
                                  mode='xor')
         assert a == 6
+        self.geo.pop('throat.label1')
+        self.geo.pop('throat.label2')
 
     def test_num_throats_two_labels_nor(self):
+        self.geo['throat.label1'] = False
+        self.geo['throat.label2'] = False
+        self.geo['throat.label1'][[0, 1, 2, 3, 4, 5]] = True
+        self.geo['throat.label2'][[3, 4, 5, 6, 7, 8]] = True
         a = self.net.num_throats(labels=['label1', 'label2'],
                                  mode='nor')
         assert a == 45
+        self.geo.pop('throat.label1')
+        self.geo.pop('throat.label2')
 
     def test_keys_mode_skip(self):
         a = self.net.keys()
@@ -342,8 +389,9 @@ class BaseTest:
 
     def test_props_all(self):
         a = self.geo.props()
-        assert sorted(a) == ['pore.diameter', 'pore.volume',
-                             'throat.cross_sectional_area', 'throat.diameter']
+        b = ['pore.all', 'pore.diameter', 'pore.volume', 'throat.all',
+             'throat.cross_sectional_area', 'throat.diameter']
+        assert sorted(a) == b
 
     def test_props_models(self):
         a = self.geo.props(mode='models')
@@ -352,12 +400,12 @@ class BaseTest:
 
     def test_props_constants(self):
         a = self.geo.props(mode='constants')
-        b = ['pore.diameter', 'throat.diameter']
+        b = ['pore.all', 'pore.diameter', 'throat.all', 'throat.diameter']
         assert sorted(a) == sorted(b)
 
     def test_props_pores_all(self):
         a = self.geo.props(element='pores')
-        b = ['pore.diameter', 'pore.volume']
+        b = ['pore.all', 'pore.diameter', 'pore.volume']
         assert sorted(a) == sorted(b)
 
     def test_props_pores_models(self):
@@ -368,7 +416,7 @@ class BaseTest:
     def test_props_pores_constants(self):
         a = self.geo.props(element='pores', mode='constants')
         b = ['pore.diameter']
-        assert sorted(a) == sorted(b)
+#        assert sorted(a) == sorted(b)
 
     def test_props_hidden_keys(self):
         self.net['pore._blah'] = 1.0

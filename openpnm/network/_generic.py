@@ -25,7 +25,7 @@ class NetworkSettings:
 
 @docstr.get_sections(base='GenericNetwork', sections=['Parameters'])
 @docstr.dedent
-class GenericNetwork(ParamMixin, Base, ModelsMixin, LabelMixin):
+class GenericNetwork(ParamMixin, LabelMixin, Base, ModelsMixin):
     r"""
     This generic class contains the main functionality used by all
     networks.
