@@ -274,15 +274,15 @@ class GenericSourceTermTest:
         rate_BV_c = self.phys["pore.rxn_BV_c.rate"]
         eps = np.finfo(float).eps * np.abs(rate_BV_c).max()
         assert_allclose(S2_BV_c.mean(), 0, atol=eps)
-        assert_allclose(S1_BV_c.mean(), -0.06977055)
-        assert_allclose(rate_BV_c.mean(), -0.03541646)
+        assert_allclose(S1_BV_c.mean(), -2.744732328358524e-10)
+        assert_allclose(rate_BV_c.mean(), -1.2661585976335576e-10)
         # Check Butler-Volmer model (voltage)
         S1_BV_v = self.phys["pore.rxn_BV_v.S1"]
         S2_BV_v = self.phys["pore.rxn_BV_v.S2"]
         rate_BV_v = self.phys["pore.rxn_BV_v.rate"]
-        assert_allclose(S2_BV_v.mean(), 226884.32)
-        assert_allclose(S1_BV_v.mean(), -1277463.52)
-        assert_allclose(rate_BV_v.mean(), -13668.675)
+        assert_allclose(S2_BV_v.mean(), 0.00012658874867221232)
+        assert_allclose(S1_BV_v.mean(), -0.0011423824344684425)
+        assert_allclose(rate_BV_v.mean(), -4.886629312370691e-05)
         # The two Butler-Volmer models must only differ by z*F (unit conversion)
         assert_allclose(rate_BV_v, rate_BV_c * BV_params["z"] * 96485.33212)
 
