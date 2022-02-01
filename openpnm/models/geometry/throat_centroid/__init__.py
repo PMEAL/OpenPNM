@@ -1,6 +1,6 @@
 r"""
-throat_centroid Model
--------------------------
+Throat Centroid Model
+---------------------
 
 Calculate throat centroid values by averaging adjacent pore coordinates
 

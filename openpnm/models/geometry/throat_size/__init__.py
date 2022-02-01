@@ -1,6 +1,6 @@
 r"""
-throat_size Models
--------------------------
+Throat Size Models
+------------------
 
 This model contains a selection of functions for calcuating the
 throat size

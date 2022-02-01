@@ -1,6 +1,6 @@
 r"""
-pore_surface_area Models
--------------------------
+Pore Surface Area Models
+------------------------
 
 This model contains a selection of functions for Calculating pore surface area.
 """
