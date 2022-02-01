@@ -160,7 +160,8 @@ class MultiPhase(GenericPhase):
         Examples
         --------
         >>> import openpnm as op
-        >>> from openpnm.phase import Air, Water, MultiPhase
+        >>> from openpnm.phase import Air, Water
+        >>> from openpnm.contrib import MultiPhase
         >>> from openpnm.models.misc import constant
 
         >>> net = op.network.Cubic(shape=[5, 5, 5])
