@@ -628,7 +628,7 @@ def butler_volmer_conc(
     number of electrons transferred and F is the Faraday's constant.
 
     .. math::
-        r =  j_0 A_{rxn} (\frac{ X }{ c_{ref} }) ^ {\nu}
+        r =  j_0 A_{rxn} (\frac{ 1 }{ z F })(\frac{ X }{ c_{ref} }) ^ {\nu}
         \Big(
             \exp(  \frac{\alpha_a z_{rds} F}{RT} \eta )
           - \exp( -\frac{\alpha_c z_{rds} F}{RT} \eta )
