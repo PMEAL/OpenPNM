@@ -15,7 +15,7 @@ class MultiPhaseTest:
 
     def test_multiphase_init(self):
         phases = [self.air, self.water]
-        m = op.phase.MultiPhase(network=self.net, phases=phases)
+        m = op.contrib.MultiPhase(network=self.net, phases=phases)
 
         assert np.all(m['pore.occupancy.all'] == 0.0)
         assert np.all(m['throat.occupancy.all'] == 0.0)
@@ -25,7 +25,7 @@ class MultiPhaseTest:
 
     def test_multiphase_no_occupancy_yet(self):
         phases = [self.air, self.water]
-        m = op.phase.MultiPhase(network=self.net, phases=phases)
+        m = op.contrib.MultiPhase(network=self.net, phases=phases)
         self.water['pore.temperature'] = 300
 
         assert np.all(self.water['pore.temperature'] == 300)
@@ -35,7 +35,7 @@ class MultiPhaseTest:
 
     def test_multiphase_set_occupancy_w_indices_only(self):
         phases = [self.air, self.water]
-        m = op.phase.MultiPhase(network=self.net, phases=phases)
+        m = op.contrib.MultiPhase(network=self.net, phases=phases)
 
         Ps_water = np.array([0, 1, 2])
         Ps_water_mask = self.net.to_mask(pores=Ps_water)
@@ -51,7 +51,7 @@ class MultiPhaseTest:
 
     def test_multiphase_set_occupancy_w_values_only(self):
         phases = [self.air, self.water]
-        m = op.phase.MultiPhase(network=self.net, phases=phases)
+        m = op.contrib.MultiPhase(network=self.net, phases=phases)
 
         Pvals = np.array([0.5, 0.9, 0.01])
         Tvals = np.array([0.9, 0.01])
@@ -80,7 +80,7 @@ class MultiPhaseTest:
 
     def test_multiphase_set_occupancy_w_pore_indices_and_Pvals(self):
         phases = [self.air, self.water]
-        m = op.phase.MultiPhase(network=self.net, phases=phases)
+        m = op.contrib.MultiPhase(network=self.net, phases=phases)
 
         Ps_water = np.array([0, 1, 2])
         Pvals = np.array([0.5, 0.9, 0.01])
@@ -122,7 +122,7 @@ class MultiPhaseTest:
         assert m["throat.occupancy.water"][Ts_water].mean() == 0.23
 
     def test_multiphase_automatic_throat_occupancy(self):
-        m = op.phase.MultiPhase(network=self.net, phases=[self.air,
+        m = op.contrib.MultiPhase(network=self.net, phases=[self.air,
                                                            self.water])
         pores = np.random.choice(self.net.Ps, size=100, replace=False)
         Pvals = np.random.random(pores.size)
@@ -140,14 +140,14 @@ class MultiPhaseTest:
         assert_allclose(m["throat.occupancy.water"], np.minimum(oc1, oc2))
 
     def test_multiphase_occupancy_set_single_phase(self):
-        m = op.phase.MultiPhase(network=self.net)
+        m = op.contrib.MultiPhase(network=self.net)
         self.water['pore.temperature'] = 300
         assert np.all(self.water['pore.temperature'] == 300)
         m.set_occupancy(phase=self.water, Pvals=1, Tvals=1)
         assert np.all(m['pore.temperature'] == 300)
 
     def test_multiphase_occupancy_set_two_phase(self):
-        m = op.phase.MultiPhase(network=self.net)
+        m = op.contrib.MultiPhase(network=self.net)
         self.water['pore.temperature'] = 300
         self.air['pore.temperature'] = 200
 
@@ -165,7 +165,7 @@ class MultiPhaseTest:
 
     def test_mutliphase_partition_coef(self):
         phases = [self.water, self.air, self.oil]
-        m = op.phase.MultiPhase(network=self.net, phases=phases)
+        m = op.contrib.MultiPhase(network=self.net, phases=phases)
 
         x, y, z = self.net["pore.coords"].T
         ps_water = self.net.Ps[(y <= 3) + (y >= 8)]
@@ -231,24 +231,24 @@ class MultiPhaseTest:
     def test_multiphase_invalid_phase(self):
         pn = op.network.Cubic(shape=[3, 3, 3])
         water = op.phase.Water(network=pn)
-        m = op.phase.MultiPhase(network=self.net)
+        m = op.contrib.MultiPhase(network=self.net)
         with pytest.raises(Exception):
             m.set_occupancy(phase=water)
 
     def test_multiphase_invalid_occupancy(self):
-        m = op.phase.MultiPhase(network=self.net, phases=[self.water, self.air])
+        m = op.contrib.MultiPhase(network=self.net, phases=[self.water, self.air])
         # The next line ideally should throw an Exception, but warning for now
         m.set_occupancy(phase=self.water, Pvals=1.5, Tvals=2.5)
 
     def test_format_interface_prop(self):
         phases = [self.water, self.air]
-        m = op.phase.MultiPhase(network=self.net, phases=phases)
+        m = op.contrib.MultiPhase(network=self.net, phases=phases)
         propname = m._format_interface_prop(propname="throat.foo", phases=phases)
         assert propname == "throat.foo.water:air"
 
     def test_get_phases_names(self):
         phases = [self.water, self.air]
-        m = op.phase.MultiPhase(network=self.net, phases=phases)
+        m = op.contrib.MultiPhase(network=self.net, phases=phases)
         names = m._get_phases_names("throat.foo.air:water")
         assert names[0] == "air"
         assert names[1] == "water"
@@ -261,7 +261,7 @@ class MultiPhaseTest:
         oil = op.phase.Water(network=net, name="oil")
 
         # Create MultiPhase and set phase occupancies
-        m = op.phase.MultiPhase(network=net, phases=[water, air, oil])
+        m = op.contrib.MultiPhase(network=net, phases=[water, air, oil])
         m.set_occupancy(air, pores=[0, 1])
         m.set_occupancy(water, pores=[2, 3])
         m.set_occupancy(oil, pores=[4, 5])

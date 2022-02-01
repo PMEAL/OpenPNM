@@ -65,4 +65,3 @@ from ._generic import GenericPhase
 from ._air import Air
 from ._water import Water
 from ._mercury import Mercury
-from ._multiphase import MultiPhase

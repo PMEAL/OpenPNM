@@ -178,7 +178,7 @@ class GenericTransportTest:
         geom = op.geometry.SpheresAndCylinders(network=net, pores=net.Ps, throats=net.Ts)
         air = op.phase.Air(network=net)
         water = op.phase.Water(network=net)
-        m = op.phase.MultiPhase(network=net, phases=[air, water])
+        m = op.contrib.MultiPhase(network=net, phases=[air, water])
         m.set_occupancy(phase=air, pores=[0, 1, 2])
         m.set_occupancy(phase=water, pores=[3, 4, 5])
         const = op.models.misc.constant
