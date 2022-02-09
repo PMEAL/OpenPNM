@@ -85,6 +85,10 @@ jobs:
         pr_allow_empty: true                              # Creates pull request even if there are no changes
         github_token: ${{ secrets.GITHUB_TOKEN }}
 
+    - name: Trim the 4th digit from the tag
+      run:
+        echo "TAG_NEW=${TAG_NEW%.dev?}" >> $GITHUB_ENV
+
     - name: Create new tag
       run: |
         REPOSITORY=${INPUT_REPOSITORY:-$GITHUB_REPOSITORY}
