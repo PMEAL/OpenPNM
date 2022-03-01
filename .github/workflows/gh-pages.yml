@@ -1,9 +1,10 @@
 name: Deploy Documentation
 
-on: [pull_request]
-  # push:
-  #   branches:
-  #   - "*"
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - release
 
 jobs:
   deploy-docs:

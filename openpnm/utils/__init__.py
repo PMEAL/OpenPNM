@@ -1,19 +1,17 @@
 r"""
+Utilities and helper classes/functions
+======================================
 
-**openpnm.utils**
-
-----
-
-This module contains two very important classes (Project and Workspace) as well
-as a number of helper classes.
+This module contains two very important classes (Project and Workspace)
+as well as a number of helper classes.
 
 """
 
 import logging as logging
 from .misc import *
-from .Workspace import Workspace
-from .Project import Project
-from .Settings import *
+from ._settings import *
+from ._workspace import *
+from ._project import *
 
 
 # You can add info to the logger message by inserting the desired %(item)
@@ -30,3 +28,8 @@ TIME STAMP : %(asctime)s\
 
 logging.basicConfig(level=logging.WARNING, format=log_format)
 del log_format
+
+
+def _get_version():
+    from openpnm.__version__ import __version__
+    return __version__.strip(".dev0")

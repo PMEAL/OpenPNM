@@ -11,7 +11,7 @@ class CapillaryPressureTest:
         )
         self.geo["throat.diameter"] = 1
         self.geo["pore.diameter"] = 1
-        self.water = op.phases.GenericPhase(network=self.net)
+        self.water = op.phase.GenericPhase(network=self.net)
         self.water["pore.surface_tension"] = 0.072
         self.water["pore.contact_angle"] = 120
         self.phys = op.physics.GenericPhysics(
@@ -150,7 +150,7 @@ class CapillaryPressureTest:
         del_geom = prj.geometries()["test_del"]
         vor_geom = prj.geometries()["test_vor"]
         f = op.models.physics.capillary_pressure.ransohoff_snap_off
-        water = op.phases.GenericPhase(network=net)
+        water = op.phase.GenericPhase(network=net)
         water["pore.surface_tension"] = 0.072
         water["pore.contact_angle"] = 45
         phys1 = op.physics.GenericPhysics(network=net, geometry=del_geom, phase=water)

@@ -1,37 +1,42 @@
+import sys
+import math
 import copy
 import json
 import inspect
 import warnings
 import functools
-import numpy as _np
-import scipy as _sp
-import scipy.sparse
+import numpy as np
+import scipy.sparse as sparse
 import time as _time
 from collections import OrderedDict
 from docrep import DocstringProcessor
-from IPython.core.magics.execution import _format_time
+
 
 __all__ = [
-    "Docorator",
-    "PrintableDict",
-    "PrintableList",
-    "NestedDict",
-    "SubDict",
-    "SettingsDict",
-    "GenericSettings",
-    "HealthDict",
-    "flat_list",
-    "sanitize_dict",
-    "unique_list",
-    "tic", "toc",
-    "is_symmetric",
-    "is_valid_propname",
-    "prettify_logger_message",
-    "remove_prop_deep",
+    'Docorator',
+    'PrintableList',
+    'PrintableDict',
+    'SubDict',
+    'NestedDict',
+    'HealthDict',
+    'tic',
+    'toc',
+    'unique_list',
+    'flat_list',
+    'sanitize_dict',
+    'methods_to_table',
+    'models_to_table',
+    'catch_module_not_found',
+    'ignore_warnings',
+    'is_symmetric',
+    'is_valid_propname',
+    'prettify_logger_message',
+    'remove_prop_deep',
 ]
 
 
 class Docorator(DocstringProcessor):
+    """Brief explanation of 'Docorator'"""
 
     __instance__ = None
 
@@ -56,10 +61,10 @@ class Docorator(DocstringProcessor):
 
 class PrintableList(list):
     r"""
-    Simple subclass of ``list`` that has nice printing.  Only works flat lists.
+    Simple subclass of ``list`` that has nice printing. Only works flat lists.
 
-    Example
-    -------
+    Examples
+    --------
     >>> from openpnm.utils import PrintableList
     >>> temp = ['item1', 'item2', 'item3']
     >>> print(PrintableList(temp))
@@ -91,8 +96,8 @@ class PrintableDict(OrderedDict):
     r"""
     Simple subclass of ``dict`` that has nicer printing.
 
-    Example
-    -------
+    Examples
+    --------
     >>> from openpnm.utils import PrintableDict
     >>> from numpy import array as arr
     >>> d = {'item1': 1, 'item2': '1', 'item3': [1, 1], 'item4': arr([1, 1])}
@@ -125,67 +130,16 @@ class PrintableDict(OrderedDict):
         for item in list(self.keys()):
             if item.startswith('_'):
                 continue
-            if isinstance(self[item], _np.ndarray):
-                lines.append("{0:<35s} {1}".format(item, _np.shape(self[item])))
+            if isinstance(self[item], np.ndarray):
+                lines.append("{0:<35s} {1}".format(item, np.shape(self[item])))
             else:
                 lines.append("{0:<35s} {1}".format(item, self[item]))
         lines.append(header)
         return "\n".join(lines)
 
 
-class SettingsDict(PrintableDict):
-    r"""
-    The SettingsDict implements the __missing__ magic method, which returns
-    None instead of KeyError.  This is useful for checking the value of a
-    settings without first ensuring it exists.
-
-    Examples
-    --------
-    >>> from openpnm.utils import SettingsDict
-    >>> sd = SettingsDict()
-    >>> sd['test'] = True
-    >>> print(sd['test'])
-    True
-    >>> print(sd['not_a_valid_key'])
-    None
-
-    """
-    __doc__ = ''
-
-    def __setitem__(self, key, value):
-        try:
-            json.dumps(value)
-        except TypeError:
-            raise Exception('Only serializable objects can be stored in settings')
-        super().__setitem__(key, value)
-
-    def __missing__(self, key):
-        self[key] = None
-        return self[key]
-
-    def _update_settings_and_docs(self, dc):
-        if isinstance(dc, type):  # If dc is class then instantiate it
-            dc = dc()
-        self.__doc__ = dc.__doc__
-        # if dc is a dataclass object.  This step is only necessary to support
-        # Python 3.6 which doesn't have the dataclasses module
-        if hasattr(dc, '__dict__'):
-            dc = copy.deepcopy(dc.__dict__)
-        else:
-            dc = copy.deepcopy(dc)
-        for item in dc.keys():
-            self[item] = dc[item]
-
-
-class GenericSettings:
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        for item in dir(self):
-            if not item.startswith('__'):
-                self.__dict__[item] = getattr(self, item)
-
-
 class SubDict(dict):
+    """Brief explanation of 'SubDict'"""
     def __getitem__(self, key):
         for item in self.keys():
             if item.endswith('.' + key):
@@ -194,6 +148,8 @@ class SubDict(dict):
 
 
 class NestedDict(dict):
+    """Brief explanation of 'NestedDict'"""
+
     def __init__(self, mapping={}, delimiter="/"):
         super().__init__()
         self.delimiter = delimiter
@@ -257,11 +213,11 @@ class NestedDict(dict):
 
 class HealthDict(PrintableDict):
     r"""
-    This class adds a 'health' check to a standard dictionary.  This check
-    looks into the dict values, and considers empty lists as healthy and all
-    else as unhealthy.  If one or more entries is 'unhealthy' the health method
-    returns False.
+    This class adds a 'health' check to a standard dictionary.
 
+    This check looks into the dict values, and considers empty lists as
+    healthy and all else as unhealthy.  If one or more entries is
+    'unhealthy' the health method returns False.
     """
 
     def __init__(self, **kwargs):
@@ -279,6 +235,81 @@ class HealthDict(PrintableDict):
         return health
 
     health = property(fget=_get_health)
+
+
+"""
+BSD 3-Clause License
+
+- Copyright (c) 2008-Present, IPython Development Team
+- Copyright (c) 2001-2007, Fernando Perez <fernando.perez@colorado.edu>
+- Copyright (c) 2001, Janko Hauser <jhauser@zscout.de>
+- Copyright (c) 2001, Nathaniel Gray <n8gray@caltech.edu>
+
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice, this
+  list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+* Neither the name of the copyright holder nor the names of its
+  contributors may be used to endorse or promote products derived from
+  this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+"""
+def _format_time(timespan, precision=3):
+    """Formats the timespan in a human readable form"""
+
+    if timespan >= 60.0:
+        # we have more than a minute, format that in a human readable form
+        # Idea from http://snipplr.com/view/5713/
+        parts = [("d", 60*60*24),("h", 60*60),("min", 60), ("s", 1)]
+        time = []
+        leftover = timespan
+        for suffix, length in parts:
+            value = int(leftover / length)
+            if value > 0:
+                leftover = leftover % length
+                time.append(u'%s%s' % (str(value), suffix))
+            if leftover < 1:
+                break
+        return " ".join(time)
+
+
+    # Unfortunately the unicode 'micro' symbol can cause problems in
+    # certain terminals.
+    # See bug: https://bugs.launchpad.net/ipython/+bug/348466
+    # Try to prevent crashes by being more secure than it needs to
+    # E.g. eclipse is able to print a µ, but has no sys.stdout.encoding set.
+    units = [u"s", u"ms",u'us',"ns"] # the save value
+    if hasattr(sys.stdout, 'encoding') and sys.stdout.encoding:
+        try:
+            u'\xb5'.encode(sys.stdout.encoding)
+            units = [u"s", u"ms",u'\xb5s',"ns"]
+        except:
+            pass
+    scaling = [1, 1e3, 1e6, 1e9]
+
+    if timespan > 0.0:
+        order = min(-int(math.floor(math.log10(timespan)) // 3), 3)
+    else:
+        order = 3
+    return u"%.*g %s" % (precision, timespan * scaling[order], units[order])
 
 
 def tic():
@@ -302,9 +333,9 @@ def toc(quiet=False):
 
     Parameters
     ----------
-    quiet : Boolean
-        If False (default) then a message is output to the console.  If True
-        the message is not displayed and the elapsed time is returned.
+    quiet : bool, default is False
+        If False then a message is output to the console. If
+        True the message is not displayed and the elapsed time is returned.
 
     See Also
     --------
@@ -325,7 +356,7 @@ def unique_list(input_list):
     """
     output_list = []
     if len(input_list) > 0:
-        dim = _np.shape(input_list)[1]
+        dim = np.shape(input_list)[1]
         for i in input_list:
             match = False
             for j in output_list:
@@ -345,8 +376,8 @@ def unique_list(input_list):
 
 def flat_list(input_list):
     r"""
-    Given a list of nested lists of arbitrary depth, returns a single level or
-    'flat' list.
+    Given a list of nested lists of arbitrary depth, returns a single
+    level or 'flat' list.
     """
     x = input_list
     if isinstance(x, list):
@@ -371,8 +402,7 @@ def sanitize_dict(input_dict):
 
 
 def methods_to_table(obj):
-    r"""
-    """
+    """Brief explanation of 'methods_to_table'"""
     parent = obj.__class__.__mro__[1]
     temp = inspect.getmembers(parent, predicate=inspect.isroutine)
     parent_funcs = [i[0] for i in temp if not i[0].startswith("_")]
@@ -406,12 +436,11 @@ def models_to_table(obj, params=True):
 
     Parameters
     ----------
-    obj : OpenPNM object
+    obj : Base
         Any object that has a ``models`` attribute
-
-    params : boolean
+    params : bool
         Indicates whether or not to include a list of parameter
-        values in the table.  Set to False for just a list of models, and
+        values in the table. Set to False for just a list of models, and
         True for a more verbose table with all parameter values.
 
     """
@@ -464,12 +493,13 @@ def catch_module_not_found(function):
 
 def ignore_warnings(warning=RuntimeWarning):
     r"""
-    Decorator for catching warnings. Useful in pore-scale models where nans
-    are inevitable, and numpy gets annoying by throwing lots of RuntimeWarnings.
+    Decorator for catching warnings. Useful in pore-scale models where
+    nans are inevitable, and numpy gets annoying by throwing lots of
+    RuntimeWarnings.
 
     Parameters
     ----------
-    warning : Python Warning object
+    warning : Warning
         Python warning type that you want to temporarily ignore
 
     Examples
@@ -507,12 +537,11 @@ def is_symmetric(a, rtol=1e-10):
 
     Parameters
     ----------
-    a : ndarray, sparse matrix
+    a : ndarray or sparse matrix
         Object to check for being a symmetric matrix.
-
     rtol : float
-        Relative tolerance with respect to the smallest entry in ``a`` that
-        is used to determine if ``a`` is symmetric.
+        Relative tolerance with respect to the smallest entry in ``a``
+        that is used to determine if ``a`` is symmetric.
 
     Returns
     -------
@@ -520,23 +549,23 @@ def is_symmetric(a, rtol=1e-10):
         ``True`` if ``a`` is a symmetric matrix, ``False`` otherwise.
 
     """
-    if not isinstance(a, _np.ndarray) and not _sp.sparse.issparse(a):
+    if not isinstance(a, np.ndarray) and not sparse.issparse(a):
         raise Exception("'a' must be either a sparse matrix or an ndarray.")
     if a.shape[0] != a.shape[1]:
         raise Exception("'a' must be a square matrix.")
 
-    atol = _np.amin(_np.absolute(a.data)) * rtol
-    if _sp.sparse.issparse(a):
+    atol = np.amin(np.absolute(a.data)) * rtol
+    if sparse.issparse(a):
         issym = False if ((a - a.T) > atol).nnz else True
-    elif isinstance(a, _np.ndarray):
-        issym = False if _np.any((a - a.T) > atol) else True
+    elif isinstance(a, np.ndarray):
+        issym = False if np.any((a - a.T) > atol) else True
 
     return issym
 
 
 def is_valid_propname(propname):
     r"""
-    Check if ``propname`` is a valid OpenPNM propname, i.e. starts with
+    Checks if ``propname`` is a valid OpenPNM propname, i.e. starts with
     'pore.' or 'throat.'
 
     Parameters
@@ -564,9 +593,7 @@ def is_valid_propname(propname):
 
 
 def prettify_logger_message(msg):
-    r"""
-    Prettifies logger messages by breaking them up into multi lines
-    """
+    """Prettifies logger messages by breaking them up into multi lines"""
     from textwrap import wrap
     linewidth = 75 - 13
     indent = "\n" + " " * 13
@@ -575,7 +602,7 @@ def prettify_logger_message(msg):
 
 
 def remove_prop_deep(obj, propname):
-    r"""Hierarchically deletes the given propname and its children"""
+    """Hierarchically deletes the given propname and its children"""
     for k in list(obj.keys()):
         obj._parse_element(propname)
         if k.startswith(propname):

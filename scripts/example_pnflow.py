@@ -4,7 +4,7 @@ ws.settings['loglevel'] = 30
 
 pn = op.network.Cubic(shape=[10, 10, 10], spacing=1e-4)
 geo = op.geometry.SpheresAndCylinders(network=pn, pores=pn.Ps, throats=pn.Ts)
-air = op.phases.Air(network=pn)
+air = op.phase.Air(network=pn)
 phys = op.physics.Standard(network=pn, phase=air, geometry=geo)
 F = op.metrics.FormationFactor(network=pn)
 F.run()

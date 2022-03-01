@@ -1,8 +1,14 @@
 r"""
+Neighbor Lookups
+================
+
 """
 import numpy as np
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)
+
+
+__all__ = ['from_neighbor_throats', 'from_neighbor_pores']
 
 
 def from_neighbor_throats(target, prop, mode='min', ignore_nans=True):
@@ -11,20 +17,31 @@ def from_neighbor_throats(target, prop, mode='min', ignore_nans=True):
 
     Parameters
     ----------
-    target : OpenPNM Object
+    target : Base
         The object which this model is associated with. This controls the
         length of the calculated array, and also provides access to other
         necessary properties.
-    prop : string
+    prop : str
         The dictionary key of the array containing the throat property to be
         used in the calculation.
-    mode : string
-        Controls how the pore property is calculated.  Options are 'min',
-        'max' and 'mean'.
+    mode : str
+        Controls how the pore property is calculated. The default value is
+        'min'. Options are:
+
+            ===========  =====================================================
+            mode         meaning
+            ===========  =====================================================
+            'min'        Returns the value of the minimum property of the
+                         neighboring throats
+            'max'        Returns the value of the maximum property of the
+                         neighboring throats
+            'mean'       Returns the value of the mean property of the
+                         neighboring throats
+            ===========  =====================================================
 
     Returns
     -------
-    value : ND-array
+    value : ndarray
         Array containing customized values based on those of adjacent throats.
 
     """
@@ -54,7 +71,7 @@ def from_neighbor_throats(target, prop, mode='min', ignore_nans=True):
         if ignore_nans:
             np.subtract.at(counts, im.row, nans[im.col])
         values = values/counts
-    Ps = boss.map_pores(target.pores(), target)
+    Ps = boss.pores(target.name)
     return np.array(values)[Ps]
 
 
@@ -64,29 +81,42 @@ def from_neighbor_pores(target, prop, mode='min', ignore_nans=True):
 
     Parameters
     ----------
-    target : OpenPNM Object
+    target : Base
         The object which this model is associated with. This controls the
         length of the calculated array, and also provides access to other
         necessary properties.
-    prop : string
+    prop : str
         The dictionary key to the array containing the pore property to be
         used in the calculation.
-    mode : string
-        Controls how the throat property is calculated.  Options are 'min',
-        'max' and 'mean'.
-    ignore_nans : boolean (default is ``True``)
+    mode : str
+        Controls how the pore property is calculated. The default value is
+        'min'. Options are:
+
+            ===========  =====================================================
+            mode         meaning
+            ===========  =====================================================
+            'min'        Returns the value of the minimum property of the
+                         neighboring pores
+            'max'        Returns the value of the maximum property of the
+                         neighboring pores
+            'mean'       Returns the value of the mean property of the
+                         neighboring pores
+            ===========  =====================================================
+
+    ignore_nans : bool (default is ``True``)
         If ``True`` the result will ignore ``nans`` in the neighbors
 
     Returns
     -------
-    value : ND-array
+    value : ndarray
         Array containing customized values based on those of adjacent pores.
 
     """
     prj = target.project
     lookup = prj.find_full_domain(target)
     network = prj.network
-    throats = network.map_throats(target.throats(), target)
+    domain = target._domain
+    throats = domain.throats(target.name)
     P12 = network.find_connected_pores(throats)
     pvalues = lookup[prop][P12]
     if ignore_nans:

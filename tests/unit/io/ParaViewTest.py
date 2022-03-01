@@ -15,7 +15,7 @@ class ParaViewTest:
     def test_export_data(self):
         pn = op.network.Cubic(shape=[30, 40])
         geo = op.geometry.SpheresAndCylinders(network=pn, pores=pn.Ps, throats=pn.Ts)
-        water = op.phases.Water(network=pn)
+        water = op.phase.Water(network=pn)
         _ = op.physics.Standard(network=pn, phase=water, geometry=geo)
         op.io.VTK.export_data(pn, water, 'test.vtp')
         op.io.ParaView.export_data(pn, filename='test.vtp')

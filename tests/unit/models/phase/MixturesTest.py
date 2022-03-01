@@ -1,6 +1,6 @@
 import openpnm as op
 import numpy as np
-from openpnm.phases import mixtures
+from openpnm.phase import mixtures
 import openpnm.models as mods
 
 
@@ -21,7 +21,7 @@ class MixturesTest:
         self.ha.set_concentration(component=self.H2O, values=0.1)
         self.ha.update_mole_fractions()
         self.ha.add_model(propname='pore.diffusivity',
-                          model=mods.phases.mixtures.wilke_fuller_diffusivity)
+                          model=mods.phase.mixtures.wilke_fuller_diffusivity)
         assert 'pore.diffusivity.' + self.O2.name in self.ha.keys()
         assert 'pore.diffusivity.' + self.N2.name in self.ha.keys()
         assert 'pore.diffusivity.' + self.H2O.name in self.ha.keys()
@@ -49,12 +49,12 @@ class MixturesTest:
         self.N2['pore.test'] = 3
         self.O2['pore.test'] = 3
         self.ha.add_model(propname='pore.blah',
-                          model=mods.phases.mixtures.mole_weighted_average,
+                          model=mods.phase.mixtures.mole_weighted_average,
                           prop='pore.test')
         assert 'pore.blah' not in self.ha.keys()
         self.H2O['pore.test'] = 3
         self.ha.add_model(propname='pore.blah',
-                          model=mods.phases.mixtures.mole_weighted_average,
+                          model=mods.phase.mixtures.mole_weighted_average,
                           prop='pore.test')
         assert 'pore.blah' in self.ha.keys()
 

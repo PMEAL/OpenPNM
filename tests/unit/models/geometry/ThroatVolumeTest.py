@@ -10,13 +10,13 @@ class ThroatVolumeTest:
         self.geo = op.geometry.GenericGeometry(network=self.net,
                                                pores=self.net.Ps,
                                                throats=self.net.Ts)
-        self.air = op.phases.Air(network=self.net)
+        self.air = op.phase.Air(network=self.net)
         self.phys = op.physics.GenericPhysics(network=self.net,
                                               phase=self.air,
                                               geometry=self.geo)
         self.geo['throat.diameter'] = 0.1
         self.geo['throat.length'] = 1.0
-        self.geo['throat.area'] = 0.03
+        self.geo['throat.cross_sectional_area'] = 0.03
 
     def test_lens_and_pendular_ring(self):
         net = op.network.Cubic(shape=[2, 1, 1])
@@ -26,13 +26,13 @@ class ThroatVolumeTest:
         net.add_model(propname='throat.lens_volume',
                       model=mod)
         Vlens = net['throat.lens_volume']
-        assert np.isclose(Vlens, 2*0.006733852203712552)
+        assert np.isclose(Vlens, 2*0.00084173)
         mod = op.models.geometry.throat_volume.pendular_ring
         net.add_model(propname='throat.ring_volume',
                       model=mod)
-        Vcyl = 2*(0.01315292522620208)
+        Vcyl = 2*(0.00164412)
         Vring = net['throat.ring_volume']
-        assert np.isclose(Vcyl - Vring, 2*0.006733852203712552)
+        assert np.isclose(Vcyl - Vring, 2*0.00084173)
 
     def test_cylinder(self):
         self.geo.add_model(propname='throat.volume',
@@ -58,7 +58,7 @@ class ThroatVolumeTest:
 
     def test_extrusion(self):
         self.geo.add_model(propname='throat.volume',
-                           throat_area='throat.area',
+                           throat_area='throat.cross_sectional_area',
                            model=mods.extrusion)
         a = np.array([0.03])
         b = np.unique(self.geo['throat.volume'])

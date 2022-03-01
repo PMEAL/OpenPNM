@@ -15,7 +15,7 @@ Nx = 10
 shape = [Nx, Nx, Nx]
 spacing = 1/Nx
 net = op.network.Cubic(shape=shape, spacing=spacing)
-air = op.phases.Air(network=net)
+air = op.phase.Air(network=net)
 air["throat.diffusive_conductance"] = np.random.rand(net.Nt)
 
 # Add reactions

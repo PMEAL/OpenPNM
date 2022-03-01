@@ -3,36 +3,50 @@
 .. module:: openpnm
    :noindex:
 
-.. toctree::
-   :hidden:
-   :maxdepth: 1
+.. admonition:: Under Development
 
-   userguide/index
-   modules/index
-   examples
+   This documentation is under active development, and is not ready yet.
+   We aim to release OpenPNM v3 by April 2022. This documentation,
+   therefore, does not reflect the latest stable release on
+   PyPI/conda-forge (v2.8.2).
 
-.. raw:: html
+.. image:: ./_static/images/openpnm_logo.png
+   :name: banner
 
-   <p align="center">
-     <img src=".\_static\images\openpnm_logo.png" width="80%"></img>
-   </p>
+#########################################
+Pore Network Modeling Framework in Python
+#########################################
 
-*OpenPNM* is an open source project to provide porous media researchers
+What is OpenPNM? |stars|
+########################
+
+OpenPNM is an open source project to provide porous media researchers
 with a ready-made framework for performing a wide range of pore network
 simulations.
 
-#########################################
-Pore-network Modeling Framework in Python
-#########################################
+.. toctree::
+   :hidden:
+   :maxdepth: 0
 
-*OpenPNM* is an open source project to provide a ready-made framework for
-performing pore network simulations of transport in porous materials.
+   user_guide/installation
+   user_guide/index
+   modules/index
+   examples/examples
 
-Citing
-######
+----
 
-If you use OpenPNM in your work, please include the following citation:
+How To Cite
+###########
 
-.. topic:: Citation
+If you use OpenPNM in a publication, please add the following citation:
 
-    Gostick J, Aghighi M, Hinebaugh J, Tranter T, Hoeh MA, Day H, Spellacy B, Sharqawy MH, Bazylak A, Burns A, Lehnert W. **OpenPNM: a pore network modeling package**. Computing in Science & Engineering. 2016 May 25;18(4):60-74. `doi:10.1109/MCSE.2016.49 <https://doi.org/10.1109/MCSE.2016.49>`_.
+.. admonition:: Citation
+
+    Gostick J, Aghighi M, Hinebaugh J, Tranter T, Hoeh MA, Day H,
+    Spellacy B, Sharqawy MH, Bazylak A, Burns A, Lehnert W.
+    **OpenPNM: a pore network modeling package**. *Computing in
+    Science & Engineering*. 2016 May 25;18(4):60-74.
+    `doi:10.1109/MCSE.2016.49 <https://doi.org/10.1109/MCSE.2016.49>`_.
+
+.. |stars| image:: https://img.shields.io/github/stars/PMEAL/OpenPNM.svg?style=social&label=Star&maxAge=2592000
+   :target: https://GitHub.com/PMEAL/OpenPNM/stargazers/

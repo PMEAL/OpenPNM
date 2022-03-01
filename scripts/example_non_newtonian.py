@@ -12,7 +12,7 @@ net = op.network.Cubic(shape=[20, 3, 3], spacing=1e-4, project=proj)
 geo = op.geometry.SpheresAndCylinders(network=net, pores=net.Ps, throats=net.Ts)
 
 # Create phase
-phase = op.phases.Water(network=net)
+phase = op.phase.Water(network=net)
 phase['pore.consistency'] = 4.2e-2  # Pa.s^n
 phase['pore.flow_index'] = 0.52
 phase['pore.viscosity_min'] = 0.001

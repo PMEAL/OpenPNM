@@ -1,13 +1,11 @@
+import numpy as np
 from openpnm.core import Base
 from openpnm.utils import logging
-import numpy as np
 logger = logging.getLogger(__name__)
 
 
 class GenericMetric(Base):
-    r"""
-
-    """
+    """Brief description of 'GenericMetric'"""
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)

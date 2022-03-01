@@ -53,7 +53,7 @@ class SubdomainTest:
         net = op.network.Cubic(shape=[3, 3, 3])
         geo = op.geometry.GenericGeometry(network=net, pores=net.Ps,
                                           throats=net.Ts)
-        phase = op.phases.GenericPhase(network=net)
+        phase = op.phase.GenericPhase(network=net)
         phys = op.physics.GenericPhysics(network=net, phase=phase,
                                           geometry=geo)
         geo.set_locations(pores=[0], mode='drop')
@@ -70,7 +70,7 @@ class SubdomainTest:
         pn = op.network.Cubic([6, 1, 1])
         g1 = op.geometry.GenericGeometry(network=pn, pores=[0, 1, 2])
         g2 = op.geometry.GenericGeometry(network=pn, pores=[3, 4, 5])
-        air = op.phases.Air(network=pn)
+        air = op.phase.Air(network=pn)
         phys1 = op.physics.GenericPhysics(network=pn)
         phys2 = op.physics.GenericPhysics(network=pn)
         with pytest.raises(Exception):
@@ -85,6 +85,22 @@ class SubdomainTest:
         assert phys2 in g2.physics
         assert phys1 in air.physics
         assert phys2 in air.physics
+
+    def test_get_conduit_data_with_subdomains(self):
+        pn = op.network.Cubic([6, 1, 1])
+        g1 = op.geometry.GenericGeometry(network=pn, pores=[0, 1, 2],
+                                         throats=[0, 1, 2])
+        g2 = op.geometry.GenericGeometry(network=pn, pores=[3, 4, 5],
+                                         throats=[3, 4])
+        pn['pore.foo'] = pn.Ps
+        pn['throat.foo'] = pn.Ts
+        d = g1.get_conduit_data(poreprop='pore.foo', throatprop='throat.foo')
+        assert np.all(d == np.array([[0, 0, 1],
+                                     [1, 1, 2],
+                                     [2, 2, 3]]))
+        d = g2.get_conduit_data(poreprop='pore.foo', throatprop='throat.foo')
+        assert np.all(d == np.array([[3, 3, 4],
+                                     [4, 4, 5]]))
 
 
 if __name__ == '__main__':

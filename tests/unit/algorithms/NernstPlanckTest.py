@@ -17,7 +17,7 @@ class NernstPlanckTest:
         self.geo['throat.conduit_lengths.throat'] = 0.6
         self.geo['throat.conduit_lengths.pore2'] = 0.1
 
-        self.phase = op.phases.GenericPhase(network=self.net)
+        self.phase = op.phase.GenericPhase(network=self.net)
         self.phase['pore.diffusivity.X'] = 1e-9
         self.phase['throat.valence.X'] = 1
 
@@ -47,7 +47,7 @@ class NernstPlanckTest:
         self.adm = op.algorithms.NernstPlanck(
             network=self.net, phase=self.phase, ion='X'
         )
-        self.adm.settings._update({"cache_A": False, "cache_b": False})
+        self.adm.settings._update({"cache": False})
         self.adm.set_value_BC(pores=self.net.pores('right'), values=2)
         self.adm.set_value_BC(pores=self.net.pores('left'), values=0)
 

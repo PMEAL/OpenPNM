@@ -22,7 +22,7 @@ def get_version(rel_path):
     for line in read(rel_path).splitlines():
         if line.startswith('__version__'):
             delim = '"' if '"' in line else "'"
-            return line.split(delim)[1]
+            return line.split(delim)[1].strip(".dev0")
     else:
         raise RuntimeError("Unable to find version string.")
 
@@ -52,27 +52,32 @@ setup(
         'openpnm.core',
         'openpnm.network',
         'openpnm.geometry',
-        'openpnm.phases',
-        'openpnm.phases.mixtures',
-        'openpnm.phases.mixtures.species.ions',
-        'openpnm.phases.mixtures.species.liquids',
-        'openpnm.phases.mixtures.species.gases',
+        'openpnm.phase',
+        'openpnm.phase.mixtures',
+        'openpnm.phase.mixtures.species.ions',
+        'openpnm.phase.mixtures.species.liquids',
+        'openpnm.phase.mixtures.species.gases',
         'openpnm.physics',
         'openpnm.utils',
         'openpnm.io',
         'openpnm.models',
-        'openpnm.models.topology',
+        'openpnm.models.network',
         'openpnm.models.misc',
         'openpnm.models.geometry',
-        'openpnm.models.phases',
+        'openpnm.models.phase',
         'openpnm.models.physics',
+        'openpnm.contrib',
         'openpnm.algorithms',
+        'openpnm.solvers',
+        'openpnm.integrators',
         'openpnm.metrics',
         'openpnm.topotools',
         'openpnm.topotools.generators',
         'openpnm.materials',
     ],
     install_requires=[
+        'attr',
+        'auto_all',
         'chemicals',
         'docrep>=0.3',
         'flatdict',
@@ -94,7 +99,6 @@ setup(
         'tqdm',
         'transforms3d',
         'traits',
-        'attr',
     ],
     author='OpenPNM Team',
     author_email='jgostick@uwaterloo.ca',

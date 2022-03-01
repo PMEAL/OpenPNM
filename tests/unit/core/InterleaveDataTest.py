@@ -16,11 +16,11 @@ class InterleaveDataTest:
         self.geo.add_model(propname='pore.volume',
                            model=op.models.geometry.pore_volume.sphere)
         self.geo['throat.diameter'] = np.random.rand(self.net.Nt)
-        self.geo.add_model(propname='throat.area',
+        self.geo.add_model(propname='throat.cross_sectional_area',
                            model=op.models.geometry.throat_cross_sectional_area.cylinder)
         self.geo.regenerate_models()
-        self.phase1 = op.phases.GenericPhase(network=self.net)
-        self.phase2 = op.phases.GenericPhase(network=self.net)
+        self.phase1 = op.phase.GenericPhase(network=self.net)
+        self.phase2 = op.phase.GenericPhase(network=self.net)
         self.phys1 = op.physics.GenericPhysics(network=self.net,
                                                geometry=self.geo,
                                                phase=self.phase1)
@@ -227,7 +227,7 @@ class InterleaveDataTest:
         net = op.network.Cubic(shape=[4, 1, 1])
         geo1 = op.geometry.GenericGeometry(network=net, pores=[0, 1], throats=[0, 1])
         op.geometry.GenericGeometry(network=net, pores=[2, 3], throats=[2])
-        air = op.phases.Air(network=net)
+        air = op.phase.Air(network=net)
         phys = op.physics.GenericPhysics(network=net, phase=air, geometry=geo1)
         phys['pore.blah'] = 1.0
         assert np.any(np.isnan(air['pore.blah']))
@@ -236,7 +236,7 @@ class InterleaveDataTest:
         net = op.network.Cubic(shape=[4, 1, 1])
         geo1 = op.geometry.GenericGeometry(network=net, pores=[0, 1], throats=[0, 1])
         op.geometry.GenericGeometry(network=net, pores=[2, 3], throats=[2])
-        air = op.phases.Air(network=net)
+        air = op.phase.Air(network=net)
         phys = op.physics.GenericPhysics(network=net, phase=air, geometry=geo1)
         phys['pore.blah'] = 1
         assert np.any(np.isnan(air['pore.blah']))
@@ -245,7 +245,7 @@ class InterleaveDataTest:
         net = op.network.Cubic(shape=[4, 1, 1])
         geo1 = op.geometry.GenericGeometry(network=net, pores=[0, 1], throats=[0, 1])
         op.geometry.GenericGeometry(network=net, pores=[2, 3], throats=[2])
-        air = op.phases.Air(network=net)
+        air = op.phase.Air(network=net)
         phys = op.physics.GenericPhysics(network=net, phase=air, geometry=geo1)
         phys['pore.blah'] = True
         assert np.sum(air['pore.blah']) == phys.Np
@@ -300,6 +300,38 @@ class InterleaveDataTest:
 
         with pytest.raises(Exception):
             pn['pore.bee.bop'] = 1
+
+    def test_interleaving_nt_by_1_with_nt_by_2(self):
+        pn = op.network.Cubic(shape=[10, 1, 1])
+        geo1 = op.geometry.SpheresAndCylinders(network=pn, pores=range(5),
+                                               throats=range(4))
+        geo2 = op.geometry.SpheresAndCylinders(network=pn, pores=range(5, 10),
+                                               throats=range(4, 9))
+        geo1['throat.conduit_data'] = np.ones((geo1.Nt, 2))
+        geo2['throat.conduit_data'] = np.ones((geo2.Nt, 1))*2
+        a = np.array([[1., 1.],
+                      [1., 1.],
+                      [1., 1.],
+                      [1., 1.],
+                      [2., 2.],
+                      [2., 2.],
+                      [2., 2.],
+                      [2., 2.],
+                      [2., 2.]])
+        assert np.all(pn['throat.conduit_data'] == a)
+        # Now do it the other way
+        geo1['throat.conduit_data'] = np.ones((geo1.Nt, 1))
+        geo2['throat.conduit_data'] = np.ones((geo2.Nt, 2))*2
+        assert np.all(pn['throat.conduit_data'] == a)
+        # Now do it with 1D arrays
+        geo1['throat.conduit_data'] = np.ones((geo1.Nt, ))
+        geo2['throat.conduit_data'] = np.ones((geo2.Nt, 2))*2
+        assert np.all(pn['throat.conduit_data'] == a)
+        # Now do it the other way
+        geo1['throat.conduit_data'] = np.ones((geo1.Nt, 2))
+        geo2['throat.conduit_data'] = np.ones((geo2.Nt, ))*2
+        assert np.all(pn['throat.conduit_data'] == a)
+
 
 
 if __name__ == '__main__':

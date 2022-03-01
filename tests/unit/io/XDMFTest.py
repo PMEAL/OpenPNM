@@ -23,10 +23,10 @@ class XDMFTest:
         self.geo_2['pore.boo'] = 1
         self.geo_2['throat.boo'] = 1
 
-        self.phase_1 = op.phases.GenericPhase(network=self.net)
+        self.phase_1 = op.phase.GenericPhase(network=self.net)
         self.phase_1['pore.bar'] = 2
         self.phase_1['throat.bar'] = 2
-        self.phase_2 = op.phases.GenericPhase(network=self.net)
+        self.phase_2 = op.phase.GenericPhase(network=self.net)
         self.phase_2['pore.bar'] = 2
         self.phase_2['throat.bar'] = 2
 
@@ -62,7 +62,7 @@ class XDMFTest:
 
     def test_save(self, tmpdir):
         fname = tmpdir.join('test_file')
-        op.io.XDMF.export_data(network=self.net, phases=self.phase_1, filename=fname)
+        op.io.to_xdmf(network=self.net, phases=self.phase_1, filename=fname)
         os.remove(tmpdir.join('test_file.hdf'))
         os.remove(tmpdir.join('test_file.xmf'))
 

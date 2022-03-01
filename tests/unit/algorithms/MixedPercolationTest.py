@@ -30,7 +30,7 @@ class MixedPercolationTest:
         self.geo.add_model(propname='pore.volume',
                            model=gm.pore_volume.sphere,
                            pore_diameter='pore.diameter')
-        self.phase = op.phases.Air(network=self.net)
+        self.phase = op.phase.Air(network=self.net)
         self.phys = op.physics.GenericPhysics(network=self.net,
                                               phase=self.phase,
                                               geometry=self.geo)
@@ -434,7 +434,7 @@ class MixedPercolationTest:
                       model=op.models.geometry.throat_centroid.pore_coords)
         geo.add_model(propname='throat.normal',
                       model=op.models.geometry.throat_vector.pore_to_pore)
-        water = op.phases.Water(network=pn)
+        water = op.phase.Water(network=pn)
         water['pore.contact_angle'] = 100
         phys = op.physics.GenericPhysics(network=pn, phase=water, geometry=geo)
         r_tor = 5e-6
@@ -460,6 +460,7 @@ class MixedPercolationTest:
 
 if __name__ == '__main__':
     t = MixedPercolationTest()
+    self = t
     t.setup_class()
     for item in t.__dir__():
         if item.startswith('test'):

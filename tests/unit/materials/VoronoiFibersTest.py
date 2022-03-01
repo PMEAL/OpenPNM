@@ -35,12 +35,12 @@ class VoronoiTest:
                              'pore.indiameter',
                              'pore.vertices',
                              'pore.volume',
-                             'throat.area',
                              'throat.c2c',
                              'throat.centroid',
                              'throat.conduit_lengths.pore1',
                              'throat.conduit_lengths.pore2',
                              'throat.conduit_lengths.throat',
+                             'throat.cross_sectional_area',
                              'throat.diameter',
                              'throat.incenter',
                              'throat.indiameter',
@@ -119,8 +119,8 @@ if __name__ == '__main__':
 
     t = VoronoiTest()
     t.setup_class()
+    self = t
     for item in t.__dir__():
         if item.startswith('test'):
             print(f'Running test: {item}')
             t.__getattribute__(item)()
-    self = t

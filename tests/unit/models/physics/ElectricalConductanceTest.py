@@ -15,7 +15,7 @@ class ElectricalConductanceTest:
         self.geo['throat.diffusive_size_factors'] = {
             "pore1": 0.123, "throat": 0.981, "pore2": 0.551
         }
-        self.phase = op.phases.GenericPhase(network=self.net)
+        self.phase = op.phase.GenericPhase(network=self.net)
         self.phase['pore.electrical_conductivity'] = 1.0
         self.phys = op.physics.GenericPhysics(network=self.net,
                                               phase=self.phase,
