@@ -2,13 +2,13 @@ import numpy as np
 from openpnm.utils import logging
 from openpnm.phase import Mercury
 from openpnm.physics import GenericPhysics
-from openpnm.metrics import Porosimetry
+from openpnm.algorithms import OrdinaryPercolation
 from openpnm import models
 from openpnm import topotools
 logger = logging.getLogger(__name__)
 
 
-class MercuryIntrusion(Porosimetry):
+class MercuryIntrusion(OrdinaryPercolation):
     r"""
     A ready-made Mercury Intrusion Porosimetry algorithm
 

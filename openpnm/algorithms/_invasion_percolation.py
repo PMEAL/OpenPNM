@@ -36,7 +36,7 @@ class IPSettings:
 
 class InvasionPercolation(GenericAlgorithm):
     r"""
-    A classic invasion percolation algorithm optimized for speed
+    A classic invasion percolation algorithm optimized for speed with numba
 
     Parameters
     ----------
@@ -65,6 +65,7 @@ class InvasionPercolation(GenericAlgorithm):
 
     def set_inlets(self, pores=[], mode='add'):
         r"""
+        Specifies from which pores the invasion process starts
 
         Parameters
         ----------
@@ -78,7 +79,7 @@ class InvasionPercolation(GenericAlgorithm):
             ============ ======================================================
             'add'        Sets the given ``pores`` to inlets, while keeping any
                          already defined inlets
-            'overwrite'  Removes all existing inlets, then add the given
+            'overwrite'  Removes all existing inlets, then adds the given
                          ``pores``
             ============ =======================================================
 
@@ -449,24 +450,61 @@ class InvasionPercolation(GenericAlgorithm):
                        idx, indptr, n_steps)
 
 
+def find_trapped_clusters(ip, outlets, bins=50):
+    from openpnm.topotools import find_clusters
+    net = ip.network
+    outlets = net.to_mask(pores=outlets)
+    if bins is None:  # Use all steps, very slow
+        steps = np.arange(ip['pore.invasion_sequence'].max())[-1::-1]
+    elif isinstance(bins, int):  # Generate even spaced steps
+        steps = np.linspace(ip['pore.invasion_sequence'].max(), 0, bins)
+    else:  # Used given steps
+        steps = bins
+    # Initialize arrays for tracking what is trapped
+    p_trapped = -np.ones(net.Np, dtype=int)
+    t_trapped = -np.ones(net.Nt, dtype=int)
+    for s in steps:
+        t_mask = ip['throat.invasion_sequence'] >= s
+        p_mask = ip['pore.invasion_sequence'] >= s
+        p_cluster, t_cluster = find_clusters(network=net, mask=t_mask)
+        hits = np.unique(p_cluster[outlets])
+        hits = hits[hits > -1]
+        if len(hits) > 0:
+            temp = np.isin(p_cluster, hits, invert=True)*p_mask
+            p_trapped[temp] = int(s)
+            temp = np.isin(t_cluster, hits, invert=True)*t_mask
+            t_trapped[temp] = int(s)
+        else:
+            p_trapped[p_mask] = int(s)
+            t_trapped[t_mask] = int(s)
+    return p_trapped, t_trapped
+
+
 if __name__ == '__main__':
     import openpnm as op
     import matplotlib.pyplot as plt
-    pn = op.network.Cubic(shape=[5, 1, 1], spacing=1e-4)
+    from scipy.stats import rankdata
+    pn = op.network.Cubic(shape=[25, 25, 1], spacing=1e-4)
     geo = op.geometry.SpheresAndCylinders(network=pn, pores=pn.Ps, throats=pn.Ts)
     water = op.phase.Water(network=pn, name='h2o')
     phys_water = op.physics.Standard(network=pn, phase=water, geometry=geo)
     ip = InvasionPercolation(network=pn, phase=water)
     ip.set_inlets(pn.pores('left'))
     ip.run()
+    outlets = pn.pores('right')
+    bins = None
+    p, t = find_trapped_clusters(ip, outlets, bins)
+    ip['pore.invasion_sequence'][p >= 0] = -1
+    ip['throat.invasion_sequence'][t >= 0] = -1
+
     # ip.plot_intrusion_curve()
     # %%
     fig, ax = plt.subplots(1, 1)
     ax.set_facecolor('grey')
     ax = op.topotools.plot_coordinates(network=pn, c='w', ax=ax)
     ax = op.topotools.plot_connections(network=pn,
-                                       throats=ip['throat.invasion_sequence'] < 300,
-                                       color_by=ip['throat.invasion_pressure'],
+                                       throats=ip['throat.invasion_sequence'] > 0,
+                                       color_by=ip['throat.invasion_sequence'][t <= 0],
                                        ax=ax)
 
 

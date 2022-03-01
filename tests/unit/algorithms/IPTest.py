@@ -36,6 +36,11 @@ class IPTest:
         alg.run()
         assert alg["throat.invasion_sequence"].max() == alg.Nt
 
+    def test_multiple_calls_to_run(self):
+        alg = op.algorithms.InvasionPercolation(network=self.net, phase=self.water)
+        alg.set_inlets(pores=self.net.pores("top"))
+        alg.run(n_steps=10)
+
     def test_results(self):
         alg = op.algorithms.InvasionPercolation(network=self.net, phase=self.water)
         alg.set_inlets(pores=self.net.pores("top"))

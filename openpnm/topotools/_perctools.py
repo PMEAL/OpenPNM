@@ -137,19 +137,25 @@ def site_percolation(ij, occupied_sites):
     return tup(s_labels, b_labels)
 
 
-def bond_percolation(ij, occupied_bonds):
+def bond_percolation(conns, occupied_bonds):
     r"""
     Calculates the site and bond occupancy status for a bond percolation
     process given a list of occupied bonds.
 
     Parameters
     ----------
-    ij : array_like
-        An N x 2 array of [site_A, site_B] connections.  A site is
-        considered occupied if any of it's connecting bonds are occupied.
+    conns : array_like
+        An N x 2 array of connections whether occupied or not. 
+        If the adjacency matrix is in the COO sparse format then this 
+        can be obtained using ``np.vstack(am.row, am.col).T``.  The 
+        matrix can be symmetric but only the upper triangular portion 
+        is kept.
 
-    occupied_bonds: bool
-        A list indicating whether a bond is occupied or not
+    occupied_bonds: array containing bools
+        A list of boolean values indicating whether a bond is occupied 
+        (``True``) or not (``False``). This must be the same length as 
+        ``conns``, but the lower triangular protion is ignored and the
+        process is treated as undirected.
 
     Returns
     -------
@@ -158,19 +164,19 @@ def bond_percolation(ij, occupied_bonds):
 
     Notes
     -----
-    The ``connected_components`` function of scipy.sparse.csgraph will give ALL
-    sites a cluster number whether they are occupied or not, so this
+    The ``connected_components`` function of ``scipy.sparse.csgraph`` will give 
+     a cluster number to ALL sites whether they are occupied or not, so this
     function essentially adjusts the cluster numbers to represent a
     percolation process.
 
     """
     from collections import namedtuple
-    Np = np.amax(ij) + 1
+    Np = np.amax(conns) + 1
     # Find occupied sites based on occupied bonds
     # (the following 2 lines are not needed but worth keeping for future ref)
     # occupied_sites = np.zeros([Np, ], dtype=bool)
     # np.add.at(occupied_sites, ij[occupied_bonds].flatten(), True)
-    adj_mat = sprs.csr_matrix((occupied_bonds, (ij[:, 0], ij[:, 1])),
+    adj_mat = sprs.csr_matrix((occupied_bonds, (conns[:, 0], conns[:, 1])),
                               shape=(Np, Np))
     adj_mat.eliminate_zeros()
     clusters = csgraph.connected_components(csgraph=adj_mat, directed=False)[1]
@@ -180,11 +186,47 @@ def bond_percolation(ij, occupied_bonds):
     mapping[valid_clusters] = np.arange(0, valid_clusters.sum())
     s_labels = mapping[clusters]
     # Bond inherit the cluster number of its connected sites
-    b_labels = np.amin(s_labels[ij], axis=1)
+    b_labels = np.amin(s_labels[conns], axis=1)
     # Set bond cluster to -1 if not actually occupied
     b_labels[~occupied_bonds] = -1
     tup = namedtuple('cluster_labels', ('sites', 'bonds'))
     return tup(s_labels, b_labels)
+
+
+def trim_disconnected_clusters(b_labels, s_labels, inlets):
+    r"""
+    Computes actual site and bond occupancy based on connectivity to the given
+    inlets
+
+    Parameters
+    ----------
+    b_labels : ndarray
+        An array of cluster labels assigned to each bond.  -1 indicates
+        unoccupied
+    s_labels : ndarray
+        An array of cluster labels assigned to each site. -1 indicates
+        unoccupied. Site cluster numbers must correspond to the bond 
+        clusters, such that if bond j has a cluster number N, then both
+        sites on each end of j are also labeled N.
+
+    Returns
+    -------
+    occupancy : tuple of ndarrays
+        The return tuple contains boolean arrays of ``occupied_sites``
+        and ``occupied_bonds``, after accounting for connection to the
+        inlets.
+
+    Notes
+    -----
+    The ``b_labels`` and ``s_labels`` arrays are returned from the
+    ``bond_percolation`` function.
+
+    """
+    hits = np.unique(s_labels[inlets])
+    hits = hits[hits >= 0]
+    occupied_bonds = np.isin(b_labels, hits)
+    occupied_sites = np.isin(s_labels, hits)
+    return occupied_sites, occupied_bonds
 
 
 def find_clusters(network, mask=[], t_labels=False):
