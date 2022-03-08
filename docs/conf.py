@@ -199,7 +199,7 @@ master_doc = 'index'
 # General information about the project.
 
 project = 'OpenPNM'
-year = datetime.datetime.now().year
+year = datetime.now().year
 copyright = '%d OpenPNM Team' % year
 author = 'PMEAL Team'
 

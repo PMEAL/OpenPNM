@@ -13,13 +13,6 @@ repo, which can be browsed
 Tutorials
 ---------
 
-.. tabbed:: Getting Started
-
-   .. toctree::
-      :maxdepth: 1
-      :glob:
-
-      examples/tutorials/getting_started/*
 
 .. tabbed:: Network
 
@@ -36,22 +29,22 @@ Tutorials
       :glob:
 
       examples/tutorials/geometry/*
-      
+
 .. tabbed:: Phase
 
    .. toctree::
       :maxdepth: 1
       :glob:
 
-      examples/tutorials/phase/*  
+      examples/tutorials/phase/*
 
-.. tabbed:: Advanced
+.. tabbed:: Physics
 
    .. toctree::
       :maxdepth: 1
       :glob:
 
-      examples/tutorials/advanced/*  
+      examples/tutorials/physics/*
 
 Simulations
 -----------
@@ -63,7 +56,7 @@ Simulations
       :glob:
 
       examples/simulations/percolation/*
-      
+
 .. tabbed:: Steady State
 
    .. toctree::
@@ -79,7 +72,7 @@ Simulations
       :glob:
 
       examples/simulations/reactive/*
-      
+
 .. tabbed:: Transient
 
    .. toctree::
@@ -87,7 +80,7 @@ Simulations
       :glob:
 
       examples/simulations/transient/*
-      
+
 .. tabbed:: Multiphysics
 
    .. toctree::
@@ -98,20 +91,11 @@ Simulations
 
 Contributions
 -------------
-        
-.. tabbed:: Paper Recreations
-            
-   .. toctree::
-      :maxdepth: 1
-      :glob:
-                  
-      examples/contrib/paper recreations/**      
 
-.. tabbed:: Other
-                
+.. tabbed:: Paper Recreations
+
    .. toctree::
       :maxdepth: 1
       :glob:
-          
-      examples/contrib/*
-                 
+
+      examples/contrib/paper recreations/**
