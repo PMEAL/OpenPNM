@@ -37,8 +37,6 @@ class ReactiveTransportSettings:
 
     """
     prefix = 'react_trans'
-    nlin_max_iter = 5000
-    relaxation_source = 1.0
     relaxation_quantity = 1.0
     sources = TypedList(types=[str])
     newton_maxiter = 5000
