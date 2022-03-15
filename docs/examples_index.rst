@@ -9,9 +9,19 @@ repo, which can be browsed
 
 -----
 
+
+Getting Started
+---------------
+
+   .. toctree::
+      :maxdepth: 1
+      :glob:
+
+      examples/getting_started
+
+
 Tutorials
 ---------
-
 
 .. tabbed:: Network
 
@@ -44,6 +54,7 @@ Tutorials
       :glob:
 
       examples/tutorials/physics/*
+
 
 Simulations
 -----------
@@ -88,6 +99,7 @@ Simulations
 
       examples/simulations/multiphysics/*
 
+
 Contributions
 -------------
 
@@ -99,3 +111,12 @@ Contributions
 
       examples/contrib/paper recreations/**
 
+
+Reference
+---------
+
+   .. toctree::
+      :maxdepth: 1
+      :glob:
+
+      examples/reference
