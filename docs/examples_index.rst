@@ -17,7 +17,7 @@ Getting Started
       :maxdepth: 1
       :glob:
 
-      examples/getting_started
+      examples/getting_started/*
 
 
 Tutorials
@@ -119,4 +119,4 @@ Reference
       :maxdepth: 1
       :glob:
 
-      examples/reference
+      examples/reference/*
