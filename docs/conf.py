@@ -25,6 +25,10 @@ author = 'OpenPNM Dev Team'
 from openpnm import __version__
 release = __version__
 
+# Import examples_linker file/module so that it runs each time docs are built
+import examples_linker
+
+
 #------------------------------------------------------------------------#
 # General config                                                         #
 #------------------------------------------------------------------------#
