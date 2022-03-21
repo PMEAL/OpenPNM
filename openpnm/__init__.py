@@ -25,6 +25,7 @@ from . import solvers
 from . import integrators
 from . import materials
 from . import topotools
+from . import _skgraph
 from . import io
 from . import metrics
 from . import contrib

@@ -1,5 +1,5 @@
 import numpy as np
-from skgraph.generators import cubic, tools
+from openpnm._skgraph.generators import cubic, tools
 
 
 def cubic_template(template, spacing=1):

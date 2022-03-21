@@ -94,8 +94,8 @@ def trim_disconnected_clusters(b_labels, s_labels, inlets):
     """
     hits = np.unique(s_labels[inlets])
     hits = hits[hits >= 0]
-    occupied_bonds *= np.isin(b_labels, hits)
-    occupied_sites *= np.isin(s_labels, hits)
+    occupied_bonds = np.isin(b_labels, hits)
+    occupied_sites = np.isin(s_labels, hits)
     return occupied_sites, occupied_bonds
 
 

@@ -1,6 +1,6 @@
 import scipy.spatial as sptl
 import scipy.sparse as sprs
-from skgraph.generators import cubic
+from openpnm._skgraph.generators import cubic
 import numpy as np
 from numba import njit
 

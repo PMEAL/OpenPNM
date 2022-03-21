@@ -1,4 +1,4 @@
-from skgraph.generators import delaunay as _delaunay, tools
+from openpnm._skgraph.generators import delaunay as _delaunay, tools
 import scipy.spatial as sptl
 import numpy as np
 
