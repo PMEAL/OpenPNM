@@ -1,5 +1,4 @@
-import openpnm.models as mods
-import openpnm.models.geometry as gmods
+from openpnm.models.collections.geometry import pyramids_and_cuboids
 from openpnm.geometry import GenericGeometry
 from openpnm.utils import Docorator
 
@@ -10,7 +9,9 @@ docstr = Docorator()
 @docstr.dedent
 class PyramidsAndCuboids(GenericGeometry):
     r"""
-
+    Pores are treated as 4-sided pyramids and throats as elongated cuboids
+    for transport conductance. Pores are treated as spheres for all other
+    properties such as volume and surface area.
 
     Parameters
     ----------
@@ -21,56 +22,5 @@ class PyramidsAndCuboids(GenericGeometry):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-
-        self.add_model(propname='pore.seed',
-                       model=mods.misc.random,
-                       element='pore',
-                       num_range=[0.2, 0.7],
-                       seed=None)
-
-        self.add_model(propname='pore.max_size',
-                       model=mods.geometry.pore_size.largest_sphere,
-                       iters=10)
-
-        self.add_model(propname='pore.diameter',
-                       model=mods.misc.product,
-                       props=['pore.max_size', 'pore.seed'])
-
-        self.add_model(propname='pore.volume',
-                       model=mods.geometry.pore_volume.sphere,
-                       pore_diameter='pore.diameter',
-                       regen_mode="explicit")
-
-        self.add_model(propname='throat.max_size',
-                       model=mods.misc.from_neighbor_pores,
-                       mode='min',
-                       prop='pore.diameter')
-
-        self.add_model(propname='throat.diameter',
-                       model=mods.misc.scaled,
-                       factor=0.5,
-                       prop='throat.max_size')
-
-        self.add_model(propname='throat.length',
-                       model=mods.geometry.throat_length.pyramids_and_cuboids,
-                       pore_diameter='pore.diameter',
-                       throat_diameter='throat.diameter')
-
-        self.add_model(propname='throat.cross_sectional_area',
-                       model=mods.geometry.throat_cross_sectional_area.cuboid,
-                       throat_diameter='throat.diameter')
-
-        self.add_model(propname='throat.volume',
-                       model=mods.geometry.throat_volume.cuboid,
-                       throat_diameter='throat.diameter',
-                       throat_length='throat.length')
-
-        self.add_model(propname='throat.diffusive_size_factors',
-                       model=gmods.diffusive_size_factors.pyramids_and_cuboids,
-                       pore_diameter="pore.diameter",
-                       throat_diameter="throat.diameter")
-
-        self.add_model(propname='throat.hydraulic_size_factors',
-                       model=gmods.hydraulic_size_factors.pyramids_and_cuboids,
-                       pore_diameter="pore.diameter",
-                       throat_diameter="throat.diameter")
+        self.models.update(pyramids_and_cuboids)
+        self.regenerate_models()

@@ -22,7 +22,7 @@ def get_version(rel_path):
     for line in read(rel_path).splitlines():
         if line.startswith('__version__'):
             delim = '"' if '"' in line else "'"
-            return line.split(delim)[1]
+            return line.split(delim)[1].strip(".dev0")
     else:
         raise RuntimeError("Unable to find version string.")
 

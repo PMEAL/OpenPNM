@@ -1,6 +1,6 @@
 r"""
-throat_seed Models
--------------------------
+Throat Seed Models
+------------------
 
 This model contains a selection of functions for calcuating the
 throat seed
