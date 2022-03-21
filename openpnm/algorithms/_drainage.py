@@ -56,6 +56,7 @@ class Drainage(GenericAlgorithm):
         self.settings = SettingsAttr(DrainageSettings, settings)
         super().__init__(settings=self.settings, **kwargs)
         self.settings['phase'] = phase.name
+        self.reset()
 
 
     def reset(self):
@@ -63,7 +64,7 @@ class Drainage(GenericAlgorithm):
         self['pore.outlets'] = False
 
 
-    def set_inlets(pores, mode='add'):
+    def set_inlets(self, pores, mode='add'):
         r"""
         Applies invading phase pressure boundary conditions to the specified pores
 
@@ -81,19 +82,19 @@ class Drainage(GenericAlgorithm):
             ============ ==========================================================
 
         """
-        self['pore.inles'][pores] = True
+        self['pore.inlets'][pores] = True
 
 
     def run(self, pressure):
         r"""
         Applies the given pressure to the existing inlets
         """
-        Tinv = self.phase[self.settings.throat_entry_threshold] <= pressure
+        phase = self.project[self.settings.phase]
+        Tinv = phase[self.settings.throat_entry_threshold] <= pressure
         s_labels, b_labels = bond_percolation(self.network.conns, Tinv)
         s_labels, b_labels = trim_disconnected_clusters(b_labels, s_labels, self['pore.inlets'])
         self['pore.invaded']  = s_labels
-        self['invaded.invaded']  = b_labels
-
+        self['throat.invaded']  = b_labels
 
 
 if __name__ == "__main__":
@@ -107,23 +108,17 @@ if __name__ == "__main__":
     phys.add_model(propname='throat.entry_pressure',
                    model=op.models.physics.capillary_pressure.washburn)
 
-    inlets = pn.pores('left')
-    values = 1e6
-    nwp['throat.invaded'] = nwp['throat.entry_pressure'] < .8e6
-
-    s_labels, b_labels = bond_percolation(pn.conns, nwp['throat.invaded'])
-    ax = op.topotools.plot_coordinates(pn, pores=inlets)
-    ax = op.topotools.plot_coordinates(pn, pores=pn.pores('right'), c='grey', ax=ax)
-    ax = op.topotools.plot_connections(pn, throats=b_labels >= 0, ax=ax)
-
-    s_labels, b_labels = trim_disconnected_clusters(b_labels, s_labels, inlets)
-    ax = op.topotools.plot_coordinates(pn, pores=inlets)
-    ax = op.topotools.plot_coordinates(pn, pores=pn.pores('right'), c='grey', ax=ax)
-    ax = op.topotools.plot_connections(pn, throats=b_labels, ax=ax)
-
+    P = .8e6
     drn = Drainage(network=pn, phase=nwp)
+    drn.set_inlets(pores=pn.pores('left'))
+    drn.run(pressure=P)
 
-
+    ax = op.topotools.plot_coordinates(pn, pores=drn['pore.inlets'])
+    ax = op.topotools.plot_coordinates(pn, pores=pn.pores('right'), c='grey', ax=ax)
+    ax = op.topotools.plot_connections(pn, throats=nwp['throat.entry_pressure'] <= P, c='grey', ax=ax)
+    ax = op.topotools.plot_connections(pn, throats=drn['throat.invaded'], ax=ax)
+    ax = op.topotools.plot_coordinates(pn, pores=drn['pore.invaded'], ax=ax)
+    ax = op.topotools.plot_coordinates(pn, pores=~drn['pore.invaded'], c='grey', ax=ax)
 
 
 
