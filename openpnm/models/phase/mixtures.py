@@ -15,7 +15,7 @@ def salinity(target, temperature='pore.temperature',
     ----------
     %(models.target.parameters)s
     %(models.phase.T)s
-    concentration : string
+    concentration : str
         The dictionary key containing the concentration values, in SI units of
         mol/m3.
 
@@ -56,7 +56,7 @@ def mole_weighted_average(target, prop):
     Parameters
     ----------
     %(models.target.parameters)s
-    prop : string
+    prop : str
         The dictionary key to the property to be averaged.
 
     Returns
@@ -89,10 +89,10 @@ def fuller_diffusivity(target, molecular_weight='pore.molecular_weight',
     Parameters
     ----------
     %(models.target.parameters)s
-    molecular_weight : string
+    molecular_weight : str
         Dictionary key containing the molecular weight of each species.  The
         default is 'pore.molecular_weight'
-    molar_diffusion_volume : string
+    molar_diffusion_volume : str
         Dictionary key containing the molar diffusion volume of each species.
         This is used by the Fuller correlation.  The default is
         'pore.molar_diffusion_volume'
@@ -135,10 +135,10 @@ def wilke_fuller_diffusivity(
     Parameters
     ----------
     %(models.target.parameters)s
-    molecular_weight : string
+    molecular_weight : str
         Dictionary key containing the molecular weight of each species.  The
         default is 'pore.molecular_weight'
-    molar_diffusion_volume : string
+    molar_diffusion_volume : str
         Dictionary key containing the molar diffusion volume of each species.
         This is used by the Fuller correlation.  The default is
         'pore.molar_diffusion_volume'

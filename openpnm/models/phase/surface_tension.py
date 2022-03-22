@@ -17,8 +17,8 @@ def water(target, temperature='pore.temperature', salinity='pore.salinity'):
     ----------
     %(models.target.parameters)s
     %(models.phase.T)s
-    salinity : string
-        The dictionary key containing the salinity values.  Salinity must be
+    salinity : str
+        The dictionary key containing the salinity values. Salinity must be
         expressed in g of salt per kg of solution (ppt).
 
     Returns
@@ -29,9 +29,8 @@ def water(target, temperature='pore.temperature', salinity='pore.salinity'):
     Notes
     -----
     T must be in K, and S in g of salt per kg of phase, or ppt (parts per
-        thousand)
-    VALIDITY: 273 < T < 313 K; 0 < S < 40 g/kg;
-    ACCURACY: 0.2 %
+    thousand). The correlation is valid for 273 < T < 313 K and
+    0 < S < 40 g/kg within 0.2% accuracy.
 
     References
     ----------
@@ -67,9 +66,9 @@ def eotvos(target, k, temperature='pore.temperature',
     k : float
         Constant parameter specific to fluid
     %(models.phase.T)s
-    critical_temperature : string
+    critical_temperature : str
         The dictionary key containing the critical temperature values (K)
-    molar_density : string
+    molar_density : str
         The dictionary key containing the molar density values (K)
 
     Returns
@@ -102,9 +101,9 @@ def guggenheim_katayama(target, K2, n, temperature='pore.temperature',
     n : scalar
         Fluid specific constant
     %(models.phase.T)s
-    critical_temperature : string
+    critical_temperature : str
         The dictionary key containing the critical temperature values (K)
-    critical_pressure : string
+    critical_pressure : str
         The dictionary key containing the critical pressure values (K)
 
     Returns
@@ -136,7 +135,7 @@ def brock_bird_scaling(target, sigma_o, To, temperature='pore.temperature',
     sigma_o : float
         Surface tension at reference temperature (N/m)
     %(models.phase.T)s
-    critical_temperature : string
+    critical_temperature : str
         The dictionary key containing the critical temperature values (K)
 
     Returns

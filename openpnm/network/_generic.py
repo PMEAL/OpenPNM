@@ -38,7 +38,7 @@ class GenericNetwork(ParamMixin, Base, ModelsMixin, LabelMixin):
         dataclass-type object with settings stored as attributes or a python
         dicionary of key-value pairs. Settings are stored in the ``settings``
         attribute of the object.
-    name : string, optional
+    name : str, optional
         A unique name to assign to the object for easier identification.  If
         not given one will be generated.
 

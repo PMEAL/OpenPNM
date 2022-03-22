@@ -17,7 +17,7 @@ def water(target, temperature="pore.temperature", salinity="pore.salinity"):
     ----------
     %(models.target.parameters)s
     %(models.phase.T)s
-    salinity : string
+    salinity : str
         The dictionary key containing the salinity values.  Salinity must be
         expressed in g of salt per kg of solution (ppt).
 
@@ -76,18 +76,18 @@ def chung(
     Parameters
     ----------
     %(models.target.parameters)s
-    acentric_factor : string
+    acentric_factor : str
         Dictionary key containing the acentric factor of the component
-    Cv : string
+    Cv : str
         Dictionary key containing the heat capacity at constant volume
         (J/(mol.K))
-    mol_weight : string
+    mol_weight : str
         Dictionary key containing the molecular weight of the component
         (kg/mol)
-    viscosity : string
+    viscosity : str
         The dictionary key containing the viscosity values (Pa.s)
     %(models.phase.T)s
-    critical_temperatre: string
+    critical_temperatre: str
         The dictionary key containing the critical temperature values (K)
 
     Returns
@@ -131,11 +131,11 @@ def sato(
     %(models.target.parameters)s
     boiling_temperature :  string
         Dictionary key containing the toiling temperature of the component (K)
-    mol_weight : string
+    mol_weight : str
         Dictionary key containing the molecular weight of the component
         (kg/mol)
     %(models.phase.T)s
-    critical_temperature : string
+    critical_temperature : str
         The dictionary key containing the critical temperature values (K)
 
     Returns

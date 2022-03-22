@@ -66,7 +66,7 @@ def largest_sphere(target, fixed_diameter='pore.fixed_diameter', iters=5):
     Parameters
     ----------
     %(models.target.parameters)s
-    fixed_diameter : string
+    fixed_diameter : str
         Name of the dictionary key on ``target`` where the array containing
         pore diameter values is stored, if any. If not provided a starting
         value is assumed as half-way to the nearest neighbor.

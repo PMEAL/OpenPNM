@@ -14,9 +14,9 @@ def standard(target, mol_weight='pore.molecular_weight',
     Parameters
     ----------
     %(models.target.parameters)s
-    mol_weight : string
+    mol_weight : str
         The dictionary key containing the molecular weight in kg/mol
-    density : string
+    density : str
         The dictionary key containing the density in kg/m3
 
     Returns

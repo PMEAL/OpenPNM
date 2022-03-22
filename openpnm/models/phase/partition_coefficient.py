@@ -18,7 +18,7 @@ def gaseous_species_in_water(target, chemical_formula,
     Parameters
     ----------
     %(models.target.parameters)s
-    chemical_formula : string
+    chemical_formula : str
         Chemical formula of the dissolving species.
     %(models.phase.T)s
 

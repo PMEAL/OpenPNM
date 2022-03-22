@@ -18,7 +18,7 @@ def percolating_continua(target, phi_crit, tau,
     volume_fraction : str
         The dictionary key in ``target`` containing the volume fraction
         of the conducting component
-    bulk_property : string
+    bulk_property : str
         The dictionary key in ``target`` containing the intrinsic
         property of the conducting component
     phi_crit : float
