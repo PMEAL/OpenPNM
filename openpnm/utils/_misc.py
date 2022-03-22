@@ -504,7 +504,7 @@ def ignore_warnings(warning=RuntimeWarning):
 
     Examples
     --------
-    >>> from openpnm.utils.misc import ignore_warnings
+    >>> from openpnm.utils import ignore_warnings
     >>> @ignore_warnings()
     ... def myfun(x):
     ...     return 1/x
