@@ -72,7 +72,6 @@ can be found by inserting known values into Darcy's law as follows:
 Adjusting pore size distribution
 --------------------------------
 
-
 It's also worth explaining how to adjust the pore size distribution of the
 network, so that the capillary curve and permeability coefficient can be
 changed to match known values. The ``geo`` object controls the geometric
@@ -94,4 +93,4 @@ later.
 Now you can run ``geo.show_hist(['pore.old_diameter', 'pore.diameter'])``
 to get a quick glance at the histograms of the two distributions.
 
-More complex tasks are explained in the :doc:`examples <../examples/examples>` page.
+More complex tasks are explained in the :doc:`examples <../examples_index>` page.

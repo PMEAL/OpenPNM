@@ -13,11 +13,11 @@ repo, which can be browsed
 Getting Started
 ---------------
 
-   .. toctree::
-      :maxdepth: 1
-      :glob:
+.. toctree::
+   :maxdepth: 1
+   :glob:
 
-      examples/getting_started/*
+   examples/getting_started/*
 
 
 Tutorials
@@ -109,14 +109,64 @@ Contributions
       :maxdepth: 1
       :glob:
 
-      examples/contrib/paper recreations/**
+      examples/contrib/paper_recreations/**
 
-
-Reference
----------
+.. tabbed:: Applications
 
    .. toctree::
       :maxdepth: 1
       :glob:
 
-      examples/reference/*
+      examples/contrib/*
+
+
+Reference
+---------
+
+.. tabbed:: Class Inheritance
+
+   .. toctree::
+      :maxdepth: 1
+      :glob:
+
+      examples/reference/class_inheritance/*
+
+.. tabbed:: Data Management
+
+   .. toctree::
+      :maxdepth: 1
+      :glob:
+
+      examples/reference/data_management/*
+
+.. tabbed:: Settings
+
+   .. toctree::
+      :maxdepth: 1
+      :glob:
+
+      examples/reference/settings/*
+
+.. tabbed:: Solvers
+
+   .. toctree::
+      :maxdepth: 1
+      :glob:
+
+      examples/reference/solvers/*
+
+.. tabbed:: Workspace
+
+   .. toctree::
+      :maxdepth: 1
+      :glob:
+
+      examples/reference/workspace/*
+
+.. tabbed:: Uncategorized
+
+   .. toctree::
+      :maxdepth: 1
+      :glob:
+
+      examples/reference/uncategorized/*
