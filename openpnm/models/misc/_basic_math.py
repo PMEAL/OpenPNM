@@ -18,10 +18,11 @@ __all__ = [
     'scaled',
     'summation',
     'product',
-    ]
+]
 
 
 def blank(target):
+    """Blank model used in PNM format, acting as a placeholder"""
     pass
 
 
