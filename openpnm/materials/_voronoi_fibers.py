@@ -9,7 +9,7 @@ from openpnm.utils import logging, Project
 from openpnm.network import DelaunayVoronoiDual
 from transforms3d import _gohlketransforms as tr
 from openpnm.geometry import GenericGeometry
-from openpnm.utils.misc import unique_list
+from openpnm.utils import unique_list
 
 logger = logging.getLogger(__name__)
 

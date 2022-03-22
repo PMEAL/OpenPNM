@@ -4,7 +4,7 @@ from copy import deepcopy
 import numpy as np
 from openpnm.utils import Workspace, logging
 from openpnm.utils import SettingsAttr
-from openpnm.utils.misc import PrintableList, Docorator
+from openpnm.utils import PrintableList, Docorator
 docstr = Docorator()
 logger = logging.getLogger(__name__)
 ws = Workspace()
@@ -397,8 +397,6 @@ class Base(dict):
                          to sending a list of both 'labels' and 'props'.
             ===========  =====================================================
 
-            Notes
-            -----
             If no mode is specified then the normal KeysView object is
             returned.
         deep : bool
