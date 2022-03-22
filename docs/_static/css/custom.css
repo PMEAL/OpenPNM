@@ -1,22 +1,15 @@
-/* @import url('https://fonts.googleapis.com/css2?family=Fira+Code&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=PT+Mono&display=swap'); */
-@import url('https://fonts.googleapis.com/css2?family=Overpass+Mono:wght@300;400;500&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Ubuntu+Mono&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=PT+Mono&display=swap');
 
 main {
     background-color: white;
-    background-image: url(./_static/images/porespy_logo.png);
+    background-image: url(./_static/images/openpnm_logo.png);
 }
 
 body {
-    font-family: sans-serif;
     background-color: #F8F9FB;
     padding-top: calc(var(--pst-header-height));
-}
-
-h1, h2, h3, h4 {
-    font-family: sans-serif;
 }
 
 .bd-sidebar, .bd-toc {
@@ -32,27 +25,27 @@ input#search-input {
 }
 
 .toctree-l1 {
-    font-family: 'Overpass Mono', monospace;
+    font-family: 'PT Mono', 'Robot Mono', 'Fira Code', monospace;
     font-weight: 500;
 }
 
 .toctree-l2 {
-    font-family: 'Overpass Mono', monospace;
+    font-family: 'PT Mono', 'Robot Mono', 'Fira Code', monospace;
     font-weight: 400;
 }
 
 .toctree-l3 {
-    font-family: 'Overpass Mono', monospace;
+    font-family: 'PT Mono', 'Robot Mono', 'Fira Code', monospace;
     font-weight: 300;
 }
 
 .toctree-l4 {
-    font-family: 'Overpass Mono', monospace;
+    font-family: 'PT Mono', 'Robot Mono', 'Fira Code', monospace;
     font-weight: 300;
 }
 
 a {
-    overflow: hidden;
+    /* overflow: hidden; */  /* Causes navbar to be slightly thicker */
     text-overflow: ellipsis;
 }
 
@@ -91,6 +84,6 @@ div.highlight > pre {
     border-radius: 5px;
 }
 
-div#navbar-collapsible a {
+/* div#navbar-collapsible a {
     font-family: sans-serif !important;
-}
+} */

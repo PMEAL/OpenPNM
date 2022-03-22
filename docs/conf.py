@@ -26,8 +26,7 @@ from openpnm import __version__
 release = __version__
 
 # Import examples_linker file/module so that it runs each time docs are built
-import examples_linker
-
+# import examples_linker
 
 #------------------------------------------------------------------------#
 # General config                                                         #
@@ -131,10 +130,9 @@ plt.ioff()
 #------------------------------------------------------------------------#
 
 html_theme = 'pydata_sphinx_theme'
-
+html_static_path = ['_static']
 html_js_files = ['js/custom.js']
 html_css_files = ['css/custom.css']
-
 html_logo = '_static/images/openpnm_logo.png'
 
 html_theme_options = {
@@ -200,13 +198,6 @@ templates_path = ['_templates']
 # The master toctree document.
 master_doc = 'index'
 
-# General information about the project.
-
-project = 'OpenPNM'
-year = datetime.now().year
-copyright = '%d OpenPNM Team' % year
-author = 'PMEAL Team'
-
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
 # built documents.
@@ -251,25 +242,3 @@ html_show_sourcelink = False
 
 # If true, "Created using Sphinx" is shown in the HTML footer. Default is True.
 html_show_sphinx = False
-
-# -- Options for HTML output ----------------------------------------------
-
-# The theme to use for HTML and HTML Help pages.  See the documentation for
-# a list of builtin themes.
-
-# html_theme = 'alabaster'
-# html_theme = 'sphinx_rtd_theme'
-html_theme = 'pydata_sphinx_theme'
-
-html_logo = '_static/images/openpnm_logo.png'
-
-# Theme options are theme-specific and customize the look and feel of a theme
-# further.  For a list of options available for each theme, see the
-# documentation.
-#
-# html_theme_options = {}
-
-# Add any paths that contain custom static files (such as style sheets) here,
-# relative to this directory. They are copied after the builtin static files,
-# so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
