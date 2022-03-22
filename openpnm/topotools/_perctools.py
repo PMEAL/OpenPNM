@@ -151,15 +151,15 @@ def bond_percolation(conns, occupied_bonds):
     Parameters
     ----------
     conns : array_like
-        An N x 2 array of connections whether occupied or not. 
-        If the adjacency matrix is in the COO sparse format then this 
-        can be obtained using ``np.vstack(am.row, am.col).T``.  The 
-        matrix can be symmetric but only the upper triangular portion 
+        An N x 2 array of connections whether occupied or not.
+        If the adjacency matrix is in the COO sparse format then this
+        can be obtained using ``np.vstack(am.row, am.col).T``.  The
+        matrix can be symmetric but only the upper triangular portion
         is kept.
 
     occupied_bonds: array containing bools
-        A list of boolean values indicating whether a bond is occupied 
-        (``True``) or not (``False``). This must be the same length as 
+        A list of boolean values indicating whether a bond is occupied
+        (``True``) or not (``False``). This must be the same length as
         ``conns``, but the lower triangular protion is ignored and the
         process is treated as undirected.
 
@@ -170,7 +170,7 @@ def bond_percolation(conns, occupied_bonds):
 
     Notes
     -----
-    The ``connected_components`` function of ``scipy.sparse.csgraph`` will give 
+    The ``connected_components`` function of ``scipy.sparse.csgraph`` will give
      a cluster number to ALL sites whether they are occupied or not, so this
     function essentially adjusts the cluster numbers to represent a
     percolation process.
@@ -211,7 +211,7 @@ def trim_disconnected_clusters(b_labels, s_labels, inlets):
         unoccupied
     s_labels : ndarray
         An array of cluster labels assigned to each site. -1 indicates
-        unoccupied. Site cluster numbers must correspond to the bond 
+        unoccupied. Site cluster numbers must correspond to the bond
         clusters, such that if bond j has a cluster number N, then both
         sites on each end of j are also labeled N.
 
@@ -258,15 +258,6 @@ def find_clusters(network, mask=[], t_labels=False):
     A tuple containing an Np long list of pore cluster labels, and an Nt-long
     list of throat cluster labels.  The label numbers correspond such that
     pores and throats with the same label are part of the same cluster.
-
-    Examples
-    --------
-    >>> import openpnm as op
-    >>> import numpy as np
-    >>> pn = op.network.Cubic(shape=[25, 25, 1])
-    >>> pn['pore.seed'] = np.random.rand(pn.Np)
-    >>> pn['throat.seed'] = np.random.rand(pn.Nt)
-
 
     """
     # Parse the input arguments
