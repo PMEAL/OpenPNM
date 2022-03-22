@@ -11,8 +11,8 @@ def salinity(target, temperature='pore.temperature',
     r"""
     Calculates the salinity in g salt per kg of solution from concentration
 
-    Parameter
-    ---------
+    Parameters
+    ----------
     %(models.target.parameters)s
     %(models.phase.T)s
     concentration : string
@@ -151,11 +151,12 @@ def wilke_fuller_diffusivity(
         The dict contains one array for each component, containing the
         diffusion coefficient of that component at each location.
 
-    Reference
-    ---------
+    References
+    ----------
     Fairbanks DF and CR Wilke, Diffusion Coefficients in Multicomponent
     Gas Mixtures. Industrial & Engineering Chemistry, 42(3), p471–475 (1950).
     `DOI: 10.1021/ie50483a022 <http://doi.org/10.1021/ie50483a022>`_
+
     """
     comps = list(target.components.values())
     values = {}

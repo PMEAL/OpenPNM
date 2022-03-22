@@ -12,6 +12,10 @@ __all__ = [
 
 
 class BCsMixin:
+    """
+    Mixin class to add boundary condition functionality to algorithms.
+    """
+
     def set_value_BC(self, pores, values, mode='merge'):
         r"""
         Applues constant value boundary conditons to the specified pores.
