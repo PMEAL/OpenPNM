@@ -1,9 +1,10 @@
 import logging
 import numpy as np
-from openpnm.models.physics.capillary_pressure import _get_key_props
+from openpnm.models.physics._utils import _get_key_props
 
 
 logger = logging.getLogger(__name__)
+
 __all__ = ["purcell", "sinusoidal", "general_toroidal"]
 
 

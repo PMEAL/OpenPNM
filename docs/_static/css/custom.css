@@ -1,6 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Fira+Code&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=PT+Mono&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
+@import url('https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.044/JuliaMono-Medium.woff2');
 
 main {
     background-color: white;
@@ -24,23 +26,27 @@ input#search-input {
     border-radius: 10px;
 }
 
-.toctree-l1 {
-    font-family: 'PT Mono', 'Robot Mono', 'Fira Code', monospace;
-    font-weight: 500;
+h1, h2, h3, h4, body {
+    font-family: 'Open Sans';
 }
 
-.toctree-l2 {
+/* .toctree-l1 {
     font-family: 'PT Mono', 'Robot Mono', 'Fira Code', monospace;
+    font-weight: 500;
+} */
+
+.toctree-l2 {
+    font-family: 'JuliaMono Medium', 'Robot Mono', 'Fira Code', monospace;
     font-weight: 400;
 }
 
 .toctree-l3 {
-    font-family: 'PT Mono', 'Robot Mono', 'Fira Code', monospace;
+    font-family: 'JuliaMono Medium', 'Robot Mono', 'Fira Code', monospace;
     font-weight: 300;
 }
 
 .toctree-l4 {
-    font-family: 'PT Mono', 'Robot Mono', 'Fira Code', monospace;
+    font-family: 'JuliaMono Medium', 'Robot Mono', 'Fira Code', monospace;
     font-weight: 300;
 }
 

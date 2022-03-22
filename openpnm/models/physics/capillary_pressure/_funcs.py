@@ -3,9 +3,11 @@ import numpy as _np
 from transforms3d import _gohlketransforms as tr
 from openpnm.models import physics as pm
 from openpnm.models import _doctxt
+from openpnm.models.physics._utils import _get_key_props
 
 
 logger = logging.getLogger(__name__)
+
 __all__ = [
     "washburn",
     "purcell",
@@ -372,37 +374,3 @@ def sinusoidal_bidirectional(target,
         target.remove_model(key)
     del network["throat.temp_diameter"]
     return _np.vstack((values[0], values[1])).T
-
-
-def _get_key_props(phase=None,
-                   diameter="throat.diameter",
-                   surface_tension="pore.surface_tension",
-                   contact_angle="pore.contact_angle"):
-    r"""
-    Many of the methods are generic to pores and throats. Some information may
-    be stored on either the pore or throat and needs to be interpolated.
-    This is a helper method to return the properties in the correct format.
-
-    TODO: Check for method to convert throat to pore data
-    """
-    element = diameter.split(".")[0]
-    if element == "pore":
-        if "throat" in surface_tension:
-            sigma = phase.interpolate_data(propname=surface_tension)
-        else:
-            sigma = phase[surface_tension]
-        if "throat" in contact_angle:
-            theta = phase.interpolate_data(propname=contact_angle)
-        else:
-            theta = phase[contact_angle]
-    if element == "throat":
-        if "pore" in surface_tension:
-            sigma = phase.interpolate_data(propname=surface_tension)
-        else:
-            sigma = phase[surface_tension]
-        if "pore" in contact_angle:
-            theta = phase.interpolate_data(propname=contact_angle)
-        else:
-            theta = phase[contact_angle]
-
-    return element, sigma, theta

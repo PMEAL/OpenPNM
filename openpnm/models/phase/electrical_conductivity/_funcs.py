@@ -1,15 +1,17 @@
-import numpy as _np
+import numpy as np
 from openpnm.utils import Docorator
 
 
 docstr = Docorator()
+
+__all__ = ["percolating_continua"]
 
 
 @docstr.dedent
 def percolating_continua(target, phi_crit, tau,
                          volume_fraction='pore.volume_fraction',
                          bulk_property='pore.intrinsic_conductivity'):
-    r'''
+    r"""
     Calculates the effective property of a continua using percolation theory
 
     Parameters
@@ -39,9 +41,9 @@ def percolating_continua(target, phi_crit, tau,
 
         \sigma_{effective}=\sigma_{bulk}(\phi - \phi_{critical})^\lambda
 
-    '''
+    """
     sigma = target[bulk_property]
     phi = target[volume_fraction]
-    diff_phi = _np.clip(phi - phi_crit, a_min=0, a_max=_np.inf)
+    diff_phi = np.clip(phi - phi_crit, a_min=0, a_max=np.inf)
     sigma_eff = sigma*(diff_phi)**tau
     return sigma_eff

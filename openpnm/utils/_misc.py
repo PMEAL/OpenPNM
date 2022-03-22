@@ -1,13 +1,11 @@
 import sys
 import math
-import copy
-import json
+import time
 import inspect
 import warnings
 import functools
 import numpy as np
 import scipy.sparse as sparse
-import time as _time
 from collections import OrderedDict
 from docrep import DocstringProcessor
 
@@ -36,7 +34,6 @@ __all__ = [
 
 
 class Docorator(DocstringProcessor):
-    """Brief explanation of 'Docorator'"""
 
     __instance__ = None
 
@@ -323,7 +320,7 @@ def tic():
 
     """
     global _startTime_for_tictoc
-    _startTime_for_tictoc = _time.time()
+    _startTime_for_tictoc = time.time()
 
 
 def toc(quiet=False):
@@ -344,7 +341,7 @@ def toc(quiet=False):
     """
     if "_startTime_for_tictoc" not in globals():
         raise Exception("Start time not set, call tic first")
-    t = _time.time() - _startTime_for_tictoc
+    t = time.time() - _startTime_for_tictoc
     if quiet is False:
         print(f"Elapsed time: {_format_time(t)}")
     return t

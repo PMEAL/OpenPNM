@@ -4,9 +4,11 @@ from openpnm.utils import Docorator
 
 docstr = Docorator()
 
+__all__ = ["standard", "ideal_gas", "vanderwaals"]
 
 @docstr.dedent
-def standard(target, mol_weight='pore.molecular_weight',
+def standard(target,
+             mol_weight='pore.molecular_weight',
              density='pore.density'):
     r"""
     Calculates the molar density from the molecular weight and mass density
@@ -32,7 +34,8 @@ def standard(target, mol_weight='pore.molecular_weight',
 
 
 @docstr.dedent
-def ideal_gas(target, pressure='pore.pressure',
+def ideal_gas(target,
+              pressure='pore.pressure',
               temperature='pore.temperature'):
     r"""
     Uses ideal gas law to calculate the molar density of an ideal gas

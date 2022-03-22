@@ -4,12 +4,13 @@ from openpnm.utils import PrintableDict
 
 
 logger = logging.getLogger(__name__)
+
 __all__ = [
     'TypedMixin',
     'TypedSet',
     'TypedList',
     'SettingsAttr',
-    ]
+]
 
 
 class TypedMixin:

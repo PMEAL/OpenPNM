@@ -103,21 +103,11 @@ Simulations
 Contributions
 -------------
 
-.. tabbed:: Paper Recreations
-
    .. toctree::
       :maxdepth: 1
       :glob:
 
-      examples/contrib/paper_recreations/**
-
-.. tabbed:: Applications
-
-   .. toctree::
-      :maxdepth: 1
-      :glob:
-
-      examples/contrib/*
+      examples/contrib/**
 
 
 Reference

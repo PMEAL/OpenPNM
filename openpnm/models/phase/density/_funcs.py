@@ -3,11 +3,12 @@ from openpnm.utils import Docorator
 
 docstr = Docorator()
 
+__all__ = ["standard", "ideal_gas", "water"]
 
-@docstr.get_sections(base='models.phase.density',
-                     sections=['Returns'])
+@docstr.get_sections(base='models.phase.density', sections=['Returns'])
 @docstr.dedent
-def standard(target, mol_weight='pore.molecular_weight',
+def standard(target,
+             mol_weight='pore.molecular_weight',
              molar_density='pore.molar_density'):
     r"""
     Calculates the mass density from the molecular weight and molar density

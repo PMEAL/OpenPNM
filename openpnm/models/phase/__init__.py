@@ -7,7 +7,7 @@ liquids, gases, and solids.
 
 """
 
-# %% The following bits are to initialize some boilerplate docstrings for docrep
+# The following bits are to initialize some boilerplate docstrings for docrep
 from openpnm.utils import Docorator as _doc
 _docstr = _doc()
 _docstr.params['models.phase.T'] = \

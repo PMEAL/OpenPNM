@@ -8,7 +8,7 @@ generating an array of random numbers.
 
 """
 
-# %% The following bits are to initialize some boilerplate docstrings for docrep
+# The following bits are to initialize some boilerplate docstrings for docrep
 from openpnm.utils import Docorator as _doc
 _docstr = _doc()
 _docstr.params['models.misc.seeds'] = \
@@ -21,7 +21,7 @@ _docstr.params['models.misc.seeds'] = \
             occurance of extreme values from the long tails."""
 
 
-from .statistical_distributions import *
-from .simple_equations import *
-from .basic_math import *
-from .neighbor_lookups import *
+from ._statistical_distributions import *
+from ._simple_equations import *
+from ._basic_math import *
+from ._neighbor_lookups import *

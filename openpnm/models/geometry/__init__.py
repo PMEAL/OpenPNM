@@ -7,8 +7,7 @@ properties. These models are to be added to a Geometry object.
 
 """
 
-
-# %% The following bits are to initialize some boilerplate docstrings for docrep
+# The following bits are to initialize some boilerplate docstrings for docrep
 from openpnm.utils import Docorator as _doc
 _docstr = _doc()
 _docstr.params['models.geometry.pdia'] = \
@@ -36,8 +35,7 @@ _docstr.params['models.geometry.tarea'] = \
             Name of the dictionary key on ``target`` where the array containing
             throat area values is stored"""
 
-
-# %% Perform imports
+# Perform imports
 from . import pore_size
 from . import pore_seed
 from . import pore_volume

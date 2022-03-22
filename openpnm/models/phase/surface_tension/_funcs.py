@@ -4,6 +4,7 @@ from openpnm.utils import Docorator
 
 docstr = Docorator()
 
+__all__ = ["water", "eotvos", "guggenheim_katayama", "brock_bird_scaling"]
 
 @docstr.dedent
 def water(target, temperature='pore.temperature', salinity='pore.salinity'):

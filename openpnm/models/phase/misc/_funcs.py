@@ -4,6 +4,7 @@ from openpnm.utils import Docorator
 
 docstr = Docorator()
 
+__all__ = ["mix_and_match"]
 
 @docstr.dedent
 def mix_and_match(target, prop, phases, occupancy):

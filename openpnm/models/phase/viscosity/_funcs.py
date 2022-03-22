@@ -1,7 +1,9 @@
-r"""
+"""
 """
 import numpy as np
 
+
+__all__ = ["water", "reynolds", "chung"]
 
 def water(target, temperature='pore.temperature', salinity='pore.salinity'):
     r"""

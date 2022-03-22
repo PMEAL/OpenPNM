@@ -4,9 +4,16 @@ from openpnm.utils import Docorator
 
 docstr = Docorator()
 
+__all__ = [
+    "salinity",
+    "mole_weighted_average",
+    "fuller_diffusivity",
+    "wilke_fuller_diffusivity"
+]
 
 @docstr.dedent
-def salinity(target, temperature='pore.temperature',
+def salinity(target,
+             temperature='pore.temperature',
              concentration='pore.concentration'):
     r"""
     Calculates the salinity in g salt per kg of solution from concentration

@@ -10,7 +10,6 @@ def ad_dif_mig(target,
                throat_hydraulic_conductance="throat.hydraulic_conductance",
                throat_diffusive_conductance="throat.diffusive_conductance",
                throat_valence="throat.valence",
-               pore_temperature="pore.temperature",
                throat_temperature="throat.temperature",
                ion="",
                s_scheme="powerlaw"):

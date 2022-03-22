@@ -9,11 +9,10 @@ from openpnm.utils import SettingsAttr
 from ._grid import Tableist
 
 
-logger = logging.getLogger(__name__)
 ws = Workspace()
-__all__ = [
-    'Project',
-    ]
+logger = logging.getLogger(__name__)
+
+__all__ = ['Project']
 
 
 class ProjectSettings(SettingsAttr):

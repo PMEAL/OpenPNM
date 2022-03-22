@@ -4,6 +4,7 @@ from openpnm.utils import Docorator
 
 docstr = Docorator()
 
+__all__ = ["water", "chung", "sato"]
 
 @docstr.dedent
 def water(target, temperature="pore.temperature", salinity="pore.salinity"):
@@ -29,10 +30,8 @@ def water(target, temperature="pore.temperature", salinity="pore.salinity"):
     Notes
     -----
     T must be in K, and S in g of salt per kg of phase, or ppt (parts per
-    thousand)
-
-    VALIDITY: 273 < T < 453 K; 0 < S < 160 g/kg;
-    ACCURACY: 3 %
+    thousand). The correlation is valid for 273 < T < 453 K and
+    0 < S < 160 g/kg within 3% accuracy.
 
     References
     ----------

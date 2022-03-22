@@ -4,9 +4,9 @@ from openpnm.utils import Docorator
 
 docstr = Docorator()
 
+__all__ = ["antoine", "water"]
 
-@docstr.get_sections(base='models.phase.vapor_pressure',
-                     sections=['Returns'])
+@docstr.get_sections(base='models.phase.vapor_pressure', sections=['Returns'])
 @docstr.dedent
 def antoine(target, A, B, C, temperature='pore.temperature'):
     r"""

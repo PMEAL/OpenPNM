@@ -26,7 +26,7 @@ from openpnm import __version__
 release = __version__
 
 # Import examples_linker file/module so that it runs each time docs are built
-# import examples_linker
+import examples_linker
 
 #------------------------------------------------------------------------#
 # General config                                                         #
@@ -180,6 +180,9 @@ html_js_files = ['js/custom.js']
 
 nbsphinx_prompt_width = "0"
 nbsphinx_allow_errors = True
+nbsphinx_custom_formats = {
+    '.md': ['jupytext.reads', {'fmt': 'Rmd'}],
+}
 
 exclude_patterns = ['_build', '_templates']
 

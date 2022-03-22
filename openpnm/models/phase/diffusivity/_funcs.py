@@ -3,9 +3,15 @@ from openpnm.utils import Docorator
 
 docstr = Docorator()
 
+__all__ = [
+    "fuller",
+    "fuller_scaling",
+    "tyn_calus",
+    "tyn_calus_scaling",
+    "chapman_enskog"
+]
 
-@docstr.get_sections(base='models.phase.diffusivity',
-                     sections=['Returns'])
+@docstr.get_sections(base='models.phase.diffusivity', sections=['Returns'])
 @docstr.dedent
 def fuller(target, MA, MB, vA, vB, temperature='pore.temperature',
            pressure='pore.pressure'):

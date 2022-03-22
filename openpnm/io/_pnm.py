@@ -135,10 +135,10 @@ def create_obj(root, name, proj):
                 except AttributeError:
                     logger.warning(f"The function {fn} could not be loaded, adding"
                                    + " 'blank' instead")
-                    obj.models[m]['model'] = op.models.misc.basic_math.blank
+                    obj.models[m]['model'] = op.models.misc.blank
             except ModuleNotFoundError:
                 logger.warning(f"The module {md} could not be loaded, adding"
                                + " 'blank' instead")
-                obj.models[m]['model'] = op.models.misc.basic_math.blank
+                obj.models[m]['model'] = op.models.misc.blank
     proj.append(obj)
     return proj, obj

@@ -3,6 +3,7 @@ from openpnm.utils import Docorator
 
 docstr = Docorator()
 
+__all__ = ["water"]
 
 @docstr.dedent
 def water(target):
