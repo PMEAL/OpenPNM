@@ -1,9 +1,9 @@
 import sys
+import logging
 import numpy as np
 from numpy.linalg import norm
 from scipy.optimize.nonlin import TerminationCondition
 from openpnm.algorithms import GenericTransport
-from openpnm.utils import logging
 from openpnm.utils import TypedList, Docorator, SettingsAttr
 from tqdm import tqdm
 docstr = Docorator()

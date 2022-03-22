@@ -1,6 +1,7 @@
+import logging
 import numpy as np
 from openpnm.algorithms import OrdinaryPercolation
-from openpnm.utils import logging, SettingsAttr, Docorator
+from openpnm.utils import SettingsAttr, Docorator
 docstr = Docorator()
 logger = logging.getLogger(__name__)
 

@@ -1,18 +1,19 @@
-from openpnm.utils import Docorator
-from openpnm.utils import logging as _logging
-from openpnm.models import misc as _misc
+import logging
 import numpy as _np
+from openpnm.utils import Docorator
+from openpnm.models import misc as _misc
 
-__all__ = ["weibull",
-           "normal",
-           "random",
-           "generic_distribution",
-           "from_neighbor_throats",
-           "largest_sphere",
-           "equivalent_diameter"
-           ]
+__all__ = [
+    "weibull",
+    "normal",
+    "random",
+    "generic_distribution",
+    "from_neighbor_throats",
+    "largest_sphere",
+    "equivalent_diameter"
+]
 
-_logger = _logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 docstr = Docorator()
 
 
@@ -110,7 +111,7 @@ def largest_sphere(target, fixed_diameter='pore.fixed_diameter', iters=5):
         # Set any unassigned values (nans) to 0
         D[_np.isnan(D)] = 0
     except KeyError:
-        _logger.info('Pore sizes not present, calculating starting values '
+        logger.info('Pore sizes not present, calculating starting values '
                      + 'as half-way to the nearest neighbor')
         D = _np.inf*_np.ones([network.Np, ], dtype=float)
         _np.minimum.at(D, P12[:, 0], L)
@@ -123,7 +124,7 @@ def largest_sphere(target, fixed_diameter='pore.fixed_diameter', iters=5):
         _np.minimum.at(Dadd, P12[:, 1], Lt)
         D += Dadd
     if _np.any(D < 0):
-        _logger.info('Negative pore diameters found!  Neighboring pores are '
+        logger.info('Negative pore diameters found!  Neighboring pores are '
                      + 'larger than the pore spacing.')
     return D[network.pores(target.name)]
 

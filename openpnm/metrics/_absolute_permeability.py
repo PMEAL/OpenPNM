@@ -1,4 +1,5 @@
-from openpnm.utils import logging, Workspace, SettingsAttr, Docorator
+import logging
+from openpnm.utils import Workspace, SettingsAttr, Docorator
 from openpnm.phase import GenericPhase
 from openpnm.physics import GenericPhysics
 from openpnm.algorithms import StokesFlow

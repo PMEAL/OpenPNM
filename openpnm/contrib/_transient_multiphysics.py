@@ -1,5 +1,6 @@
+import logging
 import numpy as np
-from openpnm.utils import logging, SettingsAttr, Docorator
+from openpnm.utils import SettingsAttr, Docorator
 from openpnm.integrators import ScipyRK45
 from openpnm.algorithms import GenericAlgorithm
 from openpnm.algorithms._solution import SolutionContainer, TransientSolution

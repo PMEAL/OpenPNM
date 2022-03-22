@@ -1,5 +1,5 @@
+import logging
 import numpy as _np
-from openpnm.utils import logging
 from openpnm.models import _doctxt
 from openpnm.models.physics._utils import _poisson_conductance
 

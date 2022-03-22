@@ -1,10 +1,10 @@
-r"""
+"""
 Neighbor Lookups
 ================
 
 """
+import logging
 import numpy as np
-from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 
 

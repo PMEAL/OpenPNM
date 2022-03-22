@@ -1,7 +1,8 @@
+import logging
 import os
 import numpy as np
 from pathlib import Path
-from openpnm.utils import logging, Docorator
+from openpnm.utils import Docorator
 
 
 logger = logging.getLogger(__name__)

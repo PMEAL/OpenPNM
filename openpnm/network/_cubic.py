@@ -1,7 +1,8 @@
+import logging
 import numpy as np
 from openpnm.network import GenericNetwork
 from openpnm import topotools
-from openpnm.utils import logging, Docorator
+from openpnm.utils import Docorator
 
 docstr = Docorator()
 logger = logging.getLogger(__name__)

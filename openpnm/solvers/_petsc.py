@@ -1,9 +1,9 @@
+import logging
 import sys
 import numpy as np
 import scipy as sp
 import scipy.sparse
 from openpnm.solvers import IterativeSolver
-from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 try:
     import petsc4py

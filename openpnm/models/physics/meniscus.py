@@ -1,6 +1,6 @@
+import logging
 import numpy as np
 from openpnm.models.physics.capillary_pressure import _get_key_props
-from openpnm.utils import logging
 
 
 logger = logging.getLogger(__name__)

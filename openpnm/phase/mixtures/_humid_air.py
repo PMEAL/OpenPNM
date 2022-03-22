@@ -1,6 +1,6 @@
+import logging
 from openpnm.phase.mixtures import IdealGas, species
 import openpnm.models as mods
-from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 
 

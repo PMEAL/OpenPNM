@@ -1,8 +1,8 @@
+import logging
 import numpy as np
 import scipy.sparse as sprs
 import scipy.spatial as sptl
 from openpnm import topotools
-from openpnm.utils import logging
 from openpnm.network import GenericNetwork
 
 

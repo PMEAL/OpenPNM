@@ -1,5 +1,5 @@
+import logging
 from openpnm.phase import GenericPhase as GenericPhase
-from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 
 

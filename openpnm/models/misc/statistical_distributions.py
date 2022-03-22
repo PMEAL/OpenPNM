@@ -1,6 +1,7 @@
+import logging
 import numpy as np
 import scipy.stats as spts
-from openpnm.utils import logging, Docorator
+from openpnm.utils import Docorator
 
 
 docstr = Docorator()

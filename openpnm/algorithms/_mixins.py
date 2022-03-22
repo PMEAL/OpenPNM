@@ -1,6 +1,7 @@
+import logging
 import numpy as np
 import warnings
-from openpnm.utils import logging, prettify_logger_message
+from openpnm.utils import prettify_logger_message
 from openpnm.utils import Docorator
 docstr = Docorator()
 logger = logging.getLogger(__name__)

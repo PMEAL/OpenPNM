@@ -1,3 +1,4 @@
+import logging
 # from collections import ChainMap  # Might use eventually
 import numpy as np
 from chemicals import Vm_to_rho, rho_to_Vm
@@ -6,7 +7,6 @@ from chemicals import R, k
 from openpnm.phase import GenericPhase as GenericPhase
 from openpnm.utils import HealthDict, PrintableList, SubDict
 from openpnm.utils import Docorator, SettingsAttr
-from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 docstr = Docorator()
 

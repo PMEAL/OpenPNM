@@ -1,6 +1,7 @@
+import logging
 import numpy as np
 from pathlib import Path
-from openpnm.utils import flat_list, logging
+from openpnm.utils import flat_list
 
 logger = logging.getLogger(__name__)
 

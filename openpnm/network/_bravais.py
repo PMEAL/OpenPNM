@@ -1,7 +1,8 @@
+import logging
 import numpy as np
 from openpnm import topotools
 from openpnm.network import GenericNetwork, Cubic
-from openpnm.utils import logging, Workspace
+from openpnm.utils import Workspace
 
 
 logger = logging.getLogger(__name__)

@@ -1,8 +1,9 @@
+import logging
 import warnings
 import uuid
 from copy import deepcopy
 import numpy as np
-from openpnm.utils import Workspace, logging
+from openpnm.utils import Workspace
 from openpnm.utils import SettingsAttr
 from openpnm.utils import PrintableList, Docorator
 docstr = Docorator()

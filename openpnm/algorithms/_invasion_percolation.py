@@ -1,8 +1,9 @@
+import logging
 import warnings
 import heapq as hq
 import numpy as np
 from collections import namedtuple
-from openpnm.utils import logging, SettingsAttr, Docorator
+from openpnm.utils import SettingsAttr, Docorator
 from openpnm.topotools import find_clusters
 from openpnm.algorithms import GenericAlgorithm
 logger = logging.getLogger(__name__)

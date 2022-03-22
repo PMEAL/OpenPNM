@@ -1,7 +1,8 @@
+import logging
 import numpy as np
 import scipy.sparse as sprs
 from scipy.sparse import csgraph
-from openpnm.utils import PrintableDict, logging, Workspace
+from openpnm.utils import PrintableDict, Workspace
 
 
 logger = logging.getLogger(__name__)

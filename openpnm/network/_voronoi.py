@@ -1,5 +1,5 @@
+import logging
 from openpnm import topotools
-from openpnm.utils import logging
 from openpnm.network import DelaunayVoronoiDual
 
 

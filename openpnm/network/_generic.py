@@ -1,10 +1,11 @@
+import logging
 import numpy as np
 import scipy.sparse as sprs
 import scipy.spatial as sptl
 from openpnm.core import Base, ModelsMixin, LabelMixin, ParamMixin
 from openpnm import topotools
 from openpnm.utils import Docorator, SettingsAttr
-from openpnm.utils import Workspace, logging
+from openpnm.utils import Workspace
 import openpnm.models.network as mods
 logger = logging.getLogger(__name__)
 ws = Workspace()

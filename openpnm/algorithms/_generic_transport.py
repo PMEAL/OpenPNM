@@ -1,9 +1,10 @@
+import logging
 import numpy as np
 import scipy.sparse.csgraph as spgr
 from openpnm.topotools import is_fully_connected
 from openpnm.algorithms import GenericAlgorithm
 from openpnm.algorithms import BCsMixin
-from openpnm.utils import logging, prettify_logger_message
+from openpnm.utils import prettify_logger_message
 from openpnm.utils import Docorator, SettingsAttr, TypedSet, Workspace
 from openpnm import solvers
 from ._solution import SteadyStateSolution, SolutionContainer

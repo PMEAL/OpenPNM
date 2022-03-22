@@ -1,8 +1,8 @@
+import logging
 import numpy as _np
 from transforms3d import _gohlketransforms as tr
 from openpnm.models import physics as pm
 from openpnm.models import _doctxt
-from openpnm.utils import logging
 
 
 logger = logging.getLogger(__name__)
