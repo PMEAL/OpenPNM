@@ -46,6 +46,7 @@ def sphere(
     value = 4 * _np.pi * R**2
     Tca = network[throat_cross_sectional_area]
     _np.subtract.at(value, network.conns.flatten(), _np.repeat(Tca, repeats=2))
+    value = value[network.pores(target.name)]
     return value
 
 
@@ -76,6 +77,7 @@ def circle(
     value = _np.pi * network[pore_diameter]
     Tca = network[throat_cross_sectional_area]
     _np.subtract.at(value, network.conns.flatten(), _np.repeat(Tca, repeats=2))
+    value = value[network.pores(target.name)]
     return value
 
 
@@ -102,6 +104,7 @@ def cube(
     value = 6.0 * D**2
     Tca = network[throat_cross_sectional_area]
     _np.subtract.at(value, network.conns.flatten(), _np.repeat(Tca, repeats=2))
+    value = value[network.pores(target.name)]
     return value
 
 
@@ -128,4 +131,5 @@ def square(
     value = 4.0 * D
     Tca = network[throat_cross_sectional_area]
     _np.subtract.at(value, network.conns.flatten(), _np.repeat(Tca, repeats=2))
+    value = value[network.pores(target.name)]
     return value
