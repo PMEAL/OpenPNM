@@ -20,16 +20,3 @@
          {%- endfor %}
    {% endif %}
    {% endblock %}
-
-   {% block attributes %}
-   {% if attributes %}
-   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
-      .. autosummary::
-         :toctree:
-         {% for item in all_attributes %}
-            {%- if not item.startswith('_') and item not in ['flags'] %}
-            {{ name }}.{{ item }}
-            {%- endif -%}
-         {%- endfor %}
-   {% endif %}
-   {% endblock %}
