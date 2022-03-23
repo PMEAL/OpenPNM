@@ -98,7 +98,7 @@ class Project(list):
         objects, but does NOT remove the associated objects.
 
         See Also
-        -------
+        --------
         purge_object
 
         """
@@ -146,7 +146,7 @@ class Project(list):
 
         Parameters
         ----------
-        objtype : list of strings
+        objtype : list[str]
             A list containing the object type(s) to be removed.  If no types
             are specified, then all objects are removed.  To clear only objects
             of a specific type, use *'network'*, *'geometry'*, *'phase'*,
