@@ -8,12 +8,13 @@ filling algorithms.
 
 """
 import time
+import logging
 import heapq as hq
 import numpy as np
 from scipy.sparse import coo_matrix, dok_matrix
 from openpnm.algorithms import MixedInvasionPercolation
 from transforms3d._gohlketransforms import angle_between_vectors
-from openpnm.utils import logging, SettingsAttr, Docorator
+from openpnm.utils import SettingsAttr, Docorator
 docstr = Docorator()
 logger = logging.getLogger(__name__)
 

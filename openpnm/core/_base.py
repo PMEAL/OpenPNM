@@ -1,10 +1,11 @@
+import logging
 import warnings
 import uuid
 from copy import deepcopy
 import numpy as np
-from openpnm.utils import Workspace, logging
+from openpnm.utils import Workspace
 from openpnm.utils import SettingsAttr
-from openpnm.utils.misc import PrintableList, Docorator
+from openpnm.utils import PrintableList, Docorator
 docstr = Docorator()
 logger = logging.getLogger(__name__)
 ws = Workspace()
@@ -46,7 +47,7 @@ class Base(dict):
         dataclass-type object with settings stored as attributes or a python
         dicionary of key-value pairs. Settings are stored in the ``settings``
         attribute of the object.
-    name : string, optional
+    name : str, optional
         A unique name to assign to the object for easier identification.  If
         not given one will be generated.
 
@@ -397,8 +398,6 @@ class Base(dict):
                          to sending a list of both 'labels' and 'props'.
             ===========  =====================================================
 
-            Notes
-            -----
             If no mode is specified then the normal KeysView object is
             returned.
         deep : bool
@@ -856,7 +855,7 @@ class Base(dict):
             given then the same property as ``poreprop`` is assumed.  So
             if poreprop = 'pore.foo' (or just 'foo'), then throatprop is
             set to 'throat.foo').
-        mode : string
+        mode : str
             How interpolation should be peformed for missing values. If values
             are present for both pores and throats, then this argument is
             ignored.  The ``interpolate`` data method is used. The default

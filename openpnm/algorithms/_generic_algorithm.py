@@ -1,6 +1,7 @@
+import logging
 import numpy as np
 from openpnm.core import Base, LegacyMixin
-from openpnm.utils import logging, Docorator, SettingsAttr
+from openpnm.utils import Docorator, SettingsAttr
 logger = logging.getLogger(__name__)
 docstr = Docorator()
 

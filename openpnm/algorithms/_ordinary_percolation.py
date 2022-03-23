@@ -1,9 +1,10 @@
+import logging
 import numpy as np
 from collections import namedtuple
 from openpnm.algorithms import GenericAlgorithm
 from openpnm.topotools import site_percolation, bond_percolation
 from openpnm.topotools import remove_isolated_clusters, ispercolating
-from openpnm.utils import logging, SettingsAttr, Docorator
+from openpnm.utils import SettingsAttr, Docorator
 from openpnm.utils import prettify_logger_message
 docstr = Docorator()
 logger = logging.getLogger(__name__)

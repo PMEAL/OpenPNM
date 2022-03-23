@@ -1,6 +1,6 @@
+import logging
 from flatdict import FlatDict
 from openpnm.io import Dict, GenericIO
-from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 
 

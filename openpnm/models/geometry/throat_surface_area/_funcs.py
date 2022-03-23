@@ -62,7 +62,7 @@ def extrusion(target, throat_perimeter='throat.perimeter',
     ----------
     %(models.target.parameters)s
     %(models.geometry.tlen)s
-    throat_perimeter : string
+    throat_perimeter : str
         Dictionary key to the throat perimeter array.  Default is
         'throat.perimeter'.
 

@@ -1,7 +1,8 @@
+import logging
 import numpy as np
 import openpnm.models.misc as misc
 from openpnm.phase import GenericPhase as GenericPhase
-from openpnm.utils import logging, SettingsAttr, Docorator, TypedList
+from openpnm.utils import SettingsAttr, Docorator, TypedList
 
 
 logger = logging.getLogger(__name__)

@@ -1,8 +1,8 @@
+import logging
 import numpy as np
 import scipy.spatial as sptl
 from openpnm.network import Delaunay
 from openpnm.topotools import trim
-from openpnm.utils import logging
 
 
 logger = logging.getLogger(__name__)

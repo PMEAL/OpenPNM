@@ -1,6 +1,7 @@
+import logging
 from openpnm.physics import GenericPhysics
 from openpnm.models.collections.physics import standard
-from openpnm.utils import logging, Docorator
+from openpnm.utils import Docorator
 
 
 logger = logging.getLogger(__name__)

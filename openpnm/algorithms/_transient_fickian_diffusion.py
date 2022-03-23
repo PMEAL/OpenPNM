@@ -1,5 +1,5 @@
+import logging
 from openpnm.algorithms import TransientReactiveTransport, FickianDiffusion
-from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 
 __all__ = ['TransientFickianDiffusion']

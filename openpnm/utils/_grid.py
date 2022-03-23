@@ -1,9 +1,7 @@
 import terminaltables as tt
 
 
-__all__ = [
-    'Tableist',
-]
+__all__ = ['Tableist']
 
 
 class Tableist:

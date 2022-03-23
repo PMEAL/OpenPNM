@@ -1,7 +1,8 @@
+import logging
 import numpy as np
 from openpnm.algorithms import ReactiveTransport
 from openpnm.models.physics import generic_source_term as gst
-from openpnm.utils import logging, Docorator, SettingsAttr
+from openpnm.utils import Docorator, SettingsAttr
 logger = logging.getLogger(__name__)
 docstr = Docorator()
 

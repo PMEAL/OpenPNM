@@ -1,4 +1,5 @@
-from openpnm.utils import logging, Project
+import logging
+from openpnm.utils import Project
 from openpnm.network import Cubic
 from openpnm.geometry import GenericGeometry
 import openpnm.models.geometry as gm

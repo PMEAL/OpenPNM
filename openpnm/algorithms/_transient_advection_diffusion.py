@@ -1,5 +1,6 @@
+import logging
 from openpnm.algorithms import TransientReactiveTransport, AdvectionDiffusion
-from openpnm.utils import logging, Docorator, SettingsAttr
+from openpnm.utils import Docorator, SettingsAttr
 docstr = Docorator()
 logger = logging.getLogger(__name__)
 

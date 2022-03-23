@@ -1,14 +1,16 @@
+import logging
 import numpy as np
 import scipy as sp
 import scipy.ndimage as spim
 from scipy.spatial import cKDTree
 from scipy.sparse import csgraph
 from scipy.spatial import ConvexHull
-from openpnm.utils import logging, Workspace, prettify_logger_message
+from openpnm.utils import Workspace, prettify_logger_message
 
 
 logger = logging.getLogger(__name__)
 ws = Workspace()
+
 __all__ = [
     'isoutside',
     'rotate_coords',
