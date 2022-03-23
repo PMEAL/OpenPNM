@@ -1,6 +1,8 @@
 import numpy as np
 from openpnm.algorithms import GenericAlgorithm
-from openpnm._skgraph.simulations import bond_percolation, trim_disconnected_clusters
+from openpnm._skgraph.simulations import bond_percolation
+from openpnm._skgraph.simulations import find_connected_clusters
+from openpnm._skgraph.simulations import find_trapped_clusters
 from openpnm.topotools import remove_isolated_clusters, ispercolating
 from openpnm.utils import logging, SettingsAttr, Docorator
 
@@ -58,48 +60,56 @@ class Drainage(GenericAlgorithm):
         self.settings['phase'] = phase.name
         self.reset()
 
-
     def reset(self):
         self['pore.inlets'] = False
         self['pore.outlets'] = False
-
+        self['pore.invaded'] = False
+        self['throat.invaded'] = False
+        self['pore.residual'] = False
+        self['throat.residual'] = False
+        self['pore.trapped'] = False
+        self['throat.trapped'] = False
 
     def set_inlets(self, pores, mode='add'):
-        r"""
-        Applies invading phase pressure boundary conditions to the specified pores
-
-        Parameters
-        ----------
-        pores : array_like
-            The pores where the given pressure should be applied.
-        mode : str
-            Controls how the BCs are added. Options are:
-
-            ============ ==========================================================
-            mode         description
-            ============ ==========================================================
-            'add'        Adds the given locations to any already present
-            ============ ==========================================================
-
-        """
         self['pore.inlets'][pores] = True
 
+    def set_outlets(self, pores, mode='add'):
+        self['pore.outlets'][pores] = True
+
+    def set_residual(self, pores=None, throats=None, mode='add'):
+        if pores is not None:
+            self['pore.residual'][pores] = True
+        if throats is not None:
+            self['throat.residual'][throats] = True
+
+    def set_trapped(self, pores=None, throats=None):
+        if pores is not None:
+            self['pore.trapped'][pores] = True
+        if throats is not None:
+            self['throat.trapped'][throats] = True
 
     def run(self, pressure):
-        r"""
-        Applies the given pressure to the existing inlets
-        """
+
         phase = self.project[self.settings.phase]
         Tinv = phase[self.settings.throat_entry_threshold] <= pressure
+        # Update invaded locations with residual
+        Tinv += self['throat.residual']
         s_labels, b_labels = bond_percolation(self.network.conns, Tinv)
-        s_labels, b_labels = trim_disconnected_clusters(b_labels, s_labels, self['pore.inlets'])
-        self['pore.invaded']  = s_labels
-        self['throat.invaded']  = b_labels
+        s_labels, b_labels = find_connected_clusters(b_labels, s_labels, self['pore.inlets'], asmask=False)
+        # Add result to existing invaded locations
+        self['pore.invaded'][s_labels >= 0] = True
+        self['throat.invaded'][b_labels >= 0] = True
+        if np.any(self['pore.outlets']):
+            s, b = find_trapped_clusters(conns=self.network.conns,
+                                         occupied_bonds=self['throat.invaded'],
+                                         outlets=self['pore.outlets'])
+            self['pore.trapped'][s >= 0] = True
+            self['throat.trapped'][b >= 0] = True
 
 
 if __name__ == "__main__":
     import openpnm as op
-    pn = op.network.Cubic([20, 20, 1], spacing=1e-5)
+    pn = op.network.Cubic([40, 40, 1], spacing=1e-5)
     geo = op.geometry.SpheresAndCylinders(network=pn, pores=pn.Ps, throats=pn.Ts)
     nwp = op.phase.GenericPhase(network=pn)
     nwp['throat.surface_tension'] = 0.480
@@ -108,25 +118,26 @@ if __name__ == "__main__":
     phys.add_model(propname='throat.entry_pressure',
                    model=op.models.physics.capillary_pressure.washburn)
 
-    P = .8e6
+    pressure = 1e6
     drn = Drainage(network=pn, phase=nwp)
     drn.set_inlets(pores=pn.pores('left'))
-    drn.run(pressure=P)
+    drn.set_outlets(pores=pn.pores('right'))
+    drn.run(pressure=pressure)
 
+    # %%
     ax = op.topotools.plot_coordinates(pn, pores=drn['pore.inlets'])
-    ax = op.topotools.plot_coordinates(pn, pores=pn.pores('right'), c='grey', ax=ax)
-    ax = op.topotools.plot_connections(pn, throats=nwp['throat.entry_pressure'] <= P, c='grey', ax=ax)
+    ax = op.topotools.plot_coordinates(pn, pores=pn.pores('right'), c='black', ax=ax)
+    ax = op.topotools.plot_connections(pn, throats=nwp['throat.entry_pressure'] <= pressure, c='grey', ax=ax)
     ax = op.topotools.plot_connections(pn, throats=drn['throat.invaded'], ax=ax)
     ax = op.topotools.plot_coordinates(pn, pores=drn['pore.invaded'], ax=ax)
-    ax = op.topotools.plot_coordinates(pn, pores=~drn['pore.invaded'], c='grey', ax=ax)
+    ax = op.topotools.plot_coordinates(pn, pores=drn['pore.outlets'], ax=ax)
+    ax = op.topotools.plot_coordinates(pn, pores=drn['pore.trapped'], c='green', ax=ax)
+    # ax = op.topotools.plot_coordinates(pn, pores=~drn['pore.invaded'], c='grey', ax=ax)
 
 
-
-
-
-
-
-
+    # %%
+    # ax = op.topotools.plot_connections(pn, throats=drn['throat.invaded'], c='grey', ax=ax)
+    # ax = op.topotools.plot_coordinates(pn, pores=drn['pore.invaded'], c='blue', ax=ax)
 
 
 
