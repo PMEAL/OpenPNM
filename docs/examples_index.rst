@@ -103,11 +103,11 @@ Simulations
 Contributions
 -------------
 
-   .. toctree::
-      :maxdepth: 1
-      :glob:
+.. toctree::
+   :maxdepth: 1
+   :glob:
 
-      examples/contrib/**
+   examples/contrib/**
 
 
 Reference

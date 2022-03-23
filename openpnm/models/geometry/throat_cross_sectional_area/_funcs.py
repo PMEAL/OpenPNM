@@ -7,7 +7,7 @@ docstr.params['models.geometry.throat_cross_sectional_area.returns'] = \
     r"""areas : ndarray
             A numpy ndarray containing throat cross-sectional area values"""
 
-_all__ = ["cylinder", "cuboid", "rectangle"]
+__all__ = ["cylinder", "cuboid", "rectangle"]
 
 
 @docstr.dedent

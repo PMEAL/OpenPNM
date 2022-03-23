@@ -173,16 +173,14 @@ html_theme_options = {
 html_sidebars = {
     "contributing": ["sidebar-search-bs.html"],
     "changelog": [],
-    # "examples/*": []
+    # "examples_index/**": [],
 }
 
 html_js_files = ['js/custom.js']
 
+nbsphinx_execute = 'always'
 nbsphinx_prompt_width = "0"
 nbsphinx_allow_errors = True
-nbsphinx_custom_formats = {
-    '.md': ['jupytext.reads', {'fmt': 'Rmd'}],
-}
 
 exclude_patterns = ['_build', '_templates']
 
