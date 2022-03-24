@@ -19,13 +19,6 @@ phys_air = op.physics.Standard(network=pn, phase=air, geometry=geo)
 phys_water = op.physics.Standard(network=pn, phase=water, geometry=geo)
 phys_hg = op.physics.Standard(network=pn, phase=hg, geometry=geo)
 
-# %% Perform porosimetry simulation
-mip = op.metrics.Porosimetry(network=pn, phase=hg)
-mip.set_inlets(pores=pn.pores(['top', 'bottom']))
-mip.run()
-hg.update(mip.results(Pc=70000))
-# mip.plot_intrusion_curve()
-
 # %% Perform Stokes flow simulation
 sf = op.algorithms.StokesFlow(network=pn, phase=water)
 sf.set_value_BC(pores=pn.pores('left'), values=101325)
