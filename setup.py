@@ -76,12 +76,10 @@ setup(
         'openpnm.materials',
     ],
     install_requires=[
-        'auto_all',
         'chemicals',
         'docrep>=0.3',
         'flatdict',
         'h5py',
-        'ipython',
         'jsonschema',
         'json-tricks',
         'matplotlib',
@@ -95,8 +93,8 @@ setup(
         'sympy',
         'terminaltables',
         'tqdm',
-        'transforms3d',
         'traits',
+        'transforms3d'
     ],
     author='OpenPNM Team',
     author_email='jgostick@uwaterloo.ca',
