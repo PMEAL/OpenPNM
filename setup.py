@@ -76,12 +76,10 @@ setup(
         'openpnm.materials',
     ],
     install_requires=[
-        'attr',
         'auto_all',
         'chemicals',
         'docrep>=0.3',
         'flatdict',
-        'gitpython',
         'h5py',
         'ipython',
         'jsonschema',
