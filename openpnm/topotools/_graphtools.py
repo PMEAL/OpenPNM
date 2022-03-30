@@ -1,13 +1,29 @@
+import logging
 import warnings
 import numpy as np
 import scipy.sparse as sprs
-from openpnm.utils import logging, Workspace
-from auto_all import start_all, end_all
+from openpnm.utils import Workspace
 
 
 logger = logging.getLogger(__name__)
 ws = Workspace()
-start_all()
+__all__ = [
+    'find_neighbor_sites',
+    'find_neighbor_bonds',
+    'find_connected_sites',
+    'find_connecting_bonds',
+    'find_complement',
+    'istriu',
+    'istril',
+    'istriangular',
+    'issymmetric',
+    'tri_to_am',
+    'vor_to_am',
+    'conns_to_am',
+    'drop_sites',
+    '_am_to_im',
+    '_im_to_am',
+]
 
 
 def find_neighbor_sites(sites, am, flatten=True, include_input=False,
@@ -669,5 +685,3 @@ def drop_sites(am, sites):
     conns = site_id[conns[~bond_mask]]
     am = sprs.coo_matrix((am.data[~bond_mask], (conns[:, 0], conns[:, 1])))
     return am, bond_mask
-
-end_all()

@@ -11,7 +11,7 @@ class GenericTransportTest:
         self.geo = op.geometry.SpheresAndCylinders(network=self.net,
                                              pores=self.net.Ps,
                                              throats=self.net.Ts)
-        self.phase = op.phases.Air(network=self.net)
+        self.phase = op.phase.Air(network=self.net)
         self.phase['pore.mole_fraction'] = 0
         self.phys = op.physics.GenericPhysics(network=self.net,
                                               phase=self.phase,
@@ -27,7 +27,7 @@ class GenericTransportTest:
     def test_undefined_elements(self):
         net = op.network.Cubic(shape=[3, 3, 3])
         geom = op.geometry.GenericGeometry(network=net, pores=net.Ps)
-        phase = op.phases.GenericPhase(network=net)
+        phase = op.phase.GenericPhase(network=net)
         phys = op.physics.GenericPhysics(network=net, phase=phase, geometry=geom)
         phys["throat.conductance"] = 1.0
         alg = op.algorithms.GenericTransport(network=net, phase=phase)
@@ -54,7 +54,13 @@ class GenericTransportTest:
         alg.settings['quantity'] = 'pore.mole_fraction'
         alg.set_value_BC(pores=self.net.pores('top'), values=1)
         alg.set_value_BC(pores=self.net.pores('bottom'), values=0)
-        alg.run()
+        soln = alg.run()
+        # Check returned data type
+        from openpnm.algorithms._solution import SteadyStateSolution
+        quantity = alg.settings['quantity']
+        assert isinstance(soln[quantity], SteadyStateSolution)
+        # Ensure solution object is attached to the algorithm
+        assert isinstance(alg.soln[quantity], SteadyStateSolution)
 
     def test_two_value_conditions(self):
         alg = op.algorithms.GenericTransport(network=self.net,
@@ -101,25 +107,25 @@ class GenericTransportTest:
         assert np.isfinite(alg['pore.bc_rate']).sum() == 2
         assert np.isfinite(alg['pore.bc_value']).sum() == 1
 
-    def test_cache_A(self):
+    def test_cache(self):
         alg = op.algorithms.GenericTransport(network=self.net,
                                              phase=self.phase)
         alg.settings['conductance'] = 'throat.diffusive_conductance'
         alg.settings['quantity'] = 'pore.mole_fraction'
         alg.set_rate_BC(pores=self.net.pores('bottom'), values=1)
         alg.set_value_BC(pores=self.net.pores('top'), values=0)
-        alg.settings["cache_A"] = True
+        alg.settings["cache"] = True
         alg.run()
         x_before = alg["pore.mole_fraction"].mean()
         self.phys["throat.diffusive_conductance"][1] = 50.0
         alg.run()
         x_after = alg["pore.mole_fraction"].mean()
-        # When cache_A is True, A is not recomputed, hence x == y
+        # When cache is True, A is not recomputed, hence x == y
         assert x_before == x_after
-        alg.settings["cache_A"] = False
+        alg.settings["cache"] = False
         alg.run()
         x_after = alg["pore.mole_fraction"].mean()
-        # When cache_A is False, A must be recomputed, hence x!= y
+        # When cache is False, A must be recomputed, hence x!= y
         assert x_before != x_after
         # Revert back changes to objects
         self.setup_class()
@@ -170,9 +176,9 @@ class GenericTransportTest:
     def test_rate_Nt_by_2_conductance(self):
         net = op.network.Cubic(shape=[1, 6, 1])
         geom = op.geometry.SpheresAndCylinders(network=net, pores=net.Ps, throats=net.Ts)
-        air = op.phases.Air(network=net)
-        water = op.phases.Water(network=net)
-        m = op.phases.MultiPhase(phases=[air, water], project=net.project)
+        air = op.phase.Air(network=net)
+        water = op.phase.Water(network=net)
+        m = op.contrib.MultiPhase(network=net, phases=[air, water])
         m.set_occupancy(phase=air, pores=[0, 1, 2])
         m.set_occupancy(phase=water, pores=[3, 4, 5])
         const = op.models.misc.constant
@@ -254,7 +260,7 @@ class GenericTransportTest:
                                              phase=self.phase)
         alg.settings['conductance'] = 'throat.diffusive_conductance'
         alg.settings['quantity'] = 'pore.concentration'
-        alg.settings['cache_A'] = False
+        alg.settings['cache'] = False
         alg.set_value_BC(pores=self.net.pores('top'), values=1)
         alg.set_value_BC(pores=self.net.pores('bottom'), values=0)
         # Check if the method can catch NaNs in data
@@ -300,7 +306,7 @@ class GenericTransportTest:
     def test_network_continuity(self):
         net = op.network.Cubic([5, 1, 1])
         op.topotools.trim(network=net, pores=[2])
-        phase = op.phases.GenericPhase(network=net)
+        phase = op.phase.GenericPhase(network=net)
         phase['throat.diffusive_conductance'] = 1.0
         alg = op.algorithms.FickianDiffusion(network=net, phase=phase)
         alg.set_value_BC(pores=0, values=1)
@@ -309,6 +315,17 @@ class GenericTransportTest:
         alg.set_value_BC(pores=3, values=0)
         alg.run()
 
+    def test_x0_is_nan(self):
+        alg = op.algorithms.GenericTransport(network=self.net,
+                                             phase=self.phase)
+        alg.settings['conductance'] = 'throat.diffusive_conductance'
+        alg.settings['quantity'] = 'pore.mole_fraction'
+        alg.set_value_BC(pores=self.net.pores('top'), values=1)
+        alg.set_value_BC(pores=self.net.pores('bottom'), values=0)
+        x0 = np.zeros(alg.Np)
+        x0[5] = np.nan
+        with pytest.raises(Exception):
+            alg.run(x0=x0)
 
     def teardown_class(self):
         ws = op.Workspace()

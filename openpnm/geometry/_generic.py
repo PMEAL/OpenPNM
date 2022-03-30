@@ -1,7 +1,8 @@
+import logging
 from copy import deepcopy
 from openpnm.core import Subdomain, ModelsMixin, ParamMixin
 from openpnm.utils import Docorator, SettingsAttr
-from openpnm.utils import Workspace, logging
+from openpnm.utils import Workspace
 logger = logging.getLogger(__name__)
 ws = Workspace()
 docstr = Docorator()
@@ -68,20 +69,17 @@ class GenericGeometry(ParamMixin, Subdomain, ModelsMixin):
 
     """
 
-    def __init__(self, pores=[], throats=[], settings=None, **kwargs):
+    def __init__(self, network, pores=[], throats=[], settings=None, **kwargs):
         self.settings = SettingsAttr(GeometrySettings, settings)
-        super().__init__(settings=self.settings, **kwargs)
-
-        network = self.project.network
-        if network:
-            network[f'pore.{self.name}'] = False
-            network[f'throat.{self.name}'] = False
-            try:
-                self.set_locations(pores=pores, throats=throats, mode='add')
-            except Exception as e:
-                logger.error(f'{e}, instantiation cancelled')
-                network.project.purge_object(self)
-                raise e
+        super().__init__(network=network, settings=self.settings, **kwargs)
+        network[f'pore.{self.name}'] = False
+        network[f'throat.{self.name}'] = False
+        try:
+            self.set_locations(pores=pores, throats=throats, mode='add')
+        except Exception as e:
+            logger.error(f'{e}, instantiation cancelled')
+            network.project.purge_object(self)
+            raise e
 
     def _get_phys(self):
         """A shortcut to get a handle to the associated physics."""

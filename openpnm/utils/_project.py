@@ -9,11 +9,10 @@ from openpnm.utils import SettingsAttr
 from ._grid import Tableist
 
 
-logger = logging.getLogger(__name__)
 ws = Workspace()
-__all__ = [
-    'Project',
-    ]
+logger = logging.getLogger(__name__)
+
+__all__ = ['Project']
 
 
 class ProjectSettings(SettingsAttr):
@@ -99,7 +98,7 @@ class Project(list):
         objects, but does NOT remove the associated objects.
 
         See Also
-        -------
+        --------
         purge_object
 
         """
@@ -147,7 +146,7 @@ class Project(list):
 
         Parameters
         ----------
-        objtype : list of strings
+        objtype : list[str]
             A list containing the object type(s) to be removed.  If no types
             are specified, then all objects are removed.  To clear only objects
             of a specific type, use *'network'*, *'geometry'*, *'phase'*,
@@ -522,14 +521,14 @@ class Project(list):
         if objtype.startswith('net'):
             obj = openpnm.network.GenericNetwork(project=self, name=name)
         elif objtype.startswith('geo'):
-            obj = openpnm.geometry.GenericGeometry(project=self, name=name,
+            obj = openpnm.geometry.GenericGeometry(network=self.network, name=name,
                                                    pores=[], throats=[])
         elif objtype.startswith('pha'):
-            obj = openpnm.phases.GenericPhase(project=self, name=name)
+            obj = openpnm.phase.GenericPhase(network=self.network, name=name)
         elif objtype.startswith('phy'):
-            obj = openpnm.physics.GenericPhysics(project=self, name=name)
+            obj = openpnm.physics.GenericPhysics(network=self.network, name=name)
         elif objtype.startswith('alg'):
-            obj = openpnm.algorithms.GenericAlgorithm(project=self, name=name)
+            obj = openpnm.algorithms.GenericAlgorithm(network=self.network, name=name)
         else:
             obj = openpnm.core.Base(project=self, name=name)
         return obj
@@ -551,26 +550,33 @@ class Project(list):
             Which file format to store the data. If a valid extension is
             included in the ``filename``, this is ignored. Option are:
 
-            'vtk'
-                (default) The Visualization Toolkit format, used by
-                various softwares such as Paraview. This actually produces a 'vtp'
-                file. NOTE: This can be quite slow since all the data is written
-                to a simple text file. For large data simulations consider
-                'xdmf'.
-            'csv'
-                The comma-separated values format, which is easily
-                openned in any spreadsheet program. The column names represent
-                the property name, including the type and name of the object to
-                which they belonged, all separated by the pipe character.
-            'xdmf'
-                The extensible data markup format, is a very efficient
-                format for large data sets. This actually results in the creation
-                of two files, the *xmf* file and an associated *hdf* file. The
-                *xmf* file contains instructions for looking into the *hdf* file
-                where the data is stored. Paraview opens the *xmf* format natively,
-                and is very fast.
-            'mat'
-                Matlab 'mat-file', which can be openned in Matlab.
+            ======== ==========================================================
+            format   description
+            ======== ==========================================================
+            'vtk'    (default) The Visualization Toolkit format, used by
+                     various softwares such as Paraview. This actually
+                     produces a 'vtp' file. NOTE: This can be quite slow since
+                     all the data is written to a simple text file. For large
+                     data simulations consider 'xdmf'.
+
+            'csv'    The comma-separated values format, which is easily
+                     opened in any spreadsheet program. The column names
+                     represent the property name, including the type and name
+                     of the object to which they belonged, all separated by
+                     the pipe character.
+
+            'xmf'    The extensible data markup format, is a very efficient
+                     format for large data sets. This actually results in the
+                     creation of two files, the *xmf* file and an associated
+                     *hdf* file. The *xmf* file contains instructions for
+                     looking into the *hdf* file where the data is stored.
+                     Paraview opens the *xmf* format natively and is very fast.
+
+            'pkl'    A python pickle files which is a saved represenation of
+                     the entire simulation.
+
+            'mat'    Matlab 'mat-file', which can be opened in Matlab.
+            ======== ==========================================================
 
         Notes
         -----
@@ -579,7 +585,7 @@ class Project(list):
         information about the format refer to ``openpnm.io``.
 
         """
-        import builtins
+        from openpnm import io
 
         project = self
         network = self.network
@@ -588,22 +594,26 @@ class Project(list):
         if filetype is None:
             if '.' in filename:
                 filetype = filename.split('.')[-1]
-                # Convert file type to io class name
-                temp = {"hdf": "hdf5", "xmf": "xdmf", "vtp": "vtk", "pkl": "pickle"}
-                if filetype in temp.keys():
-                    filetype = temp[filetype]
             else:
                 raise Exception('File type not given')
+        # Convert file type to io class name
+        temp = {"hdf": "hdf5",
+                "hdf5": "hdf5",
+                "xmf": "xdmf",
+                "xdmf": "xdmf",
+                "vtk": "vtk",
+                "vtp": "vtk",
+                "pkl": "pickle",
+                "mat": "matlab",
+                "csv": "csv"}
+        if filetype not in list(temp.keys()):
+            raise Exception(f'File type {filetype} is not supported')
+        if filetype in temp.keys():
+            filetype = temp[filetype]
 
         # Fetch correct io class, using case insensitive look-up
-        def igetattr(obj, attr):
-            for a in dir(obj):
-                if a.lower() == attr.lower():
-                    return orig_getattr(obj, a)
-        orig_getattr = builtins.getattr
-
-        fmt = igetattr(openpnm.io, filetype)
-        fmt.export_data(network=network, phases=phases, filename=filename)
+        fmt = getattr(io, 'to_' + filetype)
+        fmt(network=network, phases=phases, filename=filename)
 
     @property
     def network(self):

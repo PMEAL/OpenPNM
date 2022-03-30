@@ -1,6 +1,7 @@
+import logging
 import numpy as np
 from openpnm.algorithms import ReactiveTransport
-from openpnm.utils import logging, Docorator, SettingsAttr
+from openpnm.utils import Docorator, SettingsAttr
 docstr = Docorator()
 logger = logging.getLogger(__name__)
 
@@ -63,17 +64,20 @@ class AdvectionDiffusion(ReactiveTransport):
         pores : array_like
             The pore indices where the condition should be applied
         mode : str, optional
-            Controls how the boundary conditions are applied. Options are:
+            Controls how the boundary conditions are applied. The default value
+            is 'merge'. Options are:
 
-                'merge' (default)
-                    Adds supplied boundary conditions to already existing
-                    conditions, and also overwrites any existing values.
-                    If at rate or value BC exists at the given locations,
-                    these are deleted, and outflow conditions are given
-                    priority.
-                'overwrite'
-                    Deletes all boundary conditions of the given type then
-                    adds the specified new ones.
+            ===========  =====================================================
+            mode         meaning
+            ===========  =====================================================
+            'merge'      Adds supplied boundary conditions to already existing
+                         conditions, and also overwrites any existing values.
+                         If at rate or value BC exists at the given locations,
+                         these are deleted, and outflow conditions are given
+                         priority.
+            'overwrite'  Deletes all boundary conditions of the given type then
+                         adds the specified new ones.
+            ===========  =====================================================
 
         Notes
         -----
@@ -155,7 +159,7 @@ if __name__ == "__main__":
     import openpnm as op
     pn = op.network.Cubic(shape=[10, 10, 1])
     geo = op.geometry.SpheresAndCylinders(network=pn, pores=pn.Ps, throats=pn.Ts)
-    air = op.phases.Air(network=pn)
+    air = op.phase.Air(network=pn)
     phys = op.physics.Standard(network=pn, phase=air, geometry=geo)
     flow = op.algorithms.StokesFlow(network=pn, phase=air)
     flow.set_value_BC(pores=pn.pores('left'), values=1)

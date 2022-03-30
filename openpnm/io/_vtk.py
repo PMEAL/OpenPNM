@@ -1,8 +1,9 @@
+import logging
 import numpy as np
 from flatdict import FlatDict
 from xml.etree import ElementTree as ET
 from openpnm.io import GenericIO, Dict
-from openpnm.utils import logging, Workspace
+from openpnm.utils import Workspace
 logger = logging.getLogger(__name__)
 ws = Workspace()
 
@@ -234,3 +235,20 @@ class VTK(GenericIO):
         if n != 1:
             array = array.reshape(array.size // n, n)
         return array
+
+
+def from_vtk(filename, project=None, delim=' | '):
+    project = VTK.import_data(filename=filename, project=project, delim=delim)
+    return project
+
+
+from_vtk.__doc__ = VTK.import_data.__doc__
+
+
+def to_vtk(network, phases=[], filename="", delim=" | ",
+           fill_nans=None, fill_infs=None):
+    VTK.export_data(network=network, phases=phases, filename=filename,
+                    delim=delim, fill_nans=fill_nans, fill_infs=fill_infs)
+
+
+to_vtk.__doc__ = VTK.export_data.__doc__

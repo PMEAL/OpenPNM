@@ -1,6 +1,6 @@
+import logging
 import numpy as _np
 from openpnm.io import GenericIO
-from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 
 
@@ -14,7 +14,7 @@ class STL(GenericIO):
     """
 
     @classmethod
-    def export_data(cls, network, phases=[], filename='', maxsize='auto',
+    def export_data(cls, network, filename=None, maxsize='auto',
                     fileformat='STL Format', logger_level=0):
         r"""
         Saves (transient/steady-state) data from the given objects into the
@@ -49,20 +49,22 @@ class STL(GenericIO):
         try:
             import netgen.csg as csg
         except ModuleNotFoundError:
-            logger.error('Module "netgen.csg" not found.')
+            raise Exception('Module "netgen" not found.')
         try:
             from netgen.meshing import SetMessageImportance as log
             log(logger_level)
         except ModuleNotFoundError:
-            logger.warning('Module "netgen.meshing" not found. '
-                           + 'The "logger_level" ignored.')
+            logger.warning('Module "netgen.meshing" not found.'
+                           + ' The "logger_level" will be ignored.')
 
-        project, network, phases = cls._parse_args(network=network,
-                                                   phases=phases)
+        project, network, phases = cls._parse_args(network=network, phases=[])
         network = network[0]
 
-        if filename == '':
-            filename = project.name
+        # Temporarily add endpoints to network so STL class works
+        network["throat.endpoints.head"] = network.coords[network.conns[:, 0]]
+        network["throat.endpoints.tail"] = network.coords[network.conns[:, 1]]
+
+        filename = network.name if filename is None else filename
         path = cls._parse_filename(filename=filename, ext='stl')
         # Path is a pathlib object, so slice it up as needed
         fname_stl = path.name
@@ -112,3 +114,15 @@ class STL(GenericIO):
         mesh = geo.GenerateMesh(maxh=maxsize/scale)
         mesh.Scale(scale)
         mesh.Export(filename=fname_stl, format=fileformat)
+
+        # Remove endpoints label from network
+        del network["throat.endpoints"]
+
+
+def to_stl(network, filename=None, maxsize='auto', fileformat='STL Format',
+           logger_level=0):
+    STL.export_data(network, filename=filename, maxsize=maxsize,
+                    fileformat=fileformat, logger_level=logger_level)
+
+
+to_stl.__doc__ = STL.export_data.__doc__

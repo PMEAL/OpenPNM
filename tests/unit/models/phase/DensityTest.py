@@ -5,7 +5,7 @@ from numpy.testing import assert_approx_equal
 class DensityTest:
     def setup_class(self):
         self.net = op.network.Cubic(shape=[3, 3, 3])
-        self.phase = op.phases.GenericPhase(network=self.net)
+        self.phase = op.phase.GenericPhase(network=self.net)
         self.phase['pore.temperature'] = 298.0  # K
         self.phase['pore.pressure'] = 101325.0  # Pa
         self.phase['pore.molecular_weight'] = 0.018  # kg/mol
@@ -15,20 +15,20 @@ class DensityTest:
     def test_standard(self):
         # Liquid water
         self.phase.add_model(propname='pore.density',
-                             model=op.models.phases.density.standard)
+                             model=op.models.phase.density.standard)
         assert_approx_equal(self.phase['pore.density'].mean(), 999.702)
 
     def test_ideal_gas(self):
         # Water vapor
         self.phase.add_model(propname='pore.density',
-                             model=op.models.phases.density.ideal_gas)
+                             model=op.models.phase.density.ideal_gas)
         self.phase.regenerate_models()
         assert_approx_equal(self.phase['pore.density'].mean(), 0.73610248)
 
     def test_water(self):
         # Liquid water
         self.phase.add_model(propname='pore.density',
-                             model=op.models.phases.density.water)
+                             model=op.models.phase.density.water)
         self.phase.regenerate_models()
         assert_approx_equal(self.phase['pore.density'].mean(), 996.9522)
 

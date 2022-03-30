@@ -1,9 +1,9 @@
 import os
 import json
 import pickle
+import logging
 import numpy as np
 from pathlib import Path
-from openpnm.utils import logging
 from openpnm.io import GenericIO
 from openpnm.geometry import Imported
 import openpnm.models.geometry as gmods
@@ -11,7 +11,7 @@ from openpnm.network import GenericNetwork
 logger = logging.getLogger(__name__)
 
 
-class JSONGraphFormat(GenericIO):
+class JSONGraph(GenericIO):
     r"""
     Class for reading and writing OpenPNM networks to JSON Graph Format (JGF).
 
@@ -25,7 +25,7 @@ class JSONGraphFormat(GenericIO):
     """
 
     @classmethod
-    def __validate_json__(self, json_file):
+    def _validate_json(self, json_file):
         import jsonschema
         # Validate name of schema file
         relative_path = '../../utils/jgf_schema.pkl'
@@ -137,7 +137,7 @@ class JSONGraphFormat(GenericIO):
         # Load and validate input JSON
         with open(filename, 'r') as file:
             json_file = json.load(file)
-            if not cls.__validate_json__(json_file):
+            if not cls._validate_json(json_file):
                 raise Exception('FIle is not in the JSON Graph Format')
 
         # Extract graph metadata from JSON
@@ -174,7 +174,7 @@ class JSONGraphFormat(GenericIO):
         geom = Imported(network=network)
 
         # Define derived throat properties
-        geom.add_model(propname='throat.area',
+        geom.add_model(propname='throat.cross_sectional_area',
                        model=gmods.throat_cross_sectional_area.cylinder)
         geom.add_model(propname='throat.volume',
                        model=gmods.throat_volume.cylinder)
@@ -190,3 +190,18 @@ class JSONGraphFormat(GenericIO):
                        model=gmods.pore_volume.sphere)
 
         return network.project
+
+
+def from_jsongraph(filename, project=None):
+    project = JSONGraph.import_data(filename=filename, project=project)
+    return project
+
+
+from_jsongraph.__doc__ = JSONGraph.import_data.__doc__
+
+
+def to_jsongraph(network, filename=''):
+    JSONGraph.export_data(network=network, filename=filename)
+
+
+to_jsongraph.__doc__ = JSONGraph.export_data.__doc__

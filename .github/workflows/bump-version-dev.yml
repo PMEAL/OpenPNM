@@ -1,0 +1,54 @@
+name: Bump Version Number (dev)
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  build:
+    name: Bump version
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        persist-credentials: false  # otherwise, the token used is the GITHUB_TOKEN, instead of your personal token
+        fetch-depth: 0              # otherwise, you will failed to push refs to dest repo
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.7
+
+    - name: Set env variables
+      run: |
+        # The next line is very important, otherwise the line after triggers
+        # git to track the permission change, which breaks bump2version API (needs clean git folder)
+        git config core.filemode false
+        chmod +x .github/workflows/utils.sh
+        echo "VERSION_FILE=openpnm/__version__.py" >> $GITHUB_ENV
+        echo "SETUP_CFG_FILE=setup.cfg" >> $GITHUB_ENV
+        echo "${{ github.event.head_commit.message }}"
+
+    - name: Install dependencies
+      run: |
+        pip install bump2version
+
+    - name: Bump version (build)
+      run: |
+        source .github/workflows/utils.sh
+        bump_version build $VERSION_FILE
+        # Note that we don't want to create a new tag for "builds"
+
+    - name: Commit files
+      run: |
+        REPOSITORY=${INPUT_REPOSITORY:-$GITHUB_REPOSITORY}
+        remote_repo="https://${GITHUB_ACTOR}:${{ secrets.PUSH_ACTION_TOKEN }}@github.com/${REPOSITORY}.git"
+
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+
+        # Commit version bump to dev ([no ci] to avoid infinite loop)
+        git commit -m "Bump version number [no ci]" -a
+        git push "${remote_repo}" dev

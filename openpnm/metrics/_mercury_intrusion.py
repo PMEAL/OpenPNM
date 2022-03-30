@@ -1,6 +1,6 @@
+import logging
 import numpy as np
-from openpnm.utils import logging
-from openpnm.phases import Mercury
+from openpnm.phase import Mercury
 from openpnm.physics import GenericPhysics
 from openpnm.metrics import Porosimetry
 from openpnm import models

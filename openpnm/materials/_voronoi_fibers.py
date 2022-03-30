@@ -1,3 +1,4 @@
+import logging
 import math
 import numpy as np
 from scipy import ndimage
@@ -5,11 +6,11 @@ import scipy.spatial as sptl
 from openpnm import topotools
 from scipy.spatial import ConvexHull
 import openpnm.models.geometry as gm
-from openpnm.utils import logging, Project
+from openpnm.utils import Project
 from openpnm.network import DelaunayVoronoiDual
 from transforms3d import _gohlketransforms as tr
 from openpnm.geometry import GenericGeometry
-from openpnm.utils.misc import unique_list
+from openpnm.utils import unique_list
 
 logger = logging.getLogger(__name__)
 
@@ -147,7 +148,7 @@ class VoronoiFibers(Project):
             if len(Ts) > 0:
                 map_Ts = del_geom.to_local(throats=Ts)
                 td = del_geom["throat.diameter"][map_Ts]
-                ta = del_geom["throat.area"][map_Ts]
+                ta = del_geom["throat.cross_sectional_area"][map_Ts]
                 del_geom["pore.diameter"][map_Ps[i]] = td
                 del_geom["pore.area"][map_Ps[i]] = ta
         del_geom.regenerate_models(propnames=["throat.equivalent_area"])
@@ -458,7 +459,7 @@ class DelaunayGeometry(GenericGeometry):
                             perimeter[i] = 0
                             equiv_diameter[i] = 0
 
-        self["throat.area"] = area
+        self["throat.cross_sectional_area"] = area
         self["throat.perimeter"] = perimeter
         self["throat.centroid"] = centroid
         self["throat.diameter"] = equiv_diameter
@@ -1157,7 +1158,7 @@ class VoronoiGeometry(GenericGeometry):
                            regen_mode=rm)
             self["throat.diameter"] = np.ones(self.Nt) * network.fiber_rad * 2
             self["throat.indiameter"] = self["throat.diameter"]
-            self.add_model(propname="throat.area",
+            self.add_model(propname="throat.cross_sectional_area",
                            model=gm.throat_cross_sectional_area.cylinder,
                            regen_mode=rm)
             self.add_model(propname="throat.length",

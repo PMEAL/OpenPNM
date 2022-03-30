@@ -14,7 +14,7 @@ Module Reference
       openpnm.core
       openpnm.network
       openpnm.geometry
-      openpnm.phases
+      openpnm.phase
       openpnm.physics
       openpnm.models
       openpnm.solvers

@@ -37,7 +37,7 @@ function get_most_recent_tag {
 # -------------------------------------------------------------------------- #
 function get_version {
     local version_loc=$1
-    local temp=$(grep -E -o "([0-9]{1,}\.)+[0-9]{1,}" $version_loc)
+    local temp=$(grep -E -o "([0-9]{1,}\.)+[0-9]{1,}(.dev[0-9]{1,})?" $version_loc)
     echo "$temp"
 }
 
@@ -88,7 +88,7 @@ function bump_version {
     local bump_type=$1
     local version_loc=$2
     local version=$(get_version $version_loc)
-    bump2version --current-version $version $bump_type $version_loc
+    bump2version --current-version $version $bump_type $version_loc --verbose
 }
 
 

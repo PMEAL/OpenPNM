@@ -1,7 +1,7 @@
 import time
+import logging
 import pickle
 from openpnm.io import GenericIO
-from openpnm.utils import logging
 from openpnm.utils import Workspace, Project
 logger = logging.getLogger(__name__)
 ws = Workspace()
@@ -212,3 +212,18 @@ class Pickle(GenericIO):
                 return ws[newname]
             # Otherwise, raise exception
             raise Exception('File contents are not understood')
+
+
+def from_pickle(filename):
+    project = Pickle.load_project(filename=filename)
+    return project
+
+
+from_pickle.__doc__ = Pickle.load_project.__doc__
+
+
+def to_pickle(project, filename=''):
+    Pickle.save_project(project=project, filename=filename)
+
+
+to_pickle.__doc__ = Pickle.save_project.__doc__

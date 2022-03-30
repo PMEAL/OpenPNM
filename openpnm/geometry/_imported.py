@@ -1,6 +1,7 @@
+import logging
 import openpnm.models as mods
 from openpnm.geometry import GenericGeometry
-from openpnm.utils import logging, SettingsAttr, TypedList, Docorator
+from openpnm.utils import SettingsAttr, TypedList, Docorator
 
 
 logger = logging.getLogger(__name__)

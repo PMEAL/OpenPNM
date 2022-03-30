@@ -1,7 +1,5 @@
 import scipy.spatial as sptl
 import numpy as np
-from openpnm.topotools import vor_to_am, isoutside
-from openpnm.topotools.generators import tools
 
 
 def voronoi(points, shape=[1, 1, 1]):
@@ -24,6 +22,8 @@ def voronoi(points, shape=[1, 1, 1]):
         The Voronoi tessellation object produced by ``scipy.spatial.Voronoi``
 
     """
+    from openpnm.topotools import vor_to_am, isoutside
+    from openpnm.topotools.generators import tools
     points = tools.parse_points(points=points, shape=shape)
     mask = ~np.all(points == 0, axis=0)
     # Perform tessellation

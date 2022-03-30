@@ -1,8 +1,9 @@
+import logging
 import numpy as np
 from openpnm.network import Cubic
-from openpnm.utils import logging, Project, prettify_logger_message
+from openpnm.utils import Project, prettify_logger_message
 from openpnm.geometry import GenericGeometry
-from openpnm.phases import GenericPhase
+from openpnm.phase import GenericPhase
 from openpnm.topotools import trim
 import openpnm.models as mods
 logger = logging.getLogger(__name__)
@@ -157,11 +158,11 @@ class BundleOfTubes(Project):
                        model=mods.misc.constant, value=0.0)
         geom.add_model(propname='throat.length',
                        model=mods.network.pore_to_pore_distance)
-        geom.add_model(propname='throat.area',
+        geom.add_model(propname='throat.cross_sectional_area',
                        model=mods.geometry.throat_cross_sectional_area.cylinder)
         geom.add_model(propname='pore.area',
                        model=mods.misc.from_neighbor_throats,
-                       prop='throat.area')
+                       prop='throat.cross_sectional_area')
         geom.add_model(propname='pore.volume',
                        model=mods.misc.constant, value=0.0)
         geom.add_model(propname='throat.volume',

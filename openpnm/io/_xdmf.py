@@ -1,7 +1,7 @@
+import logging
 from flatdict import FlatDict
 import xml.etree.cElementTree as ET
 from openpnm.io import Dict, GenericIO
-from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 
 
@@ -127,7 +127,7 @@ class XDMF(GenericIO):
                     ):
                         attr_type = 'Scalar'
                         shape = D[item].shape
-                        dims = (''.join([str(i) + ' ' for i in list(shape)[::-1]]))
+                        dims = (' '.join([str(i) for i in shape]))
                         if '@' in item:
                             item = item.split('@')[0]+'@t'
                             hdf_loc = fname_hdf + ":" + item
@@ -161,6 +161,13 @@ class XDMF(GenericIO):
         with open(path_p.joinpath(fname_xdf), 'w') as file:
             file.write(cls._header)
             file.write(ET.tostring(root).decode("utf-8"))
+
+
+def to_xdmf(network, phases=[], filename=''):
+    XDMF.export_data(network=network, phases=phases, filename=filename)
+
+
+to_xdmf.__doc__ = XDMF.export_data.__doc__
 
 
 def create_root(Name):
@@ -219,7 +226,7 @@ def create_data_item(value, Dimensions, **attribs):
     element = ET.Element('DataItem')
     element.attrib.update({'ItemType': "Uniform",
                            'Format': "XML",
-                           'DatarType': "Float",
+                           'DataType': "Float",
                            'Precision': "4",
                            'Rank': "1",
                            'Dimensions': Dimensions,

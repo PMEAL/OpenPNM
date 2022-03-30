@@ -5,12 +5,12 @@ Collection of pore-scale models for manipulating data
 """
 
 
-# %% The following bits are to initialize some boilerplate docstrings
-from openpnm.utils import Docorator
-from matplotlib.docstring import Substitution
+# The following bits are to initialize some boilerplate docstrings
+from openpnm.utils import Docorator as _doc
+from matplotlib.docstring import Substitution as _sub
 
 
-_docstr = Docorator()
+_docstr = _doc()
 _docstr.params['models.target.parameters'] = \
     r"""target : OpenPNM Base object
                 Object with which this model is associated. This controls
@@ -18,7 +18,7 @@ _docstr.params['models.target.parameters'] = \
                 to other necessary properties."""
 
 
-_doctxt = Substitution(
+_doctxt = _sub(
     dict_blurb=\
     r"""Name of the dictionary key on ``target`` pointing to the
     array containing values of """,
@@ -33,17 +33,9 @@ _doctxt = Substitution(
 )
 
 
-# %%
-__all__ = [
-    'misc',
-    'network',
-    'geometry',
-    'phases',
-    'physics',
-]
-
 from . import misc
 from . import network
 from . import geometry
-from . import phases
+from . import phase
 from . import physics
+from . import collections

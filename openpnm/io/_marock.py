@@ -1,7 +1,8 @@
+import logging
 import os as os
 import numpy as np
 from pathlib import Path
-from openpnm.utils import logging, Project
+from openpnm.utils import Project
 from openpnm.network import GenericNetwork
 from openpnm.io import GenericIO
 from openpnm.topotools import trim
@@ -95,10 +96,10 @@ class MARock(GenericIO):
 
         with open(th2np_file, mode='rb') as f:
             Nt = np.fromfile(file=f, count=1, dtype='u4')[0]
-            net['throat.area'] = np.ones([Nt, ], dtype=int)*(-1)
+            net['throat.cross_sectional_area'] = np.ones([Nt, ], dtype=int)*(-1)
             for i in range(0, Nt):
                 ID = np.fromfile(file=f, count=1, dtype='u4')
-                net['throat.area'][i] = np.fromfile(file=f, count=1,
+                net['throat.cross_sectional_area'][i] = np.fromfile(file=f, count=1,
                                                     dtype='f4')
                 # numvox = np.fromfile(file=f, count=1, dtype='u4')
                 att_pores = np.fromfile(file=f, count=2, dtype='u4')
@@ -113,7 +114,7 @@ class MARock(GenericIO):
             net['pore.internal'] = net['pore.boundary_type'] == 0
 
         # Convert voxel area and volume to actual dimensions
-        net['throat.area'] = (voxel_size**2)*net['throat.area']
+        net['throat.cross_sectional_area'] = (voxel_size**2)*net['throat.cross_sectional_area']
         net['pore.volume'] = (voxel_size**3)*net['pore.volume']
 
         if project is None:
@@ -126,3 +127,11 @@ class MARock(GenericIO):
         trim(network=network, throats=ind)
 
         return project
+
+
+def from_marock(path, voxel_size=1, project=None):
+    project = MARock.import_data(path=path, voxel_size=voxel_size, project=project)
+    return project
+
+
+from_marock.__doc__ = MARock.import_data.__doc__

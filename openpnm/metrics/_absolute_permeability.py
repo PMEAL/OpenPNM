@@ -1,5 +1,6 @@
-from openpnm.utils import logging, Workspace, SettingsAttr, Docorator
-from openpnm.phases import GenericPhase
+import logging
+from openpnm.utils import Workspace, SettingsAttr, Docorator
+from openpnm.phase import GenericPhase
 from openpnm.physics import GenericPhysics
 from openpnm.algorithms import StokesFlow
 from openpnm.metrics import GenericTransportMetrics
@@ -70,7 +71,6 @@ class AbsolutePermeability(GenericTransportMetrics):
         perm.set_value_BC(pores=inlet, values=1)
         perm.set_value_BC(pores=outlet, values=0)
         perm.run()
-        phase.update(perm.results())
         K = self._calc_eff_prop(inlets=inlet, outlets=outlet,
                                 domain_area=self.settings['area'],
                                 domain_length=self.settings['length'],

@@ -23,10 +23,10 @@ class CSVTest:
         self.geo_2['pore.boo'] = 1
         self.geo_2['throat.boo'] = 1
 
-        self.phase_1 = op.phases.GenericPhase(network=self.net)
+        self.phase_1 = op.phase.GenericPhase(network=self.net)
         self.phase_1['pore.bar'] = 2
         self.phase_1['throat.bar'] = 2
-        self.phase_2 = op.phases.GenericPhase(network=self.net)
+        self.phase_2 = op.phase.GenericPhase(network=self.net)
         self.phase_2['pore.bar'] = 2
         self.phase_2['throat.bar'] = 2
 
@@ -61,19 +61,19 @@ class CSVTest:
     def test_save(self, tmpdir):
         fname = tmpdir.join(self.net.project.name)
         len_before = len(tmpdir.listdir())
-        op.io.CSV.export_data(network=self.net, phases=self.phase_1, filename=fname)
+        op.io.to_csv(network=self.net, phases=self.phase_1, filename=fname)
         assert len(tmpdir.listdir()) == (len_before + 1)
         os.remove(fname.dirpath().join(self.net.project.name + '.csv'))
 
     def test_load_bad_filename(self, tmpdir):
         with pytest.raises(OSError):
-            op.io.CSV.import_data(filename='')
+            op.io.from_csv(filename='')
 
     def test_load_categorized_by_object(self, tmpdir):
         fname = tmpdir.join(self.net.project.name)
-        op.io.CSV.export_data(network=self.net, phases=self.phase_1, filename=fname)
-        proj = op.io.CSV.import_data(filename=fname)
-        os.remove(fname.dirpath().join(self.net.project.name + '.csv'))
+        op.io.to_csv(network=self.net, phases=self.phase_1, filename=fname)
+        proj = op.io.from_csv(filename=fname)
+        # os.remove(fname.dirpath().join(self.net.project.name + '.csv'))
         assert len(proj) == 2
         assert proj.network.name == self.net.name
         assert list(proj.phases().values())[0].name == self.phase_1.name
@@ -86,7 +86,7 @@ if __name__ == '__main__':
     t.setup_class()
     for item in t.__dir__():
         if item.startswith('test'):
-            print('running test: '+item)
+            print(f'Running test: {item}')
             try:
                 t.__getattribute__(item)()
             except TypeError:

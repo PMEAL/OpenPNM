@@ -1,6 +1,5 @@
-import numpy
+import logging
 import numpy as np
-from openpnm.utils import logging
 from openpnm.io import GenericIO
 from openpnm.network import GenericNetwork
 logger = logging.getLogger(__name__)
@@ -199,3 +198,18 @@ class PerGeos(GenericIO):
         network = cls._update_network(network=network, net=net)
 
         return network.project
+
+
+def from_pergeos(filename, network=None):
+    project = PerGeos.import_data(filename=filename, network=network)
+    return project
+
+
+from_pergeos.__doc__ = PerGeos.import_data.__doc__
+
+
+def to_pergeos(network=None, phases=[], filename=''):
+    PerGeos.export_data(network=network, phases=phases, filename=filename)
+
+
+to_pergeos.__doc__ = PerGeos.export_data.__doc__

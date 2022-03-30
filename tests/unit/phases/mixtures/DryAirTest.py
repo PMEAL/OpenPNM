@@ -1,5 +1,5 @@
 import openpnm as op
-from openpnm.phases import mixtures
+from openpnm.phase import mixtures
 
 
 class DryAirTest:

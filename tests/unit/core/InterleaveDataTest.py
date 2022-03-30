@@ -16,11 +16,11 @@ class InterleaveDataTest:
         self.geo.add_model(propname='pore.volume',
                            model=op.models.geometry.pore_volume.sphere)
         self.geo['throat.diameter'] = np.random.rand(self.net.Nt)
-        self.geo.add_model(propname='throat.area',
+        self.geo.add_model(propname='throat.cross_sectional_area',
                            model=op.models.geometry.throat_cross_sectional_area.cylinder)
         self.geo.regenerate_models()
-        self.phase1 = op.phases.GenericPhase(network=self.net)
-        self.phase2 = op.phases.GenericPhase(network=self.net)
+        self.phase1 = op.phase.GenericPhase(network=self.net)
+        self.phase2 = op.phase.GenericPhase(network=self.net)
         self.phys1 = op.physics.GenericPhysics(network=self.net,
                                                geometry=self.geo,
                                                phase=self.phase1)
@@ -227,7 +227,7 @@ class InterleaveDataTest:
         net = op.network.Cubic(shape=[4, 1, 1])
         geo1 = op.geometry.GenericGeometry(network=net, pores=[0, 1], throats=[0, 1])
         op.geometry.GenericGeometry(network=net, pores=[2, 3], throats=[2])
-        air = op.phases.Air(network=net)
+        air = op.phase.Air(network=net)
         phys = op.physics.GenericPhysics(network=net, phase=air, geometry=geo1)
         phys['pore.blah'] = 1.0
         assert np.any(np.isnan(air['pore.blah']))
@@ -236,7 +236,7 @@ class InterleaveDataTest:
         net = op.network.Cubic(shape=[4, 1, 1])
         geo1 = op.geometry.GenericGeometry(network=net, pores=[0, 1], throats=[0, 1])
         op.geometry.GenericGeometry(network=net, pores=[2, 3], throats=[2])
-        air = op.phases.Air(network=net)
+        air = op.phase.Air(network=net)
         phys = op.physics.GenericPhysics(network=net, phase=air, geometry=geo1)
         phys['pore.blah'] = 1
         assert np.any(np.isnan(air['pore.blah']))
@@ -245,7 +245,7 @@ class InterleaveDataTest:
         net = op.network.Cubic(shape=[4, 1, 1])
         geo1 = op.geometry.GenericGeometry(network=net, pores=[0, 1], throats=[0, 1])
         op.geometry.GenericGeometry(network=net, pores=[2, 3], throats=[2])
-        air = op.phases.Air(network=net)
+        air = op.phase.Air(network=net)
         phys = op.physics.GenericPhysics(network=net, phase=air, geometry=geo1)
         phys['pore.blah'] = True
         assert np.sum(air['pore.blah']) == phys.Np

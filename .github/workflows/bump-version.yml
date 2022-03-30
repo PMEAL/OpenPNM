@@ -1,4 +1,4 @@
-name: Bump Version Number
+name: Bump Version Number (release)
 
 on:
   push:
@@ -68,7 +68,7 @@ jobs:
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
 
-        # commit version bump to release
+        # Commit version bump to release
         git commit -m "Bump version number" -a
         git push "${remote_repo}" release
 
@@ -84,6 +84,10 @@ jobs:
         pr_draft: false                                   # Creates pull request as draft
         pr_allow_empty: true                              # Creates pull request even if there are no changes
         github_token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Trim the 4th digit from the tag
+      run:
+        echo "TAG_NEW=${TAG_NEW%.dev?}" >> $GITHUB_ENV
 
     - name: Create new tag
       run: |

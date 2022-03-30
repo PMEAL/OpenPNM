@@ -4,7 +4,7 @@ Tools
 
 """
 import numpy as np
-from openpnm.topotools import generate_base_points, dimensionality, isoutside
+# from openpnm.topotools import generate_base_points, dimensionality, isoutside
 
 
 def trim(network, vert_ids=None, edge_ids=None):
@@ -119,6 +119,7 @@ def join(net1, net2, L_max=0.99):
 
 
 def parse_points(shape, points, reflect=False):
+    from openpnm.topotools import generate_base_points
     # Deal with input arguments
     if isinstance(points, int):
         points = generate_base_points(num_points=points,
@@ -196,6 +197,7 @@ def add_all_label(network):
 def label_surface_nodes(network):
     r"""
     """
+    from openpnm.topotools import dimensionality
     hits = np.zeros_like(network.Ps, dtype=bool)
     dims = dimensionality(network)
     mn = np.amin(network["vert.coords"], axis=0)
@@ -213,6 +215,7 @@ def label_faces(network, threshold=0.05):
     Label the vertices sitting on the faces of the domain in accordance with
     the conventions used for cubic etc.
     """
+    from openpnm.topotools import dimensionality
     dims = dimensionality(network)
     coords = np.around(network['vert.coords'], decimals=10)
     min_labels = ['front', 'left', 'bottom']
@@ -239,12 +242,16 @@ def crop(network, shape, mode='full'):
     mode : str
         Controls how vertices to be trimmed is determined. Options are:
 
-            * 'full':
-                Any vertices lying outside the domain are trimmed
-            * 'mixed'
-                Vertices with at least one neighbor lying inside the domain
-                are kept
+            ===========  =====================================================
+            mode         meaning
+            ===========  =====================================================
+            'full'       Any vertices lying outside the domain are trimmed
+            'mixed'      Vertices with at least one neighbor lying inside
+                         the domain are kept
+            ===========  =====================================================
+
     """
+    from openpnm.topotools import isoutside
     Pdrop = isoutside(network['vert.coords'], shape=shape, thresh=0)
     if mode == 'full':
         network = trim(network=network, pores=np.where(Pdrop)[0])

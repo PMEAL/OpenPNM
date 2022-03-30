@@ -1,10 +1,17 @@
 import numpy as np
 import openpnm as op
 from tqdm import tqdm
-from auto_all import start_all, end_all
 
 
-start_all()
+__all__ = [
+    'plot_connections',
+    'plot_coordinates',
+    'plot_networkx',
+    'plot_vpython',
+    'plot_tutorial',
+    'plot_network_jupyter',
+    'generate_voxel_image',
+]
 
 
 def plot_connections(network,
@@ -380,7 +387,7 @@ def plot_networkx(network,
     G = Graph()
     pos = {network.Ps[i]: [x[i], y[i]] for i in range(network.Np)}
     if not np.isfinite(node_size).all():
-        raise Exception('nan/inf values found in network["pore.diameter"]')
+        node_size[~np.isfinite(node_size)] = np.nanmin(node_size)
     node_color = np.array(['k'] * len(network.Ps))
 
     if labels:
@@ -406,7 +413,7 @@ def plot_networkx(network,
 
     # Plot pores
     gplot = draw_networkx_nodes(G, ax=ax, pos=pos, nodelist=network.Ps.tolist(),
-                                alpha=alpha, node_color="w", edgecolors=node_color,
+                                alpha=alpha, node_color=node_color, edgecolors=node_color,
                                 node_size=node_size)
     # (Optionally) Plot throats
     if plot_throats:
@@ -577,9 +584,9 @@ def plot_tutorial(network,
     """
     import networkx as nx
     import matplotlib.pyplot as plt
-    from openpnm.io import NetworkX
+    from openpnm.io import to_networkx
 
-    G = NetworkX.export_data(network=network)
+    G = to_networkx(network=network)
     pos = {i: network['pore.coords'][i, 0:2] for i in network.Ps}
     labels = {i: i for i in network.Ps}
     edge_labels = {tuple(network['throat.conns'][i, :]): i for i in network.Ts}
@@ -885,5 +892,3 @@ def generate_voxel_image(network, pore_shape="sphere", throat_shape="cylinder",
         eps_old = eps
         max_dim = int(max_dim * 1.25)
     return im
-
-end_all()

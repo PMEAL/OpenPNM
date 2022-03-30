@@ -31,7 +31,7 @@ jobs:
     - name: Set env variables (for tag mismatch)
       run: |
         echo "Tag: $TAG, Version: $VERSION"
-        if [ "${TAG//v}" = "$VERSION" ]; then
+        if [ "${TAG//v}" = "${VERSION%.dev?}" ]; then
             echo "TAG_MISMATCH=false" >> $GITHUB_ENV
         else
             echo "TAG_MISMATCH=true" >> $GITHUB_ENV

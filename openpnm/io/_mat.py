@@ -1,7 +1,8 @@
+import logging
 import scipy.io as spio
 from flatdict import FlatDict
 from openpnm.io import GenericIO, Dict
-from openpnm.utils import sanitize_dict, logging, Workspace
+from openpnm.utils import sanitize_dict, Workspace
 logger = logging.getLogger(__name__)
 ws = Workspace()
 
@@ -104,3 +105,18 @@ class MAT(GenericIO):
         project = cls._convert_data(project)
 
         return project
+
+
+def from_matlab(filename, project=None):
+    project = MAT.import_data(filename=filename, project=project)
+    return project
+
+
+from_matlab.__doc__ = MAT.import_data.__doc__
+
+
+def to_matlab(network, phases=[], filename=''):
+    MAT.export_data(network=network, phases=phases, filename=filename)
+
+
+to_matlab.__doc__ = MAT.export_data.__doc__

@@ -16,7 +16,7 @@ class BaseTest:
         self.geo.add_model(propname='pore.volume',
                            model=op.models.geometry.pore_volume.sphere)
         self.geo['throat.diameter'] = np.random.rand(self.net.Nt)
-        self.geo.add_model(propname='throat.area',
+        self.geo.add_model(propname='throat.cross_sectional_area',
                            model=op.models.geometry.throat_cross_sectional_area.cylinder)
         self.geo.regenerate_models()
         self.geo['throat.label1'] = False
@@ -27,8 +27,8 @@ class BaseTest:
         self.geo1 = op.geometry.GenericGeometry(network=self.net1,
                                                 pores=self.net1.Ps,
                                                 throats=self.net1.Ts)
-        self.phase1 = op.phases.GenericPhase(network=self.net1)
-        self.phase2 = op.phases.GenericPhase(network=self.net1)
+        self.phase1 = op.phase.GenericPhase(network=self.net1)
+        self.phase2 = op.phase.GenericPhase(network=self.net1)
         self.phys1 = op.physics.GenericPhysics(network=self.net1,
                                                geometry=self.geo1,
                                                phase=self.phase1)
@@ -53,7 +53,7 @@ class BaseTest:
 
     def test_clear_model_data(self):
         pn = op.network.Cubic([5, 5, 5])
-        phase = op.phases.Water(network=pn)
+        phase = op.phase.Water(network=pn)
         a = len(phase)
         phase.clear(mode='model_data')
         assert len(phase) == (a - len(phase.models))
@@ -343,11 +343,11 @@ class BaseTest:
     def test_props_all(self):
         a = self.geo.props()
         assert sorted(a) == ['pore.diameter', 'pore.volume',
-                             'throat.area', 'throat.diameter']
+                             'throat.cross_sectional_area', 'throat.diameter']
 
     def test_props_models(self):
         a = self.geo.props(mode='models')
-        b = ['pore.volume', 'throat.area']
+        b = ['pore.volume', 'throat.cross_sectional_area']
         assert sorted(a) == sorted(b)
 
     def test_props_constants(self):
@@ -699,6 +699,16 @@ class BaseTest:
         with pytest.raises(KeyError):
             _ = self.geo['pore.blah']
 
+    def test_getitem_with_numeric_value(self):
+        assert self.geo[5.0] == 5.0
+        assert self.net[44] == 44
+        assert self.phase1[True] == True
+        assert self.phase2[False] == False
+        assert self.phys1[0.1] == 0.1
+        assert self.phys2[4j] == 4j
+        a = op.algorithms.GenericTransport(network=self.net, phase=self.phase1)
+        assert a[0] == 0
+
     def test_interpolate_data(self):
         self.geo['throat.tester'] = np.linspace(0, 1.0, self.geo.network.Nt)
         self.geo['pore.tester'] = np.linspace(0, 1.0, self.geo.network.Np)
@@ -763,7 +773,7 @@ class BaseTest:
 
     def test_subdict_getitem_on_phase_from_phase(self):
         pn = op.network.Cubic(shape=[5, 5, 5])
-        air = op.phases.GenericPhase(network=pn)
+        air = op.phase.GenericPhase(network=pn)
         air['pore.foo.bar'] = 1
         air['pore.foo.baz'] = 2
         d = air['pore.foo']
@@ -775,7 +785,7 @@ class BaseTest:
         pn = op.network.Cubic(shape=[5, 5, 5])
         geo = op.geometry.GenericGeometry(network=pn, pores=pn.Ps,
                                           throats=pn.Ts)
-        air = op.phases.GenericPhase(network=pn)
+        air = op.phase.GenericPhase(network=pn)
         phys = op.physics.GenericPhysics(network=pn, phase=air, geometry=geo)
         air['pore.foo.bar'] = 1
         air['pore.foo.baz'] = 2
@@ -792,7 +802,7 @@ class BaseTest:
         geo2 = op.geometry.GenericGeometry(network=pn,
                                            pores=pn.Ps[75:],
                                            throats=pn.Ts[75:])
-        air = op.phases.GenericPhase(network=pn)
+        air = op.phase.GenericPhase(network=pn)
         phys1 = op.physics.GenericPhysics(network=pn, phase=air, geometry=geo1)
         phys2 = op.physics.GenericPhysics(network=pn, phase=air, geometry=geo2)
         air['pore.foo.bar'] = 1

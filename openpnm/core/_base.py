@@ -1,10 +1,11 @@
+import logging
 import warnings
 import uuid
 from copy import deepcopy
 import numpy as np
-from openpnm.utils import Workspace, logging
+from openpnm.utils import Workspace
 from openpnm.utils import SettingsAttr
-from openpnm.utils.misc import PrintableList, Docorator
+from openpnm.utils import PrintableList, Docorator
 docstr = Docorator()
 logger = logging.getLogger(__name__)
 ws = Workspace()
@@ -46,7 +47,7 @@ class Base(dict):
         dataclass-type object with settings stored as attributes or a python
         dicionary of key-value pairs. Settings are stored in the ``settings``
         attribute of the object.
-    name : string, optional
+    name : str, optional
         A unique name to assign to the object for easier identification.  If
         not given one will be generated.
 
@@ -58,7 +59,7 @@ class Base(dict):
     Notes
     -----
     This ``Base`` class is used as the template for all other OpenPNM objects,
-    including Networks, Geometries, Phases, Physics, and Algorithms. This
+    including Networks, Geometries, Phase, Physics, and Algorithms. This
     class is a subclass of the standard ``dict`` so has the usual methods such
     as ``pop`` and ``keys``, and has extra methods for working specifically
     with OpenPNM data.
@@ -182,6 +183,11 @@ class Base(dict):
                 raise Exception('Provided array is wrong length for ' + key)
 
     def __getitem__(self, key):
+        # If the key is a just a numerical value, the kick it directly back
+        # This allows one to do either value='pore.blah' or value=1.0
+        if isinstance(key, (int, float, bool, complex)):
+            return key
+
         element, prop = key.split('.', 1)
 
         if key in self.keys():
@@ -301,14 +307,19 @@ class Base(dict):
             and/or 'throat' arrays should be cleared.  The default is both.
         mode : str or List[str]
             This controls what is cleared from the object.  Options are:
-                **'props'** : Removes all numerical property values from
-                the object dictionary
-                **'model_data'** : Removes only numerical data that were
-                produced by an associated model
-                **'labels'** : Removes all labels from the object
-                dictionary, except those relating to the pore and throat
-                locations of associated objects
-                **'all'** : Removes both 'props' and 'labels'
+
+            ============  =====================================================
+            mode          meaning
+            ============  =====================================================
+            'props'       Removes all numerical property values from
+                          the object dictionary
+            'model_data'  Removes only numerical data that were
+                          produced by an associated model
+            'labels'      Removes all labels from the object
+                          dictionary, except those relating to the pore
+                          and throat locations of associated objects
+            'all'         Removes both 'props' and 'labels'
+            ============  =====================================================
 
         Notes
         -----
@@ -376,15 +387,16 @@ class Base(dict):
         mode : str, optional
             Controls which keys are returned. Options are:
 
-                **'labels'**
-                    Limits the returned list of keys to only 'labels'
-                    (boolean arrays)
-                **'props'**
-                    Limits he return list of keys to only 'props'
-                    (numerical arrays).
-                **'all'**
-                    Returns both 'labels' and 'props'. This is equivalent
-                    to sending a list of both 'labels' and 'props'.
+            ===========  =====================================================
+            mode         meaning
+            ===========  =====================================================
+            'labels'     Limits the returned list of keys to only 'labels'
+                         (boolean arrays)
+            'props'      Limits he return list of keys to only 'props'
+                         (numerical arrays).
+            'all'        Returns both 'labels' and 'props'. This is equivalent
+                         to sending a list of both 'labels' and 'props'.
+            ===========  =====================================================
 
             If no mode is specified then the normal KeysView object is
             returned.
@@ -452,13 +464,17 @@ class Base(dict):
             returned.  If no element is given, both are returned
         mode : str, optional
             Controls what type of properties are returned.  Options are:
-                **'all'** : Returns all properties on the object (default)
 
-                **'models'** : Returns only properties that are associated with a
-                model
+            ===========  =====================================================
+            mode         meaning
+            ===========  =====================================================
+            'all'        Returns all properties on the object (default)
+            'models'     Returns only properties that are associated with a
+                         model
+            'constants'  returns data values that were *not* generated by
+                         a model, but manaully created.
+            ===========  =====================================================
 
-                **'constants'** : returns data values that were *not* generated by
-                a model, but manaully created.
         deep : bool
             If set to ``True`` then the props on all associated subdomain
             objects are returned as well.
@@ -690,9 +706,9 @@ class Base(dict):
         if self._isa() in ['network', 'geometry']:
             subdomains = list(proj.geometries().values())
         elif self._isa() in ['phase', 'physics']:
-            subdomains= list(proj.find_physics(phase=self))
+            subdomains = list(proj.find_physics(phase=self))
         elif self._isa() in ['algorithm', 'base']:
-            subdomains= [self]
+            subdomains = [self]
         else:
             raise Exception('Unrecognized object type, cannot find dependents')
 
@@ -781,7 +797,7 @@ class Base(dict):
 
     def interpolate_data(self, propname, mode='mean'):
         r"""
-        Determines a pore (or throat) property as the average of it's
+        Determines a pore (or throat) property as the average of its
         neighboring throats (or pores)
 
         Parameters
@@ -789,8 +805,19 @@ class Base(dict):
         propname: str
             The dictionary key to the values to be interpolated.
         mode : str
-            The method used for interpolation.  Options are 'mean' (default),
-            'min', and 'max'.
+            The method used for interpolation. The default value is 'mean'
+            Options are:
+
+            ===========  =====================================================
+            mode         meaning
+            ===========  =====================================================
+            'mean'       returns the pore (or throat) property as the average
+                         of its neighboring throats (or pores)
+            'min'        returns the pore (or throat) property as the minimum
+                         of its neighboring throats (or pores)
+            'max'        returns the pore (or throat) property as the maximum
+                         of its neighboring throats (or pores)
+            ===========  =====================================================
 
         Returns
         -------
@@ -828,19 +855,22 @@ class Base(dict):
             given then the same property as ``poreprop`` is assumed.  So
             if poreprop = 'pore.foo' (or just 'foo'), then throatprop is
             set to 'throat.foo').
-        mode : string
+        mode : str
             How interpolation should be peformed for missing values. If values
             are present for both pores and throats, then this argument is
-            ignored.  The ``interpolate`` data method is used.  Options are:
+            ignored.  The ``interpolate`` data method is used. The default
+            value is 'mean'. Options are:
 
-                * 'mean' (default)
-
-                **'mean'** (default):
-                    Finds the mean value of the neighboring pores (or throats)
-                * 'min'
-                    Finds the minimum of the neighboring pores (or throats)
-                * 'max'
-                    Finds the maximum of the neighboring pores (or throats)
+            ===========  =====================================================
+            mode         meaning
+            ===========  =====================================================
+            'mean'       Finds the mean value of the neighboring pores
+                         (or throats)
+            'min'        Finds the minimum of the neighboring pores
+                         (or throats)
+            'max'        Finds the maximum of the neighboring pores
+                         (or throats)
+            ===========  =====================================================
 
         Returns
         -------

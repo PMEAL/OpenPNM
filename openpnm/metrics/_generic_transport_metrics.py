@@ -1,6 +1,6 @@
-from openpnm.core import Base
-from openpnm.utils import logging
+import logging
 import numpy as np
+from openpnm.core import Base
 from openpnm.topotools import get_domain_area, get_domain_length
 logger = logging.getLogger(__name__)
 

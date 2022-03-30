@@ -1,16 +1,54 @@
-from auto_all import start_all, end_all
+import logging
 import numpy as np
 import scipy as sp
 import scipy.ndimage as spim
 from scipy.spatial import cKDTree
 from scipy.sparse import csgraph
 from scipy.spatial import ConvexHull
-from openpnm.utils import logging, Workspace, prettify_logger_message
+from openpnm.utils import Workspace, prettify_logger_message
 
 
 logger = logging.getLogger(__name__)
 ws = Workspace()
-start_all()
+
+__all__ = [
+    'isoutside',
+    'rotate_coords',
+    'shear_coords',
+    'trim',
+    'extend',
+    'label_faces',
+    'find_surface_pores',
+    'dimensionality',
+    'clone_pores',
+    'merge_networks',
+    'stitch',
+    'stitch_pores',
+    'connect_pores',
+    'find_pore_to_pore_distance',
+    'subdivide',
+    'trim_occluded_throats',
+    'merge_pores',
+    'hull_centroid',
+    'template_sphere_shell',
+    'template_cylinder_annulus',
+    'generate_base_points',
+    'to_cylindrical',
+    'from_cylindrical',
+    'to_spherical',
+    'from_spherical',
+    'reflect_base_points',
+    'add_boundary_pores',
+    'iscoplanar',
+    'is_fully_connected',
+    'get_spacing',
+    'get_shape',
+    'get_domain_area',
+    'get_domain_length',
+    'filter_pores_by_z',
+    'find_interface_throats',
+    'add_reservoir_pore',
+]
 
 
 def isoutside(coords, shape):
@@ -542,10 +580,14 @@ def clone_pores(network, pores, labels=['clone'], mode='parents'):
     mode : str
         Controls the connections between parents and clones.  Options are:
 
-        - 'parents': (Default) Each clone is connected only to its parent
-        - 'siblings': Clones are only connected to each other in the same
-                      manner as parents were connected
-        - 'isolated': No connections between parents or siblings
+            ===========  =====================================================
+            mode         meaning
+            ===========  =====================================================
+            'parents'    Each clone is connected only to its parent.(Default)
+            'siblings'   Clones are only connected to each other in the same
+                         manner as parents were connected.
+            'isolated'   No connections between parents or siblings
+            ===========  =====================================================
 
     """
     if isinstance(labels, str):
@@ -792,7 +834,14 @@ def stitch_pores(network, pores1, pores2, mode='gabriel'):
         The pore indices of the disconnected clusters to be joined
     mode : str
         Dictates which tesselation method is used to identify which pores to
-        stitch together.  Options are 'gabriel' (default) or 'delaunay'.
+        stitch together.  Options are:
+
+            ===========  =====================================================
+            mode         meaning
+            ===========  =====================================================
+            'gabriel'    Uses the gabriel tesselation method
+            'delaunay'   Uses the delaunay tesselation method
+            ===========  =====================================================
 
     Returns
     -------
@@ -1102,7 +1151,7 @@ def trim_occluded_throats(network, mask='all'):
     mask : str
         Applies routine only to throats with this label
     """
-    occluded_ts = network['throat.area'] == 0
+    occluded_ts = network['throat.cross_sectional_area'] == 0
     if np.sum(occluded_ts) > 0:
         occluded_ts *= network["throat."+mask]
         trim(network=network, throats=occluded_ts)
@@ -1729,6 +1778,7 @@ def is_fully_connected(network, pores_BC=None):
         is_connected = np.unique(temp).size == 1
     return is_connected
 
+
 def get_spacing(network):
     r"""
     Determine the spacing along each axis of a simple cubic network
@@ -1749,6 +1799,7 @@ def get_spacing(network):
     d = {'vert.coords': network.coords, 'edge.conns': network.conns}
     spc = get_spacing(d)
     return spc
+
 
 def get_shape(network):
     r"""
@@ -1879,4 +1930,109 @@ def filter_pores_by_z(network, pores, z=1):
     hits = pores[orphans]
     return hits
 
-end_all()
+
+def find_interface_throats(network, P1, P2):
+    """
+    Finds all throats between two sets pores with the given labels.
+
+    Parameters
+    ----------
+    network : GenericNetwork
+        The network on which the query is to be performed
+    P1 : array_like str
+        The (label of) first set of pores
+    P2 : array_like or str
+        The (label of) second set of pores
+
+    Returns
+    -------
+    ndarray
+        List of interface throats between the two given sets of pores
+
+    Notes
+    -----
+    This method requires that the two labels do not share any pores.
+
+    """
+    P1 = network.pores(P1) if isinstance(P1, str) else P1
+    P2 = network.pores(P2) if isinstance(P2, str) else P2
+    if np.intersect1d(P1, P2).size != 0:
+        raise Exception("P1 and P2 must not share any pores.")
+    Ts1 = network.find_neighbor_throats(pores=P1, mode="xor")
+    Ts2 = network.find_neighbor_throats(pores=P2, mode="xor")
+    return np.intersect1d(Ts1, Ts2)
+
+
+
+def add_reservoir_pore(cls, network, pores, offset=0.1):
+        r"""
+        Adds a single pore connected to all ``pores`` to act as a reservoir
+
+        This function is mostly needed to make network compatible with the
+        Statoil file format, which requires reservoir pores on the inlet and
+        outlet faces.
+
+        Parameters
+        ----------
+        network : GenericNetwork
+            The network to which the reservoir pore should be added
+        pores : array_like
+            The pores to which the reservoir pore should be connected to
+        offset : scalar
+            Controls the distance which the reservoir is offset from the given
+            ``pores``.  The total displacement is found from the network
+            dimension normal to given ``pores``, multiplied by ``offset``.
+
+        Returns
+        -------
+        project : list
+            An OpenPNM project object with a new geometry object added to
+            represent the newly added pore and throats.
+
+        """
+        from openpnm.geometry import GenericGeometry
+        import openpnm.models.geometry as mods
+        # Check if a label was given and fetch actual indices
+        if isinstance(pores, str):
+            # Convert 'face' into 'pore.face' if necessary
+            if not pores.startswith('pore.'):
+                pores = 'pore.' + pores
+            pores = network.pores(pores)
+        # Find coordinates of pores on given face
+        coords = network['pore.coords'][pores]
+        # Normalize the coordinates based on full network size
+        c_norm = coords/network['pore.coords'].max(axis=0)
+        # Identify axis of face by looking for dim with smallest delta
+        diffs = np.amax(c_norm - np.average(c_norm, axis=0), axis=0)
+        ax = np.where(diffs == diffs.min())[0][0]
+        # Add new pore at center of domain
+        new_coord = network['pore.coords'].mean(axis=0)
+        domain_half_length = np.ptp(network['pore.coords'][:, ax])/2
+        if coords[:, ax].mean() < network['pore.coords'][:, ax].mean():
+            new_coord[ax] = new_coord[ax] - domain_half_length*(1 + offset)
+        if coords[:, ax].mean() > network['pore.coords'][:, ax].mean():
+            new_coord[ax] = new_coord[ax] + domain_half_length*(1 + offset)
+        Ps = np.arange(network.Np, network.Np + 1)
+        extend(network=network, coords=[new_coord], labels=['reservoir'])
+        conns = [[P, network.Np-1] for P in pores]
+        Ts = np.arange(network.Nt, network.Nt + len(conns))
+        extend(network=network, conns=conns, labels=['reservoir'])
+        # Compute the geometrical properties of the reservoir pore and throats
+        # Confirm if network has any geometry props on it
+        props = {'throat.length', 'pore.diameter', 'throat.volume'}
+        if len(set(network.keys()).intersection(props)) > 0:
+            raise Exception('Geometrical properties should be moved to a ' +
+                            'geometry object first')
+            # or just do this?:  geo = Imported(network=network)
+        geo = GenericGeometry(network=network, pores=Ps, throats=Ts)
+        geo.add_model(propname='pore.diameter',
+                      model=mods.geometry.pore_size.largest_sphere)
+        geo.add_model(propname='throat.diameter_temp',
+                      model=mods.geometry.throat_size.from_neighbor_pores,
+                      mode='min')
+        geo.add_model(propname='throat.diameter',
+                      model=mods.misc.scaled,
+                      prop='throat.diameter_temp', factor=0.5)
+        geo.add_model(propname='throat.volume',
+                      model=mods.geometry.throat_volume.cylinder)
+        return network.project

@@ -1,10 +1,10 @@
 import json
+import logging
 import json_tricks as jsont
 import numpy as np
 import importlib
 from datetime import datetime
 from openpnm.utils import Workspace, Project
-from openpnm.utils import logging
 from openpnm.io import GenericIO
 from h5py import File as hdfFile
 logger = logging.getLogger(__name__)
@@ -135,10 +135,10 @@ def create_obj(root, name, proj):
                 except AttributeError:
                     logger.warning(f"The function {fn} could not be loaded, adding"
                                    + " 'blank' instead")
-                    obj.models[m]['model'] = op.models.misc.basic_math.blank
+                    obj.models[m]['model'] = op.models.misc.blank
             except ModuleNotFoundError:
                 logger.warning(f"The module {md} could not be loaded, adding"
                                + " 'blank' instead")
-                obj.models[m]['model'] = op.models.misc.basic_math.blank
+                obj.models[m]['model'] = op.models.misc.blank
     proj.append(obj)
     return proj, obj
