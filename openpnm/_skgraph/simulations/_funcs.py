@@ -125,7 +125,7 @@ def find_connected_clusters(bond_labels, site_labels, inlets, asmask=True):
 def find_trapped_clusters(conns, occupied_bonds, outlets):
     s_labels, b_labels = bond_percolation(conns, ~occupied_bonds)
     s_labels2, b_labels2 = find_connected_clusters(b_labels, s_labels,
-                                                 outlets, asmask=False)
+                                                   outlets, asmask=False)
     # Set sites and bonds connected to outlets to -1, keeping
     s_labels[s_labels2 >= 0] = -1
     b_labels[b_labels2 >= 0] = -1
