@@ -389,8 +389,8 @@ class BaseTest:
 
     def test_props_all(self):
         a = self.geo.props()
-        b = ['pore.all', 'pore.diameter', 'pore.volume', 'throat.all',
-             'throat.cross_sectional_area', 'throat.diameter']
+        b = ['pore.diameter', 'pore.volume', 'throat.cross_sectional_area',
+             'throat.diameter']
         assert sorted(a) == b
 
     def test_props_models(self):
@@ -400,12 +400,12 @@ class BaseTest:
 
     def test_props_constants(self):
         a = self.geo.props(mode='constants')
-        b = ['pore.all', 'pore.diameter', 'throat.all', 'throat.diameter']
+        b = ['pore.diameter', 'throat.diameter']
         assert sorted(a) == sorted(b)
 
     def test_props_pores_all(self):
         a = self.geo.props(element='pores')
-        b = ['pore.all', 'pore.diameter', 'pore.volume']
+        b = ['pore.diameter', 'pore.volume']
         assert sorted(a) == sorted(b)
 
     def test_props_pores_models(self):
