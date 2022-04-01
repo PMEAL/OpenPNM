@@ -1,5 +1,5 @@
+import logging
 import numpy as np
-from openpnm.utils import logging
 from openpnm.phase import Mercury
 from openpnm.physics import GenericPhysics
 from openpnm.algorithms import OrdinaryPercolation

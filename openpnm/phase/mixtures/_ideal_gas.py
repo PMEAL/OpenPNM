@@ -1,7 +1,8 @@
+import logging
 # from collections import ChainMap  # Might use eventually
 from openpnm.phase.mixtures import GenericMixture
 import openpnm.models as mods
-from openpnm.utils import logging, Docorator
+from openpnm.utils import Docorator
 docstr = Docorator()
 logger = logging.getLogger(__name__)
 

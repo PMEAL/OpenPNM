@@ -1,5 +1,6 @@
+import logging
 from openpnm.core import Base, ModelsMixin, ParamMixin, LabelMixin
-from openpnm.utils import Workspace, logging
+from openpnm.utils import Workspace
 from openpnm.utils import Docorator, SettingsAttr
 from numpy import ones
 import openpnm.models as mods

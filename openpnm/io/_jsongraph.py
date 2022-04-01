@@ -1,9 +1,9 @@
 import os
 import json
 import pickle
+import logging
 import numpy as np
 from pathlib import Path
-from openpnm.utils import logging
 from openpnm.io import GenericIO
 from openpnm.geometry import Imported
 import openpnm.models.geometry as gmods
@@ -205,6 +205,3 @@ def to_jsongraph(network, filename=''):
 
 
 to_jsongraph.__doc__ = JSONGraph.export_data.__doc__
-
-
-

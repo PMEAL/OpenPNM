@@ -1,8 +1,6 @@
 r"""
 Pore-scale models for calculating the conductance of conduits.
 """
-__all__ = ["_poisson_conductance"]
-
 
 def _poisson_conductance(target,
                          pore_conductivity=None,
@@ -60,4 +58,46 @@ def _poisson_conductance(target,
 
 
 def _parse_input(obj, arg):
+    """
+    Returns obj[arg] if arg is string, otherwise returns arg.
+    """
     return obj[arg] if isinstance(arg, str) else arg
+
+
+def _get_key_props(phase=None,
+                   diameter="throat.diameter",
+                   surface_tension="pore.surface_tension",
+                   contact_angle="pore.contact_angle"):
+    """
+    Returns desired properties in the correct format! See Notes.
+
+    Notes
+    -----
+    Many of the methods are generic to pores and throats. Some information may
+    be stored on either the pore or throat and needs to be interpolated.
+    This is a helper method to return the properties in the correct format.
+
+    TODO: Check for method to convert throat to pore data
+
+    """
+    element = diameter.split(".")[0]
+    if element == "pore":
+        if "throat" in surface_tension:
+            sigma = phase.interpolate_data(propname=surface_tension)
+        else:
+            sigma = phase[surface_tension]
+        if "throat" in contact_angle:
+            theta = phase.interpolate_data(propname=contact_angle)
+        else:
+            theta = phase[contact_angle]
+    if element == "throat":
+        if "pore" in surface_tension:
+            sigma = phase.interpolate_data(propname=surface_tension)
+        else:
+            sigma = phase[surface_tension]
+        if "pore" in contact_angle:
+            theta = phase.interpolate_data(propname=contact_angle)
+        else:
+            theta = phase[contact_angle]
+
+    return element, sigma, theta

@@ -1,6 +1,7 @@
+import logging
 import numpy as np
 from openpnm.algorithms import ReactiveTransport
-from openpnm.utils import logging, Docorator, SettingsAttr
+from openpnm.utils import Docorator, SettingsAttr
 from openpnm.integrators import ScipyRK45
 from openpnm.algorithms._solution import SolutionContainer
 docstr = Docorator()

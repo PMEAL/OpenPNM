@@ -1,14 +1,10 @@
 chemicals
 docrep>=0.3
 flatdict
-gitpython
 h5py
-ipympl
-ipython
 jsonschema
 json_tricks
 matplotlib
-netgen
 networkx
 numba
 numpy
@@ -19,4 +15,5 @@ scipy
 sympy
 terminaltables
 tqdm
+traits
 transforms3d

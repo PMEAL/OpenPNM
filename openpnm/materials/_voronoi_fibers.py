@@ -1,3 +1,4 @@
+import logging
 import math
 import numpy as np
 from scipy import ndimage
@@ -5,11 +6,11 @@ import scipy.spatial as sptl
 from openpnm import topotools
 from scipy.spatial import ConvexHull
 import openpnm.models.geometry as gm
-from openpnm.utils import logging, Project
+from openpnm.utils import Project
 from openpnm.network import DelaunayVoronoiDual
 from transforms3d import _gohlketransforms as tr
 from openpnm.geometry import GenericGeometry
-from openpnm.utils.misc import unique_list
+from openpnm.utils import unique_list
 
 logger = logging.getLogger(__name__)
 

@@ -285,7 +285,7 @@ class MiscTest:
         net['pore.diameter'] = 2.0
         net.add_model(propname='pore.entry_pressure',
                       prop='pore.diameter',
-                      model=mods.basic_math.invert)
+                      model=mods.invert)
         assert net['pore.entry_pressure'][0] == 0.5
 
     def test_match_histograms(self):

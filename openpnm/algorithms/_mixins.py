@@ -1,6 +1,7 @@
+import logging
 import numpy as np
 import warnings
-from openpnm.utils import logging, prettify_logger_message
+from openpnm.utils import prettify_logger_message
 from openpnm.utils import Docorator
 docstr = Docorator()
 logger = logging.getLogger(__name__)
@@ -12,6 +13,10 @@ __all__ = [
 
 
 class BCsMixin:
+    """
+    Mixin class to add boundary condition functionality to algorithms.
+    """
+
     def set_value_BC(self, pores, values, mode='merge'):
         r"""
         Applues constant value boundary conditons to the specified pores.

@@ -1,7 +1,8 @@
+import logging
 import warnings
 import numpy as np
 import scipy.sparse as sprs
-from openpnm.utils import logging, Workspace
+from openpnm.utils import Workspace
 
 
 logger = logging.getLogger(__name__)

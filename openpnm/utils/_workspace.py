@@ -5,9 +5,8 @@ from openpnm.utils import SettingsAttr
 
 
 logger = logging.getLogger(__name__)
-__all__ = [
-    'Workspace',
-]
+
+__all__ = ['Workspace']
 
 
 class WorkspaceSettings(SettingsAttr):

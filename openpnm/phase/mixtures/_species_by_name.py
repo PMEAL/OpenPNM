@@ -1,10 +1,10 @@
+import logging
 from openpnm.phase.mixtures import GenericSpecies
 from openpnm.utils import PrintableDict
 import chemicals as chem
 from chemicals import numba_vectorized
 from chemicals import Vm_to_rho
 from chemicals.utils import R, k
-from openpnm.utils import logging
 import numpy as np
 logger = logging.getLogger(__name__)
 

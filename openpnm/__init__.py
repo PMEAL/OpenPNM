@@ -36,3 +36,5 @@ import numpy as _np
 _np.seterr(divide='ignore', invalid='ignore')
 
 __version__ = utils._get_version()
+
+utils._setup_logger()

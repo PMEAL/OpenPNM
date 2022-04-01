@@ -79,7 +79,7 @@ fixes=$(filter_commits_by_label "$merge_commits" "#bug")
 documentation=$(filter_commits_by_label "$merge_commits" "#doc")
 
 # Fetching uncategorized merge commits (those w/o keywords)
-all_keywords=$(join_by "|" \#new \#enh \#maint \#api \#bug \#doc \# patch \#minor \#major)
+all_keywords=$(join_by "|" \#new \#enh \#maint \#api \#bug \#doc \#patch \#minor \#major)
 uncategorized=$(filter_commits_exclude_label "$merge_commits" "$all_keywords")
 
 # Delete "entry" file if already exists
