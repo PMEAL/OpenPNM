@@ -723,7 +723,7 @@ class LabelMixin:
         props = set(super().props(*args, **kwargs))
         labels = set(self.labels())
         props = props.difference(labels)
-        return list(props)
+        return PrintableList(props)
 
     def __str__(self):
         s = super().__str__()
