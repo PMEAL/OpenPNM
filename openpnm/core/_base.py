@@ -482,9 +482,9 @@ class Base(dict):
 
         Returns
         -------
-        A an alphabetically sorted list containing the string name of all
-        pore or throat properties currently defined.  This list is an iterable,
-        so is useful for scanning through properties.
+        An alphabetically sorted list containing the string name of all
+        pore or throat properties currently defined.  This list is an
+        iterable, so is useful for scanning through properties.
 
         See Also
         --------
@@ -524,7 +524,13 @@ class Base(dict):
         # Deal with hidden props
         hide = set([i for i in self.keys() if i.split('.')[1].startswith('_')])
         vals = vals.difference(hide)
-        # Remove values of the wrong element
+        # Remove values that are boolean if obj has labels method
+        try:
+            temp = self.labels(element=element, mode='union')
+            vals = set(vals).difference(temp)
+        except AttributeError:
+            pass
+        # Remove values of the wrong element, if any slipped through
         temp = set([i for i in vals if i.split('.')[0] not in element])
         vals = set(vals).difference(temp)
         # Convert to nice list for printing
