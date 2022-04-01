@@ -481,9 +481,9 @@ class Base(dict):
 
         Returns
         -------
-        A an alphabetically sorted list containing the string name of all
-        pore or throat properties currently defined.  This list is an iterable,
-        so is useful for scanning through properties.
+        An alphabetically sorted list containing the string name of all
+        pore or throat properties currently defined.  This list is an
+        iterable, so is useful for scanning through properties.
 
         See Also
         --------
@@ -506,16 +506,16 @@ class Base(dict):
         allowed_modes = ['all', 'constants', 'models']
         mode = self._parse_mode(mode=mode, allowed=allowed_modes, single=True)
         if mode == 'all':
-            vals = set(self.keys(mode='props'))
+            vals = set(self.keys(mode='all'))
         if mode == 'constants':
             if hasattr(self, 'models'):
-                temp = set(self.keys(mode='props'))
+                temp = set(self.keys(mode='all'))
                 vals = temp.difference(self.models.keys())
             else:
-                vals = set(self.keys(mode='props'))
+                vals = set(self.keys(mode='all'))
         if mode == 'models':
             if hasattr(self, 'models'):
-                temp = set(self.keys(mode='props'))
+                temp = set(self.keys(mode='all'))
                 vals = temp.intersection(self.models.keys())
             else:
                 logger.warning('Object does not have a models attribute')
@@ -523,7 +523,13 @@ class Base(dict):
         # Deal with hidden props
         hide = set([i for i in self.keys() if i.split('.')[1].startswith('_')])
         vals = vals.difference(hide)
-        # Remove values of the wrong element
+        # Remove values that are boolean if obj has labels method
+        try:
+            temp = self.labels(element=element, mode='union')
+            vals = set(vals).difference(temp)
+        except AttributeError:
+            pass
+        # Remove values of the wrong element, if any slipped through
         temp = set([i for i in vals if i.split('.')[0] not in element])
         vals = set(vals).difference(temp)
         # Convert to nice list for printing
@@ -1204,20 +1210,6 @@ class Base(dict):
                 defined = np.shape(self[item])[0] \
                     - a.sum(axis=0, keepdims=(a.ndim-1) == 0)[0]
                 lines.append(fmt.format(i + 1, prop, defined, required))
-        lines.append(horizontal_rule)
-        lines.append("{0:<5s} {1:<45s} {2:<10s}".format('#',
-                                                        'Labels',
-                                                        'Assigned Locations'))
-        lines.append(horizontal_rule)
-        labels = self.labels()
-        labels.sort()
-        fmt = "{0:<5d} {1:<45s} {2:<10d}"
-        for i, item in enumerate(labels):
-            prop = item
-            if len(prop) > 35:
-                prop = prop[0:32] + '...'
-            if '._' not in prop:
-                lines.append(fmt.format(i + 1, prop, np.sum(self[item])))
         lines.append(horizontal_rule)
         return '\n'.join(lines)
 
