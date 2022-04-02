@@ -1,6 +1,7 @@
+import logging
 import numpy as np
 from openpnm.network import Cubic
-from openpnm.utils import logging, Project, prettify_logger_message
+from openpnm.utils import Project, prettify_logger_message
 from openpnm.geometry import GenericGeometry
 from openpnm.phase import GenericPhase
 from openpnm.topotools import trim

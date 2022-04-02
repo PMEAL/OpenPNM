@@ -6,12 +6,13 @@ MixedInvasionPercolation
 IP allowing pores and throats to invade separately.
 
 """
+import logging
 import heapq as hq
 import numpy as np
 from collections import namedtuple
 from openpnm.algorithms import GenericAlgorithm
 from openpnm.topotools import find_clusters, site_percolation
-from openpnm.utils import logging, SettingsAttr, Docorator
+from openpnm.utils import SettingsAttr, Docorator
 docstr = Docorator()
 logger = logging.getLogger(__name__)
 

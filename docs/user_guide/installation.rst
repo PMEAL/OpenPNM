@@ -56,8 +56,7 @@ Clone the repo somewhere in your disk using::
 
 Install ``openpnm`` dependencies::
 
-   $ conda install --file=requirements/conda_requirements.txt
-   $ pip install -r requirements/pip_requirements.txt
+   $ conda install --file requirements/conda_requirements.txt -c conda-forge --override-channels
 
 Install ``openpnm`` in "editable" mode::
 
@@ -71,7 +70,8 @@ to the root folder of ``openpnm`` and pull the latest changes::
 
 .. warning::
    For the development version of ``openpnm`` to work, you need to first remove
-   the ``openpnm`` that you've previously installed using ``pip`` or ``conda``.
+   the ``openpnm`` that you've previously installed using ``pip`` (via
+   ``pip uninstall openpnm``) or ``conda`` (via ``conda remove openpnm``).
 
 Where's my ``conda`` prompt?
 ###################################

@@ -1,15 +1,16 @@
-import warnings
+import logging
 import numpy as np
 import scipy.sparse.csgraph as spgr
 from openpnm.topotools import is_fully_connected
 from openpnm.algorithms import GenericAlgorithm
 from openpnm.algorithms import BCsMixin
-from openpnm.utils import logging, prettify_logger_message
-from openpnm.utils import Docorator, SettingsAttr
-from openpnm.solvers import PardisoSpsolve
-from ._solution import SteadyStateSolution
+from openpnm.utils import prettify_logger_message
+from openpnm.utils import Docorator, SettingsAttr, TypedSet, Workspace
+from openpnm import solvers
+from ._solution import SteadyStateSolution, SolutionContainer
 docstr = Docorator()
 logger = logging.getLogger(__name__)
+ws = Workspace()
 
 __all__ = ['GenericTransport', 'GenericTransportSettings']
 
@@ -38,7 +39,7 @@ class GenericTransportSettings:
     quantity = ''
     conductance = ''
     cache = True
-    variable_props = []
+    variable_props = TypedSet()
 
 
 @docstr.get_sections(base='GenericTransport', sections=['Parameters'])
@@ -220,16 +221,18 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
 
         """
         logger.info('Running GenericTransport')
-        solver = PardisoSpsolve() if solver is None else solver
+        if solver is None:
+            solver = getattr(solvers, ws.settings.default_solver)()
         # Perform pre-solve validations
         self._validate_settings()
         self._validate_data_health()
         # Write x0 to algorithm the obj (needed by _update_iterative_props)
-        self.x = x0 = np.zeros_like(self.b) if x0 is None else x0
+        self.x = x0 = np.zeros_like(self.b) if x0 is None else x0.copy()
         self["pore.initial_guess"] = x0
         self._validate_x0()
         # Initialize the solution object
-        self.soln = SteadyStateSolution(x0)
+        self.soln = SolutionContainer()
+        self.soln[self.settings['quantity']] = SteadyStateSolution(x0)
         self.soln.is_converged = False
         # Build A and b, then solve the system of equations
         self._update_A_and_b()
@@ -242,10 +245,12 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
         # Solve and apply under-relaxation
         x_new, exit_code = solver.solve(A=self.A, b=self.b, x0=x0)
         self.x = w * x_new + (1 - w) * self.x
-        # Update A and b using the recent solution
+        # Update A and b using the recent solution otherwise, for iterative
+        # algorithms, residual will be incorrectly calculated ~0, since A & b
+        # are outdated
         self._update_A_and_b()
         # Update SteadyStateSolution object on algorithm
-        self.soln[:] = self.x
+        self.soln[self.settings['quantity']][:] = self.x
         self.soln.is_converged = not bool(exit_code)
 
     def _update_A_and_b(self):
@@ -491,8 +496,8 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
         # Handle mode
         mode = self._parse_mode(mode, allowed=['merge', 'overwrite'], single=True)
         if mode == 'overwrite':
-            self.settings['variable_props'] = []
+            self.settings['variable_props'] = TypedSet()
         # parse each propname and append to variable_props in settings
         for variable_prop in variable_props:
             variable_prop = self._parse_prop(variable_prop, 'pore')
-            self.settings['variable_props'].append(variable_prop)
+            self.settings['variable_props'].add(variable_prop)

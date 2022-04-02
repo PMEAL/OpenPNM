@@ -49,6 +49,33 @@ class PoreSurfaceAreaTest:
         b = np.unique(self.geo['pore.surface_area'])
         assert_allclose(a, b)
 
+    def test_circle_multi_geom(self):
+        self.net = op.network.Cubic(shape=[10, 1, 1], spacing=1.0)
+        self.geo1 = op.geometry.GenericGeometry(network=self.net,
+                                                pores=self.net.Ps[0:3],
+                                                throats=self.net.Ts[0:3])
+        self.geo2 = op.geometry.GenericGeometry(network=self.net,
+                                                pores=self.net.Ps[3:],
+                                                throats=self.net.Ts[3:])
+        self.geo1['pore.diameter'] = 1
+        self.geo1['throat.cross_sectional_area'] = 0.3
+        self.geo2['pore.diameter'] = 1
+        self.geo2['throat.cross_sectional_area'] = 0.1
+        self.geo2.add_model(propname='pore.surface_area',
+                            model=mods.circle,
+                            regen_mode='normal')
+        self.geo1.add_model(propname='pore.surface_area',
+                            model=mods.circle,
+                            regen_mode='normal')
+        a = np.array([2.84159265, 2.54159265, 2.54159265])
+        b = self.geo1['pore.surface_area']
+        c = np.array([2.74159265, 2.94159265, 2.94159265,
+                      2.94159265, 2.94159265, 2.94159265,
+                      3.04159265])
+        d = self.geo2['pore.surface_area']
+        assert_allclose(a, b)
+        assert_allclose(c, d)
+
 
 if __name__ == '__main__':
 

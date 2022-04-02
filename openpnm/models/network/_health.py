@@ -1,10 +1,10 @@
-r"""
+"""
 Health Checks
 -------------
 
 """
+import logging
 import numpy as np
-from openpnm.utils import logging
 logger = logging.getLogger(__name__)
 
 __all__ = [
@@ -131,7 +131,7 @@ def count_coincident_pores(target, thresh=1e-6):
     Returns
     -------
     count : ndarray
-        A numpy array of Np length containing the number coincident pores
+        A numpy array of Np length containing the number of coincident pores
     """
     # This needs to be a bit complicated because it cannot be assumed
     # the coincident pores are topologically connected

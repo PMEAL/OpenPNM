@@ -7,6 +7,11 @@ class Solution(np.ndarray):
     pass
 
 
+class SolutionContainer(dict):
+    """Brief description of 'SolutionContainer'"""
+    pass
+
+
 class SteadyStateSolution(np.ndarray):
     r"""Brief description of 'SteadyStateSolution'"""
 

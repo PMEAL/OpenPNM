@@ -1,7 +1,7 @@
 import os
+import logging
 import numpy as np
 from openpnm.topotools import trim, extend
-from openpnm.utils import logging
 from openpnm.io import GenericIO
 from openpnm.network import GenericNetwork
 from openpnm.geometry import GenericGeometry

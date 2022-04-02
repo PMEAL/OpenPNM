@@ -386,9 +386,9 @@ class LabelMixin:
         labels : str or list[str]
             The label(s) whose pores locations are requested.  This argument
             also accepts '*' for wildcard searches.
-
         mode : str
             Specifies how the query should be performed.  The options are:
+
             ==============  =====================================================
             mode            meaning
             ==============  =====================================================
@@ -409,7 +409,6 @@ class LabelMixin:
         asmask : bool
             If ``True`` then a boolean array of length Np is returned with
             ``True`` values indicating the pores that satisfy the query.
-
         to_global : bool
             If ``True``, the returned indices will be indexed relative to the
             full domain.  This only has an effect when the calling object
@@ -465,9 +464,8 @@ class LabelMixin:
             The throat label(s) whose locations are requested.  If omitted,
             'all' throat inidices are returned.  This argument also accepts
             '*' for wildcard searches.
-
         mode : str
-            Specifies how the query should be performed.  The options are:
+            Specifies how the query should be performed. The options are:
 
             ==============  =====================================================
             mode            meaning
@@ -489,7 +487,6 @@ class LabelMixin:
         asmask : bool
             If ``True`` then a boolean array of length Nt is returned with
             ``True`` values indicating the throats that satisfy the query.
-
         to_global : bool
             If ``True``, the returned indices will be indexed relative to the
             full domain.  This only has an effect when the calling object
@@ -532,10 +529,8 @@ class LabelMixin:
         ----------
         pores, or throats : array_like
             List of pores or throats to be filtered
-
         labels : list of strings
             The labels to apply as a filter
-
         mode : str
             Controls how the filter is applied. The default value is
             'or'. Options include:
@@ -606,12 +601,10 @@ class LabelMixin:
         labels : list of strings, optional
             The pore labels that should be included in the count.
             If not supplied, all pores are counted.
-
         labels : list of strings
             Label of pores to be returned
-
         mode : str, optional
-            Specifies how the count should be performed.  The options are:
+            Specifies how the count should be performed. The options are:
 
             ==============  =====================================================
             mode            meaning
@@ -675,7 +668,6 @@ class LabelMixin:
         labels : list of strings, optional
             The throat labels that should be included in the count.
             If not supplied, all throats are counted.
-
         mode : str, optional
             Specifies how the count should be performed.  The options are:
 
@@ -717,3 +709,31 @@ class LabelMixin:
         Ts = self._get_indices(labels=labels, mode=mode, element='throat')
         Nt = np.shape(Ts)[0]
         return Nt
+
+    def props(self, *args, **kwargs):
+        # Overload props on base to remove labels
+        props = set(super().props(*args, **kwargs))
+        labels = set(self.labels())
+        props = props.difference(labels)
+        return PrintableList(props)
+
+    def __str__(self):
+        s = super().__str__()
+        # s = s.rpartition('\n')[0]
+        horizontal_rule = '―' * 78
+        lines = []
+        lines.append(s)
+        lines.append("{0:<5s} {1:<45s} {2:<10s}".format('#',
+                                                        'Labels',
+                                                        'Assigned Locations'))
+        lines.append(horizontal_rule)
+        labels = self.labels()
+        labels.sort()
+        fmt = "{0:<5d} {1:<45s} {2:<10d}"
+        for i, item in enumerate(labels):
+            prop = item
+            if len(prop) > 35:
+                prop = prop[0:32] + '...'
+            if '._' not in prop:
+                lines.append(fmt.format(i + 1, prop, np.sum(self[item])))
+        return '\n'.join(lines)

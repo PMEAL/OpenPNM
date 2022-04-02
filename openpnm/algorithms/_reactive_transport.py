@@ -1,9 +1,9 @@
 import sys
+import logging
 import numpy as np
 from numpy.linalg import norm
 from scipy.optimize.nonlin import TerminationCondition
 from openpnm.algorithms import GenericTransport
-from openpnm.utils import logging
 from openpnm.utils import TypedList, Docorator, SettingsAttr
 from tqdm import tqdm
 docstr = Docorator()
@@ -37,8 +37,6 @@ class ReactiveTransportSettings:
 
     """
     prefix = 'react_trans'
-    nlin_max_iter = 5000
-    relaxation_source = 1.0
     relaxation_quantity = 1.0
     sources = TypedList(types=[str])
     newton_maxiter = 5000
@@ -154,7 +152,7 @@ class ReactiveTransport(GenericTransport):
             self[propname][pores] = False
 
     def _update_iterative_props(self):
-        """r
+        """
         Regenerates phase, geometries, and physics objects using the
         current value of ``quantity``.
 
@@ -183,7 +181,7 @@ class ReactiveTransport(GenericTransport):
             phys.regenerate_models(iterative_props)
 
     def _apply_sources(self):
-        """r
+        """
         Updates ``A`` and ``b``, applying source terms to specified pores.
 
         Notes
@@ -265,7 +263,7 @@ class ReactiveTransport(GenericTransport):
                 logger.info(f'Iteration #{i:<4d} | Residual norm: {norm(res):.4e}')
 
         self.soln.is_converged = False
-        logger.critical(f"{self.name} didn't converge after {maxiter} iterations")
+        logger.warning(f"{self.name} didn't converge after {maxiter} iterations")
 
     def _get_progress(self, res):
         """
@@ -298,7 +296,9 @@ class ReactiveTransport(GenericTransport):
         # Generate global dependency graph
         dg = nx.compose_all([x.models.dependency_graph(deep=True)
                              for x in [phase, *geometries, *physics]])
-        base = [self.settings["quantity"]] + self.settings["variable_props"]
+        variable_props = self.settings["variable_props"].copy()
+        variable_props.add(self.settings["quantity"])
+        base = list(variable_props)
         # Find all props downstream that depend on base props
         dg = nx.DiGraph(nx.edge_dfs(dg, source=base))
         if len(dg.nodes) == 0:

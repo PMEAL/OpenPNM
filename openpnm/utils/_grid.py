@@ -1,8 +1,7 @@
 import terminaltables as tt
-from auto_all import start_all, end_all
 
 
-start_all()
+__all__ = ['Tableist']
 
 
 class Tableist:
@@ -321,5 +320,3 @@ class Tableist:
 
     def __repr__(self):
         return self._grid.table.__str__()
-
-end_all()

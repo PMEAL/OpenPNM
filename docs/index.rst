@@ -6,7 +6,7 @@
 .. admonition:: Under Development
 
    This documentation is under active development, and is not ready yet.
-   We aim to release OpenPNM v3 by the end of 2021. This documentation,
+   We aim to release OpenPNM v3 by April 2022. This documentation,
    therefore, does not reflect the latest stable release on
    PyPI/conda-forge (v2.8.2).
 
@@ -31,7 +31,7 @@ simulations.
    user_guide/installation
    user_guide/index
    modules/index
-   examples/examples
+   examples_index
 
 ----
 

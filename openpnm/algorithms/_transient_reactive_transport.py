@@ -1,7 +1,9 @@
+import logging
 import numpy as np
 from openpnm.algorithms import ReactiveTransport
-from openpnm.utils import logging, Docorator, SettingsAttr
+from openpnm.utils import Docorator, SettingsAttr
 from openpnm.integrators import ScipyRK45
+from openpnm.algorithms._solution import SolutionContainer
 docstr = Docorator()
 logger = logging.getLogger(__name__)
 
@@ -73,6 +75,8 @@ class TransientReactiveTransport(ReactiveTransport):
         logger.info('Running TransientTransport')
         if np.isscalar(saveat):
             saveat = np.arange(*tspan, saveat)
+        # FIXME: why do we forcibly add tspan[1] to saveat even if the user
+        # didn't want to?
         if (saveat is not None) and (tspan[1] not in saveat):
             saveat = np.hstack((saveat, [tspan[1]]))
         integrator = ScipyRK45() if integrator is None else integrator
@@ -85,13 +89,24 @@ class TransientReactiveTransport(ReactiveTransport):
         # Build RHS (dx/dt = RHS), then integrate the system of ODEs
         rhs = self._build_rhs()
         # Integrate RHS using the given solver
-        self.soln = integrator.solve(rhs, x0, tspan, saveat)
+        soln = integrator.solve(rhs, x0, tspan, saveat)
+        # Return solution as dictionary
+        self.soln = SolutionContainer()
+        self.soln[self.settings['quantity']] = soln
         return self.soln
 
     def _run_special(self, x0): ...
 
     def _build_rhs(self):
+        """
+        Returns a function handle, which calculates dy/dt = rhs(y, t).
 
+        Notes
+        -----
+        ``y`` is the variable that the algorithms solves for, e.g., for
+        ``TransientFickianDiffusion``, it would be concentration.
+
+        """
         def ode_func(t, y):
             # TODO: add a cache mechanism
             self.x = y

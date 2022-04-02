@@ -52,9 +52,9 @@ class UtilsTest:
 
     def test_is_symmetric_w_rtol(self):
         A = np.array([[1, 2, 3], [2, 4, 6], [3.000001, 6, 99]])
-        is_sym = op.utils.misc.is_symmetric(A, rtol=1e-4)
+        is_sym = op.utils.is_symmetric(A, rtol=1e-4)
         assert is_sym
-        is_sym = op.utils.misc.is_symmetric(A, rtol=1e-6)
+        is_sym = op.utils.is_symmetric(A, rtol=1e-6)
         assert not is_sym
 
     def test_is_symmetric_FickianDiffusion_must_be_symmetric(self):
@@ -67,7 +67,7 @@ class UtilsTest:
         fd = op.algorithms.FickianDiffusion(network=net, phase=air)
         fd.set_value_BC(pores=net.pores("left"), values=1.0)
         fd.set_value_BC(pores=net.pores("right"), values=0.1)
-        assert op.utils.misc.is_symmetric(fd.A)
+        assert op.utils.is_symmetric(fd.A)
 
     def test_is_symmetric_AdvectionDiffusion_must_be_nonsymmetric(self):
         net = op.network.Cubic(shape=[5, 5, 5])
@@ -80,7 +80,7 @@ class UtilsTest:
         ad.set_value_BC(pores=net.pores("left"), values=1.0)
         ad.set_value_BC(pores=net.pores("right"), values=0.1)
         # Uniform pressure field --> no advection --> still symmetric
-        assert op.utils.misc.is_symmetric(ad.A)
+        assert op.utils.is_symmetric(ad.A)
         sf = op.algorithms.StokesFlow(network=net, phase=air)
         sf.set_value_BC(pores=net.pores("left"), values=1.0)
         sf.set_value_BC(pores=net.pores("right"), values=0.0)
@@ -90,20 +90,20 @@ class UtilsTest:
         ad.settings._update({"cache": False})
         ad._build_A()
         # Non-uniform pressure field --> positive advection --> non-symmetric
-        assert not op.utils.misc.is_symmetric(ad.A)
+        assert not op.utils.is_symmetric(ad.A)
 
     def test_is_valid_propname(self):
-        assert op.utils.misc.is_valid_propname("pore.foo")
-        assert op.utils.misc.is_valid_propname("pore.zed.foo")
-        assert op.utils.misc.is_valid_propname("throat.bar")
-        assert op.utils.misc.is_valid_propname("throat.bar.foo")
-        assert not op.utils.misc.is_valid_propname("pores.blah")
-        assert not op.utils.misc.is_valid_propname("foo.blah")
-        assert not op.utils.misc.is_valid_propname("pore")
-        assert not op.utils.misc.is_valid_propname("throat")
-        assert not op.utils.misc.is_valid_propname("pore.")
-        assert not op.utils.misc.is_valid_propname("throat.")
-        assert not op.utils.misc.is_valid_propname("pore.foo..bar")
+        assert op.utils.is_valid_propname("pore.foo")
+        assert op.utils.is_valid_propname("pore.zed.foo")
+        assert op.utils.is_valid_propname("throat.bar")
+        assert op.utils.is_valid_propname("throat.bar.foo")
+        assert not op.utils.is_valid_propname("pores.blah")
+        assert not op.utils.is_valid_propname("foo.blah")
+        assert not op.utils.is_valid_propname("pore")
+        assert not op.utils.is_valid_propname("throat")
+        assert not op.utils.is_valid_propname("pore.")
+        assert not op.utils.is_valid_propname("throat.")
+        assert not op.utils.is_valid_propname("pore.foo..bar")
 
 
 if __name__ == '__main__':

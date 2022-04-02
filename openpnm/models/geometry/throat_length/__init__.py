@@ -1,6 +1,6 @@
 r"""
-throat_length Models
--------------------------
+Throat Length Models
+--------------------
 
 This model contains a selection of functions for finding throat length
 assuming pores and throats have various shapes.

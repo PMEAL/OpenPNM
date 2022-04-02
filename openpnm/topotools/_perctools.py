@@ -1,13 +1,20 @@
+import logging
 import numpy as np
 import scipy.sparse as sprs
 from scipy.sparse import csgraph
-from openpnm.utils import PrintableDict, logging, Workspace
-from auto_all import start_all, end_all
+from openpnm.utils import PrintableDict, Workspace
 
 
 logger = logging.getLogger(__name__)
 ws = Workspace()
-start_all()
+__all__ = [
+    'ispercolating',
+    'remove_isolated_clusters',
+    'site_percolation',
+    'bond_percolation',
+    'find_clusters',
+    'find_path',
+]
 
 
 def ispercolating(am, inlets, outlets, mode='site'):
@@ -357,5 +364,3 @@ def find_path(network, pore_pairs, weights=None):
     pdict = PrintableDict
     dict_ = pdict(**{'pores': pores, 'throats': throats})
     return dict_
-
-end_all()

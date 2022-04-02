@@ -1,7 +1,8 @@
+import logging
 import inspect
 import numpy as np
-from openpnm.utils import PrintableDict, logging, Workspace
-from openpnm.utils.misc import is_valid_propname
+from openpnm.utils import PrintableDict, Workspace
+from openpnm.utils import is_valid_propname
 from openpnm.utils import prettify_logger_message
 logger = logging.getLogger(__name__)
 ws = Workspace()
@@ -22,6 +23,11 @@ class ModelsDict(PrintableDict):
     ``dependency_graph``, and ``dependency_map``.
 
     """
+
+    def update(self, models):
+        target = self._find_parent()
+        for item in models.keys():
+            target.add_model(propname=item, **models[item])
 
     def _find_parent(self):
         r"""

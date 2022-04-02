@@ -1,7 +1,8 @@
+import logging
 from copy import deepcopy
 from openpnm.core import Subdomain, ModelsMixin, ParamMixin
 from openpnm.utils import Docorator, SettingsAttr
-from openpnm.utils import Workspace, logging
+from openpnm.utils import Workspace
 logger = logging.getLogger(__name__)
 ws = Workspace()
 docstr = Docorator()

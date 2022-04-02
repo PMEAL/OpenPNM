@@ -1,6 +1,7 @@
+import logging
 from copy import deepcopy
 from openpnm.algorithms import TransientReactiveTransport, IonicConduction
-from openpnm.utils import logging, Docorator, SettingsAttr
+from openpnm.utils import Docorator, SettingsAttr
 logger = logging.getLogger(__name__)
 docstr = Docorator()
 
@@ -21,7 +22,6 @@ class TransientIonicConduction(TransientReactiveTransport,
     of pure diffusion and advection-diffusion problems.
     """
 
-    def __init__(self, phase, settings=None, **kwargs):
+    def __init__(self, settings=None, **kwargs):
         self.settings = SettingsAttr(TransientIonicConductionSettings, settings)
         super().__init__(settings=self.settings, **kwargs)
-        self.settings['phase'] = phase.name

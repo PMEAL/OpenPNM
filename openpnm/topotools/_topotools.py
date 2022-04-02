@@ -1,16 +1,54 @@
-from auto_all import start_all, end_all
+import logging
 import numpy as np
 import scipy as sp
 import scipy.ndimage as spim
 from scipy.spatial import cKDTree
 from scipy.sparse import csgraph
 from scipy.spatial import ConvexHull
-from openpnm.utils import logging, Workspace, prettify_logger_message
+from openpnm.utils import Workspace, prettify_logger_message
 
 
 logger = logging.getLogger(__name__)
 ws = Workspace()
-start_all()
+
+__all__ = [
+    'isoutside',
+    'rotate_coords',
+    'shear_coords',
+    'trim',
+    'extend',
+    'label_faces',
+    'find_surface_pores',
+    'dimensionality',
+    'clone_pores',
+    'merge_networks',
+    'stitch',
+    'stitch_pores',
+    'connect_pores',
+    'find_pore_to_pore_distance',
+    'subdivide',
+    'trim_occluded_throats',
+    'merge_pores',
+    'hull_centroid',
+    'template_sphere_shell',
+    'template_cylinder_annulus',
+    'generate_base_points',
+    'to_cylindrical',
+    'from_cylindrical',
+    'to_spherical',
+    'from_spherical',
+    'reflect_base_points',
+    'add_boundary_pores',
+    'iscoplanar',
+    'is_fully_connected',
+    'get_spacing',
+    'get_shape',
+    'get_domain_area',
+    'get_domain_length',
+    'filter_pores_by_z',
+    'find_interface_throats',
+    'add_reservoir_pore',
+]
 
 
 def isoutside(coords, shape):
@@ -1740,6 +1778,7 @@ def is_fully_connected(network, pores_BC=None):
         is_connected = np.unique(temp).size == 1
     return is_connected
 
+
 def get_spacing(network):
     r"""
     Determine the spacing along each axis of a simple cubic network
@@ -1760,6 +1799,7 @@ def get_spacing(network):
     d = {'vert.coords': network.coords, 'edge.conns': network.conns}
     spc = get_spacing(d)
     return spc
+
 
 def get_shape(network):
     r"""
@@ -1922,8 +1962,6 @@ def find_interface_throats(network, P1, P2):
     Ts2 = network.find_neighbor_throats(pores=P2, mode="xor")
     return np.intersect1d(Ts1, Ts2)
 
-
-end_all()
 
 
 def add_reservoir_pore(cls, network, pores, offset=0.1):

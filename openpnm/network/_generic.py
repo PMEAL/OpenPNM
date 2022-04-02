@@ -1,10 +1,11 @@
+import logging
 import numpy as np
 import scipy.sparse as sprs
 import scipy.spatial as sptl
 from openpnm.core import Base, ModelsMixin, LabelMixin, ParamMixin
 from openpnm import topotools
 from openpnm.utils import Docorator, SettingsAttr
-from openpnm.utils import Workspace, logging
+from openpnm.utils import Workspace
 import openpnm.models.network as mods
 logger = logging.getLogger(__name__)
 ws = Workspace()
@@ -25,7 +26,7 @@ class NetworkSettings:
 
 @docstr.get_sections(base='GenericNetwork', sections=['Parameters'])
 @docstr.dedent
-class GenericNetwork(ParamMixin, Base, ModelsMixin, LabelMixin):
+class GenericNetwork(ParamMixin, LabelMixin, Base, ModelsMixin):
     r"""
     This generic class contains the main functionality used by all
     networks.
@@ -37,7 +38,7 @@ class GenericNetwork(ParamMixin, Base, ModelsMixin, LabelMixin):
         dataclass-type object with settings stored as attributes or a python
         dicionary of key-value pairs. Settings are stored in the ``settings``
         attribute of the object.
-    name : string, optional
+    name : str, optional
         A unique name to assign to the object for easier identification.  If
         not given one will be generated.
 

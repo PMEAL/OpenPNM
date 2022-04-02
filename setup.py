@@ -22,7 +22,7 @@ def get_version(rel_path):
     for line in read(rel_path).splitlines():
         if line.startswith('__version__'):
             delim = '"' if '"' in line else "'"
-            return line.split(delim)[1]
+            return line.split(delim)[1].strip(".dev0")
     else:
         raise RuntimeError("Unable to find version string.")
 
@@ -72,14 +72,10 @@ setup(
         'openpnm.materials',
     ],
     install_requires=[
-        'attr',
-        'auto_all',
         'chemicals',
         'docrep>=0.3',
         'flatdict',
-        'gitpython',
         'h5py',
-        'ipython',
         'jsonschema',
         'json-tricks',
         'matplotlib',
@@ -93,8 +89,8 @@ setup(
         'sympy',
         'terminaltables',
         'tqdm',
-        'transforms3d',
         'traits',
+        'transforms3d'
     ],
     author='OpenPNM Team',
     author_email='jgostick@uwaterloo.ca',

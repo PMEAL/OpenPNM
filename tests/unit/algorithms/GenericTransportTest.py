@@ -57,9 +57,10 @@ class GenericTransportTest:
         soln = alg.run()
         # Check returned data type
         from openpnm.algorithms._solution import SteadyStateSolution
-        assert isinstance(soln, SteadyStateSolution)
+        quantity = alg.settings['quantity']
+        assert isinstance(soln[quantity], SteadyStateSolution)
         # Ensure solution object is attached to the algorithm
-        assert isinstance(alg.soln, SteadyStateSolution)
+        assert isinstance(alg.soln[quantity], SteadyStateSolution)
 
     def test_two_value_conditions(self):
         alg = op.algorithms.GenericTransport(network=self.net,
@@ -177,7 +178,7 @@ class GenericTransportTest:
         geom = op.geometry.SpheresAndCylinders(network=net, pores=net.Ps, throats=net.Ts)
         air = op.phase.Air(network=net)
         water = op.phase.Water(network=net)
-        m = op.phase.MultiPhase(network=net, phases=[air, water])
+        m = op.contrib.MultiPhase(network=net, phases=[air, water])
         m.set_occupancy(phase=air, pores=[0, 1, 2])
         m.set_occupancy(phase=water, pores=[3, 4, 5])
         const = op.models.misc.constant

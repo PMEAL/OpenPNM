@@ -1,15 +1,10 @@
-attr
-auto_all
 chemicals
 docrep>=0.3
 flatdict
-gitpython
 h5py
-ipython
 jsonschema
 json-tricks
 matplotlib
-mkl
 networkx
 numba
 numpy

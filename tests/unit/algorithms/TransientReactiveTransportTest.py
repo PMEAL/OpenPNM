@@ -47,18 +47,19 @@ class TransientReactiveTransportTest:
         out = self.alg.run(x0=0, tspan=(0, 1), saveat=0.1)
         # Test datatype
         from openpnm.algorithms._solution import TransientSolution
-        assert isinstance(out, TransientSolution)
+        quantity = self.alg.settings['quantity']
+        assert isinstance(out[quantity], TransientSolution)
         # Ensure solution object is attached to the algorithm
-        assert isinstance(self.alg.soln, TransientSolution)
+        assert isinstance(self.alg.soln[quantity], TransientSolution)
         # Test shape
-        nt.assert_array_equal(self.alg.soln.shape, (self.alg.Np, 11))
+        nt.assert_array_equal(self.alg.soln[quantity].shape, (self.alg.Np, 11))
         # Test stored time points
-        nt.assert_array_equal(self.alg.soln.t, np.arange(0, 1.1, 0.1))
+        nt.assert_array_equal(self.alg.soln[quantity].t, np.arange(0, 1.1, 0.1))
         # Ensure solution is callable (i.e., interpolates intermediate times)
-        assert hasattr(out, "__call__")
+        assert hasattr(out[quantity], "__call__")
         # Test solution interpolation
-        f = interp1d(out.t, out)
-        nt.assert_allclose(f(0.05), out(0.05))
+        f = interp1d(out[quantity].t, out[quantity])
+        nt.assert_allclose(f(0.05), out[quantity](0.05))
         # Ensure no extrapolation
         with nt.assert_raises(Exception):
             out(1.01)
@@ -70,7 +71,8 @@ class TransientReactiveTransportTest:
         # Integrate from 0 to 0.3 in one go
         out2 = self.alg.run(x0=0, tspan=(0, 0.3))
         # Ensure the results match
-        nt.assert_allclose(out1(0.3), out2(0.3), rtol=1e-5)
+        quantity = self.alg.settings['quantity']
+        nt.assert_allclose(out1[quantity](0.3), out2[quantity](0.3), rtol=1e-5)
 
 
     def test_adding_bc_over_sources(self):
