@@ -11,7 +11,7 @@ def voronoi_delaunay_dual(points, shape, crop=False):
     ----------
     points : array_like or scalar
         The points to be tessellated.  If a scalar is given a set of points
-        of that size is generated.
+        of that size is generated inside the given ``shape``.
     shape : array_like
         The size of the domain in which the points lie
     crop : bool, optional (default is ``False``)
@@ -29,7 +29,7 @@ def voronoi_delaunay_dual(points, shape, crop=False):
 
     """
     from openpnm.topotools import isoutside, conns_to_am
-    from openpnm.topotools.generators import tools
+    from openpnm._skimage.generators import tools
     # Generate a set of base points if number was given
     points = tools.parse_points(points=points, shape=shape)
     mask = ~np.all(points == 0, axis=0)
@@ -83,13 +83,13 @@ def voronoi_delaunay_dual(points, shape, crop=False):
 
     # Assign coords and conns to network dict
     network = {}
-    network['vert.coords'] = verts
-    network['edge.conns'] = conns
+    network['coords'] = verts
+    network['conns'] = conns
 
     # Identify and trim pores outside the domain if requested
     if crop:
         Ps = isoutside(verts, shape=shape)
-        network = tools.trim(network=network, vert_ids=np.where(Ps)[0])
+        network = tools.trim(network=network, sites=np.where(Ps)[0])
 
     return network, vor, tri
 
@@ -97,9 +97,9 @@ def voronoi_delaunay_dual(points, shape, crop=False):
 if __name__ == "__main__":
     dvd, vor, tri = voronoi_delaunay_dual(points=50, shape=[1, 0, 1])
     print(dvd.keys())
-    print(dvd['vert.coords'].shape)
-    print(dvd['edge.conns'].shape)
+    print(dvd['coords'].shape)
+    print(dvd['conns'].shape)
     dvd, vor, tri = voronoi_delaunay_dual(points=50, shape=[1, 0, 1], crop=True)
     print(dvd.keys())
-    print(dvd['vert.coords'].shape)
-    print(dvd['edge.conns'].shape)
+    print(dvd['coords'].shape)
+    print(dvd['conns'].shape)

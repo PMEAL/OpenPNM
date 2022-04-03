@@ -28,10 +28,10 @@ def cubic_template(template, spacing=1):
     coords = np.unravel_index(range(template.size), template.shape)
     coords = np.vstack(coords).T
     Np = coords.shape[0]
-    temp['vert.template_coords'] = coords
-    temp['vert.template_indices'] = np.arange(Np)
+    temp['template_coords'] = coords
+    temp['template_indices'] = np.arange(Np)
     # Trim pores not present in template
-    temp = tools.trim(network=temp, vert_ids=~template.flatten())
+    temp = tools.trim(network=temp, sites=~template.flatten())
     return temp
 
 

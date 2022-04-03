@@ -28,8 +28,8 @@ def delaunay(points, shape=[1, 1, 1]):
     tri = sptl.Delaunay(points=points[:, mask])
     coo = tri_to_am(tri)
     d = {}
-    d['vert.coords'] = points
-    d['edge.conns'] = np.vstack((coo.row, coo.col)).T
+    d['coords'] = points
+    d['conns'] = np.vstack((coo.row, coo.col)).T
     return d, tri
 
 
@@ -37,30 +37,30 @@ if __name__ == "__main__":
     # Make a 2D network based on number of points
     dn, tri = delaunay(points=50, shape=[1, 1, 0])
     print(dn.keys())
-    print(dn['vert.coords'].shape)
-    print(dn['edge.conns'].shape)
+    print(dn['coords'].shape)
+    print(dn['conns'].shape)
     # Make a 2D network based on number of points
     dn, tri = delaunay(points=50, shape=[1, 0, 1])
     print(dn.keys())
-    print(dn['vert.coords'].shape)
-    print(dn['edge.conns'].shape)
+    print(dn['coords'].shape)
+    print(dn['conns'].shape)
     # Make a 3D network based on number of points
     dn, tri = delaunay(points=50, shape=[1, 1, 1])
     print(dn.keys())
-    print(dn['vert.coords'].shape)
-    print(dn['edge.conns'].shape)
+    print(dn['coords'].shape)
+    print(dn['conns'].shape)
     # Make a 3D cylinder
     dn, tri = delaunay(points=50, shape=[1, 1])
     print(dn.keys())
-    print(dn['vert.coords'].shape)
-    print(dn['edge.conns'].shape)
+    print(dn['coords'].shape)
+    print(dn['conns'].shape)
     # Make a 2D circle
     dn, tri = delaunay(points=50, shape=[1, 0])
     print(dn.keys())
-    print(dn['vert.coords'].shape)
-    print(dn['edge.conns'].shape)
+    print(dn['coords'].shape)
+    print(dn['conns'].shape)
     # Make a 3D sphere
     dn, tri = delaunay(points=50, shape=[1])
     print(dn.keys())
-    print(dn['vert.coords'].shape)
-    print(dn['edge.conns'].shape)
+    print(dn['coords'].shape)
+    print(dn['conns'].shape)

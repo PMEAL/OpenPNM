@@ -73,8 +73,8 @@ def cubic(shape, spacing=1, connectivity=6):
     pairs = np.sort(pairs, axis=1)
 
     d = {}
-    d['vert.coords'] = points * spacing
-    d['edge.conns'] = pairs
+    d['coords'] = points * spacing
+    d['conns'] = pairs
     return d
 
 

@@ -7,7 +7,6 @@ topologies
 
 """
 
-from . import tools
 from ._cubic import cubic
 from ._delaunay import delaunay
 from ._gabriel import gabriel
