@@ -62,6 +62,10 @@ def fcc(shape, spacing=1, mode='kdtree'):
                            net2['coords'],
                            net3['coords'],
                            net4['coords']))
+    corner_labels = np.concatenate((np.ones(net1['coords'].shape[0], dtype=bool),
+                                    np.zeros(net2['coords'].shape[0], dtype=bool),
+                                    np.zeros(net3['coords'].shape[0], dtype=bool),
+                                    np.zeros(net4['coords'].shape[0], dtype=bool)))
     if mode.startswith('tri'):
         tri = sptl.Delaunay(points=crds)
         am = tri_to_am(tri)
@@ -88,6 +92,8 @@ def fcc(shape, spacing=1, mode='kdtree'):
     conns = np.vstack((net1['conns'], conns))
 
     d = {}
+    d['site.corner'] = corner_labels
+    d['site.face'] = ~corner_labels
     d['coords'] = crds*spacing
     d['conns'] = conns
     return d
@@ -99,6 +105,8 @@ if __name__ == '__main__':
     net = fcc([3, 3, 3], 1, mode='tri')
     net['pore.coords'] = net.pop('coords')
     net['throat.conns'] = net.pop('conns')
+    net['pore.corner'] = net.pop('site.corner')
+    net['pore.face'] = net.pop('site.face')
     pn = op.network.GenericNetwork()
     pn.update(net)
     pn['pore.all'] = np.ones((np.shape(pn.coords)[0]), dtype=bool)

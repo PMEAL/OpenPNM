@@ -3,6 +3,7 @@ import numpy as np
 from openpnm.network import GenericNetwork
 from openpnm import topotools
 from openpnm._skgraph.generators import cubic
+from openpnm._skgraph.tools import find_surface_sites
 from openpnm.utils import Docorator
 
 docstr = Docorator()
@@ -53,24 +54,6 @@ class Cubic(GenericNetwork):
 
     %(GenericNetwork.parameters)s
 
-    Examples
-    --------
-    .. plot::
-
-       import openpnm as op
-       import matplotlib.pyplot as plt
-
-       pn = op.network.Cubic(shape=[5, 5, 5], spacing=[1, 1, 1])
-
-       fig, ax = plt.subplots(figsize=(5, 5))
-       op.topotools.plot_connections(network=pn, ax=ax)
-       op.topotools.plot_coordinates(network=pn, c='r', s=75, ax=ax)
-
-       plt.show()
-
-    For larger networks and more control over presentation use `Paraview
-    <http://www.paraview.org>`_.
-
     """
 
     def __init__(self, shape, spacing=[1, 1, 1], connectivity=6, **kwargs):
@@ -82,25 +65,11 @@ class Cubic(GenericNetwork):
         self["throat.all"] = np.ones(net['conns'].shape[0], dtype=bool)
         self["pore.internal"] = True
         self["throat.internal"] = True
-        self._label_surface_pores()
-        topotools.label_faces(network=self)
+        self["pore.surface"] = find_surface_sites(self.coords)
         Ps = self["pore.surface"]
         self["throat.surface"] = np.all(Ps[self["throat.conns"]], axis=1)
-        # Scale network to requested spacing
-        self["pore.coords"] *= spacing
-
-    def _label_surface_pores(self):
-        r"""
-        """
-        hits = np.zeros_like(self.Ps, dtype=bool)
-        dims = topotools.dimensionality(self)
-        mn = np.amin(self["pore.coords"], axis=0)
-        mx = np.amax(self["pore.coords"], axis=0)
-        for ax in [0, 1, 2]:
-            if dims[ax]:
-                hits += self["pore.coords"][:, ax] <= mn[ax]
-                hits += self["pore.coords"][:, ax] >= mx[ax]
-        self["pore.surface"] = hits
+        topotools.label_faces(network=self, label='surface')
+        self["pore.coords"] *= spacing  # Scale network to requested spacing
 
     def add_boundary_pores(self, labels=["top", "bottom", "front",
                                          "back", "left", "right"],

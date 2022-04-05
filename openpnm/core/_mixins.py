@@ -736,4 +736,5 @@ class LabelMixin:
                 prop = prop[0:32] + '...'
             if '._' not in prop:
                 lines.append(fmt.format(i + 1, prop, np.sum(self[item])))
+        lines.append(horizontal_rule)
         return '\n'.join(lines)

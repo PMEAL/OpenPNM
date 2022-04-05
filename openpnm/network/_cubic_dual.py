@@ -2,14 +2,16 @@ import logging
 import numpy as np
 from openpnm.network import GenericNetwork, Cubic
 from openpnm import topotools
-from openpnm.utils import Workspace
+from openpnm.utils import Workspace, Docorator
 
 
+docstr = Docorator()
 logger = logging.getLogger(__name__)
 ws = Workspace()
 __all__ = ['CubicDual']
 
 
+@docstr.dedent
 class CubicDual(GenericNetwork):
     r"""
     Body centered cubic lattice plus face centered nodes on the surfaces
@@ -29,49 +31,11 @@ class CubicDual(GenericNetwork):
     spacing : list[float]
         The distance between pores of the primary network in each of the
         principal directions
-    label_1 : str
-        The label to apply to the primary cubic lattices, which defaults
-        to 'primary'
-    label_2 : str
-        The label to apply to the secondary cubic lattices, which defaults
-        to 'seconary'
-    name : str
-        An optional name for the object to help identify it. If not given,
-        one will be generated.
+    %(GenericNetwork.parameters)s
 
     See Also
     --------
     Bravais
-
-    Examples
-    --------
-    .. plot::
-
-       import openpnm as op
-       import matplotlib.pyplot as plt
-
-       pn = op.network.CubicDual(shape=[3, 3, 3])
-
-       # Check the number of primary pores (normal cubic network)
-       print(pn.num_pores('pore.primary'))
-
-       # But more pores are present from seconary network
-       print(pn.Np)
-
-       # And it can be plotted for quick visualization using
-       fig, ax = plt.subplots(figsize=(5, 5))
-       op.topotools.plot_connections(network=pn,
-                                     throats=pn.throats('primary'),
-                                     color='g', ax=ax)
-       op.topotools.plot_connections(network=pn,
-                                     throats=pn.throats('secondary'),
-                                     color='b', ax=ax)
-       op.topotools.plot_coordinates(network=pn, c='r', s=25, ax=ax)
-
-       plt.show()
-
-    For larger networks and more control over presentation use `Paraview
-    <http://www.paraview.org>`_.
 
     """
     def __init__(self, shape, spacing=1, label_1='primary',
