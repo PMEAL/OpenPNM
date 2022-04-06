@@ -59,10 +59,10 @@ class Cubic(GenericNetwork):
     def __init__(self, shape, spacing=[1, 1, 1], connectivity=6, **kwargs):
         super().__init__(**kwargs)
         net = cubic(shape=shape, spacing=spacing, connectivity=connectivity)
-        self["pore.coords"] = net['coords']
-        self["throat.conns"] = net['conns']
-        self["pore.all"] = np.ones(net['coords'].shape[0], dtype=bool)
-        self["throat.all"] = np.ones(net['conns'].shape[0], dtype=bool)
+        self["pore.coords"] = net['node.coords']
+        self["throat.conns"] = net['edge.conns']
+        self["pore.all"] = np.ones(net['node.coords'].shape[0], dtype=bool)
+        self["throat.all"] = np.ones(net['edge.conns'].shape[0], dtype=bool)
         self["pore.internal"] = True
         self["throat.internal"] = True
         self["pore.surface"] = find_surface_sites(self.coords)

@@ -42,12 +42,12 @@ def bcc(shape, spacing=1, mode='kdtree'):
     spacing = np.array(spacing)
     net1 = cubic(shape=shape+1, spacing=1)
     net2 = cubic(shape=shape, spacing=1)
-    net2['coords'] += 0.5
-    crds = np.concatenate((net1['coords'], net2['coords']))
-    corner_label = np.concatenate((np.ones(net1['coords'].shape[0], dtype=bool),
-                                   np.zeros(net2['coords'].shape[0], dtype=bool)))
-    body_label = np.concatenate((np.zeros(net1['coords'].shape[0], dtype=bool),
-                                 np.ones(net2['coords'].shape[0], dtype=bool)))
+    net2['node.coords'] += 0.5
+    crds = np.concatenate((net1['node.coords'], net2['node.coords']))
+    corner_label = np.concatenate((np.ones(net1['node.coords'].shape[0], dtype=bool),
+                                   np.zeros(net2['node.coords'].shape[0], dtype=bool)))
+    body_label = np.concatenate((np.zeros(net1['node.coords'].shape[0], dtype=bool),
+                                 np.ones(net2['node.coords'].shape[0], dtype=bool)))
     if mode.startswith('tri'):
         tri = sptl.Delaunay(points=crds)
         am = tri_to_am(tri)
@@ -73,10 +73,10 @@ def bcc(shape, spacing=1, mode='kdtree'):
         conns = np.vstack((am.row, am.col)).T
 
     d = {}
-    d['site.corner'] = corner_label
-    d['site.body'] = body_label
-    d['coords'] = crds*spacing
-    d['conns'] = conns
+    d['node.corner'] = corner_label
+    d['node.body'] = body_label
+    d['node.coords'] = crds*spacing
+    d['edge.conns'] = conns
     return d
 
 
@@ -85,10 +85,10 @@ if __name__ == '__main__':
     import matplotlib.pyplot as plt
     pn = op.network.GenericNetwork()
     net = bcc([3, 3, 3], 1, mode='tri')
-    net['pore.coords'] = net.pop('coords')
-    net['throat.conns'] = net.pop('conns')
-    net['pore.corner'] = net.pop('site.corner')
-    net['pore.body'] = net.pop('site.body')
+    net['pore.coords'] = net.pop('node.coords')
+    net['throat.conns'] = net.pop('edge.conns')
+    net['pore.corner'] = net.pop('node.corner')
+    net['pore.body'] = net.pop('node.body')
     pn.update(net)
     pn['pore.all'] = np.ones((np.shape(pn.coords)[0]), dtype=bool)
     pn['throat.all'] = np.ones((np.shape(pn.conns)[0]), dtype=bool)

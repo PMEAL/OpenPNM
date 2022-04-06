@@ -33,14 +33,14 @@ def voronoi(points, shape=[1, 1, 1]):
     # Write values to dictionary
     d = {}
     conns = np.vstack((coo.row, coo.col)).T
-    d['conns'] = conns
+    d['edge.conns'] = conns
     if np.any(mask == False):
         verts = np.zeros([np.shape(vor.vertices)[0], 3])
         for i, col in enumerate(np.where(mask)[0]):
             verts[:, col] = vor.vertices[:, i]
     else:
         verts = np.copy(vor.vertices)
-    d['coords'] = verts
+    d['node.coords'] = verts
 
     return d, vor
 
@@ -48,9 +48,9 @@ def voronoi(points, shape=[1, 1, 1]):
 if __name__ == "__main__":
     vn, vor = voronoi(points=50, shape=[1, 0, 1])
     print(vn.keys())
-    print(vn['coords'].shape)
-    print(vn['conns'].shape)
+    print(vn['node.coords'].shape)
+    print(vn['edge.conns'].shape)
     vn, vor = voronoi(points=50, shape=[1, 0, 1])
     print(vn.keys())
-    print(vn['coords'].shape)
-    print(vn['conns'].shape)
+    print(vn['node.coords'].shape)
+    print(vn['edge.conns'].shape)

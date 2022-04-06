@@ -30,12 +30,12 @@ def gabriel(points=None, delaunay=None, shape=None):
     if points is not None:
         delaunay, tri = _delaunay(points=points, shape=shape)
     # Find centroid or midpoint of each edge in conns
-    c = delaunay['coords'][delaunay['conns']]
+    c = delaunay['node.coords'][delaunay['edge.conns']]
     m = (c[:, 0, :] + c[:, 1, :])/2
     # Find the radius sphere between each pair of nodes
     r = np.sqrt(np.sum((c[:, 0, :] - c[:, 1, :])**2, axis=1))/2
     # Use the kd-tree function in Scipy's spatial module
-    tree = sptl.cKDTree(delaunay['coords'])
+    tree = sptl.cKDTree(delaunay['node.coords'])
     # Find the nearest point for each midpoint
     n = tree.query(x=m, k=1)[0]
     # If nearest point to m is at distance r, then the edge is a Gabriel edge
@@ -43,32 +43,32 @@ def gabriel(points=None, delaunay=None, shape=None):
     d = {}
     d.update(delaunay)
     # Reduce the connectivity to all True values found in g
-    d['conns'] = delaunay['conns'][g]
-    d['coords'] = delaunay['coords']
+    d['edge.conns'] = delaunay['edge.conns'][g]
+    d['node.coords'] = delaunay['node.coords']
     return d
 
 
 if __name__ == '__main__':
-    from openpnm.topotools.generators import delaunay
+    from openpnm._skgraph.generators import delaunay
     # Make a 2D network using points
     gb = gabriel(points=50, shape=[1, 1, 0])
     print(gb.keys())
-    print(gb['coords'].shape)
-    print(gb['conns'].shape)
+    print(gb['node.coords'].shape)
+    print(gb['edge.conns'].shape)
     # Make a 2D network based on a pre-existing delaunay network
     dn, tri = delaunay(points=50, shape=[1, 1, 0])
     gb = gabriel(delaunay=dn)
     print(gb.keys())
-    print(gb['coords'].shape)
-    print(gb['conns'].shape)
+    print(gb['node.coords'].shape)
+    print(gb['edge.conns'].shape)
     # Make a 3D network using points
     gb = gabriel(points=50, shape=[1, 1, 1])
     print(gb.keys())
-    print(gb['coords'].shape)
-    print(gb['conns'].shape)
+    print(gb['node.coords'].shape)
+    print(gb['edge.conns'].shape)
     # Make a 3D network based on a pre-existing delaunay network
     dn, tri = delaunay(points=50, shape=[1, 1, 1])
     gb = gabriel(delaunay=dn)
     print(gb.keys())
-    print(gb['coords'].shape)
-    print(gb['conns'].shape)
+    print(gb['node.coords'].shape)
+    print(gb['edge.conns'].shape)

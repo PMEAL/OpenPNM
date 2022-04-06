@@ -1,5 +1,6 @@
 import numpy as np
-from openpnm._skgraph.generators import cubic, tools
+from openpnm._skgraph.generators import cubic
+from openpnm._skgraph.operations import trim_nodes
 
 
 def cubic_template(template, spacing=1):
@@ -28,10 +29,10 @@ def cubic_template(template, spacing=1):
     coords = np.unravel_index(range(template.size), template.shape)
     coords = np.vstack(coords).T
     Np = coords.shape[0]
-    temp['template_coords'] = coords
-    temp['template_indices'] = np.arange(Np)
+    temp['node.template_coords'] = coords
+    temp['node.template_indices'] = np.arange(Np)
     # Trim pores not present in template
-    temp = tools.trim(network=temp, sites=~template.flatten())
+    temp = trim_nodes(g=temp, inds=~template.flatten())
     return temp
 
 

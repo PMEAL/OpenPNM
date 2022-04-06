@@ -1,6 +1,6 @@
 import logging
 import numpy as np
-from openpnm.network import GenericNetwork, Cubic
+from openpnm.network import GenericNetwork, Bravais
 from openpnm import topotools
 from openpnm.utils import Workspace, Docorator
 
@@ -38,56 +38,11 @@ class CubicDual(GenericNetwork):
     Bravais
 
     """
-    def __init__(self, shape, spacing=1, label_1='primary',
-                 label_2='secondary', **kwargs):
+    def __init__(self, shape, spacing=1, **kwargs):
         super().__init__(**kwargs)
-        spacing = np.array(spacing)
         shape = np.array(shape)
-        # Deal with non-3D shape arguments
-        shape = np.pad(shape, [0, 3-shape.size], mode='constant',
-                       constant_values=1)
-        net = Cubic(shape=shape, spacing=1)
-        net['throat.'+label_1] = True
-        net['pore.'+label_1] = True
-        single_dim = shape == 1
-        shape[single_dim] = 2
-        dual = Cubic(shape=shape-1, spacing=1)
-        faces = [['left', 'right'], ['front', 'back'], ['top', 'bottom']]
-        faces = [faces[i] for i in np.where(~single_dim)[0]]
-        faces = np.array(faces).flatten().tolist()
-        dual.add_boundary_pores(faces)
-        # Add secondary network name as a label
-        dual['pore.'+label_2] = True
-        dual['throat.'+label_2] = True
-        # Shift coordinates prior to stitching
-        dual['pore.coords'] += 0.5*(~single_dim)
-        topotools.stitch(net, dual, P_network=net.Ps, P_donor=dual.Ps,
-                         len_max=1)
-        net['throat.interconnect'] = net['throat.stitched']
-        del net['throat.stitched']
-        # Clean-up labels
-        net['pore.surface'] = False
-        net['throat.surface'] = False
-        for face in faces:
-            # Remove face label from secondary network since it's internal now
-            Ps = net.pores(labels=[face, label_2], mode='xnor')
-            net['pore.'+face][Ps] = False
-            Ps = net.pores(labels=[face+'_boundary'])
-            net['pore.'+face][Ps] = True
-            Ps = net.pores(face)
-            net['pore.surface'][Ps] = True
-            Ts = net.find_neighbor_throats(pores=Ps, mode='xnor')
-            net['throat.surface'][Ts] = True
-            net['throat.'+face] = net.to_mask(throats=Ts)
-        for item in net.labels():
-            if 'boundary' in item:
-                net.pop(item)
-        # Transfer all dictionary items from 'net' to 'self'
-        for item in net:
-            self.update({item: net[item]})
-        ws.close_project(net.project)
-        # Finally, scale network to requested spacing
-        net['pore.coords'] *= spacing
+        net = Bravais(shape=shape+1, mode='bcc')
+        Ps = net['pore.surface'] * net['pore.corner_sites']
 
     def add_boundary_pores(self, labels=['top', 'bottom', 'front', 'back',
                                          'left', 'right'], spacing=None):
