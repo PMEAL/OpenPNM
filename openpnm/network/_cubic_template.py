@@ -2,6 +2,7 @@ import logging
 import numpy as np
 from openpnm.network import Cubic
 from openpnm import topotools
+from openpnm._skgraph.operations import trim_nodes
 
 
 logger = logging.getLogger(__name__)
@@ -35,25 +36,6 @@ class CubicTemplate(Cubic):
     The other arguments are the same as ``Cubic`` except that ``shape`` is
     inferred from the ``template`` image.
 
-    Examples
-    --------
-    .. plot::
-
-       import openpnm as op
-       import matplotlib.pyplot as plt
-
-       im = op.topotools.template_cylinder_annulus(10, 15, 10)
-       pn = op.network.CubicTemplate(template=im)
-
-       # It can be plotted for quick visualization using
-       fig, ax = plt.subplots(figsize=(5, 5))
-       op.topotools.plot_connections(network=pn, ax=ax, linewidth=0.5)
-
-       plt.show()
-
-    For larger networks and more control over presentation use `Paraview
-    <http://www.paraview.org>`_.
-
     """
 
     def __init__(self, template, spacing=[1, 1, 1], **kwargs):
@@ -62,7 +44,8 @@ class CubicTemplate(Cubic):
         coords = np.unravel_index(range(template.size), template.shape)
         self['pore.template_coords'] = np.vstack(coords).T
         self['pore.template_indices'] = self.Ps
-        topotools.trim(network=self, pores=template.flatten() == 0)
+        trim_nodes(g=self, inds=template.flatten() == 0,
+                   node_prefix='pore', edge_prefix='throat')
         # Add "internal_surface" label to "fake" surface pores!
         ndims = topotools.dimensionality(self).sum()
         max_neighbors = 6 if ndims == 3 else 4

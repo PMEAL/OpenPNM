@@ -55,7 +55,7 @@ def fcc(shape, spacing=1, mode='kdtree', node_prefix='node', edge_prefix='edge')
 
     """
     from openpnm.topotools import tri_to_am
-    shape = np.array(shape) + 1
+    shape = np.array(shape)
     # Create base cubic network of corner sites
     net1 = cubic(shape=shape)
     # Create 3 networks to become face sites
@@ -98,7 +98,7 @@ def fcc(shape, spacing=1, mode='kdtree', node_prefix='node', edge_prefix='edge')
         am = sprs.triu(am, k=1)
         am = am.tocoo()
         conns = np.vstack((am.row, am.col)).T
-    conns = np.vstack((net1[edge_prefix+'.conns'], conns))
+    conns = np.vstack((net1['edge.conns'], conns))
 
     d = {}
     d[node_prefix+'.corner'] = corner_labels

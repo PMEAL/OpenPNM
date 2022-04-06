@@ -14,8 +14,8 @@ class BravaisTest:
         fcc = op.network.Bravais(shape=[3, 3, 3], mode='fcc')
         assert fcc.Np == 63
         assert fcc.Nt == 294
-        assert fcc.num_pores('pore.corner_sites') == 27
-        assert fcc.num_pores('pore.face_sites') == 36
+        assert fcc.num_pores('pore.corner') == 27
+        assert fcc.num_pores('pore.face') == 36
         assert fcc.num_throats('throat.corner_to_corner') == 54
         assert fcc.num_throats('throat.corner_to_face') == 240
 
@@ -34,8 +34,8 @@ class BravaisTest:
         bcc = op.network.Bravais(shape=[3, 3, 3], mode='bcc')
         assert bcc.Np == 35
         assert bcc.Nt == 130
-        assert bcc.num_pores('pore.corner_sites') == 27
-        assert bcc.num_pores('pore.body_sites') == 8
+        assert bcc.num_pores('pore.corner') == 27
+        assert bcc.num_pores('pore.body') == 8
         assert bcc.num_throats('throat.corner_to_corner') == 54
         assert bcc.num_throats('throat.corner_to_body') == 64
         assert bcc.num_throats('throat.body_to_body') == 12

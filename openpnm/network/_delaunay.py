@@ -1,13 +1,14 @@
-import logging
-from openpnm import topotools
-from openpnm.network import DelaunayVoronoiDual
+import numpy as np
+from openpnm.network import GenericNetwork
+from openpnm._skgraph.generators import delaunay, tools
+from openpnm._skgraph.tools import isoutside
+from openpnm._skgraph.operations import trim_nodes
 
 
-logger = logging.getLogger(__name__)
 __all__ = ['Delaunay']
 
 
-class Delaunay(DelaunayVoronoiDual):
+class Delaunay(GenericNetwork):
     r"""
     Random network formed by Delaunay tessellation of arbitrary base points
 
@@ -92,16 +93,12 @@ class Delaunay(DelaunayVoronoiDual):
 
     def __init__(self, shape=[1, 1, 1], points=None, **kwargs):
         # Clean-up input points
-        points = self._parse_points(shape=shape, points=points)
-        super().__init__(shape=shape, points=points, **kwargs)
-
-        # Initialize network object
-        topotools.trim(network=self, pores=self.pores(['voronoi']))
-        pop = ['pore.voronoi', 'throat.voronoi', 'throat.interconnect',
-               'pore.delaunay', 'throat.delaunay']
-        for item in pop:
-            del self[item]
-
-        # Trim additional pores that are missed by the parent class's trimming
-        Ps = topotools.isoutside(coords=self['pore.coords'], shape=shape)
-        topotools.trim(network=self, pores=Ps)
+        points = tools.parse_points(shape=shape, points=points)
+        net = delaunay(points=points, shape=shape,
+                       node_prefix='pore', edge_prefix='throat')
+        Ps = isoutside(coords=self['pore.coords'], shape=shape)
+        net = trim_nodes(network=net, inds=Ps,
+                         node_prefix='pore', edge_prefix='throat')
+        self.update(net)
+        self['pore.all'] = np.ones(self['pore.coords'].shape[0], dtype=bool)
+        self['throat.all'] = np.ones(self['throat.conns'].shape[0], dtype=bool)

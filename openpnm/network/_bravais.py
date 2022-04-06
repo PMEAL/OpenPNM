@@ -78,41 +78,37 @@ class Bravais(GenericNetwork):
             raise Exception('Bravais lattice networks must have at least 2 '
                             'pores in all directions')
         if mode == 'bcc':
-            net = bcc(shape=shape, spacing=spacing)
-            self['pore.coords'] = net['node.coords']
-            self['throat.conns'] = net['edge.conns']
-            self['pore.all'] = np.ones(net['node.coords'].shape[0], dtype=bool)
-            self['throat.all'] = np.ones(net['edge.conns'].shape[0], dtype=bool)
+            net = bcc(shape=shape, spacing=spacing,
+                      node_prefix='pore', edge_prefix='throat')
+            self.update(net)
+            self['pore.all'] = np.ones(self['pore.coords'].shape[0], dtype=bool)
+            self['throat.all'] = np.ones(self['throat.conns'].shape[0], dtype=bool)
             # Deal with labels
-            self['pore.corner_sites'] = net['node.corner']
-            self['pore.body_sites'] = net['node.body']
-            Ts = self.find_neighbor_throats(pores=self.pores('body_sites'),
+            Ts = self.find_neighbor_throats(pores=self.pores('body'),
                                             mode='exclusive_or')
             self['throat.corner_to_body'] = False
             self['throat.corner_to_body'][Ts] = True
-            Ts = self.find_neighbor_throats(pores=self.pores('corner_sites'),
+            Ts = self.find_neighbor_throats(pores=self.pores('corner'),
                                             mode='xnor')
             self['throat.corner_to_corner'] = False
             self['throat.corner_to_corner'][Ts] = True
-            Ts = self.find_neighbor_throats(pores=self.pores('body_sites'),
+            Ts = self.find_neighbor_throats(pores=self.pores('body'),
                                             mode='xnor')
             self['throat.body_to_body'] = False
             self['throat.body_to_body'][Ts] = True
 
         elif mode == 'fcc':
-            net = fcc(shape=shape, spacing=spacing)
-            self['pore.coords'] = net['node.coords']
-            self['throat.conns'] = net['edge.conns']
-            self['pore.all'] = np.ones(net['node.coords'].shape[0], dtype=bool)
-            self['throat.all'] = np.ones(net['edge.conns'].shape[0], dtype=bool)
+            net = fcc(shape=shape, spacing=spacing,
+                      node_prefix='pore', edge_prefix='throat')
+            self.update(net)
+            self['pore.all'] = np.ones(self['pore.coords'].shape[0], dtype=bool)
+            self['throat.all'] = np.ones(self['throat.conns'].shape[0], dtype=bool)
             # Deal with labels
-            self['pore.face_sites'] = net['node.face']
-            self['pore.corner_sites'] = net['node.corner']
-            Ts = self.find_neighbor_throats(pores=self.pores('corner_sites'),
+            Ts = self.find_neighbor_throats(pores=self.pores('corner'),
                                             mode='xnor')
             self['throat.corner_to_corner'] = False
             self['throat.corner_to_corner'][Ts] = True
-            Ts = self.find_neighbor_throats(pores=self.pores('face_sites'))
+            Ts = self.find_neighbor_throats(pores=self.pores('face'))
             self['throat.corner_to_face'] = False
             self['throat.corner_to_face'][Ts] = True
 
@@ -120,11 +116,11 @@ class Bravais(GenericNetwork):
             raise NotImplementedError('hcp is not implemented yet')
 
         elif mode == 'sc':
-            net = cubic(shape=shape, spacing=1)
-            self['pore.coords'] = net['node.coords']
-            self['throat.conns'] = net['edge.conns']
-            self['pore.all'] = np.ones(net['node.coords'].shape[0], dtype=bool)
-            self['throat.all'] = np.ones(net['edge.conns'].shape[0], dtype=bool)
+            net = cubic(shape=shape, spacing=1,
+                        node_prefix='pore', edge_prefix='throat')
+            self.update(net)
+            self['pore.all'] = np.ones(self['pore.coords'].shape[0], dtype=bool)
+            self['throat.all'] = np.ones(self['throat.conns'].shape[0], dtype=bool)
             self['pore.corner_sites'] = True
             self['throat.corner_to_corner'] = True
 

@@ -49,8 +49,8 @@ def bcc(shape, spacing=1, mode='kdtree', node_prefix='node', edge_prefix='edge')
     from openpnm.topotools import tri_to_am
     shape = np.array(shape)
     spacing = np.array(spacing)
-    net1 = cubic(shape=shape+1, spacing=1)
-    net2 = cubic(shape=shape, spacing=1)
+    net1 = cubic(shape=shape, spacing=1)
+    net2 = cubic(shape=shape-1, spacing=1)
     net2['node.coords'] += 0.5
     crds = np.concatenate((net1['node.coords'], net2['node.coords']))
     corner_label = np.concatenate(
