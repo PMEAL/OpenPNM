@@ -4,7 +4,7 @@ from openpnm._skgraph.generators import cubic
 import numpy as np
 
 
-def bcc(shape, spacing=1, mode='kdtree'):
+def bcc(shape, spacing=1, mode='kdtree', node_prefix='node', edge_prefix='edge'):
     r"""
     Generate a body-centered cubic lattice
 
@@ -18,21 +18,30 @@ def bcc(shape, spacing=1, mode='kdtree'):
         applied in all 3 directions.
     mode : str
         Dictate how neighbors are found.  Options are:
-            ===============  =====================================================
-            mode             meaning
-            ===============  =====================================================
-            'kdtree'         Uses ``scipy.spatial.KDTree`` to find all neighbors
-                             within the unit cell.
-            'triangulation'  Uses ``scipy.spatial.Delaunay`` to find all neighbors.
-            ===============  =====================================================
+
+        ===============  =====================================================
+        mode             meaning
+        ===============  =====================================================
+        'kdtree'         Uses ``scipy.spatial.KDTree`` to find all neighbors
+                         within the unit cell.
+        'triangulation'  Uses ``scipy.spatial.Delaunay`` to find all neighbors.
+        ===============  =====================================================
+
+    node_prefix : str, optional
+        If a custom prefix is used to indicate node arrays, such as ('site', or
+        'vertex') it can be specified here.  The defaul it 'node'.
+    edge_prefix : str, optional
+        If a custom prefix is used to indicate site arrays, such as ('bond', or
+        'link') it can be specified here.  The defaul it 'edge'.
+
     Returns
     -------
     network : dict
-        A dictionary containing 'vert.coords' and 'edge.conns'
+        A dictionary containing 'coords' and 'conns'
 
     Notes
     -----
-    It is not clear whether KDTree of Delaunay are faster. In fact it is
+    It is not clear whether KDTree or Delaunay are faster. In fact it is
     surely possible to find the neighbors formulaically but this is not
     implemented yet.
 
@@ -44,10 +53,12 @@ def bcc(shape, spacing=1, mode='kdtree'):
     net2 = cubic(shape=shape, spacing=1)
     net2['node.coords'] += 0.5
     crds = np.concatenate((net1['node.coords'], net2['node.coords']))
-    corner_label = np.concatenate((np.ones(net1['node.coords'].shape[0], dtype=bool),
-                                   np.zeros(net2['node.coords'].shape[0], dtype=bool)))
-    body_label = np.concatenate((np.zeros(net1['node.coords'].shape[0], dtype=bool),
-                                 np.ones(net2['node.coords'].shape[0], dtype=bool)))
+    corner_label = np.concatenate(
+        (np.ones(net1['node.coords'].shape[0], dtype=bool),
+         np.zeros(net2['node.coords'].shape[0], dtype=bool)))
+    body_label = np.concatenate(
+        (np.zeros(net1['node.coords'].shape[0], dtype=bool),
+         np.ones(net2['node.coords'].shape[0], dtype=bool)))
     if mode.startswith('tri'):
         tri = sptl.Delaunay(points=crds)
         am = tri_to_am(tri)
@@ -73,10 +84,10 @@ def bcc(shape, spacing=1, mode='kdtree'):
         conns = np.vstack((am.row, am.col)).T
 
     d = {}
-    d['node.corner'] = corner_label
-    d['node.body'] = body_label
-    d['node.coords'] = crds*spacing
-    d['edge.conns'] = conns
+    d[node_prefix+'.corner'] = corner_label
+    d[node_prefix+'.body'] = body_label
+    d[node_prefix+'.coords'] = crds*spacing
+    d[edge_prefix+'.conns'] = conns
     return d
 
 

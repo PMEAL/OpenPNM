@@ -11,7 +11,7 @@ def len_lil(lil):
     return indptr
 
 
-def fcc(shape, spacing=1, mode='kdtree'):
+def fcc(shape, spacing=1, mode='kdtree', node_prefix='node', edge_prefix='edge'):
     r"""
     Generate a face-centered cubic lattice
 
@@ -26,18 +26,26 @@ def fcc(shape, spacing=1, mode='kdtree'):
     mode : str
         Dictate how neighbors are found.  Options are:
 
-            ===============  =====================================================
-            mode             meaning
-            ===============  =====================================================
-            'kdtree'         Uses ``scipy.spatial.KDTree`` to find all neighbors
-                             within the unit cell.
-            'triangulation'  Uses ``scipy.spatial.Delaunay`` to find all neighbors.
-            ===============  =====================================================
+        ===============  =====================================================
+        mode             meaning
+        ===============  =====================================================
+        'kdtree'         Uses ``scipy.spatial.KDTree`` to find all neighbors
+                         within the unit cell.
+        'triangulation'  Uses ``scipy.spatial.Delaunay`` to find all neighbors.
+        ===============  =====================================================
+
+    node_prefix : str, optional
+        If a custom prefix is used to indicate node arrays, such as ('site', or
+        'vertex') it can be specified here.  The defaul it 'node'.
+    edge_prefix : str, optional
+        If a custom prefix is used to indicate site arrays, such as ('bond', or
+        'link') it can be specified here.  The defaul it 'edge'.
+
 
     Returns
     -------
     network : dict
-        A dictionary containing 'vert.coords' and 'edge.conns'
+        A dictionary containing 'coords' and 'conns'
 
     Notes
     -----
@@ -62,10 +70,11 @@ def fcc(shape, spacing=1, mode='kdtree'):
                            net2['node.coords'],
                            net3['node.coords'],
                            net4['node.coords']))
-    corner_labels = np.concatenate((np.ones(net1['node.coords'].shape[0], dtype=bool),
-                                    np.zeros(net2['node.coords'].shape[0], dtype=bool),
-                                    np.zeros(net3['node.coords'].shape[0], dtype=bool),
-                                    np.zeros(net4['node.coords'].shape[0], dtype=bool)))
+    corner_labels = np.concatenate(
+        (np.ones(net1['node.coords'].shape[0], dtype=bool),
+         np.zeros(net2['node.coords'].shape[0], dtype=bool),
+         np.zeros(net3['node.coords'].shape[0], dtype=bool),
+         np.zeros(net4['node.coords'].shape[0], dtype=bool)))
     if mode.startswith('tri'):
         tri = sptl.Delaunay(points=crds)
         am = tri_to_am(tri)
@@ -89,13 +98,13 @@ def fcc(shape, spacing=1, mode='kdtree'):
         am = sprs.triu(am, k=1)
         am = am.tocoo()
         conns = np.vstack((am.row, am.col)).T
-    conns = np.vstack((net1['edge.conns'], conns))
+    conns = np.vstack((net1[edge_prefix+'.conns'], conns))
 
     d = {}
-    d['node.corner'] = corner_labels
-    d['node.face'] = ~corner_labels
-    d['node.coords'] = crds*spacing
-    d['edge.conns'] = conns
+    d[node_prefix+'.corner'] = corner_labels
+    d[node_prefix+'.face'] = ~corner_labels
+    d[node_prefix+'.coords'] = crds*spacing
+    d[edge_prefix+'.conns'] = conns
     return d
 
 

@@ -2,7 +2,7 @@ import scipy.spatial as sptl
 import numpy as np
 
 
-def voronoi(points, shape=[1, 1, 1]):
+def voronoi(points, shape=[1, 1, 1], node_prefix='node', edge_prefix='edge'):
     r"""
     Generate a network based on a Voronoi tessellation of base points
 
@@ -13,6 +13,12 @@ def voronoi(points, shape=[1, 1, 1]):
         or a scalar value indicating the number of points to generate.
     shape : array_like
         Indicates the size and shape of the domain.
+    node_prefix : str, optional
+        If a custom prefix is used to indicate node arrays, such as ('site', or
+        'vertex') it can be specified here.  The defaul it 'node'.
+    edge_prefix : str, optional
+        If a custom prefix is used to indicate site arrays, such as ('bond', or
+        'link') it can be specified here.  The defaul it 'edge'.
 
     Returns
     -------
@@ -33,14 +39,14 @@ def voronoi(points, shape=[1, 1, 1]):
     # Write values to dictionary
     d = {}
     conns = np.vstack((coo.row, coo.col)).T
-    d['edge.conns'] = conns
+    d[edge_prefix+'.conns'] = conns
     if np.any(mask == False):
         verts = np.zeros([np.shape(vor.vertices)[0], 3])
         for i, col in enumerate(np.where(mask)[0]):
             verts[:, col] = vor.vertices[:, i]
     else:
         verts = np.copy(vor.vertices)
-    d['node.coords'] = verts
+    d[node_prefix+'.coords'] = verts
 
     return d, vor
 

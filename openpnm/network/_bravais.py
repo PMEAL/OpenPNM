@@ -79,13 +79,13 @@ class Bravais(GenericNetwork):
                             'pores in all directions')
         if mode == 'bcc':
             net = bcc(shape=shape, spacing=spacing)
-            self['pore.coords'] = net['coords']
-            self['throat.conns'] = net['conns']
-            self['pore.all'] = np.ones(net['coords'].shape[0], dtype=bool)
-            self['throat.all'] = np.ones(net['conns'].shape[0], dtype=bool)
+            self['pore.coords'] = net['node.coords']
+            self['throat.conns'] = net['edge.conns']
+            self['pore.all'] = np.ones(net['node.coords'].shape[0], dtype=bool)
+            self['throat.all'] = np.ones(net['edge.conns'].shape[0], dtype=bool)
             # Deal with labels
-            self['pore.corner_sites'] = net['site.corner']
-            self['pore.body_sites'] = net['site.body']
+            self['pore.corner_sites'] = net['node.corner']
+            self['pore.body_sites'] = net['node.body']
             Ts = self.find_neighbor_throats(pores=self.pores('body_sites'),
                                             mode='exclusive_or')
             self['throat.corner_to_body'] = False
@@ -101,13 +101,13 @@ class Bravais(GenericNetwork):
 
         elif mode == 'fcc':
             net = fcc(shape=shape, spacing=spacing)
-            self['pore.coords'] = net['coords']
-            self['throat.conns'] = net['conns']
-            self['pore.all'] = np.ones(net['coords'].shape[0], dtype=bool)
-            self['throat.all'] = np.ones(net['conns'].shape[0], dtype=bool)
+            self['pore.coords'] = net['node.coords']
+            self['throat.conns'] = net['edge.conns']
+            self['pore.all'] = np.ones(net['node.coords'].shape[0], dtype=bool)
+            self['throat.all'] = np.ones(net['edge.conns'].shape[0], dtype=bool)
             # Deal with labels
-            self['pore.face_sites'] = net['site.face']
-            self['pore.corner_sites'] = net['site.corner']
+            self['pore.face_sites'] = net['node.face']
+            self['pore.corner_sites'] = net['node.corner']
             Ts = self.find_neighbor_throats(pores=self.pores('corner_sites'),
                                             mode='xnor')
             self['throat.corner_to_corner'] = False
@@ -121,10 +121,10 @@ class Bravais(GenericNetwork):
 
         elif mode == 'sc':
             net = cubic(shape=shape, spacing=1)
-            self['pore.coords'] = net['coords']
-            self['throat.conns'] = net['conns']
-            self['pore.all'] = np.ones(net['coords'].shape[0], dtype=bool)
-            self['throat.all'] = np.ones(net['conns'].shape[0], dtype=bool)
+            self['pore.coords'] = net['node.coords']
+            self['throat.conns'] = net['edge.conns']
+            self['pore.all'] = np.ones(net['node.coords'].shape[0], dtype=bool)
+            self['throat.all'] = np.ones(net['edge.conns'].shape[0], dtype=bool)
             self['pore.corner_sites'] = True
             self['throat.corner_to_corner'] = True
 

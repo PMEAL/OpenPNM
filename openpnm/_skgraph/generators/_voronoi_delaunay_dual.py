@@ -1,9 +1,12 @@
 import scipy.spatial as sptl
 import scipy.sparse as sprs
 import numpy as np
+from openpnm._skgraph.generators import tools
+from openpnm._skgraph.operations import trim_nodes
+from openpnm.topotools import isoutside, conns_to_am
 
 
-def voronoi_delaunay_dual(points, shape, crop=False):
+def voronoi_delaunay_dual(points, shape, crop=False, node_prefix='node', edge_prefix='edge'):
     r"""
     Generate a dual Voronoi-Delaunay network from given base points
 
@@ -17,6 +20,12 @@ def voronoi_delaunay_dual(points, shape, crop=False):
     crop : bool, optional (default is ``False``)
         If ``True`` then all points lying beyond the given domain shape will
         be removed
+    node_prefix : str, optional
+        If a custom prefix is used to indicate node arrays, such as ('site', or
+        'vertex') it can be specified here.  The defaul it 'node'.
+    edge_prefix : str, optional
+        If a custom prefix is used to indicate site arrays, such as ('bond', or
+        'link') it can be specified here.  The defaul it 'edge'.
 
     Returns
     -------
@@ -28,8 +37,6 @@ def voronoi_delaunay_dual(points, shape, crop=False):
         The Delaunay triangulation object produced ``scipy.spatial.Delaunay``
 
     """
-    from openpnm.topotools import isoutside, conns_to_am
-    from openpnm._skimage.generators import tools
     # Generate a set of base points if number was given
     points = tools.parse_points(points=points, shape=shape)
     mask = ~np.all(points == 0, axis=0)
@@ -83,13 +90,13 @@ def voronoi_delaunay_dual(points, shape, crop=False):
 
     # Assign coords and conns to network dict
     network = {}
-    network['coords'] = verts
-    network['conns'] = conns
+    network[node_prefix+'.coords'] = verts
+    network[edge_prefix+'.conns'] = conns
 
     # Identify and trim pores outside the domain if requested
     if crop:
         Ps = isoutside(verts, shape=shape)
-        network = tools.trim(network=network, sites=np.where(Ps)[0])
+        network = trim_nodes(g=network, inds=np.where(Ps)[0])
 
     return network, vor, tri
 
@@ -97,9 +104,9 @@ def voronoi_delaunay_dual(points, shape, crop=False):
 if __name__ == "__main__":
     dvd, vor, tri = voronoi_delaunay_dual(points=50, shape=[1, 0, 1])
     print(dvd.keys())
-    print(dvd['coords'].shape)
-    print(dvd['conns'].shape)
+    print(dvd['node.coords'].shape)
+    print(dvd['edge.conns'].shape)
     dvd, vor, tri = voronoi_delaunay_dual(points=50, shape=[1, 0, 1], crop=True)
     print(dvd.keys())
-    print(dvd['coords'].shape)
-    print(dvd['conns'].shape)
+    print(dvd['node.coords'].shape)
+    print(dvd['edge.conns'].shape)

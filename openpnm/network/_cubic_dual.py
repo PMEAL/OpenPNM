@@ -44,6 +44,7 @@ class CubicDual(GenericNetwork):
         net = Bravais(shape=shape+1, mode='bcc')
         Ps = net['pore.surface'] * net['pore.corner_sites']
 
+
     def add_boundary_pores(self, labels=['top', 'bottom', 'front', 'back',
                                          'left', 'right'], spacing=None):
         r"""

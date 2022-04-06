@@ -3,7 +3,8 @@ import scipy.spatial as sptl
 import numpy as np
 
 
-def gabriel(points=None, delaunay=None, shape=None):
+def gabriel(points=None, delaunay=None, shape=None,
+            node_prefix='node', edge_prefix='edge'):
     r"""
     Generate a network based on a Gabriel tessellation, which is a subset of
     the Delaunay triangulation
@@ -20,6 +21,12 @@ def gabriel(points=None, delaunay=None, shape=None):
         ignored.
     shape : array_like
         Indicates the size and shape of the domain
+    node_prefix : str, optional
+        If a custom prefix is used to indicate node arrays, such as ('site', or
+        'vertex') it can be specified here.  The defaul it 'node'.
+    edge_prefix : str, optional
+        If a custom prefix is used to indicate site arrays, such as ('bond', or
+        'link') it can be specified here.  The defaul it 'edge'.
 
     Returns
     -------
@@ -43,8 +50,8 @@ def gabriel(points=None, delaunay=None, shape=None):
     d = {}
     d.update(delaunay)
     # Reduce the connectivity to all True values found in g
-    d['edge.conns'] = delaunay['edge.conns'][g]
-    d['node.coords'] = delaunay['node.coords']
+    d[edge_prefix+'.conns'] = delaunay['edge.conns'][g]
+    d[node_prefix+'.coords'] = delaunay['node.coords']
     return d
 
 

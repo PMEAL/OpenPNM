@@ -9,6 +9,7 @@ from scipy.sparse import csgraph
 # Once a function has been stripped of all its OpenPNM dependent code it
 # can be added to this list of functions to import
 __all__ = [
+    'change_prefix',
     'isoutside',
     'rotate_coords',
     'shear_coords',
@@ -19,6 +20,14 @@ __all__ = [
     'site_to_site_distance',
     'hull_centroid',
 ]
+
+
+def change_prefix(g, old_prefix, new_prefix):
+    for item in g.keys():
+        if item.startswith(old_prefix):
+            key = item.split('.')[1:]
+            g[new_prefix + '.' + key] = g.pop(item)
+    return g
 
 
 def isoutside(coords, shape):

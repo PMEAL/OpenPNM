@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def cubic(shape, spacing=1, connectivity=6):
+def cubic(shape, spacing=1, connectivity=6, node_prefix='node', edge_prefix='edge'):
     r"""
     Generate a simple cubic lattice
 
@@ -73,8 +73,8 @@ def cubic(shape, spacing=1, connectivity=6):
     pairs = np.sort(pairs, axis=1)
 
     d = {}
-    d['node.coords'] = points * spacing
-    d['edge.conns'] = pairs
+    d[node_prefix+'.coords'] = points * spacing
+    d[edge_prefix+'.conns'] = pairs
     return d
 
 

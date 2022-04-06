@@ -2,7 +2,7 @@ import numpy as np
 import scipy.spatial as sptl
 
 
-def delaunay(points, shape=[1, 1, 1]):
+def delaunay(points, shape=[1, 1, 1], node_prefix='node', edge_prefix='edge'):
     r"""
     Generate a network based on Delaunay triangulation of random points
 
@@ -28,8 +28,8 @@ def delaunay(points, shape=[1, 1, 1]):
     tri = sptl.Delaunay(points=points[:, mask])
     coo = tri_to_am(tri)
     d = {}
-    d['node.coords'] = points
-    d['edge.conns'] = np.vstack((coo.row, coo.col)).T
+    d[node_prefix+'.coords'] = points
+    d[edge_prefix+'.conns'] = np.vstack((coo.row, coo.col)).T
     return d, tri
 
 
