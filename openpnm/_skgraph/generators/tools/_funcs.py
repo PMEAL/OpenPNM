@@ -4,6 +4,7 @@ Tools
 
 """
 import numpy as np
+from openpnm._skgraph import settings
 
 
 __all__ = [
@@ -31,19 +32,21 @@ def parse_points(shape, points, reflect=False):
     return points
 
 
-def get_spacing(network):
+def get_spacing(coords, conns):
     r"""
     Determine spacing of a cubic network
 
     Parameters
     ----------
-    network : dictionary
-        A network dictionary containing 'vert.coords' and 'edge.conns'
+    coords : ndarray
+        The x,y,z, location of each node
+    conns : ndarray
+        The pore1-pore2 connections for each throat
 
     Returns
     -------
     spacing : ndarray
-        An array containing the spacing between vertices in each direction
+        An array containing the spacing between nodes in each direction
 
     Notes
     -----
@@ -55,12 +58,11 @@ def get_spacing(network):
     """
     from openpnm.topotools import dimensionality
     # Find Network spacing
-    P12 = network["edge.conns"]
-    C12 = network["vert.coords"][P12]
+    C12 = coords[conns]
     mag = np.linalg.norm(np.diff(C12, axis=1), axis=2)
     unit_vec = np.around(np.squeeze(np.diff(C12, axis=1)) / mag, decimals=14)
     spacing = [0, 0, 0]
-    dims = dimensionality(coords=network['vert.coords'])
+    dims = dimensionality(coords=coords)
     # Ensure vectors point in n-dims unique directions
     c = {tuple(row): 1 for row in unit_vec}
     mag = np.atleast_1d(mag.squeeze()).astype(float)
@@ -79,53 +81,63 @@ def get_spacing(network):
     return np.array(spacing)
 
 
-def get_shape(network):
-    L = np.ptp(network["vert.coords"], axis=0)
+def get_shape(coords, conns):
+    L = np.ptp(coords, axis=0)
     mask = L.astype(bool)
-    S = get_spacing(network)
+    S = get_spacing(coords, conns)
     shape = np.array([1, 1, 1], int)
     shape[mask] = L[mask] / S[mask] + 1
     return shape
 
 
-def add_all_label(network):
-    network['pore.all'] = np.ones(network['pore.coords'].shape[0], dtype=bool)
-    network['throat.all'] = np.ones(network['throat.conns'].shape[0], dtype=bool)
-    return network
+def add_all_label(coords, conns):
+    d = {}
+    d['pore.all'] = np.ones(coords.shape[0], dtype=bool)
+    d['throat.all'] = np.ones(conns.shape[0], dtype=bool)
+    return d
 
 
-def label_surface_nodes(network):
+def label_surface_nodes(coords):
     r"""
     """
-    from openpnm.topotools import dimensionality
-    hits = np.zeros_like(network.Ps, dtype=bool)
-    dims = dimensionality(network)
-    mn = np.amin(network["vert.coords"], axis=0)
-    mx = np.amax(network["vert.coords"], axis=0)
+    from openpnm._skimage.tools import dimensionality
+
+    node_prefix = settings.node_prefix
+
+    dims = dimensionality(coords)
+    hits = np.zeros_like(coords.shape[0], dtype=bool)
+    mn = np.amin(coords, axis=0)
+    mx = np.amax(coords, axis=0)
     for ax in np.where(dims)[0]:
         if dims[ax]:
-            hits += network["vert.coords"][:, ax] <= mn[ax]
-            hits += network["vert.coords"][:, ax] >= mx[ax]
-    network["vert.surface"] = hits
-    return network
+            hits += coords[:, ax] <= mn[ax]
+            hits += coords[:, ax] >= mx[ax]
+    d = {node_prefix + '.surface': hits}
+    return d
 
 
-def label_faces(network, threshold=0.05):
+def label_faces(coords, threshold=0.05):
     r"""
     Label the vertices sitting on the faces of the domain in accordance with
     the conventions used for cubic etc.
     """
-    from openpnm.topotools import dimensionality
-    dims = dimensionality(network)
-    coords = np.around(network['vert.coords'], decimals=10)
+    from openpnm._skimage.tools import dimensionality
+
+    node_prefix = settings.node_prefix
+
+    dims = dimensionality(coords)
+    coords = np.around(coords, decimals=10)
     min_labels = ['front', 'left', 'bottom']
     max_labels = ['back', 'right', 'top']
     min_coords = np.amin(coords, axis=0)
     max_coords = np.amax(coords, axis=0)
+    d = {}
     for ax in np.where(dims)[0]:
-        network['vert.' + min_labels[ax]] = coords[:, ax] <= threshold*min_coords[ax]
-        network['vert.' + max_labels[ax]] = coords[:, ax] >= (1-threshold)*max_coords[ax]
-    return network
+        d[node_prefix + '.' + min_labels[ax]] = \
+            coords[:, ax] <= threshold*min_coords[ax]
+        d[node_prefix + '.' + max_labels[ax]] = \
+            coords[:, ax] >= (1-threshold)*max_coords[ax]
+    return d
 
 
 def _template_sphere_disc(dim, outer_radius, inner_radius):
@@ -233,14 +245,14 @@ def template_cylinder_annulus(height, outer_radius, inner_radius=0):
     return img
 
 
-def reflect_base_points(base_pts, domain_size):
+def reflect_base_points(points, domain_size):
     r"""
     Helper function for relecting a set of points about the faces of a
     given domain.
 
     Parameters
     ----------
-    base_pts : array_like
+    points : array_like
         The coordinates of the base_pts to be reflected in the coordinate
         system corresponding to the the domain as follows:
 
@@ -250,36 +262,27 @@ def reflect_base_points(base_pts, domain_size):
     domain_size : list or array
         Controls the size and shape of the domain, as follows:
 
-        **sphere** : If a single value is received, its treated as the radius
-        [r] of a sphere centered on [0, 0, 0].
-
-        **cylinder** : If a two-element list is received it's treated as the
-        radius and height of a cylinder [r, z] positioned at [0, 0, 0] and
-        extending in the positive z-direction.  If the z dimension is 0, a
-        disk of radius r is created.
-
-        **rectangle** : If a three element list is received, it's treated
-        as the outer corner of rectangle [x, y, z] whose opposite corner lies
-        at [0, 0, 0].  If the z dimension is 0, a rectangle of size X-by-Y is
-        created.
-
-    Notes
-    -----
-    The base points can be either [N x 3] or [3 x N].  There transposed internally
-    as needed and returned to the original shape.  If N=3 then the transposing is
-    skipped so the user needs to ensure the the form of [3 x N].
+        ========== ============================================================
+        shape      result
+        ========== ============================================================
+        [x, y, z]  A 3D cubic domain of dimension x, y and z
+        [x, y, 0]  A 2D square domain of size x by y
+        [r, z]     A 3D cylindrical domain of radius r and height z
+        [r, 0]     A 2D circular domain of radius r
+        [r]        A 3D spherical domain of radius r
+        ========== ============================================================
 
     """
     domain_size = np.array(domain_size)
     if len(domain_size) == 1:
-        r, theta, phi = base_pts
+        r, theta, phi = points
         new_r = 2*domain_size[0] - r
         r = np.hstack([r, new_r])
         theta = np.hstack([theta, theta])
         phi = np.hstack([phi, phi])
-        base_pts = np.vstack((r, theta, phi))
+        points = np.vstack((r, theta, phi))
     if len(domain_size) == 2:
-        r, theta, z = base_pts
+        r, theta, z = points
         new_r = 2*domain_size[0] - r
         r = np.hstack([r, new_r])
         theta = np.hstack([theta, theta])
@@ -288,27 +291,25 @@ def reflect_base_points(base_pts, domain_size):
             r = np.hstack([r, r, r])
             theta = np.hstack([theta, theta, theta])
             z = np.hstack([z, -z, 2*domain_size[1]-z])
-        base_pts = np.vstack((r, theta, z))
+        points = np.vstack((r, theta, z))
     elif len(domain_size) == 3:
         Nx, Ny, Nz = domain_size
         # Reflect base points about all 6 faces
-        orig_pts = base_pts
-        base_pts = np.vstack((base_pts,
-                              [-1, 1, 1] * orig_pts + [2.0 * Nx, 0, 0]))
-        base_pts = np.vstack((base_pts, [-1, 1, 1] * orig_pts))
-        base_pts = np.vstack((base_pts,
-                              [1, -1, 1] * orig_pts + [0, 2.0 * Ny, 0]))
-        base_pts = np.vstack((base_pts, [1, -1, 1] * orig_pts))
+        orig_pts = points
+        points = np.vstack((points,
+                            [-1, 1, 1] * orig_pts + [2.0 * Nx, 0, 0]))
+        points = np.vstack((points, [-1, 1, 1] * orig_pts))
+        points = np.vstack((points,
+                            [1, -1, 1] * orig_pts + [0, 2.0 * Ny, 0]))
+        points = np.vstack((points, [1, -1, 1] * orig_pts))
         if domain_size[2] != 0:
-            base_pts = np.vstack((base_pts,
-                                  [1, 1, -1] * orig_pts + [0, 0, 2.0 * Nz]))
-            base_pts = np.vstack((base_pts, [1, 1, -1] * orig_pts))
-    return base_pts
+            points = np.vstack((points,
+                               [1, 1, -1] * orig_pts + [0, 0, 2.0 * Nz]))
+            points = np.vstack((points, [1, 1, -1] * orig_pts))
+    return points
 
 
-
-def generate_base_points(num_points, domain_size, density_map=None,
-                         reflect=True):
+def generate_base_points(num_points, domain_size, reflect=True):
     r"""
     Generates a set of base points for passing into the Tessellation-based
     Network classes.  The points can be distributed in spherical, cylindrical,
@@ -323,69 +324,29 @@ def generate_base_points(num_points, domain_size, density_map=None,
     domain_size : list or array
         Controls the size and shape of the domain, as follows:
 
-        **sphere** : If a single value is received, its treated as the radius
-        [r] of a sphere centered on [0, 0, 0].
+        ========== ============================================================
+        shape      result
+        ========== ============================================================
+        [x, y, z]  A 3D cubic domain of dimension x, y and z
+        [x, y, 0]  A 2D square domain of size x by y
+        [r, z]     A 3D cylindrical domain of radius r and height z
+        [r, 0]     A 2D circular domain of radius r
+        [r]        A 3D spherical domain of radius r
+        ========== ============================================================
 
-        **cylinder** : If a two-element list is received it's treated as the
-        radius and height of a cylinder [r, z] positioned at [0, 0, 0] and
-        extending in the positive z-direction.  If the z dimension is 0, a
-        disk of radius r is created.
-
-        **rectangle** : If a three element list is received, it's treated
-        as the outer corner of rectangle [x, y, z] whose opposite corner lies
-        at [0, 0, 0].  If the z dimension is 0, a rectangle of size X-by-Y is
-        created.
-    density_map : array, optional
-        A an array that contains fractional values (0 < i < 1) indicating the
-        liklihood that a point in that region should be kept.  The size of this
-        array can be anything, but the shape must match the ``domain_size``;
-        that is for a 3D network the shape of the ``density_map`` can be
-        [10, 10, 10] or [50, 50, 50], depending on how important the resolution
-        of the density distribution is.  For a 2D network the ``density_map``
-        should be [10, 10].
-
-        When specifying a custom probabiliy map is it recommended to also set
-        values outside the given domain to zero.  If not, then the correct
-        shape will still be returned, but with too few points in it.
     reflect : bool
-        If ``True``, the the base points are generated as specified, the reflected
+        If ``True``, the base points are generated as specified then reflected
         about each face of the domain.  This essentially tricks the
-        tessellation functions into creating smoothfaces at the
-        boundaries once these excess pores are trimmed.
+        tessellation functions into creating smooth faces at the
+        boundaries once these excess points are trimmed.
 
     Notes
     -----
-    The reflection approach tends to create larger pores near the surfaces, so
-    it might be necessary to use the ``density_map`` argument to specify a
-    slightly higher density of points near the surfaces.
-
     The ``Voronoi``, ``Delaunay``, ``Gabriel``, and ``DelunayVoronoiDual``
     classes can *techncially* handle base points with spherical or cylindrical
     domains, but the reflection across round surfaces does not create perfect
     Voronoi cells so the surfaces will not be smooth.
 
-
-    Examples
-    --------
-    The following generates a spherical array with higher values near the core.
-    It uses a distance transform to create a sphere of radius 10, then a
-    second distance transform to create larger values in the center away from
-    the sphere surface.  These distance values could be further skewed by
-    applying a power, with values higher than 1 resulting in higher values in
-    the core, and fractional values smoothinging them out a bit.
-
-    >>> import openpnm as op
-    >>> import scipy as sp
-    >>> import scipy.ndimage as spim
-    >>> im = np.ones([21, 21, 21], dtype=int)
-    >>> im[10, 10, 10] = 0
-    >>> im = spim.distance_transform_edt(im) <= 20  # Create sphere of 1's
-    >>> prob = spim.distance_transform_edt(im)
-    >>> prob = prob / np.amax(prob)  # Normalize between 0 and 1
-    >>> pts = op.topotools.generate_base_points(num_points=50,
-    ...                                         domain_size=[1, 1, 1],
-    ...                                         density_map=prob)
-    >>> net = op.network.DelaunayVoronoiDual(points=pts, shape=[1, 1, 1])
 
     """
 
@@ -407,11 +368,6 @@ def generate_base_points(num_points, domain_size, density_map=None,
     if len(domain_size) == 1:  # Spherical
         domain_size = np.array(domain_size)
         r = domain_size[0]
-        if density_map is None:
-            # Make an image of a sphere filled with ones and use _try_points
-            density_map = np.ones([41, 41, 41])
-            density_map[20, 20, 20] = 0
-            density_map = spim.distance_transform_edt(density_map) < 20
         base_pts = _try_points(num_points, density_map)
         # Convert to spherical coordinates
         X, Y, Z = np.array(base_pts - [0.5, 0.5, 0.5]).T
@@ -431,12 +387,6 @@ def generate_base_points(num_points, domain_size, density_map=None,
 
     elif len(domain_size) == 2:  # Cylindrical or Disk
         domain_size = np.array(domain_size)
-        if density_map is None:
-            density_map = np.ones([41, 41, 41])
-            density_map[20, 20, :] = 0
-            if domain_size[1] == 0:  # Disk
-                density_map = density_map[:, :, 0]
-            density_map = spim.distance_transform_edt(density_map) < 20
         base_pts = _try_points(num_points, density_map)
         # Convert to cylindrical coordinates
         X, Y, Z = np.array(base_pts - [0.5, 0.5, 0]).T  # Center on z-axis
@@ -456,10 +406,6 @@ def generate_base_points(num_points, domain_size, density_map=None,
         base_pts = np.vstack([X, Y, Z]).T
 
     elif len(domain_size) == 3:  # Cube or square
-        if density_map is None:
-            density_map = np.ones([41, 41, 41])
-            if domain_size[2] == 0:
-                density_map = density_map[:, :, 0]
         base_pts = _try_points(num_points, density_map)
         base_pts = base_pts*domain_size
         if reflect:

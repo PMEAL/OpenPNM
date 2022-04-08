@@ -2,9 +2,12 @@ import logging
 import numpy as np
 from openpnm.network import GenericNetwork
 from openpnm import topotools
+from openpnm.utils import Docorator
 from openpnm._skgraph.generators import cubic
 from openpnm._skgraph.tools import find_surface_sites
-from openpnm.utils import Docorator
+from openpnm._skgraph import settings as skgr_settings
+skgr_settings.node_prefix = 'pore'
+skgr_settings.edge_prefix = 'throat'
 
 docstr = Docorator()
 logger = logging.getLogger(__name__)
@@ -58,8 +61,7 @@ class Cubic(GenericNetwork):
 
     def __init__(self, shape, spacing=[1, 1, 1], connectivity=6, **kwargs):
         super().__init__(**kwargs)
-        net = cubic(shape=shape, spacing=spacing, connectivity=connectivity,
-                    node_prefix='pore', edge_prefix='throat')
+        net = cubic(shape=shape, spacing=spacing, connectivity=connectivity)
         self.update(net)
         self["pore.all"] = np.ones(net['pore.coords'].shape[0], dtype=bool)
         self["throat.all"] = np.ones(net['throat.conns'].shape[0], dtype=bool)

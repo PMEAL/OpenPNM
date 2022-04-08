@@ -1,4 +1,5 @@
 import numpy as np
+from openpnm._skgraph import settings
 
 
 __all__ = [
@@ -7,7 +8,7 @@ __all__ = [
 ]
 
 
-def trim_edges(g, inds, edge_prefix='edge'):
+def trim_edges(g, inds):
     r"""
     Removes given edge from a graph or network
 
@@ -19,9 +20,6 @@ def trim_edges(g, inds, edge_prefix='edge'):
     inds : array_like
         The edge indices to be trimmed in the form of a 1D list or boolean
         mask with ``True`` values indicating indices to trim.
-    edge_prefix : str, optional
-        If a custom prefix is used to indicate site arrays, such as ('bond', or
-        'link') it can be specified here.  The defaul it 'edge'.
 
     Returns
     -------
@@ -29,6 +27,7 @@ def trim_edges(g, inds, edge_prefix='edge'):
         The dictionary with all edge arrays trimmed accordingly
 
     """
+    edge_prefix = settings.edge_prefix
     N_bonds = g[edge_prefix+'.conns'].shape[0]
     inds = np.atleast_1d(inds)
     keep = np.ones(N_bonds, dtype=bool)
@@ -39,7 +38,7 @@ def trim_edges(g, inds, edge_prefix='edge'):
     return g
 
 
-def trim_nodes(g, inds, node_prefix='node', edge_prefix='edge'):
+def trim_nodes(g, inds):
     r"""
     Removes given nodes and any connected edges from a graph or network
 
@@ -51,12 +50,6 @@ def trim_nodes(g, inds, node_prefix='node', edge_prefix='edge'):
     inds: array_like
         The node indices to be trimmed in the form of a 1D list or boolean
         mask with ``True`` values indicating indices to trim.
-    node_prefix : str, optional
-        If a custom prefix is used to indicate node arrays, such as ('site', or
-        'vertex') it can be specified here.  The defaul it 'node'.
-    edge_prefix : str, optional
-        If a custom prefix is used to indicate site arrays, such as ('bond', or
-        'link') it can be specified here.  The defaul it 'edge'.
 
     Returns
     -------
@@ -66,6 +59,9 @@ def trim_nodes(g, inds, node_prefix='node', edge_prefix='edge'):
         array renumbered so edges point to the updated node indices.
 
     """
+    node_prefix = settings.node_prefix
+    edge_prefix = settings.edge_prefix
+
     N_sites = g[node_prefix+'.coords'].shape[0]
     inds = np.atleast_1d(inds)
     if inds.dtype == bool:
@@ -77,7 +73,7 @@ def trim_nodes(g, inds, node_prefix='node', edge_prefix='edge'):
             g[item] = g[item][keep]
     # Remove edges
     edges = np.any(np.isin(g[edge_prefix+'.conns'], inds), axis=1)
-    g = trim_edges(g, inds=edges, edge_prefix=edge_prefix)
+    g = trim_edges(g, inds=edges)
     # Renumber throat conns
     remapping = np.cumsum(keep) - 1
     g[edge_prefix+'.conns'] = remapping[g[edge_prefix+'.conns']]

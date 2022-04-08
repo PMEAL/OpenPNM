@@ -1,10 +1,10 @@
-from openpnm._skgraph.generators import delaunay as _delaunay, tools
-import scipy.spatial as sptl
 import numpy as np
+import scipy.spatial as sptl
+from openpnm._skgraph.generators import delaunay as _delaunay, tools
+from openpnm._skgraph import settings
 
 
-def gabriel(points=None, delaunay=None, shape=None,
-            node_prefix='node', edge_prefix='edge'):
+def gabriel(points=None, delaunay=None, shape=None):
     r"""
     Generate a network based on a Gabriel tessellation, which is a subset of
     the Delaunay triangulation
@@ -21,12 +21,6 @@ def gabriel(points=None, delaunay=None, shape=None,
         ignored.
     shape : array_like
         Indicates the size and shape of the domain
-    node_prefix : str, optional
-        If a custom prefix is used to indicate node arrays, such as ('site', or
-        'vertex') it can be specified here.  The defaul it 'node'.
-    edge_prefix : str, optional
-        If a custom prefix is used to indicate site arrays, such as ('bond', or
-        'link') it can be specified here.  The defaul it 'edge'.
 
     Returns
     -------
@@ -34,6 +28,9 @@ def gabriel(points=None, delaunay=None, shape=None,
         A dictionary containing 'vert.coords' and 'edge.conns'
 
     """
+    node_prefix = settings.node_prefix
+    edge_prefix = settings.edge_prefix
+
     if points is not None:
         delaunay, tri = _delaunay(points=points, shape=shape)
     # Find centroid or midpoint of each edge in conns
@@ -57,6 +54,10 @@ def gabriel(points=None, delaunay=None, shape=None,
 
 if __name__ == '__main__':
     from openpnm._skgraph.generators import delaunay
+
+    settings.node_prefix = 'node'
+    settings.edge_prefix = 'edge'
+
     # Make a 2D network using points
     gb = gabriel(points=50, shape=[1, 1, 0])
     print(gb.keys())

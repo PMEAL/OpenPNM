@@ -78,7 +78,7 @@ class TypedList(TypedMixin, list):
 
 class SettingsAttr:
     r"""
-    A custom data class that hold settings for objects.
+    A custom data class that holds settings for objects.
 
     The main function of this custom class is to enforce the datatype of
     values that are assigned to ensure they remain consistent.  For instance

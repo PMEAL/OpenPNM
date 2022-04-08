@@ -1,8 +1,9 @@
+import numpy as np
 import scipy.spatial as sptl
 import scipy.sparse as sprs
-from openpnm._skgraph.generators import cubic
-import numpy as np
 from numba import njit
+from openpnm._skgraph.generators import cubic
+from openpnm._skgraph import settings
 
 
 @njit
@@ -11,15 +12,15 @@ def len_lil(lil):
     return indptr
 
 
-def fcc(shape, spacing=1, mode='kdtree', node_prefix='node', edge_prefix='edge'):
+def fcc(shape, spacing=1, mode='kdtree'):
     r"""
     Generate a face-centered cubic lattice
 
     Parameters
     ----------
     shape : array_like
-        The number of unit cells in each direction.  A unit cell has vertices
-        on all 8 corners, 6 faces and a single vertex at its center.
+        The number of corner sites in each direction. A sipmle cubic lattice
+        is created then the 'face-sites' are added afterwards.
     spacing : array_like or float
         The size of a unit cell in each direction. If an scalar is given it is
         applied in all 3 directions.
@@ -34,18 +35,11 @@ def fcc(shape, spacing=1, mode='kdtree', node_prefix='node', edge_prefix='edge')
         'triangulation'  Uses ``scipy.spatial.Delaunay`` to find all neighbors.
         ===============  =====================================================
 
-    node_prefix : str, optional
-        If a custom prefix is used to indicate node arrays, such as ('site', or
-        'vertex') it can be specified here.  The defaul it 'node'.
-    edge_prefix : str, optional
-        If a custom prefix is used to indicate site arrays, such as ('bond', or
-        'link') it can be specified here.  The defaul it 'edge'.
-
-
     Returns
     -------
     network : dict
-        A dictionary containing 'coords' and 'conns'
+        A dictionary containing 'coords', 'conns' and various boolean labels
+        (i.e. 'node.center')
 
     Notes
     -----
@@ -55,6 +49,10 @@ def fcc(shape, spacing=1, mode='kdtree', node_prefix='node', edge_prefix='edge')
 
     """
     from openpnm.topotools import tri_to_am
+
+    node_prefix = settings.node_prefix
+    edge_prefix = settings.edge_prefix
+
     shape = np.array(shape)
     # Create base cubic network of corner sites
     net1 = cubic(shape=shape)
@@ -63,18 +61,18 @@ def fcc(shape, spacing=1, mode='kdtree', node_prefix='node', edge_prefix='edge')
     net3 = cubic(shape=shape - [1, 0, 1])
     net4 = cubic(shape=shape - [0, 1, 1])
     # Offset pore coords by 1/2 a unit cell
-    net2['node.coords'] += np.array([0.5, 0.5, 0])
-    net3['node.coords'] += np.array([0.5, 0, 0.5])
-    net4['node.coords'] += np.array([0, 0.5, 0.5])
-    crds = np.concatenate((net1['node.coords'],
-                           net2['node.coords'],
-                           net3['node.coords'],
-                           net4['node.coords']))
+    net2[node_prefix+'.coords'] += np.array([0.5, 0.5, 0])
+    net3[node_prefix+'.coords'] += np.array([0.5, 0, 0.5])
+    net4[node_prefix+'.coords'] += np.array([0, 0.5, 0.5])
+    crds = np.concatenate((net1[node_prefix+'.coords'],
+                           net2[node_prefix+'.coords'],
+                           net3[node_prefix+'.coords'],
+                           net4[node_prefix+'.coords']))
     corner_labels = np.concatenate(
-        (np.ones(net1['node.coords'].shape[0], dtype=bool),
-         np.zeros(net2['node.coords'].shape[0], dtype=bool),
-         np.zeros(net3['node.coords'].shape[0], dtype=bool),
-         np.zeros(net4['node.coords'].shape[0], dtype=bool)))
+        (np.ones(net1[node_prefix+'.coords'].shape[0], dtype=bool),
+         np.zeros(net2[node_prefix+'.coords'].shape[0], dtype=bool),
+         np.zeros(net3[node_prefix+'.coords'].shape[0], dtype=bool),
+         np.zeros(net4[node_prefix+'.coords'].shape[0], dtype=bool)))
     if mode.startswith('tri'):
         tri = sptl.Delaunay(points=crds)
         am = tri_to_am(tri)
@@ -98,24 +96,28 @@ def fcc(shape, spacing=1, mode='kdtree', node_prefix='node', edge_prefix='edge')
         am = sprs.triu(am, k=1)
         am = am.tocoo()
         conns = np.vstack((am.row, am.col)).T
-    conns = np.vstack((net1['edge.conns'], conns))
+    conns = np.vstack((net1[edge_prefix+'.conns'], conns))
 
     d = {}
-    d[node_prefix+'.corner'] = corner_labels
-    d[node_prefix+'.face'] = ~corner_labels
-    d[node_prefix+'.coords'] = crds*spacing
-    d[edge_prefix+'.conns'] = conns
+    d[node_prefix + '.corner'] = corner_labels
+    d[node_prefix + '.face'] = ~corner_labels
+    d[node_prefix + '.coords'] = crds*spacing
+    d[edge_prefix + '.conns'] = conns
     return d
 
 
 if __name__ == '__main__':
     import openpnm as op
     import matplotlib.pyplot as plt
+
+    node_prefix = settings.node_prefix
+    edge_prefix = settings.edge_prefix
+
     net = fcc([3, 3, 3], 1, mode='tri')
-    net['pore.coords'] = net.pop('node.coords')
-    net['throat.conns'] = net.pop('edge.conns')
-    net['pore.corner'] = net.pop('node.corner')
-    net['pore.face'] = net.pop('node.face')
+    net['pore.coords'] = net.pop(node_prefix+'.coords')
+    net['throat.conns'] = net.pop(edge_prefix+'.conns')
+    net['pore.corner'] = net.pop(node_prefix+'.corner')
+    net['pore.face'] = net.pop(node_prefix+'.face')
     pn = op.network.GenericNetwork()
     pn.update(net)
     pn['pore.all'] = np.ones((np.shape(pn.coords)[0]), dtype=bool)

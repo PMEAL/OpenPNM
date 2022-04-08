@@ -1,7 +1,8 @@
 import numpy as np
+from openpnm._skgraph import settings
 
 
-def cubic(shape, spacing=1, connectivity=6, node_prefix='node', edge_prefix='edge'):
+def cubic(shape, spacing=1, connectivity=6):
     r"""
     Generate a simple cubic lattice
 
@@ -17,9 +18,12 @@ def cubic(shape, spacing=1, connectivity=6, node_prefix='node', edge_prefix='edg
     Returns
     -------
     network : dict
-        A dictionary containing 'vert.coords' and 'edge.conns'
+        A dictionary containing ``coords`` and ``conns`` of a cubic network with the
+        specified spacing and connectivity.
 
     """
+    node_prefix = settings.node_prefix
+    edge_prefix = settings.edge_prefix
     # Take care of 1D/2D networks
     shape = np.array(shape, ndmin=1)
     shape = np.concatenate((shape, [1] * (3 - shape.size))).astype(int)
@@ -75,9 +79,11 @@ def cubic(shape, spacing=1, connectivity=6, node_prefix='node', edge_prefix='edg
     d = {}
     d[node_prefix+'.coords'] = points * spacing
     d[edge_prefix+'.conns'] = pairs
+
+    # Label the various throat connections
+    # P1 = points[pairs[:, 0]]
+    # P2 = points[pairs[:, 1]]
+    # L = np.sqrt(np.sum((P1 - P2)**2, axis=1))
+    # d[edge_prefix+'.spacing'] = L
+
     return d
-
-
-if __name__ == "__main__":
-    pn = cubic([3, 4, 5])
-    print(pn)

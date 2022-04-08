@@ -1,13 +1,16 @@
 import numpy as np
 from openpnm.network import GenericNetwork
+from openpnm.utils import Docorator
 from openpnm._skgraph.generators import delaunay, tools
 from openpnm._skgraph.tools import isoutside
 from openpnm._skgraph.operations import trim_nodes
 
 
 __all__ = ['Delaunay']
+docstr = Docorator()
 
 
+@docstr.dedent
 class Delaunay(GenericNetwork):
     r"""
     Random network formed by Delaunay tessellation of arbitrary base points
@@ -21,14 +24,17 @@ class Delaunay(GenericNetwork):
         The size of the domain.  It's possible to create cubic as well as 2D
         square domains by changing the ``shape`` as follows:
 
-            [x, y, z]
-                will produce a normal cubic domain of dimension x, and and z
-            [x, y, 0]
-                will produce a 2D square domain of size x by y
+        ========== ============================================================
+        shape      result
+        ========== ============================================================
+        [x, y, z]  A 3D cubic domain of dimension x, y and z
+        [x, y, 0]  A 2D square domain of size x by y
+        [r, z]     A 3D cylindrical domain of radius r and height z
+        [r, 0]     A 2D circular domain of radius r
+        [r]        A 3D spherical domain of radius r
+        ========== ============================================================
 
-    name : str
-        An optional name for the object to help identify it.  If not given,
-        one will be generated.
+    %(GenericNetwork.parameters)s
 
     See Also
     --------
@@ -38,8 +44,8 @@ class Delaunay(GenericNetwork):
 
     Notes
     -----
-    This class always performs the tessellation on the full set of points, then
-    trims any points that lie outside the given domain ``shape``.
+    This class always performs the tessellation on the full set of points,
+    then trims any points that lie outside the given domain ``shape``.
 
     """
 
@@ -53,3 +59,9 @@ class Delaunay(GenericNetwork):
         self.update(net)
         self['pore.all'] = np.ones(self['pore.coords'].shape[0], dtype=bool)
         self['throat.all'] = np.ones(self['throat.conns'].shape[0], dtype=bool)
+
+
+if __name__ == "__main__":
+    import openpnm as op
+    dn = Delaunay(shape=[1, 0], points=500)
+    op.topotools.plot_connections(dn)

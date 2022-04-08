@@ -4,9 +4,10 @@ import numpy as np
 from openpnm._skgraph.generators import tools
 from openpnm._skgraph.operations import trim_nodes
 from openpnm.topotools import isoutside, conns_to_am
+from openpnm._skgraph import settings
 
 
-def voronoi_delaunay_dual(points, shape, crop=False, node_prefix='node', edge_prefix='edge'):
+def voronoi_delaunay_dual(points, shape, crop=False):
     r"""
     Generate a dual Voronoi-Delaunay network from given base points
 
@@ -20,12 +21,6 @@ def voronoi_delaunay_dual(points, shape, crop=False, node_prefix='node', edge_pr
     crop : bool, optional (default is ``False``)
         If ``True`` then all points lying beyond the given domain shape will
         be removed
-    node_prefix : str, optional
-        If a custom prefix is used to indicate node arrays, such as ('site', or
-        'vertex') it can be specified here.  The defaul it 'node'.
-    edge_prefix : str, optional
-        If a custom prefix is used to indicate site arrays, such as ('bond', or
-        'link') it can be specified here.  The defaul it 'edge'.
 
     Returns
     -------
@@ -37,7 +32,9 @@ def voronoi_delaunay_dual(points, shape, crop=False, node_prefix='node', edge_pr
         The Delaunay triangulation object produced ``scipy.spatial.Delaunay``
 
     """
-    # Generate a set of base points if number was given
+    node_prefix = settings.node_prefix
+    edge_prefix = settings.edge_prefix
+    # Generate a set of base points if scalar was given
     points = tools.parse_points(points=points, shape=shape)
     mask = ~np.all(points == 0, axis=0)
 
@@ -76,7 +73,7 @@ def voronoi_delaunay_dual(points, shape, crop=False, node_prefix='node', edge_pr
 
     # Convert to sanitized adjacency matrix
     am = conns_to_am(conns)
-    # Finally, retrieve conns back from am
+    # Finally, retreive conns back from am
     conns = np.vstack((am.row, am.col)).T
 
     # Convert coords to 3D by adding col of 0's if necessary
@@ -93,6 +90,26 @@ def voronoi_delaunay_dual(points, shape, crop=False, node_prefix='node', edge_pr
     network[node_prefix+'.coords'] = verts
     network[edge_prefix+'.conns'] = conns
 
+    n_nodes = verts.shape[0]
+    n_edges = conns.shape[0]
+
+    # Label all pores and throats by type
+    network[node_prefix+'.delaunay'] = np.zeros(n_nodes, dtype=bool)
+    network[node_prefix+'.delaunay'][0:vor.npoints] = True
+    network[node_prefix+'.voronoi'] = np.zeros(n_nodes, dtype=bool)
+    network[node_prefix+'.voronoi'][vor.npoints:] = True
+    # Label throats between Delaunay pores
+    network[edge_prefix+'.delaunay'] = np.zeros(n_edges, dtype=bool)
+    Ts = np.all(network[edge_prefix+'.conns'] < vor.npoints, axis=1)
+    network[edge_prefix+'.delaunay'][Ts] = True
+    # Label throats between Voronoi pores
+    network[edge_prefix+'.voronoi'] = np.zeros(n_edges, dtype=bool)
+    Ts = np.all(network[edge_prefix+'.conns'] >= vor.npoints, axis=1)
+    network[edge_prefix+'.voronoi'][Ts] = True
+    # Label throats connecting a Delaunay and a Voronoi pore
+    Ts = np.sum(network[node_prefix+'.delaunay'][conns].astype(int), axis=1) == 1
+    network[edge_prefix+'.interconnect'] = Ts
+
     # Identify and trim pores outside the domain if requested
     if crop:
         Ps = isoutside(verts, shape=shape)
@@ -102,6 +119,8 @@ def voronoi_delaunay_dual(points, shape, crop=False, node_prefix='node', edge_pr
 
 
 if __name__ == "__main__":
+    settings.node_prefix = 'node'
+    settings.edge_prefix = 'edge'
     dvd, vor, tri = voronoi_delaunay_dual(points=50, shape=[1, 0, 1])
     print(dvd.keys())
     print(dvd['node.coords'].shape)

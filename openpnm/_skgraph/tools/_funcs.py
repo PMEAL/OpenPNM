@@ -42,16 +42,19 @@ def isoutside(coords, shape):
         The shape of the domain beyond which points are considered "outside".
         The argument is treated as follows:
 
-        **sphere** : If a scalar or single element list is received, it's
-        treated as the radius [r] of a sphere centered on [0, 0, 0].
-
-        **cylinder** : If a two-element list is received it's treated as
-        the radius and height of a cylinder [r, z] whose central axis
-        starts at [0, 0, 0] and extends in the positive z-direction.
-
-        **rectangle** : If a three element list is received, it's treated
-        as the outer corner of rectangle [x, y, z] whose opposite corner
-        lies at [0, 0, 0].
+        ========== ============================================================
+        shape      Interpretation
+        ========== ============================================================
+        [x, y, z]  A 3D cubic domain of dimension x, y and z with the origin at
+                   [0, 0, 0].
+        [x, y, 0]  A 2D square domain of size x by y with the origin at
+                   [0, 0]
+        [r, z]     A 3D cylindrical domain of radius r and height z whose
+                   central axis starts at [0, 0, 0]
+        [r, 0]     A 2D circular domain of radius r centered on [0, 0] and
+                   extending upwards
+        [r]        A 3D spherical domain of radius r centered on [0, 0, 0]
+        ========== ============================================================
 
     Returns
     -------

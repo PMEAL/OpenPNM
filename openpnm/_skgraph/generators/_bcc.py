@@ -1,43 +1,39 @@
 import scipy.spatial as sptl
 import scipy.sparse as sprs
-from openpnm._skgraph.generators import cubic
 import numpy as np
+from openpnm._skgraph.generators import cubic
+from openpnm._skgraph import settings
 
 
-def bcc(shape, spacing=1, mode='kdtree', node_prefix='node', edge_prefix='edge'):
+def bcc(shape, spacing=1, mode='kdtree'):
     r"""
     Generate a body-centered cubic lattice
 
     Parameters
     ----------
     shape : array_like
-        The number of unit cells in each direction.  A unit cell has vertices
-        on all 8 corners and a single pore at its center.
+        The number of corner sites in each direction.  A cubic lattice of
+        this size is created and then 'body-centered' nodes are added
+        afterward.
     spacing : array_like or float
         The size of a unit cell in each direction. If an scalar is given it is
         applied in all 3 directions.
     mode : str
         Dictate how neighbors are found.  Options are:
 
-        ===============  =====================================================
+        ===============  ======================================================
         mode             meaning
-        ===============  =====================================================
+        ===============  ======================================================
         'kdtree'         Uses ``scipy.spatial.KDTree`` to find all neighbors
-                         within the unit cell.
-        'triangulation'  Uses ``scipy.spatial.Delaunay`` to find all neighbors.
-        ===============  =====================================================
-
-    node_prefix : str, optional
-        If a custom prefix is used to indicate node arrays, such as ('site', or
-        'vertex') it can be specified here.  The defaul it 'node'.
-    edge_prefix : str, optional
-        If a custom prefix is used to indicate site arrays, such as ('bond', or
-        'link') it can be specified here.  The defaul it 'edge'.
+                         within the unit cell
+        'triangulation'  Uses ``scipy.spatial.Delaunay`` to find all neighbors
+        ===============  ======================================================
 
     Returns
     -------
     network : dict
-        A dictionary containing 'coords' and 'conns'
+        A dictionary containing 'coords', 'conns' and various boolean labels
+        (i.e. 'node.center')
 
     Notes
     -----
@@ -47,18 +43,24 @@ def bcc(shape, spacing=1, mode='kdtree', node_prefix='node', edge_prefix='edge')
 
     """
     from openpnm.topotools import tri_to_am
+
+    node_prefix = settings.node_prefix
+    edge_prefix = settings.edge_prefix
+
     shape = np.array(shape)
     spacing = np.array(spacing)
     net1 = cubic(shape=shape, spacing=1)
     net2 = cubic(shape=shape-1, spacing=1)
-    net2['node.coords'] += 0.5
-    crds = np.concatenate((net1['node.coords'], net2['node.coords']))
+    net2[node_prefix + '.coords'] += 0.5
+    crds = np.concatenate(
+        (net1[node_prefix + '.coords'],
+         net2[node_prefix + '.coords']))
     corner_label = np.concatenate(
-        (np.ones(net1['node.coords'].shape[0], dtype=bool),
-         np.zeros(net2['node.coords'].shape[0], dtype=bool)))
+        (np.ones(net1[node_prefix + '.coords'].shape[0], dtype=bool),
+         np.zeros(net2[node_prefix + '.coords'].shape[0], dtype=bool)))
     body_label = np.concatenate(
-        (np.zeros(net1['node.coords'].shape[0], dtype=bool),
-         np.ones(net2['node.coords'].shape[0], dtype=bool)))
+        (np.zeros(net1[node_prefix + '.coords'].shape[0], dtype=bool),
+         np.ones(net2[node_prefix + '.coords'].shape[0], dtype=bool)))
     if mode.startswith('tri'):
         tri = sptl.Delaunay(points=crds)
         am = tri_to_am(tri)
@@ -96,10 +98,10 @@ if __name__ == '__main__':
     import matplotlib.pyplot as plt
     pn = op.network.GenericNetwork()
     net = bcc([3, 3, 3], 1, mode='tri')
-    net['pore.coords'] = net.pop('node.coords')
-    net['throat.conns'] = net.pop('edge.conns')
-    net['pore.corner'] = net.pop('node.corner')
-    net['pore.body'] = net.pop('node.body')
+    net['pore.coords'] = net.pop(settings.node_prefix + '.coords')
+    net['throat.conns'] = net.pop(settings.edge_prefix + '.conns')
+    net['pore.corner'] = net.pop(settings.node_prefix + '.corner')
+    net['pore.body'] = net.pop(settings.node_prefix + '.body')
     pn.update(net)
     pn['pore.all'] = np.ones((np.shape(pn.coords)[0]), dtype=bool)
     pn['throat.all'] = np.ones((np.shape(pn.conns)[0]), dtype=bool)

@@ -1,8 +1,9 @@
 import numpy as np
 import scipy.spatial as sptl
+from openpnm._skgraph import settings
 
 
-def delaunay(points, shape=[1, 1, 1], node_prefix='node', edge_prefix='edge'):
+def delaunay(points, shape=[1, 1, 1]):
     r"""
     Generate a network based on Delaunay triangulation of random points
 
@@ -23,6 +24,10 @@ def delaunay(points, shape=[1, 1, 1], node_prefix='node', edge_prefix='edge'):
     """
     from openpnm.topotools import tri_to_am
     from openpnm.topotools.generators import tools
+
+    node_prefix = settings.node_prefix
+    edge_prefix = settings.edge_prefix
+
     points = tools.parse_points(points=points, shape=shape)
     mask = ~np.all(points == 0, axis=0)
     tri = sptl.Delaunay(points=points[:, mask])
@@ -34,6 +39,8 @@ def delaunay(points, shape=[1, 1, 1], node_prefix='node', edge_prefix='edge'):
 
 
 if __name__ == "__main__":
+    settings.node_prefix = 'node'
+    settings.edge_prefix = 'edge'
     # Make a 2D network based on number of points
     dn, tri = delaunay(points=50, shape=[1, 1, 0])
     print(dn.keys())

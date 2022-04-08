@@ -1,12 +1,15 @@
-import logging
 from openpnm import topotools
 from openpnm.network import DelaunayVoronoiDual
+from openpnm.utils import Docorator
+from openpnm._skgraph.operations import trim_nodes
+from openpnm._skgraph.generators.tools import parse_points
 
 
-logger = logging.getLogger(__name__)
 __all__ = ['Voronoi']
+docstr = Docorator()
 
 
+@docstr.dedent
 class Voronoi(DelaunayVoronoiDual):
     r"""
     Random network formed by Voronoi tessellation of arbitrary base points
@@ -26,9 +29,7 @@ class Voronoi(DelaunayVoronoiDual):
             [x, y, 0]
                 will produce a 2D square domain of size x by y
 
-    name : str
-        An optional name for the object to help identify it. If not given,
-        one will be generated.
+    %(GenericNetwork.parameters)s
 
     Notes
     -----
@@ -38,12 +39,12 @@ class Voronoi(DelaunayVoronoiDual):
 
     """
 
-    def __init__(self, shape=[1, 1, 1], points=None, **kwargs):
+    def __init__(self, shape, points, **kwargs):
         # Clean-up input points
-        points = self._parse_points(shape=shape, points=points)
+        points = parse_points(shape=shape, points=points)
         super().__init__(shape=shape, points=points, **kwargs)
         # Initialize network object
-        topotools.trim(network=self, pores=self.pores('delaunay'))
+        trim_nodes(self, nodes=self.pores('delaunay'))
         pop = ['pore.delaunay', 'throat.delaunay', 'throat.interconnect']
         for item in pop:
             del self[item]

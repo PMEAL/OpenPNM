@@ -1,8 +1,9 @@
-import scipy.spatial as sptl
 import numpy as np
+import scipy.spatial as sptl
+from openpnm._skgraph import settings
 
 
-def voronoi(points, shape=[1, 1, 1], node_prefix='node', edge_prefix='edge'):
+def voronoi(points, shape=[1, 1, 1]):
     r"""
     Generate a network based on a Voronoi tessellation of base points
 
@@ -13,12 +14,6 @@ def voronoi(points, shape=[1, 1, 1], node_prefix='node', edge_prefix='edge'):
         or a scalar value indicating the number of points to generate.
     shape : array_like
         Indicates the size and shape of the domain.
-    node_prefix : str, optional
-        If a custom prefix is used to indicate node arrays, such as ('site', or
-        'vertex') it can be specified here.  The defaul it 'node'.
-    edge_prefix : str, optional
-        If a custom prefix is used to indicate site arrays, such as ('bond', or
-        'link') it can be specified here.  The defaul it 'edge'.
 
     Returns
     -------
@@ -30,6 +25,10 @@ def voronoi(points, shape=[1, 1, 1], node_prefix='node', edge_prefix='edge'):
     """
     from openpnm.topotools import vor_to_am, isoutside
     from openpnm.topotools.generators import tools
+
+    node_prefix = settings.node_prefix
+    edge_prefix = settings.edge_prefix
+
     points = tools.parse_points(points=points, shape=shape)
     mask = ~np.all(points == 0, axis=0)
     # Perform tessellation
@@ -52,6 +51,9 @@ def voronoi(points, shape=[1, 1, 1], node_prefix='node', edge_prefix='edge'):
 
 
 if __name__ == "__main__":
+    settings.node_prefix = 'node'
+    settings.edge_prefix = 'edge'
+
     vn, vor = voronoi(points=50, shape=[1, 0, 1])
     print(vn.keys())
     print(vn['node.coords'].shape)
