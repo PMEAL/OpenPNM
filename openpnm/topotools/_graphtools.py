@@ -1,9 +1,10 @@
 import logging
-import warnings
 import numpy as np
 import scipy.sparse as sprs
 from openpnm.utils import Workspace
 from openpnm._skgraph import tools
+from openpnm._skgraph import queries
+from openpnm._skgraph import operations
 
 
 logger = logging.getLogger(__name__)
@@ -27,108 +28,11 @@ __all__ = [
 ]
 
 
-def find_neighbor_sites(sites, am, flatten=True, include_input=False,
-                        logic='or'):
-    r"""
-    Given a symmetric adjacency matrix, finds all sites that are connected
-    to the input sites.
+def find_neighbor_sites(sites, **kwargs):
+    return queries.find_neighbor_nodes(nodes=sites, **kwargs)
 
-    Parameters
-    ----------
-    am : scipy.sparse matrix
-        The adjacency matrix of the network.  Must be symmetrical such that if
-        sites *i* and *j* are connected, the matrix contains non-zero values
-        at locations (i, j) and (j, i).
 
-    flatten : bool
-        If ``True`` (default) the returned result is a compressed array of all
-        neighbors, or a list of lists with each sub-list containing the
-        neighbors for each input site.  Note that an *unflattened* list might
-        be slow to generate since it is a Python ``list`` rather than a Numpy
-        array.
-
-    include_input : bool
-        If ``False`` (default) the input sites will be removed from the result.
-
-    logic : str
-        Specifies logic to filter the resulting list.  Options are:
-
-        **'or'** : (default) All neighbors of the input sites.  This is also
-        known as the 'union' in set theory or 'any' in boolean logic.  Both
-        keywords are accepted and treated as 'or'.
-
-        **'xor'** : Only neighbors of one and only one input site.  This is
-        useful for finding the sites that are not shared by any of the input
-        sites.  'exclusive_or' is also accepted.
-
-        **'xnor'** : Neighbors that are shared by two or more input sites. This
-        is equivalent to finding all neighbors with 'or', minus those found
-        with 'xor', and is useful for finding neighbors that the inputs have
-        in common.  'nxor' is also accepted.
-
-        **'and'** : Only neighbors shared by all input sites.  This is also
-        known as 'intersection' in set theory and (somtimes) as 'all' in
-        boolean logic.  Both keywords are accepted and treated as 'and'.
-
-    Returns
-    -------
-    An array containing the neighboring sites filtered by the given logic.  If
-    ``flatten`` is ``False`` then the result is a list of lists containing the
-    neighbors of each input site.
-
-    See Also
-    --------
-    find_complement
-
-    Notes
-    -----
-    The ``logic`` options are applied to neighboring sites only, thus it is not
-    possible to obtain sites that are part of the global set but not neighbors.
-    This is because (a) the list global sites might be very large, and (b) it
-    is not possible to return a list of neighbors for each input site if global
-    sites are considered.
-
-    """
-    if am.format != 'lil':
-        am = am.tolil(copy=False)
-    sites = np.array(sites, ndmin=1)
-    if len(sites) == 0:
-        return []
-    am_coo = am.tocoo()
-    n_sites = am.shape[0]
-    rows = am.rows[sites].tolist()
-    if len(rows) == 0:
-        return []
-    neighbors = am_coo.col[np.in1d(am_coo.row, sites)]
-    if logic in ['or', 'union', 'any']:
-        neighbors = np.unique(neighbors)
-    elif logic in ['xor', 'exclusive_or']:
-        neighbors = np.unique(np.where(np.bincount(neighbors) == 1)[0])
-    elif logic in ['xnor', 'nxor']:
-        neighbors = np.unique(np.where(np.bincount(neighbors) > 1)[0])
-    elif logic in ['and', 'all', 'intersection']:
-        neighbors = set(neighbors)
-        [neighbors.intersection_update(i) for i in rows]
-        neighbors = np.array(list(neighbors), dtype=np.int64, ndmin=1)
-    else:
-        raise Exception('Specified logic is not implemented')
-    # Deal with removing inputs or not
-    mask = np.zeros(shape=n_sites, dtype=bool)
-    mask[neighbors] = True
-    if not include_input:
-        mask[sites] = False
-    # Finally flatten or not
-    if flatten:
-        neighbors = np.where(mask)[0]
-    else:
-        if neighbors.size > 0:
-            for i in range(len(rows)):
-                vals = np.array(rows[i], dtype=np.int64)
-                rows[i] = vals[mask[vals]]
-            neighbors = rows
-        else:
-            neighbors = [np.array([], dtype=int) for i in range(len(sites))]
-    return neighbors
+find_neighbor_sites.__doc__ = queries.find_neighbor_nodes.__doc__
 
 
 def find_neighbor_bonds(sites, im=None, am=None, flatten=True, logic='or'):
@@ -350,40 +254,10 @@ def find_connected_sites(bonds, am, flatten=True, logic='or'):
 
 
 def find_connecting_bonds(sites, am):
-    r"""
-    Given pairs of sites, finds the bonds which connects each pair.
+    queries.find_connecting_edges(bonds=sites, am=am)
 
-    Parameters
-    ----------
-    sites : array_like
-        A 2-column vector containing pairs of site indices on each row.
 
-    am : scipy.sparse matrix
-        The adjacency matrix of the network.  Must be symmetrical such that if
-        sites *i* and *j* are connected, the matrix contains non-zero values
-        at locations (i, j) and (j, i).
-
-    Returns
-    -------
-    Returns a list the same length as P1 (and P2) with each element
-    containing the throat number that connects the corresponding pores,
-    or `None`` if pores are not connected.
-
-    Notes
-    -----
-    The returned list can be converted to an ndarray, which will convert
-    the ``None`` values to ``nan``.  These can then be found using
-    ``numpy.isnan``.
-
-    """
-    if am.format != 'dok':
-        am = am.todok(copy=False)
-    sites = np.array(sites, ndmin=2)
-    if sites.size == 0:
-        return []
-    z = tuple(zip(sites[:, 0], sites[:, 1]))
-    neighbors = [am.get(z[i], None) for i in range(len(z))]
-    return neighbors
+find_connecting_bonds.__doc__ = queries.find_connecting_edges.__doc__
 
 
 def find_complement(am, sites=None, bonds=None, asmask=False):
@@ -495,7 +369,7 @@ conns_to_am.__doc__ = tools.conns_to_am.__doc__
 
 
 def drop_sites(am, sites):
-    return tools.drop_nodes_from_am(am=am, sites=sites)
+    return operations.drop_nodes_from_am(am=am, sites=sites)
 
 
-drop_sites.__doc__ = tools.drop_nodes_from_am.__doc__
+drop_sites.__doc__ = operations.drop_nodes_from_am.__doc__
