@@ -1,5 +1,5 @@
 import numpy as np
-from openpnm._skimage import settings
+from openpnm._skgraph import settings
 
 
 __all__ = [

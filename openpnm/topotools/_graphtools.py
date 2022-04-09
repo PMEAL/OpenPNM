@@ -3,6 +3,7 @@ import warnings
 import numpy as np
 import scipy.sparse as sprs
 from openpnm.utils import Workspace
+from openpnm._skgraph import tools
 
 
 logger = logging.getLogger(__name__)
@@ -393,13 +394,10 @@ def find_complement(am, sites=None, bonds=None, asmask=False):
     ----------
     am : scipy.sparse matrix
         The adjacency matrix of the network.
-
     sites : array_like (optional)
         The set of sites for which the complement is sought
-
     bonds : array_like (optional)
         The set of bonds for which the complement is sought
-
     asmask : bool
         If set to ``True`` the result is returned as a boolean mask of the
         correct length with ``True`` values indicate the complements.  The
@@ -434,254 +432,70 @@ def find_complement(am, sites=None, bonds=None, asmask=False):
 
 
 def istriu(am):
-    r"""
-    Returns ``True`` is the sparse adjacency matrix is upper triangular
-    """
-    if am.shape[0] != am.shape[1]:
-        print('Matrix is not square, triangularity is irrelevant')
-        return False
-    if am.format != 'coo':
-        am = am.tocoo(copy=False)
-    return np.all(am.row <= am.col)
+    return tools.istriu(am)
+
+
+istriu.__doc__ = tools.istriu.__doc__
 
 
 def istril(am):
-    r"""
-    Returns ``True`` is the sparse adjacency matrix is lower triangular
-    """
-    if am.shape[0] != am.shape[1]:
-        print('Matrix is not square, triangularity is irrelevant')
-        return False
-    if am.format != 'coo':
-        am = am.tocoo(copy=False)
-    return np.all(am.row >= am.col)
+    return tools.istril(am)
+
+
+istril.__doc__ = tools.istril.__doc__
 
 
 def istriangular(am):
-    r"""
-    Returns ``True`` if the sparse adjacency matrix is either upper or lower
-    triangular
-    """
-    if am.format != 'coo':
-        am = am.tocoo(copy=False)
-    return istril(am) or istriu(am)
+    return tools.istriangular(am)
+
+
+istriangular.__doc__ = tools.istriangular.__doc__
 
 
 def issymmetric(am):
-    r"""
-    A method to check if a square matrix is symmetric
-    Returns ``True`` if the sparse adjacency matrix is symmetric
-    """
-    if am.shape[0] != am.shape[1]:
-        logger.warning('Matrix is not square, symmetrical is irrelevant')
-        return False
-    if am.format != 'coo':
-        am = am.tocoo(copy=False)
-    if istril(am) or istriu(am):
-        return False
-    # Compare am with its transpose, element wise
-    sym = ((am != am.T).size) == 0
-    return sym
+    return tools.issymmetric(am)
+
+
+issymmetric.__doc__ = tools.issymmetric.__doc__
 
 
 def _am_to_im(am):
-    r"""
-    Convert an adjacency matrix into an incidence matrix
-    """
-    if am.shape[0] != am.shape[1]:
-        raise Exception('Adjacency matrices must be square')
-    if am.format != 'coo':
-        am = am.tocoo(copy=False)
-    conn = np.vstack((am.row, am.col)).T
-    row = conn[:, 0]
-    data = am.data
-    col = np.arange(np.size(am.data))
-    if istriangular(am):
-        row = np.append(row, conn[:, 1])
-        data = np.append(data, data)
-        col = np.append(col, col)
-    im = sprs.coo.coo_matrix((data, (row, col)), (row.max() + 1, col.max() + 1))
-    return im
+    return tools.am_to_im(am)
+
+
+_am_to_im.__doc__ = tools.am_to_im.__doc__
 
 
 def _im_to_am(im):
-    r"""
-    Convert an incidence matrix into an adjacency matrix
-    """
-    if im.shape[0] == im.shape[1]:
-        print('Warning: Received matrix is square which is unlikely')
-    if im.shape[0] > im.shape[1]:
-        print('Warning: Received matrix has more sites than bonds')
-    if im.format != 'coo':
-        im = im.tocoo(copy=False)
+    return tools.im_to_am(im)
+
+
+_im_to_am.__doc__ = tools.im_to_am.__doc__
 
 
 def tri_to_am(tri):
-    r"""
-    Given a Delaunay Triangulation object from Scipy's ``spatial`` module,
-    converts to a sparse adjacency matrix network representation.
+    return tools.tri_to_am(tri=tri)
 
-    Parameters
-    ----------
-    tri : Delaunay Triangulation Object
-        This object is produced by ``scipy.spatial.Delaunay``
 
-    Returns
-    -------
-    A sparse adjacency matrix in COO format.  The network is undirected
-    and unweighted, so the adjacency matrix is upper-triangular and all the
-    weights are set to 1.
-
-    """
-    # Create an empty list-of-list matrix
-    lil = sprs.lil_matrix((tri.npoints, tri.npoints))
-    # Scan through Delaunay triangulation to retrieve pairs
-    indices, indptr = tri.vertex_neighbor_vertices
-    for k in range(tri.npoints):
-        lil.rows[k] = indptr[indices[k]:indices[k + 1]].tolist()
-    # Convert to coo format
-    lil.data = lil.rows  # Just a dummy array to make things work properly
-    coo = lil.tocoo()
-    # Set weights to 1's
-    coo.data = np.ones_like(coo.data)
-    # Remove diagonal, and convert to csr remove duplicates
-    am = sprs.triu(A=coo, k=1, format='csr')
-    # The convert back to COO and return
-    am = am.tocoo()
-    return am
+tri_to_am.__doc__ = tools.tri_to_am.__doc__
 
 
 def vor_to_am(vor):
-    r"""
-    Given a Voronoi tessellation object from Scipy's ``spatial`` module,
-    converts to a sparse adjacency matrix network representation in COO format.
-
-    Parameters
-    ----------
-    vor : Voronoi Tessellation object
-        This object is produced by ``scipy.spatial.Voronoi``
-
-    Returns
-    -------
-    A sparse adjacency matrix in COO format.  The network is undirected
-    and unweighted, so the adjacency matrix is upper-triangular and all the
-    weights are set to 1.
-
-    """
-    # Create adjacency matrix in lil format for quick matrix construction
-    N = vor.vertices.shape[0]
-    rc = [[], []]
-    for ij in vor.ridge_dict.keys():
-        row = vor.ridge_dict[ij].copy()
-        # Make sure voronoi cell closes upon itself
-        row.append(row[0])
-        # Add connections to rc list
-        rc[0].extend(row[:-1])
-        rc[1].extend(row[1:])
-    rc = np.vstack(rc).T
-    # Make adj mat upper triangular
-    rc = np.sort(rc, axis=1)
-    # Remove any pairs with ends at infinity (-1)
-    keep = ~np.any(rc == -1, axis=1)
-    rc = rc[keep]
-    data = np.ones_like(rc[:, 0])
-    # Build adj mat in COO format
-    M = N = np.amax(rc) + 1
-    am = sprs.coo_matrix((data, (rc[:, 0], rc[:, 1])), shape=(M, N))
-    # Remove diagonal, and convert to csr remove duplicates
-    am = sprs.triu(A=am, k=1, format='csr')
-    # The convert back to COO and return
-    am = am.tocoo()
-    return am
+    return tools.vor_to_am(vor=vor)
 
 
-def conns_to_am(conns, shape=None, force_triu=True, drop_diag=True,
-                drop_dupes=True, drop_negs=True):
-    r"""
-    Converts a list of connections into a Scipy sparse adjacency matrix
+vor_to_am.__doc__ = tools.vor_to_am.__doc__
 
-    Parameters
-    ----------
-    conns : array_like, N x 2
-        The list of site-to-site connections
 
-    shape : list, optional
-        The shape of the array.  If none is given then it is inferred from the
-        maximum value in ``conns`` array.
+def conns_to_am(*args, **kwargs):
+    return tools.conns_to_am(*args, **kwargs)
 
-    force_triu : bool
-        If True (default), then all connections are assumed undirected, and
-        moved to the upper triangular portion of the array
 
-    drop_diag : bool
-        If True (default), then connections from a site and itself are removed.
-
-    drop_dupes : bool
-        If True (default), then all pairs of sites sharing multiple connections
-        are reduced to a single connection.
-
-    drop_negs : bool
-        If True (default), then all connections with one or both ends pointing
-        to a negative number are removed.
-
-    """
-    if force_triu:  # Sort connections to [low, high]
-        conns = np.sort(conns, axis=1)
-    if drop_negs:  # Remove connections to -1
-        keep = ~np.any(conns < 0, axis=1)
-        conns = conns[keep]
-    if drop_diag:  # Remove connections of [self, self]
-        keep = np.where(conns[:, 0] != conns[:, 1])[0]
-        conns = conns[keep]
-    # Now convert to actual sparse array in COO format
-    data = np.ones_like(conns[:, 0], dtype=int)
-    if shape is None:
-        N = conns.max() + 1
-        shape = (N, N)
-    am = sprs.coo_matrix((data, (conns[:, 0], conns[:, 1])), shape=shape)
-    if drop_dupes:  # Convert to csr and back too coo
-        am = am.tocsr()
-        am = am.tocoo()
-    # Perform one last check on adjacency matrix
-    missing = np.where(np.bincount(conns.flatten()) == 0)[0]
-    if np.size(missing) or np.any(am.col.max() < (shape[0] - 1)):
-        warnings.warn('Some nodes are not connected to any bonds')
-    return am
+conns_to_am.__doc__ = tools.conns_to_am.__doc__
 
 
 def drop_sites(am, sites):
-    r"""
-    Update adjacency matrix after dropping sites
+    return tools.drop_nodes_from_am(am=am, sites=sites)
 
-    Parameters
-    ----------
-    am : scipy.sparse matrix
-        The adjacency matrix of the network in COO format.
-    sites : array_like
-        A list of which sites to drop.  Can either be integer indices or a
-        boolean mask with ``True`` indicating which sites to drop.
 
-    Returns
-    -------
-    am : ndarray
-        An updated adjacency matrix with sites and headless bonds removed,
-        and site indices updated accordingly
-    dropped_bonds : ndarray
-        A boolean array with ``True`` values indicating which bonds
-        were rendered headless. This can be used to drop invalid bonds
-        from other arrays (i.e. array = array[~dropped_bonds]).
-
-    """
-    import scipy.sparse as sprs
-    sites = np.array(sites)
-    if sites.dtype != bool:
-        inds = np.copy(sites)
-        sites = np.zeros(am.shape[0], dtype=bool)
-        sites[inds] = True
-    site_mask = ~sites
-    conns = np.vstack((am.row, am.col)).T
-    site_id = np.cumsum(site_mask) - 1
-    bond_mask = ~np.all(site_mask[conns], axis=1)
-    conns = site_id[conns[~bond_mask]]
-    am = sprs.coo_matrix((am.data[~bond_mask], (conns[:, 0], conns[:, 1])))
-    return am, bond_mask
+drop_sites.__doc__ = tools.drop_nodes_from_am.__doc__

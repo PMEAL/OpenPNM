@@ -5,6 +5,7 @@ from openpnm._skgraph import settings
 __all__ = [
     'trim_nodes',
     'trim_edges',
+    'drop_nodes_from_am',
 ]
 
 
@@ -78,3 +79,41 @@ def trim_nodes(g, inds):
     remapping = np.cumsum(keep) - 1
     g[edge_prefix+'.conns'] = remapping[g[edge_prefix+'.conns']]
     return g
+
+
+def drop_nodes_from_am(am, nodes):
+    r"""
+    Update adjacency matrix after dropping nodes
+
+    Parameters
+    ----------
+    am : scipy.sparse matrix
+        The adjacency matrix of the network in COO format.
+    nodes : array_like
+        A list of which nodes to drop.  Can either be integer indices or a
+        boolean mask with ``True`` indicating which locations to drop
+
+    Returns
+    -------
+    am : ndarray
+        An updated adjacency matrix with nodes and headless edges removed,
+        and node indices updated accordingly
+    dropped_edges : ndarray
+        A boolean array with ``True`` values indicating which edges
+        were rendered headless. This can be used to drop invalid edges
+        from other arrays (i.e. array = array[~dropped_edges]).
+
+    """
+    import scipy.sparse as sprs
+    nodes = np.array(nodes)
+    if nodes.dtype != bool:
+        inds = np.copy(nodes)
+        nodes = np.zeros(am.shape[0], dtype=bool)
+        nodes[inds] = True
+    node_mask = ~nodes
+    conns = np.vstack((am.row, am.col)).T
+    node_id = np.cumsum(node_mask) - 1
+    edge_mask = ~np.all(node_mask[conns], axis=1)
+    conns = node_id[conns[~edge_mask]]
+    am = sprs.coo_matrix((am.data[~node_mask], (conns[:, 0], conns[:, 1])))
+    return am, edge_mask

@@ -2,32 +2,28 @@ import numpy as np
 
 
 __all__ = [
-    'find_interface_bonds',
+    'find_interface_edges',
     'filter_by_z',
 ]
 
 
-def find_interface_bonds(conns, P1, P2):
+def find_interface_edges(conns, P1, P2):
     """
-    Finds all bonds between two sets pores with the given labels.
+    Finds all bonds between two sets of nodes
 
     Parameters
     ----------
-    network : GenericNetwork
-        The network on which the query is to be performed
+    conns : ndarray
+        The connections of the sparse adjacency matrix in COO format
     P1 : array_like
-        The first set of pores
+        The first set of nodes
     P2 : array_like
-        The second set of pores
+        The second set of nodes
 
     Returns
     -------
     ndarray
-        List of interface throats between the two given sets of pores
-
-    Notes
-    -----
-    This method requires that the two labels do not share any pores.
+        List of interface edges between the two given sets of nodes
 
     """
     if np.intersect1d(P1, P2).size != 0:
@@ -37,16 +33,16 @@ def find_interface_bonds(conns, P1, P2):
     return np.intersect1d(Ts1, Ts2)
 
 
-def filter_by_z(conns, sites, z=1):
+def filter_by_z(conns, nodes, z=1):
     r"""
-    Find sites with a given number of neighbors
+    Find nodes with a given number of neighbors
 
     Parameters
     ----------
     conns : ndarray
-        The network on which the query is to be performed
-    sites : array_like
-        The sites to be filtered
+        The connections of the sparse adjacency matrix in COO format
+    nodes : array_like
+        The nodes to be filtered
     z : int
         The coordination number to filter by
 
@@ -56,8 +52,7 @@ def filter_by_z(conns, sites, z=1):
         A list of pores which satisfy the criteria
 
     """
-    pores = network._parse_indices(pores)
-    Nz = network.num_neighbors(pores=pores)
+    Nz = num_neighbors(nodes=nodes)
     orphans = np.where(Nz == z)[0]
-    hits = pores[orphans]
+    hits = nodes[orphans]
     return hits
