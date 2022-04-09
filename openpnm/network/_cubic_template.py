@@ -3,6 +3,9 @@ import numpy as np
 from openpnm.network import Cubic
 from openpnm import topotools
 from openpnm._skgraph.operations import trim_nodes
+from openpnm._skgraph import settings
+settings.node_prefix = 'pore'
+settings.edge_prefix = 'throat'
 
 
 logger = logging.getLogger(__name__)
@@ -44,8 +47,8 @@ class CubicTemplate(Cubic):
         coords = np.unravel_index(range(template.size), template.shape)
         self['pore.template_coords'] = np.vstack(coords).T
         self['pore.template_indices'] = self.Ps
-        trim_nodes(g=self, inds=template.flatten() == 0,
-                   node_prefix='pore', edge_prefix='throat')
+        d = trim_nodes(g=dict(self), inds=template.flatten() == 0)
+        self.update(d)
         # Add "internal_surface" label to "fake" surface pores!
         ndims = topotools.dimensionality(self).sum()
         max_neighbors = 6 if ndims == 3 else 4

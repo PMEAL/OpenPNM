@@ -20,7 +20,7 @@ def cubic_template(template, spacing=1):
     Returns
     -------
     network : dict
-        A dictionary containing 'vert.coords' and 'edge.conns'
+        A dictionary containing 'node.coords' and 'edge.conns'
 
     """
     node_prefix = settings.node_prefix

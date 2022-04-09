@@ -542,7 +542,7 @@ def get_spacing(network):
 
     """
     from openpnm.topotools.generators.tools import get_spacing
-    d = {'vert.coords': network.coords, 'edge.conns': network.conns}
+    d = {'node.coords': network.coords, 'edge.conns': network.conns}
     spc = get_spacing(d)
     return spc
 
@@ -564,7 +564,7 @@ def get_shape(network):
 
     """
     from openpnm.topotools.generators.tools import get_shape
-    d = {'vert.coords': network.coords, 'edge.conns': network.conns}
+    d = {'node.coords': network.coords, 'edge.conns': network.conns}
     shp = get_shape(d)
     return shp
 

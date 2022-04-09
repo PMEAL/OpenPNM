@@ -18,7 +18,7 @@ def voronoi(points, shape=[1, 1, 1]):
     Returns
     -------
     network : dict
-        A dictionary containing 'vert.coords' and 'edge.conns'
+        A dictionary containing 'node.coords' and 'edge.conns'
     vor : Voronoi tessellation object
         The Voronoi tessellation object produced by ``scipy.spatial.Voronoi``
 

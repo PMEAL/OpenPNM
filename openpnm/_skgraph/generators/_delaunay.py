@@ -18,7 +18,7 @@ def delaunay(points, shape=[1, 1, 1]):
     Returns
     -------
     network : dict
-        A dictionary containing 'vert.coords' and 'edge.conns'
+        A dictionary containing 'node.coords' and 'edge.conns'
     tri : Delaunay tessellation object
         The Delaunay tessellation object produced by ``scipy.spatial.Delaunay``
     """

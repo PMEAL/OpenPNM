@@ -25,7 +25,7 @@ def voronoi_delaunay_dual(points, shape, crop=False):
     Returns
     -------
     network : dict
-        A dictionary containing 'vert.coords' and 'edge.conns'
+        A dictionary containing 'node.coords' and 'edge.conns'
     vor : Voronoi object
         The Voronoi tessellation object produced by ``scipy.spatial.Voronoi``
     tri : Delaunay object
