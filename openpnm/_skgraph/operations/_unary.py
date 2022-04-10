@@ -1,4 +1,5 @@
 import numpy as np
+import scipy.sparse as sprs
 from openpnm._skgraph import settings
 
 
@@ -104,7 +105,6 @@ def drop_nodes_from_am(am, inds):
         from other arrays (i.e. array = array[~dropped_edges]).
 
     """
-    import scipy.sparse as sprs
     nodes = np.array(inds)
     if nodes.dtype != bool:
         inds = np.copy(nodes)
@@ -115,5 +115,5 @@ def drop_nodes_from_am(am, inds):
     node_id = np.cumsum(node_mask) - 1
     edge_mask = ~np.all(node_mask[conns], axis=1)
     conns = node_id[conns[~edge_mask]]
-    am = sprs.coo_matrix((am.data[~node_mask], (conns[:, 0], conns[:, 1])))
+    am = sprs.coo_matrix((am.data[~edge_mask], (conns[:, 0], conns[:, 1])))
     return am, edge_mask
