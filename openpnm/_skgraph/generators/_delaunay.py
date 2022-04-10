@@ -23,7 +23,7 @@ def delaunay(points, shape=[1, 1, 1]):
         The Delaunay tessellation object produced by ``scipy.spatial.Delaunay``
     """
     from openpnm.topotools import tri_to_am
-    from openpnm.topotools.generators import tools
+    from openpnm._skgraph.generators import tools
 
     node_prefix = settings.node_prefix
     edge_prefix = settings.edge_prefix

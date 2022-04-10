@@ -5,6 +5,7 @@ Tools
 """
 import numpy as np
 from openpnm._skgraph import settings
+from openpnm._skgraph import tools
 
 
 __all__ = [
@@ -16,6 +17,11 @@ __all__ = [
     'label_faces',
     'template_sphere_shell',
     'template_cylinder_annulus',
+    'generate_base_points',
+    'reflect_base_points',
+]
+
+__notyet__ = [
 ]
 
 
@@ -247,31 +253,31 @@ def template_cylinder_annulus(height, outer_radius, inner_radius=0):
 
 def reflect_base_points(points, domain_size):
     r"""
-    Helper function for relecting a set of points about the faces of a
-    given domain.
+    Relects a set of points about the faces of a given domain
 
     Parameters
     ----------
-    points : array_like
-        The coordinates of the base_pts to be reflected in the coordinate
-        system corresponding to the the domain as follows:
-
-        **spherical** : [r, theta, phi]
-        **cylindrical** or **circular** : [r, theta, z]
-        **rectangular** or **square** : [x, y, z]
+    points : ndarray
+        The coordinates of the points to be reflected.  The points should be
+        in the coordinate system corresponding to the the domain.
     domain_size : list or array
         Controls the size and shape of the domain, as follows:
 
         ========== ============================================================
         shape      result
         ========== ============================================================
-        [x, y, z]  A 3D cubic domain of dimension x, y and z
-        [x, y, 0]  A 2D square domain of size x by y
-        [r, z]     A 3D cylindrical domain of radius r and height z
-        [r, 0]     A 2D circular domain of radius r
-        [r]        A 3D spherical domain of radius r
+        [x, y, z]  Points will be reflected about all 6 faces
+        [x, y, 0]  Points will be relfected about the x and y faces
+        [r, z]     Points will be reflected above and below the end faces and
+                   across the perimeter
+        [r, 0]     Points will be reflected across the perimeter
+        [r]        Points will be reflected across the outer surface
         ========== ============================================================
 
+    Returns
+    -------
+    points : ndarray
+        The coordinates of the original points plus the new reflected points
     """
     domain_size = np.array(domain_size)
     if len(domain_size) == 1:
@@ -311,103 +317,80 @@ def reflect_base_points(points, domain_size):
 
 def generate_base_points(num_points, domain_size, reflect=True):
     r"""
-    Generates a set of base points for passing into the Tessellation-based
-    Network classes.  The points can be distributed in spherical, cylindrical,
-    or rectilinear patterns, as well as 2D and 3D (disks and squares).
+    Generates a set of randomly distributed points in rectilinear coordinates
+    for use in spatial tessellations
+
+    The points can be distributed in spherical, cylindrical, or rectilinear
+    domains, as well as 2D and 3D (disks and squares)
 
     Parameters
     ----------
     num_points : scalar
-        The number of base points that lie within the domain.  Note that the
-        actual number of points returned will be larger, with the extra points
-        lying outside the domain.
+        The number of base points that lie within the domain
     domain_size : list or array
         Controls the size and shape of the domain, as follows:
 
         ========== ============================================================
         shape      result
         ========== ============================================================
-        [x, y, z]  A 3D cubic domain of dimension x, y and z
-        [x, y, 0]  A 2D square domain of size x by y
-        [r, z]     A 3D cylindrical domain of radius r and height z
-        [r, 0]     A 2D circular domain of radius r
-        [r]        A 3D spherical domain of radius r
+        [x, y, z]  A 3D cubic domain of dimension x, y and z, with points in
+                   the range [0:x, 0:y, 0:z]
+        [x, y, 0]  A 2D square domain of size x by y, with points in the range
+                   [0:x, 0:y, 0:0]
+        [r, z]     A 3D cylindrical domain of radius r and height z, with
+                   points in the range [-r/2:r/2, -r/2:r/2, 0:z]
+        [r, 0]     A 2D circular domain of radius r, with points in the range
+                   [-r/2:r/2, -r/2:r/2, 0:0]
+        [r]        A 3D spherical domain of radius r, with points in the range
+                   [-r/2:r/2, -r/2:r/2, -r/2:r/2]
         ========== ============================================================
 
     reflect : bool
         If ``True``, the base points are generated as specified then reflected
         about each face of the domain.  This essentially tricks the
-        tessellation functions into creating smooth faces at the
-        boundaries once these excess points are trimmed.
+        tessellation functions into creating smooth faces at the boundaries
+        once these excess points are trimmed. Note that the surface is not
+        perfectly smooth for the curved faces.
 
     Notes
     -----
-    The ``Voronoi``, ``Delaunay``, ``Gabriel``, and ``DelunayVoronoiDual``
-    classes can *techncially* handle base points with spherical or cylindrical
-    domains, but the reflection across round surfaces does not create perfect
-    Voronoi cells so the surfaces will not be smooth.
-
+    To convert between coordinate systems see ``cart2sph`` and ``cart2cyl``
 
     """
-
-    def _try_points(num_points, prob):
-        prob = np.atleast_3d(prob)
-        prob = np.array(prob)/np.amax(prob)  # Ensure prob is normalized
-        base_pts = []
-        N = 0
-        while N < num_points:
-            pt = np.random.rand(3)  # Generate a point
-            # Test whether to keep it or not
-            [indx, indy, indz] = np.floor(pt*np.shape(prob)).astype(int)
-            if np.random.rand(1) <= prob[indx][indy][indz]:
-                base_pts.append(pt)
-                N += 1
-        base_pts = np.array(base_pts)
-        return base_pts
-
     if len(domain_size) == 1:  # Spherical
         domain_size = np.array(domain_size)
-        r = domain_size[0]
-        base_pts = _try_points(num_points, density_map)
+        base_pts = np.random.rand(num_points*9, 3)  # Generate more than needed
         # Convert to spherical coordinates
-        X, Y, Z = np.array(base_pts - [0.5, 0.5, 0.5]).T
-        r = 2*np.sqrt(X**2 + Y**2 + Z**2)*domain_size[0]
-        theta = 2*np.arctan(Y/X)
-        phi = 2*np.arctan(np.sqrt(X**2 + Y**2)/Z)
-        # Trim points outside the domain (from improper prob images)
-        inds = r <= domain_size[0]
-        [r, theta, phi] = [r[inds], theta[inds], phi[inds]]
+        X, Y, Z = (np.array(base_pts - [0.5, 0.5, 0.5]))*domain_size
+        R, Q, P = tools.cart2sph(X, Y, Z).T
+        # Keep points outside the domain
+        inds = R <= domain_size[0]/2
+        R, Q, P = R[inds], Q[inds], P[inds]
+        # Trim internal points to give requested final number
+        R, Q, P = R[:num_points], Q[:num_points], P[:num_points]
         # Reflect base points across perimeter
         if reflect:
-            r, theta, phi = reflect_base_points(np.vstack((r, theta, phi)),
-                                                domain_size)
+            R, Q, P = reflect_base_points(np.vstack((R, Q, P)).T, domain_size)
         # Convert to Cartesean coordinates
-        X, Y, Z = from_spherical(r, theta, phi)
-        base_pts = np.vstack([X, Y, Z]).T
+        base_pts = tools.sph2cart(R, Q, P)
 
     elif len(domain_size) == 2:  # Cylindrical or Disk
-        domain_size = np.array(domain_size)
-        base_pts = _try_points(num_points, density_map)
+        domain_size = np.array([domain_size[0], domain_size[0], domain_size[1]])
+        base_pts = np.random.rand(num_points*9, 3)  # Generate more than needed
         # Convert to cylindrical coordinates
-        X, Y, Z = np.array(base_pts - [0.5, 0.5, 0]).T  # Center on z-axis
-        r = 2*np.sqrt(X**2 + Y**2)*domain_size[0]
-        theta = 2*np.arctan(Y/X)
-        z = Z*domain_size[1]
+        X, Y, Z = ((np.array(base_pts - [0.5, 0.5, 0]))*domain_size).T
+        R, Q, Z = tools.cart2cyl(X, Y, Z).T
         # Trim points outside the domain (from improper prob images)
-        inds = r <= domain_size[0]
-        [r, theta, z] = [r[inds], theta[inds], z[inds]]
-        inds = ~((z > domain_size[1]) + (z < 0))
-        [r, theta, z] = [r[inds], theta[inds], z[inds]]
+        inds = R <= domain_size[0]/2
+        R, Q, Z = R[inds], Q[inds], Q[inds]
+        R, Q, Z = R[:num_points], Q[:num_points], Z[:num_points]
         if reflect:
-            r, theta, z = reflect_base_points(np.vstack([r, theta, z]),
-                                              domain_size)
+            R, Q, Z = reflect_base_points(np.vstack((R, Q, Z)).T, domain_size)
         # Convert to Cartesean coordinates
-        X, Y, Z = from_cylindrical(r, theta, z)
-        base_pts = np.vstack([X, Y, Z]).T
+        base_pts = tools.cyl2cart(R, Q, Z)
 
     elif len(domain_size) == 3:  # Cube or square
-        base_pts = _try_points(num_points, density_map)
-        base_pts = base_pts*domain_size
+        base_pts = np.random.rand(num_points, 3)*domain_size
         if reflect:
             base_pts = reflect_base_points(base_pts, domain_size)
 

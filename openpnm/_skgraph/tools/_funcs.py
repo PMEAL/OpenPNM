@@ -30,6 +30,10 @@ __all__ = [
     'istril',
     'istriangular',
     'issymmetric',
+    'cart2sph',
+    'sph2cart',
+    'cart2cyl',
+    'cyl2cart',
 ]
 
 
@@ -357,7 +361,48 @@ def sph2cart(r, theta, phi):
     return np.vstack((x, y, z)).T
 
 
+def cart2cyl(x, y, z):
+    r"""
+
+    Notes
+    -----
+    Surprizingly (and annoyingly) this is not built into numpy, for reasons
+    discussed `here <https://github.com/numpy/numpy/issues/5228>`_.
+    """
+    theta = np.arctan2(y, x)
+    r = np.hypot(x, y)
+    return np.vstack((r, theta, z)).T
+
+
+def cyl2cart(r, theta, z):
+    r"""
+
+    Notes
+    -----
+    Surprizingly (and annoyingly) this is not built into numpy, for reasons
+    discussed `here <https://github.com/numpy/numpy/issues/5228>`_.
+    """
+    x = r * np.cos(theta)
+    y = r * np.sin(theta)
+    return np.stack((x, y, z)).T
+
+
 def find_surface_nodes_cubic(coords):
+    r"""
+    Identifies nodes on the outer surface of the domain assuming a cubic domain
+    to save time
+
+    Parameters
+    ----------
+    coords : ndarray
+        The coordinates of nodes in the network
+
+    Returns
+    -------
+    mask : ndarray
+        A boolean array of ``True`` values indicating which nodes were found
+        on the surfaces.
+    """
     hits = np.zeros(coords.shape[0], dtype=bool)
     dims = dimensionality(coords)
     for d in range(3):
@@ -474,32 +519,6 @@ def hull_centroid(coords):
     centroid = coords.mean(axis=0)
     centroid[dim] = hull.points[hull.vertices].mean(axis=0)
     return centroid
-
-
-def cart2cyl(x, y, z):
-    theta = np.arctan2(y, x)
-    r = np.hypot(x, y)
-    return r, theta, z
-
-
-def cyl2cart(r, theta, z):
-    x = r * np.cos(theta)
-    y = r * np.sin(theta)
-    return x, y, z
-
-
-def to_cylindrical(X, Y, Z):
-    r = 2*np.sqrt(X**2 + Y**2)
-    theta = 2*np.arctan(Y/X)
-    z = Z
-    return np.vstack((r, theta, z))
-
-
-def from_cylindrical(r, theta, z):
-    X = r*np.cos(theta)
-    Y = r*np.sin(theta)
-    Z = z
-    return np.vstack((X, Y, Z))
 
 
 def iscoplanar(coords):

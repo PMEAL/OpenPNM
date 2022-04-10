@@ -14,6 +14,7 @@ __all__ = [
     'find_complementary_nodes',
     'find_complementary_edges',
     'find_path',
+    'find_coordination',
 ]
 
 
@@ -426,15 +427,15 @@ def find_connecting_edges(inds, am):
 
 def find_common_edges(conns, inds_1, inds_2):
     """
-    Finds all bonds between two sets of nodes
+    Finds edges shared between two sets of nodes
 
     Parameters
     ----------
     conns : ndarray
         The connections of the sparse adjacency matrix in COO format
-    inds2 : array_like
+    inds_1 : array_like
         A list of indices defining the first set of nodes
-    P2 : array_like
+    inds_2 : array_like
         A list of indices defining the second set of nodes
 
     Returns
@@ -450,9 +451,9 @@ def find_common_edges(conns, inds_1, inds_2):
     return np.intersect1d(edges_1, edges_2)
 
 
-def filter_by_z(conns, nodes, z=1):
+def filter_by_z(conns, inds, z=1):
     r"""
-    Find nodes with a given number of neighbors
+    Filters a list of nodes to those with a given number of neighbors
 
     Parameters
     ----------
@@ -465,14 +466,40 @@ def filter_by_z(conns, nodes, z=1):
 
     Returns
     -------
-    pores : array_like
-        A list of pores which satisfy the criteria
+    inds : array_like
+        A list of node indices which satisfy the criteria
 
     """
-    Nz = num_neighbors(inds=inds)
-    orphans = np.where(Nz == z)[0]
-    hits = nodes[orphans]
-    return hits
+    coordination = find_coordination(conns)
+    hits = coordination == z
+    inds = inds[hits[inds]]
+    return inds
+
+
+def find_coordination(conns, nodes=None):
+    r"""
+    Find the coordination number of nodes
+
+    Parameters
+    ----------
+    conns : ndarray
+        The edge list of the network
+    nodes : array_like, optional
+        The nodes for which coordination is sought.  If not provided then
+        coordination for *all* nodes is returned
+
+    Returns
+    -------
+    z : ndarray
+        An array containing the number of neighbors for each given node
+    """
+    am = sprs.coo_matrix((np.ones(conns.shape[0], dtype=int),
+                          (conns[:, 0], conns[:, 1])))
+    am = am.tocsr()
+    z = am.sum(axis=1).A1
+    if nodes is None:
+        nodes = np.arange(am.shape[0])
+    return z[nodes]
 
 
 def find_path(am, pairs):
