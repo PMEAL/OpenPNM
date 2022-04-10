@@ -3,7 +3,6 @@ import scipy.sparse as sprs
 import numpy as np
 from openpnm._skgraph.generators import tools
 from openpnm._skgraph.operations import trim_nodes
-from openpnm.topotools import isoutside, conns_to_am
 from openpnm._skgraph import settings
 
 
@@ -32,6 +31,7 @@ def voronoi_delaunay_dual(points, shape, crop=False):
         The Delaunay triangulation object produced ``scipy.spatial.Delaunay``
 
     """
+    from openpnm.topotools import isoutside, conns_to_am
     node_prefix = settings.node_prefix
     edge_prefix = settings.edge_prefix
     # Generate a set of base points if scalar was given

@@ -26,7 +26,6 @@ __all__ = [
     'stitch_pores',
     'connect_pores',
     'find_pore_to_pore_distance',
-    'trim_occluded_throats',
     'merge_pores',
     'hull_centroid',
     'template_sphere_shell',
@@ -391,7 +390,7 @@ def find_surface_pores(network, markers=None, label='surface'):
 def dimensionality(network=None, coords=None):
     if coords is None:
         coords = network.coords
-    return dimensionality(coords)
+    return skgr.tools.dimensionality(coords)
 
 
 dimensionality.__doc__ = skgr.tools.dimensionality.__doc__
@@ -825,24 +824,6 @@ def find_pore_to_pore_distance(network, pores1=None, pores2=None):
     return cdist(coords[p1], coords[p2])
 
 
-def trim_occluded_throats(network, mask='all'):
-    r"""
-    Remove throats with zero area from the network and also remove
-    pores that are isolated as a result
-
-    Parameters
-    ----------
-    network : GenericNetwork
-
-    mask : str
-        Applies routine only to throats with this label
-    """
-    occluded_ts = network['throat.cross_sectional_area'] == 0
-    if np.sum(occluded_ts) > 0:
-        occluded_ts *= network["throat."+mask]
-        trim(network=network, throats=occluded_ts)
-
-
 def merge_pores(network, pores, labels=['merged']):
     r"""
     Combines a selection of pores into a new single pore located at the
@@ -1234,10 +1215,10 @@ filter_pores_by_z.__doc__ = skgr.queries.filter_by_z.__doc__
 
 
 def find_interface_throats(network, P1, P2):
-    return skgr.find_common_edges(conns=network.conns, inds_1=P1, inds_2=P2)
+    return skgr.queries.find_common_edges(conns=network.conns, inds_1=P1, inds_2=P2)
 
 
-find_interface_throats.__doc__ = skgr.find_common_edges.__doc__
+find_interface_throats.__doc__ = skgr.queries.find_common_edges.__doc__
 
 
 def add_reservoir_pore(cls, network, pores, offset=0.1):
