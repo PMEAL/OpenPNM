@@ -81,7 +81,7 @@ def trim_nodes(g, inds):
     return g
 
 
-def drop_nodes_from_am(am, nodes):
+def drop_nodes_from_am(am, inds):
     r"""
     Update adjacency matrix after dropping nodes
 
@@ -89,9 +89,9 @@ def drop_nodes_from_am(am, nodes):
     ----------
     am : scipy.sparse matrix
         The adjacency matrix of the network in COO format.
-    nodes : array_like
-        A list of which nodes to drop.  Can either be integer indices or a
-        boolean mask with ``True`` indicating which locations to drop
+    inds : array_like
+        A list of which nodes indices to drop.  Can either be integer indices
+        or a boolean mask with ``True`` indicating which locations to drop
 
     Returns
     -------
@@ -105,7 +105,7 @@ def drop_nodes_from_am(am, nodes):
 
     """
     import scipy.sparse as sprs
-    nodes = np.array(nodes)
+    nodes = np.array(inds)
     if nodes.dtype != bool:
         inds = np.copy(nodes)
         nodes = np.zeros(am.shape[0], dtype=bool)

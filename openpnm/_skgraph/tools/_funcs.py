@@ -255,7 +255,7 @@ def dimensionality(coords):
 
 def generate_points_on_sphere(n=100, r=1):
     r"""
-    Generates points on a sphere of a given radius
+    Generates points on a the surface of a sphere with the given radius
 
     Parameters
     ----------
@@ -271,7 +271,7 @@ def generate_points_on_sphere(n=100, r=1):
     -------
     coords : ndarray
         An array of x, y, z coordinates for the sphere which will be centered
-        on [0, 0, 0].
+        on [0, 0, 0]
 
     """
     if isinstance(n, int):
@@ -304,11 +304,24 @@ def generate_points_on_sphere(n=100, r=1):
 
 
 def generate_points_in_disk(n=100, r=1):
+    r"""
+    Generates equally spaced points inside a disk
+    """
     indices = np.arange(0, n, dtype=float) + 0.5
     r = np.sqrt(indices/n)
     theta = np.pi*(1 + 5**0.5)*indices
     x = r*np.cos(theta)
     y = r*np.sin(theta)
+    return np.vstack((x, y)).T
+
+
+def generate_points_on_a_circle(n=100, r=1):
+    r"""
+    Generates ``n`` equally spaced points on a circle in cartesean coordinates
+    """
+    theta = np.linspace(0, 2*np.pi, n, endpoint=False)
+    r = np.ones_like(theta)*r
+    x, y, z = cyl2cart(r=r, theta=theta, z=0)
     return np.vstack((x, y)).T
 
 
@@ -362,8 +375,14 @@ def find_surface_sites(coords):
     coords = coords - shift
     tmp = cart2sph(*coords.T)
     r = 2*tmp[0].max()
-    markers = generate_points_on_sphere(n=int(coords.shape[0]/10), r=r)
-    pts = np.vstack((coords, markers))
+    # Check if domain is 2D
+    check = np.all(coords == coords.mean(axis=0), axis=0)
+    if any(check):
+        markers = generate_points_on_a_circle(n=max(10, int(coords.shape[0]/10)), r=r)
+        pts = np.vstack((coords[:, [0, 1]], markers))
+    else:
+        markers = generate_points_on_sphere(n=max(10, int(coords.shape[0]/10)), r=r)
+        pts = np.vstack((coords, markers))
     tri = Delaunay(pts, incremental=False)
     (indices, indptr) = tri.vertex_neighbor_vertices
     hits = np.zeros(coords.shape[0], dtype=bool)

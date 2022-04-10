@@ -180,9 +180,9 @@ class GraphToolsTest:
     def test_find_connecting_bonds_nonexistant_connections(self):
         am = self.net.create_adjacency_matrix(weights=self.net.Ts, fmt='dok')
         T = topotools.find_connecting_bonds(sites=[0, 5], am=am)
-        assert np.all(T == [None])
+        assert np.isnan(T).sum() == 1
         T = topotools.find_connecting_bonds(sites=[[0, 1], [0, 5]], am=am)
-        assert np.all(T == [0, None])
+        assert np.isnan(T).sum() == 1
 
     def test_find_connecting_bonds_multiple_sites_fmt_not_dok(self):
         am = self.net.create_adjacency_matrix(weights=self.net.Ts, fmt='csr')
@@ -521,32 +521,32 @@ class GraphToolsTest:
         assert len(clusters[0]) == net.Np
         assert len(clusters[1]) == net.Nt
 
-    def test_find_complement(self):
-        am = self.net.create_adjacency_matrix(weights=self.net.Ts, fmt='coo')
-        a = [0, 1, 2]
-        b = topotools.find_complement(sites=a, am=am)
-        assert set(a).isdisjoint(b)
-        a = [0, 1, 2]
-        b = topotools.find_complement(bonds=a, am=am)
-        assert set(a).isdisjoint(b)
-        with pytest.raises(Exception):
-            topotools.find_complement(am=am)
-        with pytest.raises(Exception):
-            topotools.find_complement(am=am, sites=a, bonds=a)
+    # def test_find_complement(self):
+    #     am = self.net.create_adjacency_matrix(weights=self.net.Ts, fmt='coo')
+    #     a = [0, 1, 2]
+    #     b = topotools.find_complement(sites=a, am=am)
+    #     assert set(a).isdisjoint(b)
+    #     a = [0, 1, 2]
+    #     b = topotools.find_complement(bonds=a, am=am)
+    #     assert set(a).isdisjoint(b)
+    #     with pytest.raises(Exception):
+    #         topotools.find_complement(am=am)
+    #     with pytest.raises(Exception):
+    #         topotools.find_complement(am=am, sites=a, bonds=a)
 
-    def test_find_complement_asmask(self):
-        am = self.net.create_adjacency_matrix(weights=self.net.Ts, fmt='coo')
-        a = [0, 1, 2]
-        b = topotools.find_complement(sites=a, am=am, asmask=True)
-        assert len(b) == self.net.Np
+    # def test_find_complement_asmask(self):
+    #     am = self.net.create_adjacency_matrix(weights=self.net.Ts, fmt='coo')
+    #     a = [0, 1, 2]
+    #     b = topotools.find_complement(sites=a, am=am, asmask=True)
+    #     assert len(b) == self.net.Np
 
-    def test_drop_sites(self):
-        am = self.net.create_adjacency_matrix(fmt='coo')
-        assert np.all(am.shape == (6, 6))
-        assert am.col.max() == 5
-        am, Ts = topotools.drop_sites(am, sites=[0])
-        assert np.all(am.shape == (5, 5))
-        assert am.col.max() == 4
+    # def test_drop_sites(self):
+    #     am = self.net.create_adjacency_matrix(fmt='coo')
+    #     assert np.all(am.shape == (6, 6))
+    #     assert am.col.max() == 5
+    #     am, Ts = topotools.drop_sites(am, sites=[0])
+    #     assert np.all(am.shape == (5, 5))
+    #     assert am.col.max() == 4
 
 
 if __name__ == '__main__':
