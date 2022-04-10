@@ -7,6 +7,7 @@ __all__ = [
     'bond_percolation',
     'find_connected_clusters',
     'find_trapped_clusters',
+    'find_connected_clusters',
 ]
 
 

@@ -4,6 +4,7 @@ import scipy.spatial as sptl
 from openpnm.network import GenericNetwork
 from openpnm._skgraph.generators import gabriel
 from openpnm._skgraph.operations import trim_nodes
+from openpnm._skgraph import settings
 
 
 logger = logging.getLogger(__name__)
@@ -41,8 +42,9 @@ class Gabriel(GenericNetwork):
 
     def __init__(self, shape=[1, 1, 1], points=None, trim=True, **kwargs):
         super().__init__(**kwargs)
-        net = gabriel(shape=shape, points=points,
-                      node_prefix='pore', edge_prefix='throat')
+        settings.node_prefix = 'pore'
+        settings.edge_prefix = 'throat'
+        net = gabriel(shape=shape, points=points)
         points = net['pore.coords']
         conns = net['throat.conns']
         # Find centroid of each pair of nodes

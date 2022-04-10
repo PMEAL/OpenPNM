@@ -16,7 +16,9 @@ __all__ = [
     'dimensionality',
     'generate_points_on_sphere',
     'generate_points_in_disk',
-    'find_surface_sites',
+    'generate_points_on_circle',
+    'find_surface_nodes',
+    'find_surface_nodes_cubic',
     'site_to_site_distance',
     'hull_centroid',
     'tri_to_am',
@@ -315,7 +317,7 @@ def generate_points_in_disk(n=100, r=1):
     return np.vstack((x, y)).T
 
 
-def generate_points_on_a_circle(n=100, r=1):
+def generate_points_on_circle(n=100, r=1):
     r"""
     Generates ``n`` equally spaced points on a circle in cartesean coordinates
     """
@@ -355,37 +357,61 @@ def sph2cart(r, theta, phi):
     return np.vstack((x, y, z)).T
 
 
-def find_surface_sites(coords):
+def find_surface_nodes_cubic(coords):
+    hits = np.zeros(coords.shape[0], dtype=bool)
+    dims = dimensionality(coords)
+    for d in range(3):
+        if dims[d]:
+            hi = np.where(coords[:, d] == coords[:, d].max())[0]
+            lo = np.where(coords[:, d] == coords[:, d].min())[0]
+            hits[hi] = True
+            hits[lo] = True
+    return hits
+
+
+def find_surface_nodes(coords):
     r"""
-    Identifies sites on the outer surface of the domain
+    Identifies nodes on the outer surface of the domain
 
     Parameters
     ----------
     coords : ndarray
-        The coordinates of sites in the network
+        The coordinates of nodes in the network
 
     Returns
     -------
     mask : ndarray
-        A boolean array of ``True`` values indicating which sites where found
+        A boolean array of ``True`` values indicating which nodes were found
         on the surfaces.
+
+    Notes
+    -----
+    This function generates points around the domain the performs a Delaunay
+    tesselation between these points and the network nodes.  Any network
+    nodes which are connected to a generated point is considered a surface
+    node.
     """
     coords = np.copy(coords)
     shift = np.mean(coords, axis=0)
     coords = coords - shift
     tmp = cart2sph(*coords.T)
+    hits = np.zeros(coords.shape[0], dtype=bool)
     r = 2*tmp[0].max()
-    # Check if domain is 2D
-    check = np.all(coords == coords.mean(axis=0), axis=0)
-    if any(check):
-        markers = generate_points_on_a_circle(n=max(10, int(coords.shape[0]/10)), r=r)
-        pts = np.vstack((coords[:, [0, 1]], markers))
+    dims = dimensionality(coords)
+    if sum(dims) == 1:
+        hi = np.where(coords[:, dims] == coords[:, dims].max())[0]
+        lo = np.where(coords[:, dims] == coords[:, dims].min())[0]
+        hits[hi] = True
+        hits[lo] = True
+        return hits
+    if sum(dims) == 2:
+        markers = generate_points_on_circle(n=max(10, int(coords.shape[0]/10)), r=r)
+        pts = np.vstack((coords[:, dims], markers))
     else:
         markers = generate_points_on_sphere(n=max(10, int(coords.shape[0]/10)), r=r)
         pts = np.vstack((coords, markers))
     tri = Delaunay(pts, incremental=False)
     (indices, indptr) = tri.vertex_neighbor_vertices
-    hits = np.zeros(coords.shape[0], dtype=bool)
     for k in range(coords.shape[0], tri.npoints):
         neighbors = indptr[indices[k]:indices[k+1]]
         inds = np.where(neighbors < coords.shape[0])

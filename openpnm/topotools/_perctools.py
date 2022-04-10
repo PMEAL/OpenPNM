@@ -3,6 +3,8 @@ import numpy as np
 import scipy.sparse as sprs
 from scipy.sparse import csgraph
 from openpnm.utils import PrintableDict, Workspace
+from openpnm._skgraph import simulations
+from openpnm._skgraph import queries
 
 
 logger = logging.getLogger(__name__)
@@ -17,187 +19,32 @@ __all__ = [
 ]
 
 
-def ispercolating(am, inlets, outlets, mode='site'):
-    r"""
-    Determines if a percolating clusters exists in the network spanning
-    the given inlet and outlet sites
-
-    Parameters
-    ----------
-    am : adjacency_matrix
-        The adjacency matrix with the ``data`` attribute indicating
-        if a bond is occupied or not
-
-    inlets : array_like
-        An array of indices indicating which sites are part of the inlets
-
-    outlets : array_like
-        An array of indices indicating which sites are part of the outlets
-
-    mode : str
-        Indicates which type of percolation to apply,. Options are:
-
-            ===========  =====================================================
-            mode         meaning
-            ===========  =====================================================
-            'site'       Applies site percolation
-            'bond'       Applies bond percolation
-            ===========  =====================================================
-
-    """
-    if am.format != 'coo':
-        am = am.to_coo()
-    ij = np.vstack((am.col, am.row)).T
-    if mode.startswith('site'):
-        occupied_sites = np.zeros(shape=am.shape[0], dtype=bool)
-        occupied_sites[ij[am.data].flatten()] = True
-        clusters = site_percolation(ij, occupied_sites)
-    elif mode.startswith('bond'):
-        occupied_bonds = am.data
-        clusters = bond_percolation(ij, occupied_bonds)
-    ins = np.unique(clusters.sites[inlets])
-    if ins[0] == -1:
-        ins = ins[1:]
-    outs = np.unique(clusters.sites[outlets])
-    if outs[0] == -1:
-        outs = outs[1:]
-    hits = np.in1d(ins, outs)
-    return np.any(hits)
+def ispercolating(**kwargs):
+    return simulations.ispercolating(**kwargs)
 
 
-def remove_isolated_clusters(labels, inlets):
-    r"""
-    Finds cluster labels not attached to the inlets, and sets them to
-    unoccupied (-1)
+ispercolating.__doc__ = simulations.ispercolating.__doc__
 
-    Parameters
-    ----------
-    labels : tuple of site and bond labels
-        This information is provided by the ``site_percolation`` or
-        ``bond_percolation`` functions
 
-    inlets : array_like
-        A list of which sites are inlets.  Can be a boolean mask or an
-        array of indices.
+def remove_isolated_clusters(**kwargs):
+    return simulations.remove_isolated_clusters(**kwargs)
 
-    Returns
-    -------
-    A tuple containing a list of site and bond labels, with all clusters
-    not connected to the inlet sites set to not occupied.
 
-    """
-    # Identify clusters of invasion sites
-    inv_clusters = np.unique(labels.sites[inlets])
-    # Remove cluster numbers == -1, if any
-    inv_clusters = inv_clusters[inv_clusters >= 0]
-    # Find all pores in invading clusters
-    p_invading = np.in1d(labels.sites, inv_clusters)
-    labels.sites[~p_invading] = -1
-    t_invading = np.in1d(labels.bonds, inv_clusters)
-    labels.bonds[~t_invading] = -1
-    return labels
+remove_isolated_clusters.__doc__ = simulations.remove_isolated_clusters.__doc__
 
 
 def site_percolation(ij, occupied_sites):
-    r"""
-    Calculates the site and bond occupancy status for a site percolation
-    process given a list of occupied sites.
+    return simulations.site_percolation_orig(conns=ij, inds=occupied_sites)
 
-    Parameters
-    ----------
-    ij : array_like
-        An N x 2 array of [site_A, site_B] connections.  If two connected
-        sites are both occupied they are part of the same cluster, as it
-        the bond connecting them.
 
-    occupied_sites : bool
-        A list indicating whether sites are occupied or not
-
-    Returns
-    -------
-    A tuple containing a list of site and bond labels, indicating which
-    cluster each belongs to.  A value of -1 indicates unoccupied.
-
-    Notes
-    -----
-    The ``connected_components`` function of scipy.sparse.csgraph will give ALL
-    sites a cluster number whether they are occupied or not, so this
-    function essentially adjusts the cluster numbers to represent a
-    percolation process.
-
-    """
-    from collections import namedtuple
-    import scipy.stats as spst
-
-    Np = np.size(occupied_sites)
-    occupied_bonds = np.all(occupied_sites[ij], axis=1)
-    adj_mat = sprs.csr_matrix((occupied_bonds, (ij[:, 0], ij[:, 1])),
-                              shape=(Np, Np))
-    adj_mat.eliminate_zeros()
-    clusters = csgraph.connected_components(csgraph=adj_mat, directed=False)[1]
-    clusters[~occupied_sites] = -1
-    s_labels = spst.rankdata(clusters + 1, method="dense") - 1
-    if np.any(~occupied_sites):
-        s_labels -= 1
-    b_labels = np.amin(s_labels[ij], axis=1)
-    tup = namedtuple('cluster_labels', ('sites', 'bonds'))
-    return tup(s_labels, b_labels)
+site_percolation.__doc__ = simulations.site_percolation_orig.__doc__
 
 
 def bond_percolation(conns, occupied_bonds):
-    r"""
-    Calculates the site and bond occupancy status for a bond percolation
-    process given a list of occupied bonds.
+    return simulations.bond_percolation_orig(conns=conns, inds=occupied_bonds)
 
-    Parameters
-    ----------
-    conns : array_like
-        An N x 2 array of connections whether occupied or not.
-        If the adjacency matrix is in the COO sparse format then this
-        can be obtained using ``np.vstack(am.row, am.col).T``.  The
-        matrix can be symmetric but only the upper triangular portion
-        is kept.
 
-    occupied_bonds: array containing bools
-        A list of boolean values indicating whether a bond is occupied
-        (``True``) or not (``False``). This must be the same length as
-        ``conns``, but the lower triangular protion is ignored and the
-        process is treated as undirected.
-
-    Returns
-    -------
-    A tuple containing a list of site and bond labels, indicating which
-    cluster each belongs to.  A value of -1 indicates uninvaded.
-
-    Notes
-    -----
-    The ``connected_components`` function of ``scipy.sparse.csgraph`` will give
-     a cluster number to ALL sites whether they are occupied or not, so this
-    function essentially adjusts the cluster numbers to represent a
-    percolation process.
-
-    """
-    from collections import namedtuple
-    Np = np.amax(conns) + 1
-    # Find occupied sites based on occupied bonds
-    # (the following 2 lines are not needed but worth keeping for future ref)
-    # occupied_sites = np.zeros([Np, ], dtype=bool)
-    # np.add.at(occupied_sites, ij[occupied_bonds].flatten(), True)
-    adj_mat = sprs.csr_matrix((occupied_bonds, (conns[:, 0], conns[:, 1])),
-                              shape=(Np, Np))
-    adj_mat.eliminate_zeros()
-    clusters = csgraph.connected_components(csgraph=adj_mat, directed=False)[1]
-    # Clusters of size 1 only occur if all a site's bonds are uninvaded
-    valid_clusters = np.bincount(clusters) > 1
-    mapping = -np.ones(shape=(clusters.max()+1, ), dtype=int)
-    mapping[valid_clusters] = np.arange(0, valid_clusters.sum())
-    s_labels = mapping[clusters]
-    # Bond inherit the cluster number of its connected sites
-    b_labels = np.amin(s_labels[conns], axis=1)
-    # Set bond cluster to -1 if not actually occupied
-    b_labels[~occupied_bonds] = -1
-    tup = namedtuple('cluster_labels', ('sites', 'bonds'))
-    return tup(s_labels, b_labels)
+bond_percolation.__doc__ = simulations.bond_percolation_orig.__doc__
 
 
 def trim_disconnected_clusters(b_labels, s_labels, inlets):
@@ -219,7 +66,7 @@ def trim_disconnected_clusters(b_labels, s_labels, inlets):
     Returns
     -------
     occupancy : tuple of ndarrays
-        The return tuple contains boolean arrays of ``occupied_sites``
+        The returned tuple contains boolean arrays of ``occupied_sites``
         and ``occupied_bonds``, after accounting for connection to the
         inlets.
 
@@ -333,67 +180,8 @@ def _bond_percolation(network, tmask):
 
 
 def find_path(network, pore_pairs, weights=None):
-    r"""
-    Find the shortest path between pairs of pores.
+    am = network.create_adjacency_matrix(weights=weights)
+    return queries.find_path(am, pairs=pore_pairs)
 
-    Parameters
-    ----------
-    network : GenericNetwork
-        The Network object on which the search should be performed
 
-    pore_pairs : array_like
-        An N x 2 array containing N pairs of pores for which the shortest
-        path is sought.
-
-    weights : array_like, optional
-        An Nt-long list of throat weights for the search.  Typically this
-        would be the throat lengths, but could also be used to represent
-        the phase configuration.  If no weights are given then the
-        standard topological connections of the Network are used.
-
-    Returns
-    -------
-    A dictionary containing both the pores and throats that define the
-    shortest path connecting each pair of input pores.
-
-    Notes
-    -----
-    The shortest path is found using Dijkstra's algorithm included in the
-    scipy.sparse.csgraph module
-
-    TODO: The returned throat path contains the correct values, but not
-    necessarily in the true order
-
-    Examples
-    --------
-    >>> import openpnm as op
-    >>> pn = op.network.Cubic(shape=[3, 3, 3])
-    >>> a = op.topotools.find_path(network=pn, pore_pairs=[[0, 4], [0, 10]])
-    >>> a['pores']
-    [array([0, 1, 4]), array([ 0,  1, 10])]
-    >>> a['throats']
-    [array([ 0, 19]), array([ 0, 37])]
-    """
-    Ps = np.array(pore_pairs, ndmin=2)
-    if weights is None:
-        weights = np.ones_like(network.Ts)
-    graph = network.create_adjacency_matrix(weights=weights, fmt='csr',
-                                            drop_zeros=False)
-    paths = csgraph.dijkstra(csgraph=graph, indices=Ps[:, 0],
-                             return_predecessors=True)[1]
-    pores = []
-    throats = []
-    for row in range(0, np.shape(Ps)[0]):
-        j = Ps[row][1]
-        ans = []
-        while paths[row][j] > -9999:
-            ans.append(j)
-            j = paths[row][j]
-        ans.append(Ps[row][0])
-        ans.reverse()
-        pores.append(np.array(ans, dtype=int))
-        Ts = network.find_neighbor_throats(pores=ans, mode='xnor')
-        throats.append(np.array(Ts, dtype=int))
-    pdict = PrintableDict
-    dict_ = pdict(**{'pores': pores, 'throats': throats})
-    return dict_
+find_path.__doc__ = queries.find_path.__doc__

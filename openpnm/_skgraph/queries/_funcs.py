@@ -1,5 +1,6 @@
 import numpy as np
 import scipy.sparse as sprs
+from scipy.sparse import csgraph
 from openpnm._skgraph.tools import istriu
 
 
@@ -12,6 +13,7 @@ __all__ = [
     'find_connected_nodes',
     'find_complementary_nodes',
     'find_complementary_edges',
+    'find_path',
 ]
 
 
@@ -471,3 +473,49 @@ def filter_by_z(conns, nodes, z=1):
     orphans = np.where(Nz == z)[0]
     hits = nodes[orphans]
     return hits
+
+
+def find_path(am, pairs):
+    r"""
+    Find the shortest path between pairs of nodes
+
+    Parameters
+    ----------
+    am : sparse adjacency matrix
+        The adjacency matrix of the network with the ``data`` attribute
+        containing the weights to be used in the path search
+    pairs : array_like
+        An N x 2 array containing N pairs of nodes between which the shortest
+        path is sought
+
+    Returns
+    -------
+    A dictionary containing both the nodes and edges that define the
+    shortest path connecting each pair of input pores.
+
+    Notes
+    -----
+    The shortest path is found using Dijkstra's algorithm included in the
+    ``scipy.sparse.csgraph`` module
+
+    TODO: The returned throat path contains the correct values, but not
+    necessarily in the true order
+
+    """
+    pairs = np.array(pairs, ndmin=2)
+    paths = csgraph.dijkstra(csgraph=am, indices=pairs[:, 0],
+                             return_predecessors=True)[1]
+    nodes = []
+    edges = []
+    for row in range(0, np.shape(pairs)[0]):
+        j = pairs[row][1]
+        ans = []
+        while paths[row][j] > -9999:
+            ans.append(j)
+            j = paths[row][j]
+        ans.append(pairs[row][0])
+        ans.reverse()
+        nodes.append(np.array(ans, dtype=int))
+        Ts = find_neighbor_edges(inds=ans, mode='xnor')
+        edges.append(np.array(Ts, dtype=int))
+    return {'pores': nodes, 'throats': edges}

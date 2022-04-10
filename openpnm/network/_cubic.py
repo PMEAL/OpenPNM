@@ -4,7 +4,7 @@ from openpnm.network import GenericNetwork
 from openpnm import topotools
 from openpnm.utils import Docorator
 from openpnm._skgraph.generators import cubic
-from openpnm._skgraph.tools import find_surface_sites
+from openpnm._skgraph.tools import find_surface_nodes_cubic
 from openpnm._skgraph import settings as skgr_settings
 skgr_settings.node_prefix = 'pore'
 skgr_settings.edge_prefix = 'throat'
@@ -67,11 +67,10 @@ class Cubic(GenericNetwork):
         self["throat.all"] = np.ones(net['throat.conns'].shape[0], dtype=bool)
         self["pore.internal"] = True
         self["throat.internal"] = True
-        self["pore.surface"] = find_surface_sites(self.coords)
+        self["pore.surface"] = find_surface_nodes_cubic(self.coords)
         Ps = self["pore.surface"]
         self["throat.surface"] = np.all(Ps[self["throat.conns"]], axis=1)
         topotools.label_faces(network=self, label='surface')
-        self["pore.coords"] *= spacing  # Scale network to requested spacing
 
     def add_boundary_pores(self, labels=["top", "bottom", "front",
                                          "back", "left", "right"],

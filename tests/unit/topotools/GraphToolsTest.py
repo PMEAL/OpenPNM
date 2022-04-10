@@ -18,7 +18,7 @@ class GraphToolsTest:
             | \ |
             0 ― 1 ― 2
 
-            The Adjacency Matrix:    The Enumreated Adjacency Matrix:
+            The Adjacency Matrix:    The Enumerated Adjacency Matrix:
 
               | 0  1  2  3  4  5       | 0  1  2  3  4  5
             ――|――――――――――――――――――    ――|――――――――――――――――――
@@ -531,7 +531,6 @@ class GraphToolsTest:
 
 
 if __name__ == '__main__':
-
     t = GraphToolsTest()
     self = t
     t.setup_class()
