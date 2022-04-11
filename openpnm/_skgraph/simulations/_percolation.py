@@ -6,11 +6,52 @@ from collections import namedtuple
 
 
 __all__ = [
+    'trim_disconnected_clusters',
     'site_percolation_orig',
     'bond_percolation_orig',
     'ispercolating',
     'remove_isolated_clusters',
 ]
+
+
+def trim_disconnected_clusters(b_labels, s_labels, inlets):
+    r"""
+    Computes actual node and edge occupancy based on connectivity to the given
+    inlets
+
+    Parameters
+    ----------
+    b_labels : ndarray
+        An array of cluster labels assigned to each bond.  -1 indicates
+        unoccupied
+    s_labels : ndarray
+        An array of cluster labels assigned to each site. -1 indicates
+        unoccupied. Site cluster numbers must correspond to the bond
+        clusters, such that if bond j has a cluster number N, then both
+        sites on each end of j are also labeled N.
+    inlets : ndarray
+        An array containing node indices that are to be treated as inlets.
+        Any clusters labels not found in these nodes will be considered
+        disconnected and set to -1.
+
+    Returns
+    -------
+    occupancy : tuple of ndarrays
+        The returned tuple contains boolean arrays of ``occupied_sites``
+        and ``occupied_bonds``, after accounting for connection to the
+        ``inlets``.
+
+    Notes
+    -----
+    The ``b_labels`` and ``s_labels`` arrays are returned from the
+    ``bond_percolation`` function.
+
+    """
+    hits = np.unique(s_labels[inlets])
+    hits = hits[hits >= 0]
+    occupied_bonds = np.isin(b_labels, hits)
+    occupied_sites = np.isin(s_labels, hits)
+    return occupied_sites, occupied_bonds
 
 
 def remove_isolated_clusters(labels, inlets):

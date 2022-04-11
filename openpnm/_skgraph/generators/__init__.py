@@ -15,3 +15,4 @@ from ._voronoi_delaunay_dual import voronoi_delaunay_dual
 from ._template import cubic_template
 from ._fcc import fcc
 from ._bcc import bcc
+from . import tools
