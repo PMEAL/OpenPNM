@@ -10,7 +10,6 @@ import openpnm._skgraph as skgr
 
 logger = logging.getLogger(__name__)
 ws = Workspace()
-
 __all__ = [
     'isoutside',
     'rotate_coords',
@@ -66,6 +65,75 @@ def shear_coords(network, **kwargs):
 
 
 shear_coords.__doc__ = skgr.tools.shear_coords.__doc__
+
+
+def template_sphere_shell(**kwargs):
+    return skgr.generators.tools.template_sphere_shell(**kwargs)
+
+
+template_sphere_shell.__doc__ = \
+    skgr.generators.tools.template_sphere_shell.__doc__
+
+
+def template_cylinder_annulus(**kwargs):
+    return skgr.generators.tools.template_cylinder_annulus(**kwargs)
+
+
+template_cylinder_annulus.__doc__ = \
+    skgr.generators.tools.template_cylinder_annulus.__doc__
+
+
+def generate_base_points(**kwargs):
+    return skgr.generators.tools.generate_base_points(**kwargs)
+
+
+generate_base_points.__doc__ = \
+    skgr.generators.tools.generate_base_points.__doc__
+
+
+def reflect_base_points(**kwargs):
+    return skgr.generators.tools.reflect_base_points(**kwargs)
+
+
+reflect_base_points.__doc__ = \
+    skgr.generators.tools.reflect_base_points.__doc__
+
+
+def get_spacing(network):
+    return skgr.generators.tools.get_spacing(network.coords, network.conns)
+
+
+get_spacing.__doc__ = skgr.generators.tools.get_spacing.__doc__
+
+
+def get_shape(network):
+    return skgr.generators.tools.get_shape(network.coords, network.conns)
+
+
+get_shape.__doc__ = skgr.generators.tools.get_shape.__doc__
+
+
+def filter_pores_by_z(network, pores, z):
+    return skgr.queries.filter_by_z(conns=network.conns, inds=pores, z=z)
+
+
+filter_pores_by_z.__doc__ = skgr.queries.filter_by_z.__doc__
+
+
+def find_interface_throats(network, P1, P2):
+    return skgr.queries.find_common_edges(conns=network.conns, inds_1=P1, inds_2=P2)
+
+
+find_interface_throats.__doc__ = skgr.queries.find_common_edges.__doc__
+
+
+def dimensionality(network=None, coords=None):
+    if coords is None:
+        coords = network.coords
+    return skgr.tools.dimensionality(coords)
+
+
+dimensionality.__doc__ = skgr.tools.dimensionality.__doc__
 
 
 def trim(network, pores=[], throats=[]):
@@ -250,8 +318,9 @@ def extend(network, coords=[], conns=[], labels=[], **kwargs):
 def label_faces(network, tol=0.0, label='surface'):
     r"""
     Finds pores on the surface of the network and labels them according to
-    whether they are on the *top*, *bottom*, etc.  This function assumes the
-    network is cubic in shape (i.e. with six flat sides)
+    whether they are on the *top*, *bottom*, etc.
+
+    This function assumes the network is cubic in shape
 
     Parameters
     ----------
@@ -307,11 +376,10 @@ def find_surface_pores(network, markers=None, label='surface'):
         labeling is performed in one step, so all points are added, and then
         any pores connected to at least one marker is given the provided label.
         By default, this function will automatically generate 6 points outside
-        each axis of the network domain.
-        Users may wish to specify a single external marker point and provide an
-        appropriate label in order to identify specific faces.  For instance,
-        the marker may be *above* the domain, and the label might be
-        'top_surface'.
+        each axis of the network domain. Users may wish to specify a single
+        external marker point and provide an appropriate label in order to
+        identify specific faces.  For instance, the marker may be *above* the
+        domain, and the label might be 'top_surface'.
     label : str
         The label to apply to the pores.  The default is 'surface'.
 
@@ -387,15 +455,6 @@ def find_surface_pores(network, markers=None, label='surface'):
         network['pore.'+label][neighbors] = True
 
 
-def dimensionality(network=None, coords=None):
-    if coords is None:
-        coords = network.coords
-    return skgr.tools.dimensionality(coords)
-
-
-dimensionality.__doc__ = skgr.tools.dimensionality.__doc__
-
-
 def clone_pores(network, pores, labels=['clone'], mode='parents'):
     r"""
     Clones the specified pores and adds them to the network
@@ -411,14 +470,14 @@ def clone_pores(network, pores, labels=['clone'], mode='parents'):
     mode : str
         Controls the connections between parents and clones.  Options are:
 
-            ===========  =====================================================
-            mode         meaning
-            ===========  =====================================================
-            'parents'    Each clone is connected only to its parent.(Default)
-            'siblings'   Clones are only connected to each other in the same
-                         manner as parents were connected.
-            'isolated'   No connections between parents or siblings
-            ===========  =====================================================
+        ===========  ==========================================================
+        mode         description
+        ===========  ==========================================================
+        'parents'    Each clone is connected only to its parent.(Default)
+        'siblings'   Clones are only connected to each other in the same
+                     manner as parents were connected.
+        'isolated'   No connections between parents or siblings
+        ===========  ==========================================================
 
     """
     if isinstance(labels, str):
@@ -580,10 +639,14 @@ def stitch(network, donor, P_network, P_donor, method='nearest',
     method : str (default = 'nearest')
         The method to use when making pore to pore connections. Options are:
 
-        - 'radius' : Connects each pore on the recipient network to the
-                     nearest pores on the donor network, within ``len_max``
-        - 'nearest' : Connects each pore on the recipienet network to the
-                      nearest pore on the donor network.
+        ========= =============================================================
+        mode      description
+        ========= =============================================================
+        'radius'  Connects each pore on the recipient network to the nearest
+                  pores on the donor network, within ``len_max``
+        'nearest' Connects each pore on the recipienet network to the nearest
+                  pore on the donor network.
+        ========= =============================================================
 
     Notes
     -----
@@ -667,12 +730,12 @@ def stitch_pores(network, pores1, pores2, mode='gabriel'):
         Dictates which tesselation method is used to identify which pores to
         stitch together.  Options are:
 
-            ===========  =====================================================
-            mode         meaning
-            ===========  =====================================================
-            'gabriel'    Uses the gabriel tesselation method
-            'delaunay'   Uses the delaunay tesselation method
-            ===========  =====================================================
+        ===========  ==========================================================
+        mode         meaning
+        ===========  ==========================================================
+        'gabriel'    Uses the gabriel tesselation method
+        'delaunay'   Uses the delaunay tesselation method
+        ===========  ==========================================================
 
     Returns
     -------
@@ -710,7 +773,7 @@ def connect_pores(network, pores1, pores2, labels=[], add_conns=True):
     Parameters
     ----------
     network : GenericNetwork
-
+        The network to which the pores should be added
     pores1 : array_like
         The first group of pores on the network
     pores2 : array_like
@@ -925,38 +988,6 @@ def hull_centroid(points):
     return centroid
 
 
-def template_sphere_shell(**kwargs):
-    return skgr.generators.tools.template_sphere_shell(**kwargs)
-
-
-template_sphere_shell.__doc__ = \
-    skgr.generators.tools.template_sphere_shell.__doc__
-
-
-def template_cylinder_annulus(**kwargs):
-    return skgr.generators.tools.template_cylinder_annulus(**kwargs)
-
-
-template_cylinder_annulus.__doc__ = \
-    skgr.generators.tools.template_cylinder_annulus.__doc__
-
-
-def generate_base_points(**kwargs):
-    return skgr.generators.tools.generate_base_points(**kwargs)
-
-
-generate_base_points.__doc__ = \
-    skgr.generators.tools.generate_base_points.__doc__
-
-
-def reflect_base_points(**kwargs):
-    return skgr.generators.tools.reflect_base_points(**kwargs)
-
-
-reflect_base_points.__doc__ = \
-    skgr.generators.tools.reflect_base_points.__doc__
-
-
 def add_boundary_pores(network, pores, offset=None, move_to=None,
                        apply_label='boundary'):
     r"""
@@ -1111,20 +1142,6 @@ def is_fully_connected(network, pores_BC=None):
     return is_connected
 
 
-def get_spacing(network):
-    return skgr.generators.tools.get_spacing(network.coords, network.conns)
-
-
-get_spacing.__doc__ = skgr.generators.tools.get_spacing.__doc__
-
-
-def get_shape(network):
-    return skgr.generators.tools.get_shape(network.coords, network.conns)
-
-
-get_shape.__doc__ = skgr.generators.tools.get_shape.__doc__
-
-
 def get_domain_area(network, inlets=None, outlets=None):
     r"""
     Determine the cross sectional area relative to the inlets/outlets.
@@ -1133,10 +1150,8 @@ def get_domain_area(network, inlets=None, outlets=None):
     ----------
     network : GenericNetwork
         The network object containing the pore coordinates
-
     inlets : array_like
         The pore indices of the inlets.
-
     outlets : array_Like
         The pore indices of the outlets.
 
@@ -1177,10 +1192,8 @@ def get_domain_length(network, inlets=None, outlets=None):
     ----------
     network : GenericNetwork
         The network object containing the pore coordinates
-
     inlets : array_like
         The pore indices of the inlets.
-
     outlets : array_Like
         The pore indices of the outlets.
 
@@ -1205,20 +1218,6 @@ def get_domain_length(network, inlets=None, outlets=None):
         logger.error('A unique value of length could not be found')
     length = Ls[0]
     return length
-
-
-def filter_pores_by_z(network, pores, z):
-    return skgr.queries.filter_by_z(conns=network.conns, inds=pores, z=z)
-
-
-filter_pores_by_z.__doc__ = skgr.queries.filter_by_z.__doc__
-
-
-def find_interface_throats(network, P1, P2):
-    return skgr.queries.find_common_edges(conns=network.conns, inds_1=P1, inds_2=P2)
-
-
-find_interface_throats.__doc__ = skgr.queries.find_common_edges.__doc__
 
 
 def add_reservoir_pore(cls, network, pores, offset=0.1):
