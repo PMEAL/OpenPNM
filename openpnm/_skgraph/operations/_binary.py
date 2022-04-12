@@ -18,8 +18,7 @@ def join(net1, net2, L_max=0.99):
     net2 : dictionary
         A dictionary containing 'node.coords' and 'edge.conns'
     L_max : float
-        The maximum distance between vertices below which they are called
-        neighbors
+        The distance between nodes below which they are joined
 
     Returns
     -------
@@ -40,7 +39,7 @@ def join(net1, net2, L_max=0.99):
     from scipy.spatial import KDTree
     t1 = KDTree(net1[node_prefix+'.coords'])
     t2 = KDTree(net2[node_prefix+'.coords'])
-    pairs = t1.query_ball_tree(t2, r=0.99)
+    pairs = t1.query_ball_tree(t2, r=L_max)
     # Combine existing network data
     net3 = {}
     Np1 = net1[node_prefix+'.coords'].shape[0]

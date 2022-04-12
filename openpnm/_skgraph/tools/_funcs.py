@@ -19,7 +19,7 @@ __all__ = [
     'generate_points_on_circle',
     'find_surface_nodes',
     'find_surface_nodes_cubic',
-    'site_to_site_distance',
+    'internode_distance',
     'hull_centroid',
     'tri_to_am',
     'vor_to_am',
@@ -464,19 +464,19 @@ def find_surface_nodes(coords):
     return hits
 
 
-def site_to_site_distance(coords, sites1=None, sites2=None):
+def internode_distance(coords, nodes1=None, nodes2=None):
     r"""
-    Find the distance between all pores on set 1 to each pore in set 2
+    Find the distance between all nodes on set 1 to each node in set 2
 
     Parameters
     ----------
     coords : ndarray
-        The coordinate of the network sites
-    sites1 : array_like
-        The site indices of the first set
-    sites2 : array_Like
-        The site indices of the second set.  It's OK if these indices are
-        partially or completely duplicating ``site1``.
+        The coordinate of the network nodes
+    nodes1 : array_like
+        A list containing the indices of the first set of nodes
+    nodes2 : array_Like
+        A list containing the indices of the first set of nodes.  It's OK if
+        these indices are partially or completely duplicating ``nodes1``.
 
     Returns
     -------
@@ -487,15 +487,14 @@ def site_to_site_distance(coords, sites1=None, sites2=None):
 
     Notes
     -----
-    This function computes and returns a distance matrix, which is a dense
-    matrix of size Np_1 by Np_2, so can get large.  For distances between
-    larger sets a KD-tree approach would be better, which is available in
-    ``scipy.spatial``.
+    This function computes and returns a distance matrix, so can get large.
+    For distances between larger sets a KD-tree approach would be better,
+    which is available in ``scipy.spatial``.
 
     """
     from scipy.spatial.distance import cdist
-    p1 = np.array(sites1, ndmin=1)
-    p2 = np.array(sites2, ndmin=1)
+    p1 = np.array(nodes1, ndmin=1)
+    p2 = np.array(nodes2, ndmin=1)
     return cdist(coords[p1], coords[p2])
 
 

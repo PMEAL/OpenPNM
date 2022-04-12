@@ -136,6 +136,15 @@ def dimensionality(network=None, coords=None):
 dimensionality.__doc__ = skgr.tools.dimensionality.__doc__
 
 
+
+def find_pore_to_pore_distance(network, pores1, pores2):
+    return skgr.tools.internode_distance(network.coords, pores1, pores1)
+
+
+find_pore_to_pore_distance.__doc__ = \
+    skgr.tools.internode_distance.__doc__
+
+
 def trim(network, pores=[], throats=[]):
     """
     Remove pores or throats from the network
@@ -849,42 +858,6 @@ def connect_pores(network, pores1, pores2, labels=[], add_conns=True):
         extend(network=network, throat_conns=conns, labels=labels)
     else:
         return conns
-
-
-def find_pore_to_pore_distance(network, pores1=None, pores2=None):
-    r"""
-    Find the distance between all pores on set 1 to each pore in set 2
-
-    Parameters
-    ----------
-    network : GenericNetwork
-        The network object containing the pore coordinates
-    pores1 : array_like
-        The pore indices of the first set
-    pores2 : array_Like
-        The pore indices of the second set.  It's OK if these indices are
-        partially or completely duplicating ``pores``.
-
-    Returns
-    -------
-    dist : array_like
-        A distance matrix with ``len(pores1)`` rows and ``len(pores2)`` columns.
-        The distance between pore *i* in ``pores1`` and *j* in ``pores2`` is
-        located at *(i, j)* and *(j, i)* in the distance matrix.
-
-    Notes
-    -----
-    This function computes and returns a distance matrix, which is a dense
-    matrix of size Np_1 by Np_2, so can get large.  For distances between
-    larger sets a KD-tree approach would be better, which is available in
-    ``scipy.spatial``.
-
-    """
-    from scipy.spatial.distance import cdist
-    p1 = np.array(pores1, ndmin=1)
-    p2 = np.array(pores2, ndmin=1)
-    coords = network['pore.coords']
-    return cdist(coords[p1], coords[p2])
 
 
 def merge_pores(network, pores, labels=['merged']):

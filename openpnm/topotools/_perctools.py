@@ -65,12 +65,10 @@ trim_disconnected_clusters.__doc__ = \
 
 def find_clusters(network, mask=[]):
     r"""
-    Identify connected clusters of pores in the network.
+    Identify connected clusters of pores and throats in the network.
 
-    This method also returns a list of throat cluster numbers, which
-    correspond to the cluster numbers of the pores to which the throat is
-    connected.  Either site and bond percolation can be considered, see
-    description of input arguments for details.
+    Either site and bond percolation can be considered, see description of
+    ``mask`` argument for details.
 
     Parameters
     ----------
@@ -85,10 +83,10 @@ def find_clusters(network, mask=[]):
     Returns
     -------
     p_labels, t_labels : tuple of ndarrays
-        A tuple containing an Np long arra of pore cluster labels, and an
+        A tuple containing an Np long arraY of pore cluster labels, and an
         Nt-long array of throat cluster labels. The label numbers correspond
         such that pores and throats with the same label are part of the same
-        cluster.
+        cluster. Uninvaded locations are set to -1.
 
     """
     # Parse the input arguments
