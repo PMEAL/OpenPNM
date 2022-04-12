@@ -97,13 +97,10 @@ def ispercolating(am, inlets, outlets, mode='site'):
     am : adjacency_matrix
         The adjacency matrix with the ``data`` attribute indicating
         if an egde is occupied or not.
-
     inlets : array_like
         An array of indices indicating which nodes are part of the inlets
-
     outlets : array_like
         An array of indices indicating which nodes are part of the outlets
-
     mode : str
         Indicates which type of percolation to apply,. Options are:
 
@@ -148,7 +145,6 @@ def bond_percolation_orig(conns, inds):
         can be obtained using ``np.vstack(am.row, am.col).T``.  The
         matrix can be symmetric but only the upper triangular portion
         is kept.
-
     inds : ndarray, boolean
         A list of boolean values indicating whether a bond is occupied
         (``True``) or not (``False``). This must be the same length as
