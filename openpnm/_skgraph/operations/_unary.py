@@ -159,7 +159,7 @@ def trim_nodes(g, inds):
         if k.startswith(node_prefix):
             g[k] = v[keep]
     # Remove edges
-    edges = np.any(np.isin(g[edge_prefix+'.conns'], inds), axis=1)
+    edges = np.any(np.isin(g[edge_prefix+'.conns'], np.where(inds)[0]), axis=1)
     g = trim_edges(g, inds=edges)
     # Renumber throat conns
     remapping = np.cumsum(keep) - 1

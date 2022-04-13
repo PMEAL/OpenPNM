@@ -1,8 +1,11 @@
 import logging
 import numpy as np
-from openpnm.network import Cubic
+from openpnm.network import GenericNetwork
 from openpnm import topotools
+from openpnm._skgraph.generators import cubic_template
 from openpnm._skgraph.operations import trim_nodes
+from openpnm._skgraph.queries import find_coordination
+from openpnm._skgraph.tools import dimensionality, find_surface_nodes
 from openpnm._skgraph import settings
 settings.node_prefix = 'pore'
 settings.edge_prefix = 'throat'
@@ -12,7 +15,7 @@ logger = logging.getLogger(__name__)
 __all__ = ['CubicTemplate']
 
 
-class CubicTemplate(Cubic):
+class CubicTemplate(GenericNetwork):
     r"""
     Simple cubic lattice with arbitrary domain shape specified by a
     template image
@@ -43,16 +46,14 @@ class CubicTemplate(Cubic):
 
     def __init__(self, template, spacing=[1, 1, 1], **kwargs):
         template = np.atleast_3d(template)
-        super().__init__(shape=template.shape, spacing=spacing, **kwargs)
-        coords = np.unravel_index(range(template.size), template.shape)
-        self['pore.template_coords'] = np.vstack(coords).T
-        self['pore.template_indices'] = self.Ps
-        d = trim_nodes(g=dict(self), inds=template.flatten() == 0)
-        self.update(d)
-        # Add "internal_surface" label to "fake" surface pores!
-        ndims = topotools.dimensionality(self).sum()
+        super().__init__(**kwargs)
+        net = cubic_template(template=template, spacing=spacing)
+        net['pore.all'] = np.ones(net['pore.coords'].shape[0], dtype=bool)
+        net['throat.all'] = np.ones(net['throat.conns'].shape[0], dtype=bool)
+        self.update(net)
+        self['pore.surface'] = find_surface_nodes(self.coords)
+        ndims = dimensionality(self.coords).sum()
         max_neighbors = 6 if ndims == 3 else 4
-        num_neighbors = np.diff(self.get_adjacency_matrix(fmt="csr").indptr)
-        mask_surface = self["pore.surface"]
-        mask_internal_surface = (num_neighbors < max_neighbors) & ~mask_surface
+        num_neighbors = find_coordination(self.conns, nodes=self.Ps)
+        mask_internal_surface = (num_neighbors < max_neighbors) & ~self["pore.surface"]
         self.set_label("pore.internal_surface", pores=mask_internal_surface)

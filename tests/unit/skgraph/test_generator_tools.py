@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from openpnm import topotools
 
 
-class GeneratorToolTest:
+class GeneratorToolsTest:
 
     def setup_class(self):
         self.ws = op.Workspace()
@@ -73,7 +73,7 @@ class GeneratorToolTest:
 
 if __name__ == '__main__':
 
-    t = GeneratorToolTest()
+    t = GeneratorToolsTest()
     self = t
     t.setup_class()
     for item in t.__dir__():

@@ -33,16 +33,16 @@ The ``skgraph`` protocol is as follows:
   of node 0.
 
 """
-from numpy import nan as _nan
+import numpy as _np
 from openpnm.utils import PrintableDict as _pdict
 from openpnm.utils import SettingsAttr as _Settings
 
 settings = _Settings()
 settings.node_prefix = 'node'
-settings.edge_prefix ='edge'
+settings.edge_prefix = 'edge'
 settings.missing_values = {'bool': False,
-                           'int': _nan,
-                           'float': _nan,
+                           'int': _np.nan,
+                           'float': _np.nan,
                            'object': None}
 
 
@@ -61,3 +61,18 @@ def info(g):
     d._key = 'Attribute'
     d._value = 'Description'
     print(d)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

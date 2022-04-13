@@ -1,9 +1,12 @@
 import numpy as np
 import scipy.spatial as sptl
 from openpnm._skgraph import settings
+from openpnm._skgraph.tools import vor_to_am, isoutside
+from openpnm._skgraph.generators import tools
+from openpnm._skgraph.operations import trim_nodes
 
 
-def voronoi(points, shape=[1, 1, 1]):
+def voronoi(points, shape=[1, 1, 1], trim=True):
     r"""
     Generate a network based on a Voronoi tessellation of base points
 
@@ -14,6 +17,9 @@ def voronoi(points, shape=[1, 1, 1]):
         or a scalar value indicating the number of points to generate.
     shape : array_like
         Indicates the size and shape of the domain.
+    trim : boolean
+        If ``True`` (default) then any vertices lying outside the domain
+        given by ``shape`` are removed (as are the edges connected to them).
 
     Returns
     -------
@@ -23,8 +29,6 @@ def voronoi(points, shape=[1, 1, 1]):
         The Voronoi tessellation object produced by ``scipy.spatial.Voronoi``
 
     """
-    from openpnm.topotools import vor_to_am, isoutside
-    from openpnm.topotools.generators import tools
 
     node_prefix = settings.node_prefix
     edge_prefix = settings.edge_prefix
@@ -46,6 +50,10 @@ def voronoi(points, shape=[1, 1, 1]):
     else:
         verts = np.copy(vor.vertices)
     d[node_prefix+'.coords'] = verts
+
+    if trim:
+        hits = isoutside(coords=verts, shape=shape)
+        d = trim_nodes(d, hits)
 
     return d, vor
 

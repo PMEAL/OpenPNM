@@ -1,7 +1,7 @@
 import numpy as np
 import scipy.sparse as sprs
 from scipy.sparse import csgraph
-from openpnm._skgraph.tools import istriu
+from openpnm._skgraph.tools import istriu, conns_to_am
 
 
 __all__ = [
@@ -446,8 +446,9 @@ def find_common_edges(conns, inds_1, inds_2):
     """
     if np.intersect1d(inds_1, inds_2).size != 0:
         raise Exception("inds_1 and inds_2 must not share any pores.")
-    edges_1 = find_neighbor_edges(inds_1, mode="xor")
-    edges_2 = find_neighbor_edges(inds_2, mode="xor")
+    am = conns_to_am(conns)
+    edges_1 = find_neighbor_edges(inds=inds_1, am=am, logic="xor")
+    edges_2 = find_neighbor_edges(inds=inds_2, am=am, logic="xor")
     return np.intersect1d(edges_1, edges_2)
 
 
@@ -470,6 +471,7 @@ def filter_by_z(conns, inds, z=1):
         A list of node indices which satisfy the criteria
 
     """
+    inds = np.array(inds)
     coordination = find_coordination(conns)
     hits = coordination == z
     inds = inds[hits[inds]]
@@ -485,7 +487,7 @@ def find_coordination(conns, nodes=None):
     conns : ndarray
         The edge list of the network
     nodes : array_like, optional
-        The nodes for which coordination is sought.  If not provided then
+        The nodes for which coordination is sought. If not provided then
         coordination for *all* nodes is returned
 
     Returns
@@ -493,8 +495,11 @@ def find_coordination(conns, nodes=None):
     z : ndarray
         An array containing the number of neighbors for each given node
     """
-    am = sprs.coo_matrix((np.ones(conns.shape[0], dtype=int),
-                          (conns[:, 0], conns[:, 1])))
+    N = conns.max() + 1
+    i = np.hstack((conns[:, 0], conns[:, 1]))
+    j = np.hstack((conns[:, 1], conns[:, 0]))
+    am = sprs.coo_matrix((np.ones(2*conns.shape[0], dtype=int),
+                          (i, j)), shape=[N, N])
     am = am.tocsr()
     z = am.sum(axis=1).A1
     if nodes is None:

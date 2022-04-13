@@ -41,18 +41,18 @@ def remove_isolated_clusters(**kwargs):
 remove_isolated_clusters.__doc__ = simulations.remove_isolated_clusters.__doc__
 
 
-def site_percolation(ij, occupied_sites):
-    return simulations.site_percolation_orig(conns=ij, inds=occupied_sites)
+def site_percolation(network, occupied_sites):
+    return simulations.site_percolation(network.conns, occupied_sites)
 
 
-site_percolation.__doc__ = simulations.site_percolation_orig.__doc__
+site_percolation.__doc__ = simulations.site_percolation.__doc__
 
 
-def bond_percolation(conns, occupied_bonds):
-    return simulations.bond_percolation_orig(conns=conns, inds=occupied_bonds)
+def bond_percolation(network, occupied_bonds):
+    return simulations.bond_percolation(network.conns, occupied_bonds)
 
 
-bond_percolation.__doc__ = simulations.bond_percolation_orig.__doc__
+bond_percolation.__doc__ = simulations.bond_percolation.__doc__
 
 
 def trim_disconnected_clusters(**kwargs):
@@ -96,11 +96,11 @@ def find_clusters(network, mask=[]):
     # If pore mask was given perform site percolation
     if np.size(mask) == network.Np:
         (p_clusters, t_clusters) = \
-            simulations.site_percolation_orig(network.conns, mask)
+            simulations.site_percolation(network.conns, mask)
     # If pore mask was given perform bond percolation
     elif np.size(mask) == network.Nt:
         (p_clusters, t_clusters) = \
-            simulations.bond_percolation_orig(network.conns, mask)
+            simulations.bond_percolation(network.conns, mask)
     else:
         raise Exception('Mask received was neither Nt nor Np long')
     return (p_clusters, t_clusters)

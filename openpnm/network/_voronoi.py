@@ -1,7 +1,9 @@
+import numpy as np
 from openpnm import topotools
-from openpnm.network import DelaunayVoronoiDual
+from openpnm.network import GenericNetwork
 from openpnm.utils import Docorator
 from openpnm._skgraph.operations import trim_nodes
+from openpnm._skgraph.generators import voronoi
 from openpnm._skgraph.generators.tools import parse_points
 
 
@@ -10,7 +12,7 @@ docstr = Docorator()
 
 
 @docstr.dedent
-class Voronoi(DelaunayVoronoiDual):
+class Voronoi(GenericNetwork):
     r"""
     Random network formed by Voronoi tessellation of arbitrary base points
 
@@ -39,12 +41,11 @@ class Voronoi(DelaunayVoronoiDual):
 
     """
 
-    def __init__(self, shape, points, **kwargs):
+    def __init__(self, shape, points, trim=True, **kwargs):
         # Clean-up input points
         points = parse_points(shape=shape, points=points)
-        super().__init__(shape=shape, points=points, **kwargs)
-        # Initialize network object
-        trim_nodes(self, nodes=self.pores('delaunay'))
-        pop = ['pore.delaunay', 'throat.delaunay', 'throat.interconnect']
-        for item in pop:
-            del self[item]
+        super().__init__(**kwargs)
+        net, vor = voronoi(points=points, shape=shape, trim=trim)
+        self['pore.all'] = np.ones(net['pore.coords'].shape[0], dtype=bool)
+        self['throat.all'] = np.ones(net['throat.conns'].shape[0], dtype=bool)
+        self.update(net)

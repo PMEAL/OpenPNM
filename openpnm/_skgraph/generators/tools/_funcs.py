@@ -13,8 +13,7 @@ __all__ = [
     'get_spacing',
     'get_shape',
     'add_all_label',
-    'label_surface_nodes',
-    'label_faces',
+    'label_faces_cubic',
     'template_sphere_shell',
     'template_cylinder_annulus',
     'generate_base_points',
@@ -103,35 +102,24 @@ def add_all_label(coords, conns):
     return d
 
 
-def label_surface_nodes(coords):
+def label_faces_cubic(coords, threshold=0.0):
     r"""
-    """
-    from openpnm._skimage.tools import dimensionality
+    Label the nodes sitting on the faces of the domain assuming the domain
+    is cubic
 
+    Parameters
+    ----------
+    coords : ndarray
+        The x,y,z coordinates of each node
+    threshold : float
+        Controls how closely a node must be to a face to be counted. It is
+        defined as ``hit = x <= (1+threshold) * x_min`` and
+        ``hit = y >= (1-threshold) * y_max``.  The default is 0, which means
+        nodes must be exactly on a face.
+    """
     node_prefix = settings.node_prefix
 
-    dims = dimensionality(coords)
-    hits = np.zeros_like(coords.shape[0], dtype=bool)
-    mn = np.amin(coords, axis=0)
-    mx = np.amax(coords, axis=0)
-    for ax in np.where(dims)[0]:
-        if dims[ax]:
-            hits += coords[:, ax] <= mn[ax]
-            hits += coords[:, ax] >= mx[ax]
-    d = {node_prefix + '.surface': hits}
-    return d
-
-
-def label_faces(coords, threshold=0.05):
-    r"""
-    Label the vertices sitting on the faces of the domain in accordance with
-    the conventions used for cubic etc.
-    """
-    from openpnm._skimage.tools import dimensionality
-
-    node_prefix = settings.node_prefix
-
-    dims = dimensionality(coords)
+    dims = tools.dimensionality(coords)
     coords = np.around(coords, decimals=10)
     min_labels = ['front', 'left', 'bottom']
     max_labels = ['back', 'right', 'top']
@@ -140,7 +128,7 @@ def label_faces(coords, threshold=0.05):
     d = {}
     for ax in np.where(dims)[0]:
         d[node_prefix + '.' + min_labels[ax]] = \
-            coords[:, ax] <= threshold*min_coords[ax]
+            coords[:, ax] <= (1+threshold)*min_coords[ax]
         d[node_prefix + '.' + max_labels[ax]] = \
             coords[:, ax] >= (1-threshold)*max_coords[ax]
     return d

@@ -1,6 +1,8 @@
 import numpy as np
 import scipy.spatial as sptl
 from openpnm._skgraph import settings
+from openpnm._skgraph.generators import tools
+from openpnm._skgraph.tools import tri_to_am
 
 
 def delaunay(points, shape=[1, 1, 1]):
@@ -22,9 +24,6 @@ def delaunay(points, shape=[1, 1, 1]):
     tri : Delaunay tessellation object
         The Delaunay tessellation object produced by ``scipy.spatial.Delaunay``
     """
-    from openpnm.topotools import tri_to_am
-    from openpnm._skgraph.generators import tools
-
     node_prefix = settings.node_prefix
     edge_prefix = settings.edge_prefix
 

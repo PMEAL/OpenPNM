@@ -4,6 +4,10 @@ from scipy.spatial import cKDTree
 from scipy.spatial import ConvexHull
 from scipy.spatial import Delaunay
 from scipy.sparse import csgraph
+from openpnm._skgraph import settings
+from openpnm._skgraph.tools import generate_points_on_sphere
+from openpnm._skgraph.tools import generate_points_on_circle
+from openpnm._skgraph.tools import cart2sph, sph2cart, cart2cyl, cyl2cart
 
 
 # Once a function has been stripped of all its OpenPNM dependent code it
@@ -11,12 +15,7 @@ from scipy.sparse import csgraph
 __all__ = [
     'change_prefix',
     'isoutside',
-    'rotate_coords',
-    'shear_coords',
     'dimensionality',
-    'generate_points_on_sphere',
-    'generate_points_in_disk',
-    'generate_points_on_circle',
     'find_surface_nodes',
     'find_surface_nodes_cubic',
     'internode_distance',
@@ -26,14 +25,11 @@ __all__ = [
     'conns_to_am',
     'am_to_im',
     'im_to_am',
+    'dict_to_am',
     'istriu',
     'istril',
     'istriangular',
     'issymmetric',
-    'cart2sph',
-    'sph2cart',
-    'cart2cyl',
-    'cyl2cart',
 ]
 
 
@@ -83,8 +79,9 @@ def isoutside(coords, shape):
 
     Returns
     -------
-    An Np-long mask of ``True`` values indicating pores that lie outside the
-    domain.
+    mask : boolean ndarray
+        A boolean array with ``True`` values indicating nodes that lie outside
+        the domain.
 
     Notes
     -----
@@ -121,122 +118,6 @@ def isoutside(coords, shape):
     return Ps
 
 
-def rotate_coords(coords, a=0, b=0, c=0, R=None):
-    r"""
-    Rotates coordinates a given amount about each axis
-
-    Parameters
-    ----------
-    coords : ndarray
-        The site coordinates to be transformed.  ``coords`` must be in 3D,
-        but a 2D network can be represented by putting 0's in the missing
-        dimension.
-    a, b, c : scalar, optional
-        The amount in degrees to rotate about the x, y, and z-axis,
-        respectively.
-    R : array_like, optional
-        Rotation matrix.  Must be a 3-by-3 matrix since coordinates are
-        always in 3D.  If this is given then `a`, `b`, and `c` are ignored.
-
-    Returns
-    -------
-    coords : ndarray
-        A copy of the given ``coords`` is made and returned to the rotation
-        does not occur *in place*.
-
-    See Also
-    --------
-    shear_coords
-
-    """
-    coords = np.copy(coords)
-    if R is None:
-        if a:
-            R = np.array([[1, 0, 0],
-                          [0, np.cos(np.deg2rad(a)), -np.sin(np.deg2rad(a))],
-                          [0, np.sin(np.deg2rad(a)), np.cos(np.deg2rad(a))]])
-            coords = np.tensordot(coords, R, axes=(1, 1))
-        if b:
-            R = np.array([[np.cos(np.deg2rad(b)), 0, -np.sin(np.deg2rad(b))],
-                          [0, 1, 0],
-                          [np.sin(np.deg2rad(b)), 0, np.cos(np.deg2rad(b))]])
-            coords = np.tensordot(coords, R, axes=(1, 1))
-        if c:
-            R = np.array([[np.cos(np.deg2rad(c)), -np.sin(np.deg2rad(c)), 0],
-                          [np.sin(np.deg2rad(c)), np.cos(np.deg2rad(c)), 0],
-                          [0, 0, 1]])
-            coords = np.tensordot(coords, R, axes=(1, 1))
-    else:
-        coords = np.tensordot(coords, R, axes=(1, 1))
-    return coords
-
-
-def shear_coords(coords, ay=0, az=0, bx=0, bz=0, cx=0, cy=0, S=None):
-    r"""
-    Shears the coordinates a given amount about along axis
-
-    Parameters
-    ----------
-    coords : ndarray
-        The coordinates to be transformed
-    ay : scalar
-        The factor by which to shear along the x-axis as a function of y
-    az : scalar
-        The factor by which to shear along the x-axis as a function of z
-    bx : scalar
-        The factor by which to shear along the y-axis as a function of x
-    bz : scalar
-        The factor by which to shear along the y-axis as a function of z
-    cx : scalar
-        The factor by which to shear along the z-axis  as a function of x
-    cy : scalar
-        The factor by which to shear along the z-axis as a function of y
-    S : array_like
-        The shear matrix.  Must be a 3-by-3 matrix since pore coordinates are
-        always in 3D.  If this is given then the other individual arguments
-        are ignored.
-
-    Returns
-    -------
-    coords : ndarray
-        The sheared coordinates.  A copy of the supplied coordinates is made
-        so that the operation is not performed *in place*.
-
-    See Also
-    --------
-    rotate_coords
-
-    Notes
-    -----
-    The shear along the i *th*-axis is given as i\* = i + aj.  This means
-    the new i coordinate is the old one plus some linear factor *a* in the
-    j *th* direction.
-
-    The values of ``a``, ``b``, and ``c`` are essentially the inverse of the
-    slope to be formed by the neighboring layers of sheared pores.  A value of
-    0 means no shear, and neighboring points are stacked directly on top of
-    each other; a value of 1 means they form a 45 degree diagonal, and so on.
-
-    If ``S`` is given, then is should be of the form:
-
-    ::
-
-        S = [[1 , ay, az],
-             [bx, 1 , bz],
-             [cx, cy, 1 ]]
-
-        where any of the off-diagonal components can be 0 meaning no shear
-
-    """
-    coords = np.copy(coords)
-    if S is None:
-        S = np.array([[1, ay, az],
-                      [bx, 1, bz],
-                      [cx, cy, 1]])
-    coords = (S@coords.T).T
-    return coords
-
-
 def dimensionality(coords):
     r"""
     Checks the dimensionality of the network
@@ -257,134 +138,6 @@ def dimensionality(coords):
     eps = np.finfo(float).resolution
     dims_unique = [not np.allclose(xk, xk.mean(), atol=0, rtol=eps) for xk in coords.T]
     return np.array(dims_unique)
-
-
-def generate_points_on_sphere(n=100, r=1):
-    r"""
-    Generates points on a the surface of a sphere with the given radius
-
-    Parameters
-    ----------
-    n : int or [int, int]
-        If a single ``int`` is provided then this number of points will be
-        generated using the Fibonacci method to make them approximately
-        equally spaced.  If a list of 2 ``int``s is given, they are interpreted
-        as the number of meridians and parallels to divide the sphere with.
-    r : scalar
-        The radius of the sphere on which the points should lie
-
-    Returns
-    -------
-    coords : ndarray
-        An array of x, y, z coordinates for the sphere which will be centered
-        on [0, 0, 0]
-
-    """
-    if isinstance(n, int):
-        i = np.arange(n)
-        phi = np.pi * (3 - np.sqrt(5))  # golden angle in radians
-        y = 1 - (i / float(n - 1))*2  # y goes from 1 to -1
-        radius = np.sqrt(1 - y*y)  # radius at y
-        theta = phi * i  # golden angle increment
-        x = np.cos(theta) * radius
-        z = np.sin(theta) * radius
-        # Convert to spherical coords
-        r_, q, p = cart2sph(x, y, z).T
-        # Scale the radius then convert back to cartesian
-        coords = sph2cart(r=r*r_, theta=q, phi=p)
-    else:
-        nlat = n[0]
-        nlon = n[1]
-        lat = []
-        lon = []
-        for i in range(0, 360, max(1, int(360/nlon))):
-            for j in range(max(1, int(180/nlat)), 180, max(1, int(180/nlat))):
-                lon.append(i)
-                lat.append(j)
-        lat.extend([0, 180])
-        lon.extend([0, 0])
-        theta = np.deg2rad(lon) - np.pi
-        phi = np.deg2rad(lat) - np.pi/2
-        coords = sph2cart(phi=phi, theta=theta, r=r)
-    return coords
-
-
-def generate_points_in_disk(n=100, r=1):
-    r"""
-    Generates equally spaced points inside a disk
-    """
-    indices = np.arange(0, n, dtype=float) + 0.5
-    r = np.sqrt(indices/n)
-    theta = np.pi*(1 + 5**0.5)*indices
-    x = r*np.cos(theta)
-    y = r*np.sin(theta)
-    return np.vstack((x, y)).T
-
-
-def generate_points_on_circle(n=100, r=1):
-    r"""
-    Generates ``n`` equally spaced points on a circle in cartesean coordinates
-    """
-    theta = np.linspace(0, 2*np.pi, n, endpoint=False)
-    r = np.ones_like(theta)*r
-    x, y, z = cyl2cart(r=r, theta=theta, z=0)
-    return np.vstack((x, y)).T
-
-
-def cart2sph(x, y, z):
-    r"""
-
-    Notes
-    -----
-    Surprizingly (and annoyingly) this is not built into numpy, for reasons
-    discussed `here <https://github.com/numpy/numpy/issues/5228>`_.
-    """
-    hxy = np.hypot(x, y)
-    r = np.hypot(hxy, z)
-    phi = np.arctan2(z, hxy)
-    theta = np.arctan2(y, x)
-    return np.vstack((r, theta, phi)).T
-
-
-def sph2cart(r, theta, phi):
-    r"""
-
-    Notes
-    -----
-    Surprizingly (and annoyingly) this is not built into numpy, for reasons
-    discussed `here <https://github.com/numpy/numpy/issues/5228>`_.
-    """
-    rcos_theta = r * np.cos(phi)
-    x = rcos_theta * np.cos(theta)
-    y = rcos_theta * np.sin(theta)
-    z = r * np.sin(phi)
-    return np.vstack((x, y, z)).T
-
-
-def cart2cyl(x, y, z):
-    r"""
-
-    Notes
-    -----
-    Surprizingly (and annoyingly) this is not built into numpy, for reasons
-    discussed `here <https://github.com/numpy/numpy/issues/5228>`_.
-    """
-    theta = np.arctan2(y, x)
-    r = np.hypot(x, y)
-    return np.vstack((r, theta, z)).T
-
-
-def cyl2cart(r, theta, z):
-    r"""
-
-    Notes
-    -----
-    Surprizingly (and annoyingly) this is not built into numpy, for reasons
-    discussed `here <https://github.com/numpy/numpy/issues/5228>`_.
-    """
-    x = r * np.cos(theta)
-    y = r * np.sin(theta)
-    return np.stack((x, y, z)).T
 
 
 def find_surface_nodes_cubic(coords):
@@ -416,7 +169,8 @@ def find_surface_nodes_cubic(coords):
 
 def find_surface_nodes(coords):
     r"""
-    Identifies nodes on the outer surface of the domain
+    Identifies nodes on the outer surface of the domain using a Delaunay
+    tessellation
 
     Parameters
     ----------
@@ -433,7 +187,7 @@ def find_surface_nodes(coords):
     -----
     This function generates points around the domain the performs a Delaunay
     tesselation between these points and the network nodes.  Any network
-    nodes which are connected to a generated point is considered a surface
+    nodes which are connected to a generated points is considered a surface
     node.
     """
     coords = np.copy(coords)
@@ -808,6 +562,15 @@ def vor_to_am(vor):
     return am
 
 
+def dict_to_am(g):
+    edge_prefix = settings.edge_prefix
+    node_prefix = settings.node_prefix
+    conns = g[edge_prefix+'.conns']
+    shape = [g[node_prefix+'.coords'].shape[0]]*2
+    am = conns_to_am(conns, shape)
+    return am
+
+
 def conns_to_am(conns, shape=None, force_triu=True, drop_diag=True,
                 drop_dupes=True, drop_negs=True):
     r"""
@@ -818,8 +581,8 @@ def conns_to_am(conns, shape=None, force_triu=True, drop_diag=True,
     conns : array_like, N x 2
         The list of site-to-site connections
     shape : list, optional
-        The shape of the array.  If none is given then it is inferred from the
-        maximum value in ``conns`` array.
+        The shape of the array.  If none is given then it is take as 1 + the
+        maximum value in ``conns``.
     force_triu : bool
         If True (default), then all connections are assumed undirected, and
         moved to the upper triangular portion of the array

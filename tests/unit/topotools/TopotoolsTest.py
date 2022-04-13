@@ -185,62 +185,43 @@ class TopotoolsTest:
         assert isinstance(pn['pore.test_vals'], np.ndarray)
         assert ('pore.' + geo2.name) in pn.keys()
 
-    # def test_subdivide_3d(self):
-    #     net = op.network.Cubic(shape=[3, 3, 3])
-    #     assert net.Np == 27
-    #     assert net.Nt == 54
-    #     op.topotools.subdivide(net, pores=13, shape=[5, 5, 5], labels="blah")
-    #     assert net.pores("blah").size == 125
-    #     assert net.throats("blah").size == 300 + 25 * 6
-    #     assert net.Np == 27 - 1 + 125
-    #     assert net.Nt == 54 - 6 + 300 + 25 * 6
-
-    # def test_subdivide_2d(self):
-    #     net = op.network.Cubic(shape=[1, 3, 3])
-    #     assert net.Np == 9
-    #     assert net.Nt == 12
-    #     op.topotools.subdivide(net, pores=4, shape=[1, 5, 5], labels="blah")
-    #     assert net.pores("blah").size == 25
-    #     assert net.throats("blah").size == 40 + 5 * 4
-    #     assert net.Np == 9 - 1 + 25
-    #     assert net.Nt == 12 - 4 + 40 + 5 * 4
-
     def test_merge_pores(self):
         testnet = op.network.Cubic(shape=[10, 10, 10])
         to_merge = [[0, 1], [998, 999]]
         topotools.merge_pores(testnet, to_merge)
         assert testnet.Np == 998
 
-    def test_merge_pores_coords(self):
-        r"""
-        Coordinates of merged pores should be centroid of the enclosing convex
-        hull.
+    # This test is commented since the subdivide method is gone in v3
+    # def test_merge_pores_coords(self):
+    #     r"""
+    #     Coordinates of merged pores should be centroid of the enclosing convex
+    #     hull.
 
-        This test verifies that if one subdivides a pore and then merge it
-        with a bunch of other pores, the coordinates of the new pore should be
-        exactly the same as when one merges the same pores without subdiving.
+    #     This test verifies that if one subdivides a pore and then merge it
+    #     with a bunch of other pores, the coordinates of the new pore should be
+    #     exactly the same as when one merges the same pores without subdiving.
 
-        """
-        # Subdivide first, then merge
-        testnet = op.network.Cubic(shape=[1, 10, 10])
-        testnet["pore.to_merge"] = False
-        testnet["pore.to_merge"][[14, 15, 16, 24, 25, 26, 34, 35, 36]] = True
-        topotools.subdivide(testnet, pores=15, shape=[1, 10, 10],
-                            labels="subdivided")
-        topotools.merge_pores(testnet, labels="new_pore",
-                              pores=testnet.pores(["subdivided", "to_merge"]))
-        xyz_w_subdivide = testnet['pore.coords'][testnet.pores("new_pore")]
+    #     """
+    #     # Subdivide first, then merge
+    #     testnet = op.network.Cubic(shape=[1, 10, 10])
+    #     testnet["pore.to_merge"] = False
+    #     testnet["pore.to_merge"][[14, 15, 16, 24, 25, 26, 34, 35, 36]] = True
+    #     topotools.subdivide(testnet, pores=15, shape=[1, 10, 10],
+    #                         labels="subdivided")
+    #     topotools.merge_pores(testnet, labels="new_pore",
+    #                           pores=testnet.pores(["subdivided", "to_merge"]))
+    #     xyz_w_subdivide = testnet['pore.coords'][testnet.pores("new_pore")]
 
-        # No subdivide, only merge
-        testnet = op.network.Cubic(shape=[1, 10, 10])
-        testnet["pore.to_merge"] = False
-        testnet["pore.to_merge"][[14, 15, 16, 24, 25, 26, 34, 35, 36]] = True
-        topotools.merge_pores(testnet, labels="new_pore",
-                              pores=testnet.pores("to_merge"))
-        xyz_wo_subdivide = testnet['pore.coords'][testnet.pores("new_pore")]
+    #     # No subdivide, only merge
+    #     testnet = op.network.Cubic(shape=[1, 10, 10])
+    #     testnet["pore.to_merge"] = False
+    #     testnet["pore.to_merge"][[14, 15, 16, 24, 25, 26, 34, 35, 36]] = True
+    #     topotools.merge_pores(testnet, labels="new_pore",
+    #                           pores=testnet.pores("to_merge"))
+    #     xyz_wo_subdivide = testnet['pore.coords'][testnet.pores("new_pore")]
 
-        # Compare the two coords
-        assert_allclose(xyz_w_subdivide, xyz_wo_subdivide)
+    #     # Compare the two coords
+    #     assert_allclose(xyz_w_subdivide, xyz_wo_subdivide)
 
     def test_connect_pores(self):
         testnet = op.network.Cubic(shape=[10, 10, 10])
@@ -598,7 +579,9 @@ class TopotoolsTest:
         assert_allclose(Ts_int, np.array([]))
         # Test calling the function with labels
         net["pore.internal"] = ~net["pore.surface"]
-        Ts_int = op.topotools.find_interface_throats(net, "internal", "surface")
+        P1 = net.pores('internal')
+        P2 = net.pores('surface')
+        Ts_int = op.topotools.find_interface_throats(net, P1, P2)
         assert_allclose(Ts_int, np.array([0, 3]))
 
 

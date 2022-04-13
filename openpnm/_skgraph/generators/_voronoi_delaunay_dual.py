@@ -3,10 +3,11 @@ import scipy.sparse as sprs
 import numpy as np
 from openpnm._skgraph.generators import tools
 from openpnm._skgraph.operations import trim_nodes
+from openpnm._skgraph.tools import isoutside, conns_to_am
 from openpnm._skgraph import settings
 
 
-def voronoi_delaunay_dual(points, shape, crop=False):
+def voronoi_delaunay_dual(points, shape, trim=True):
     r"""
     Generate a dual Voronoi-Delaunay network from given base points
 
@@ -17,9 +18,9 @@ def voronoi_delaunay_dual(points, shape, crop=False):
         of that size is generated inside the given ``shape``.
     shape : array_like
         The size of the domain in which the points lie
-    crop : bool, optional (default is ``False``)
-        If ``True`` then all points lying beyond the given domain shape will
-        be removed
+    trim : bool, optional
+        If ``True`` (default) then all points lying beyond the given domain
+        shape will be removed
 
     Returns
     -------
@@ -31,7 +32,6 @@ def voronoi_delaunay_dual(points, shape, crop=False):
         The Delaunay triangulation object produced ``scipy.spatial.Delaunay``
 
     """
-    from openpnm.topotools import isoutside, conns_to_am
     node_prefix = settings.node_prefix
     edge_prefix = settings.edge_prefix
     # Generate a set of base points if scalar was given
@@ -111,7 +111,7 @@ def voronoi_delaunay_dual(points, shape, crop=False):
     network[edge_prefix+'.interconnect'] = Ts
 
     # Identify and trim pores outside the domain if requested
-    if crop:
+    if trim:
         Ps = isoutside(verts, shape=shape)
         network = trim_nodes(g=network, inds=np.where(Ps)[0])
 
@@ -125,7 +125,7 @@ if __name__ == "__main__":
     print(dvd.keys())
     print(dvd['node.coords'].shape)
     print(dvd['edge.conns'].shape)
-    dvd, vor, tri = voronoi_delaunay_dual(points=50, shape=[1, 0, 1], crop=True)
+    dvd, vor, tri = voronoi_delaunay_dual(points=50, shape=[1, 0, 1], trim=True)
     print(dvd.keys())
     print(dvd['node.coords'].shape)
     print(dvd['edge.conns'].shape)
