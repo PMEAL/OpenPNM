@@ -51,7 +51,7 @@ def change_prefix(g, old_prefix, new_prefix):
     return g
 
 
-def isoutside(coords, shape):
+def isoutside(coords, shape, tolerance=0.0):
     r"""
     Identifies sites that lie outside the specified shape
 
@@ -92,16 +92,17 @@ def isoutside(coords, shape):
     # Label external pores for trimming below
     if len(shape) == 1:  # Spherical
         # Find external points
-        r = np.sqrt(np.sum(coords**2, axis=1))
+        R, Q, P = cart2sph(*coords.T)
         Ps = r > shape[0]
     elif len(shape) == 2:  # Cylindrical
         # Find external pores outside radius
-        r = np.sqrt(np.sum(coords[:, [0, 1]]**2, axis=1))
-        Ps = r > shape[0]
+        R, Q, Z = cart2cyl(*coords.T)
+        Ps = R > (1+tolerance)*shape[0]
         # Find external pores above and below cylinder
         if shape[1] > 0:
-            Ps = Ps + (coords[:, 2] > shape[1])
-            Ps = Ps + (coords[:, 2] < 0)
+            thresh = tolerance*shape[1]
+            Ps = Ps + (coords[:, 2] > (shape[1] + thresh))
+            Ps = Ps + (coords[:, 2] < (0 - thresh ))
         else:
             pass
     elif len(shape) == 3:  # Rectilinear

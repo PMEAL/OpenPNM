@@ -36,6 +36,7 @@ def voronoi_delaunay_dual(points, shape, trim=True):
     edge_prefix = settings.edge_prefix
     # Generate a set of base points if scalar was given
     points = tools.parse_points(points=points, shape=shape)
+    # Generate mask to remove any dims with all 0's
     mask = ~np.all(points == 0, axis=0)
 
     # Perform tessellations
@@ -76,21 +77,21 @@ def voronoi_delaunay_dual(points, shape, trim=True):
     # Finally, retreive conns back from am
     conns = np.vstack((am.row, am.col)).T
 
-    # Convert coords to 3D by adding col of 0's if necessary
-    coords = np.around(pts_all, decimals=10)
-    if np.any(mask == False):
-        verts = np.zeros([np.shape(coords)[0], 3])
-        for i, col in enumerate(np.where(mask)[0]):
-            verts[:, col] = coords[:, i]
+    # Convert coords to 3D if necessary
+    # Rounding is crucial since some voronoi verts endup outside domain
+    pts_all = np.around(pts_all, decimals=10)
+    if mask.sum() < 3:
+        coords = np.zeros([pts_all.shape[0], 3], dtype=float)
+        coords[:, mask] = pts_all
     else:
-        verts = np.copy(coords)
+        coords = pts_all
 
     # Assign coords and conns to network dict
     network = {}
-    network[node_prefix+'.coords'] = verts
+    network[node_prefix+'.coords'] = coords
     network[edge_prefix+'.conns'] = conns
 
-    n_nodes = verts.shape[0]
+    n_nodes = coords.shape[0]
     n_edges = conns.shape[0]
 
     # Label all pores and throats by type
@@ -112,7 +113,7 @@ def voronoi_delaunay_dual(points, shape, trim=True):
 
     # Identify and trim pores outside the domain if requested
     if trim:
-        Ps = isoutside(verts, shape=shape)
+        Ps = isoutside(coords, shape=shape)
         network = trim_nodes(g=network, inds=np.where(Ps)[0])
 
     return network, vor, tri

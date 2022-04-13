@@ -326,11 +326,11 @@ def generate_base_points(num_points, domain_size, reflect=True):
         [x, y, 0]  A 2D square domain of size x by y, with points in the range
                    [0:x, 0:y, 0:0]
         [r, z]     A 3D cylindrical domain of radius r and height z, with
-                   points in the range [-r/2:r/2, -r/2:r/2, 0:z]
+                   points in the range [-r:r, -r:r, 0:z]
         [r, 0]     A 2D circular domain of radius r, with points in the range
-                   [-r/2:r/2, -r/2:r/2, 0:0]
+                   [-r:r, -r:r, 0:0]
         [r]        A 3D spherical domain of radius r, with points in the range
-                   [-r/2:r/2, -r/2:r/2, -r/2:r/2]
+                   [-r:r, -r:r, -r:r]
         ========== ============================================================
 
     reflect : bool
@@ -346,36 +346,37 @@ def generate_base_points(num_points, domain_size, reflect=True):
 
     """
     if len(domain_size) == 1:  # Spherical
-        domain_size = np.array(domain_size)
+        shape = np.array(2*domain_size[0], 2*domain_size[0], 2*domain_size[0])
         base_pts = np.random.rand(num_points*9, 3)  # Generate more than needed
         # Convert to spherical coordinates
-        X, Y, Z = (np.array(base_pts - [0.5, 0.5, 0.5]))*domain_size
-        R, Q, P = tools.cart2sph(X, Y, Z).T
+        X, Y, Z = ((np.array(base_pts - [0.5, 0.5, 0.5]))*shape).T
+        R, Q, P = tools.cart2sph(X, Y, Z)
         # Keep points outside the domain
-        inds = R <= domain_size[0]/2
+        inds = R <= domain_size[0]
         R, Q, P = R[inds], Q[inds], P[inds]
         # Trim internal points to give requested final number
         R, Q, P = R[:num_points], Q[:num_points], P[:num_points]
         # Reflect base points across perimeter
         if reflect:
-            R, Q, P = reflect_base_points(np.vstack((R, Q, P)).T, domain_size)
+            R, Q, P = reflect_base_points(np.vstack((R, Q, P)), domain_size)
         # Convert to Cartesean coordinates
-        base_pts = tools.sph2cart(R, Q, P)
+        base_pts = np.vstack(tools.sph2cart(R, Q, P)).T
 
     elif len(domain_size) == 2:  # Cylindrical or Disk
-        domain_size = np.array([domain_size[0], domain_size[0], domain_size[1]])
+        shape = np.array([2*domain_size[0], 2*domain_size[0], domain_size[1]])
         base_pts = np.random.rand(num_points*9, 3)  # Generate more than needed
         # Convert to cylindrical coordinates
-        X, Y, Z = ((np.array(base_pts - [0.5, 0.5, 0]))*domain_size).T
-        R, Q, Z = tools.cart2cyl(X, Y, Z).T
-        # Trim points outside the domain (from improper prob images)
-        inds = R <= domain_size[0]/2
-        R, Q, Z = R[inds], Q[inds], Q[inds]
+        X, Y, Z = ((np.array(base_pts - [0.5, 0.5, 0]))*shape).T
+        R, Q, Z = tools.cart2cyl(X, Y, Z)
+        # Trim points outside the domain
+        inds = R <= domain_size[0]
+        R, Q, Z = R[inds], Q[inds], Z[inds]
+        # Reduce to requested number of points
         R, Q, Z = R[:num_points], Q[:num_points], Z[:num_points]
         if reflect:
-            R, Q, Z = reflect_base_points(np.vstack((R, Q, Z)).T, domain_size)
+            R, Q, Z = reflect_base_points(np.vstack((R, Q, Z)), domain_size)
         # Convert to Cartesean coordinates
-        base_pts = tools.cyl2cart(R, Q, Z)
+        base_pts = np.vstack(tools.cyl2cart(R, Q, Z)).T
 
     elif len(domain_size) == 3:  # Cube or square
         base_pts = np.random.rand(num_points, 3)*domain_size

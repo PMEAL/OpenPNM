@@ -135,9 +135,9 @@ def trim_nodes(g, inds):
     Parameters
     ----------
     g : dictionary
-        A dictionary containing 'node.coods' and other node attributes in the
+        A dictionary containing 'node.coords' and other node attributes in the
         form of 'node.<attribute>'.
-    inds: array_like
+    inds : array_like
         The node indices to be trimmed in the form of a 1D list or boolean
         mask with ``True`` values indicating indices to trim.
 
@@ -153,15 +153,17 @@ def trim_nodes(g, inds):
     edge_prefix = settings.edge_prefix
     N_sites = g[node_prefix+'.coords'].shape[0]
     inds = np.atleast_1d(inds)
+    if inds.dtype == bool:
+        inds = np.where(inds)[0]
     keep = np.ones(N_sites, dtype=bool)
     keep[inds] = False
     for k, v in g.items():
         if k.startswith(node_prefix):
             g[k] = v[keep]
     # Remove edges
-    edges = np.any(np.isin(g[edge_prefix+'.conns'], np.where(inds)[0]), axis=1)
+    edges = np.any(np.isin(g[edge_prefix+'.conns'], inds), axis=1)
     g = trim_edges(g, inds=edges)
-    # Renumber throat conns
+    # Renumber conns
     remapping = np.cumsum(keep) - 1
     g[edge_prefix+'.conns'] = remapping[g[edge_prefix+'.conns']]
     return g

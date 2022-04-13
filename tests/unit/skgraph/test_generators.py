@@ -1,5 +1,6 @@
 import numpy as np
 from openpnm._skgraph import generators as gen
+from openpnm._skgraph import operations as ops
 from openpnm._skgraph import settings
 from openpnm._skgraph.visualization import plot_edges, plot_nodes
 settings.node_prefix = 'node'
@@ -79,31 +80,64 @@ class SKGRGeneratorsTest:
         points = gen.tools.generate_base_points(50, [1, 1, 0], reflect=True)
         assert len(points) == 250
         net, vor = gen.voronoi(points=points, shape=[1, 1, 0], trim=True)
-        assert len(net['node.coords']) == 100
-        assert len(net['edge.conns']) == 146
+        assert net['node.coords'].shape[0] == 102
+        assert net['edge.conns'].shape[0] == 151
+
+    def test_voronoi_circle(self):
+        np.random.seed(0)
+        points = gen.tools.generate_base_points(1000, [4, 0], reflect=True)
+        assert len(points) == 2000
+        net, vor = gen.voronoi(points=points, shape=[4, 0],
+                               trim=True, tolerance=0.005)
+        assert net['node.coords'].shape[0] == 2097
+        assert net['edge.conns'].shape[0] == 3096
+
+    def test_voronoi_cylinder(self):
+        np.random.seed(0)
+        points = gen.tools.generate_base_points(1000, [2, 4], reflect=True)
+        net, vor = gen.voronoi(points=points, shape=[2, 4],
+                               trim=True, tolerance=0.1)
         ax = plot_edges(net['edge.conns'], net['node.coords'])
-        ax = plot_nodes(net['node.coords'], ax=ax)
+        assert net['node.coords'].shape[0] == 2097
+        assert net['edge.conns'].shape[0] == 3096
+
+    def test_voronoi_delaunay_dual_square(self):
+        np.random.seed(0)
+        points = gen.tools.generate_base_points(50, [1, 1, 0], reflect=True)
+        assert len(points) == 250
+        net, vor, tri = gen.voronoi_delaunay_dual(points=points,
+                                                  shape=[1, 1, 0],
+                                                  trim=True)
+        assert net['node.coords'].shape[0] == 152
+        assert net['edge.conns'].shape[0] == 552
+        net = ops.trim_nodes(net, net['node.delaunay'])
+        assert net['node.coords'].shape[0] == 102
+        assert net['edge.conns'].shape[0] == 151
 
     def test_voronoi_delaunay_dual(self):
         np.random.seed(0)
-        net, tri, vor = gen.voronoi_delaunay_dual(points=20,
+        net, vor, tri = gen.voronoi_delaunay_dual(points=20,
                                                   shape=[1, 1, 1],
                                                   trim=False)
         assert net['node.coords'].shape[0] == 85
         assert net['edge.conns'].shape[0] == 491
         np.random.seed(0)
-        net, tri, vor = gen.voronoi_delaunay_dual(points=20,
+        net, vor, tri = gen.voronoi_delaunay_dual(points=20,
                                                   shape=[1, 1, 1],
                                                   trim=True)
         assert net['node.coords'].shape[0] == 59
-        assert net['edge.conns'].shape[0] == 115
+        assert net['edge.conns'].shape[0] == 311
 
     def test_cubic_template(self):
         im = np.ones([50, 50], dtype=bool)
-        im[25:, ...] = False
+        im[25:30, 25:40] = False
         net = gen.cubic_template(template=im)
-        assert net['node.coords'].shape[0] == 1250
-        assert net['edge.conns'].shape[0] == 2425
+        assert net['node.coords'].shape[0] == 2425
+        assert net['edge.conns'].shape[0] == 4730
+
+
+# ax = plot_edges(net['edge.conns'], net['node.coords'])
+# ax = plot_nodes(net['node.coords'], ax=ax)
 
 
 if __name__ == '__main__':
