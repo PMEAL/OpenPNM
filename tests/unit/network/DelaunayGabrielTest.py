@@ -12,9 +12,9 @@ class DelaunayGabrielTest:
 
     def test_gabriel_and_delaunay_cubic(self):
         np.random.seed(0)
-        dn = op.network.Delaunay(shape=[1, 1, 1], points=50, trim=True)
+        dn = op.network.Delaunay(shape=[1, 1, 1], points=50)
         np.random.seed(0)
-        gn = op.network.Gabriel(shape=[1, 1, 1], points=50, trim=True)
+        gn = op.network.Gabriel(shape=[1, 1, 1], points=50)
         assert gn.Nt < dn.Nt
         assert gn.num_pores(['internal', 'surface'], mode='union') == 50
         assert dn.num_pores(['internal', 'surface'], mode='union') == 50

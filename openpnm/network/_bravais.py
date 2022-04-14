@@ -78,8 +78,7 @@ class Bravais(GenericNetwork):
             raise Exception('Bravais lattice networks must have at least 2 '
                             'pores in all directions')
         if mode == 'bcc':
-            net = bcc(shape=shape, spacing=spacing,
-                      node_prefix='pore', edge_prefix='throat')
+            net = bcc(shape=shape, spacing=spacing)
             self.update(net)
             self['pore.all'] = np.ones(self['pore.coords'].shape[0], dtype=bool)
             self['throat.all'] = np.ones(self['throat.conns'].shape[0], dtype=bool)
@@ -98,8 +97,7 @@ class Bravais(GenericNetwork):
             self['throat.body_to_body'][Ts] = True
 
         elif mode == 'fcc':
-            net = fcc(shape=shape, spacing=spacing,
-                      node_prefix='pore', edge_prefix='throat')
+            net = fcc(shape=shape, spacing=spacing)
             self.update(net)
             self['pore.all'] = np.ones(self['pore.coords'].shape[0], dtype=bool)
             self['throat.all'] = np.ones(self['throat.conns'].shape[0], dtype=bool)
@@ -116,8 +114,7 @@ class Bravais(GenericNetwork):
             raise NotImplementedError('hcp is not implemented yet')
 
         elif mode == 'sc':
-            net = cubic(shape=shape, spacing=1,
-                        node_prefix='pore', edge_prefix='throat')
+            net = cubic(shape=shape, spacing=1)
             self.update(net)
             self['pore.all'] = np.ones(self['pore.coords'].shape[0], dtype=bool)
             self['throat.all'] = np.ones(self['throat.conns'].shape[0], dtype=bool)
