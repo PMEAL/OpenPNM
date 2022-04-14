@@ -88,18 +88,25 @@ class SKGRGeneratorsTest:
         points = gen.tools.generate_base_points(1000, [4, 0], reflect=True)
         assert len(points) == 2000
         net, vor = gen.voronoi(points=points, shape=[4, 0],
-                               trim=True, tolerance=0.005)
-        assert net['node.coords'].shape[0] == 2097
-        assert net['edge.conns'].shape[0] == 3096
+                               trim=True, tolerance=0.0015)
+        assert net['node.coords'].shape[0] == 2098
+        assert net['edge.conns'].shape[0] == 3097
 
     def test_voronoi_cylinder(self):
         np.random.seed(0)
-        points = gen.tools.generate_base_points(1000, [2, 4], reflect=True)
+        points = gen.tools.generate_base_points(700, [2, 4], reflect=True)
         net, vor = gen.voronoi(points=points, shape=[2, 4],
-                               trim=True, tolerance=0.1)
-        ax = plot_edges(net['edge.conns'], net['node.coords'])
-        assert net['node.coords'].shape[0] == 2097
-        assert net['edge.conns'].shape[0] == 3096
+                               trim=True, tolerance=[0.05, 0])
+        assert net['node.coords'].shape[0] == 5800
+        assert net['edge.conns'].shape[0] == 11272
+
+    def test_voronoi_sphere(self):
+        np.random.seed(0)
+        points = gen.tools.generate_base_points(700, [2], reflect=True)
+        net, vor = gen.voronoi(points=points, shape=[2],
+                               trim=True, tolerance=[0.05])
+        assert net['node.coords'].shape[0] == 5656
+        assert net['edge.conns'].shape[0] == 10953
 
     def test_voronoi_delaunay_dual_square(self):
         np.random.seed(0)

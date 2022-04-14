@@ -346,7 +346,7 @@ def generate_base_points(num_points, domain_size, reflect=True):
 
     """
     if len(domain_size) == 1:  # Spherical
-        shape = np.array(2*domain_size[0], 2*domain_size[0], 2*domain_size[0])
+        shape = np.array([2*domain_size[0], 2*domain_size[0], 2*domain_size[0]])
         base_pts = np.random.rand(num_points*9, 3)  # Generate more than needed
         # Convert to spherical coordinates
         X, Y, Z = ((np.array(base_pts - [0.5, 0.5, 0.5]))*shape).T

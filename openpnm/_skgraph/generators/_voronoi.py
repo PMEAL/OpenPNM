@@ -6,7 +6,7 @@ from openpnm._skgraph.generators import tools
 from openpnm._skgraph.operations import trim_nodes
 
 
-def voronoi(points, shape=[1, 1, 1], trim=True, tolerance=0.01):
+def voronoi(points, shape=[1, 1, 1], trim=True, tolerance=0.0):
     r"""
     Generate a network based on a Voronoi tessellation of base points
 
@@ -22,12 +22,14 @@ def voronoi(points, shape=[1, 1, 1], trim=True, tolerance=0.01):
         given by ``shape`` are removed (as are the edges connected to them).
     tolerance : float
         The tolerance to use when deciding if a point is within the domain or
-        not when ``trim=True``.
+        not when ``trim=True``. The default is 0.  Increasing this is usually
+        only needed when dealing with curved domain faces (spheres and
+        cylinders).
 
     Returns
     -------
     network : dict
-        A dictionary containing node coordinate and edge connections
+        A dictionary containing node coordinates and edge connections
     vor : Voronoi tessellation object
         The Voronoi tessellation object produced by ``scipy.spatial.Voronoi``
 

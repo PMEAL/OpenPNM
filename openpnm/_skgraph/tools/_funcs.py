@@ -77,6 +77,14 @@ def isoutside(coords, shape, tolerance=0.0):
         [r]        A 3D spherical domain of radius r centered on [0, 0, 0]
         ========== ============================================================
 
+    tolerance : scalar or array_like, optional
+        Controls how far a node must be from the domain boundary to be
+        considered outside. It is applied as a fraction of the domain size as
+        ``x[i] > (shape[0] + shape[0]*threshold)`` or
+        ``y[i] < (0 - shape[1]*threshold)``.  Discrete threshold values
+        can be given for each axis by supplying a list the same size as
+        ``shape``.
+
     Returns
     -------
     mask : boolean ndarray
@@ -89,32 +97,33 @@ def isoutside(coords, shape, tolerance=0.0):
     of ``shape`` should be set to 0.
 
     """
+    shape = np.array(shape, dtype=float)
+    if np.isscalar(tolerance):
+        tolerance = np.array([tolerance]*len(shape))
+    else:
+        tolerance = np.array(tolerance)
     # Label external pores for trimming below
     if len(shape) == 1:  # Spherical
         # Find external points
         R, Q, P = cart2sph(*coords.T)
-        Ps = r > shape[0]
+        thresh = tolerance[0]*shape[0]
+        Ps = R > (shape[0] + thresh)
     elif len(shape) == 2:  # Cylindrical
         # Find external pores outside radius
         R, Q, Z = cart2cyl(*coords.T)
-        Ps = R > (1+tolerance)*shape[0]
+        thresh = tolerance[0]*shape[0]
+        Ps = R > shape[0]*(1 + thresh)
         # Find external pores above and below cylinder
         if shape[1] > 0:
-            thresh = tolerance*shape[1]
+            thresh = tolerance[1]*shape[1]
             Ps = Ps + (coords[:, 2] > (shape[1] + thresh))
-            Ps = Ps + (coords[:, 2] < (0 - thresh ))
+            Ps = Ps + (coords[:, 2] < (0 - thresh))
         else:
             pass
     elif len(shape) == 3:  # Rectilinear
-        shape = np.array(shape, dtype=float)
-        try:
-            lo_lim = shape[:, 0]
-            hi_lim = shape[:, 1]
-        except IndexError:
-            lo_lim = np.array([0, 0, 0])
-            hi_lim = shape
-        Ps1 = np.any(coords > hi_lim, axis=1)
-        Ps2 = np.any(coords < lo_lim, axis=1)
+        thresh = tolerance*shape
+        Ps1 = np.any(coords > (shape + thresh), axis=1)
+        Ps2 = np.any(coords < (0 - thresh), axis=1)
         Ps = Ps1 + Ps2
     return Ps
 
