@@ -2,6 +2,7 @@ import logging
 import numpy as np
 from openpnm.network import GenericNetwork
 from openpnm.utils import Docorator
+from openpnm import topotools
 from openpnm import _skgraph as skgr
 skgr.settings.node_prefix = 'pore'
 skgr.settings.edge_prefix = 'throat'
@@ -96,7 +97,7 @@ class Cubic(GenericNetwork):
             labels = [labels]
         x, y, z = self["pore.coords"].T
         if spacing is None:
-            spacing = topotools.get_spacing(self)
+            spacing = skgr.generators.tools.get_cubic_spacing(self)
         else:
             spacing = np.array(spacing)
             if spacing.size == 1:
@@ -104,7 +105,7 @@ class Cubic(GenericNetwork):
         Lcx, Lcy, Lcz = spacing
 
         offset = {}
-        shape = topotools.get_shape(self)
+        shape = skgr.generators.tools.get_cubic_shape(self)
         offset["front"] = offset["left"] = offset["bottom"] = [0, 0, 0]
         offset["right"] = [Lcx * shape[0], 0, 0]
         offset["back"] = [0, Lcy * shape[1], 0]

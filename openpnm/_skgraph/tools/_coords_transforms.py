@@ -162,7 +162,8 @@ def generate_points_on_sphere(n=100, r=1):
         # Convert to spherical coords
         r_, q, p = cart2sph(x, y, z)
         # Scale the radius then convert back to cartesian
-        coords = sph2cart(r=r*r_, theta=q, phi=p).T
+        X, Y, Z = sph2cart(r=r*r_, theta=q, phi=p)
+        coords = np.vstack((X, Y, Z)).T
     else:
         nlat = n[0]
         nlon = n[1]
@@ -176,7 +177,8 @@ def generate_points_on_sphere(n=100, r=1):
         lon.extend([0, 0])
         theta = np.deg2rad(lon) - np.pi
         phi = np.deg2rad(lat) - np.pi/2
-        coords = sph2cart(phi=phi, theta=theta, r=r).T
+        X, Y, Z = sph2cart(phi=phi, theta=theta, r=r)
+        coords = np.vstack((X, Y, Z)).T
     return coords
 
 
