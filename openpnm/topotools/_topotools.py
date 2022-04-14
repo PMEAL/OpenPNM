@@ -100,17 +100,17 @@ reflect_base_points.__doc__ = \
 
 
 def get_spacing(network):
-    return skgr.generators.tools.get_spacing(network.coords, network.conns)
+    return skgr.generators.tools.get_cubic_spacing(network)
 
 
-get_spacing.__doc__ = skgr.generators.tools.get_spacing.__doc__
+get_spacing.__doc__ = skgr.generators.tools.get_cubic_spacing.__doc__
 
 
 def get_shape(network):
-    return skgr.generators.tools.get_shape(network.coords, network.conns)
+    return skgr.generators.tools.get_cubic_shape(network)
 
 
-get_shape.__doc__ = skgr.generators.tools.get_shape.__doc__
+get_shape.__doc__ = skgr.generators.tools.get_cubic_shape.__doc__
 
 
 def filter_pores_by_z(network, pores, z):

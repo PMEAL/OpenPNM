@@ -2,78 +2,124 @@ import pytest
 import numpy as np
 import openpnm as op
 import matplotlib.pyplot as plt
-from openpnm import topotools
+from openpnm._skgraph import generators as gen
+from openpnm._skgraph import tools
 
 
-class GeneratorToolsTest:
+class SKGRGeneratorToolsTest:
 
     def setup_class(self):
         self.ws = op.Workspace()
 
-    def test_trim_verts(self):
-        net = op.topotools.generators.cubic(shape=[3, 3, 3])
-        net['vert.test'] = np.ones(net['vert.coords'].shape[0])
-        net['edge.test'] = np.ones(net['edge.conns'].shape[0])
-        assert net['vert.test'].sum() == 27
-        assert net['edge.test'].sum() == 54
-        net = op.topotools.generators.tools.trim(network=net,
-                                                 vert_ids=[4])
-        assert net['vert.coords'].shape[0] == 26
-        assert net['edge.conns'].max() == 25
-        assert net['vert.test'].sum() == 26
-        assert net['edge.test'].sum() == 49
-
-    def test_trim_edges(self):
-        net = op.topotools.generators.cubic(shape=[3, 3, 3])
-        net['vert.test'] = np.ones(net['vert.coords'].shape[0])
-        net['edge.test'] = np.ones(net['edge.conns'].shape[0])
-        assert net['vert.test'].sum() == 27
-        assert net['edge.test'].sum() == 54
-        net = op.topotools.generators.tools.trim(network=net,
-                                                 edge_ids=[4])
-        assert net['vert.coords'].shape[0] == 27
-        assert net['edge.conns'].shape[0] == 53
-        assert net['edge.conns'].max() == 26
-        assert net['vert.test'].sum() == 27
-        assert net['edge.test'].sum() == 53
-
-    def test_trim_edges_and_verts(self):
-        net = op.topotools.generators.cubic(shape=[3, 3, 3])
-        with pytest.raises(Exception):
-            net = op.topotools.generators.tools.trim(network=net,
-                                                     edge_ids=[4],
-                                                     vert_ids=[4])
-
-    def test_join(self):
-        net1 = op.topotools.generators.cubic(shape=[3, 3, 3])
-        net2 = op.topotools.generators.cubic(shape=[3, 3, 3])
-        net2['vert.coords'] += 3
-        net1['edge.test'] = np.ones(net1['edge.conns'].shape[0])
-        net2['edge.test'] = np.ones(net2['edge.conns'].shape[0])
-        net1['vert.test'] = np.ones((net1['vert.coords'].shape[0], 2))
-        net2['vert.test'] = np.ones((net2['vert.coords'].shape[0], 2))
-        net3 = op.topotools.generators.tools.join(net1, net2)
-        assert net3['edge.conns'].max() == 53
-        assert net3['vert.coords'].shape[0] == 54
-        assert net3['edge.conns'].shape[0] == 108
-        assert np.all(net3['vert.test'].shape == np.array((54, 2)))
-        assert np.all(net3['edge.test'].shape == np.array([108,]))
+    def test_parse_points(self):
+        pts = gen.tools.parse_points(shape=[1, 1, 1], points=10)
+        assert pts.shape == (10, 3)
+        assert pts[:, 2].max() > 0
+        pts = gen.tools.parse_points(shape=[1, 1, 0], points=10)
+        assert pts.shape == (10, 3)
+        assert pts[:, 2].max() == 0
+        pts = gen.tools.parse_points(shape=[1, 1], points=10)
+        assert pts.shape == (10, 3)
+        assert pts[:, 2].max() > 0
+        r, q, z = tools.cart2cyl(*pts.T)
+        assert r.max() < 1
+        assert r.max() > 0
+        pts = gen.tools.parse_points(shape=[1, 0], points=10)
+        assert pts.shape == (10, 3)
+        assert pts[:, 2].max() == 0
+        r, q, z = tools.cart2cyl(*pts.T)
+        assert r.max() < 1
+        assert r.max() > 0
+        pts = gen.tools.parse_points(shape=[1], points=10)
+        assert pts.shape == (10, 3)
+        assert pts[:, 2].max() > 0
+        r, q, p = tools.cart2sph(*pts.T)
+        assert r.max() < 1
+        assert r.max() > 0
 
     def test_get_spacing(self):
-        net = op.topotools.generators.cubic(shape=[3, 3, 3], spacing=[1, 2, 3])
-        spc = op.topotools.generators.tools.get_spacing(net)
-        assert np.all(np.array([1, 2, 3]) == spc)
+        d = gen.cubic(shape=[3, 3, 3])
+        s = gen.tools.get_cubic_spacing(d)
+        assert np.all(s == [1, 1, 1])
+        d = gen.cubic(shape=[3, 3, 3], spacing=[1, 2, 3])
+        s = gen.tools.get_cubic_spacing(d)
+        assert np.all(s == [1, 2, 3])
+        d = gen.cubic(shape=[5, 4, 3], spacing=[1, 2, 3])
+        s = gen.tools.get_cubic_spacing(d)
+        assert np.all(s == [1, 2, 3])
 
     def test_get_shape(self):
-        net = op.topotools.generators.cubic(shape=[3, 4, 5])
-        shp = op.topotools.generators.tools.get_shape(net)
-        assert np.all(np.array([3, 4, 5]) == shp)
+        d = gen.cubic(shape=[3, 3, 3])
+        s = gen.tools.get_cubic_shape(d)
+        assert np.all(s == [3, 3, 3])
+        d = gen.cubic(shape=[3, 3, 3], spacing=[1, 2, 3])
+        s = gen.tools.get_cubic_shape(d)
+        assert np.all(s == [3, 3, 3])
+        d = gen.cubic(shape=[5, 4, 3], spacing=[1, 2, 3])
+        s = gen.tools.get_cubic_shape(d)
+        assert np.all(s == [5, 4, 3])
 
+    def test_add_all_label(self):
+        d = gen.cubic(shape=[3, 3, 3])
+        assert len(d.keys()) == 2
+        d = gen.tools.add_all_label(d)
+        assert len(d.keys()) == 4
+        assert 'pore.all' in d.keys()
+        assert 'throat.all' in d.keys()
+
+    def test_label_faces_cubic(self):
+        d = gen.cubic(shape=[3, 3, 3])
+        d = gen.tools.label_faces_cubic(d, rtol=0.1)
+        assert d['pore.left'].sum() == 9
+        assert d['pore.right'].sum() == 9
+        assert d['pore.front'].sum() == 9
+        assert d['pore.back'].sum() == 9
+        assert d['pore.top'].sum() == 9
+        assert d['pore.bottom'].sum() == 9
+
+    def test_template_sphere_shell(self):
+        im = gen.tools.template_sphere_shell(r_outer=10, r_inner=0)
+        assert im.sum() == 4139
+        im = gen.tools.template_sphere_shell(r_outer=10, r_inner=5)
+        assert im.sum() == 3624
+
+    def test_template_cylinder_annulus(self):
+        im = gen.tools.template_cylinder_annulus(z=10, r_outer=10, r_inner=0)
+        assert im.sum() == 3050
+        im = gen.tools.template_cylinder_annulus(z=10, r_outer=10, r_inner=5)
+        assert im.sum() == 2240
+        im = gen.tools.template_cylinder_annulus(z=0, r_outer=10, r_inner=0)
+        assert im.sum() == 305
+        im = gen.tools.template_cylinder_annulus(z=0, r_outer=10, r_inner=5)
+        assert im.sum() == 224
+
+    def test_generate_base_points_and_reflect(self):
+        f = gen.tools.generate_base_points
+        pts = f(20, domain_size=[1, 1, 1], reflect=False)
+        assert pts.shape == (20, 3)
+        pts = f(20, domain_size=[1, 1, 1], reflect=True)
+        assert pts.shape == (140, 3)
+        pts = f(20, domain_size=[1, 1, 0], reflect=False)
+        assert pts.shape == (20, 3)
+        pts = f(20, domain_size=[1, 1, 0], reflect=True)
+        assert pts.shape == (100, 3)
+        pts = f(20, domain_size=[1, 1], reflect=False)
+        assert pts.shape == (20, 3)
+        pts = f(20, domain_size=[1, 1], reflect=True)
+        assert pts.shape == (120, 3)
+        pts = f(20, domain_size=[1, 0], reflect=False)
+        assert pts.shape == (20, 3)
+        pts = f(20, domain_size=[1, 0], reflect=True)
+        assert pts.shape == (40, 3)
+        pts = f(20, domain_size=[1], reflect=False)
+        assert pts.shape == (20, 3)
+        pts = f(20, domain_size=[1], reflect=True)
+        assert pts.shape == (40, 3)
 
 
 if __name__ == '__main__':
 
-    t = GeneratorToolsTest()
+    t = SKGRGeneratorToolsTest()
     self = t
     t.setup_class()
     for item in t.__dir__():

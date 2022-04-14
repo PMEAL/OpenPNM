@@ -10,8 +10,8 @@ from openpnm._skgraph import tools
 
 __all__ = [
     'parse_points',
-    'get_spacing',
-    'get_shape',
+    'get_cubic_spacing',
+    'get_cubic_shape',
     'add_all_label',
     'label_faces_cubic',
     'template_sphere_shell',
@@ -25,7 +25,6 @@ __notyet__ = [
 
 
 def parse_points(shape, points, reflect=False):
-    from openpnm.topotools import generate_base_points
     # Deal with input arguments
     if isinstance(points, int):
         points = generate_base_points(num_points=points,
@@ -37,37 +36,31 @@ def parse_points(shape, points, reflect=False):
     return points
 
 
-def get_spacing(coords, conns):
+def get_cubic_spacing(g):
     r"""
     Determine spacing of a cubic network
 
     Parameters
     ----------
-    coords : ndarray
-        The x,y,z, location of each node
-    conns : ndarray
-        The pore1-pore2 connections for each throat
+    g : dict
+        The network dictionary containg both conns and coords
 
     Returns
     -------
     spacing : ndarray
         An array containing the spacing between nodes in each direction
 
-    Notes
-    -----
-    This function only works on simple cubic networks with no boundary
-    vertices. If a unique spacing cannot be found in each direction,
-    and/or the edges are not all oriented perpendicularly, exceptions
-    will be raised.
-
     """
-    from openpnm.topotools import dimensionality
+    node_prefix = settings.node_prefix
+    edge_prefix = settings.edge_prefix
+    coords = g[node_prefix+'.coords']
+    conns = g[edge_prefix+'.conns']
     # Find Network spacing
     C12 = coords[conns]
     mag = np.linalg.norm(np.diff(C12, axis=1), axis=2)
     unit_vec = np.around(np.squeeze(np.diff(C12, axis=1)) / mag, decimals=14)
     spacing = [0, 0, 0]
-    dims = dimensionality(coords=coords)
+    dims = tools.dimensionality(coords=coords)
     # Ensure vectors point in n-dims unique directions
     c = {tuple(row): 1 for row in unit_vec}
     mag = np.atleast_1d(mag.squeeze()).astype(float)
@@ -86,52 +79,93 @@ def get_spacing(coords, conns):
     return np.array(spacing)
 
 
-def get_shape(coords, conns):
+def get_cubic_shape(g):
+    r"""
+    Determine shape of a cubic network
+
+    Parameters
+    ----------
+    g : dict
+        The network dictionary containg both conns and coords
+
+    Returns
+    -------
+    shape : ndarray
+        An array containing the shape of the network each direction
+
+    """
+    node_prefix = settings.node_prefix
+    coords = g[node_prefix+'.coords']
     L = np.ptp(coords, axis=0)
     mask = L.astype(bool)
-    S = get_spacing(coords, conns)
+    S = get_cubic_spacing(g)
     shape = np.array([1, 1, 1], int)
     shape[mask] = L[mask] / S[mask] + 1
     return shape
 
 
-def add_all_label(coords, conns):
-    d = {}
-    d['pore.all'] = np.ones(coords.shape[0], dtype=bool)
-    d['throat.all'] = np.ones(conns.shape[0], dtype=bool)
-    return d
+def add_all_label(g):
+    r"""
+    Add 'node.all' and 'edge.all' to network dictionary
+
+    Parameters
+    ----------
+    g : dict
+        The network dictionary, containing 'node.coords' and 'edge.conns'
+
+    Returns
+    -------
+    g : dict
+        The supplied dictionary with the 'all' labels added
+
+    Notes
+    -----
+    This function is helpful for working with OpenPNM
+
+    """
+    node_prefix = settings.node_prefix
+    edge_prefix = settings.edge_prefix
+    coords = g[node_prefix+'.coords']
+    conns = g[edge_prefix+'.conns']
+    g['pore.all'] = np.ones(coords.shape[0], dtype=bool)
+    g['throat.all'] = np.ones(conns.shape[0], dtype=bool)
+    return g
 
 
-def label_faces_cubic(coords, threshold=0.0):
+def label_faces_cubic(g, rtol=0.0):
     r"""
     Label the nodes sitting on the faces of the domain assuming the domain
     is cubic
 
     Parameters
     ----------
-    coords : ndarray
-        The x,y,z coordinates of each node
-    threshold : float
+    g : dict
+        The network dictionary contain 'node.coords'
+    rtol : float
         Controls how closely a node must be to a face to be counted. It is
-        defined as ``hit = x <= (1+threshold) * x_min`` and
-        ``hit = y >= (1-threshold) * y_max``.  The default is 0, which means
-        nodes must be exactly on a face.
+        computed relative to the fraction of domain size, as:
+        ``hi_label = abs(1 - x[i]/x.max()) < rtol`` and
+        ``lo_label = abs(x[i]/x.max()) < rtol``
+
+    Returns
+    -------
+    g : dict
+        The network dictionary with the face labels added
     """
     node_prefix = settings.node_prefix
-
+    coords = g[node_prefix+'.coords']
     dims = tools.dimensionality(coords)
     coords = np.around(coords, decimals=10)
     min_labels = ['front', 'left', 'bottom']
     max_labels = ['back', 'right', 'top']
     min_coords = np.amin(coords, axis=0)
     max_coords = np.amax(coords, axis=0)
-    d = {}
     for ax in np.where(dims)[0]:
-        d[node_prefix + '.' + min_labels[ax]] = \
-            coords[:, ax] <= (1+threshold)*min_coords[ax]
-        d[node_prefix + '.' + max_labels[ax]] = \
-            coords[:, ax] >= (1-threshold)*max_coords[ax]
-    return d
+        g[node_prefix + '.' + min_labels[ax]] = \
+            abs((coords[:, ax]-min_coords[ax])/max_coords[ax]) <= rtol
+        g[node_prefix + '.' + max_labels[ax]] = \
+            abs(1-coords[:, ax]/max_coords[ax]) <= rtol
+    return g
 
 
 def _template_sphere_disc(dim, outer_radius, inner_radius):
@@ -178,7 +212,7 @@ def _template_sphere_disc(dim, outer_radius, inner_radius):
     return img
 
 
-def template_sphere_shell(outer_radius, inner_radius=0, dim=3):
+def template_sphere_shell(r_outer, r_inner=0):
     r"""
     This method generates an image array of a sphere-shell.
 
@@ -187,14 +221,11 @@ def template_sphere_shell(outer_radius, inner_radius=0, dim=3):
 
     Parameters
     ----------
-    outer_radius : int
-        Number of nodes in the outer radius of the sphere.
-    inner_radius : int
-        Number of nodes in the inner radius of the shell.  a value of 0 will
+    r_outer : int
+        Number of nodes in the outer radius of the sphere
+    r_inner : int, optional
+        Number of nodes in the inner radius of the shell.  A value of 0 will
         result in a solid sphere.
-    dim : scalar
-        Controls the number of dimensions of the result.  3 returns a sphere,
-        while 2 returns a disk.
 
     Returns
     -------
@@ -203,12 +234,12 @@ def template_sphere_shell(outer_radius, inner_radius=0, dim=3):
         elsewhere.
 
     """
-    img = _template_sphere_disc(dim=dim, outer_radius=outer_radius,
-                                inner_radius=inner_radius)
+    img = _template_sphere_disc(dim=3, outer_radius=r_outer,
+                                inner_radius=r_inner)
     return img
 
 
-def template_cylinder_annulus(height, outer_radius, inner_radius=0):
+def template_cylinder_annulus(z, r_outer, r_inner=0):
     r"""
     This method generates an image array of a disc-ring.
 
@@ -217,11 +248,11 @@ def template_cylinder_annulus(height, outer_radius, inner_radius=0):
 
     Parameters
     ----------
-    height : int
-        The height of the cylinder
-    outer_radius : int
+    z : int
+        The height of the cylinder. A value of 0 will result in a circle
+    r_outer : int
         Number of nodes in the outer radius of the cylinder
-    inner_radius : int
+    r_inner : int, optional
         Number of the nodes in the inner radius of the annulus.  A value of 0
         will result in a solid cylinder.
 
@@ -233,9 +264,10 @@ def template_cylinder_annulus(height, outer_radius, inner_radius=0):
 
     """
 
-    img = _template_sphere_disc(dim=2, outer_radius=outer_radius,
-                                inner_radius=inner_radius)
-    img = np.tile(np.atleast_3d(img), reps=height)
+    img = _template_sphere_disc(dim=2, outer_radius=r_outer,
+                                inner_radius=r_inner)
+    if z > 0:
+        img = np.tile(np.atleast_3d(img), reps=z)
     return img
 
 

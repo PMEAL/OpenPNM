@@ -25,7 +25,7 @@ def add_nodes(g, coords):
 
     Returns
     -------
-    network : dict
+    g : dict
         The network dictionary with the new nodes added to the end. Note that
         any existing node attributes are also extended and filled with default
         values specified in ``settings.default_values``
@@ -37,9 +37,10 @@ def add_nodes(g, coords):
     # It's fine for 1D arrays like ``np.array([])``, but for N-dimensional
     # stuff it's trickier. For instance ``np.array([[], []])`` has a shape
     # of (2, 0) so the empty dimension is the wrong one since all the array
-    # extending in this functionoccurs on the 1st axis.
+    # extending in this function occurs on the 1st axis.
 
     node_prefix = settings.node_prefix
+    coords = np.atleast_2d(coords)
     Nnew = coords.shape[0]
     for k, v in g.items():
         if k.startswith(node_prefix):
@@ -68,7 +69,7 @@ def add_edges(g, conns):
 
     Returns
     -------
-    network : dict
+    g : dict
         The network dictionary with the new edges added to the end. Note that
         any existing edge attributes are also extended and filled with default
         values specified in ``settings.default_values``.
@@ -80,10 +81,11 @@ def add_edges(g, conns):
     # It's fine for 1D arrays like ``np.array([])``, but for N-dimensional
     # stuff it's trickier. For instance ``np.array([[], []])`` has a shape
     # of (2, 0) so the empty dimension is the wrong one since all the array
-    # extending in this functionoccurs on the 1st axis.
+    # extending in this function occurs on the 1st axis.
 
     edge_prefix = settings.edge_prefix
-    Nnew = np.array(conns).shape[0]
+    conns = np.atleast_2d(conns)
+    Nnew = conns.shape[0]
     for k, v in g.items():
         if k.startswith(edge_prefix):
             blank = np.repeat(v[:1, ...], Nnew, axis=0)
@@ -100,13 +102,12 @@ def add_edges(g, conns):
 
 def trim_edges(g, inds):
     r"""
-    Removes given edge from a graph or network
+    Removes given edges from a graph or network
 
     Parameters
     ----------
     g : dictionary
-        A dictionary containing 'edge.conns' and other edge attributes in the
-        form of 'edge.<attribute>'.
+        A dictionary containing coords, conns and other attributes
     inds : array_like
         The edge indices to be trimmed in the form of a 1D list or boolean
         mask with ``True`` values indicating indices to trim.
@@ -135,8 +136,7 @@ def trim_nodes(g, inds):
     Parameters
     ----------
     g : dictionary
-        A dictionary containing 'node.coords' and other node attributes in the
-        form of 'node.<attribute>'.
+        A dictionary containing coords, conns and other attributes
     inds : array_like
         The node indices to be trimmed in the form of a 1D list or boolean
         mask with ``True`` values indicating indices to trim.

@@ -68,8 +68,7 @@ class Cubic(GenericNetwork):
         self["pore.surface"] = skgr.tools.find_surface_nodes_cubic(self.coords)
         Ps = self["pore.surface"]
         self["throat.surface"] = np.all(Ps[self["throat.conns"]], axis=1)
-        labels = skgr.generators.tools.label_faces_cubic(coords=self.coords)
-        self.update(labels)
+        self = skgr.generators.tools.label_faces_cubic(self)
 
     def add_boundary_pores(self, labels=["top", "bottom", "front",
                                          "back", "left", "right"],
