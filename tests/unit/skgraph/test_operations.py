@@ -14,6 +14,25 @@ class SKGROperationsTest:
     def teardown_class(self):
         pass
 
+    def test_join(self):
+        g1 = gen.cubic([3, 3, 3])
+        g2 = gen.cubic([3, 3, 3])
+        g2['node.coords'] += np.array([0, 0, 3])
+        g3 = ops.join(g1, g2)
+        assert g3['edge.conns'].shape[0] == 108
+
+        g1 = gen.cubic([3, 3, 3])
+        g2 = gen.cubic([3, 3, 3])
+        g2['node.coords'] += np.array([0, 0, 3])
+        g3 = ops.join(g1, g2, L_max=1.1)
+        assert g3['edge.conns'].shape[0] == 117
+
+        g1 = gen.cubic([3, 3, 3])
+        g2 = gen.cubic([3, 3, 3])
+        g2['node.coords'] += np.array([0, 0, 3])
+        g3 = ops.join(g1, g2, L_max=1.9)
+        assert g3['edge.conns'].shape[0] == 157
+
     def test_add_nodes(self):
         g = gen.cubic([3, 3, 3])
         g = ops.add_nodes(g, [4, 4, 4])

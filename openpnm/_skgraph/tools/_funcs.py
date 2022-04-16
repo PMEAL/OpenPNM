@@ -4,15 +4,17 @@ from scipy.spatial import cKDTree
 from scipy.spatial import ConvexHull
 from scipy.spatial import Delaunay
 from scipy.sparse import csgraph
-from openpnm._skgraph import settings
 from openpnm._skgraph.tools import generate_points_on_sphere
 from openpnm._skgraph.tools import generate_points_on_circle
 from openpnm._skgraph.tools import cart2sph, sph2cart, cart2cyl, cyl2cart
+# from openpnm._skgraph.tools import get_node_prefix, get_edge_prefix
 
 
 # Once a function has been stripped of all its OpenPNM dependent code it
 # can be added to this list of functions to import
 __all__ = [
+    'get_edge_prefix',
+    'get_node_prefix',
     'change_prefix',
     'isoutside',
     'dimensionality',
@@ -26,6 +28,7 @@ __all__ = [
     'am_to_im',
     'im_to_am',
     'dict_to_am',
+    'dict_to_im',
     'istriu',
     'istril',
     'istriangular',
@@ -41,6 +44,62 @@ __notyet__ = [
     'get_shape',
     'get_spacing',
 ]
+
+
+def get_edge_prefix(g):
+    r"""
+    Determines the prefix used for edge arrays from ``<edge_prefix>.conns``
+
+    Parameters
+    ----------
+    g : dict
+        The graph dictionary
+
+    Returns
+    -------
+    edge_prefix : str
+        The value of ``<edge_prefix>`` used in ``g``.  This is found by
+        scanning ``g.keys()`` until an array ending in ``'.conns'`` is found,
+        then returning the prefix.
+
+    Notes
+    -----
+    This process is surprizingly fast, on the order of a few doze nano seconds,
+    so this overhead is worth it for the flexibility it provides in array
+    naming. Since all ``dict`` are now sorted in Python, it may be helpful to
+    ensure the ``'conns'`` array is near the beginning of the list.
+    """
+    for item in g.keys():
+        if item.endswith('.conns'):
+            return item.split('.')[0]
+
+
+def get_node_prefix(g):
+    r"""
+    Determines the prefix used for node arrays from ``<edge_prefix>.coords``
+
+    Parameters
+    ----------
+    g : dict
+        The graph dictionary
+
+    Returns
+    -------
+    node_prefix : str
+        The value of ``<node_prefix>`` used in ``g``.  This is found by
+        scanning ``g.keys()`` until an array ending in ``'.coords'`` is found,
+        then returning the prefix.
+
+    Notes
+    -----
+    This process is surprizingly fast, on the order of a few doze nano seconds,
+    so this overhead is worth it for the flexibility it provides in array
+    naming. Since all ``dict`` are now sorted in Python, it may be helpful to
+    ensure the ``'coords'`` array is near the beginning of the list.
+    """
+    for item in g.keys():
+        if item.endswith('.coords'):
+            return item.split('.')[0]
 
 
 def change_prefix(g, old_prefix, new_prefix):
@@ -573,12 +632,68 @@ def vor_to_am(vor):
 
 
 def dict_to_am(g):
-    edge_prefix = settings.edge_prefix
-    node_prefix = settings.node_prefix
+    r"""
+    Convert a graph dictionary into a scipy.sparse adjacency matrix in
+    COO format
+
+    Parameters
+    ----------
+    g : dict
+        A network dictionary
+
+    Returns
+    -------
+    am : sparse matrix
+        The sparse adjacency matrix in COO format
+
+    """
+    edge_prefix = get_edge_prefix(g)
+    node_prefix = get_node_prefix(g)
     conns = g[edge_prefix+'.conns']
+    # if symmetric:
+    #     conns = np.vstack((conns, np.fliplr(conns)))
     shape = [g[node_prefix+'.coords'].shape[0]]*2
-    am = conns_to_am(conns, shape)
+    data = np.ones_like(conns[:, 0], dtype=int)
+    am = sprs.coo_matrix((data, (conns[:, 0], conns[:, 1])), shape=shape)
     return am
+
+
+def dict_to_im(g):
+    r"""
+    Convert a graph dictionary into a scipy.sparse incidence matrix in COO
+    format
+
+    Parameters
+    ----------
+    g : dict
+        The network dictionary
+
+    Returns
+    -------
+    im : sparse matrix
+        The sparse incidence matrix in COO format.
+
+    Notes
+    -----
+    Rows correspond to nodes and columns correspond to edges. Each column
+    has 2 nonzero values indicating which 2 nodes are connected by the
+    corresponding edge. Each row contains an arbitrary number of nonzeros
+    whose locations indicate which edges are directly connected to the
+    corresponding node.
+    """
+    edge_prefix = get_edge_prefix(g)
+    node_prefix = get_node_prefix(g)
+    conns = g[edge_prefix+'.conns']
+    coords = g[node_prefix+'.coords']
+    data = np.ones(2*conns.shape[0], dtype=int)
+    shape = (coords.shape[0], conns.shape[0])
+    temp = np.arange(conns.shape[0])
+    cols = np.vstack((temp, temp)).T.flatten()
+    # Could also be done using the following, if faster:
+    # cols = np.linspace(0, conns.shape[0], 2*conns.shape[0], endpoint=False).astype(int)
+    rows = conns.flatten()
+    im = sprs.coo_matrix((data, (rows, cols)), shape=shape)
+    return im
 
 
 def conns_to_am(conns, shape=None, force_triu=True, drop_diag=True,
@@ -591,7 +706,7 @@ def conns_to_am(conns, shape=None, force_triu=True, drop_diag=True,
     conns : array_like, N x 2
         The list of site-to-site connections
     shape : list, optional
-        The shape of the array.  If none is given then it is take as 1 + the
+        The shape of the array.  If none is given then it is taken as 1 + the
         maximum value in ``conns``.
     force_triu : bool
         If True (default), then all connections are assumed undirected, and

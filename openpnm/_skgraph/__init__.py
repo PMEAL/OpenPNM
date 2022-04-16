@@ -63,7 +63,8 @@ def info(g):
     print(d)
 
 
-
+from .tools import get_edge_prefix
+from .tools import get_node_prefix
 
 
 
