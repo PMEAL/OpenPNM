@@ -470,7 +470,7 @@ def find_common_edges(g, inds_1, inds_2):
 
     """
     if np.intersect1d(inds_1, inds_2).size != 0:
-        raise Exception("inds_1 and inds_2 must not share any pores.")
+        raise Exception("inds_1 and inds_2 must not share any nodes")
     edges_1 = find_neighbor_edges(inds=inds_1, g=g, logic="xor")
     edges_2 = find_neighbor_edges(inds=inds_2, g=g, logic="xor")
     return np.intersect1d(edges_1, edges_2)

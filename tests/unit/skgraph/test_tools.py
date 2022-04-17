@@ -1,6 +1,8 @@
+import pytest
 import numpy as np
 from numpy.testing import assert_allclose
 from openpnm._skgraph import tools
+from openpnm._skgraph.generators import cubic
 
 
 class SKGRToolsTest:
@@ -9,6 +11,20 @@ class SKGRToolsTest:
 
     def teardown_class(self):
         pass
+
+    def test_dict_to_am(self):
+        g = cubic(shape=[3, 2, 1])
+        am = tools.dict_to_am(g)
+        assert_allclose(np.linalg.norm(am.todense()), 3.7416573867739413)
+        am = tools.dict_to_am(g, force_symmetrical=False)
+        assert_allclose(np.linalg.norm(am.todense()), 2.6457513110645907)
+
+    def test_dict_to_am_w_dupes(self):
+        g = cubic(shape=[3, 2, 1])
+        g['edge.conns'][1, :] = [0, 1]
+        with pytest.raises(Exception):
+            _ = tools.dict_to_am(g)
+        g['edge.conns'][1, :] = [1, 0]
 
     def test_cart2cyl_and_back(self):
         x, y, z = np.random.rand(10, 3).T

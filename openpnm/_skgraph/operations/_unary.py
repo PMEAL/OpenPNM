@@ -1,6 +1,6 @@
 import numpy as np
 import scipy.sparse as sprs
-from openpnm._skgraph import settings
+from openpnm._skgraph import settings, tools
 
 
 __all__ = [
@@ -39,7 +39,7 @@ def add_nodes(g, coords):
     # of (2, 0) so the empty dimension is the wrong one since all the array
     # extending in this function occurs on the 1st axis.
 
-    node_prefix = settings.node_prefix
+    node_prefix = tools.get_node_prefix(g)
     coords = np.atleast_2d(coords)
     Nnew = coords.shape[0]
     for k, v in g.items():
@@ -83,7 +83,7 @@ def add_edges(g, conns):
     # of (2, 0) so the empty dimension is the wrong one since all the array
     # extending in this function occurs on the 1st axis.
 
-    edge_prefix = settings.edge_prefix
+    edge_prefix = tools.get_edge_prefix(g)
     conns = np.atleast_2d(conns)
     Nnew = conns.shape[0]
     for k, v in g.items():
@@ -118,7 +118,7 @@ def trim_edges(g, inds):
         The dictionary with all edge arrays trimmed accordingly
 
     """
-    edge_prefix = settings.edge_prefix
+    edge_prefix = tools.get_edge_prefix(g)
     N_bonds = g[edge_prefix+'.conns'].shape[0]
     inds = np.atleast_1d(inds)
     keep = np.ones(N_bonds, dtype=bool)
@@ -149,8 +149,8 @@ def trim_nodes(g, inds):
         array renumbered so edges point to the updated node indices.
 
     """
-    node_prefix = settings.node_prefix
-    edge_prefix = settings.edge_prefix
+    node_prefix = tools.get_node_prefix(g)
+    edge_prefix = tools.get_edge_prefix(g)
     N_sites = g[node_prefix+'.coords'].shape[0]
     inds = np.atleast_1d(inds)
     if inds.dtype == bool:

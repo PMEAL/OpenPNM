@@ -51,8 +51,8 @@ def get_cubic_spacing(g):
         An array containing the spacing between nodes in each direction
 
     """
-    node_prefix = settings.node_prefix
-    edge_prefix = settings.edge_prefix
+    node_prefix = tools.get_node_prefix(g)
+    edge_prefix = tools.get_edge_prefix(g)
     coords = g[node_prefix+'.coords']
     conns = g[edge_prefix+'.conns']
     # Find Network spacing
@@ -94,7 +94,7 @@ def get_cubic_shape(g):
         An array containing the shape of the network each direction
 
     """
-    node_prefix = settings.node_prefix
+    node_prefix = tools.get_node_prefix(g)
     coords = g[node_prefix+'.coords']
     L = np.ptp(coords, axis=0)
     mask = L.astype(bool)
@@ -123,8 +123,8 @@ def add_all_label(g):
     This function is helpful for working with OpenPNM
 
     """
-    node_prefix = settings.node_prefix
-    edge_prefix = settings.edge_prefix
+    node_prefix = tools.get_node_prefix(g)
+    edge_prefix = tools.get_edge_prefix(g)
     coords = g[node_prefix+'.coords']
     conns = g[edge_prefix+'.conns']
     g['pore.all'] = np.ones(coords.shape[0], dtype=bool)
@@ -152,7 +152,7 @@ def label_faces_cubic(g, rtol=0.0):
     g : dict
         The network dictionary with the face labels added
     """
-    node_prefix = settings.node_prefix
+    node_prefix = tools.get_node_prefix(g)
     coords = g[node_prefix+'.coords']
     dims = tools.dimensionality(coords)
     coords = np.around(coords, decimals=10)

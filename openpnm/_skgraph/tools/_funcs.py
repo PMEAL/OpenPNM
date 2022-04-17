@@ -631,7 +631,7 @@ def vor_to_am(vor):
     return am
 
 
-def dict_to_am(g):
+def dict_to_am(g, weights=None, force_symmetrical=True):
     r"""
     Convert a graph dictionary into a scipy.sparse adjacency matrix in
     COO format
@@ -640,21 +640,47 @@ def dict_to_am(g):
     ----------
     g : dict
         A network dictionary
+    weights : ndarray, optional
+        The weight values to use for the connections. If not provided
+        then 1's are assumed.
+    force_symmetrical : boolean
+        If ``True`` (default) then the edge connections are assumed to be in
+        triangular form, and are forced to be symmetrical. Set this to
+        ``False`` if the graph is already symmetrical to save time, or if the
+        graph is directed.
 
     Returns
     -------
     am : sparse matrix
         The sparse adjacency matrix in COO format
 
+    Notes
+    -----
+    Duplicate connections (i.e. a multigraph) are not allowed
+
     """
+    if ismultigraph(g):
+        raise Exception('Graph contains duplicate connections')
     edge_prefix = get_edge_prefix(g)
     node_prefix = get_node_prefix(g)
     conns = g[edge_prefix+'.conns']
-    # if symmetric:
-    #     conns = np.vstack((conns, np.fliplr(conns)))
     shape = [g[node_prefix+'.coords'].shape[0]]*2
-    data = np.ones_like(conns[:, 0], dtype=int)
-    am = sprs.coo_matrix((data, (conns[:, 0], conns[:, 1])), shape=shape)
+    if weights is None:
+        weights = np.ones_like(conns[:, 0], dtype=int)
+    if force_symmetrical:
+        # Ensure the matrix is symmetrical.  It's ok if it already it.
+        conns = np.vstack((conns, np.fliplr(conns)))
+        data = np.hstack((weights, weights))
+        am = sprs.coo_matrix((data, (conns[:, 0], conns[:, 1])), shape=shape)
+        # If matrix was already symmetrical, the above lines result in
+        # duplicate entries. Converting to CSR merges these duplicates into
+        # one connection and accumulates all duplicate weights in the data
+        # attribute. Upon converting back to COO the duplicates are removed
+        # but the weights will be incorrect, so they must be over-written:
+        am = am.tocsr().tocoo()
+        am.data = np.hstack((weights, weights))
+    else:
+        am = sprs.coo_matrix((weights, (conns[:, 0], conns[:, 1])), shape=shape)
     return am
 
 
@@ -671,7 +697,7 @@ def dict_to_im(g):
     Returns
     -------
     im : sparse matrix
-        The sparse incidence matrix in COO format.
+        The sparse incidence matrix in COO format
 
     Notes
     -----
@@ -681,6 +707,8 @@ def dict_to_im(g):
     whose locations indicate which edges are directly connected to the
     corresponding node.
     """
+    if ismultigraph(g):
+        raise Exception('Graph contains duplicate connections')
     edge_prefix = get_edge_prefix(g)
     node_prefix = get_node_prefix(g)
     conns = g[edge_prefix+'.conns']
@@ -689,11 +717,35 @@ def dict_to_im(g):
     shape = (coords.shape[0], conns.shape[0])
     temp = np.arange(conns.shape[0])
     cols = np.vstack((temp, temp)).T.flatten()
-    # Could also be done using the following, if faster:
-    # cols = np.linspace(0, conns.shape[0], 2*conns.shape[0], endpoint=False).astype(int)
     rows = conns.flatten()
     im = sprs.coo_matrix((data, (rows, cols)), shape=shape)
     return im
+
+
+def ismultigraph(g):
+    r"""
+    Checks if graph contains multiple connections between any pair of nodes
+
+    Parameters
+    ----------
+    g : dict
+        The graph dictionary
+
+    Returns
+    -------
+    flag : bool
+        Returns ``True`` if any pair of nodes is connected by more than one
+        edge.
+    """
+    edge_prefix = get_edge_prefix(g)
+    node_prefix = get_node_prefix(g)
+    conns = g[edge_prefix+'.conns']
+    coords = g[node_prefix+'.coords']
+    data = np.ones_like(conns[:, 0], dtype=int)
+    shape = 2*[coords.shape[0]]
+    am = sprs.coo_matrix((data, (conns[:, 0], conns[:, 1])), shape=shape)
+    csr = am.tocsr()
+    return np.any(csr.data > 1)
 
 
 def conns_to_am(conns, shape=None, force_triu=True, drop_diag=True,
@@ -754,10 +806,8 @@ def am_to_im(am):
     r"""
     Convert an adjacency matrix into an incidence matrix
     """
-    if am.shape[0] != am.shape[1]:
-        raise Exception('Adjacency matrices must be square')
     if am.format != 'coo':
-        am = am.tocoo(copy=False)
+        am = am.tocoo()
     conn = np.vstack((am.row, am.col)).T
     row = conn[:, 0]
     data = am.data
