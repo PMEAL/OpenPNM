@@ -33,8 +33,6 @@ def voronoi_delaunay_dual(points, shape, trim=True,
         The Delaunay triangulation object produced ``scipy.spatial.Delaunay``
 
     """
-    node_prefix = settings.node_prefix
-    edge_prefix = settings.edge_prefix
     # Generate a set of base points if scalar was given
     points = tools.parse_points(points=points, shape=shape)
     # Generate mask to remove any dims with all 0's

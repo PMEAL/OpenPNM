@@ -28,9 +28,6 @@ def gabriel(points=None, delaunay=None, shape=None, node_prefix='node', edge_pre
         A dictionary containing 'node.coords' and 'edge.conns'
 
     """
-    node_prefix = settings.node_prefix
-    edge_prefix = settings.edge_prefix
-
     if points is not None:
         delaunay, tri = _delaunay(points=points, shape=shape,
                                   node_prefix=node_prefix, edge_prefix=edge_prefix)
@@ -55,10 +52,6 @@ def gabriel(points=None, delaunay=None, shape=None, node_prefix='node', edge_pre
 
 if __name__ == '__main__':
     from openpnm._skgraph.generators import delaunay
-
-    settings.node_prefix = 'node'
-    settings.edge_prefix = 'edge'
-
     # Make a 2D network using points
     gb = gabriel(points=50, shape=[1, 1, 0])
     print(gb.keys())

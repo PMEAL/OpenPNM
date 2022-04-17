@@ -3,8 +3,6 @@ from openpnm._skgraph import generators as gen
 from openpnm._skgraph import operations as ops
 from openpnm._skgraph import settings
 from openpnm._skgraph.visualization import plot_edges, plot_nodes
-settings.node_prefix = 'node'
-settings.edge_prefix = 'edge'
 
 
 class SKGRGeneratorsTest:

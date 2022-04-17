@@ -35,10 +35,6 @@ def voronoi(points, shape=[1, 1, 1], trim=True, tolerance=0.0,
         The Voronoi tessellation object produced by ``scipy.spatial.Voronoi``
 
     """
-
-    node_prefix = settings.node_prefix
-    edge_prefix = settings.edge_prefix
-
     points = tools.parse_points(points=points, shape=shape)
     mask = ~np.all(points == 0, axis=0)
     # Perform tessellation
@@ -69,9 +65,6 @@ def voronoi(points, shape=[1, 1, 1], trim=True, tolerance=0.0,
 
 
 if __name__ == "__main__":
-    settings.node_prefix = 'node'
-    settings.edge_prefix = 'edge'
-
     vn, vor = voronoi(points=50, shape=[1, 0, 1])
     print(vn.keys())
     print(vn['node.coords'].shape)
