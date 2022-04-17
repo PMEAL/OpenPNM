@@ -1,10 +1,9 @@
 import numpy as np
 from openpnm._skgraph.generators import cubic
 from openpnm._skgraph.operations import trim_nodes
-from openpnm._skgraph import settings
 
 
-def cubic_template(template, spacing=1):
+def cubic_template(template, spacing=1, node_prefix='node', edge_prefix='edge'):
     r"""
     Generate a simple cubic lattice matching the shape of the provided tempate
 
@@ -23,11 +22,10 @@ def cubic_template(template, spacing=1):
         A dictionary containing 'node.coords' and 'edge.conns'
 
     """
-    node_prefix = settings.node_prefix
-
     template = np.atleast_3d(template).astype(bool)
     # Generate a full cubic network
-    temp = cubic(shape=template.shape, spacing=spacing)
+    temp = cubic(shape=template.shape, spacing=spacing,
+                 node_prefix=node_prefix, edge_prefix=edge_prefix)
     # Store some info about template
     coords = np.unravel_index(range(template.size), template.shape)
     coords = np.vstack(coords).T

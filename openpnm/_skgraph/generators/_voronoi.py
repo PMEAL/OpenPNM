@@ -6,7 +6,8 @@ from openpnm._skgraph.generators import tools
 from openpnm._skgraph.operations import trim_nodes
 
 
-def voronoi(points, shape=[1, 1, 1], trim=True, tolerance=0.0):
+def voronoi(points, shape=[1, 1, 1], trim=True, tolerance=0.0,
+            node_prefix='node', edge_prefix='edge'):
     r"""
     Generate a network based on a Voronoi tessellation of base points
 

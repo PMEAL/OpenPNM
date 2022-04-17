@@ -2,10 +2,10 @@ import scipy.spatial as sptl
 import scipy.sparse as sprs
 import numpy as np
 from openpnm._skgraph.generators import cubic
-from openpnm._skgraph import settings
+from openpnm._skgraph.tools import tri_to_am
 
 
-def bcc(shape, spacing=1, mode='kdtree'):
+def bcc(shape, spacing=1, mode='kdtree', node_prefix='node', edge_prefix='edge'):
     r"""
     Generate a body-centered cubic lattice
 
@@ -42,15 +42,12 @@ def bcc(shape, spacing=1, mode='kdtree'):
     implemented yet.
 
     """
-    from openpnm.topotools import tri_to_am
-
-    node_prefix = settings.node_prefix
-    edge_prefix = settings.edge_prefix
-
     shape = np.array(shape)
     spacing = np.array(spacing)
-    net1 = cubic(shape=shape, spacing=1)
-    net2 = cubic(shape=shape-1, spacing=1)
+    net1 = cubic(shape=shape, spacing=1,
+                 node_prefix=node_prefix, edge_prefix=edge_prefix)
+    net2 = cubic(shape=shape-1, spacing=1,
+                 node_prefix=node_prefix, edge_prefix=edge_prefix)
     net2[node_prefix + '.coords'] += 0.5
     crds = np.concatenate(
         (net1[node_prefix + '.coords'],
@@ -96,12 +93,13 @@ def bcc(shape, spacing=1, mode='kdtree'):
 if __name__ == '__main__':
     import openpnm as op
     import matplotlib.pyplot as plt
+    from openpnm._skgraph import get_node_prefix, get_edge_prefix
     pn = op.network.GenericNetwork()
     net = bcc([3, 3, 3], 1, mode='tri')
-    net['pore.coords'] = net.pop(settings.node_prefix + '.coords')
-    net['throat.conns'] = net.pop(settings.edge_prefix + '.conns')
-    net['pore.corner'] = net.pop(settings.node_prefix + '.corner')
-    net['pore.body'] = net.pop(settings.node_prefix + '.body')
+    net['pore.coords'] = net.pop(get_node_prefix(net) + '.coords')
+    net['throat.conns'] = net.pop(get_edge_prefix(net) + '.conns')
+    net['pore.corner'] = net.pop(get_node_prefix(net) + '.corner')
+    net['pore.body'] = net.pop(get_node_prefix(net) + '.body')
     pn.update(net)
     pn['pore.all'] = np.ones((np.shape(pn.coords)[0]), dtype=bool)
     pn['throat.all'] = np.ones((np.shape(pn.conns)[0]), dtype=bool)

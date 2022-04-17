@@ -4,7 +4,7 @@ from openpnm._skgraph.generators import delaunay as _delaunay, tools
 from openpnm._skgraph import settings
 
 
-def gabriel(points=None, delaunay=None, shape=None):
+def gabriel(points=None, delaunay=None, shape=None, node_prefix='node', edge_prefix='edge'):
     r"""
     Generate a network based on a Gabriel tessellation, which is a subset of
     the Delaunay triangulation
@@ -32,7 +32,8 @@ def gabriel(points=None, delaunay=None, shape=None):
     edge_prefix = settings.edge_prefix
 
     if points is not None:
-        delaunay, tri = _delaunay(points=points, shape=shape)
+        delaunay, tri = _delaunay(points=points, shape=shape,
+                                  node_prefix=node_prefix, edge_prefix=edge_prefix)
     # Find centroid or midpoint of each edge in conns
     c = delaunay[node_prefix+'.coords'][delaunay[edge_prefix+'.conns']]
     m = (c[:, 0, :] + c[:, 1, :])/2

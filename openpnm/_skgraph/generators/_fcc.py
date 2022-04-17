@@ -3,7 +3,7 @@ import scipy.spatial as sptl
 import scipy.sparse as sprs
 from numba import njit
 from openpnm._skgraph.generators import cubic
-from openpnm._skgraph import settings
+from openpnm._skgraph.tools import tri_to_am
 
 
 @njit
@@ -12,7 +12,7 @@ def len_lil(lil):
     return indptr
 
 
-def fcc(shape, spacing=1, mode='kdtree'):
+def fcc(shape, spacing=1, mode='kdtree', node_prefix='node', edge_prefix='edge'):
     r"""
     Generate a face-centered cubic lattice
 
@@ -48,18 +48,17 @@ def fcc(shape, spacing=1, mode='kdtree'):
     implemented yet.
 
     """
-    from openpnm.topotools import tri_to_am
-
-    node_prefix = settings.node_prefix
-    edge_prefix = settings.edge_prefix
-
     shape = np.array(shape)
     # Create base cubic network of corner sites
-    net1 = cubic(shape=shape)
+    net1 = cubic(shape=shape,
+                 node_prefix=node_prefix, edge_prefix=edge_prefix)
     # Create 3 networks to become face sites
-    net2 = cubic(shape=shape - [1, 1, 0])
-    net3 = cubic(shape=shape - [1, 0, 1])
-    net4 = cubic(shape=shape - [0, 1, 1])
+    net2 = cubic(shape=shape - [1, 1, 0],
+                 node_prefix=node_prefix, edge_prefix=edge_prefix)
+    net3 = cubic(shape=shape - [1, 0, 1],
+                 node_prefix=node_prefix, edge_prefix=edge_prefix)
+    net4 = cubic(shape=shape - [0, 1, 1],
+                 node_prefix=node_prefix, edge_prefix=edge_prefix)
     # Offset pore coords by 1/2 a unit cell
     net2[node_prefix+'.coords'] += np.array([0.5, 0.5, 0])
     net3[node_prefix+'.coords'] += np.array([0.5, 0, 0.5])
@@ -110,14 +109,7 @@ if __name__ == '__main__':
     import openpnm as op
     import matplotlib.pyplot as plt
 
-    node_prefix = settings.node_prefix
-    edge_prefix = settings.edge_prefix
-
-    net = fcc([3, 3, 3], 1, mode='tri')
-    net['pore.coords'] = net.pop(node_prefix+'.coords')
-    net['throat.conns'] = net.pop(edge_prefix+'.conns')
-    net['pore.corner'] = net.pop(node_prefix+'.corner')
-    net['pore.face'] = net.pop(node_prefix+'.face')
+    net = fcc([3, 3, 3], 1, mode='tri', node_prefix='pore', edge_prefix='throat')
     pn = op.network.GenericNetwork()
     pn.update(net)
     pn['pore.all'] = np.ones((np.shape(pn.coords)[0]), dtype=bool)

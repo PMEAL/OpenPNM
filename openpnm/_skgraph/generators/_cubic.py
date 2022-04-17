@@ -1,8 +1,7 @@
 import numpy as np
-from openpnm._skgraph import settings
 
 
-def cubic(shape, spacing=1, connectivity=6):
+def cubic(shape, spacing=1, connectivity=6, node_prefix='node', edge_prefix='edge'):
     r"""
     Generate a simple cubic lattice
 
@@ -22,8 +21,6 @@ def cubic(shape, spacing=1, connectivity=6):
         specified spacing and connectivity.
 
     """
-    node_prefix = settings.node_prefix
-    edge_prefix = settings.edge_prefix
     # Take care of 1D/2D networks
     shape = np.array(shape, ndmin=1)
     shape = np.concatenate((shape, [1] * (3 - shape.size))).astype(int)
