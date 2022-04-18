@@ -7,7 +7,6 @@ from scipy.sparse import csgraph
 from openpnm._skgraph.tools import generate_points_on_sphere
 from openpnm._skgraph.tools import generate_points_on_circle
 from openpnm._skgraph.tools import cart2sph, sph2cart, cart2cyl, cyl2cart
-# from openpnm._skgraph.tools import get_node_prefix, get_edge_prefix
 
 
 # Once a function has been stripped of all its OpenPNM dependent code it
@@ -64,10 +63,10 @@ def get_edge_prefix(g):
 
     Notes
     -----
-    This process is surprizingly fast, on the order of a few doze nano seconds,
-    so this overhead is worth it for the flexibility it provides in array
-    naming. Since all ``dict`` are now sorted in Python, it may be helpful to
-    ensure the ``'conns'`` array is near the beginning of the list.
+    This process is surprizingly fast, on the order of nano seconds, so this
+    overhead is worth it for the flexibility it provides in array naming.
+    However, since all ``dict`` are now sorted in Python, it may be helpful
+    to ensure the ``'conns'`` array is near the beginning of the list.
     """
     for item in g.keys():
         if item.endswith('.conns'):
@@ -92,10 +91,10 @@ def get_node_prefix(g):
 
     Notes
     -----
-    This process is surprizingly fast, on the order of a few doze nano seconds,
-    so this overhead is worth it for the flexibility it provides in array
-    naming. Since all ``dict`` are now sorted in Python, it may be helpful to
-    ensure the ``'coords'`` array is near the beginning of the list.
+    This process is surprizingly fast, on the order of nano seconds, so this
+    overhead is worth it for the flexibility it provides in array naming.
+    However, since all ``dict`` are now sorted in Python, it may be helpful
+    to ensure the ``'conns'`` array is near the beginning of the list.
     """
     for item in g.keys():
         if item.endswith('.coords'):
@@ -571,7 +570,7 @@ def tri_to_am(tri):
     """
     # Create an empty list-of-list matrix
     lil = sprs.lil_matrix((tri.npoints, tri.npoints))
-    # Scan through Delaunay triangulation to retrieve pairs
+    # Scan through Delaunay triangulation object to retrieve pairs
     indices, indptr = tri.vertex_neighbor_vertices
     for k in range(tri.npoints):
         lil.rows[k] = indptr[indices[k]:indices[k + 1]].tolist()
@@ -631,9 +630,9 @@ def vor_to_am(vor):
     return am
 
 
-def dict_to_am(g, weights=None, force_symmetrical=True):
+def dict_to_am(g, weights=None):
     r"""
-    Convert a graph dictionary into a scipy.sparse adjacency matrix in
+    Convert a graph dictionary into a ``scipy.sparse`` adjacency matrix in
     COO format
 
     Parameters
@@ -643,11 +642,6 @@ def dict_to_am(g, weights=None, force_symmetrical=True):
     weights : ndarray, optional
         The weight values to use for the connections. If not provided
         then 1's are assumed.
-    force_symmetrical : boolean
-        If ``True`` (default) then the edge connections are assumed to be in
-        triangular form, and are forced to be symmetrical. Set this to
-        ``False`` if the graph is already symmetrical to save time, or if the
-        graph is directed.
 
     Returns
     -------
@@ -656,28 +650,27 @@ def dict_to_am(g, weights=None, force_symmetrical=True):
 
     Notes
     -----
-    Duplicate connections (i.e. a multigraph) are not allowed
+    If the edge connections in ``g`` are in upper-triangular form, then the
+    graph is assumed to be undirected and the returned adjacency matrix is
+    symmetrical (i.e. the triu entries are reflected in tril). If any edges
+    are found in the lower triangle, then the returned adjacency matrix is
+    unsymmetrical.
+
+    Multigraphs (i.e. duplicate connections between nodes) are not suported,
+    but this is not checked for here to avoid overhead since this function is
+    called frequently.
 
     """
-    if ismultigraph(g):
-        raise Exception('Graph contains duplicate connections')
     edge_prefix = get_edge_prefix(g)
     node_prefix = get_node_prefix(g)
-    conns = g[edge_prefix+'.conns']
+    conns = np.copy(g[edge_prefix+'.conns'])
     shape = [g[node_prefix+'.coords'].shape[0]]*2
     if weights is None:
         weights = np.ones_like(conns[:, 0], dtype=int)
-    if force_symmetrical:
-        # Ensure the matrix is symmetrical.  It's ok if it already it.
-        conns = np.vstack((conns, np.fliplr(conns)))
-        data = np.hstack((weights, weights))
+    if isgtriu(g):  # If graph is triu, then it is assumed to be undirected
+        conns = np.vstack((conns, np.fliplr(conns)))  # Reflect to tril
+        data = np.ones_like(conns[:, 0], dtype=int)  # Generate fake data
         am = sprs.coo_matrix((data, (conns[:, 0], conns[:, 1])), shape=shape)
-        # If matrix was already symmetrical, the above lines result in
-        # duplicate entries. Converting to CSR merges these duplicates into
-        # one connection and accumulates all duplicate weights in the data
-        # attribute. Upon converting back to COO the duplicates are removed
-        # but the weights will be incorrect, so they must be over-written:
-        am = am.tocsr().tocoo()
         am.data = np.hstack((weights, weights))
     else:
         am = sprs.coo_matrix((weights, (conns[:, 0], conns[:, 1])), shape=shape)
@@ -686,7 +679,7 @@ def dict_to_am(g, weights=None, force_symmetrical=True):
 
 def dict_to_im(g):
     r"""
-    Convert a graph dictionary into a scipy.sparse incidence matrix in COO
+    Convert a graph dictionary into a ``scipy.sparse`` incidence matrix in COO
     format
 
     Parameters
@@ -707,18 +700,19 @@ def dict_to_im(g):
     whose locations indicate which edges are directly connected to the
     corresponding node.
     """
-    if ismultigraph(g):
-        raise Exception('Graph contains duplicate connections')
     edge_prefix = get_edge_prefix(g)
     node_prefix = get_node_prefix(g)
     conns = g[edge_prefix+'.conns']
     coords = g[node_prefix+'.coords']
-    data = np.ones(2*conns.shape[0], dtype=int)
-    shape = (coords.shape[0], conns.shape[0])
-    temp = np.arange(conns.shape[0])
-    cols = np.vstack((temp, temp)).T.flatten()
-    rows = conns.flatten()
-    im = sprs.coo_matrix((data, (rows, cols)), shape=shape)
+    if isgtriu(g):
+        data = np.ones(2*conns.shape[0], dtype=int)
+        shape = (coords.shape[0], conns.shape[0])
+        temp = np.arange(conns.shape[0])
+        cols = np.vstack((temp, temp)).T.flatten()
+        rows = conns.flatten()
+        im = sprs.coo_matrix((data, (rows, cols)), shape=shape)
+    else:
+        raise Exception('Not sure how to implement im on directed graphs yet')
     return im
 
 
@@ -744,8 +738,34 @@ def ismultigraph(g):
     data = np.ones_like(conns[:, 0], dtype=int)
     shape = 2*[coords.shape[0]]
     am = sprs.coo_matrix((data, (conns[:, 0], conns[:, 1])), shape=shape)
-    csr = am.tocsr()
-    return np.any(csr.data > 1)
+    am.sum_duplicates()
+    return np.any(am.data > 1)
+
+
+def isgtriu(g):
+    r"""
+    Determines if graph connections are in upper triangular format
+
+    Parameters
+    ----------
+    g : dict
+        The graph dictionary
+
+    Returns
+    -------
+    flag : bool
+        Returns ``True`` if *all* rows in "conns" are ordered as [lo, hi]
+    """
+    edge_prefix = get_edge_prefix(g)
+    conns = g[edge_prefix+'.conns']
+    return np.all(conns[:, 0] < conns[:, 1])
+
+
+def to_triu(g):
+    edge_prefix = get_edge_prefix(g)
+    conns = g[edge_prefix+'.conns']
+    g[edge_prefix+'.conns'] = np.sort(conns, axis=1)
+    return g
 
 
 def conns_to_am(conns, shape=None, force_triu=True, drop_diag=True,

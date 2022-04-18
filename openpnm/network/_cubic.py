@@ -60,7 +60,8 @@ class Cubic(GenericNetwork):
     def __init__(self, shape, spacing=[1, 1, 1], connectivity=6, **kwargs):
         super().__init__(**kwargs)
         net = skgr.generators.cubic(shape=shape, spacing=spacing,
-                                    connectivity=connectivity)
+                                    connectivity=connectivity,
+                                    node_prefix='pore', edge_prefix='throat')
         self.update(net)
         self["pore.all"] = np.ones(net['pore.coords'].shape[0], dtype=bool)
         self["throat.all"] = np.ones(net['throat.conns'].shape[0], dtype=bool)

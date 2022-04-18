@@ -12,12 +12,35 @@ class SKGRToolsTest:
     def teardown_class(self):
         pass
 
-    def test_dict_to_am(self):
+    def test_dict_to_am_undirected(self):
         g = cubic(shape=[3, 2, 1])
         am = tools.dict_to_am(g)
+        # Make sure am is symmetrical but edges have the same order
+        assert np.all(am.row == np.hstack((g['edge.conns'][:, 0], g['edge.conns'][:, 1])))
+        assert np.all(am.col == np.hstack((g['edge.conns'][:, 1], g['edge.conns'][:, 0])))
         assert_allclose(np.linalg.norm(am.todense()), 3.7416573867739413)
-        am = tools.dict_to_am(g, force_symmetrical=False)
+
+    def test_dict_to_am_directed(self):
+        g = cubic(shape=[3, 2, 1])
+        g['edge.conns'][1, :] = [1, 0]
+        am = tools.dict_to_am(g)
+        # Make sure edges in am are untouched
+        assert np.all(am.row == g['edge.conns'][:, 0])
+        assert np.all(am.col == g['edge.conns'][:, 1])
         assert_allclose(np.linalg.norm(am.todense()), 2.6457513110645907)
+
+    def test_dict_to_am_undirected_w_weights(self):
+        g = cubic(shape=[3, 2, 1])
+        Ts = np.arange(g['edge.conns'].shape[0])
+        am = tools.dict_to_am(g, weights=Ts)
+        assert np.all(am.data == np.hstack((Ts, Ts)))
+
+    def test_dict_to_am_directed_w_weights(self):
+        g = cubic(shape=[3, 2, 1])
+        g['edge.conns'][1, :] = [1, 0]
+        Ts = np.arange(g['edge.conns'].shape[0])
+        am = tools.dict_to_am(g, weights=Ts)
+        assert np.all(am.data == Ts)
 
     def test_dict_to_am_w_dupes(self):
         g = cubic(shape=[3, 2, 1])
@@ -25,6 +48,15 @@ class SKGRToolsTest:
         with pytest.raises(Exception):
             _ = tools.dict_to_am(g)
         g['edge.conns'][1, :] = [1, 0]
+        with pytest.raises(Exception):
+            _ = tools.dict_to_am(g)
+
+    def test_dict_to_am_already_symmetrical(self):
+        g = cubic(shape=[3, 2, 1])
+        conns = g['edge.conns']
+        g['edge.conns'] = np.vstack((conns, np.fliplr(conns)))
+        with pytest.raises(Exception):
+            _ = tools.dict_to_am(g)
 
     def test_cart2cyl_and_back(self):
         x, y, z = np.random.rand(10, 3).T

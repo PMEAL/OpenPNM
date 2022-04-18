@@ -31,6 +31,9 @@ The ``skgraph`` protocol is as follows:
 * node and edge indices are implied by their position in the node or edge
   arrays. For e.g. g['node.coords'][0, :] contains the x,y,z coordinates
   of node 0.
+* Undirected graphs are indicated by ensure the adjacency matrix is in
+  upper triangular form. Any entries in the lower triangular portion
+  result in a directed graph. Multigraphs are not supported.
 
 """
 import numpy as _np

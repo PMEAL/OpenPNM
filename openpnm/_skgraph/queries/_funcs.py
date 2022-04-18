@@ -1,7 +1,7 @@
 import numpy as np
 import scipy.sparse as sprs
 from scipy.sparse import csgraph
-from openpnm._skgraph.tools import istriu, conns_to_am, dict_to_am
+from openpnm._skgraph.tools import istriu, conns_to_am, dict_to_am, dict_to_im
 from openpnm._skgraph.tools import get_node_prefix, get_edge_prefix
 
 
@@ -180,7 +180,7 @@ def find_connected_nodes(inds, g=None, am=None, flatten=True, logic='or'):
     return neighbors
 
 
-def find_neighbor_edges(inds, im=None, am=None, flatten=True, logic='or'):
+def find_neighbor_edges(inds, g, flatten=True, logic='or'):
     r"""
     Finds all edges that are connected to the given input nodes
 
@@ -188,15 +188,8 @@ def find_neighbor_edges(inds, im=None, am=None, flatten=True, logic='or'):
     ----------
     inds : array_like (optional)
         A list of node indices whose neighbor edges are sought
-    im : scipy.sparse matrix
-        The incidence matrix of the network.  Must be shaped as (N-nodes,
-        N-edges), with non-zeros indicating which nodes are connected. Either
-        ``am`` or ``im`` must be given.  Passing in ``im`` is slower, but more
-        powerful as it allows for an unflattened list of neighbors.
-    am : scipy.sparse matrix (optional)
-        The adjacency matrix of the network. Either ``am`` or ``im`` must be
-        given.  Passing in ``am`` is faster, but does not allow for an
-        unflattened list.
+    g : dict
+        The graph dictionary
     flatten : bool (default is ``True``)
         Indicates whether the returned result is a compressed array of all
         neighbors, or a list of lists with each sub-list containing the
@@ -240,6 +233,12 @@ def find_neighbor_edges(inds, im=None, am=None, flatten=True, logic='or'):
     if global sites are considered.
 
     """
+    if flatten == False:
+        im = dict_to_im(g)
+        am = None
+    else:
+        am = dict_to_am(g)
+        im = None
     if im is not None:
         if im.format != 'lil':
             im = im.tolil(copy=False)
@@ -465,8 +464,8 @@ def find_common_edges(g, inds_1, inds_2):
 
     Returns
     -------
-    ndarray
-        List of interface edges between the two given sets of nodes
+    edges : ndarray
+        List of edge indices connecting the two given sets of nodes
 
     """
     if np.intersect1d(inds_1, inds_2).size != 0:
@@ -526,15 +525,8 @@ def find_coordination(g, nodes=None):
     for multigraphs since it counts the number of neighboring nodes, not
     the number of incoming/outgoing edges.
     """
-    am = dict_to_am(g)
-    # Ensure the matrix is symmetrical.  It's ok if it already it.
-    row = np.hstack((am.row, am.col))
-    col = np.hstack((am.col, am.row))
-    am.row = row
-    am.col = col
-    am.data = np.hstack((am.data, am.data))
-    # Converting to CSR removes duplicates by indicating them in the data attr
-    z = am.tocsr().getnnz(axis=1)
+    am = dict_to_am(g, directed=False)
+    z = am.getnnz(axis=1)
     if nodes is None:
         return z
     else:
@@ -559,7 +551,7 @@ def find_path(g, pairs, weights=None):
     Returns
     -------
     A dictionary containing both the nodes and edges that define the
-    shortest path connecting each pair of input pores.
+    shortest path connecting each pair of input nodes.
 
     Notes
     -----
@@ -572,10 +564,12 @@ def find_path(g, pairs, weights=None):
     """
     am = dict_to_am(g)
     if weights is not None:
-        am.data = weights
+        am.data = np.ones_like(am.row, dtype=int)
     pairs = np.array(pairs, ndmin=2)
     paths = csgraph.dijkstra(csgraph=am, indices=pairs[:, 0],
-                             return_predecessors=True)[1]
+                             return_predecessors=True, min_only=False)[1]
+    am.data = np.hstack(2*[np.arange(am.data.size/2)]).astype(int)
+    dok = am.todok()
     nodes = []
     edges = []
     for row in range(0, np.shape(pairs)[0]):
@@ -587,6 +581,6 @@ def find_path(g, pairs, weights=None):
         ans.append(pairs[row][0])
         ans.reverse()
         nodes.append(np.array(ans, dtype=int))
-        Ts = find_neighbor_edges(inds=ans, mode='xnor')
+
         edges.append(np.array(Ts, dtype=int))
-    return {'pores': nodes, 'throats': edges}
+    return {'nodes': nodes, 'edges': edges}
