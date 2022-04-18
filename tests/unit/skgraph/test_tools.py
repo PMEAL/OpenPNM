@@ -45,18 +45,15 @@ class SKGRToolsTest:
     def test_dict_to_am_w_dupes(self):
         g = cubic(shape=[3, 2, 1])
         g['edge.conns'][1, :] = [0, 1]
-        with pytest.raises(Exception):
-            _ = tools.dict_to_am(g)
-        g['edge.conns'][1, :] = [1, 0]
-        with pytest.raises(Exception):
-            _ = tools.dict_to_am(g)
-
-    def test_dict_to_am_already_symmetrical(self):
-        g = cubic(shape=[3, 2, 1])
-        conns = g['edge.conns']
-        g['edge.conns'] = np.vstack((conns, np.fliplr(conns)))
-        with pytest.raises(Exception):
-            _ = tools.dict_to_am(g)
+        # This does NOT raise an exception since checking for this would add
+        # too much overhead
+        am = tools.dict_to_am(g)
+        assert len(am.data == 14)
+        assert am.data.max() == 1
+        # If we remove duplicates now, am is changed
+        am.sum_duplicates()
+        assert len(am.data == 12)
+        assert am.data.max() == 2
 
     def test_cart2cyl_and_back(self):
         x, y, z = np.random.rand(10, 3).T
@@ -80,6 +77,37 @@ class SKGRToolsTest:
         assert_allclose(x, x2)
         assert_allclose(y, y2)
         assert_allclose(z, z2)
+
+    def test_find_coincident_nodes(self):
+        g = cubic(shape=[10, 10, 10])
+        hits = tools.find_coincident_nodes(g)
+        assert hits == []
+        g['node.coords'][1, :] = g['node.coords'][0, :]
+        g['node.coords'][2, :] = g['node.coords'][0, :]
+        g['node.coords'][4, :] = g['node.coords'][0, :]
+        hits = tools.find_coincident_nodes(g)
+        assert len(hits) == 1
+        assert np.all(hits[0] == [0, 1, 2, 4])
+        g['node.coords'][10, :] = g['node.coords'][20, :]
+        hits = tools.find_coincident_nodes(g)
+        assert len(hits) == 2
+        assert np.all(hits[1] == [10, 20])
+
+    def test_dimensionality(self):
+        g = cubic(shape=[3, 1, 1])
+        assert np.all(tools.dimensionality(g) == [True, False, False])
+        g = cubic(shape=[1, 3, 1])
+        assert np.all(tools.dimensionality(g) == [False, True, False])
+        g = cubic(shape=[1, 1, 3])
+        assert np.all(tools.dimensionality(g) == [False, False, True])
+        g = cubic(shape=[3, 3, 1])
+        assert np.all(tools.dimensionality(g) == [True, True, False])
+        g = cubic(shape=[3, 1, 3])
+        assert np.all(tools.dimensionality(g) == [True, False, True])
+        g = cubic(shape=[1, 3, 3])
+        assert np.all(tools.dimensionality(g) == [False, True, True])
+        g = cubic(shape=[3, 3, 3])
+        assert np.all(tools.dimensionality(g) == [True, True, True])
 
 
 if __name__ == '__main__':

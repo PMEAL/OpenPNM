@@ -19,6 +19,7 @@ __all__ = [
     'dimensionality',
     'find_surface_nodes',
     'find_surface_nodes_cubic',
+    'find_coincident_nodes',
     'internode_distance',
     'hull_centroid',
     'tri_to_am',
@@ -30,6 +31,7 @@ __all__ = [
     'dict_to_im',
     'istriu',
     'istril',
+    'isgtriu',
     'istriangular',
     'issymmetric',
 ]
@@ -186,14 +188,14 @@ def isoutside(coords, shape, tolerance=0.0):
     return Ps
 
 
-def dimensionality(coords):
+def dimensionality(g):
     r"""
     Checks the dimensionality of the network
 
     Parameters
     ----------
-    coords : ndarray
-        The coordinates of the sites
+    g : dict
+        The graph dictionary
 
     Returns
     -------
@@ -203,6 +205,8 @@ def dimensionality(coords):
         in that dimension.
 
     """
+    n = get_node_prefix(g)
+    coords = g[n+'.coords']
     eps = np.finfo(float).resolution
     dims_unique = [not np.allclose(xk, xk.mean(), atol=0, rtol=eps) for xk in coords.T]
     return np.array(dims_unique)
@@ -233,6 +237,39 @@ def find_surface_nodes_cubic(coords):
             hits[hi] = True
             hits[lo] = True
     return hits
+
+
+def find_coincident_nodes(g):
+    r"""
+    Finds nodes with identical coordinates
+
+    Parameters
+    ----------
+    g : dict
+        The graph dictionary
+
+    Returns
+    -------
+    duplicates : list of ndarrays
+        A list with each sublist indicating the indices of nodes that share
+        a common set of coordinates
+
+    Notes
+    -----
+    This function works by computing a ``hash`` of the coordinates then finding
+    all nodes with equivalent hash values. Hashes are supposed to be unique
+    but they occassionally "collide", meaning nodes may be identified as
+    coincident that are not.
+    """
+    node_prefix = get_node_prefix(g)
+    coords = g[node_prefix+'.coords']
+    hashed = [hash(row.tobytes()) for row in coords]
+    uniq, counts = np.unique(hashed, return_counts=True)
+    hits = np.where(counts > 1)[0]
+    dupes = []
+    for item in hits:
+        dupes.append(np.where(hashed == uniq[item])[0])
+    return dupes
 
 
 def find_surface_nodes(coords):

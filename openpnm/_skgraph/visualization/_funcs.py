@@ -6,6 +6,7 @@ from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.collections import LineCollection
 from mpl_toolkits.mplot3d.art3d import Line3DCollection
 from openpnm._skgraph.tools import dimensionality
+from openpnm._skgraph.tools import get_node_prefix, get_edge_prefix
 
 
 __all__ = [
@@ -14,8 +15,7 @@ __all__ = [
 ]
 
 
-def plot_edges(conns,
-               coords,
+def plot_edges(g,
                edges=None,
                ax=None,
                size_by=None,
@@ -34,10 +34,8 @@ def plot_edges(conns,
 
     Parameters
     ----------
-    conns : ndarray
-        The connections of the network
-    coords : ndarray
-        The coordinates of the network
+    g : dict
+        The graph dictionary
     edges : array_like (optional)
         The list of edges to plot if only a sub-sample is desired.  This is
         useful for inspecting a small region of the network.  If no edges are
@@ -88,9 +86,12 @@ def plot_edges(conns,
     plot_coordinates
 
     """
-
+    node_prefix = get_node_prefix(g)
+    edge_prefix = get_edge_prefix(g)
+    conns = g[edge_prefix+'.conns']
+    coords = g[node_prefix+'.coords']
     Ts = np.arange(conns.shape[0]) if edges is None else edges
-    dim = dimensionality(coords)
+    dim = dimensionality(g)
     ThreeD = True if dim.sum() == 3 else False
     # Add a dummy axis for 1D networks
     if dim.sum() == 1:
@@ -142,7 +143,7 @@ def plot_edges(conns,
     return lc
 
 
-def plot_nodes(coords,
+def plot_nodes(g,
                nodes=None,
                ax=None,
                size_by=None,
@@ -158,8 +159,8 @@ def plot_nodes(coords,
 
     Parameters
     ----------
-    coords : ndarray
-        The network coordinates
+    g : dict
+        The graph dictionary
     nodes : array_like (optional)
         The list of nodes to plot if only a sub-sample is desired. This is
         useful for inspecting a small region of the network. If no nodes
@@ -208,9 +209,11 @@ def plot_nodes(coords,
     plot_edges
 
     """
+    node_prefix = get_node_prefix(g)
+    coords = g[node_prefix+'.coords']
     Ps = np.arange(coords.shape[0]) if nodes is None else nodes
 
-    dim = dimensionality(coords)
+    dim = dimensionality(g)
     ThreeD = True if dim.sum() == 3 else False
     # Add a dummy axis for 1D networks
     if dim.sum() == 1:

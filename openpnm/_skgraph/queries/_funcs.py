@@ -1,7 +1,8 @@
 import numpy as np
 import scipy.sparse as sprs
 from scipy.sparse import csgraph
-from openpnm._skgraph.tools import istriu, conns_to_am, dict_to_am, dict_to_im
+from openpnm._skgraph.tools import conns_to_am, dict_to_am, dict_to_im
+from openpnm._skgraph.tools import istriu, isgtriu
 from openpnm._skgraph.tools import get_node_prefix, get_edge_prefix
 
 
@@ -83,18 +84,16 @@ def find_complementary_nodes(inds, g, asmask=False):
         return np.arange(N)[mask]
 
 
-def find_connected_nodes(inds, g=None, am=None, flatten=True, logic='or'):
+def find_connected_nodes(g, inds, flatten=True, logic='or'):
     r"""
     Finds which nodes are connected to a given set of edges
 
     Parameters
     ----------
+    g : dict
+        The graph dictionary
     inds : array_like
         A list of edges indices whose connected nodes are sought
-    g : dict, optional
-        The graph dictionary. Either this or ``am`` must be given.
-    am : scipy.sparse matrix, optional.
-        The adjacency matrix of the network. Either this or ``g`` must be given.
     flatten : bool (default is ``True``)
         Indicates whether the returned result is a compressed array of all
         neighbors, or a list of lists with each sub-list containing the
@@ -132,6 +131,8 @@ def find_connected_nodes(inds, g=None, am=None, flatten=True, logic='or'):
     array is of type ``float`` and is not suitable for indexing.
 
     """
+    if not isgtriu(g):
+        raise Exception("This function is not implemented for directed networks")
     edges = np.array(inds, ndmin=1)
     if len(edges) == 0:  # Short-circuit this fuction if edges is empty
         return []
@@ -142,12 +143,8 @@ def find_connected_nodes(inds, g=None, am=None, flatten=True, logic='or'):
             am = am.tocoo()
     else:
         raise Exception('either g or am must be given')
-    # This function only uses the upper triangular portion, so make sure it
-    # is sorted properly first
-    if not istriu(am):
-        am = sprs.triu(am, k=1)
     neighbors = np.hstack((am.row[edges], am.col[edges]))
-    if neighbors.size:
+    if neighbors.size > 0:
         n_sites = np.amax(neighbors)
     if logic in ['or', 'union', 'any']:
         neighbors = np.unique(neighbors)
@@ -273,10 +270,10 @@ def find_neighbor_edges(inds, g, flatten=True, logic='or'):
     elif am is not None:
         if am.format != 'coo':
             am = am.tocoo(copy=False)
-        if not istriu(am):
-            am = sprs.triu(am, k=1)
         if flatten is False:
             raise Exception('flatten cannot be used with an adjacency matrix')
+        if isgtriu(g):
+            am = sprs.triu(am, k=1)
         Ps = np.zeros(am.shape[0], dtype=bool)
         Ps[inds] = True
         conns = np.vstack((am.row, am.col)).T
@@ -296,21 +293,17 @@ def find_neighbor_edges(inds, g, flatten=True, logic='or'):
         raise Exception('Either the incidence or the adjacency matrix must be specified')
 
 
-def find_neighbor_nodes(inds, g=None, am=None, flatten=True, include_input=False,
+def find_neighbor_nodes(g, inds, flatten=True, include_input=False,
                         logic='or'):
     r"""
     Ginds all nodes that are directly connected to the input nodes
 
     Parameters
     ----------
+    g : dict
+        The graph dictionary
     inds : array_like
         A list of node indices whose neighbors are sought
-    g : dict, optional
-        The graph dictionary. Either this or ``am`` must be provided.
-    am : scipy.sparse matrix, optional
-        The adjacency matrix of the network. Must be symmetrical such that if
-        nodes *i* and *j* are connected, the matrix contains non-zero values
-        at locations (i, j) and (j, i). Either this or ``g`` must be provided.
     flatten : bool
         If ``True`` (default) the returned result is a compressed array of all
         neighbors, or a list of lists with each sub-list containing the
@@ -362,11 +355,8 @@ def find_neighbor_nodes(inds, g=None, am=None, flatten=True, include_input=False
     # Short-circuit the function if the input list is already empty
     if len(nodes) == 0:
         return []
-    if g is not None:
-        am = dict_to_am(g)
-    am_coo = am.tocoo()
-    if am.format != 'lil':
-        am = am.tolil(copy=False)
+    am_coo = dict_to_am(g)
+    am = am_coo.tolil(copy=False)
     rows = am.rows[nodes].tolist()
     if len(rows) == 0:
         return []
@@ -437,7 +427,7 @@ def find_connecting_edges(inds, g=None, am=None):
     if nodes.size == 0:
         return []
     if g is not None:
-        am = dict_to_am(g)
+        am = dict_to_am(g, weights=np.arange(g['edge.conns'].shape[0]))
     elif am is not None:
         pass
     else:
@@ -445,7 +435,7 @@ def find_connecting_edges(inds, g=None, am=None):
     if am.format != 'dok':
         am = am.todok(copy=True)
     z = tuple(zip(nodes[:, 0], nodes[:, 1]))
-    neighbors = np.array([am.get(z[i], np.nan) for i in range(len(z))])
+    neighbors = np.array([am.get(item, np.nan) for item in z])
     return neighbors
 
 
@@ -470,6 +460,8 @@ def find_common_edges(g, inds_1, inds_2):
     """
     if np.intersect1d(inds_1, inds_2).size != 0:
         raise Exception("inds_1 and inds_2 must not share any nodes")
+    if not isgtriu(g):
+        raise Exception("This function is not implemented for directed graphs")
     edges_1 = find_neighbor_edges(inds=inds_1, g=g, logic="xor")
     edges_2 = find_neighbor_edges(inds=inds_2, g=g, logic="xor")
     return np.intersect1d(edges_1, edges_2)
@@ -520,12 +512,10 @@ def find_coordination(g, nodes=None):
 
     Notes
     -----
-    This gives the same result for both directed and undirected graphs since
-    'coordination' is direction independent. It also gives the same result
-    for multigraphs since it counts the number of neighboring nodes, not
-    the number of incoming/outgoing edges.
+    Supports directed and undirected graphs
+
     """
-    am = dict_to_am(g, directed=False)
+    am = dict_to_am(g)
     z = am.getnnz(axis=1)
     if nodes is None:
         return z
@@ -550,16 +540,16 @@ def find_path(g, pairs, weights=None):
 
     Returns
     -------
-    A dictionary containing both the nodes and edges that define the
-    shortest path connecting each pair of input nodes.
+    paths : dict
+        A dictionary containing ``'node_paths'`` and ``'edge_paths'``, each
+        containing a list of lists indicating the path between each set of
+        nodes given in ``pairs``. An empty list indicates that no path was
+        found between a given set of pairs.
 
     Notes
     -----
     The shortest path is found using Dijkstra's algorithm included in the
     ``scipy.sparse.csgraph`` module
-
-    TODO: The returned throat path contains the correct values, but not
-    necessarily in the true order
 
     """
     am = dict_to_am(g)
@@ -568,7 +558,10 @@ def find_path(g, pairs, weights=None):
     pairs = np.array(pairs, ndmin=2)
     paths = csgraph.dijkstra(csgraph=am, indices=pairs[:, 0],
                              return_predecessors=True, min_only=False)[1]
-    am.data = np.hstack(2*[np.arange(am.data.size/2)]).astype(int)
+    if isgtriu(g):
+        am.data = np.hstack(2*[np.arange(am.data.size/2)]).astype(int)
+    else:
+        am.data = np.arange(am.data.size).astype(int)
     dok = am.todok()
     nodes = []
     edges = []
@@ -578,9 +571,14 @@ def find_path(g, pairs, weights=None):
         while paths[row][j] > -9999:
             ans.append(j)
             j = paths[row][j]
-        ans.append(pairs[row][0])
-        ans.reverse()
-        nodes.append(np.array(ans, dtype=int))
-
-        edges.append(np.array(Ts, dtype=int))
-    return {'nodes': nodes, 'edges': edges}
+        if len(ans) > 0:
+            ans.append(pairs[row][0])
+            ans.reverse()
+            nodes.append(np.array(ans, dtype=int))
+            keys = [tuple((ans[i], ans[i+1])) for i in range(len(ans)-1)]
+            temp = [dok[k] for k in keys]
+            edges.append(np.array(temp, dtype=int))
+        else:
+            nodes.append([])
+            edges.append([])
+    return {'node_paths': nodes, 'edge_paths': edges}
