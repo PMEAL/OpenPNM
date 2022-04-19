@@ -9,8 +9,7 @@ class CubicDualTest:
         pass
 
     def test_generation_3D(self):
-        net = op.network.CubicDual(shape=[5, 5, 5], label_1='primary',
-                                   label_2='secondary')
+        net = op.network.CubicDual(shape=[5, 5, 5])
         assert net.Np == 285
         assert net.Nt == 1436
         assert net.num_pores('all') == 285

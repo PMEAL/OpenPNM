@@ -1,14 +1,12 @@
 import numpy as np
-from openpnm import topotools
 from openpnm.network import GenericNetwork
 from openpnm.utils import Docorator
-from openpnm._skgraph.operations import trim_nodes
 from openpnm._skgraph.generators import voronoi
 from openpnm._skgraph.generators.tools import parse_points
 
 
-__all__ = ['Voronoi']
 docstr = Docorator()
+__all__ = ['Voronoi']
 
 
 @docstr.dedent
@@ -45,7 +43,8 @@ class Voronoi(GenericNetwork):
         # Clean-up input points
         points = parse_points(shape=shape, points=points)
         super().__init__(**kwargs)
-        net, vor = voronoi(points=points, shape=shape, trim=trim)
+        net, vor = voronoi(points=points, shape=shape, trim=trim,
+                           node_prefix='pore', edge_prefix='throat')
         self['pore.all'] = np.ones(net['pore.coords'].shape[0], dtype=bool)
         self['throat.all'] = np.ones(net['throat.conns'].shape[0], dtype=bool)
         self.update(net)

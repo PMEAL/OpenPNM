@@ -38,12 +38,12 @@ class CubicDual(GenericNetwork):
     Bravais
 
     """
+
     def __init__(self, shape, spacing=1, **kwargs):
         super().__init__(**kwargs)
         shape = np.array(shape)
         net = Bravais(shape=shape+1, mode='bcc')
         Ps = net['pore.surface'] * net['pore.corner_sites']
-
 
     def add_boundary_pores(self, labels=['top', 'bottom', 'front', 'back',
                                          'left', 'right'], spacing=None):
