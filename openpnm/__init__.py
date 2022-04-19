@@ -25,7 +25,6 @@ from . import physics
 from . import algorithms
 from . import solvers
 from . import integrators
-from . import materials
 from . import io
 from . import metrics
 from . import contrib

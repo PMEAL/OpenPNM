@@ -73,7 +73,6 @@ setup(
         'openpnm.integrators',
         'openpnm.metrics',
         'openpnm.topotools',
-        'openpnm.materials',
         'openpnm._skgraph',
         'openpnm._skgraph.generators',
         'openpnm._skgraph.io',
