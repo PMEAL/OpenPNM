@@ -134,15 +134,9 @@ def find_connected_nodes(g, inds, flatten=True, logic='or'):
     if not isgtriu(g):
         raise Exception("This function is not implemented for directed networks")
     edges = np.array(inds, ndmin=1)
-    if len(edges) == 0:  # Short-circuit this fuction if edges is empty
+    if len(edges) == 0:  # Short-circuit this function if edges is empty
         return []
-    if g is not None:
-        am = dict_to_am(g)
-    elif am is not None:
-        if am.format != 'coo':
-            am = am.tocoo()
-    else:
-        raise Exception('either g or am must be given')
+    am = dict_to_am(g)
     neighbors = np.hstack((am.row[edges], am.col[edges]))
     if neighbors.size > 0:
         n_sites = np.amax(neighbors)

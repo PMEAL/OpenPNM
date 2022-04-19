@@ -35,7 +35,7 @@ The ``skgraph`` protocol is as follows:
   upper triangular form. Any entries in the lower triangular portion
   result in a directed graph. For rare edge case where a directed graph
   happens to have all connections in the upper triangle, the only solution
-  is to reverse the direction all *all* connections to be in the lower
+  is to reverse the direction of *all* connections to be in the lower
   triangle. Multigraphs are not supported.
 
 """
@@ -43,9 +43,8 @@ import numpy as _np
 from openpnm.utils import PrintableDict as _pdict
 from openpnm.utils import SettingsAttr as _Settings
 
+
 settings = _Settings()
-settings.node_prefix = 'node'
-settings.edge_prefix = 'edge'
 settings.missing_values = {'bool': False,
                            'int': _np.nan,
                            'float': _np.nan,

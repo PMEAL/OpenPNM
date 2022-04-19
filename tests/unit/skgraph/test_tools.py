@@ -142,6 +142,28 @@ class SKGRToolsTest:
         edge_prefix = tools.get_edge_prefix(g)
         assert edge_prefix == 'baz'
 
+    def test_get_spacing(self):
+        d = cubic(shape=[3, 3, 3])
+        s = tools.get_cubic_spacing(d)
+        assert np.all(s == [1, 1, 1])
+        d = cubic(shape=[3, 3, 3], spacing=[1, 2, 3])
+        s = tools.get_cubic_spacing(d)
+        assert np.all(s == [1, 2, 3])
+        d = cubic(shape=[5, 4, 3], spacing=[1, 2, 3])
+        s = tools.get_cubic_spacing(d)
+        assert np.all(s == [1, 2, 3])
+
+    def test_get_shape(self):
+        d = cubic(shape=[3, 3, 3])
+        s = tools.get_cubic_shape(d)
+        assert np.all(s == [3, 3, 3])
+        d = cubic(shape=[3, 3, 3], spacing=[1, 2, 3])
+        s = tools.get_cubic_shape(d)
+        assert np.all(s == [3, 3, 3])
+        d = cubic(shape=[5, 4, 3], spacing=[1, 2, 3])
+        s = tools.get_cubic_shape(d)
+        assert np.all(s == [5, 4, 3])
+
 
 if __name__ == '__main__':
     t = SKGRToolsTest()

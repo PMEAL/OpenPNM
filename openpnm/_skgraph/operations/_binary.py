@@ -45,8 +45,8 @@ def join(g1, g2, L_max=0.99):
     net3 = {}
     Np1 = g1[node_prefix_1+'.coords'].shape[0]
     Np2 = g2[node_prefix_2+'.coords'].shape[0]
-    Nt1 = g1[node_prefix_1+'.conns'].shape[0]
-    Nt2 = g2[node_prefix_2+'.conns'].shape[0]
+    Nt1 = g1[edge_prefix_1+'.conns'].shape[0]
+    Nt2 = g2[edge_prefix_2+'.conns'].shape[0]
     net3[node_prefix_1+'.coords'] = \
         np.vstack((g1.pop(node_prefix_1+'.coords'),
                    g2.pop(node_prefix_2+'.coords')))

@@ -1,10 +1,7 @@
 import numpy as np
 from openpnm._skgraph import generators as gen
-from openpnm._skgraph import settings
 from openpnm._skgraph.visualization import plot_edges, plot_nodes
 import openpnm._skgraph.operations as ops
-settings.node_prefix = 'node'
-settings.edge_prefix = 'edge'
 
 
 class SKGROperationsTest:

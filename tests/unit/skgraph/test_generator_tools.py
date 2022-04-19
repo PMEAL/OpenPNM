@@ -37,28 +37,6 @@ class SKGRGeneratorToolsTest:
         assert r.max() < 1
         assert r.max() > 0
 
-    def test_get_spacing(self):
-        d = gen.cubic(shape=[3, 3, 3])
-        s = gen.tools.get_cubic_spacing(d)
-        assert np.all(s == [1, 1, 1])
-        d = gen.cubic(shape=[3, 3, 3], spacing=[1, 2, 3])
-        s = gen.tools.get_cubic_spacing(d)
-        assert np.all(s == [1, 2, 3])
-        d = gen.cubic(shape=[5, 4, 3], spacing=[1, 2, 3])
-        s = gen.tools.get_cubic_spacing(d)
-        assert np.all(s == [1, 2, 3])
-
-    def test_get_shape(self):
-        d = gen.cubic(shape=[3, 3, 3])
-        s = gen.tools.get_cubic_shape(d)
-        assert np.all(s == [3, 3, 3])
-        d = gen.cubic(shape=[3, 3, 3], spacing=[1, 2, 3])
-        s = gen.tools.get_cubic_shape(d)
-        assert np.all(s == [3, 3, 3])
-        d = gen.cubic(shape=[5, 4, 3], spacing=[1, 2, 3])
-        s = gen.tools.get_cubic_shape(d)
-        assert np.all(s == [5, 4, 3])
-
     def test_add_all_label(self):
         d = gen.cubic(shape=[3, 3, 3])
         assert len(d.keys()) == 2

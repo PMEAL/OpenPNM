@@ -85,8 +85,8 @@ def label_faces_cubic(g, rtol=0.0):
     coords = g[node_prefix+'.coords']
     dims = tools.dimensionality(g)
     coords = np.around(coords, decimals=10)
-    min_labels = ['front', 'left', 'bottom']
-    max_labels = ['back', 'right', 'top']
+    min_labels = ['left', 'front', 'bottom']
+    max_labels = ['right', 'back', 'top']
     min_coords = np.amin(coords, axis=0)
     max_coords = np.amax(coords, axis=0)
     for ax in np.where(dims)[0]:
