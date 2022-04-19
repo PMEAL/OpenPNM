@@ -74,6 +74,7 @@ setup(
         'openpnm.topotools',
         'openpnm.topotools.generators',
         'openpnm.materials',
+        'openpnm._skgraph',
     ],
     install_requires=[
         'chemicals',
