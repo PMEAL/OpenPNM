@@ -100,45 +100,42 @@ reflect_base_points.__doc__ = \
 
 
 def get_spacing(network):
-    return skgr.generators.tools.get_cubic_spacing(network)
+    return skgr.tools.get_cubic_spacing(network)
 
 
-get_spacing.__doc__ = skgr.generators.tools.get_cubic_spacing.__doc__
+get_spacing.__doc__ = skgr.tools.get_cubic_spacing.__doc__
 
 
 def get_shape(network):
-    return skgr.generators.tools.get_cubic_shape(network)
+    return skgr.tools.get_cubic_shape(network)
 
 
-get_shape.__doc__ = skgr.generators.tools.get_cubic_shape.__doc__
+get_shape.__doc__ = skgr.tools.get_cubic_shape.__doc__
 
 
 def filter_pores_by_z(network, pores, z):
-    return skgr.queries.filter_by_z(conns=network.conns, inds=pores, z=z)
+    return skgr.queries.filter_by_z(g=network, inds=pores, z=z)
 
 
 filter_pores_by_z.__doc__ = skgr.queries.filter_by_z.__doc__
 
 
 def find_interface_throats(network, P1, P2):
-    return skgr.queries.find_common_edges(conns=network.conns, inds_1=P1, inds_2=P2)
+    return skgr.queries.find_common_edges(g=network, inds_1=P1, inds_2=P2)
 
 
 find_interface_throats.__doc__ = skgr.queries.find_common_edges.__doc__
 
 
-def dimensionality(network=None, coords=None):
-    if coords is None:
-        coords = network.coords
-    return skgr.tools.dimensionality(coords)
+def dimensionality(network=None):
+    return skgr.tools.dimensionality(network)
 
 
 dimensionality.__doc__ = skgr.tools.dimensionality.__doc__
 
 
-
 def find_pore_to_pore_distance(network, pores1, pores2):
-    return skgr.tools.internode_distance(network.coords, pores1, pores1)
+    return skgr.tools.internode_distance(network, pores1, pores1)
 
 
 find_pore_to_pore_distance.__doc__ = \

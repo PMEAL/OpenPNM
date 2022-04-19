@@ -4,7 +4,6 @@ from openpnm.utils import Docorator
 from openpnm._skgraph.generators import delaunay, tools
 from openpnm._skgraph.tools import isoutside
 from openpnm._skgraph.operations import trim_nodes
-from openpnm._skgraph import settings
 
 
 __all__ = ['Delaunay']
@@ -52,11 +51,10 @@ class Delaunay(GenericNetwork):
 
     def __init__(self, shape=[1, 1, 1], points=None, **kwargs):
         super().__init__(**kwargs)
-        settings.node_prefix = 'pore'
-        settings.edge_prefix = 'throat'
         points = tools.parse_points(shape=shape, points=points)
-        net, tri = delaunay(points=points, shape=shape)
-        Ps = isoutside(coords=net['pore.coords'], shape=shape)
+        net, tri = delaunay(points=points, shape=shape,
+                            node_prefix='pore', edge_prefix='throat')
+        Ps = isoutside(net, shape=shape)
         net = trim_nodes(g=net, inds=Ps)
         self.update(net)
         self['pore.all'] = np.ones(self['pore.coords'].shape[0], dtype=bool)

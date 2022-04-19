@@ -55,6 +55,20 @@ class SKGRToolsTest:
         assert len(am.data == 12)
         assert am.data.max() == 2
 
+    def test_dict_to_im_undirected(self):
+        g = cubic(shape=[3, 2, 1])
+        im = tools.dict_to_im(g)
+        for i in range(im.shape[0]):
+            a = np.where(im.getcol(i).todense())[0]
+            b = g['edge.conns'][i, :]
+            assert np.all(a == b)
+
+    def test_dict_to_im_directed(self):
+        g = cubic(shape=[3, 2, 1])
+        g['edge.conns'] = [3, 2]
+        with pytest.raises(Exception):
+            _ = tools.dict_to_im(g)
+
     def test_cart2cyl_and_back(self):
         x, y, z = np.random.rand(10, 3).T
         r, q, z1 = tools.cart2cyl(x, y, z)
@@ -108,6 +122,25 @@ class SKGRToolsTest:
         assert np.all(tools.dimensionality(g) == [False, True, True])
         g = cubic(shape=[3, 3, 3])
         assert np.all(tools.dimensionality(g) == [True, True, True])
+
+    def test_get_prefixes(self):
+        g = cubic(shape=[3, 1, 1], node_prefix='foo', edge_prefix='bar')
+        node_prefix = tools.get_node_prefix(g)
+        edge_prefix = tools.get_edge_prefix(g)
+        assert node_prefix == 'foo'
+        assert edge_prefix == 'bar'
+        # The following should be made to throw an exception, but is a tiny
+        # edge case that would add a lot of overhead since it would mean
+        # scanning the entire keys list rather than just stopping at the first
+        # occurance of 'coords' (or 'conns').
+        # g['test.coords'] = 1
+        # node_prefix = tools.get_node_prefix(g)
+        g['foo.coords2'] = 2
+        node_prefix = tools.get_node_prefix(g)
+        assert node_prefix == 'foo'
+        g = tools.change_prefix(g, 'bar', 'baz')
+        edge_prefix = tools.get_edge_prefix(g)
+        assert edge_prefix == 'baz'
 
 
 if __name__ == '__main__':

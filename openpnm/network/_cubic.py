@@ -67,7 +67,7 @@ class Cubic(GenericNetwork):
         self["throat.all"] = np.ones(net['throat.conns'].shape[0], dtype=bool)
         self["pore.internal"] = True
         self["throat.internal"] = True
-        self["pore.surface"] = skgr.tools.find_surface_nodes_cubic(self.coords)
+        self["pore.surface"] = skgr.tools.find_surface_nodes_cubic(self)
         Ps = self["pore.surface"]
         self["throat.surface"] = np.all(Ps[self["throat.conns"]], axis=1)
         self = skgr.generators.tools.label_faces_cubic(self)
@@ -98,7 +98,7 @@ class Cubic(GenericNetwork):
             labels = [labels]
         x, y, z = self["pore.coords"].T
         if spacing is None:
-            spacing = skgr.generators.tools.get_cubic_spacing(self)
+            spacing = skgr.tools.get_cubic_spacing(self)
         else:
             spacing = np.array(spacing)
             if spacing.size == 1:
@@ -106,7 +106,7 @@ class Cubic(GenericNetwork):
         Lcx, Lcy, Lcz = spacing
 
         offset = {}
-        shape = skgr.generators.tools.get_cubic_shape(self)
+        shape = skgr.tools.get_cubic_shape(self)
         offset["front"] = offset["left"] = offset["bottom"] = [0, 0, 0]
         offset["right"] = [Lcx * shape[0], 0, 0]
         offset["back"] = [0, Lcy * shape[1], 0]

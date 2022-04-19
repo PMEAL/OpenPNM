@@ -422,12 +422,13 @@ def find_connecting_edges(inds, g=None, am=None):
     save time.
 
     """
+    edge_prefix = get_edge_prefix(g)
     nodes = np.array(inds, ndmin=2)
     # Short-circuit function if nodes is an empty list
     if nodes.size == 0:
         return []
     if g is not None:
-        am = dict_to_am(g, weights=np.arange(g['edge.conns'].shape[0]))
+        am = dict_to_am(g, weights=np.arange(g[edge_prefix+'.conns'].shape[0]))
     elif am is not None:
         pass
     else:

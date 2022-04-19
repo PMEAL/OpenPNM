@@ -112,7 +112,7 @@ def voronoi_delaunay_dual(points, shape, trim=True,
 
     # Identify and trim pores outside the domain if requested
     if trim:
-        Ps = isoutside(coords, shape=shape)
+        Ps = isoutside(network, shape=shape)
         network = trim_nodes(g=network, inds=np.where(Ps)[0])
 
     return network, vor, tri

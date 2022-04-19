@@ -16,8 +16,6 @@ __all__ = [
     'vor_to_am',
     'conns_to_am',
     'drop_sites',
-    '_am_to_im',
-    '_im_to_am',
 ]
 
 
@@ -42,8 +40,8 @@ def find_connected_sites(bonds, **kwargs):
 find_connected_sites.__doc__ = queries.find_connected_nodes.__doc__
 
 
-def find_connecting_bonds(sites, am):
-    return queries.find_connecting_edges(inds=sites, am=am)
+def find_connecting_bonds(sites, **kwargs):
+    return queries.find_connecting_edges(inds=sites, **kwargs)
 
 
 find_connecting_bonds.__doc__ = queries.find_connecting_edges.__doc__
@@ -75,20 +73,6 @@ def issymmetric(am):
 
 
 issymmetric.__doc__ = tools.issymmetric.__doc__
-
-
-def _am_to_im(am):
-    return tools.am_to_im(am)
-
-
-_am_to_im.__doc__ = tools.am_to_im.__doc__
-
-
-def _im_to_am(im):
-    return tools.im_to_am(im)
-
-
-_im_to_am.__doc__ = tools.im_to_am.__doc__
 
 
 def tri_to_am(tri):

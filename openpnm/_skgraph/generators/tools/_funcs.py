@@ -4,14 +4,11 @@ Tools
 
 """
 import numpy as np
-from openpnm._skgraph import settings
 from openpnm._skgraph import tools
 
 
 __all__ = [
     'parse_points',
-    'get_cubic_spacing',
-    'get_cubic_shape',
     'add_all_label',
     'label_faces_cubic',
     'template_sphere_shell',
@@ -34,74 +31,6 @@ def parse_points(shape, points, reflect=False):
         # Should we check to ensure that points are reflected?
         points = np.array(points)
     return points
-
-
-def get_cubic_spacing(g):
-    r"""
-    Determine spacing of a cubic network
-
-    Parameters
-    ----------
-    g : dict
-        The network dictionary containg both conns and coords
-
-    Returns
-    -------
-    spacing : ndarray
-        An array containing the spacing between nodes in each direction
-
-    """
-    node_prefix = tools.get_node_prefix(g)
-    edge_prefix = tools.get_edge_prefix(g)
-    coords = g[node_prefix+'.coords']
-    conns = g[edge_prefix+'.conns']
-    # Find Network spacing
-    C12 = coords[conns]
-    mag = np.linalg.norm(np.diff(C12, axis=1), axis=2)
-    unit_vec = np.around(np.squeeze(np.diff(C12, axis=1)) / mag, decimals=14)
-    spacing = [0, 0, 0]
-    dims = tools.dimensionality(coords=coords)
-    # Ensure vectors point in n-dims unique directions
-    c = {tuple(row): 1 for row in unit_vec}
-    mag = np.atleast_1d(mag.squeeze()).astype(float)
-    if len(c.keys()) > sum(dims):
-        raise Exception(
-            "Spacing is undefined when throats point in more directions"
-            " than network has dimensions."
-        )
-    for ax in [0, 1, 2]:
-        if dims[ax]:
-            inds = np.where(unit_vec[:, ax] == unit_vec[:, ax].max())[0]
-            temp = np.unique(mag[inds])
-            if not np.allclose(temp, temp[0]):
-                raise Exception("A unique value of spacing could not be found.")
-            spacing[ax] = temp[0]
-    return np.array(spacing)
-
-
-def get_cubic_shape(g):
-    r"""
-    Determine shape of a cubic network
-
-    Parameters
-    ----------
-    g : dict
-        The network dictionary containg both conns and coords
-
-    Returns
-    -------
-    shape : ndarray
-        An array containing the shape of the network each direction
-
-    """
-    node_prefix = tools.get_node_prefix(g)
-    coords = g[node_prefix+'.coords']
-    L = np.ptp(coords, axis=0)
-    mask = L.astype(bool)
-    S = get_cubic_spacing(g)
-    shape = np.array([1, 1, 1], int)
-    shape[mask] = L[mask] / S[mask] + 1
-    return shape
 
 
 def add_all_label(g):
@@ -154,7 +83,7 @@ def label_faces_cubic(g, rtol=0.0):
     """
     node_prefix = tools.get_node_prefix(g)
     coords = g[node_prefix+'.coords']
-    dims = tools.dimensionality(coords)
+    dims = tools.dimensionality(g)
     coords = np.around(coords, decimals=10)
     min_labels = ['front', 'left', 'bottom']
     max_labels = ['back', 'right', 'top']

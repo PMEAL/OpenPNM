@@ -58,7 +58,7 @@ def voronoi(points, shape=[1, 1, 1], trim=True, tolerance=0.0,
     d[node_prefix+'.coords'] = coords
 
     if trim:
-        hits = isoutside(coords=coords, shape=shape, tolerance=tolerance)
+        hits = isoutside(d, shape=shape, rtol=tolerance)
         d = trim_nodes(d, hits)
 
     return d, vor

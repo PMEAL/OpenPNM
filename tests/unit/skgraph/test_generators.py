@@ -141,8 +141,8 @@ class SKGRGeneratorsTest:
         assert net['edge.conns'].shape[0] == 4730
 
 
-# ax = plot_edges(net['edge.conns'], net['node.coords'])
-# ax = plot_nodes(net['node.coords'], ax=ax)
+# ax = plot_edges(net)
+# ax = plot_nodes(net, ax=ax)
 
 
 if __name__ == '__main__':
