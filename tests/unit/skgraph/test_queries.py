@@ -57,14 +57,26 @@ class SKGRQueriesTest:
 
     def test_find_neighbor_nodes_undirected(self):
         g = cubic(shape=[3, 2, 1])
-        c = queries.find_neighbor_nodes(g=g, inds=[0, 2, 4], logic='or')
-        assert np.all(c == [1, 3, 5])
-        c = queries.find_neighbor_nodes(g=g, inds=[0, 2, 4], logic='xor')
-        assert np.all(c == [1, 3, 5])
-        c = queries.find_neighbor_nodes(g=g, inds=[0, 2, 4], logic='xnor')
-        assert np.all(c == [])
-        c = queries.find_neighbor_nodes(g=g, inds=[0, 2, 4], logic='and')
-        assert np.all(c == [])
+        c = queries.find_neighbor_nodes(g=g, inds=[0, 2], logic='or')
+        assert np.all(c == [1, 3, 4])
+        c = queries.find_neighbor_nodes(g=g, inds=[0, 2], logic='xor')
+        assert np.all(c == [1, 3, 4])
+        c = queries.find_neighbor_nodes(g=g, inds=[0, 2], logic='xnor')
+        assert np.all(c == [1])
+        c = queries.find_neighbor_nodes(g=g, inds=[0, 2], logic='and')
+        assert np.all(c == [1])
+
+    def test_find_neighbor_nodes_directed(self):
+        g = cubic(shape=[3, 2, 1])
+        g['edge.conns'][1, :] = [3, 2]
+        c = queries.find_neighbor_nodes(g=g, inds=[0, 2], logic='or')
+        assert np.all(c == [1, 4])
+        c = queries.find_neighbor_nodes(g=g, inds=[0, 2], logic='xor')
+        assert np.all(c == [1, 4])
+        c = queries.find_neighbor_nodes(g=g, inds=[0, 3], logic='xnor')
+        assert np.all(c == [2])
+        c = queries.find_neighbor_nodes(g=g, inds=[0, 3], logic='and')
+        assert np.all(c == [2])
 
     def test_find_connecting_edges_undirected(self):
         g = cubic(shape=[3, 2, 1])
