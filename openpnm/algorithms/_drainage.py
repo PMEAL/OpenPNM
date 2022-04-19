@@ -4,14 +4,11 @@ from openpnm._skgraph.simulations import bond_percolation
 from openpnm._skgraph.simulations import find_connected_clusters
 from openpnm._skgraph.simulations import find_trapped_clusters
 from openpnm.topotools import remove_isolated_clusters, ispercolating
-from openpnm.utils import logging, SettingsAttr, Docorator
+from openpnm.utils import SettingsAttr, Docorator
 
 
 __all__ = ['Drainage']
-
-
 docstr = Docorator()
-logger = logging.getLogger(__name__)
 
 
 @docstr.get_sections(base='DrainageSettings',
@@ -79,7 +76,7 @@ class Drainage(GenericAlgorithm):
             self['pore.invaded'][pores] = True
         if throats is not None:
             self['throat.invaded'][throats] = True
-            
+
     def set_trapped(self, pores=None, throats=None, mode='add'):
         # A pore/throat cannot be both trapped and invaded so set invaded=False
         if pores is not None:
