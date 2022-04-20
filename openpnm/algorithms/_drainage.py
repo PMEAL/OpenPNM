@@ -53,10 +53,30 @@ class Drainage(GenericAlgorithm):
         self.soln = SolutionContainer()
 
     def set_inlets(self, pores, mode='add'):
-        self['pore.inlets'][pores] = True
+        if mode == 'add':
+            self['pore.inlets'][pores] = True
+        elif mode == 'drop':
+            self['pore.inlets'][pores] = False
+        elif mode == 'clear':
+            self['pore.inlets'] = False
+        elif mode == 'overwrite':
+            self['pore.inlets'] = False
+            self['pore.inlets'][pores] = True
+        else:
+            raise Exception(f'Unrecognized mode {mode}')
 
     def set_outlets(self, pores, mode='add'):
-        self['pore.outlets'][pores] = True
+        if mode == 'add':
+            self['pore.outlets'][pores] = True
+        elif mode == 'drop':
+            self['pore.outlets'][pores] = False
+        elif mode == 'clear':
+            self['pore.outlets'] = False
+        elif mode == 'overwrite':
+            self['pore.outlets'] = False
+            self['pore.outlets'][pores] = True
+        else:
+            raise Exception(f'Unrecognized mode {mode}')
 
     def set_residual(self, pores=None, throats=None, mode='add'):
         if pores is not None:
@@ -95,14 +115,19 @@ class Drainage(GenericAlgorithm):
     def _run_special(self, pressure):
         phase = self.project[self.settings.phase]
         Tinv = phase[self.settings.throat_entry_pressure] <= pressure
-        # Update invaded locations with residual
+        # Update invaded locations with any residual
         Tinv += self['throat.invaded']
+        # Removed trapped throats from this list, if any
+        Tinv[self['throat.trapped']] = False
+        # Performed bond_percolation to label invaded clusters
         s_labels, b_labels = bond_percolation(self.network.conns, Tinv)
+        # Remove label from clusters not connected to the inlets
         s_labels, b_labels = find_connected_clusters(
             b_labels, s_labels, self['pore.inlets'], asmask=False)
         # Add result to existing invaded locations
         self['pore.invaded'][s_labels >= 0] = True
         self['throat.invaded'][b_labels >= 0] = True
+        # If any outlets were specified, evaluate trapping
         if np.any(self['pore.outlets']):
             s, b = find_trapped_clusters(conns=self.network.conns,
                                          occupied_bonds=self['throat.invaded'],
@@ -145,15 +170,16 @@ if __name__ == "__main__":
                    model=op.models.physics.capillary_pressure.washburn)
 
     drn = Drainage(network=pn, phase=nwp)
+    drn.set_residual(pores=np.random.randint(0, 399, 150))
     drn.set_inlets(pores=pn.pores('left'))
     drn.set_outlets(pores=pn.pores('right'))
-    pressures = [0.2e6, 0.3e6, 0.4e6, 0.5e6, 0.6e6, 0.7e6, 0.8e6, 0.9e6, 1e6, 1.1e6, 1.2e6, 1.5e6, 2e6]
+    pressures = np.linspace(0.4e6, 2e6, 20)
     sol = drn.run(pressures)
 
     # %%
     ax = op.topotools.plot_coordinates(pn, pores=drn['pore.inlets'], c='m')
     ax = op.topotools.plot_coordinates(pn, pores=pn['pore.right'], ax=ax, c='m')
-    ax = op.topotools.plot_connections(pn, throats=nwp['throat.entry_pressure'] <= pressures[0], c='white', ax=ax)
+    ax = op.topotools.plot_connections(pn, throats=nwp['throat.entry_pressure'] <= pressures[4], c='white', ax=ax)
     ax = op.topotools.plot_connections(pn, throats=drn['throat.invaded'], ax=ax)
     ax = op.topotools.plot_coordinates(pn, pores=drn['pore.invaded'], ax=ax)
     ax = op.topotools.plot_coordinates(pn, pores=drn['pore.trapped'], c='green', ax=ax)
