@@ -105,6 +105,9 @@ class SKGRToolsTest:
         g['node.coords'][10, :] = g['node.coords'][20, :]
         hits = tools.find_coincident_nodes(g)
         assert len(hits) == 2
+        # TODO: The following line seems to fail on the CI, as if the entries
+        # in hits are in a different order. There is no reason I can see why
+        # this would happen though. Need to figure this out.
         assert np.all(hits[1] == [10, 20])
 
     def test_dimensionality(self):

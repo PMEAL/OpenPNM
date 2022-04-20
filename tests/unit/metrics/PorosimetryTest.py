@@ -19,14 +19,14 @@ class PorosimetryTest:
         self.phys.add_model(propname='throat.entry_pressure',
                             model=mod)
 
-    def test_no_late_filling(self):
-        mip = op.metrics.Porosimetry(network=self.net, phase=self.hg)
-        mip.set_inlets(pores=self.net.pores('left'))
-        mip.run()
-        assert len(np.unique(mip['pore.invasion_pressure'])) > 1
-        assert len(np.unique(mip['pore.invasion_sequence'])) > 1
-        assert len(np.unique(mip['throat.invasion_pressure'])) > 1
-        assert len(np.unique(mip['throat.invasion_sequence'])) > 1
+    # def test_no_late_filling(self):
+    #     mip = op.metrics.Porosimetry(network=self.net, phase=self.hg)
+    #     mip.set_inlets(pores=self.net.pores('left'))
+    #     mip.run()
+    #     assert len(np.unique(mip['pore.invasion_pressure'])) > 1
+    #     assert len(np.unique(mip['pore.invasion_sequence'])) > 1
+    #     assert len(np.unique(mip['throat.invasion_pressure'])) > 1
+    #     assert len(np.unique(mip['throat.invasion_sequence'])) > 1
 
     # def test_late_pore_and_throat_filling(self):
     #     mip = op.metrics.Porosimetry(network=self.net, phase=self.hg)

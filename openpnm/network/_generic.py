@@ -500,7 +500,7 @@ class GenericNetwork(ParamMixin, LabelMixin, Base, ModelsMixin):
         >>> pn = op.network.Cubic(shape=[5, 5, 5])
         >>> Ts = pn.find_connecting_throat([0, 1, 2], [2, 2, 2])
         >>> print(Ts)
-        [nan, 1., nan]
+        [nan 1. nan]
 
         """
         sites = np.vstack((P1, P2)).T
