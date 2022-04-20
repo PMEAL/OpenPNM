@@ -38,7 +38,7 @@ class SKGRGeneratorToolsTest:
         assert r.max() > 0
 
     def test_add_all_label(self):
-        d = gen.cubic(shape=[3, 3, 3])
+        d = gen.cubic(shape=[3, 3, 3], node_prefix='pore', edge_prefix='throat')
         assert len(d.keys()) == 2
         d = gen.tools.add_all_label(d)
         assert len(d.keys()) == 4
@@ -46,7 +46,7 @@ class SKGRGeneratorToolsTest:
         assert 'throat.all' in d.keys()
 
     def test_label_faces_cubic(self):
-        d = gen.cubic(shape=[3, 3, 3])
+        d = gen.cubic(shape=[3, 3, 3], node_prefix='pore', edge_prefix='throat')
         d = gen.tools.label_faces_cubic(d, rtol=0.1)
         assert d['pore.left'].sum() == 9
         assert d['pore.right'].sum() == 9
