@@ -50,6 +50,7 @@ class Drainage(GenericAlgorithm):
         self['throat.invaded'] = False
         self['pore.trapped'] = False
         self['throat.trapped'] = False
+        self.soln = SolutionContainer()
 
     def set_inlets(self, pores, mode='add'):
         self['pore.inlets'][pores] = True
@@ -74,13 +75,22 @@ class Drainage(GenericAlgorithm):
 
     def run(self, pressures):
         pressures = np.array(pressures, ndmin=1)
-        soln = np.zeros([self.Np, pressures.size], dtype=float)
+        Nx = pressures.size
+        self.soln['pore.invaded'] = \
+            PressureScan(pressures, np.zeros([self.Np, Nx], dtype=int))
+        self.soln['throat.invaded'] = \
+            PressureScan(pressures, np.zeros([self.Nt, Nx], dtype=int))
+        self.soln['pore.trapped'] = \
+            PressureScan(pressures, np.zeros([self.Np, Nx], dtype=int))
+        self.soln['throat.trapped'] = \
+            PressureScan(pressures, np.zeros([self.Nt, Nx], dtype=int))
         for i, p in enumerate(pressures):
             self._run_special(p)
-            soln[:, i] = self['pore.invaded']
-        soln = PressureScan(x=pressures, y=soln)
-        self.soln = SolutionContainer()
-        self.soln['pore.saturation'] = soln
+            self.soln['pore.invaded'][:, i] = self['pore.invaded']
+            self.soln['throat.invaded'][:, i] = self['throat.invaded']
+            self.soln['pore.trapped'][:, i] = self['pore.trapped']
+            self.soln['throat.trapped'][:, i] = self['throat.trapped']
+        return self.soln
 
     def _run_special(self, pressure):
         phase = self.project[self.settings.phase]
@@ -100,6 +110,24 @@ class Drainage(GenericAlgorithm):
             self['pore.trapped'][s >= 0] = True
             self['throat.trapped'][b >= 0] = True
 
+    def pc_curve(self, pressures=None):
+        if pressures is None:
+            pressures = self.soln['pore.invaded'].p
+        elif isinstance(pressures, int):
+            pressures = np.linspace(self.soln['pore.invaded'].p[0],
+                                    self.soln['pore.invaded'].p[-1],
+                                    pressures)
+        else:
+            pressures = np.array(pressures)
+        pc = []
+        snwp = []
+        Vp = self.soln['pore.invaded']
+        Vt = self.soln['throat.invaded']
+        for p in pressures:
+            pc.append(p)
+            snwp.append((Vp(p).sum() + Vt(p).sum())/(Vp(p).size + Vt(p).size))
+        return pc, snwp
+
 
 if __name__ == "__main__":
     import openpnm as op
@@ -118,9 +146,9 @@ if __name__ == "__main__":
 
     drn = Drainage(network=pn, phase=nwp)
     drn.set_inlets(pores=pn.pores('left'))
-    # drn.set_outlets(pores=pn.pores('right'))
-    pressures=[0.8e6, 0.9e6, 1e6, 1.1e6, 1.2e6]
-    drn.run(pressures)
+    drn.set_outlets(pores=pn.pores('right'))
+    pressures = [0.2e6, 0.3e6, 0.4e6, 0.5e6, 0.6e6, 0.7e6, 0.8e6, 0.9e6, 1e6, 1.1e6, 1.2e6, 1.5e6, 2e6]
+    sol = drn.run(pressures)
 
     # %%
     ax = op.topotools.plot_coordinates(pn, pores=drn['pore.inlets'], c='m')

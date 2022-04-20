@@ -88,7 +88,8 @@ class TransientSolution(UnsteadySolution):
 class PressureScan(UnsteadySolution):
 
     def interpolate(self, p):
-        return super().interpolate(x=p)
+        s = super().interpolate(x=p).astype(self.dtype)
+        return s
 
     @property
     def p(self):
@@ -96,3 +97,5 @@ class PressureScan(UnsteadySolution):
         Wrapper to access the generic _x attribute on the super class
         """
         return self._x
+
+    __call__ = interpolate
