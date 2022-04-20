@@ -44,7 +44,7 @@ setup(
         'Topic :: Scientific/Engineering',
         'Topic :: Scientific/Engineering :: Physics'
     ],
-    packages=find_packages("openpnm"),
+    packages=find_packages("."),
     install_requires=[
         'chemicals',
         'docrep>=0.3',
