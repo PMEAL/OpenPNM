@@ -193,14 +193,14 @@ def remove_isolated_clusters(labels, inlets):
 
     """
     # Identify clusters of invasion sites
-    inv_clusters = np.unique(labels.sites[inlets])
+    inv_clusters = np.unique(labels.site_labels[inlets])
     # Remove cluster numbers == -1, if any
     inv_clusters = inv_clusters[inv_clusters >= 0]
     # Find all pores in invading clusters
-    p_invading = np.in1d(labels.sites, inv_clusters)
-    labels.sites[~p_invading] = -1
-    t_invading = np.in1d(labels.bonds, inv_clusters)
-    labels.bonds[~t_invading] = -1
+    p_invading = np.in1d(labels.site_labels, inv_clusters)
+    labels.site_labels[~p_invading] = -1
+    t_invading = np.in1d(labels.bond_labels, inv_clusters)
+    labels.bond_labels[~t_invading] = -1
     return labels
 
 

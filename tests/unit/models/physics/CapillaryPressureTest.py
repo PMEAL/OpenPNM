@@ -138,7 +138,7 @@ class CapillaryPressureTest:
         p = (np.random.random([len(bp), 3]) - 0.5) / 1000
         bp += p
         fiber_rad = 2e-6
-        bp = op.topotools.reflect_base_points(bp, domain_size=[1, 1, 1])
+        bp = op.topotools.reflect_base_points(points=bp, domain_size=[1, 1, 1])
         prj = op.materials.VoronoiFibers(
             fiber_rad=fiber_rad,
             resolution=1e-6,

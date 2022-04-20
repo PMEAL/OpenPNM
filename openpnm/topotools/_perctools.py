@@ -41,15 +41,15 @@ def remove_isolated_clusters(**kwargs):
 remove_isolated_clusters.__doc__ = simulations.remove_isolated_clusters.__doc__
 
 
-def site_percolation(network, occupied_sites):
-    return simulations.site_percolation(network.conns, occupied_sites)
+def site_percolation(conns, occupied_sites):
+    return simulations.site_percolation(conns, occupied_sites)
 
 
 site_percolation.__doc__ = simulations.site_percolation.__doc__
 
 
-def bond_percolation(network, occupied_bonds):
-    return simulations.bond_percolation(network.conns, occupied_bonds)
+def bond_percolation(conns, occupied_bonds):
+    return simulations.bond_percolation(conns, occupied_bonds)
 
 
 bond_percolation.__doc__ = simulations.bond_percolation.__doc__
