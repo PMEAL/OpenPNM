@@ -20,16 +20,41 @@ class SteadyStateSolution(np.ndarray):
         return obj
 
 
-class TransientSolution(Solution):
-    """Brief description of 'TransientSolution'"""
+class UnsteadySolution(Solution):
+    """Brief description of 'UnsteadySolution'"""
 
-    def __new__(cls, t, x):
-        obj = np.asarray(x).view(cls)
-        obj.t = np.asarray(t).view(cls)
+    def __new__(cls, x, y):
+        obj = np.asarray(y).view(cls)
+        obj._x = np.asarray(x).view(cls)
         return obj
 
     def _create_interpolant(self):
-        self._interpolant = interp1d(self.t, self, bounds_error=True)
+        self._interpolant = interp1d(self._x, self, bounds_error=True)
+
+    def interpolate(self, x):
+        """
+        Interpolates solution at point 'x'.
+
+        Parameters
+        ----------
+        x : float
+            Point at which the solution is to be interpolated
+
+        Returns
+        -------
+        ndarray
+            Solution interpolated at the given point 'x'
+
+        """
+        # Cache interpolant to avoid overhead
+        if not hasattr(self, "_interpolant"):
+            self._create_interpolant()
+        return self._interpolant(x)
+
+    __call__ = interpolate
+
+
+class TransientSolution(UnsteadySolution):
 
     def interpolate(self, t):
         """
@@ -50,9 +75,24 @@ class TransientSolution(Solution):
         't' must reside inside the 'tspan' used during integration.
 
         """
-        # Cache interpolant to avoid overhead
-        if not hasattr(self, "_interpolant"):
-            self._create_interpolant()
-        return self._interpolant(t)
+        return super().interpolate(x=t)
 
-    __call__ = interpolate
+    @property
+    def t(self):
+        r"""
+        Wrapper to access the generic _x attribute on the super class
+        """
+        return self._x
+
+
+class PressureScan(UnsteadySolution):
+
+    def interpolate(self, p):
+        return super().interpolate(x=p)
+
+    @property
+    def p(self):
+        r"""
+        Wrapper to access the generic _x attribute on the super class
+        """
+        return self._x

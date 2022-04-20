@@ -1,5 +1,6 @@
 import numpy as np
 from openpnm.algorithms import GenericAlgorithm
+from openpnm.algorithms._solution import SolutionContainer, PressureScan
 from openpnm._skgraph.simulations import bond_percolation
 from openpnm._skgraph.simulations import find_connected_clusters
 from openpnm._skgraph.simulations import find_trapped_clusters
@@ -19,23 +20,8 @@ class DrainageSettings:
     Parameters
     ----------
     %(GenericAlgorithmSettings.parameters)s
-    access_limited : bool
-        If ``True`` then invading fluid must be connected to the specified
-        inlets
-    mode : str
-        Controls whether pore or throat entry threshold values are used.
-        Options are:
 
-        ===========  ==========================================================
-        mode         meaning
-        ===========  ==========================================================
-        'site'       the pore entry is considered
-        'bond'       the throat values are considered.
-        ===========  ==========================================================
-
-    pore_entry_threshold : str
-        The dictionary key for the pore entry pressure array
-    throat_entry_threshold : str
+    throat_entry_pressure : str
         The dictionary key for the pore entry pressure array
     pore_volume : str
         The dictionary key for the pore volume array
@@ -44,7 +30,7 @@ class DrainageSettings:
 
     """
     phase = ''
-    throat_entry_threshold = 'throat.entry_pressure'
+    throat_entry_pressure = 'throat.entry_pressure'
     pore_volume = 'pore.volume'
     throat_volume = 'throat.volume'
 
@@ -86,9 +72,19 @@ class Drainage(GenericAlgorithm):
             self['throat.invaded'][throats] = False
             self['throat.trapped'][throats] = True
 
-    def run(self, pressure):
+    def run(self, pressures):
+        pressures = np.array(pressures, ndmin=1)
+        soln = np.zeros([self.Np, pressures.size], dtype=float)
+        for i, p in enumerate(pressures):
+            self._run_special(p)
+            soln[:, i] = self['pore.invaded']
+        soln = PressureScan(x=pressures, y=soln)
+        self.soln = SolutionContainer()
+        self.soln['pore.saturation'] = soln
+
+    def _run_special(self, pressure):
         phase = self.project[self.settings.phase]
-        Tinv = phase[self.settings.throat_entry_threshold] <= pressure
+        Tinv = phase[self.settings.throat_entry_pressure] <= pressure
         # Update invaded locations with residual
         Tinv += self['throat.invaded']
         s_labels, b_labels = bond_percolation(self.network.conns, Tinv)
@@ -120,16 +116,16 @@ if __name__ == "__main__":
     phys.add_model(propname='throat.entry_pressure',
                    model=op.models.physics.capillary_pressure.washburn)
 
-    pressure = 1e6
     drn = Drainage(network=pn, phase=nwp)
     drn.set_inlets(pores=pn.pores('left'))
     # drn.set_outlets(pores=pn.pores('right'))
-    drn.run(pressure=pressure)
+    pressures=[0.8e6, 0.9e6, 1e6, 1.1e6, 1.2e6]
+    drn.run(pressures)
 
     # %%
     ax = op.topotools.plot_coordinates(pn, pores=drn['pore.inlets'], c='m')
     ax = op.topotools.plot_coordinates(pn, pores=pn['pore.right'], ax=ax, c='m')
-    ax = op.topotools.plot_connections(pn, throats=nwp['throat.entry_pressure'] <= pressure, c='white', ax=ax)
+    ax = op.topotools.plot_connections(pn, throats=nwp['throat.entry_pressure'] <= pressures[0], c='white', ax=ax)
     ax = op.topotools.plot_connections(pn, throats=drn['throat.invaded'], ax=ax)
     ax = op.topotools.plot_coordinates(pn, pores=drn['pore.invaded'], ax=ax)
     ax = op.topotools.plot_coordinates(pn, pores=drn['pore.trapped'], c='green', ax=ax)
