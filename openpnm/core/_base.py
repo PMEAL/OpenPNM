@@ -123,32 +123,6 @@ class Base(dict):
         if element not in ['pore', 'throat']:
             raise Exception('All keys must start with either pore, or throat')
 
-        # Check 2: If adding a new key, make sure it has no conflicts
-        if self.project:
-            proj = self.project
-            boss = proj.find_full_domain(self)
-            keys = boss.keys(mode='all', deep=True)
-        else:
-            boss = None
-            keys = self.keys()
-        # Prevent 'pore.foo.bar' when 'pore.foo' present
-        long_keys = [i for i in keys if i.count('.') > 1]
-        key_root = '.'.join(key.split('.')[:2])
-        if (key.count('.') > 1) and (key_root in keys):
-            raise Exception('Cannot create ' + key + ' when '
-                            + key_root + ' is already defined')
-        # Prevent 'pore.foo' when 'pore.foo.bar' is present
-        if (key.count('.') == 1) and any([i.startswith(key) for i in long_keys]):
-            hit = [i for i in keys if i.startswith(key)][0]
-            raise Exception('Cannot create ' + key + ' when '
-                            + hit + ' is already defined')
-        # Prevent writing pore.foo on boss when present on subdomain
-        if boss:
-            if boss is self and (key not in ['pore.all', 'throat.all']):
-                if (key in keys) and (key not in self.keys()):
-                    raise Exception('Cannot create ' + key + ' when it is'
-                                    + ' already defined on a subdomain')
-
         # This check allows subclassed numpy arrays through, eg. with units
         if not isinstance(value, np.ndarray):
             value = np.array(value, ndmin=1)  # Convert value to an ndarray

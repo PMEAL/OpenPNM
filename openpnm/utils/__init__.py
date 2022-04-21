@@ -11,6 +11,7 @@ from ._misc import *
 from ._settings import *
 from ._workspace import *
 from ._project import *
+from ._health import *
 
 
 def _get_version():
