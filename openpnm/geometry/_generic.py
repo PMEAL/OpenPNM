@@ -1,6 +1,6 @@
 import logging
 from copy import deepcopy
-from openpnm.core import Subdomain, ModelsMixin, ParamMixin
+from openpnm.core import Subdomain, ModelsMixin, ParamMixin, LabelMixin
 from openpnm.utils import Docorator, SettingsAttr
 from openpnm.utils import Workspace
 logger = logging.getLogger(__name__)
@@ -23,7 +23,7 @@ class GeometrySettings:
 @docstr.get_sections(base='GenericGeometry', sections=['Parameters',
                                                        'Examples'])
 @docstr.dedent
-class GenericGeometry(ParamMixin, Subdomain, ModelsMixin):
+class GenericGeometry(ParamMixin, Subdomain, ModelsMixin, LabelMixin):
     r"""
     This generic class is meant as a starter for custom Geometry objects
 

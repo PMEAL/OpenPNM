@@ -5,7 +5,7 @@ from openpnm._skgraph.simulations import bond_percolation
 from openpnm._skgraph.simulations import find_connected_clusters
 from openpnm._skgraph.simulations import find_trapped_clusters
 from openpnm.topotools import remove_isolated_clusters, ispercolating
-from openpnm.utils import SettingsAttr, Docorator
+from openpnm.utils import SettingsAttr, Docorator, TypedSet
 
 
 __all__ = ['Drainage']
@@ -33,6 +33,9 @@ class DrainageSettings:
     throat_entry_pressure = 'throat.entry_pressure'
     pore_volume = 'pore.volume'
     throat_volume = 'throat.volume'
+    nwp_saturation = 'snwp'
+    nwp_pressure = 'pc'
+    variable_props = TypedSet()
 
 
 class Drainage(GenericAlgorithm):
@@ -104,22 +107,30 @@ class Drainage(GenericAlgorithm):
             PressureScan(pressures, np.zeros([self.Np, Nx], dtype=int))
         self.soln['throat.trapped'] = \
             PressureScan(pressures, np.zeros([self.Nt, Nx], dtype=int))
+        self.soln['pore.snwp'] = \
+            PressureScan(pressures, np.zeros([self.Np, Nx], dtype=float))
+        self.soln['throat.snwp'] = \
+            PressureScan(pressures, np.zeros([self.Nt, Nx], dtype=float))
         for i, p in enumerate(pressures):
             self._run_special(p)
             self.soln['pore.invaded'][:, i] = self['pore.invaded']
             self.soln['throat.invaded'][:, i] = self['throat.invaded']
             self.soln['pore.trapped'][:, i] = self['pore.trapped']
             self.soln['throat.trapped'][:, i] = self['throat.trapped']
+            self.soln['pore.snwp'][:, i] = self['pore.snwp']
+            self.soln['throat.snwp'][:, i] = self['throat.snwp']
         return self.soln
 
     def _run_special(self, pressure):
         phase = self.project[self.settings.phase]
+
+        # Perform Percolation -------------------------------------------------
         Tinv = phase[self.settings.throat_entry_pressure] <= pressure
-        # Update invaded locations with any residual
+        # Pre-seed invaded locations with residual, if any
         Tinv += self['throat.invaded']
-        # Removed trapped throats from this list, if any
+        # Remove trapped throats from this list, if any
         Tinv[self['throat.trapped']] = False
-        # Performed bond_percolation to label invaded clusters
+        # Perform bond_percolation to label invaded clusters
         s_labels, b_labels = bond_percolation(self.network.conns, Tinv)
         # Remove label from clusters not connected to the inlets
         s_labels, b_labels = find_connected_clusters(
@@ -127,6 +138,19 @@ class Drainage(GenericAlgorithm):
         # Add result to existing invaded locations
         self['pore.invaded'][s_labels >= 0] = True
         self['throat.invaded'][b_labels >= 0] = True
+
+        # Partial Filling -----------------------------------------------------
+        # Update invasion status and pressure onto phase as 'quantity'
+        pc = self.settings.nwp_pressure
+        phase['pore.'+pc] = self['pore.invaded']*pressure
+        phase['throat.'+pc] = self['throat.invaded']*pressure
+        for phys in phase.physics:
+            phys.regenerate_models()
+        snwp = self.settings.nwp_saturation
+        self['pore.snwp'] = phase['pore.'+snwp]
+        self['throat.snwp'] = phase['throat.'+snwp]
+
+        # Trapping ------------------------------------------------------------
         # If any outlets were specified, evaluate trapping
         if np.any(self['pore.outlets']):
             s, b = find_trapped_clusters(conns=self.network.conns,
@@ -146,12 +170,30 @@ class Drainage(GenericAlgorithm):
             pressures = np.array(pressures)
         pc = []
         snwp = []
-        Vp = self.soln['pore.invaded']
-        Vt = self.soln['throat.invaded']
+        Snwp_p = self.soln['pore.snwp']
+        Snwp_t = self.soln['throat.snwp']
+        Vp = self.network['pore.volume']
+        Vt = self.network['throat.volume']
         for p in pressures:
             pc.append(p)
-            snwp.append((Vp(p).sum() + Vt(p).sum())/(Vp(p).size + Vt(p).size))
+            snwp.append(((Snwp_p(p)*Vp).sum() + (Snwp_t(p)*Vt).sum())/(Vp.sum() + Vt.sum()))
         return pc, snwp
+
+
+def late_filling(target,
+                 pressure='pore.pc',
+                 pc_star='pore.pc_star',
+                 eta=3,
+                 swp_star=0.5):
+    network = target.network
+    phase = network.project.find_phase(target)
+    element = pressure.split('.')[0]
+    pc = phase[pressure]
+    pc_star = phase[pc_star]
+    swp = swp_star*(pc_star/pc)**eta
+    swp[np.isinf(swp)] = 1
+    snwp = 1 - swp
+    return snwp[target._domain[element+'.'+target.name]]
 
 
 if __name__ == "__main__":
@@ -159,32 +201,77 @@ if __name__ == "__main__":
     import matplotlib.pyplot as plt
     plt.rcParams['figure.facecolor'] = 'grey'
     plt.rcParams['axes.facecolor'] = 'grey'
+
     np.random.seed(0)
     pn = op.network.Cubic([20, 20, 1], spacing=1e-5)
+
     geo = op.geometry.SpheresAndCylinders(network=pn, pores=pn.Ps, throats=pn.Ts)
+
     nwp = op.phase.GenericPhase(network=pn)
     nwp['throat.surface_tension'] = 0.480
     nwp['throat.contact_angle'] = 140
+    nwp['throat.pc_star'] = nwp['throat.surface_tension']/pn['throat.diameter']
+    nwp['pore.pc_star'] = nwp['pore.surface_tension']/pn['pore.diameter']
+
     phys = op.physics.GenericPhysics(network=pn, phase=nwp, geometry=geo)
     phys.add_model(propname='throat.entry_pressure',
                    model=op.models.physics.capillary_pressure.washburn)
+    phys.add_model(propname='throat.snwp',
+                   model=late_filling,
+                   pressure='throat.pc',
+                   pc_star='throat.pc_star',
+                   eta=.8, swp_star=0.5,
+                   regen_mode='deferred')
+    phys.add_model(propname='pore.snwp',
+                   model=late_filling,
+                   pressure='pore.pc',
+                   pc_star='pore.pc_star',
+                   eta=.8, swp_star=0.5,
+                   regen_mode='deferred')
 
     drn = Drainage(network=pn, phase=nwp)
-    drn.set_residual(pores=np.random.randint(0, 399, 150))
+    drn.set_residual(pores=np.random.randint(0, 50, 350))
     drn.set_inlets(pores=pn.pores('left'))
     drn.set_outlets(pores=pn.pores('right'))
-    pressures = np.linspace(0.4e6, 2e6, 20)
+    pressures = np.logspace(np.log10(0.2e6), np.log10(5e6), 50)
     sol = drn.run(pressures)
 
     # %%
-    ax = op.topotools.plot_coordinates(pn, pores=drn['pore.inlets'], c='m')
-    ax = op.topotools.plot_coordinates(pn, pores=pn['pore.right'], ax=ax, c='m')
-    ax = op.topotools.plot_connections(pn, throats=nwp['throat.entry_pressure'] <= pressures[4], c='white', ax=ax)
-    ax = op.topotools.plot_connections(pn, throats=drn['throat.invaded'], ax=ax)
-    ax = op.topotools.plot_coordinates(pn, pores=drn['pore.invaded'], ax=ax)
-    ax = op.topotools.plot_coordinates(pn, pores=drn['pore.trapped'], c='green', ax=ax)
-    # ax = op.topotools.plot_coordinates(pn, pores=~drn['pore.invaded'], c='grey', ax=ax)
+    fig, ax = plt.subplots(1, 1)
+    ax.plot(*drn.pc_curve(), 'o-')
+    # ax.set_ylim([0, 1])
+
+    # %%
+    if 0:
+        ax = op.topotools.plot_coordinates(pn, pores=drn['pore.inlets'], c='m')
+        ax = op.topotools.plot_coordinates(pn, pores=pn['pore.right'], ax=ax, c='m')
+        ax = op.topotools.plot_connections(pn, throats=nwp['throat.entry_pressure'] <= pressures[4], c='white', ax=ax)
+        ax = op.topotools.plot_connections(pn, throats=drn['throat.invaded'], ax=ax)
+        ax = op.topotools.plot_coordinates(pn, pores=drn['pore.invaded'], ax=ax)
+        ax = op.topotools.plot_coordinates(pn, pores=drn['pore.trapped'], c='green', ax=ax)
+        # ax = op.topotools.plot_coordinates(pn, pores=~drn['pore.invaded'], c='grey', ax=ax)
 
     # %%
     # ax = op.topotools.plot_connections(pn, throats=drn['throat.invaded'], c='grey', ax=ax)
     # ax = op.topotools.plot_coordinates(pn, pores=drn['pore.invaded'], c='blue', ax=ax)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

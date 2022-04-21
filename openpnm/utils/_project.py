@@ -940,6 +940,69 @@ class Project(list):
         df = df.rename(index={k: indices[k] for k, _ in enumerate(indices)})
         return df.T
 
+    def _get_iterative_props(self, obj):
+        r"""
+        Finds and returns properties that need to be iterated while
+        running an algorithm.
+        """
+        import networkx as nx
+        phase = self[obj.settings.phase]
+        physics = self.find_physics(phase=phase)
+        geometries = self.geometries().values()
+        # Generate global dependency graph
+        dg = nx.compose_all([x.models.dependency_graph(deep=True)
+                             for x in [phase, *geometries, *physics]])
+        variable_props = obj.settings["variable_props"].copy()
+        q = obj.settings["quantity"]
+        if isinstance(q, str):
+            variable_props.add(q)
+        else:
+            for i in q:
+                variable_props.add(i)
+        base = list(variable_props)
+        # Find all props downstream that depend on base props
+        dg = nx.DiGraph(nx.edge_dfs(dg, source=base))
+        if len(dg.nodes) == 0:
+            return []
+        iterative_props = list(nx.dag.lexicographical_topological_sort(dg))
+        # "variable_props" should be in the returned list but not "quantity"
+        if isinstance(q, str):
+            iterative_props.remove(obj.settings["quantity"])
+        else:
+            for item in iterative_props:
+                if item in obj.settings["quantity"]:
+                    iterative_props.remove(item)
+        return iterative_props
+
+    def _update_iterative_props(self, obj):
+        """
+        Regenerates phase, geometries, and physics objects using the
+        current value of ``quantity``.
+
+        Notes
+        -----
+        The algorithm directly writes the value of 'quantity' into the
+        phase, which is against one of the OpenPNM rules of objects not
+        being able to write into each other.
+
+        """
+        iterative_props = self._get_iterative_props()
+        if not iterative_props:
+            return
+        # Fetch objects associated with the algorithm
+        phase = self[obj.settings.phase]
+        physics = self.find_physics(phase=phase)
+        geometries = self.geometries().values()
+        # Update 'quantity' on phase with the most recent value
+        quantity = obj.settings['quantity']
+        phase[quantity] = obj[quantity]
+        # Regenerate all associated objects
+        phase.regenerate_models(propnames=iterative_props)
+        for geom in geometries:
+            geom.regenerate_models(iterative_props)
+        for phys in physics:
+            phys.regenerate_models(iterative_props)
+
     def _regenerate_models(self, objs=[], propnames=[]):
         r"""
         Can be used to regenerate models across all objects in the project.
