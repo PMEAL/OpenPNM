@@ -43,9 +43,9 @@ class GenericNetwork(Domain):
         not given one will be generated.
 
     coords : array_like (optional)
-        An Np-by-3 array of [x, y, z] coordinates for each pore.
+        An Np-by-3 array of [x, y, z] coordinates for each pore
     conns : array_like (optional)
-        An Nt-by-2 array of [head, tail] connections between pores.
+        An Nt-by-2 array of [head, tail] connections between pores
 
     Examples
     --------
@@ -113,17 +113,10 @@ class GenericNetwork(Domain):
 
     def __setitem__(self, key, value):
         if key == 'throat.conns':
-            if np.shape(value)[1] != 2:
-                logger.error('Wrong size for throat conns!')
-            else:
-                if np.any(value[:, 0] > value[:, 1]):
-                    logger.debug('Converting throat.conns to be upper triangular')
-                    value = np.sort(value, axis=1)
+            if np.any(value[:, 0] > value[:, 1]):
+                logger.debug('Converting throat.conns to be upper triangular')
+                value = np.sort(value, axis=1)
         super().__setitem__(key, value)
-
-    @property
-    def _subdomains(self):
-        return list(self.project.geometries().values())
 
     def _gen_ids(self):
         IDs = self.get('pore._id', np.array([], ndmin=1, dtype=np.int64))
@@ -856,29 +849,3 @@ class GenericNetwork(Domain):
     def coords(self):
         r"""Returns the list of pore coordinates of the network."""
         return self['pore.coords']
-
-    def check_network_health(self):
-        r"""
-        This method check the network topological health.
-
-        Specifically, it checks for:
-            1. Isolated pores
-            2. Islands or isolated clusters of pores
-            3. Duplicate throats
-            4. Bidirectional throats (ie. symmetrical adjacency matrix)
-            5. Headless throats
-
-        Returns
-        -------
-        dict
-            A dictionary containing the offending pores or throat numbers
-            under each named key.
-
-        Notes
-        -----
-        - Does not yet check for duplicate pores
-        - Does not yet suggest which throats to remove
-        - This is just a 'check' and does not 'fix' the problems it finds
-
-        """
-        return self.project.check_network_health()

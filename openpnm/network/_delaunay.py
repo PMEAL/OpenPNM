@@ -57,8 +57,6 @@ class Delaunay(GenericNetwork):
         Ps = isoutside(net, shape=shape)
         net = trim_nodes(g=net, inds=Ps)
         self.update(net)
-        self['pore.all'] = np.ones(self['pore.coords'].shape[0], dtype=bool)
-        self['throat.all'] = np.ones(self['throat.conns'].shape[0], dtype=bool)
 
 
 if __name__ == "__main__":

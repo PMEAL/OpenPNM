@@ -1,7 +1,7 @@
 import numpy as np
 import openpnm as op
 
-pn = op.network.Cubic(shape=[40, 40, 1], name='bob')
+pn = op.network.Cubic(shape=[4, 4, 1])
 pn.models.update(op.models.collections.geometry.circles_and_rectangles)
 pn.regenerate_models()
 
@@ -14,6 +14,3 @@ fd = op.algorithms.FickianDiffusion(network=pn, phase=air)
 fd.set_value_BC(pores=pn.pores('left'), values=1)
 fd.set_value_BC(pores=pn.pores('right'), values=0)
 fd.run()
-
-import matplotlib.pyplot as plt
-plt.imshow(fd['pore.concentration'].reshape([40, 40]))

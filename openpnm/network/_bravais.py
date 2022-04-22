@@ -79,8 +79,6 @@ class Bravais(GenericNetwork):
             net = bcc(shape=shape, spacing=spacing,
                       node_prefix='pore', edge_prefix='throat')
             self.update(net)
-            self['pore.all'] = np.ones(self['pore.coords'].shape[0], dtype=bool)
-            self['throat.all'] = np.ones(self['throat.conns'].shape[0], dtype=bool)
             # Deal with labels
             Ts = self.find_neighbor_throats(pores=self.pores('body'),
                                             mode='exclusive_or')
@@ -99,8 +97,6 @@ class Bravais(GenericNetwork):
             net = fcc(shape=shape, spacing=spacing,
                       node_prefix='pore', edge_prefix='throat')
             self.update(net)
-            self['pore.all'] = np.ones(self['pore.coords'].shape[0], dtype=bool)
-            self['throat.all'] = np.ones(self['throat.conns'].shape[0], dtype=bool)
             # Deal with labels
             Ts = self.find_neighbor_throats(pores=self.pores('corner'),
                                             mode='xnor')
@@ -117,8 +113,6 @@ class Bravais(GenericNetwork):
             net = cubic(shape=shape, spacing=1,
                         node_prefix='pore', edge_prefix='throat')
             self.update(net)
-            self['pore.all'] = np.ones(self['pore.coords'].shape[0], dtype=bool)
-            self['throat.all'] = np.ones(self['throat.conns'].shape[0], dtype=bool)
             self['pore.corner_sites'] = True
             self['throat.corner_to_corner'] = True
 

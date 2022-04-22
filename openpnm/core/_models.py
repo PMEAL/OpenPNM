@@ -7,7 +7,7 @@ from openpnm.utils import prettify_logger_message
 logger = logging.getLogger(__name__)
 ws = Workspace()
 
-__all__ = ['ModelsDict', 'ModelsMixin']
+__all__ = ['ModelsDict', 'ModelsMixin', 'ModelWrapper']
 
 
 class ModelsDict(PrintableDict):
@@ -244,6 +244,9 @@ class ModelWrapper(dict):
                         if mod is self:
                             return key
 
+    def __repr__(self):
+        return self.__str__()
+
     def __str__(self):
         horizontal_rule = '―' * 78
         lines = [horizontal_rule]
@@ -331,20 +334,14 @@ class ModelsMixin:
 
         Parameters
         ----------
-        propnames : str or list[str]
-            The list of property names to be regenerated.  If None are given
+        propnames : str or list of str
+            The list of property names to be regenerated.  If none are given
             then ALL models are re-run (except for those whose ``regen_mode``
             is 'constant').
-        exclude : list[str]
+        exclude : list of str
             Since the default behavior is to run ALL models, this can be used
             to exclude specific models.  It may be more convenient to supply
             as list of 2 models to exclude than to specify 8 models to include.
-        deep : bool
-            Specifies whether or not to regenerate models on all associated
-            objects.  For instance, if ``True``, then all Physics models will
-            be regenerated when method is called on the corresponding Phase.
-            The default is ``False``.  The method does not work in reverse,
-            so regenerating models on a Physics will not update a Phase.
 
         """
         # If empty list of propnames was given, do nothing and return
@@ -364,36 +361,12 @@ class ModelsMixin:
         # Re-order given propnames according to dependency tree
         self_models = self.models.dependency_list()
         propnames = [i for i in self_models if i in propnames]
-
-        if deep:
-            other_models = None  # Will trigger regen of ALL models
-        else:
-            # Make list of given propnames that are not in self
-            other_models = list(set(propnames).difference(set(self_models)))
-        # The following has some redundant lines, but is easier to understand
-        if self._isa('phase'):
-            # Start be regenerating models on self
-            for item in propnames:
-                self._regen(item)
-            # Then regen models on associated objects, if any in other_models
-            for phys in self.project.find_physics(phase=self):
-                phys.regenerate_models(propnames=other_models, deep=False)
-        elif self._isa('network'):  # Repeat for other object types
-            for item in propnames:
-                self._regen(item)
-            for geom in self.project.geometries().values():
-                geom.regenerate_models(propnames=other_models, deep=False)
-        else:
-            for item in propnames:
-                self._regen(item)
+        for item in propnames:
+            self._regen(item)
 
     def _regen(self, prop):
         # Create a temporary dict of all model arguments
-        try:
-            kwargs = self.models[prop].copy()
-        except KeyError:
-            logger.info(f'{prop} not found, will retry if deep is True')
-            return
+        kwargs = self.models[prop].copy()
         # Pop model and regen_mode from temporary dict
         model = kwargs.pop('model')
         regen_mode = kwargs.pop('regen_mode', None)

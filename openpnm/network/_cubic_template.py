@@ -43,8 +43,6 @@ class CubicTemplate(GenericNetwork):
         super().__init__(**kwargs)
         net = cubic_template(template=template, spacing=spacing,
                              node_prefix='pore', edge_prefix='throat')
-        net['pore.all'] = np.ones(net['pore.coords'].shape[0], dtype=bool)
-        net['throat.all'] = np.ones(net['throat.conns'].shape[0], dtype=bool)
         self.update(net)
         self['pore.surface'] = find_surface_nodes(self)
         ndims = dimensionality(self).sum()

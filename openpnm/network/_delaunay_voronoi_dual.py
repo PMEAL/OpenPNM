@@ -54,9 +54,6 @@ class DelaunayVoronoiDual(GenericNetwork):
 
         net, vor, tri = voronoi_delaunay_dual(shape=shape, points=points)
         self.update(net)
-        self['pore.all'] = np.ones([self.coords.shape[0]], dtype=bool)
-        self['throat.all'] = np.ones([self.conns.shape[0]], dtype=bool)
-
         self._vor = vor
         self._tri = tri
 

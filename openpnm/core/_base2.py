@@ -1,5 +1,5 @@
 import numpy as np
-from openpnm.core import LabelMixin, ParamMixin, ParserMixin, ModelsDict
+from openpnm.core import LabelMixin, ParamMixin, ParserMixin, ModelsDict, ModelWrapper
 from openpnm.utils import Workspace, SettingsAttr
 from copy import deepcopy
 from uuid import uuid4
@@ -34,9 +34,6 @@ class BaseSettings:
 
 
 class Base2(dict):
-    r"""
-    This deals with the original openpnm dict read/write logic
-    """
 
     def __new__(cls, *args, **kwargs):
         instance = super().__new__(cls, *args, **kwargs)
@@ -68,38 +65,25 @@ class Base2(dict):
     def __setitem__(self, key, value):
         if value is None:
             return
-
         element, prop = key.split('.', 1)
-
-        # Catch parameters and divert to params attr
-        # if element == 'param':
-        #     self.params[key] = value
-        #     return
-
         # Catch dictionaries and break them up
         if isinstance(value, dict):
             for k, v in value.items():
                 self[key+'.'+k] = v
             return
-
         # Enfore correct dict naming
         if element not in ['pore', 'throat']:
             raise Exception('All keys must start with either pore, or throat')
-
         # Convert value to ndarray
         if not isinstance(value, np.ndarray):
             value = np.array(value, ndmin=1)
-
         # Skip checks for coords and conns
         if key in ['pore.coords', 'throat.conns']:
             self.update({key: value})
             return
-
         # Finally write data
         if self._count(element) is None:
             self.update({key: value})  # If length not defined, do it
-            # Alternative
-            # raise Exception('pore.coords and throat.conns must be defined first')
         elif value.shape[0] == 1:  # If value is scalar
             value = np.ones((self._count(element), ), dtype=value.dtype)*value
             self.update({key: value})
@@ -114,7 +98,6 @@ class Base2(dict):
         # pore-scale models
         if not isinstance(key, str):
             return key
-
         element, prop = key.split('.', 1)
         try:
             return super().__getitem__(key)
@@ -151,7 +134,6 @@ class Base2(dict):
         self.settings['name'] = name
 
     def _get_name(self):
-        """String representing the name of the object"""
         try:
             return self.settings['name']
         except AttributeError:
@@ -160,7 +142,6 @@ class Base2(dict):
     name = property(_get_name, _set_name)
 
     def _get_project(self):
-        """A shortcut to get a handle to the associated project."""
         for proj in ws.values():
             if self in proj:
                 return proj
@@ -173,7 +154,6 @@ class Base2(dict):
             self._settings_docs = settings.__doc__
 
     def _get_settings(self):
-        """Dictionary containing object settings."""
         if self._settings is None:
             self._settings = SettingsAttr()
         if self._settings_docs is not None:
@@ -187,10 +167,6 @@ class Base2(dict):
 
     @property
     def network(self):
-        r"""
-        A shortcut to get a handle to the associated network.
-        There can only be one so this works.
-        """
         return self.project.network
 
     @property
@@ -201,17 +177,6 @@ class Base2(dict):
         for k, v in self.items():
             if k.startswith(element):
                 return v.shape[0]
-        # Alternative
-        # if element == 'pore':
-        #     try:
-        #         return self['pore.coords'].shape[0]
-        #     except KeyError:
-        #         return None
-        # elif element == 'throat':
-        #     try:
-        #         return self['throat.conns'].shape[0]
-        #     except KeyError:
-        #         return None
 
     @property
     def Nt(self):
@@ -330,15 +295,32 @@ class ModelMixin2:
             domain = ''
         else:
             domain = '@'+domain.split('.')[-1]
-        self.models[propname+domain] = {}
+        self.models[propname+domain] = ModelWrapper()
         self.models[propname+domain]['model'] = model
         self.models[propname+domain]['regen_mode'] = regen_mode
         for item in kwargs:
             self.models[propname+domain][item] = kwargs[item]
+        if regen_mode != 'deferred':
+            self.run_model(propname+domain)
 
-    def regenerate_models(self):
-        for item in self.models.keys():
-            self.run_model(item)
+    def regenerate_models(self, propnames=None, exclude=[]):
+        if isinstance(propnames, list) and len(propnames) == 0:
+            return  # Short-circuit function and return
+        elif isinstance(propnames, str):  # Convert string to list if necessary
+            propnames = [propnames]
+        elif propnames is None:  # If no props given, then regenerate them all
+            propnames = self.models.dependency_list()
+        # Remove any that are specifically excluded
+        propnames = [i for i in propnames if i not in exclude]
+        # Re-order given propnames according to dependency tree
+        all_models = self.models.dependency_list()
+        propnames = [i for i in all_models if i in propnames]
+        # Now run each on in sequence
+        for item in propnames:
+            try:
+                self.run_model(item)
+            except KeyError:
+                pass
 
     def run_model(self, propname, domain=None):
         if domain is None:
@@ -349,34 +331,31 @@ class ModelMixin2:
                         self.run_model(propname=propname, domain=domain)
             else:
                 element, prop = propname.split('.', 1)
-                model = self.models[propname]['model']
+                mod_dict = self.models[propname]
                 # Collect kwargs
-                kwargs = {}
-                for item in self.models[propname].keys():
+                kwargs = {'target': self}
+                for item in mod_dict.keys():
                     if item not in ['model', 'regen_mode']:
-                        kwargs[item] = self.models[propname][item]
-                vals = model(target=self, **kwargs)
+                        kwargs[item] = mod_dict[item]
+                vals = mod_dict['model'](**kwargs)
                 self[propname] = vals
         else:
             domain = domain.split('.')[-1]
             element, prop = propname.split('@')[0].split('.', 1)
             propname = element+'.'+prop
-            model = self.models[propname+'@'+domain]['model']
+            mod_dict = self.models[propname+'@'+domain]
             # Collect kwargs
-            kwargs = {}
-            for item in self.models[propname+'@'+domain].keys():
+            kwargs = {'target': self, domain: element+'.'+domain}
+            for item in mod_dict.keys():
                 if item not in ['model', 'regen_mode']:
-                    kwargs[item] = self.models[propname+'@'+domain][item]
-            vals = model(target=self, domain=element+'.'+domain, **kwargs)
+                    kwargs[item] = mod_dict[item]
+            vals = mod_dict['model'](**kwargs)
             if propname not in self.keys():
                 self[propname] = np.nan*np.ones([self.Np, *vals.shape[1:]])
             self[propname][self[element+'.'+domain]] = vals
 
 
 class Domain(ParserMixin, ParamMixin, LabelMixin, ModelMixin2, Base2):
-    r"""
-    This adds the new domain-based read/write logic
-    """
 
     def __getitem__(self, key):
         if '@' in key:
