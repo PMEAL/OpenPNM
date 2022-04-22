@@ -26,9 +26,9 @@ input#search-input {
     border-radius: 10px;
 }
 
-h1, h2, h3, h4, body {
+/* h1, h2, h3, h4, body {
     font-family: 'Open Sans';
-}
+} */
 
 /* .toctree-l1 {
     font-family: 'PT Mono', 'Robot Mono', 'Fira Code', monospace;

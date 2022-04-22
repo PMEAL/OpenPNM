@@ -144,11 +144,6 @@ html_theme_options = {
             "icon": "fab fa-github-square",
         },
         {
-            "name": "Substack",
-            "url": "https://openpnm.substack.com/",
-            "icon": "fas fa-envelope-square",
-        },
-        {
             "name": "Twitter",
             "url": "https://twitter.com/OpenPNM",
             "icon": "fab fa-twitter-square",
