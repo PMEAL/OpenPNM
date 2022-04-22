@@ -37,75 +37,23 @@ class IPSettings:
 
 class InvasionPercolation(GenericAlgorithm):
     r"""
-    A classic/basic invasion percolation algorithm optimized for speed.
+    A classic invasion percolation algorithm optimized for speed with numba
 
     Parameters
     ----------
     network : GenericNetwork
-        The Network upon which the invasion will occur.
+        The Network upon which the invasion will occur
 
     Notes
     ----
-    This algorithm uses a binary heap to store all a list of all accessible
-    throats, sorted according to entry pressure.  This means that item [0] in
-    the heap is the most easily invaded throat, so looking up which throat
-    to invade next is computationally trivial.  In order to keep the list
-    sorted new throats to the list takes more time, however, the heap data
-    structure is very efficient at this.  Interested users can consult the
-    wikipedia page on `binary heaps
-    <https://en.wikipedia.org/wiki/Binary_heap>`_ for more information.
-
-
-    Examples
-    --------
-    Start by importing the usual packages:
-
-    >>> import openpnm as op
-    >>> import scipy as sp
-    >>> import matplotlib.pyplot as plt
-
-    Create 2D cubic network for easier visualizaiton:
-
-    >>> S = np.array([100, 100, 1])
-    >>> pn = op.network.Cubic(shape=S, spacing=0.0001, name='pn11')
-
-    Add a basic geometry:
-
-    >>> geom = op.geometry.SpheresAndCylinders(network=pn, pores=pn.Ps, throats=pn.Ts)
-
-    Create an invading phase, and attach the capillary pressure model:
-
-    >>> water = op.phase.Water(network=pn)
-    >>> water.add_model(propname='throat.entry_pressure',
-    ...                 model=op.models.physics.capillary_pressure.washburn)
-
-    Initialize an invasion percolation object and define inlets:
-
-    >>> ip = op.algorithms.InvasionPercolation(network=pn, phase=water)
-    >>> ip.set_inlets(pores=0)
-    >>> ip.run()
-
-    After running the algorithm the invading phase configuration at a given
-    saturation can be obtained and assigned to the phase object:
-
-    >>> water.update(ip.results(Snwp=0.5))
-
-    Because it was a 2D network it's easy to quickly visualize the invasion
-    pattern as an image for verification:
-
-    .. note::
-
-        Because the network is 2D and cubic, an image can be generated with
-        color corresponding to a value.  The following plots the entire
-        invasion sequence, and the water configuraiton at Snwp = 0.5.
-
-        ``plt.subplot(1, 2, 1)``
-
-        ``plt.imshow(np.reshape(ip['pore.invasion_sequence'], newshape=S[S > 1]))``
-
-        ``plt.subplot(1, 2, 2)``
-
-        ``plt.imshow(np.reshape(water['pore.occupancy'], newshape=S[S > 1]))``
+    This algorithm uses a `binary
+    heap <https://en.wikipedia.org/wiki/Binary_heap>`_ to store a list of all
+    accessible throats, sorted according to entry pressure.  This means that
+    item [0] in the heap is the most easily invaded throat that is currently
+    accessible by the invading fluid, so looking up which throat to invade
+    next is computationally trivial. In order to keep the list sorted,
+    adding new throats to the list takes more time; however, the heap data
+    structure is very efficient at this.
 
     """
     def __init__(self, phase, settings=None, **kwargs):
@@ -114,35 +62,55 @@ class InvasionPercolation(GenericAlgorithm):
         self.settings['phase'] = phase.name
         self['pore.invasion_sequence'] = -1
         self['throat.invasion_sequence'] = -1
+        self['pore.inlets'] = False
 
-    def set_inlets(self, pores=[], overwrite=False):
+    def set_inlets(self, pores=[], mode='add'):
         r"""
+        Specifies from which pores the invasion process starts
 
         Parameters
         ----------
         pores : array_like
             The list of inlet pores from which the Phase can enter the Network
+        mode : str
+            Controls how the given inlets are added.  Options are:
+
+            ============ ======================================================
+            mode         description
+            ============ ======================================================
+            'add'        Sets the given ``pores`` to inlets, while keeping any
+                         already defined inlets
+            'overwrite'  Removes all existing inlets, then adds the given
+                         ``pores``
+            ============ =======================================================
+
         """
-        if overwrite:
+        mode = self._parse_mode(mode=mode,
+                                allowed=['add', 'overwrite'],
+                                single=True)
+        if mode == 'overwrite':
+            self['pore.inlets'] = False
             self['pore.invasion_sequence'] = -1
         self['pore.invasion_sequence'][pores] = 0
-
+        self['pore.inlets'] = True
 
     def run(self, n_steps=None):
         r"""
-        Performs the algorithm.
+        Performs the algorithm for the given number of steps
 
         Parameters
         ----------
         n_steps : int
-            The number of throats to invaded during this step
+            The number of throats to invade during the run.  This can be
+            used to incrementally invading the network, allowing for
+            simulations to occur between each call to ``run``.
 
         """
 
         # Setup arrays and info
         phase = self.project[self.settings['phase']]
         self['throat.entry_pressure'] = phase[self.settings['entry_pressure']]
-        # Indices into t_entry giving a sorted list
+        # Generated indices into t_entry giving a sorted list
         self['throat.sorted'] = np.argsort(self['throat.entry_pressure'], axis=0)
         self['throat.order'] = 0
         self['throat.order'][self['throat.sorted']] = np.arange(0, self.Nt)
@@ -379,7 +347,7 @@ class InvasionPercolation(GenericAlgorithm):
     def get_intrusion_data(self):
         r"""
         Get the percolation data as the invader volume or number fraction vs
-        the capillary capillary pressure.
+        the capillary pressure.
 
         """
         if 'pore.invasion_pressure' not in self.props():
@@ -441,7 +409,7 @@ class InvasionPercolation(GenericAlgorithm):
         ``idx`` and ``indptr`` are properties are the network's incidence
         matrix, and are used to quickly find neighbor throats.
 
-        Numba doesn't like forein data types (i.e. GenericNetwork), and so
+        Numba doesn't like foreign data types (i.e. GenericNetwork), and so
         ``find_neighbor_throats`` method cannot be called in a jitted method.
 
         Nested wrapper is for performance issues (reduced OpenPNM import)
@@ -453,8 +421,8 @@ class InvasionPercolation(GenericAlgorithm):
         @njit
         def wrapper(queue, t_sorted, t_order, t_inv, p_inv, p_inv_t, conns,
                     idx, indptr, n_steps):
-            count = 0
-            while (len(queue) > 0) and (count < n_steps):
+            count = 1
+            while (len(queue) > 0) and (count < (n_steps + 1)):
                 # Find throat at the top of the queue
                 t = hq.heappop(queue)
                 # Extract actual throat number
@@ -483,13 +451,82 @@ class InvasionPercolation(GenericAlgorithm):
                        idx, indptr, n_steps)
 
 
+def find_trapped_clusters(ip, outlets, bins=50):
+    from openpnm.topotools import find_clusters
+    net = ip.network
+    outlets = net.to_mask(pores=outlets)
+    if bins is None:  # Use all steps, very slow
+        steps = np.arange(ip['pore.invasion_sequence'].max())[-1::-1]
+    elif isinstance(bins, int):  # Generate even spaced steps
+        steps = np.linspace(ip['pore.invasion_sequence'].max(), 0, bins)
+    else:  # Used given steps
+        steps = bins
+    # Initialize arrays for tracking what is trapped
+    p_trapped = -np.ones(net.Np, dtype=int)
+    t_trapped = -np.ones(net.Nt, dtype=int)
+    for s in steps:
+        t_mask = ip['throat.invasion_sequence'] >= s
+        p_mask = ip['pore.invasion_sequence'] >= s
+        p_cluster, t_cluster = find_clusters(network=net, mask=t_mask)
+        hits = np.unique(p_cluster[outlets])
+        hits = hits[hits > -1]
+        if len(hits) > 0:
+            temp = np.isin(p_cluster, hits, invert=True)*p_mask
+            p_trapped[temp] = int(s)
+            temp = np.isin(t_cluster, hits, invert=True)*t_mask
+            t_trapped[temp] = int(s)
+        else:
+            p_trapped[p_mask] = int(s)
+            t_trapped[t_mask] = int(s)
+    return p_trapped, t_trapped
+
+
 if __name__ == '__main__':
     import openpnm as op
-    pn = op.network.Cubic(shape=[10, 10, 10], spacing=1e-4)
+    import matplotlib.pyplot as plt
+    from scipy.stats import rankdata
+    pn = op.network.Cubic(shape=[25, 25, 1], spacing=1e-4)
     geo = op.geometry.SpheresAndCylinders(network=pn, pores=pn.Ps, throats=pn.Ts)
     water = op.phase.Water(network=pn, name='h2o')
     phys_water = op.physics.Standard(network=pn, phase=water, geometry=geo)
     ip = InvasionPercolation(network=pn, phase=water)
     ip.set_inlets(pn.pores('left'))
     ip.run()
-    ip.plot_intrusion_curve()
+    outlets = pn.pores('right')
+    bins = None
+    p, t = find_trapped_clusters(ip, outlets, bins)
+    ip['pore.invasion_sequence'][p >= 0] = -1
+    ip['throat.invasion_sequence'][t >= 0] = -1
+
+    # ip.plot_intrusion_curve()
+    # %%
+    fig, ax = plt.subplots(1, 1)
+    ax.set_facecolor('grey')
+    ax = op.topotools.plot_coordinates(network=pn, c='w', ax=ax)
+    ax = op.topotools.plot_connections(network=pn,
+                                       throats=ip['throat.invasion_sequence'] > 0,
+                                       color_by=ip['throat.invasion_sequence'][t <= 0],
+                                       ax=ax)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

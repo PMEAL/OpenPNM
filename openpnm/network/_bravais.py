@@ -1,15 +1,17 @@
-import logging
 import numpy as np
 from openpnm import topotools
-from openpnm.network import GenericNetwork, Cubic
+from openpnm.network import GenericNetwork
 from openpnm.utils import Workspace
+from openpnm.utils import Docorator
+from openpnm._skgraph.generators import cubic, fcc, bcc
 
 
-logger = logging.getLogger(__name__)
+docstr = Docorator()
 ws = Workspace()
 __all__ = ['Bravais']
 
 
+@docstr.dedent
 class Bravais(GenericNetwork):
     r"""
     Crystal lattice types including fcc, bcc, sc, and hcp
@@ -44,9 +46,7 @@ class Bravais(GenericNetwork):
             'hcp'        Hexagonal close packed (Not Implemented Yet)
             ===========  =====================================================
 
-    name : str
-        An optional name for the object to help identify it. If not given,
-        one will be generated.
+    %(GenericNetwork.parameters)s
 
     See Also
     --------
@@ -61,51 +61,11 @@ class Bravais(GenericNetwork):
 
     Limitations:
 
-    * Bravais lattice can also have a skew to them, but this is not
-      implemented yet.
+    * In principle Bravais lattice can also have a skew to them, but this is
+      not implemented yet.
     * Support for 2D networks has not been added yet.
     * Hexagonal Close Packed (hcp) has not been implemented yet, but is on
       the todo list.
-
-    Examples
-    --------
-    .. plot::
-
-       import openpnm as op
-       import matplotlib.pyplot as plt
-
-       sc = op.network.Bravais(shape=[3, 3, 3], mode='sc')
-       bcc = op.network.Bravais(shape=[3, 3, 3], mode='bcc')
-       fcc = op.network.Bravais(shape=[3, 3, 3], mode='fcc')
-
-       # Since these three networks all have the same domain size, it is clear
-       # that both 'bcc' and 'fcc' have more pores per unit volume. This is
-       # particularly helpful for modeling higher porosity materials.
-       print(sc.Np, bcc.Np, fcc.Np)
-
-       # They all have the same number corner sites, which corresponds to the
-       # [3, 3, 3] shape that was specified
-       print(sc.num_pores('corner*'),
-             bcc.num_pores('corner*'),
-             fcc.num_pores('corner*'))
-
-       # Shift 'bcc' and 'fcc' networks by 3 and 6 units, respectively, so
-       # we can visualize them side by side in a single figure
-       bcc['pore.coords'][:, 0] += 3
-       fcc['pore.coords'][:, 0] += 6
-
-       # Visualization of these three networks can be done quickly using the
-       # functions in topotools. Firstly, merge them all into a single network
-       # for convenience
-       op.topotools.merge_networks(sc, [bcc, fcc])
-
-       fig, ax = plt.subplots(figsize=(6, 6))
-       op.topotools.plot_connections(sc, ax=ax)
-
-       plt.show()
-
-    For larger networks and more control over presentation use `Paraview
-    <http://www.paraview.org>`_.
 
     """
 
@@ -116,72 +76,37 @@ class Bravais(GenericNetwork):
             raise Exception('Bravais lattice networks must have at least 2 '
                             'pores in all directions')
         if mode == 'bcc':
-            # Make a basic cubic for the coner pores
-            net1 = Cubic(shape=shape)
-            net1['pore.net1'] = True
-            # Create a smaller cubic for the body pores, and shift it
-            net2 = Cubic(shape=shape-1)
-            net2['pore.net2'] = True
-            net2['pore.coords'] += 0.5
-            # Stitch them together
-            topotools.stitch(net1, net2, net1.Ps, net2.Ps, len_max=0.99)
-            self.update(net1)
-            ws.close_project(net1.project)
-
+            net = bcc(shape=shape, spacing=spacing,
+                      node_prefix='pore', edge_prefix='throat')
+            self.update(net)
+            self['pore.all'] = np.ones(self['pore.coords'].shape[0], dtype=bool)
+            self['throat.all'] = np.ones(self['throat.conns'].shape[0], dtype=bool)
             # Deal with labels
-            Ps1 = self['pore.net2']
-            self.clear(mode='labels')
-            self['pore.corner_sites'] = ~Ps1
-            self['pore.body_sites'] = Ps1
-            Ts = self.find_neighbor_throats(pores=self.pores('body_sites'),
+            Ts = self.find_neighbor_throats(pores=self.pores('body'),
                                             mode='exclusive_or')
             self['throat.corner_to_body'] = False
             self['throat.corner_to_body'][Ts] = True
-            Ts = self.find_neighbor_throats(pores=self.pores('corner_sites'),
+            Ts = self.find_neighbor_throats(pores=self.pores('corner'),
                                             mode='xnor')
             self['throat.corner_to_corner'] = False
             self['throat.corner_to_corner'][Ts] = True
-            Ts = self.find_neighbor_throats(pores=self.pores('body_sites'),
+            Ts = self.find_neighbor_throats(pores=self.pores('body'),
                                             mode='xnor')
             self['throat.body_to_body'] = False
             self['throat.body_to_body'][Ts] = True
 
         elif mode == 'fcc':
-            shape = np.array(shape)
-            # Create base cubic network of corner sites
-            net1 = Cubic(shape=shape)
-            # Create 3 networks to become face sites
-            net2 = Cubic(shape=shape - [1, 1, 0])
-            net3 = Cubic(shape=shape - [1, 0, 1])
-            net4 = Cubic(shape=shape - [0, 1, 1])
-            net2['pore.coords'] += np.array([0.5, 0.5, 0])
-            net3['pore.coords'] += np.array([0.5, 0, 0.5])
-            net4['pore.coords'] += np.array([0, 0.5, 0.5])
-            # Remove throats from net2 (trim doesn't work when removing ALL)
-            for n in [net2, net3, net4]:
-                n.clear(element='throat', mode='all')
-                n.update({'throat.all': np.array([], dtype=bool)})
-                n.update({'throat.conns': np.ndarray([0, 2], dtype=bool)})
-            # Join networks 2, 3 and 4 into one with all face sites
-            topotools.stitch(net2, net3, net2.Ps, net3.Ps, method='radius',
-                             len_max=0.75)
-            topotools.stitch(net2, net4, net2.Ps, net4.Ps, method='radius',
-                             len_max=0.75)
-            # Join face sites network with the corner sites network
-            topotools.stitch(net1, net2, net1.Ps, net2.Ps, method='radius',
-                             len_max=0.75)
-            self.update(net1)
-            ws.close_project(net1.project)
+            net = fcc(shape=shape, spacing=spacing,
+                      node_prefix='pore', edge_prefix='throat')
+            self.update(net)
+            self['pore.all'] = np.ones(self['pore.coords'].shape[0], dtype=bool)
+            self['throat.all'] = np.ones(self['throat.conns'].shape[0], dtype=bool)
             # Deal with labels
-            self.clear(mode='labels')
-            Ps = np.any(np.mod(self['pore.coords'], 1) == 0, axis=1)
-            self['pore.face_sites'] = Ps
-            self['pore.corner_sites'] = ~Ps
-            Ts = self.find_neighbor_throats(pores=self.pores('corner_sites'),
+            Ts = self.find_neighbor_throats(pores=self.pores('corner'),
                                             mode='xnor')
             self['throat.corner_to_corner'] = False
             self['throat.corner_to_corner'][Ts] = True
-            Ts = self.find_neighbor_throats(pores=self.pores('face_sites'))
+            Ts = self.find_neighbor_throats(pores=self.pores('face'))
             self['throat.corner_to_face'] = False
             self['throat.corner_to_face'][Ts] = True
 
@@ -189,10 +114,11 @@ class Bravais(GenericNetwork):
             raise NotImplementedError('hcp is not implemented yet')
 
         elif mode == 'sc':
-            net = Cubic(shape=shape, spacing=1)
+            net = cubic(shape=shape, spacing=1,
+                        node_prefix='pore', edge_prefix='throat')
             self.update(net)
-            ws.close_project(net.project)
-            self.clear(mode='labels')
+            self['pore.all'] = np.ones(self['pore.coords'].shape[0], dtype=bool)
+            self['throat.all'] = np.ones(self['throat.conns'].shape[0], dtype=bool)
             self['pore.corner_sites'] = True
             self['throat.corner_to_corner'] = True
 

@@ -832,7 +832,7 @@ class MixedInvasionPercolation(GenericAlgorithm):
         residual = self["pore.residual"]
         net = self.project.network
         conns = net["throat.conns"]
-        rclusters = site_percolation(conns, residual).sites
+        rclusters = site_percolation(conns, residual).site_labels
         rcluster_ids = np.unique(rclusters[rclusters > -1])
         initial_num = len(self.queue) - 1
         for rcluster_id in rcluster_ids:

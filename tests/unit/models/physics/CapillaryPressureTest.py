@@ -118,60 +118,60 @@ class CapillaryPressureTest:
         )
         assert np.any(diff != 0)
 
-    def test_ransohoff_snapoff_verts(self):
-        ws = op.Workspace()
-        ws.clear()
-        bp = np.array(
-            [
-                [0.25, 0.25, 0.25],
-                [0.25, 0.75, 0.25],
-                [0.75, 0.25, 0.25],
-                [0.75, 0.75, 0.25],
-                [0.25, 0.25, 0.75],
-                [0.25, 0.75, 0.75],
-                [0.75, 0.25, 0.75],
-                [0.75, 0.75, 0.75],
-            ]
-        )
-        scale = 1e-4
-        np.random.seed(1)
-        p = (np.random.random([len(bp), 3]) - 0.5) / 1000
-        bp += p
-        fiber_rad = 2e-6
-        bp = op.topotools.reflect_base_points(bp, domain_size=[1, 1, 1])
-        prj = op.materials.VoronoiFibers(
-            fiber_rad=fiber_rad,
-            resolution=1e-6,
-            shape=[scale, scale, scale],
-            points=bp * scale,
-            name="test",
-        )
-        net = prj.network
-        del_geom = prj.geometries()["test_del"]
-        vor_geom = prj.geometries()["test_vor"]
-        f = op.models.physics.capillary_pressure.ransohoff_snap_off
-        water = op.phase.GenericPhase(network=net)
-        water["pore.surface_tension"] = 0.072
-        water["pore.contact_angle"] = 45
-        phys1 = op.physics.GenericPhysics(network=net, geometry=del_geom, phase=water)
-        phys1.add_model(propname="throat.snap_off", model=f, wavelength=fiber_rad)
-        phys1.add_model(
-            propname="throat.snap_off_pair",
-            model=f,
-            wavelength=fiber_rad,
-            require_pair=True,
-        )
-        phys2 = op.physics.GenericPhysics(network=net, geometry=vor_geom, phase=water)
-        phys2.add_model(propname="throat.snap_off", model=f, wavelength=fiber_rad)
-        phys2.add_model(
-            propname="throat.snap_off_pair",
-            model=f,
-            wavelength=fiber_rad,
-            require_pair=True,
-        )
-        ts = ~net["throat.interconnect"]
-        assert ~np.any(np.isnan(water["throat.snap_off"][ts]))
-        assert np.any(~np.isnan(water["throat.snap_off_pair"][ts]))
+    # def test_ransohoff_snapoff_verts(self):
+    #     ws = op.Workspace()
+    #     ws.clear()
+    #     bp = np.array(
+    #         [
+    #             [0.25, 0.25, 0.25],
+    #             [0.25, 0.75, 0.25],
+    #             [0.75, 0.25, 0.25],
+    #             [0.75, 0.75, 0.25],
+    #             [0.25, 0.25, 0.75],
+    #             [0.25, 0.75, 0.75],
+    #             [0.75, 0.25, 0.75],
+    #             [0.75, 0.75, 0.75],
+    #         ]
+    #     )
+    #     scale = 1e-4
+    #     np.random.seed(1)
+    #     p = (np.random.random([len(bp), 3]) - 0.5) / 1000
+    #     bp += p
+    #     fiber_rad = 2e-6
+    #     bp = op.topotools.reflect_base_points(points=bp, domain_size=[1, 1, 1])
+    #     prj = op.materials.VoronoiFibers(
+    #         fiber_rad=fiber_rad,
+    #         resolution=1e-6,
+    #         shape=[scale, scale, scale],
+    #         points=bp * scale,
+    #         name="test",
+    #     )
+    #     net = prj.network
+    #     del_geom = prj.geometries()["test_del"]
+    #     vor_geom = prj.geometries()["test_vor"]
+    #     f = op.models.physics.capillary_pressure.ransohoff_snap_off
+    #     water = op.phase.GenericPhase(network=net)
+    #     water["pore.surface_tension"] = 0.072
+    #     water["pore.contact_angle"] = 45
+    #     phys1 = op.physics.GenericPhysics(network=net, geometry=del_geom, phase=water)
+    #     phys1.add_model(propname="throat.snap_off", model=f, wavelength=fiber_rad)
+    #     phys1.add_model(
+    #         propname="throat.snap_off_pair",
+    #         model=f,
+    #         wavelength=fiber_rad,
+    #         require_pair=True,
+    #     )
+    #     phys2 = op.physics.GenericPhysics(network=net, geometry=vor_geom, phase=water)
+    #     phys2.add_model(propname="throat.snap_off", model=f, wavelength=fiber_rad)
+    #     phys2.add_model(
+    #         propname="throat.snap_off_pair",
+    #         model=f,
+    #         wavelength=fiber_rad,
+    #         require_pair=True,
+    #     )
+    #     ts = ~net["throat.interconnect"]
+    #     assert ~np.any(np.isnan(water["throat.snap_off"][ts]))
+    #     assert np.any(~np.isnan(water["throat.snap_off_pair"][ts]))
 
 
 if __name__ == "__main__":
