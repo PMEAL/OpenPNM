@@ -275,7 +275,7 @@ class Project(list):
     def __str__(self):
         s = []
         hr = '―'*78
-        s.append(hr)
+        s.append('═'*78)
         s.append(' {0:<15} '.format('Object Name')
                  + '{0:<65}'.format('Object ID'))
         s.append(hr)

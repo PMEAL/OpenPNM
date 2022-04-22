@@ -1,1 +1,0 @@
-This folder is used by openpnm to put web-readable content.  OpenPNM will launch a webserver on your local machine, with this as its root directory.  Any files or data stored in here will be visible to any other computers on your local network, hence its called public.
