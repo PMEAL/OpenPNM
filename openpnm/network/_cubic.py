@@ -1,8 +1,11 @@
 import logging
 import numpy as np
 from openpnm.network import GenericNetwork
-from openpnm import topotools
 from openpnm.utils import Docorator
+from openpnm import topotools
+from openpnm import _skgraph as skgr
+skgr.settings.node_prefix = 'pore'
+skgr.settings.edge_prefix = 'throat'
 
 docstr = Docorator()
 logger = logging.getLogger(__name__)
@@ -52,104 +55,22 @@ class Cubic(GenericNetwork):
 
     %(GenericNetwork.parameters)s
 
-    Examples
-    --------
-    .. plot::
-
-       import openpnm as op
-       import matplotlib.pyplot as plt
-
-       pn = op.network.Cubic(shape=[5, 5, 5], spacing=[1, 1, 1])
-
-       fig, ax = plt.subplots(figsize=(5, 5))
-       op.topotools.plot_connections(network=pn, ax=ax)
-       op.topotools.plot_coordinates(network=pn, c='r', s=75, ax=ax)
-
-       plt.show()
-
-    For larger networks and more control over presentation use `Paraview
-    <http://www.paraview.org>`_.
-
     """
 
     def __init__(self, shape, spacing=[1, 1, 1], connectivity=6, **kwargs):
         super().__init__(**kwargs)
-
-        # Take care of 1D/2D networks
-        shape = np.array(shape, ndmin=1)
-        shape = np.concatenate((shape, [1] * (3 - shape.size))).astype(int)
-        shape = np.maximum(shape, [1, 1, 1])
-
-        arr = np.atleast_3d(np.empty(shape))
-
-        spacing = np.float64(spacing)
-        if spacing.size == 2:
-            spacing = np.concatenate((spacing, [1]))
-        spacing = np.ones(3, dtype=float) * np.array(spacing, ndmin=1)
-
-        z = np.tile(np.arange(shape[2]), shape[0] * shape[1])
-        y = np.tile(np.repeat(np.arange(shape[1]), shape[2]), shape[0])
-        x = np.repeat(np.arange(shape[0]), shape[1] * shape[2])
-        points = (np.vstack([x, y, z]).T).astype(float) + 0.5
-
-        idx = np.arange(arr.size).reshape(arr.shape)
-
-        face_joints = [(idx[:, :, :-1], idx[:, :, 1:]),
-                       (idx[:, :-1], idx[:, 1:]),
-                       (idx[:-1], idx[1:])]
-
-        corner_joints = [(idx[:-1, :-1, :-1], idx[1:, 1:, 1:]),
-                         (idx[:-1, :-1, 1:], idx[1:, 1:, :-1]),
-                         (idx[:-1, 1:, :-1], idx[1:, :-1, 1:]),
-                         (idx[1:, :-1, :-1], idx[:-1, 1:, 1:])]
-
-        edge_joints = [(idx[:, :-1, :-1], idx[:, 1:, 1:]),
-                       (idx[:, :-1, 1:], idx[:, 1:, :-1]),
-                       (idx[:-1, :, :-1], idx[1:, :, 1:]),
-                       (idx[1:, :, :-1], idx[:-1, :, 1:]),
-                       (idx[1:, 1:, :], idx[:-1, :-1, :]),
-                       (idx[1:, :-1, :], idx[:-1, 1:, :])]
-
-        if connectivity == 6:
-            joints = face_joints
-        elif connectivity == 6 + 8:
-            joints = face_joints + corner_joints
-        elif connectivity == 6 + 12:
-            joints = face_joints + edge_joints
-        elif connectivity == 12 + 8:
-            joints = edge_joints + corner_joints
-        elif connectivity == 6 + 8 + 12:
-            joints = face_joints + corner_joints + edge_joints
-        else:
-            raise Exception("Invalid connectivity. Must be 6, 14, 18, 20 or 26.")
-
-        tails, heads = np.array([], dtype=int), np.array([], dtype=int)
-        for T, H in joints:
-            tails = np.concatenate((tails, T.flatten()))
-            heads = np.concatenate((heads, H.flatten()))
-        pairs = np.vstack([tails, heads]).T
-
-        self["pore.coords"] = points
-        self["throat.conns"] = pairs
-        self._label_surface_pores()
-        topotools.label_faces(network=self)
+        net = skgr.generators.cubic(shape=shape, spacing=spacing,
+                                    connectivity=connectivity,
+                                    node_prefix='pore', edge_prefix='throat')
+        self.update(net)
+        self["pore.all"] = np.ones(net['pore.coords'].shape[0], dtype=bool)
+        self["throat.all"] = np.ones(net['throat.conns'].shape[0], dtype=bool)
+        self["pore.internal"] = True
+        self["throat.internal"] = True
+        self["pore.surface"] = skgr.tools.find_surface_nodes_cubic(self)
         Ps = self["pore.surface"]
         self["throat.surface"] = np.all(Ps[self["throat.conns"]], axis=1)
-        # Scale network to requested spacing
-        self["pore.coords"] *= spacing
-
-    def _label_surface_pores(self):
-        r"""
-        """
-        hits = np.zeros_like(self.Ps, dtype=bool)
-        dims = topotools.dimensionality(self)
-        mn = np.amin(self["pore.coords"], axis=0)
-        mx = np.amax(self["pore.coords"], axis=0)
-        for ax in [0, 1, 2]:
-            if dims[ax]:
-                hits += self["pore.coords"][:, ax] <= mn[ax]
-                hits += self["pore.coords"][:, ax] >= mx[ax]
-        self["pore.surface"] = hits
+        self = skgr.generators.tools.label_faces_cubic(self)
 
     def add_boundary_pores(self, labels=["top", "bottom", "front",
                                          "back", "left", "right"],
@@ -177,7 +98,7 @@ class Cubic(GenericNetwork):
             labels = [labels]
         x, y, z = self["pore.coords"].T
         if spacing is None:
-            spacing = topotools.get_spacing(self)
+            spacing = skgr.tools.get_cubic_spacing(self)
         else:
             spacing = np.array(spacing)
             if spacing.size == 1:
@@ -185,7 +106,7 @@ class Cubic(GenericNetwork):
         Lcx, Lcy, Lcz = spacing
 
         offset = {}
-        shape = topotools.get_shape(self)
+        shape = skgr.tools.get_cubic_shape(self)
         offset["front"] = offset["left"] = offset["bottom"] = [0, 0, 0]
         offset["right"] = [Lcx * shape[0], 0, 0]
         offset["back"] = [0, Lcy * shape[1], 0]

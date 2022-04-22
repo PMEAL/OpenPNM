@@ -447,8 +447,7 @@ class GenericNetwork(Domain):
 
         """
         Ts = self._parse_indices(throats)
-        am = self.get_adjacency_matrix(fmt='coo')
-        pores = topotools.find_connected_sites(bonds=Ts, am=am,
+        pores = topotools.find_connected_sites(bonds=Ts, g=self,
                                                flatten=flatten, logic=mode)
         return pores
 
@@ -484,12 +483,11 @@ class GenericNetwork(Domain):
         >>> pn = op.network.Cubic(shape=[5, 5, 5])
         >>> Ts = pn.find_connecting_throat([0, 1, 2], [2, 2, 2])
         >>> print(Ts)
-        [None, 1, None]
+        [nan  1. nan]
 
         """
-        am = self.create_adjacency_matrix(weights=self.Ts, fmt='coo')
         sites = np.vstack((P1, P2)).T
-        Ts = topotools.find_connecting_bonds(sites=sites, am=am)
+        Ts = topotools.find_connecting_bonds(sites=sites, g=self)
         return Ts
 
     def find_neighbor_pores(self, pores, mode='union', flatten=True,
@@ -583,10 +581,8 @@ class GenericNetwork(Domain):
         pores = self._parse_indices(pores)
         if np.size(pores) == 0:
             return np.array([], ndmin=1, dtype=int)
-        if 'lil' not in self._am.keys():
-            self.get_adjacency_matrix(fmt='lil')
         neighbors = topotools.find_neighbor_sites(sites=pores, logic=mode,
-                                                  am=self._am['lil'],
+                                                  g=self,
                                                   flatten=flatten,
                                                   include_input=include_input)
         if asmask is False:
@@ -670,15 +666,12 @@ class GenericNetwork(Domain):
         if np.size(pores) == 0:
             return np.array([], ndmin=1, dtype=int)
         if flatten is False:
-            if 'lil' not in self._im.keys():
-                self.get_incidence_matrix(fmt='lil')
             neighbors = topotools.find_neighbor_bonds(sites=pores, logic=mode,
-                                                      im=self._im['lil'],
+                                                      g=self,
                                                       flatten=flatten)
         else:
-            am = self.create_adjacency_matrix(fmt='coo', triu=True)
             neighbors = topotools.find_neighbor_bonds(sites=pores, logic=mode,
-                                                      am=am, flatten=True)
+                                                      g=self, flatten=True)
         if asmask is False:
             return neighbors
         elif flatten is True:

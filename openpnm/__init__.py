@@ -13,6 +13,7 @@ methods, occasionally with basic embedded examples on how to use them.
 
 """
 
+from . import _skgraph
 from . import utils
 from . import core
 from . import models
@@ -24,7 +25,6 @@ from . import physics
 from . import algorithms
 from . import solvers
 from . import integrators
-from . import materials
 from . import io
 from . import metrics
 from . import contrib
