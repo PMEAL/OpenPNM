@@ -129,12 +129,8 @@ class Cubic(GenericNetwork):
             heads = np.concatenate((heads, H.flatten()))
         pairs = np.vstack([tails, heads]).T
 
-        self["pore.all"] = np.ones([points.shape[0], ], dtype=bool)
-        self["throat.all"] = np.ones([pairs.shape[0], ], dtype=bool)
         self["pore.coords"] = points
         self["throat.conns"] = pairs
-        self["pore.internal"] = True
-        self["throat.internal"] = True
         self._label_surface_pores()
         topotools.label_faces(network=self)
         Ps = self["pore.surface"]

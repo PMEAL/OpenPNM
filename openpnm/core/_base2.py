@@ -1,60 +1,63 @@
 import numpy as np
 from openpnm.core import LabelMixin, ParamMixin, ParserMixin, ModelsDict
-from openpnm import Workspace
+from openpnm.utils import Workspace, SettingsAttr
+from copy import deepcopy
+from uuid import uuid4
 
 
 ws = Workspace()
 
 
-class ModelMixin:
-
-    def __init__(self):
-        super().__init__()
-        self.models = ModelsDict()
-
-    def add_model(self, propname, model, domain, regen_mode='normal', **kwargs):
-        domain = domain.split('.')[-1]
-        self.models[propname+'@'+domain] = {}
-        self.models[propname+'@'+domain]['model'] = model
-        self.models[propname+'@'+domain]['regen_mode'] = regen_mode
-        for item in kwargs:
-            self.models[propname+'@'+domain][item] = kwargs[item]
-
-    def run_model(self, propname, domain=None):
-        if domain is None:
-            for item in self.models.keys():
-                if item.startswith(propname):
-                    domain = item.split('@')[-1]
-                    self.run_model(propname=propname, domain=domain)
-        else:
-            domain = domain.split('.')[-1]
-            element, prop = propname.split('@')[0].split('.', 1)
-            propname = element+'.'+prop
-            model = self.models[propname+'@'+domain]['model']
-            # Collect kwargs
-            kwargs = {}
-            for item in self.models[propname+'@'+domain].keys():
-                if item not in ['model', 'regen_mode']:
-                    kwargs[item] = self.models[propname+'@'+domain][item]
-            vals = model(target=self, domain=element+'.'+domain, **kwargs)
-            if propname not in self.keys():
-                self[propname] = np.nan*np.ones([self.Np, *vals.shape[1:]])
-            self[propname][self[element+'.'+domain]] = vals
+__all__ = [
+    'Base2',
+    'Domain',
+]
 
 
-class Base(dict):
+class BaseSettings:
+    r"""
+    The default settings to use on instance of Base
+
+    Parameters
+    ----------
+    prefix : str
+        The default prefix to use when generating a name
+    name : str
+        The name of the object, which will be generated if not given
+    uuid : str
+        A universally unique identifier for the object to keep things straight
+
+    """
+    prefix = 'base'
+    name = ''
+    uuid = ''
+
+
+class Base2(dict):
     r"""
     This deals with the original openpnm dict read/write logic
     """
 
-    def __init__(self, *args, project=None, network=None, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __new__(cls, *args, **kwargs):
+        instance = super().__new__(cls, *args, **kwargs)
+        instance._settings = None
+        instance._settings_docs = None
+        return instance
+
+    def __init__(self, project=None, network=None, settings=None, name=None):
+        super().__init__()
+        self.settings = SettingsAttr(BaseSettings, settings)
         if project is None:
             if network is None:
                 project = ws.new_project()
             else:
                 project = network.project
+        if name is None:
+            name = project._generate_name(self)
+        project._validate_name(name)
         project.extend(self)
+        self.settings['name'] = name
+        self.settings.uuid = str(uuid4())
 
     def __repr__(self):
         module = self.__module__
@@ -76,7 +79,7 @@ class Base(dict):
         # Catch dictionaries and break them up
         if isinstance(value, dict):
             for k, v in value.items():
-                self[k] = v
+                self[key+'.'+k] = v
             return
 
         # Enfore correct dict naming
@@ -106,8 +109,9 @@ class Base(dict):
             raise Exception('Provided array is wrong length for ' + key)
 
     def __getitem__(self, key):
-        # If the key is a just a numerical value, the kick it directly back
-        # This allows one to do either value='pore.blah' or value=1.0
+        # If the key is a just a numerical value, the kick it directly back.
+        # This allows one to do either value='pore.blah' or value=1.0 in
+        # pore-scale models
         if not isinstance(key, str):
             return key
 
@@ -115,13 +119,18 @@ class Base(dict):
         try:
             return super().__getitem__(key)
         except KeyError:
-            vals = {}
-            keys = self.keys()
-            vals.update({k: self.get(k) for k in keys if k.startswith(key + '.')})
-            if len(vals) > 0:
-                return vals
+            if key.split('.')[1] == self.name:
+                self['pore.'+self.name] = np.ones(self.Np, dtype=bool)
+                self['throat.'+self.name] = np.ones(self.Nt, dtype=bool)
+                return self[key]
             else:
-                raise KeyError(key)
+                vals = {}
+                keys = self.keys()
+                vals.update({k: self.get(k) for k in keys if k.startswith(key + '.')})
+                if len(vals) > 0:
+                    return vals
+                else:
+                    raise KeyError(key)
 
     def __delitem__(self, key):
         try:
@@ -131,6 +140,25 @@ class Base(dict):
             for item in d.keys():
                 super().__delitem__(item)
 
+    def _set_name(self, name, validate=True):
+        old_name = self.settings['name']
+        if name == old_name:
+            return
+        if name is None:
+            name = self.project._generate_name(self)
+        if validate:
+            self.project._validate_name(name)
+        self.settings['name'] = name
+
+    def _get_name(self):
+        """String representing the name of the object"""
+        try:
+            return self.settings['name']
+        except AttributeError:
+            return None
+
+    name = property(_get_name, _set_name)
+
     def _get_project(self):
         """A shortcut to get a handle to the associated project."""
         for proj in ws.values():
@@ -139,6 +167,24 @@ class Base(dict):
 
     project = property(fget=_get_project)
 
+    def _set_settings(self, settings):
+        self._settings = deepcopy(settings)
+        if (self._settings_docs is None) and (settings.__doc__ is not None):
+            self._settings_docs = settings.__doc__
+
+    def _get_settings(self):
+        """Dictionary containing object settings."""
+        if self._settings is None:
+            self._settings = SettingsAttr()
+        if self._settings_docs is not None:
+            self._settings.__dict__['__doc__'] = self._settings_docs
+        return self._settings
+
+    def _del_settings(self):
+        self._settings = None
+
+    settings = property(fget=_get_settings, fset=_set_settings, fdel=_del_settings)
+
     @property
     def network(self):
         r"""
@@ -146,6 +192,10 @@ class Base(dict):
         There can only be one so this works.
         """
         return self.project.network
+
+    @property
+    def _domain(self):
+        return self
 
     def _count(self, element):
         for k, v in self.items():
@@ -200,8 +250,7 @@ class Base(dict):
         if isinstance(element, str):
             element = [element]
         props = []
-        items = super().items()
-        for k, v in items:
+        for k, v in self.items():
             if v.dtype != bool:
                 if k.split('.', 1)[0] in element:
                     props.append(k)
@@ -270,7 +319,61 @@ class Base(dict):
         return '\n'.join(lines)
 
 
-class Domain(ParserMixin, ParamMixin, LabelMixin, ModelMixin, Base):
+class ModelMixin2:
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.models = ModelsDict()
+
+    def add_model(self, propname, model, domain=None, regen_mode='normal', **kwargs):
+        if domain is None:
+            domain = ''
+        else:
+            domain = '@'+domain.split('.')[-1]
+        self.models[propname+domain] = {}
+        self.models[propname+domain]['model'] = model
+        self.models[propname+domain]['regen_mode'] = regen_mode
+        for item in kwargs:
+            self.models[propname+domain][item] = kwargs[item]
+
+    def regenerate_models(self):
+        for item in self.models.keys():
+            self.run_model(item)
+
+    def run_model(self, propname, domain=None):
+        if domain is None:
+            if '@' in propname:
+                for item in self.models.keys():
+                    if item.startswith(propname):
+                        domain = item.split('@')[-1]
+                        self.run_model(propname=propname, domain=domain)
+            else:
+                element, prop = propname.split('.', 1)
+                model = self.models[propname]['model']
+                # Collect kwargs
+                kwargs = {}
+                for item in self.models[propname].keys():
+                    if item not in ['model', 'regen_mode']:
+                        kwargs[item] = self.models[propname][item]
+                vals = model(target=self, **kwargs)
+                self[propname] = vals
+        else:
+            domain = domain.split('.')[-1]
+            element, prop = propname.split('@')[0].split('.', 1)
+            propname = element+'.'+prop
+            model = self.models[propname+'@'+domain]['model']
+            # Collect kwargs
+            kwargs = {}
+            for item in self.models[propname+'@'+domain].keys():
+                if item not in ['model', 'regen_mode']:
+                    kwargs[item] = self.models[propname+'@'+domain][item]
+            vals = model(target=self, domain=element+'.'+domain, **kwargs)
+            if propname not in self.keys():
+                self[propname] = np.nan*np.ones([self.Np, *vals.shape[1:]])
+            self[propname][self[element+'.'+domain]] = vals
+
+
+class Domain(ParserMixin, ParamMixin, LabelMixin, ModelMixin2, Base2):
     r"""
     This adds the new domain-based read/write logic
     """
@@ -312,7 +415,14 @@ def random_seed(target, domain, seed=None, lim=[0, 1]):
     return seeds
 
 
+def factor(target, prop, f=1):
+    vals = target[prop]*f
+    return vals
+
+
 if __name__ == '__main__':
+
+    # %%
     import openpnm as op
     import pytest
     pn = op.network.Cubic(shape=[3, 3, 1])
@@ -331,8 +441,13 @@ if __name__ == '__main__':
                 model=random_seed,
                 domain='right',
                 lim=[0.7, 0.99])
+    g.add_model(propname='pore.seedx',
+                model=factor,
+                prop='pore.seed',
+                f=10)
 
-    # Run some basic tests
+    # %% Run some basic tests
+    # Use official args
     g.run_model('pore.seed', domain='pore.left')
     assert np.sum(~np.isnan(g['pore.seed'])) == g['pore.left'].sum()
     # Use partial syntax
@@ -341,6 +456,11 @@ if __name__ == '__main__':
     # Use lazy syntax
     g.run_model('pore.seed@right')
     assert np.sum(np.isnan(g['pore.seed'])) == 3
+    # Full domain model
+    g.run_model('pore.seedx')
+    assert 'pore.seedx' in g.keys()
+    x = g['pore.seedx']
+    assert x[~np.isnan(x)].min() > 2
     # Fetch data with lazy syntax
     assert g['pore.seed@left'].shape[0] == 3
     # Write data with lazy syntax, ensuring scalar to array conversion

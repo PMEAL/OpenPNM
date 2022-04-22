@@ -2,7 +2,7 @@ import logging
 import numpy as np
 import scipy.sparse as sprs
 import scipy.spatial as sptl
-from openpnm.core import Base, ModelsMixin, LabelMixin, ParamMixin
+from openpnm.core import Domain
 from openpnm import topotools
 from openpnm.utils import Docorator, SettingsAttr
 from openpnm.utils import Workspace
@@ -26,7 +26,7 @@ class NetworkSettings:
 
 @docstr.get_sections(base='GenericNetwork', sections=['Parameters'])
 @docstr.dedent
-class GenericNetwork(ParamMixin, LabelMixin, Base, ModelsMixin):
+class GenericNetwork(Domain):
     r"""
     This generic class contains the main functionality used by all
     networks.
@@ -90,20 +90,20 @@ class GenericNetwork(ParamMixin, LabelMixin, Base, ModelsMixin):
     stored for future use to save construction time.
 
     """
+
     def __init__(self, conns=None, coords=None, settings=None, **kwargs):
         self.settings = SettingsAttr(NetworkSettings, settings)
         super().__init__(settings=self.settings, **kwargs)
+
         self._am = {}
         self._im = {}
+
         if coords is not None:
-            Np = np.shape(coords)[0]
-            self['pore.all'] = np.ones(Np, dtype=bool)
             self['pore.coords'] = np.array(coords)
 
         if conns is not None:
-            Nt = np.shape(conns)[0]
-            self['throat.all'] = np.ones(Nt, dtype=bool)
             self['throat.conns'] = np.array(conns)
+
         self.add_model(propname='pore.coordination_number',
                        model=mods.coordination_number,
                        regen_mode='deferred')
@@ -120,23 +120,6 @@ class GenericNetwork(ParamMixin, LabelMixin, Base, ModelsMixin):
                     logger.debug('Converting throat.conns to be upper triangular')
                     value = np.sort(value, axis=1)
         super().__setitem__(key, value)
-
-    def __getitem__(self, key):
-        # If the key is a just a numerical value, the kick it directly back
-        # This allows one to do either value='pore.blah' or value=1.0
-        if isinstance(key, (int, float, bool, complex)):
-            return key
-
-        element, prop = key.split('.', 1)
-        # Deal with special keys first
-        if key.split('.')[-1] == self.name:
-            element = key.split('.')[0]
-            return self[f"{element}.all"]
-        if key.split('.')[-1] == '_id':
-            self._gen_ids()
-            return self.get(f"{element}._id")
-        vals = super().__getitem__(key)
-        return vals
 
     @property
     def _subdomains(self):

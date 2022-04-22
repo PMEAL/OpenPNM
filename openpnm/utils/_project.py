@@ -1,12 +1,9 @@
 import logging
-import time
 import uuid
-import openpnm
 import numpy as np
 from copy import deepcopy
-from openpnm.utils import HealthDict, Workspace
+from openpnm.utils import Workspace
 from openpnm.utils import SettingsAttr
-from ._grid import Tableist
 
 
 ws = Workspace()
@@ -252,6 +249,12 @@ class Project(list):
         for item in self:
             if 'throat.conns' in item.keys():
                 return item
+
+    def find_phase(self, obj):
+        return obj
+
+    def find_full_domain(self, obj):
+        return obj
 
     def phases(self, name=None):
         if name:

@@ -291,11 +291,9 @@ class ReactiveTransport(GenericTransport):
         """
         import networkx as nx
         phase = self.project[self.settings.phase]
-        physics = self.project.find_physics(phase=phase)
-        geometries = self.project.geometries().values()
         # Generate global dependency graph
         dg = nx.compose_all([x.models.dependency_graph(deep=True)
-                             for x in [phase, *geometries, *physics]])
+                             for x in [phase]])
         variable_props = self.settings["variable_props"].copy()
         variable_props.add(self.settings["quantity"])
         base = list(variable_props)

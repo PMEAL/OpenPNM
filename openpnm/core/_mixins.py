@@ -502,7 +502,7 @@ class LabelMixin:
             _ = self.pop('pore.' + label, None)
             _ = self.pop('throat.' + label, None)
 
-    def _get_indices(self, element, labels='all', mode='or'):
+    def _get_indices(self, element, labels, mode='or'):
         r"""
         This is the actual method for getting indices, but should not be called
         directly.  Use ``pores`` or ``throats`` instead.
@@ -510,40 +510,38 @@ class LabelMixin:
         # Parse and validate all input values.
         element = self._parse_element(element, single=True)
         labels = self._parse_labels(labels=labels, element=element)
-        if element+'.all' not in self.keys():
-            raise Exception('Cannot proceed without {}.all'.format(element))
 
         # Begin computing label array
         if mode in ['or', 'any', 'union']:
-            union = np.zeros_like(self[element+'.all'], dtype=bool)
+            union = np.zeros([self._count(element), ], dtype=bool)
             for item in labels:  # Iterate over labels and collect all indices
                 union = union + self[element+'.'+item.split('.')[-1]]
             ind = union
         elif mode in ['and', 'all', 'intersection']:
-            intersect = np.ones_like(self[element+'.all'], dtype=bool)
+            intersect = np.ones([self._count(element), ], dtype=bool)
             for item in labels:  # Iterate over labels and collect all indices
                 intersect = intersect*self[element+'.'+item.split('.')[-1]]
             ind = intersect
         elif mode in ['xor', 'exclusive_or']:
-            xor = np.zeros_like(self[element+'.all'], dtype=int)
+            xor = np.zerose([self._count(element), ], dtype=int)
             for item in labels:  # Iterate over labels and collect all indices
                 info = self[element+'.'+item.split('.')[-1]]
                 xor = xor + np.int8(info)
             ind = (xor == 1)
         elif mode in ['nor', 'not', 'none']:
-            nor = np.zeros_like(self[element+'.all'], dtype=int)
+            nor = np.zeros([self._count(element), ], dtype=int)
             for item in labels:  # Iterate over labels and collect all indices
                 info = self[element+'.'+item.split('.')[-1]]
                 nor = nor + np.int8(info)
             ind = (nor == 0)
         elif mode in ['nand']:
-            nand = np.zeros_like(self[element+'.all'], dtype=int)
+            nand = np.zeros([self._count(element), ], dtype=int)
             for item in labels:  # Iterate over labels and collect all indices
                 info = self[element+'.'+item.split('.')[-1]]
                 nand = nand + np.int8(info)
             ind = (nand < len(labels)) * (nand > 0)
         elif mode in ['xnor', 'nxor']:
-            xnor = np.zeros_like(self[element+'.all'], dtype=int)
+            xnor = np.zeros([self._count(element), ], dtype=int)
             for item in labels:  # Iterate over labels and collect all indices
                 info = self[element+'.'+item.split('.')[-1]]
                 xnor = xnor + np.int8(info)
@@ -555,7 +553,7 @@ class LabelMixin:
         ind = ind.astype(dtype=int)
         return ind
 
-    def pores(self, labels='all', mode='or', asmask=False, to_global=False):
+    def pores(self, labels=None, mode='or', asmask=False, to_global=False):
         r"""
         Returns pore indicies where given labels exist, according to the logic
         specified by the ``mode`` argument.
@@ -622,6 +620,8 @@ class LabelMixin:
         >>> pn.pores(labels=['top', 'back'], mode='xnor')
         array([ 24,  49,  74,  99, 124])
         """
+        if labels is None:
+            labels = self.name
         ind = self._get_indices(element='pore', labels=labels, mode=mode)
         if to_global and hasattr(self, 'to_global'):
             ind = self.to_global(pores=ind)
@@ -632,7 +632,7 @@ class LabelMixin:
                 ind = self.to_mask(pores=ind)
         return ind
 
-    def throats(self, labels='all', mode='or', asmask=False, to_global=False):
+    def throats(self, labels=None, mode='or', asmask=False, to_global=False):
         r"""
         Returns throat locations where given labels exist, according to the
         logic specified by the ``mode`` argument.
@@ -689,6 +689,8 @@ class LabelMixin:
         array([0, 1, 2, 3, 4])
 
         """
+        if labels is None:
+            labels = self.name
         ind = self._get_indices(element='throat', labels=labels, mode=mode)
         if to_global and hasattr(self, 'to_global'):
             ind = self.to_global(throats=ind)
