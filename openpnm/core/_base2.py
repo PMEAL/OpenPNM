@@ -294,7 +294,7 @@ class ModelMixin2:
         if domain is None:
             domain = ''
         else:
-            domain = '@'+domain.split('.')[-1]
+            domain = domain.split('.')[-1]
         self.models[propname+domain] = ModelWrapper()
         self.models[propname+domain]['model'] = model
         self.models[propname+domain]['regen_mode'] = regen_mode
@@ -345,7 +345,7 @@ class ModelMixin2:
             propname = element+'.'+prop
             mod_dict = self.models[propname+'@'+domain]
             # Collect kwargs
-            kwargs = {'target': self, domain: element+'.'+domain}
+            kwargs = {'target': self, 'domain': element+'.'+domain}
             for item in mod_dict.keys():
                 if item not in ['model', 'regen_mode']:
                     kwargs[item] = mod_dict[item]
@@ -404,26 +404,21 @@ if __name__ == '__main__':
     # %%
     import openpnm as op
     import pytest
-    pn = op.network.Cubic(shape=[3, 3, 1])
-    g = Domain()
-    g.name = 'bob'
-    g['pore.coords'] = pn.pop('pore.coords')
-    g['throat.conns'] = pn.pop('throat.conns')
-    for k, v in pn.items():
-        g[k] = v
+    g = op.network.Cubic(shape=[3, 3, 1])
 
-    g.add_model(propname='pore.seed',
+    g.add_model(propname='pore.seed@left',
                 model=random_seed,
-                domain='pore.left',
-                lim=[0.2, 0.4])
-    g.add_model(propname='pore.seed',
+                lim=[0.2, 0.4],
+                regen_mode='deferred')
+    g.add_model(propname='pore.seed@right',
                 model=random_seed,
-                domain='right',
-                lim=[0.7, 0.99])
+                lim=[0.7, 0.99],
+                regen_mode='deferred')
     g.add_model(propname='pore.seedx',
                 model=factor,
                 prop='pore.seed',
-                f=10)
+                f=10,
+                regen_mode='deferred')
 
     # %% Run some basic tests
     # Use official args
@@ -451,13 +446,13 @@ if __name__ == '__main__':
     # Use labels that were not used by models
     assert g['pore.seed@front'].shape[0] == 3
     # Write a dict
-    g['pore.dict'] = {'pore.item1': 1, 'pore.item2': 1}
-    assert g['pore.item1'].sum() == 9
-    assert g['pore.item2'].sum() == 9
+    g['pore.dict'] = {'item1': 1, 'item2': 1}
+    assert g['pore.dict.item1'].sum() == 9
+    assert g['pore.dict.item2'].sum() == 9
     # A dict with domains
-    g['pore.dict'] = {'pore.item1@left': 2, 'pore.item2@right': 2}
-    assert g['pore.item1'].sum() == 12
-    assert g['pore.item2'].sum() == 12
+    g['pore.dict'] = {'item1@left': 2, 'item2@right': 2}
+    assert g['pore.dict.item1'].sum() == 12
+    assert g['pore.dict.item2'].sum() == 12
     g['pore.nested.name1'] = 10
     g['pore.nested.name2'] = 20
     assert isinstance(g['pore.nested'], dict)

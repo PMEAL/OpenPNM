@@ -244,8 +244,8 @@ class ModelWrapper(dict):
                         if mod is self:
                             return key
 
-    def __repr__(self):
-        return self.__str__()
+    # def __repr__(self):
+    #     return self.__str__()
 
     def __str__(self):
         horizontal_rule = '―' * 78
