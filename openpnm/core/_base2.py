@@ -60,6 +60,26 @@ class Base2(dict):
     def __setitem__(self, key, value):
         if value is None:
             return
+        # Intercept @ symbol
+        if '@' in key:
+            element, prop = key.split('@')[0].split('.', 1)
+            domain = key.split('@')[1].split('.')[-1]
+            locs = super().__getitem__(element+'.'+domain)
+            try:
+                vals = self[element+'.'+prop]
+                vals[locs] = value
+                self[element+'.'+prop] = vals
+            except KeyError:
+                value = np.array(value)
+                if value.dtype == bool:
+                    temp = np.zeros([self._count(element), *value.shape[1:]],
+                                    dtype=bool)
+                else:
+                    temp = np.zeros([self._count(element), *value.shape[1:]],
+                                    dtype=float)
+                self.__setitem__(element+'.'+prop, temp)
+                self[element+'.'+prop][locs] = value
+            return
         element, prop = key.split('.', 1)
         # Catch dictionaries and break them up
         if isinstance(value, dict):
@@ -93,6 +113,20 @@ class Base2(dict):
         # pore-scale models
         if not isinstance(key, str):
             return key
+
+        # If key contains an @ symbol then return a subset of values at the
+        # requested locations
+        if '@' in key:
+            element, prop = key.split('@')[0].split('.', 1)
+            domain = key.split('@')[1].split('.')[-1]
+            locs = self[element+'.'+domain]
+            vals = self[element+'.'+prop]
+            return vals[locs]
+
+        # If key starts with conduit, then call the get_conduit_data method
+        # to build an Nt-by-3 array of pore-throat-pore values
+        if key.startswith('conduit'):
+            return self.get_conduit_data(propname=key.split('.', 1)[1])
 
         element, prop = key.split('.', 1)
         try:
@@ -271,26 +305,19 @@ class Base2(dict):
             values = from_neighbor_pores(target=self, prop=propname, mode=mode)
         return values
 
-    def get_conduit_data(self, poreprop, throatprop=None, mode='mean'):
-        # Deal with various args
-        if not poreprop.startswith('pore'):
-            poreprop = 'pore.' + poreprop
-        if throatprop is None:
-            throatprop = 'throat.' + poreprop.split('.', 1)[1]
-        if not throatprop.startswith('throat'):
-            throatprop = 'throat.' + throatprop
-        # Generate array
+    def get_conduit_data(self, propname, mode='mean'):
+        poreprop = 'pore.' + propname.split('.', 1)[-1]
+        throatprop = 'throat.' + propname.split('.', 1)[-1]
         conns = self.network.conns
         try:
             T = self[throatprop]
-            try:
-                P1, P2 = self[poreprop][conns.T]
-            except KeyError:
-                P = self.interpolate_data(propname=throatprop, mode=mode)
-                P1, P2 = P[conns.T]
         except KeyError:
+            T = np.ones([self.Nt, ], dtype=float)*np.nan
+        try:
             P1, P2 = self[poreprop][conns.T]
-            T = self.interpolate_data(propname=poreprop, mode=mode)
+        except KeyError:
+            P1 = np.ones([self.Np, ], dtype=float)*np.nan
+            P2 = np.ones([self.Np, ], dtype=float)*np.nan
         return np.vstack((P1, T, P2)).T
 
     def __str__(self):
@@ -403,38 +430,7 @@ class ModelMixin2:
 
 
 class Domain(ParserMixin, ParamMixin, LabelMixin, ModelMixin2, Base2):
-
-    def __getitem__(self, key):
-        try:
-            if '@' in key:
-                element, prop = key.split('@')[0].split('.', 1)
-                domain = key.split('@')[1].split('.')[-1]
-                locs = super().__getitem__(element+'.'+domain)
-                vals = super().__getitem__(element+'.'+prop)
-                return vals[locs]
-            else:
-                return super().__getitem__(key)
-        except TypeError:
-            return super().__getitem__(key)
-
-    def __setitem__(self, key, value):
-        if '@' in key:
-            element, prop = key.split('@')[0].split('.', 1)
-            domain = key.split('@')[1].split('.')[-1]
-            locs = super().__getitem__(element+'.'+domain)
-            try:
-                vals = self[element+'.'+prop]
-                vals[locs] = value
-                self[element+'.'+prop] = vals
-            except KeyError:
-                value = np.array(value)
-                temp = np.zeros([self.Np, *value.shape[1:]], dtype=bool)
-                if value.dtype != bool:
-                    temp = temp*np.nan
-                super().__setitem__(element+'.'+prop, temp)
-                self[element+'.'+prop][locs] = value
-        else:
-            super().__setitem__(key, value)
+    ...
 
 
 def random_seed(target, domain, seed=None, lim=[0, 1]):
@@ -520,6 +516,11 @@ if __name__ == '__main__':
     assert 'pore.nested.name1' not in g.keys()
     del g['pore.nested']
     assert 'pore.nested.name2' not in g.keys()
+    # More fun
+    c = g['conduit.seed']
+    assert c.shape == (12, 3)
+    assert 'throat.seed' not in g
+    assert np.isnan(c[:, 1]).sum() == g.Nt
 
 
 
