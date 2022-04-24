@@ -1,8 +1,7 @@
 import numpy as np
 from openpnm.core import LabelMixin, ParamMixin, ParserMixin, ModelsDict, ModelWrapper
-from openpnm.utils import Workspace, SettingsAttr
+from openpnm.utils import Workspace, SettingsAttr, PrintableList
 from copy import deepcopy
-from uuid import uuid4
 
 
 ws = Workspace()
@@ -24,13 +23,10 @@ class BaseSettings:
         The default prefix to use when generating a name
     name : str
         The name of the object, which will be generated if not given
-    uuid : str
-        A universally unique identifier for the object to keep things straight
 
     """
     prefix = 'base'
     name = ''
-    uuid = ''
 
 
 class Base2(dict):
@@ -54,7 +50,6 @@ class Base2(dict):
         project._validate_name(name)
         project.extend(self)
         self.settings['name'] = name
-        self.settings.uuid = str(uuid4())
 
     def __repr__(self):
         module = self.__module__
@@ -93,11 +88,12 @@ class Base2(dict):
             raise Exception('Provided array is wrong length for ' + key)
 
     def __getitem__(self, key):
-        # If the key is a just a numerical value, the kick it directly back.
+        # If key is a just a numerical value, then kick it directly back.
         # This allows one to do either value='pore.blah' or value=1.0 in
         # pore-scale models
         if not isinstance(key, str):
             return key
+
         element, prop = key.split('.', 1)
         try:
             return super().__getitem__(key)
@@ -119,9 +115,55 @@ class Base2(dict):
         try:
             super().__delitem__(key)
         except KeyError:
-            d = self[key]  # if key is a nested dict, get all values
+            d = self[key]  # If key is a nested dict, get all values
             for item in d.keys():
                 super().__delitem__(item)
+
+    def clear(self, mode=None):
+        if mode is None:
+            super().clear()
+        else:
+            mode = self._parse_mode(mode=mode, allowed=['props',
+                                                        'labels',
+                                                        'models'])
+            if 'props' in mode:
+                for item in self.props():
+                    if item not in ['pore.coords', 'throat.conns']:
+                        del self[item]
+            if 'labels' in mode:
+                for item in self.labels():
+                    del self[item]
+            if 'models' in mode:
+                for item in self.models.keys():
+                    _ = self.pop(item.split('@')[0], None)
+
+    def keys(self, mode=None):
+        if mode is None:
+            return super().keys()
+        else:
+            mode = self._parse_mode(mode=mode, allowed=['props',
+                                                        'labels',
+                                                        'models',
+                                                        'constants'])
+            vals = set()
+            if 'props' in mode:
+                for item in self.props():
+                    vals.add(item)
+            if 'labels' in mode:
+                for item in self.labels():
+                    vals.add(item)
+            if 'models' in mode:
+                for item in self.models.keys():
+                    propname = item.split('@')[0]
+                    if propname in self.keys():
+                        vals.add(propname)
+            if 'constants' in mode:
+                vals = vals.union(set(self.props()))
+                for item in self.models.keys():
+                    propname = item.split('@')[0]
+                    if propname in vals:
+                        vals.remove(propname)
+            return PrintableList(vals)
 
     def _set_name(self, name, validate=True):
         old_name = self.settings['name']
@@ -330,15 +372,20 @@ class ModelMixin2:
                         domain = item.split('@')[-1]
                         self.run_model(propname=propname, domain=domain)
             else:
-                element, prop = propname.split('.', 1)
-                mod_dict = self.models[propname]
-                # Collect kwargs
-                kwargs = {'target': self}
-                for item in mod_dict.keys():
-                    if item not in ['model', 'regen_mode']:
-                        kwargs[item] = mod_dict[item]
-                vals = mod_dict['model'](**kwargs)
-                self[propname] = vals
+                if propname in self.models.keys():
+                    element, prop = propname.split('.', 1)
+                    mod_dict = self.models[propname]
+                    # Collect kwargs
+                    kwargs = {'target': self}
+                    for item in mod_dict.keys():
+                        if item not in ['model', 'regen_mode']:
+                            kwargs[item] = mod_dict[item]
+                    vals = mod_dict['model'](**kwargs)
+                    self[propname] = vals
+                else:
+                    for item in self.models.keys():
+                        if item.startswith(propname.split('@', 1)[0]+'@'):
+                            self.run_model(propname=item)
         else:
             domain = domain.split('.')[-1]
             element, prop = propname.split('@')[0].split('.', 1)
@@ -358,13 +405,16 @@ class ModelMixin2:
 class Domain(ParserMixin, ParamMixin, LabelMixin, ModelMixin2, Base2):
 
     def __getitem__(self, key):
-        if '@' in key:
-            element, prop = key.split('@')[0].split('.', 1)
-            domain = key.split('@')[1].split('.')[-1]
-            locs = super().__getitem__(element+'.'+domain)
-            vals = super().__getitem__(element+'.'+prop)
-            return vals[locs]
-        else:
+        try:
+            if '@' in key:
+                element, prop = key.split('@')[0].split('.', 1)
+                domain = key.split('@')[1].split('.')[-1]
+                locs = super().__getitem__(element+'.'+domain)
+                vals = super().__getitem__(element+'.'+prop)
+                return vals[locs]
+            else:
+                return super().__getitem__(key)
+        except TypeError:
             return super().__getitem__(key)
 
     def __setitem__(self, key, value):
@@ -399,9 +449,9 @@ def factor(target, prop, f=1):
     return vals
 
 
+# %%
 if __name__ == '__main__':
 
-    # %%
     import openpnm as op
     import pytest
     g = op.network.Cubic(shape=[3, 3, 1])
@@ -430,6 +480,13 @@ if __name__ == '__main__':
     # Use lazy syntax
     g.run_model('pore.seed@right')
     assert np.sum(np.isnan(g['pore.seed'])) == 3
+    # Run the pore seed model for all domains at once:
+    del g['pore.seed']
+    g.run_model('pore.seed')  # This does not work yet
+    assert 'pore.seed' in g.keys()
+    assert g['pore.seed@left'].shape[0] == 3
+    assert g['pore.seed@right'].shape[0] == 3
+    assert 'pore.seedx' not in g.keys()
     # Full domain model
     g.run_model('pore.seedx')
     assert 'pore.seedx' in g.keys()

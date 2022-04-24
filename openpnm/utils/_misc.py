@@ -85,8 +85,7 @@ class PrintableList(list):
         return "\n".join(lines)
 
     def __repr__(self):
-        self.sort()
-        return super().__repr__()
+        return self.__str__()
 
 
 class PrintableDict(OrderedDict):
