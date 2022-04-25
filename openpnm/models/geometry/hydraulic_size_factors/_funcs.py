@@ -109,8 +109,7 @@ def circles_and_rectangles(
     %(models.geometry.hydraulic_size_factor.notes)s
 
     """
-    D1, Dt, D2 = target.get_conduit_data(poreprop=pore_diameter,
-                                         throatprop=throat_diameter).T
+    D1, Dt, D2 = target.get_conduit_data(pore_diameter.split('.', 1)[1]).T
     L1, Lt, L2 = _conduit_lengths.circles_and_rectangles(
         target=target,
         pore_diameter=pore_diameter,

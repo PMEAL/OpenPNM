@@ -281,25 +281,27 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
         """
         Ensures the geometry doesn't contain nans.
         """
-        h = self.project.check_geometry_health()
-        issues = [k for k, v in h.items() if v]
-        if issues:
-            msg = (r"Found the following critical issues with your geomet"
-                   f"ry objects: {', '.join(issues)}. Run project.check_g"
-                   "eometry_health() for more details.")
-            raise Exception(msg)
+        pass
+        # h = self.project.check_geometry_health()
+        # issues = [k for k, v in h.items() if v]
+        # if issues:
+        #     msg = (r"Found the following critical issues with your geomet"
+        #            f"ry objects: {', '.join(issues)}. Run project.check_g"
+        #            "eometry_health() for more details.")
+        #     raise Exception(msg)
 
     def _validate_topology_health(self):
         """
         Ensures the network is not clustered, and if it is, they're at
         least connected to a boundary condition pore.
         """
-        Ps = ~np.isnan(self['pore.bc_rate']) + ~np.isnan(self['pore.bc_value'])
-        if not is_fully_connected(network=self.network, pores_BC=Ps):
-            msg = ("Your network is clustered. Run h = net.check_network_"
-                   "health() followed by op.topotools.trim(net, pores=h['"
-                   "trim_pores']) to make your network fully connected.")
-            raise Exception(msg)
+        pass
+        # Ps = ~np.isnan(self['pore.bc_rate']) + ~np.isnan(self['pore.bc_value'])
+        # if not is_fully_connected(network=self.network, pores_BC=Ps):
+        #     msg = ("Your network is clustered. Run h = net.check_network_"
+        #            "health() followed by op.topotools.trim(net, pores=h['"
+        #            "trim_pores']) to make your network fully connected.")
+        #     raise Exception(msg)
 
     def _validate_conductance_model_health(self):
         """
@@ -321,67 +323,68 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
         """
         Checks whether A and b are well-defined, i.e. doesn't contain nans.
         """
-        import networkx as nx
-        from pandas import unique
+        pass
+        # import networkx as nx
+        # from pandas import unique
 
-        # Validate network topology health
-        self._validate_topology_health()
-        # Short-circuit subsequent checks if data are healthy
-        if np.isfinite(self.A.data).all() and np.isfinite(self.b).all():
-            return True
-        # Validate geometry health
-        self._validate_geometry_health()
+        # # Validate network topology health
+        # self._validate_topology_health()
+        # # Short-circuit subsequent checks if data are healthy
+        # if np.isfinite(self.A.data).all() and np.isfinite(self.b).all():
+        #     return True
+        # # Validate geometry health
+        # self._validate_geometry_health()
 
-        # Fetch phase/geometries/physics
-        prj = self.project
-        phase = prj.phases(self.settings.phase)
-        geometries = prj.geometries().values()
-        physics = prj.physics().values()
+        # # Fetch phase/geometries/physics
+        # prj = self.project
+        # phase = prj.phases(self.settings.phase)
+        # geometries = prj.geometries().values()
+        # physics = prj.physics().values()
 
-        # Locate the root of NaNs
-        unaccounted_nans = []
-        for geom, phys in zip(geometries, physics):
-            objs = [phase, geom, phys]
-            # Generate global dependency graph
-            dg = nx.compose_all([x.models.dependency_graph(deep=True) for x in objs])
-            d = {}  # maps prop -> obj.name
-            for obj in objs:
-                for k, v in prj.check_data_health(obj).items():
-                    if "Has NaNs" in v:
-                        # FIXME: The next line doesn't cover multi-level props
-                        base_prop = ".".join(k.split(".")[:2])
-                        if base_prop in dg.nodes:
-                            d[base_prop] = obj.name
-                        else:
-                            unaccounted_nans.append(base_prop)
-            # Generate dependency subgraph for props with NaNs
-            dg_nans = nx.subgraph(dg, d.keys())
-            # Find prop(s)/object(s) from which NaNs have propagated
-            root_props = [n for n in d.keys() if not nx.ancestors(dg_nans, n)]
-            root_objs = unique([d[x] for x in nx.topological_sort(dg_nans)])
-            # Throw error with helpful info on how to resolve the issue
-            if root_props:
-                msg = ("Found NaNs in A matrix, possibly caused by NaNs in"
-                       f" {', '.join(root_props)}. The issue might get resolved"
-                       " if you call `regenerate_models` on the following"
-                       f" object(s): {', '.join(root_objs)}")
-                raise Exception(msg)
+        # # Locate the root of NaNs
+        # unaccounted_nans = []
+        # for geom, phys in zip(geometries, physics):
+        #     objs = [phase, geom, phys]
+        #     # Generate global dependency graph
+        #     dg = nx.compose_all([x.models.dependency_graph(deep=True) for x in objs])
+        #     d = {}  # maps prop -> obj.name
+        #     for obj in objs:
+        #         for k, v in prj.check_data_health(obj).items():
+        #             if "Has NaNs" in v:
+        #                 # FIXME: The next line doesn't cover multi-level props
+        #                 base_prop = ".".join(k.split(".")[:2])
+        #                 if base_prop in dg.nodes:
+        #                     d[base_prop] = obj.name
+        #                 else:
+        #                     unaccounted_nans.append(base_prop)
+        #     # Generate dependency subgraph for props with NaNs
+        #     dg_nans = nx.subgraph(dg, d.keys())
+        #     # Find prop(s)/object(s) from which NaNs have propagated
+        #     root_props = [n for n in d.keys() if not nx.ancestors(dg_nans, n)]
+        #     root_objs = unique([d[x] for x in nx.topological_sort(dg_nans)])
+        #     # Throw error with helpful info on how to resolve the issue
+        #     if root_props:
+        #         msg = ("Found NaNs in A matrix, possibly caused by NaNs in"
+        #                f" {', '.join(root_props)}. The issue might get resolved"
+        #                " if you call `regenerate_models` on the following"
+        #                f" object(s): {', '.join(root_objs)}")
+        #         raise Exception(msg)
 
-        # Raise Exception for throats without an assigned conductance model
-        self._validate_conductance_model_health()
+        # # Raise Exception for throats without an assigned conductance model
+        # self._validate_conductance_model_health()
 
-        # Raise Exception for unaccounted properties
-        if unaccounted_nans:
-            msg = ("Found NaNs in A matrix, possibly caused by NaNs in"
-                   f" {', '.join(unaccounted_nans)}.")
-            raise Exception(msg)
+        # # Raise Exception for unaccounted properties
+        # if unaccounted_nans:
+        #     msg = ("Found NaNs in A matrix, possibly caused by NaNs in"
+        #            f" {', '.join(unaccounted_nans)}.")
+        #     raise Exception(msg)
 
-        # Raise Exception otherwise if root cannot be found
-        msg = ("Found NaNs in A matrix but couldn't locate the root cause."
-               " It's likely that disabling caching of A matrix via"
-               " `alg.settings['cache'] = False` after instantiating the"
-               " algorithm object fixes the problem.")
-        raise Exception(msg)
+        # # Raise Exception otherwise if root cannot be found
+        # msg = ("Found NaNs in A matrix but couldn't locate the root cause."
+        #        " It's likely that disabling caching of A matrix via"
+        #        " `alg.settings['cache'] = False` after instantiating the"
+        #        " algorithm object fixes the problem.")
+        # raise Exception(msg)
 
     def results(self):
         r"""

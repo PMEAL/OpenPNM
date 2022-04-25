@@ -2,6 +2,7 @@ import numpy as np
 from openpnm.core import LabelMixin, ParamMixin, ParserMixin, ModelsDict, ModelWrapper
 from openpnm.utils import Workspace, SettingsAttr, PrintableList
 from copy import deepcopy
+import inspect
 
 
 ws = Workspace()
@@ -114,19 +115,21 @@ class Base2(dict):
         if not isinstance(key, str):
             return key
 
+        # If key starts with conduit, then call the get_conduit_data method
+        # to build an Nt-by-3 array of pore-throat-pore values
+        if key.startswith('conduit'):
+            if '@' in key:
+                raise Exception('@domain syntax does not work conduit prefix')
+            return self.get_conduit_data(propname=key.split('.', 1)[1])
+
         # If key contains an @ symbol then return a subset of values at the
-        # requested locations
+        # requested locations, by recursively calling __getitem__
         if '@' in key:
             element, prop = key.split('@')[0].split('.', 1)
             domain = key.split('@')[1].split('.')[-1]
             locs = self[element+'.'+domain]
             vals = self[element+'.'+prop]
             return vals[locs]
-
-        # If key starts with conduit, then call the get_conduit_data method
-        # to build an Nt-by-3 array of pore-throat-pore values
-        if key.startswith('conduit'):
-            return self.get_conduit_data(propname=key.split('.', 1)[1])
 
         element, prop = key.split('.', 1)
         try:
@@ -316,8 +319,8 @@ class Base2(dict):
         try:
             P1, P2 = self[poreprop][conns.T]
         except KeyError:
-            P1 = np.ones([self.Np, ], dtype=float)*np.nan
-            P2 = np.ones([self.Np, ], dtype=float)*np.nan
+            P1 = np.ones([self.Nt, ], dtype=float)*np.nan
+            P2 = np.ones([self.Nt, ], dtype=float)*np.nan
         return np.vstack((P1, T, P2)).T
 
     def __str__(self):
@@ -363,7 +366,7 @@ class ModelMixin2:
         if domain is None:
             domain = ''
         else:
-            domain = domain.split('.')[-1]
+            domain = '@'+domain.split('.')[-1]
         self.models[propname+domain] = ModelWrapper()
         self.models[propname+domain]['model'] = model
         self.models[propname+domain]['regen_mode'] = regen_mode
@@ -393,12 +396,12 @@ class ModelMixin2:
 
     def run_model(self, propname, domain=None):
         if domain is None:
-            if '@' in propname:
+            if '@' in propname:  # Get domain from propname, if present
                 for item in self.models.keys():
                     if item.startswith(propname):
                         domain = item.split('@')[-1]
                         self.run_model(propname=propname, domain=domain)
-            else:
+            else:  # Model applies everywhere
                 if propname in self.models.keys():
                     element, prop = propname.split('.', 1)
                     mod_dict = self.models[propname]
@@ -413,7 +416,7 @@ class ModelMixin2:
                     for item in self.models.keys():
                         if item.startswith(propname.split('@', 1)[0]+'@'):
                             self.run_model(propname=item)
-        else:
+        else:  # domain was given explicitly
             domain = domain.split('.')[-1]
             element, prop = propname.split('@')[0].split('.', 1)
             propname = element+'.'+prop
@@ -423,9 +426,14 @@ class ModelMixin2:
             for item in mod_dict.keys():
                 if item not in ['model', 'regen_mode']:
                     kwargs[item] = mod_dict[item]
-            vals = mod_dict['model'](**kwargs)
+            if 'domain' in inspect.getfullargspec(mod_dict['model']).args:
+                vals = mod_dict['model'](**kwargs)
+            else:
+                _ = kwargs.pop('domain', None)
+                vals = mod_dict['model'](**kwargs)[self[element+'.'+domain]]
             if propname not in self.keys():
-                self[propname] = np.nan*np.ones([self.Np, *vals.shape[1:]])
+                self[propname] = np.nan*np.ones([self._count(element),
+                                                 *vals.shape[1:]])
             self[propname][self[element+'.'+domain]] = vals
 
 
@@ -445,11 +453,11 @@ def factor(target, prop, f=1):
     return vals
 
 
-# %%
 if __name__ == '__main__':
-
     import openpnm as op
     import pytest
+
+    # %%
     g = op.network.Cubic(shape=[3, 3, 1])
 
     g.add_model(propname='pore.seed@left',
@@ -464,6 +472,12 @@ if __name__ == '__main__':
                 model=factor,
                 prop='pore.seed',
                 f=10,
+                regen_mode='deferred')
+    g.add_model(propname='pore.test',
+                model=factor,
+                domain='front',
+                prop='pore.seed',
+                f=100,
                 regen_mode='deferred')
 
     # %% Run some basic tests
@@ -488,6 +502,11 @@ if __name__ == '__main__':
     assert 'pore.seedx' in g.keys()
     x = g['pore.seedx']
     assert x[~np.isnan(x)].min() > 2
+    # Run the non-domain enabled model on a subdomain
+    assert 'pore.test' not in g
+    g.run_model('pore.test')
+    assert 'pore.test' in g
+    assert np.isnan(g['pore.test']).sum() == 7
     # Fetch data with lazy syntax
     assert g['pore.seed@left'].shape[0] == 3
     # Write data with lazy syntax, ensuring scalar to array conversion
