@@ -52,6 +52,9 @@ class Base2(dict):
         project.extend(self)
         self.settings['name'] = name
 
+    def __eq__(self, other):
+        return hex(id(self)) == hex(id(other))
+
     def __repr__(self):
         module = self.__module__
         module = ".".join([x for x in module.split(".") if not x.startswith("_")])
@@ -77,7 +80,7 @@ class Base2(dict):
                                     dtype=bool)
                 else:
                     temp = np.zeros([self._count(element), *value.shape[1:]],
-                                    dtype=float)
+                                    dtype=float)*np.nan
                 self.__setitem__(element+'.'+prop, temp)
                 self[element+'.'+prop][locs] = value
             return
@@ -273,6 +276,9 @@ class Base2(dict):
     def Ps(self):
         return np.arange(self._count('pore'))
 
+    def _tomask(self, element, indices):
+        return self.to_mask(**{element + 's': indices})
+
     def to_mask(self, pores=None, throats=None):
         if pores is not None:
             indices = np.array(pores, ndmin=1)
@@ -375,6 +381,13 @@ class ModelMixin2:
         if regen_mode != 'deferred':
             self.run_model(propname+domain)
 
+    def add_model_collection(self, models, domain=None):
+        for k, v in models.items():
+            _ = v.pop('regen_mode')
+            model = v.pop('model')
+            self.add_model(propname=k, model=model, domain=domain,
+                           regen_mode='deferred', **v)
+
     def regenerate_models(self, propnames=None, exclude=[]):
         if isinstance(propnames, list) and len(propnames) == 0:
             return  # Short-circuit function and return
@@ -385,7 +398,8 @@ class ModelMixin2:
         # Remove any that are specifically excluded
         propnames = [i for i in propnames if i not in exclude]
         # Re-order given propnames according to dependency tree
-        all_models = self.models.dependency_list()
+        # all_models = self.models.dependency_list()
+        all_models = self.models.keys()
         propnames = [i for i in all_models if i in propnames]
         # Now run each on in sequence
         for item in propnames:
@@ -400,7 +414,8 @@ class ModelMixin2:
                 for item in self.models.keys():
                     if item.startswith(propname):
                         domain = item.split('@')[-1]
-                        self.run_model(propname=propname, domain=domain)
+                        temp = item.split('@')[0]
+                        self.run_model(propname=temp, domain=domain)
             else:  # Model applies everywhere
                 if propname in self.models.keys():
                     element, prop = propname.split('.', 1)
@@ -411,6 +426,8 @@ class ModelMixin2:
                         if item not in ['model', 'regen_mode']:
                             kwargs[item] = mod_dict[item]
                     vals = mod_dict['model'](**kwargs)
+                    if isinstance(vals, dict):  # Handle models that return a dict
+                        vals = np.vstack(list(vals.values())).T
                     self[propname] = vals
                 else:
                     for item in self.models.keys():
@@ -426,11 +443,14 @@ class ModelMixin2:
             for item in mod_dict.keys():
                 if item not in ['model', 'regen_mode']:
                     kwargs[item] = mod_dict[item]
-            if 'domain' in inspect.getfullargspec(mod_dict['model']).args:
-                vals = mod_dict['model'](**kwargs)
-            else:
+            if 'domain' not in inspect.getfullargspec(mod_dict['model']).args:
                 _ = kwargs.pop('domain', None)
-                vals = mod_dict['model'](**kwargs)[self[element+'.'+domain]]
+                vals = mod_dict['model'](**kwargs)
+                if isinstance(vals, dict):  # Handle models that return a dict
+                    vals = np.vstack(list(vals.values())).T
+                vals = vals[self[element+'.'+domain]]
+            else:  # Model that accepts domain arg and returns subdomdain data
+                vals = mod_dict['model'](**kwargs)
             if propname not in self.keys():
                 self[propname] = np.nan*np.ones([self._count(element),
                                                  *vals.shape[1:]])
@@ -506,6 +526,9 @@ if __name__ == '__main__':
     assert 'pore.test' not in g
     g.run_model('pore.test')
     assert 'pore.test' in g
+    assert np.isnan(g['pore.test']).sum() == 7
+    del g['pore.test']
+    g.run_model('pore.test@front')
     assert np.isnan(g['pore.test']).sum() == 7
     # Fetch data with lazy syntax
     assert g['pore.seed@left'].shape[0] == 3

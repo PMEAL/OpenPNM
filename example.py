@@ -2,7 +2,10 @@ import numpy as np
 import openpnm as op
 
 pn = op.network.Cubic(shape=[4, 4, 1])
-pn.models.update(op.models.collections.geometry.circles_and_rectangles)
+Ps = pn.pores('left')
+Ts = pn.find_neighbor_throats(Ps, asmask=True)
+pn['throat.left'] = Ts
+pn.add_model_collection(op.models.collections.geometry.circles_and_rectangles)
 pn.regenerate_models()
 
 air = op.phase.Air(network=pn)
