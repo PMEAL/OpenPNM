@@ -5,7 +5,8 @@ pn = op.network.Cubic(shape=[4, 4, 1])
 Ps = pn.pores('left')
 Ts = pn.find_neighbor_throats(Ps, asmask=True)
 pn['throat.left'] = Ts
-pn.add_model_collection(op.models.collections.geometry.circles_and_rectangles)
+pn.add_model_collection(op.models.collections.geometry.circles_and_rectangles,
+                        domain='left')
 pn.regenerate_models()
 
 air = op.phase.Air(network=pn)

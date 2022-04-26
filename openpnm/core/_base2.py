@@ -1,9 +1,10 @@
 import numpy as np
-from openpnm.core import LabelMixin, ParamMixin, ModelsDict, ModelWrapper
+from openpnm.core import LabelMixin, ParamMixin, ModelsDict, ModelWrapper, ParserMixin
 from openpnm.utils import Workspace, SettingsAttr, PrintableList
 from openpnm.utils import parse_mode
 from copy import deepcopy
 import inspect
+import numpy.lib.recfunctions as rf
 
 
 ws = Workspace()
@@ -87,10 +88,14 @@ class Base2(dict):
             return
         element, prop = key.split('.', 1)
         # Catch dictionaries and break them up
+        # if isinstance(value, dict):
+        #     for k, v in value.items():
+        #         self[key+'.'+k] = v
+        #     return
+        # Catch dictionaries and convert to struct arrays
         if isinstance(value, dict):
-            for k, v in value.items():
-                self[key+'.'+k] = v
-            return
+            value = rf.unstructured_to_structured(np.vstack(list(value.values())).T,
+                                                  names=list(value.keys()))
         # Enfore correct dict naming
         if element not in ['pore', 'throat']:
             raise Exception('All keys must start with either pore, or throat')
@@ -144,6 +149,11 @@ class Base2(dict):
                 self['pore.'+self.name] = np.ones(self.Np, dtype=bool)
                 self['throat.'+self.name] = np.ones(self.Nt, dtype=bool)
                 return self[key]
+            # Probably too much?
+            # elif '.' in prop:
+            #     vals = self[element + '.' + prop.split('.', 1)[0]]
+            #     vals = vals[prop.split('.', 1)[-1]]
+            #     return vals
             else:
                 # This deals with nested dicts like conduit data
                 vals = {}
@@ -367,9 +377,12 @@ class Base2(dict):
                 defined = np.size(self[item]) - len(invalid)
                 lines.append(fmt.format(i + 1, prop, defined, required))
             elif '._' not in prop:
-                a = np.isnan(self[item])
-                defined = np.shape(self[item])[0] \
-                    - a.sum(axis=0, keepdims=(a.ndim-1) == 0)[0]
+                try:  # normal ndarray
+                    a = np.isnan(self[item])
+                    defined = np.shape(self[item])[0] \
+                        - a.sum(axis=0, keepdims=(a.ndim-1) == 0)[0]
+                except TypeError:  # numpy struct array
+                    defined = self[item].shape[0]
                 lines.append(fmt.format(i + 1, prop, defined, required))
         lines.append(horizontal_rule)
         return '\n'.join(lines)
@@ -471,7 +484,7 @@ class ModelMixin2:
             self[propname][self[element+'.'+domain]] = vals
 
 
-class Domain(ParamMixin, LabelMixin, ModelMixin2, Base2):
+class Domain(ParserMixin, ParamMixin, LabelMixin, ModelMixin2, Base2):
     ...
 
 
