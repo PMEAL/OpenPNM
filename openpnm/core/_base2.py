@@ -1,6 +1,7 @@
 import numpy as np
-from openpnm.core import LabelMixin, ParamMixin, ParserMixin, ModelsDict, ModelWrapper
+from openpnm.core import LabelMixin, ParamMixin, ModelsDict, ModelWrapper
 from openpnm.utils import Workspace, SettingsAttr, PrintableList
+from openpnm.utils import parse_mode
 from copy import deepcopy
 import inspect
 
@@ -119,7 +120,7 @@ class Base2(dict):
             return key
 
         # If key starts with conduit, then call the get_conduit_data method
-        # to build an Nt-by-3 array of pore-throat-pore values
+        # to build an Nt-by-3 array of pore1-throat-pore2 values
         if key.startswith('conduit'):
             if '@' in key:
                 raise Exception('@domain syntax does not work conduit prefix')
@@ -138,11 +139,13 @@ class Base2(dict):
         try:
             return super().__getitem__(key)
         except KeyError:
+            # If key is actually the object's name, create arrays and return
             if key.split('.')[1] == self.name:
                 self['pore.'+self.name] = np.ones(self.Np, dtype=bool)
                 self['throat.'+self.name] = np.ones(self.Nt, dtype=bool)
                 return self[key]
             else:
+                # This deals with nested dicts like conduit data
                 vals = {}
                 keys = self.keys()
                 vals.update({k: self.get(k) for k in keys if k.startswith(key + '.')})
@@ -163,16 +166,17 @@ class Base2(dict):
         if mode is None:
             super().clear()
         else:
-            mode = self._parse_mode(mode=mode, allowed=['props',
-                                                        'labels',
-                                                        'models'])
+            mode = parse_mode(obj=self, mode=mode, allowed=['props',
+                                                            'labels',
+                                                            'models'])
             if 'props' in mode:
                 for item in self.props():
                     if item not in ['pore.coords', 'throat.conns']:
                         del self[item]
             if 'labels' in mode:
                 for item in self.labels():
-                    del self[item]
+                    if item not in ['pore.'+self.name, 'throat.'+self.name]:
+                        del self[item]
             if 'models' in mode:
                 for item in self.models.keys():
                     _ = self.pop(item.split('@')[0], None)
@@ -181,10 +185,10 @@ class Base2(dict):
         if mode is None:
             return super().keys()
         else:
-            mode = self._parse_mode(mode=mode, allowed=['props',
-                                                        'labels',
-                                                        'models',
-                                                        'constants'])
+            mode = parse_mode(obj=self, mode=mode, allowed=['props',
+                                                            'labels',
+                                                            'models',
+                                                            'constants'])
             vals = set()
             if 'props' in mode:
                 for item in self.props():
@@ -214,6 +218,14 @@ class Base2(dict):
         if validate:
             self.project._validate_name(name)
         self.settings['name'] = name
+        if 'pore.'+old_name in self.keys():
+            self['pore.'+name] = self.pop('pore.'+old_name)
+        elif self.Np is not None:
+            self['pore.'+name] = np.ones([self.Np, ], dtype=bool)
+        if 'throat.'+old_name in self.keys():
+            self['throat.'+name] = self.pop('throat.'+old_name)
+        elif self.Nt is not None:
+            self['throat.'+name] = np.ones([self.Nt, ], dtype=bool)
 
     def _get_name(self):
         try:
@@ -251,6 +263,7 @@ class Base2(dict):
     def network(self):
         return self.project.network
 
+    # TODO: Delete this once codes stops asking for it
     @property
     def _domain(self):
         return self
@@ -277,7 +290,7 @@ class Base2(dict):
         return np.arange(self._count('pore'))
 
     def _tomask(self, element, indices):
-        return self.to_mask(**{element + 's': indices})
+        return self.to_mask(**{element+'s': indices})
 
     def to_mask(self, pores=None, throats=None):
         if pores is not None:
@@ -368,7 +381,8 @@ class ModelMixin2:
         super().__init__(*args, **kwargs)
         self.models = ModelsDict()
 
-    def add_model(self, propname, model, domain=None, regen_mode='normal', **kwargs):
+    def add_model(self, propname, model, domain=None, regen_mode='normal',
+                  **kwargs):
         if domain is None:
             domain = ''
         else:
@@ -457,7 +471,7 @@ class ModelMixin2:
             self[propname][self[element+'.'+domain]] = vals
 
 
-class Domain(ParserMixin, ParamMixin, LabelMixin, ModelMixin2, Base2):
+class Domain(ParamMixin, LabelMixin, ModelMixin2, Base2):
     ...
 
 

@@ -118,6 +118,11 @@ class ModelsDict(PrintableDict):
 
         dtree = nx.DiGraph()
         models = list(self.keys())
+
+        # The following line is needed to remove the @ from model names
+        # but this isn't the full solution.
+        # models = list(set([i.split('@')[0] for i in self.keys()]))
+
         # Fetch model-less props: those w/o any model, like temperature
         # otherwise, they won't get picked up in the dependency graph.
         all_props = list(self._find_parent().keys())
