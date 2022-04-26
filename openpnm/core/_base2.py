@@ -94,8 +94,12 @@ class Base2(dict):
         #     return
         # Catch dictionaries and convert to struct arrays
         if isinstance(value, dict):
-            value = rf.unstructured_to_structured(np.vstack(list(value.values())).T,
-                                                  names=list(value.keys()))
+            d = {}
+            for k, v in value.items():  # Use base to convert each column
+                self[element+'.'+k] = v
+                d.update({k.split('@')[0]: self.pop(element+'.'+k.split('@')[0])})
+            value = rf.unstructured_to_structured(np.vstack(list(d.values())).T,
+                                                  names=list(d.keys()))
         # Enfore correct dict naming
         if element not in ['pore', 'throat']:
             raise Exception('All keys must start with either pore, or throat')
@@ -128,7 +132,7 @@ class Base2(dict):
         # to build an Nt-by-3 array of pore1-throat-pore2 values
         if key.startswith('conduit'):
             if '@' in key:
-                raise Exception('@domain syntax does not work conduit prefix')
+                raise Exception('@domain syntax does not work with conduit prefix')
             return self.get_conduit_data(propname=key.split('.', 1)[1])
 
         # If key contains an @ symbol then return a subset of values at the
@@ -144,19 +148,12 @@ class Base2(dict):
         try:
             return super().__getitem__(key)
         except KeyError:
-            # If key is actually the object's name, create arrays and return
-            if key.split('.')[1] == self.name:
-                self['pore.'+self.name] = np.ones(self.Np, dtype=bool)
-                self['throat.'+self.name] = np.ones(self.Nt, dtype=bool)
-                return self[key]
-            # Probably too much?
-            # elif '.' in prop:
-            #     vals = self[element + '.' + prop.split('.', 1)[0]]
-            #     vals = vals[prop.split('.', 1)[-1]]
-            #     return vals
+            # If key is object's name or all, return ones
+            if key.split('.')[1] in [self.name, 'all']:
+                vals = np.ones(self._count(element), dtype=bool)
+                return vals
             else:
-                # This deals with nested dicts like conduit data
-                vals = {}
+                vals = {}  # This deals with nested dicts like conduit data
                 keys = self.keys()
                 vals.update({k: self.get(k) for k in keys if k.startswith(key + '.')})
                 if len(vals) > 0:
@@ -394,21 +391,21 @@ class ModelMixin2:
         super().__init__(*args, **kwargs)
         self.models = ModelsDict()
 
-    def add_model(self, propname, model, domain=None, regen_mode='normal',
+    def add_model(self, propname, model, domain='all', regen_mode='normal',
                   **kwargs):
-        if domain is None:
-            domain = ''
+        if '@' in propname:
+            propname, domain = propname.split('@')
         else:
-            domain = '@'+domain.split('.')[-1]
-        self.models[propname+domain] = ModelWrapper()
-        self.models[propname+domain]['model'] = model
-        self.models[propname+domain]['regen_mode'] = regen_mode
+            domain = domain.split('.')[-1]
+        self.models[propname+'@'+domain] = ModelWrapper()
+        self.models[propname+'@'+domain]['model'] = model
+        self.models[propname+'@'+domain]['regen_mode'] = regen_mode
         for item in kwargs:
-            self.models[propname+domain][item] = kwargs[item]
+            self.models[propname+'@'+domain][item] = kwargs[item]
         if regen_mode != 'deferred':
-            self.run_model(propname+domain)
+            self.run_model(propname+'@'+domain)
 
-    def add_model_collection(self, models, domain=None):
+    def add_model_collection(self, models, domain='all'):
         for k, v in models.items():
             _ = v.pop('regen_mode')
             model = v.pop('model')
@@ -436,30 +433,15 @@ class ModelMixin2:
                 pass
 
     def run_model(self, propname, domain=None):
-        if domain is None:
+        if domain in [None]:
             if '@' in propname:  # Get domain from propname, if present
+                propname, domain = propname.split('@')
+                self.run_model(propname=propname, domain=domain)
+            else:  # Run model for all domains
                 for item in self.models.keys():
-                    if item.startswith(propname):
+                    if item.startswith(propname+'@'):
                         domain = item.split('@')[-1]
-                        temp = item.split('@')[0]
-                        self.run_model(propname=temp, domain=domain)
-            else:  # Model applies everywhere
-                if propname in self.models.keys():
-                    element, prop = propname.split('.', 1)
-                    mod_dict = self.models[propname]
-                    # Collect kwargs
-                    kwargs = {'target': self}
-                    for item in mod_dict.keys():
-                        if item not in ['model', 'regen_mode']:
-                            kwargs[item] = mod_dict[item]
-                    vals = mod_dict['model'](**kwargs)
-                    if isinstance(vals, dict):  # Handle models that return a dict
-                        vals = np.vstack(list(vals.values())).T
-                    self[propname] = vals
-                else:
-                    for item in self.models.keys():
-                        if item.startswith(propname.split('@', 1)[0]+'@'):
-                            self.run_model(propname=item)
+                        self.run_model(propname=propname, domain=domain)
         else:  # domain was given explicitly
             domain = domain.split('.')[-1]
             element, prop = propname.split('@')[0].split('.', 1)
@@ -568,17 +550,31 @@ if __name__ == '__main__':
     # Use labels that were not used by models
     assert g['pore.seed@front'].shape[0] == 3
     # Write a dict
-    g['pore.dict'] = {'item1': 1, 'item2': 1}
-    assert g['pore.dict.item1'].sum() == 9
-    assert g['pore.dict.item2'].sum() == 9
+    g['pore.dict'] = {'item1': 1, 'item2': 2.0}
+    # This no longer works...
+    with pytest.raises(KeyError):
+        assert g['pore.dict.item1'].sum() == 9
+        assert g['pore.dict.item2'].sum() == 9
+    # ...but this does
+    assert g['pore.dict']['item1'].sum() == 9
+    assert g['pore.dict']['item2'].sum() == 18
     # A dict with domains
-    g['pore.dict'] = {'item1@left': 2, 'item2@right': 2}
-    assert g['pore.dict.item1'].sum() == 12
-    assert g['pore.dict.item2'].sum() == 12
+    g['pore.dict'] = {'item1@left': 1, 'item2@right': 2.0}
+    # This no longer works...
+    with pytest.raises(KeyError):
+        assert g['pore.dict.item1'].sum() == 9
+        assert g['pore.dict.item2'].sum() == 18
+    # ...but this does
+    mask = ~np.isnan(g['pore.dict']['item1'])
+    assert g['pore.dict']['item1'][mask].sum() == 3
+    mask = ~np.isnan(g['pore.dict']['item2'])
+    assert g['pore.dict']['item2'][mask].sum() == 6
+    g['pore.dict'] = {'item3@left': 1, 'item3@right': 2.0}
+    # Double dots...not sure how these should work
     g['pore.nested.name1'] = 10
     g['pore.nested.name2'] = 20
     assert isinstance(g['pore.nested'], dict)
-    # assert len(g['pore.nested']) == 2
+    assert len(g['pore.nested']) == 2
     with pytest.raises(KeyError):
         g['pore.nested.fail']
     del g['pore.nested.name1']

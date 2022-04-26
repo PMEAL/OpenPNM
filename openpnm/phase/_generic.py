@@ -40,8 +40,8 @@ class GenericPhase(Domain):
         self.settings = SettingsAttr(PhaseSettings, settings)
         super().__init__(network=network, settings=self.settings, **kwargs)
 
-        self['pore.'+self.name] = np.ones([network.Np, ], dtype=bool)
-        self['throat.'+self.name] = np.ones([network.Nt, ], dtype=bool)
+        self['pore.all'] = np.ones([network.Np, ], dtype=bool)
+        self['throat.all'] = np.ones([network.Nt, ], dtype=bool)
 
         # Set standard conditions on the fluid to get started
         self['pore.temperature'] = 298.0
