@@ -122,26 +122,6 @@ class Base2(dict):
         else:
             raise Exception('Provided array is wrong length for ' + key)
 
-    def _dict_to_struct(self, d, element):
-        for k, v in d.items():
-            self[element+'._.'+k] = v
-        # Do it 2nd loop so that any @ domains are all written before popping
-        d2 = {}
-        for k, v in d.items():
-            # Since key can only be popped once, but may be in items > once
-            temp = self.pop(element+'._.'+k.split('@')[0], None)
-            if temp is not None:
-                d2.update({k.split('@')[0]: temp})
-        struct = rf.unstructured_to_structured(np.vstack(list(d2.values())).T,
-                                               names=list(d2.keys()))
-        return struct
-
-    def _struct_to_dict(self, s):
-        d = {}
-        for key in s.dtype.names:
-            d[key] = s[key]
-        return d
-
     def __getitem__(self, key):
         # If key is a just a numerical value, then kick it directly back.
         # This allows one to do either value='pore.blah' or value=1.0 in
@@ -164,6 +144,14 @@ class Base2(dict):
             locs = self[element+'.'+domain]
             vals = self[element+'.'+prop]
             return vals[locs]
+
+        if '*' in key:
+            d = {}
+            key = key[1:]
+            for k, v in self.items():
+                if k.endswith(key):
+                    d[k[:-len(key)-1]] = super().__getitem__(k)
+            return d
 
         element, prop = key.split('.', 1)
         try:
@@ -376,6 +364,26 @@ class Base2(dict):
             P2 = np.ones([self.Nt, ], dtype=float)*np.nan
         return np.vstack((P1, T, P2)).T
 
+    def _dict_to_struct(self, d, element):
+        for k, v in d.items():
+            self[element+'._.'+k] = v
+        # Do it 2nd loop so that any @ domains are all written before popping
+        d2 = {}
+        for k, v in d.items():
+            # Since key can only be popped once, but may be in items > once
+            temp = self.pop(element+'._.'+k.split('@')[0], None)
+            if temp is not None:
+                d2.update({k.split('@')[0]: temp})
+        struct = rf.unstructured_to_structured(np.vstack(list(d2.values())).T,
+                                               names=list(d2.keys()))
+        return struct
+
+    def _struct_to_dict(self, s):
+        d = {}
+        for key in s.dtype.names:
+            d[key] = s[key]
+        return d
+
     def __str__(self):
         module = self.__module__
         module = ".".join([x for x in module.split(".") if not x.startswith("_")])
@@ -436,7 +444,7 @@ class ModelMixin2:
 
     def add_model_collection(self, models, domain='all'):
         for k, v in models.items():
-            _ = v.pop('regen_mode')
+            _ = v.pop('regen_mode', None)
             model = v.pop('model')
             self.add_model(propname=k, model=model, domain=domain,
                            regen_mode='deferred', **v)
@@ -475,6 +483,7 @@ class ModelMixin2:
             domain = domain.split('.')[-1]
             element, prop = propname.split('@')[0].split('.', 1)
             propname = element+'.'+prop
+            print(propname)
             mod_dict = self.models[propname+'@'+domain]
             # Collect kwargs
             kwargs = {'target': self, 'domain': element+'.'+domain}
@@ -486,8 +495,12 @@ class ModelMixin2:
                 _ = kwargs.pop('domain', None)
                 vals = mod_dict['model'](**kwargs)
                 if isinstance(vals, dict):  # Handle models that return a dict
-                    vals = np.vstack(list(vals.values())).T
-                vals = vals[self[element+'.'+domain]]
+                    for k, v in vals.items():
+                        vals[k] = v[self[element+'.'+domain]]
+                elif isinstance(vals, float):  # Handle models that return a float
+                    vals = np.atleast_1d(vals)
+                else:  # Index into full domain result for use below
+                    vals = vals[self[element+'.'+domain]]
             else:  # Model that accepts domain arg
                 vals = mod_dict['model'](**kwargs)
             # Finally add model results to self

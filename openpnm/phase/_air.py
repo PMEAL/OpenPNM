@@ -29,5 +29,5 @@ class Air(GenericPhase):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.models.update(air)
-        self.regenerate_models()
+        self.add_model_collection(models=air, domain='all')
+        # self.regenerate_models()
