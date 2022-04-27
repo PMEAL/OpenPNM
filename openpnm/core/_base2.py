@@ -434,11 +434,17 @@ class ModelMixin2:
             propname, domain = propname.split('@')
         else:
             domain = domain.split('.')[-1]
-        self.models[propname+'@'+domain] = ModelWrapper()
-        self.models[propname+'@'+domain]['model'] = model
-        self.models[propname+'@'+domain]['regen_mode'] = regen_mode
-        for item in kwargs:
-            self.models[propname+'@'+domain][item] = kwargs[item]
+
+        # Add model and regen_mode to kwargs dictionary
+        kwargs.update({'model': model, 'regen_mode': regen_mode})
+        # Insepct model to extract arguments and default values
+        if model.__defaults__:
+            vals = list(inspect.getfullargspec(model).defaults)
+            keys = inspect.getfullargspec(model).args[-len(vals):]
+            for k, v in zip(keys, vals):  # Put defaults into kwargs
+                if k not in kwargs:  # Skip if argument was given in kwargs
+                    kwargs.update({k: v})
+        self.models[propname+'@'+domain] = ModelWrapper(**kwargs)
         if regen_mode != 'deferred':
             self.run_model(propname+'@'+domain)
 
