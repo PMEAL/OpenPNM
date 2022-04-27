@@ -86,20 +86,21 @@ class Base2(dict):
                 self.__setitem__(element+'.'+prop, temp)
                 self[element+'.'+prop][locs] = value
             return
+
         element, prop = key.split('.', 1)
         # Catch dictionaries and break them up
-        # if isinstance(value, dict):
-        #     for k, v in value.items():
-        #         self[key+'.'+k] = v
-        #     return
-        # Catch dictionaries and convert to struct arrays
         if isinstance(value, dict):
-            d = {}
-            for k, v in value.items():  # Use base to convert each column
-                self[element+'.'+k] = v
-                d.update({k.split('@')[0]: self.pop(element+'.'+k.split('@')[0])})
-            value = rf.unstructured_to_structured(np.vstack(list(d.values())).T,
-                                                  names=list(d.keys()))
+            for k, v in value.items():
+                self[key+'.'+k] = v
+            return
+        # Catch dictionaries and convert to struct arrays and back
+        # if isinstance(value, dict):
+        #     s = self._dict_to_struct(d=value, element=element)
+        #     d = self._struct_to_dict(s=s)
+        #     for k, v in d.items():
+        #         self[element+'.'+prop+'.'+k] = v
+        #     return
+
         # Enfore correct dict naming
         if element not in ['pore', 'throat']:
             raise Exception('All keys must start with either pore, or throat')
@@ -120,6 +121,26 @@ class Base2(dict):
             self.update({key: value})
         else:
             raise Exception('Provided array is wrong length for ' + key)
+
+    def _dict_to_struct(self, d, element):
+        for k, v in d.items():
+            self[element+'._.'+k] = v
+        # Do it 2nd loop so that any @ domains are all written before popping
+        d2 = {}
+        for k, v in d.items():
+            # Since key can only be popped once, but may be in items > once
+            temp = self.pop(element+'._.'+k.split('@')[0], None)
+            if temp is not None:
+                d2.update({k.split('@')[0]: temp})
+        struct = rf.unstructured_to_structured(np.vstack(list(d2.values())).T,
+                                               names=list(d2.keys()))
+        return struct
+
+    def _struct_to_dict(self, s):
+        d = {}
+        for key in s.dtype.names:
+            d[key] = s[key]
+        return d
 
     def __getitem__(self, key):
         # If key is a just a numerical value, then kick it directly back.
@@ -151,6 +172,12 @@ class Base2(dict):
             # If key is object's name or all, return ones
             if key.split('.')[1] in [self.name, 'all']:
                 vals = np.ones(self._count(element), dtype=bool)
+                return vals
+            elif any([k.startswith(key) for k in self.keys()]):
+                vals = {}  # Gather any arrays into a dict
+                for k in self.keys():
+                    if k.startswith(key):
+                        vals.update({k.split('.')[-1]: self[k]})
                 return vals
             else:
                 vals = {}  # This deals with nested dicts like conduit data
@@ -379,7 +406,9 @@ class Base2(dict):
                     defined = np.shape(self[item])[0] \
                         - a.sum(axis=0, keepdims=(a.ndim-1) == 0)[0]
                 except TypeError:  # numpy struct array
-                    defined = self[item].shape[0]
+                    k = self[item].dtype.names
+                    required = self[item].shape[0]*len(k)
+                    defined = sum([sum(~np.isnan(self[item][i])) for i in k])
                 lines.append(fmt.format(i + 1, prop, defined, required))
         lines.append(horizontal_rule)
         return '\n'.join(lines)
@@ -551,24 +580,12 @@ if __name__ == '__main__':
     assert g['pore.seed@front'].shape[0] == 3
     # Write a dict
     g['pore.dict'] = {'item1': 1, 'item2': 2.0}
-    # This no longer works...
-    with pytest.raises(KeyError):
-        assert g['pore.dict.item1'].sum() == 9
-        assert g['pore.dict.item2'].sum() == 9
-    # ...but this does
-    assert g['pore.dict']['item1'].sum() == 9
-    assert g['pore.dict']['item2'].sum() == 18
+    assert g['pore.dict.item1'].sum() == 9
+    assert g['pore.dict.item2'].sum() == 18
     # A dict with domains
-    g['pore.dict'] = {'item1@left': 1, 'item2@right': 2.0}
-    # This no longer works...
-    with pytest.raises(KeyError):
-        assert g['pore.dict.item1'].sum() == 9
-        assert g['pore.dict.item2'].sum() == 18
-    # ...but this does
-    mask = ~np.isnan(g['pore.dict']['item1'])
-    assert g['pore.dict']['item1'][mask].sum() == 3
-    mask = ~np.isnan(g['pore.dict']['item2'])
-    assert g['pore.dict']['item2'][mask].sum() == 6
+    g['pore.dict'] = {'item1@left': 2, 'item2@right': 3.0}
+    assert g['pore.dict.item1'].sum() == 12
+    assert g['pore.dict.item2'].sum() == 21
     g['pore.dict'] = {'item3@left': 1, 'item3@right': 2.0}
     # Double dots...not sure how these should work
     g['pore.nested.name1'] = 10
@@ -579,8 +596,8 @@ if __name__ == '__main__':
         g['pore.nested.fail']
     del g['pore.nested.name1']
     assert 'pore.nested.name1' not in g.keys()
-    del g['pore.nested']
-    assert 'pore.nested.name2' not in g.keys()
+    # del g['pore.nested']
+    # assert 'pore.nested.name2' not in g.keys()
     # More fun
     c = g['conduit.seed']
     assert c.shape == (12, 3)
