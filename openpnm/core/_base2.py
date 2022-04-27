@@ -647,6 +647,7 @@ if __name__ == '__main__':
     assert g['pore.dict3.item1@left'].sum() == 3
     assert np.isnan(g['pore.dict3.item2']).sum() == 6
     assert np.isnan(g['pore.dict3.item3']).sum() == 6
+    # Run model on both domains that its assigned
     g.run_model('pore.dict3')
     assert g['pore.dict3.item1@left'].sum() == 3
     assert g['pore.dict3.item1@right'].sum() == 3
