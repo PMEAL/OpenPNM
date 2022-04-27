@@ -194,7 +194,7 @@ class Base2(dict):
         except KeyError:
             d = self[key]  # If key is a nested dict, get all values
             for item in d.keys():
-                super().__delitem__(item)
+                super().__delitem__(key+'.'+item)
 
     def clear(self, mode=None):
         if mode is None:
@@ -462,11 +462,11 @@ class ModelMixin2:
                 pass
 
     def run_model(self, propname, domain=None):
-        if domain in [None]:
-            if '@' in propname:  # Get domain from propname, if present
+        if domain is None:
+            if '@' in propname:  # Get domain from propname if present
                 propname, domain = propname.split('@')
                 self.run_model(propname=propname, domain=domain)
-            else:  # Run model for all domains
+            else:  # No domain means run model for ALL domains
                 for item in self.models.keys():
                     if item.startswith(propname+'@'):
                         domain = item.split('@')[-1]
@@ -481,18 +481,30 @@ class ModelMixin2:
             for item in mod_dict.keys():
                 if item not in ['model', 'regen_mode']:
                     kwargs[item] = mod_dict[item]
+            # Deal with models that don't have domain argument yet
             if 'domain' not in inspect.getfullargspec(mod_dict['model']).args:
                 _ = kwargs.pop('domain', None)
                 vals = mod_dict['model'](**kwargs)
                 if isinstance(vals, dict):  # Handle models that return a dict
                     vals = np.vstack(list(vals.values())).T
                 vals = vals[self[element+'.'+domain]]
-            else:  # Model that accepts domain arg and returns subdomdain data
+            else:  # Model that accepts domain arg
                 vals = mod_dict['model'](**kwargs)
-            if propname not in self.keys():
-                self[propname] = np.nan*np.ones([self._count(element),
-                                                 *vals.shape[1:]])
-            self[propname][self[element+'.'+domain]] = vals
+            # Finally add model results to self
+            if isinstance(vals, np.ndarray):  # If model returns single array
+                if propname not in self.keys():
+                    # Create empty array if not found
+                    self[propname] = np.nan*np.ones([self._count(element),
+                                                     *vals.shape[1:]])
+                self[propname][self[element+'.'+domain]] = vals
+            elif isinstance(vals, dict):  # If model returns a dict of arrays
+                for k, v in vals.items():
+                    if propname + '.' + k not in self.keys():
+                        # Create empty array if not found
+                        self[propname + '.' + k] = \
+                            np.nan*np.ones([self._count(element),
+                                            *v.shape[1:]])
+                    self[propname + '.' + k][self[element+'.'+domain]] = v
 
 
 class Domain(ParserMixin, ParamMixin, LabelMixin, ModelMixin2, Base2):
@@ -509,6 +521,15 @@ def random_seed(target, domain, seed=None, lim=[0, 1]):
 def factor(target, prop, f=1):
     vals = target[prop]*f
     return vals
+
+
+def dolittle(target, domain):
+    N = target[domain].sum()
+    d = {}
+    d['item1'] = np.ones([N, ])
+    d['item2'] = np.ones([N, ])*2
+    d['item3'] = np.ones([N, ])*3
+    return d
 
 
 if __name__ == '__main__':
@@ -537,6 +558,17 @@ if __name__ == '__main__':
                 prop='pore.seed',
                 f=100,
                 regen_mode='deferred')
+    g.add_model(propname='pore.dict2',
+                model=dolittle,
+                regen_mode='deferred',)
+    g.add_model(propname='pore.dict3',
+                model=dolittle,
+                domain='left',
+                regen_mode='deferred',)
+    g.add_model(propname='pore.dict3',
+                model=dolittle,
+                domain='right',
+                regen_mode='deferred',)
 
     # %% Run some basic tests
     # Use official args
@@ -596,15 +628,28 @@ if __name__ == '__main__':
         g['pore.nested.fail']
     del g['pore.nested.name1']
     assert 'pore.nested.name1' not in g.keys()
-    # del g['pore.nested']
-    # assert 'pore.nested.name2' not in g.keys()
+    del g['pore.nested']
+    assert 'pore.nested.name2' not in g.keys()
     # More fun
     c = g['conduit.seed']
     assert c.shape == (12, 3)
     assert 'throat.seed' not in g
     assert np.isnan(c[:, 1]).sum() == g.Nt
-
-
+    # Run model that returns a dict to all pores
+    g.run_model('pore.dict2')
+    assert len(g['pore.dict2']) == 3
+    assert g['pore.dict2.item1'].sum() == 9
+    assert g['pore.dict2.item2'].sum() == 18
+    # Run model that returns a dict to only subdomain pores
+    g.run_model('pore.dict3@left')
+    assert len(g['pore.dict3']) == 3
+    assert np.isnan(g['pore.dict3.item1']).sum() == 6
+    assert g['pore.dict3.item1@left'].sum() == 3
+    assert np.isnan(g['pore.dict3.item2']).sum() == 6
+    assert np.isnan(g['pore.dict3.item3']).sum() == 6
+    g.run_model('pore.dict3')
+    assert g['pore.dict3.item1@left'].sum() == 3
+    assert g['pore.dict3.item1@right'].sum() == 3
 
 
 
