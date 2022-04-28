@@ -160,6 +160,7 @@ class Base2(dict):
             if key.split('.', 1)[-1] in [self.name, 'all']:
                 element, prop = key.split('.', 1)
                 vals = np.ones(self._count(element), dtype=bool)
+                self[element+'.all'] = vals
                 return vals
             else:
                 vals = {}  # Gather any arrays into a dict
@@ -235,13 +236,9 @@ class Base2(dict):
         if validate:
             self.project._validate_name(name)
         self.settings['name'] = name
-        if 'pore.'+old_name in self.keys():
-            self['pore.'+name] = self.pop('pore.'+old_name)
-        elif self.Np is not None:
+        if self.Np is not None:
             self['pore.'+name] = np.ones([self.Np, ], dtype=bool)
-        if 'throat.'+old_name in self.keys():
-            self['throat.'+name] = self.pop('throat.'+old_name)
-        elif self.Nt is not None:
+        if self.Nt is not None:
             self['throat.'+name] = np.ones([self.Nt, ], dtype=bool)
 
     def _get_name(self):
@@ -338,10 +335,11 @@ class Base2(dict):
 
     def interpolate_data(self, propname, mode='mean'):
         from openpnm.models.misc import from_neighbor_throats, from_neighbor_pores
-        if propname.startswith('throat'):
-            values = from_neighbor_throats(target=self, prop=propname, mode=mode)
-        elif propname.startswith('pore'):
-            values = from_neighbor_pores(target=self, prop=propname, mode=mode)
+        element, prop = propname.split('.', 1)
+        if element == 'throat':
+            values = from_neighbor_pores(target=self, prop='pore.'+prop, mode=mode)
+        elif element == 'pore':
+            values = from_neighbor_throats(target=self, prop='throat.'+prop, mode=mode)
         return values
 
     def get_conduit_data(self, propname, mode='mean'):
@@ -357,7 +355,10 @@ class Base2(dict):
         except KeyError:
             P1 = np.ones([self.Nt, ], dtype=float)*np.nan
             P2 = np.ones([self.Nt, ], dtype=float)*np.nan
-        return np.vstack((P1, T, P2)).T
+        vals = np.vstack((P1, T, P2)).T
+        if np.isnan(vals).sum() == vals.size:
+            raise KeyError(f'{propname} not found')
+        return vals
 
     def _dict_to_struct(self, d, element):
         for k, v in d.items():

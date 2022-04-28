@@ -168,17 +168,11 @@ class ReactiveTransport(GenericTransport):
             return
         # Fetch objects associated with the algorithm
         phase = self.project[self.settings.phase]
-        physics = self.project.find_physics(phase=phase)
-        geometries = self.project.geometries().values()
         # Update 'quantity' on phase with the most recent value
         quantity = self.settings['quantity']
         phase[quantity] = self.x
         # Regenerate all associated objects
         phase.regenerate_models(propnames=iterative_props)
-        for geom in geometries:
-            geom.regenerate_models(iterative_props)
-        for phys in physics:
-            phys.regenerate_models(iterative_props)
 
     def _apply_sources(self):
         """

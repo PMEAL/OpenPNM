@@ -48,18 +48,8 @@ class GenericPhase(Domain):
         self['pore.pressure'] = 101325.0
 
     def __getitem__(self, key):
-        # Attempt at automatic interpolation if key not found.  This behavior
-        # could arguably be turned off/on as a setting
-        element, prop = key.split('.', 1)
-        if key not in self.keys():
-            elem = list({'pore', 'throat'}.difference({element}))[0]
-            if (elem + '.' + prop) in self.keys():
-                mod = {'pore': mods.misc.from_neighbor_throats,
-                       'throat': mods.misc.from_neighbor_pores}
-                self.add_model(propname=key,
-                               model=mod[element],
-                               prop=elem + '.' + prop,
-                               mode='mean')
-                self.run_model(key)
-        vals = super().__getitem__(key)
-        return vals
+        try:
+            return super().__getitem__(key)
+        except KeyError:
+            vals = self.interpolate_data(key)
+            return vals

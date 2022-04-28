@@ -19,8 +19,8 @@ __all__ = [
 
 @_doctxt
 def washburn(target,
-             surface_tension="pore.surface_tension",
-             contact_angle="pore.contact_angle",
+             surface_tension="throat.surface_tension",
+             contact_angle="throat.contact_angle",
              diameter="throat.diameter"):
     r"""
     Computes the capillary entry pressure assuming the throat in a
@@ -53,14 +53,10 @@ def washburn(target,
     suitable for highly non-wetting invading phases in most materials.
 
     """
-    network = target.project.network
+    network = target.network
     phase = target.project.find_phase(target)
-    element, sigma, theta = _get_key_props(
-        phase=phase,
-        diameter=diameter,
-        surface_tension=surface_tension,
-        contact_angle=contact_angle,
-    )
+    sigma = target[surface_tension]
+    theta = target[contact_angle]
     r = network[diameter] / 2
     value = -2 * sigma * _np.cos(_np.radians(theta)) / r
     if diameter.split(".")[0] == "throat":

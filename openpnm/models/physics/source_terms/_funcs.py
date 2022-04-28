@@ -252,9 +252,9 @@ def power_law(target, X, A1='', A2='', A3=''):
             rate = S_{1} X + S_{2}
 
     """
-    A = _parse_args(target=target, key=A1, default=0.0)
-    B = _parse_args(target=target, key=A2, default=1.0)
-    C = _parse_args(target=target, key=A3, default=0.0)
+    A = target[A1]
+    B = target[A2]
+    C = target[A3]
     X = target[X]
 
     r = A * X ** B + C
@@ -647,8 +647,8 @@ def butler_volmer_conc(
 
     .. math::
         rate = S_{1} X + S_{2}
-    
-    Reference: Rahn, Christopher D. Wang, Chao-Yang. (2013). Battery Systems Engineering - 
+
+    Reference: Rahn, Christopher D. Wang, Chao-Yang. (2013). Battery Systems Engineering -
     3.2.1 The Butler-Volmer Equation. (pp. 27). John Wiley & Sons.
 
     """
@@ -773,8 +773,8 @@ def butler_volmer_voltage(
 
     .. math::
         rate = S_{1} X + S_{2}
-    
-    Reference: Rahn, Christopher D. Wang, Chao-Yang. (2013). Battery Systems Engineering - 
+
+    Reference: Rahn, Christopher D. Wang, Chao-Yang. (2013). Battery Systems Engineering -
     3.2.1 The Butler-Volmer Equation. (pp. 27). John Wiley & Sons.
     """
     network = target.project.network

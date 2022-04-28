@@ -44,9 +44,9 @@ def generic_hydraulic(
     mut = phase[throat_viscosity][throats]
 
     if isinstance(F, dict):
-        g1 = F[f"{size_factors}.pore1"][throats] / mu1
-        gt = F[f"{size_factors}.throat"][throats] / mut
-        g2 = F[f"{size_factors}.pore2"][throats] / mu2
+        g1 = F["pore1"][throats] / mu1
+        gt = F["throat"][throats] / mut
+        g2 = F["pore2"][throats] / mu2
         return 1 / (1/g1 + 1/gt + 1/g2)
     return F[throats] / mut
 

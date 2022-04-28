@@ -328,7 +328,7 @@ class LabelMixin:
         locations = self._parse_indices(locations)
         element = self._parse_element(element=element)
         # Collect list of all pore OR throat labels
-        labels = self.keys(mode='labels', element=element)
+        labels = [i for i in self.keys(mode='labels') if i.split('.')[0] in element]
         labels.sort()
         labels = np.array(labels)  # Convert to ndarray for following checks
         # Make an 2D array with locations in rows and labels in cols
@@ -525,7 +525,7 @@ class LabelMixin:
                 intersect = intersect*self[element+'.'+item.split('.')[-1]]
             ind = intersect
         elif mode in ['xor', 'exclusive_or']:
-            xor = np.zerose([self._count(element), ], dtype=int)
+            xor = np.zeros([self._count(element), ], dtype=int)
             for item in labels:  # Iterate over labels and collect all indices
                 info = self[element+'.'+item.split('.')[-1]]
                 xor = xor + np.int8(info)

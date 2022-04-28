@@ -1,6 +1,6 @@
 import logging
 import numpy as np
-from openpnm.core import Base, LegacyMixin
+from openpnm.core import Base, LegacyMixin, Base2, Domain
 from openpnm.utils import Docorator, SettingsAttr
 logger = logging.getLogger(__name__)
 docstr = Docorator()
@@ -24,7 +24,7 @@ class GenericAlgorithmSettings:
 
 @docstr.get_sections(base='GenericAlgorithm', sections=['Parameters'])
 @docstr.dedent
-class GenericAlgorithm(Base, LegacyMixin):
+class GenericAlgorithm(Domain, LegacyMixin):
     r"""
     Generic class to define the foundation of Algorithms
 
