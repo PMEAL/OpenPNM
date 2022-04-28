@@ -153,24 +153,19 @@ class Base2(dict):
                     d[k[:-len(key)-1]] = super().__getitem__(k)
             return d
 
-        element, prop = key.split('.', 1)
         try:
             return super().__getitem__(key)
         except KeyError:
             # If key is object's name or all, return ones
-            if key.split('.')[1] in [self.name, 'all']:
+            if key.split('.', 1)[-1] in [self.name, 'all']:
+                element, prop = key.split('.', 1)
                 vals = np.ones(self._count(element), dtype=bool)
                 return vals
-            elif any([k.startswith(key) for k in self.keys()]):
+            else:
                 vals = {}  # Gather any arrays into a dict
                 for k in self.keys():
-                    if k.startswith(key):
-                        vals.update({k.split('.')[-1]: self[k]})
-                return vals
-            else:
-                vals = {}  # This deals with nested dicts like conduit data
-                keys = self.keys()
-                vals.update({k: self.get(k) for k in keys if k.startswith(key + '.')})
+                    if k.startswith(key+'.'):
+                        vals.update({k.removeprefix(key+'.'): self[k]})
                 if len(vals) > 0:
                     return vals
                 else:
@@ -489,7 +484,6 @@ class ModelMixin2:
             domain = domain.split('.')[-1]
             element, prop = propname.split('@')[0].split('.', 1)
             propname = element+'.'+prop
-            print(propname)
             mod_dict = self.models[propname+'@'+domain]
             # Collect kwargs
             kwargs = {'target': self, 'domain': element+'.'+domain}
