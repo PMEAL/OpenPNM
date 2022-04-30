@@ -445,6 +445,7 @@ class ModelMixin2:
             self.run_model(propname+'@'+domain)
 
     def add_model_collection(self, models, domain='all'):
+        models = deepcopy(models)
         for k, v in models.items():
             _ = v.pop('regen_mode', None)
             model = v.pop('model')

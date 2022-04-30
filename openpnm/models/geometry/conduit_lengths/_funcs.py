@@ -114,10 +114,7 @@ def cones_and_cylinders(
 
     """
     L_ctc = target['throat.spacing']
-    D1, Dt, D2 = target.get_conduit_data(
-        poreprop=pore_diameter,
-        throatprop=throat_diameter
-    ).T
+    D1, Dt, D2 = target.get_conduit_data(pore_diameter.split('.')[1]).T
 
     L1 = D1 / 2
     L2 = D2 / 2
