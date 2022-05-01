@@ -94,7 +94,7 @@ class Workspace(dict):
         for item in project:
             __main__.__dict__[item.name] = item
 
-    def _validate_name(self, name, prefix='proj'):
+    def _validate_name(self, name=None, prefix='proj'):
         r"""
         Generates a valid name for projects
         """
