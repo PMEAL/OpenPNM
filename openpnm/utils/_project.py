@@ -266,12 +266,6 @@ class Project(list):
             return self._get_object_by_name(name)
         return self._get_objects_by_type('algorithm')
 
-    def _get_object_by_name(self, name):
-        for item in self:
-            if item.name == name:
-                return item
-        raise Exception('An object named ' + name + ' was not found')
-
     def __str__(self):
         s = []
         hr = '―'*78
