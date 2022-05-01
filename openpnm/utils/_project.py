@@ -194,13 +194,6 @@ class Project(list):
     def workspace(self):
         return ws
 
-    def save_project(self, filename=None):
-        if filename is None:
-            dt = datetime.now()
-            filename = dt.strftime("%Y_%m_%d_%H_%M_%S")
-        with open(filename.split('.')[-1]+'.pnm', 'wb') as f:
-            pickle.dump(self, f)
-
     def __str__(self):
         s = []
         hr = '―'*78
@@ -213,6 +206,3 @@ class Project(list):
                      + '{0:<65}'.format(item.__repr__()))
         s.append(hr)
         return '\n'.join(s)
-
-    # def __repr__(self):
-        # return self.__str__()

@@ -178,9 +178,13 @@ class Workspace(dict):
         ``os.path`` in the Python standard library.
 
         """
-        project.save_project(filename=filename)
+        if filename is None:
+            dt = datetime.now()
+            filename = dt.strftime("%Y_%m_%d_%H_%M_%S")
+        with open(filename.split('.')[-1]+'.pnm', 'wb') as f:
+            pickle.dump(project, f)
 
-    def load_project(self, filename, overwrite=False):
+    def load_project(self, filename):
         r"""
         Loads a Project from the specified 'pnm' file
 
@@ -192,8 +196,6 @@ class Workspace(dict):
         ----------
         filename : str or Path
             The name of the file to open. See Notes for more information.
-        overwrite : bool
-            Brief explanation of 'overwrite'
 
         See Also
         --------
