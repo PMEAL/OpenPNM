@@ -209,41 +209,6 @@ class Project(list):
         names = [i.name for i in self]
         return names
 
-    def purge_object(self, obj):
-        r"""
-        Removes an object from the Project.  This removes all references
-        to the object from all other objects (i.e. removes labels)
-
-        Parameters
-        ----------
-        obj : Base or list[Base]
-            The object(s) to purge
-
-        Returns
-        -------
-        None
-
-        Raises
-        ------
-        An Exception is raised if the object is a Network.
-
-        Notes
-        -----
-        For a clearer picture of this logic, type ``print(project.grid)`` at
-        the console.  A deep purge of a Geometry is like removing a row, while
-        a Phase is like removing a column.
-
-        """
-        if isinstance(obj, list):
-            for item in obj:
-                self.purge_object(obj=item)
-            return
-        for item in self:
-            for key in list(item.keys()):
-                if key.split('.')[-1] == obj.name:
-                    del item[key]
-        super().remove(obj)
-
     @property
     def network(self):
         for item in self:
