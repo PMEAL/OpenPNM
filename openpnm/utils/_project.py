@@ -53,6 +53,18 @@ class Project(list):
         ws[name] = self  # Register self with workspace
         self.settings['uuid'] = str(uuid.uuid4())
 
+    def __getitem__(self, key):
+        if isinstance(key, str):  # Enable dict-style retrieval if key is a string
+            obj = None
+            for item in self:
+                if item.name == key:
+                    obj = item
+            if obj is None:
+                raise KeyError(key)
+        else:
+            obj = super().__getitem__(key)
+        return obj
+
     def extend(self, obj):
         r"""
         This function is used to add objects to the project. Arguments can
@@ -74,38 +86,6 @@ class Project(list):
 
         """
         self.extend(obj)
-
-    def remove(self, obj):
-        r"""
-        The given object is removed from the project
-
-        This removes the object, along with all it's labels in associated
-        objects, but does NOT remove the associated objects.
-
-        See Also
-        --------
-        purge_object
-
-        """
-        self.purge_object(obj, deep=False)
-
-    def pop(self, index):
-        r"""
-        The object at the given index is removed from the list and returned.
-
-        Notes
-        -----
-        This method uses ``purge_object`` to perform the actual removal of the
-        object. It is reommended to just use that directly instead.
-
-        See Also
-        --------
-        purge_object
-
-        """
-        obj = self[index]
-        self.purge_object(obj, deep=False)
-        return obj
 
     def insert(self, index, obj):
         r"""
@@ -173,18 +153,6 @@ class Project(list):
                 return key
 
     name = property(fget=_get_name, fset=_set_name)
-
-    def __getitem__(self, key):
-        if isinstance(key, str):
-            obj = None
-            for item in self:
-                if item.name == key:
-                    obj = item
-            if obj is None:
-                raise KeyError(key)
-        else:
-            obj = super().__getitem__(key)
-        return obj
 
     def _validate_name(self, name):
         if name in self.names:
