@@ -125,7 +125,7 @@ class ModelsDict(PrintableDict):
 
         # Fetch model-less props: those w/o any model, like temperature
         # otherwise, they won't get picked up in the dependency graph.
-        all_props = list(self._find_parent().keys())
+        all_props = list(self.keys())
         exclude_keys = ["pore.all", "throat.all"]
         pure_props = np.setdiff1d(all_props, models + exclude_keys).tolist()
 

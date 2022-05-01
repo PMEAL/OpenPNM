@@ -75,33 +75,13 @@ class Project(list):
         if not isinstance(obj, list):
             obj = [obj]
         for item in obj:
+            # This needs to append or else it unpacks the dict into arrays
             super().append(item)
 
     def append(self, obj):
-        r"""
-        The Project (a list) must be kept as a flat list, so the append
-        function, which can normally be used to insert a list into a list, is
-        overloaded to basically prevent the normal append operation and simply
-        calls ``extend``.
-
-        """
         self.extend(obj)
 
     def insert(self, index, obj):
-        r"""
-        Inserts the supplied object at the specified index in the Project list
-
-        Notes
-        -----
-        The order of the objects in an OpenPNM Project lists do not matter, so
-        it is recommended to just use ``append`` instead.
-
-        See Also
-        --------
-        append
-        extend
-
-        """
         self.extend(obj)
 
     def copy(self, name=None):
@@ -212,5 +192,5 @@ class Project(list):
         s.append(hr)
         return '\n'.join(s)
 
-    def __repr__(self):
-        return self.__str__()
+    # def __repr__(self):
+        # return self.__str__()

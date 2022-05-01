@@ -48,10 +48,10 @@ class Base2(dict):
                 project = ws.new_project()
             else:
                 project = network.project
+        project.extend(self)
         if name is None:
             name = project._generate_name(self)
         project._validate_name(name)
-        project.extend(self)
         self.settings['name'] = name
 
     def __eq__(self, other):
