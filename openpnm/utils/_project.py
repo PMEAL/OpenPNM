@@ -117,10 +117,6 @@ class Project(list):
         ws[name] = proj
         return proj
 
-    @property
-    def workspace(self):
-        return ws
-
     def _set_name(self, name):
         if name is None:
             name = ws._gen_name()
@@ -162,21 +158,27 @@ class Project(list):
             if 'throat.conns' in item.keys():
                 return item
 
+    @property
     def phases(self):
         from openpnm.phase import GenericPhase
         phases = []
         for item in self:
             if isinstance(item, GenericPhase):
-                phases.extend(item)
+                phases.append(item)
         return phases
 
+    @property
     def algorithms(self):
         from openpnm.algorithms import GenericAlgorithm
         algs = []
         for item in self:
             if isinstance(item, GenericAlgorithm):
-                algs.extend(item)
+                algs.append(item)
         return algs
+
+    @property
+    def workspace(self):
+        return ws
 
     def __str__(self):
         s = []
