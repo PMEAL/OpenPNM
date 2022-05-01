@@ -96,7 +96,7 @@ def general_toroidal(
 
     # Get data from dictionary keys
     network = target.project.network
-    phase = target.project.find_phase(target)
+    phase = target
     (element,
      surface_tension,
      contact) = _get_key_props(phase=phase,

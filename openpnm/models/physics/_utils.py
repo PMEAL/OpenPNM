@@ -38,7 +38,7 @@ def _poisson_conductance(target,
     network = target.network
     domain = target._domain
     throats = domain.throats(target.name)
-    phase = target.project.find_phase(target)
+    phase = target
     cn = network.conns[throats]
     # TODO: Uncomment the following 2 lines once #2087 is merged
     # Dt = phase[throat_conductivity][throats]

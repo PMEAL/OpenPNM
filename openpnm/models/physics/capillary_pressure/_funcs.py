@@ -54,9 +54,9 @@ def washburn(target,
 
     """
     network = target.network
-    phase = target.project.find_phase(target)
-    sigma = target[surface_tension]
-    theta = target[contact_angle]
+    phase = target
+    sigma = phase[surface_tension]
+    theta = phase[contact_angle]
     r = network[diameter] / 2
     value = -2 * sigma * _np.cos(_np.radians(theta)) / r
     if diameter.split(".")[0] == "throat":
@@ -115,7 +115,7 @@ def purcell(target,
 
     """
     network = target.project.network
-    phase = target.project.find_phase(target)
+    phase = target
     element, sigma, theta = _get_key_props(
         phase=phase,
         diameter=diameter,
@@ -185,7 +185,7 @@ def ransohoff_snap_off(target,
     33(5), pp.753-765.
 
     """
-    phase = target.project.find_phase(target)
+    phase = target
     geometry = target.project.find_geometry(target)
     element, sigma, theta = _get_key_props(
         phase=phase,

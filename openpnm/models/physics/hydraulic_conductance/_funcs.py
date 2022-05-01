@@ -38,7 +38,7 @@ def generic_hydraulic(
     network = target.network
     throats = target.throats(to_global=True)
     conns = network.conns[throats]
-    phase = target.project.find_phase(target)
+    phase = target
     F = network[size_factors]
     mu1, mu2 = phase[pore_viscosity][conns].T
     mut = phase[throat_viscosity][throats]
@@ -140,7 +140,7 @@ def hagen_poiseuille_power_law(
     network = target.project.network
     domain = target._domain
     throats = domain.throats(target.name)
-    phase = target.project.find_phase(target)
+    phase = target
     cn = network.conns[throats]
 
     # Fetch model parameters

@@ -109,7 +109,7 @@ def mixed_diffusion(target,
     """
     # Fetch GenericPhysicss
     network = target.network
-    phase = target.project.find_phase(target)
+    phase = target
 
     # Fetch model parameters
     Dp = phase[pore_diffusivity]
@@ -175,7 +175,7 @@ def taylor_aris_diffusion(target,
     network = target.network
     domain = target._domain
     throats = domain.throats(target.name)
-    phase = target.project.find_phase(target)
+    phase = target
     cn = network['throat.conns'][throats]
     F = network[size_factors]
 
@@ -236,7 +236,7 @@ def multiphase_diffusion(target,
     # Fetch GenericPhysicss
     network = target.network
     throats = target.throats(to_global=True)
-    phase = target.project.find_phase(target)
+    phase = target
     cn = network.conns[throats]
     F = network[size_factors]
 

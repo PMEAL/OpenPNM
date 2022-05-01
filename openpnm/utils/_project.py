@@ -68,9 +68,8 @@ class Project(list):
     def extend(self, obj):
         r"""
         This function is used to add objects to the project. Arguments can
-        be single OpenPNM objects, an OpenPNM project list, or a plain list of
-        OpenPNM objects. Note that if an object has the same name as one
-        already existing on the project, the it will be renamed automatically.
+        be single OpenPNM objects, an OpenPNM project list, or a list of
+        OpenPNM objects.
         """
         if not isinstance(obj, list):
             obj = [obj]
@@ -163,21 +162,21 @@ class Project(list):
             if 'throat.conns' in item.keys():
                 return item
 
-    def find_phase(self, obj):
-        return obj
+    def phases(self):
+        from openpnm.phase import GenericPhase
+        phases = []
+        for item in self:
+            if isinstance(item, GenericPhase):
+                phases.extend(item)
+        return phases
 
-    def find_full_domain(self, obj):
-        return obj
-
-    def phases(self, name=None):
-        if name:
-            return self._get_object_by_name(name)
-        return self._get_objects_by_type('phase')
-
-    def algorithms(self, name=None):
-        if name:
-            return self._get_object_by_name(name)
-        return self._get_objects_by_type('algorithm')
+    def algorithms(self):
+        from openpnm.algorithms import GenericAlgorithm
+        algs = []
+        for item in self:
+            if isinstance(item, GenericAlgorithm):
+                algs.extend(item)
+        return algs
 
     def __str__(self):
         s = []
