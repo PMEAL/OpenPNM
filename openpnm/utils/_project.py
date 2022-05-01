@@ -1,13 +1,16 @@
+import pickle
 import logging
 import uuid
 import numpy as np
 from copy import deepcopy
+from datetime import datetime
 from openpnm.utils import Workspace
 from openpnm.utils import SettingsAttr
 
 
 ws = Workspace()
 logger = logging.getLogger(__name__)
+
 
 __all__ = ['Project']
 
@@ -17,7 +20,21 @@ class ProjectSettings(SettingsAttr):
     uuid : str
         A universally unique identifier for the object to keep things straight
     """
+    prefix = 'proj'
     uuid = ''
+    original_uuid = ''
+
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, name):
+        name = ws._validate_name(name, self.prefix)
+        for v in list(ws.values()):
+            if v.settings is self:
+                ws[name] = ws.pop(v.settings.name)
+        self._name = name
 
 
 class Project(list):
@@ -47,11 +64,12 @@ class Project(list):
     """
 
     def __init__(self, *args, **kwargs):
-        name = kwargs.pop('name', None)
-        super().__init__(*args, **kwargs)
         self.settings = ProjectSettings()
-        ws[name] = self  # Register self with workspace
+        self.settings['name'] = kwargs.pop('name', None)
         self.settings['uuid'] = str(uuid.uuid4())
+        self.settings['original_uuid'] = self.settings['uuid']
+        super().__init__(*args, **kwargs)
+        ws[self.settings['name']] = self
 
     def __getitem__(self, key):
         if isinstance(key, str):  # Enable dict-style retrieval if key is a string
@@ -104,28 +122,24 @@ class Project(list):
         Notes
         -----
         Because they are new objects, they are given a new uuid
-        (``obj.settings['_uuid']``), but the uuid of the original object
-        is also stored (``obj.settings['_uuid_old']``) for reference.
+        (``obj.settings['uuid']``), but the uuid of the original object
+        is also stored (``obj.settings['original_uuid']``) for reference.
 
         """
-        if name is None:
-            name = ws._gen_name()
+        name = ws._validate_name(name, self.settings.prefix)
         proj = deepcopy(self)
         for item in proj:
-            item.settings['_uuid'] = str(uuid.uuid4())
-        self.settings['_uuid'] = str(uuid.uuid4())
+            item.settings['uuid'] = str(uuid.uuid4())
+        proj.settings['uuid'] = str(uuid.uuid4())
+        proj.settings['name'] = name
         ws[name] = proj
         return proj
 
     def _set_name(self, name):
-        if name is None:
-            name = ws._gen_name()
-        ws[name] = self
+        self.settings['name'] = name
 
     def _get_name(self):
-        for key in ws.keys():
-            if ws[key] is self:
-                return key
+        return self.settings['name']
 
     name = property(fget=_get_name, fset=_set_name)
 
@@ -179,6 +193,13 @@ class Project(list):
     @property
     def workspace(self):
         return ws
+
+    def save_project(self, filename=None):
+        if filename is None:
+            dt = datetime.now()
+            filename = dt.strftime("%Y_%m_%d_%H_%M_%S")
+        with open(filename.split('.')[-1]+'.pnm', 'wb') as f:
+            pickle.dump(self, f)
 
     def __str__(self):
         s = []
