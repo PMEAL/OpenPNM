@@ -6,38 +6,33 @@ from numpy.testing import assert_approx_equal
 class CapillaryPressureTest:
     def setup_class(self):
         self.net = op.network.Cubic(shape=[3, 3, 3])
-        self.geo = op.geometry.GenericGeometry(
-            network=self.net, pores=self.net.Ps, throats=self.net.Ts
-        )
-        self.geo["throat.diameter"] = 1
-        self.geo["pore.diameter"] = 1
+        self.net["throat.diameter"] = 1
+        self.net["pore.diameter"] = 1
         self.water = op.phase.GenericPhase(network=self.net)
         self.water["pore.surface_tension"] = 0.072
         self.water["pore.contact_angle"] = 120
-        self.phys = op.physics.GenericPhysics(
-            network=self.net, geometry=self.geo, phase=self.water
-        )
 
     def test_washburn_pore_values(self):
         f = op.models.physics.capillary_pressure.washburn
-        self.phys.add_model(
+        self.water.add_model(
             propname="pore.capillary_pressure",
             model=f,
             surface_tension="pore.surface_tension",
             contact_angle="pore.contact_angle",
             diameter="pore.diameter",
         )
-        self.phys.add_model(
+        self.water.add_model(
             propname="throat.capillary_pressure",
             model=f,
             surface_tension="pore.surface_tension",
             contact_angle="pore.contact_angle",
             diameter="throat.diameter",
         )
-        self.phys.regenerate_models()
+        self.water.regenerate_models()
         a = 0.14399999999999993
         assert_approx_equal(self.water["pore.capillary_pressure"][0], a)
-        self.phys.remove_model("pore.capillary_pressure")
+        del self.water["pore.capillary_pressure"]
+        del self.water.model["pore.capillary_pressure@all"]
 
     def test_washburn_throat_values(self):
         f = op.models.physics.capillary_pressure.washburn
