@@ -337,8 +337,12 @@ class Base2(dict):
         from openpnm.models.misc import from_neighbor_throats, from_neighbor_pores
         element, prop = propname.split('.', 1)
         if element == 'throat':
+            if self['pore.'+prop].dtype == bool:
+                raise Exception('The requested datatype is boolean, cannot interpolate')
             values = from_neighbor_pores(target=self, prop='pore.'+prop, mode=mode)
         elif element == 'pore':
+            if self['throat.'+prop].dtype == bool:
+                raise Exception('The requested datatype is boolean, cannot interpolate')
             values = from_neighbor_throats(target=self, prop='throat.'+prop, mode=mode)
         return values
 
