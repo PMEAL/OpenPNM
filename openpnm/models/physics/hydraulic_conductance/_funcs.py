@@ -150,7 +150,8 @@ def hagen_poiseuille_power_law(
     L2 = network[conduit_lengths + ".pore2"][throats]
     Lt = network[conduit_lengths + ".throat"][throats]
     P = phase[pore_pressure]
-    Pt = phase.interpolate_data(propname=pore_pressure)[throats]
+    t_prop = 'throat.'+pore_pressure.split('.', 1)[-1]
+    Pt = phase.interpolate_data(propname=t_prop)[throats]
 
     mu_min = phase[pore_viscosity_min][cn]
     mu_mint = phase[throat_viscosity_min][throats]
