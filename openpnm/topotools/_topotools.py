@@ -276,7 +276,7 @@ def extend(network, coords=[], conns=[], labels=[], **kwargs):
         network['throat.conns'] = conns
 
     # Increase size of any prop or label arrays already on network and phases
-    objs = list(network.project.phases().values())
+    objs = list(network.project.phases)
     objs.append(network)
     for obj in objs:
         obj.update({'pore.all': np.ones([Np, ], dtype=bool),
@@ -293,7 +293,7 @@ def extend(network, coords=[], conns=[], labels=[], **kwargs):
                 obj[item][:arr.shape[0]] = arr
 
     # Regenerate models on all objects to fill new elements
-    for obj in network.project.phases().values():
+    for obj in network.project.phases:
         if hasattr(obj, 'models'):
             obj.regenerate_models()
 
