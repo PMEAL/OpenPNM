@@ -149,20 +149,8 @@ def standard_kinetics(target, X, prefactor, exponent):
     return values
 
 
-def _parse_args(target, key, default):
-    r"""
-    Parses the passed ``key``: returns ``default`` if ``key`` is empty,
-    otherwise fetches and returns the values from ``target``.
-    """
-    if key == '':
-        val = default
-    else:
-        val = target[key]
-    return val
-
-
 @_doctxt
-def linear(target, X, A1='', A2=''):
+def linear(target, X, A1=0.0, A2=0.0):
     r"""
     Calculates the rate, as well as slope and intercept of the following
     function at the given value of ``X``:
@@ -209,7 +197,7 @@ def linear(target, X, A1='', A2=''):
 
 
 @_doctxt
-def power_law(target, X, A1='', A2='', A3=''):
+def power_law(target, X, A1=0.0, A2=0.0, A3=0.0):
     r"""
     Calculates the rate, as well as slope and intercept of the following
     function at the given value of *X*:
@@ -261,7 +249,7 @@ def power_law(target, X, A1='', A2='', A3=''):
 
 
 @_doctxt
-def exponential(target, X, A1='', A2='', A3='', A4='', A5='', A6=''):
+def exponential(target, X, A1=0.0, A2=1.0, A3=1.0, A4=1.0, A5=0.0, A6=0.0):
     r"""
     Calculates the rate, as well as slope and intercept of the following
     function at the given value of `X`:
@@ -300,12 +288,12 @@ def exponential(target, X, A1='', A2='', A3='', A4='', A5='', A6=''):
             rate = S_{1} X + S_{2}
 
     """
-    A = _parse_args(target=target, key=A1, default=0.0)
-    B = _parse_args(target=target, key=A2, default=1.0)
-    C = _parse_args(target=target, key=A3, default=1.0)
-    D = _parse_args(target=target, key=A4, default=1.0)
-    E = _parse_args(target=target, key=A5, default=0.0)
-    F = _parse_args(target=target, key=A6, default=0.0)
+    A = target[A1]
+    B = target[A2]
+    C = target[A3]
+    D = target[A4]
+    E = target[A5]
+    F = target[A6]
     X = target[X]
 
     r = A * B ** (C * X ** D + E) + F
@@ -316,7 +304,7 @@ def exponential(target, X, A1='', A2='', A3='', A4='', A5='', A6=''):
 
 
 @_doctxt
-def natural_exponential(target, X, A1='', A2='', A3='', A4='', A5=''):
+def natural_exponential(target, X, A1=0.0, A2=0.0, A3=0.0, A4=0.0, A5=0.0):
     r"""
     Calculates the rate, as well as slope and intercept of the following
     function at the given value of `X`:
@@ -355,11 +343,11 @@ def natural_exponential(target, X, A1='', A2='', A3='', A4='', A5=''):
             rate = S_{1} X + S_{2}
 
     """
-    A = _parse_args(target=target, key=A1, default=0.0)
-    B = _parse_args(target=target, key=A2, default=0.0)
-    C = _parse_args(target=target, key=A3, default=0.0)
-    D = _parse_args(target=target, key=A4, default=0.0)
-    E = _parse_args(target=target, key=A5, default=0.0)
+    A = target[A1]
+    B = target[A2]
+    C = target[A3]
+    D = target[A4]
+    E = target[A5]
     X = target[X]
 
     r = A * _np.exp(B * X ** C + D) + E
@@ -370,7 +358,7 @@ def natural_exponential(target, X, A1='', A2='', A3='', A4='', A5=''):
 
 
 @_doctxt
-def logarithm(target, X, A1='', A2='', A3='', A4='', A5='', A6=''):
+def logarithm(target, X, A1=0.0, A2=10.0, A3=1.0, A4=1.0, A5=0.0, A6=0.0):
     r"""
     Calculates the rate, as well as slope and intercept of the following
     function at the given value of `X`:
@@ -409,12 +397,12 @@ def logarithm(target, X, A1='', A2='', A3='', A4='', A5='', A6=''):
             rate = S_{1} X + S_{2}
 
     """
-    A = _parse_args(target=target, key=A1, default=0.0)
-    B = _parse_args(target=target, key=A2, default=10.0)
-    C = _parse_args(target=target, key=A3, default=1.0)
-    D = _parse_args(target=target, key=A4, default=1.0)
-    E = _parse_args(target=target, key=A5, default=0.0)
-    F = _parse_args(target=target, key=A6, default=0.0)
+    A = target[A1]
+    B = target[A2]
+    C = target[A3]
+    D = target[A4]
+    E = target[A5]
+    F = target[A6]
     X = target[X]
 
     r = (A * _np.log(C * X ** D + E)/_np.log(B) + F)
@@ -426,7 +414,7 @@ def logarithm(target, X, A1='', A2='', A3='', A4='', A5='', A6=''):
 
 
 @_doctxt
-def natural_logarithm(target, X, A1='', A2='', A3='', A4='', A5=''):
+def natural_logarithm(target, X, A1=0.0, A2=1.0, A3=1.0, A4=0.0, A5=0.0):
     r"""
     Calculates the rate, as well as slope and intercept of the following
     function at the given value of `X`:
@@ -465,11 +453,11 @@ def natural_logarithm(target, X, A1='', A2='', A3='', A4='', A5=''):
             rate = S_{1} X + S_{2}
 
     """
-    A = _parse_args(target=target, key=A1, default=0.0)
-    B = _parse_args(target=target, key=A2, default=1.0)
-    C = _parse_args(target=target, key=A3, default=1.0)
-    D = _parse_args(target=target, key=A4, default=0.0)
-    E = _parse_args(target=target, key=A5, default=0.0)
+    A = target[A1]
+    B = target[A2]
+    C = target[A3]
+    D = target[A4]
+    E = target[A5]
     X = target[X]
 
     r = A*_np.log(B*X**C + D) + E

@@ -161,6 +161,11 @@ class Base2(dict):
             vals = self[element+'.'+prop]
             return vals[locs]
 
+        # This allows for lookup of all data that 'ends with' a certain
+        # string. Is probably gimmicky and should be deleted.  Was mostly
+        # meant for exploring the idea of putting phase values in the
+        # network dict, like pn['pore.temperature.air'], but we're not doing
+        # that now.
         if '*' in key:
             d = {}
             key = key[1:]
