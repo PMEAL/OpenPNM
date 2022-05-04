@@ -129,6 +129,11 @@ class Base2(dict):
         if not isinstance(key, str):
             return key
 
+        # Some default arguments are just empty strings, so return a 0.0
+        # if this is the case (see #2407 for discussion)
+        if key in ['', None]:
+            return 0.0
+
         # If key starts with conduit, then call the get_conduit_data method
         # to build an Nt-by-3 array of pore1-throat-pore2 values
         if key.startswith('conduit'):
@@ -502,6 +507,9 @@ class ModelMixin2:
                 vals = mod_dict['model'](**kwargs)
                 if isinstance(vals, dict):  # Handle models that return a dict
                     for k, v in vals.items():
+                        v = np.atleast_1d(v)
+                        if v.shape[0] == 1:  # Returned item was a scalar
+                            v = np.tile(v, self._count(element))
                         vals[k] = v[self[element+'.'+domain]]
                 elif isinstance(vals, float):  # Handle models that return a float
                     vals = np.atleast_1d(vals)
