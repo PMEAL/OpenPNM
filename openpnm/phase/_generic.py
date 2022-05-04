@@ -51,5 +51,12 @@ class GenericPhase(Domain):
         try:
             return super().__getitem__(key)
         except KeyError:
+            # Before interpolating, ensure other prop is present, to avoid
+            # infinite recurrsion
+            element, prop = key.split('.', 1)
+            if (element == 'pore') and ('throat.'+prop not in self.keys()):
+                raise KeyError(f"Cannot interpolate {key} without 'throat.{prop}'")
+            elif (element == 'throat') and ('pore.'+prop not in self.keys()):
+                raise KeyError(f"Cannot interpolate {key} without 'pore.{prop}'")
             vals = self.interpolate_data(key)
             return vals
