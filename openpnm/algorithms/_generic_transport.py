@@ -187,7 +187,7 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
             # Update b (impose bc values)
             ind = np.isfinite(self['pore.bc_value'])
             self.b[ind] = self['pore.bc_value'][ind] * f
-            # Update b (substract quantities from b to keep A symmetric)
+            # Update b (subtract quantities from b to keep A symmetric)
             x_BC = np.zeros_like(self.b)
             x_BC[ind] = self['pore.bc_value'][ind]
             self.b[~ind] -= (self.A * x_BC)[~ind]

@@ -49,7 +49,11 @@ class GenericPhase(Domain):
 
     def __getitem__(self, key):
         try:
-            return super().__getitem__(key)
+            # return super().__getitem__(key)
+            try:
+                return super().__getitem__(key)
+            except KeyError:
+                return self.network[key]
         except KeyError:
             # Before interpolating, ensure other prop is present, to avoid
             # infinite recurrsion
