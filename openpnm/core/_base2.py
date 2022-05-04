@@ -1,6 +1,6 @@
 import numpy as np
-from openpnm.core import LabelMixin, ParamMixin, ModelsDict, ModelWrapper, ParserMixin
-from openpnm.utils import Workspace, SettingsAttr, PrintableList
+from openpnm.core import LabelMixin, ModelsDict, ModelWrapper, ParserMixin
+from openpnm.utils import Workspace, SettingsAttr, PrintableList, PrintableDict
 from openpnm.utils import parse_mode
 from copy import deepcopy
 import inspect
@@ -53,6 +53,10 @@ class Base2(dict):
             name = project._generate_name(self)
         project._validate_name(name)
         self.settings['name'] = name
+        # Add parameters attr
+        self._params = PrintableDict()
+        self._params._key = "Parameters"
+        self._params._value = "Values"
 
     def __eq__(self, other):
         return hex(id(self)) == hex(id(other))
@@ -66,6 +70,12 @@ class Base2(dict):
     def __setitem__(self, key, value):
         if value is None:
             return
+
+        # Intercept parameters
+        if key.startswith('param'):
+            self._params[key] = value
+            return
+
         # Intercept @ symbol
         if '@' in key:
             element, prop = key.split('@')[0].split('.', 1)
@@ -129,10 +139,11 @@ class Base2(dict):
         if not isinstance(key, str):
             return key
 
-        # Some default arguments are just empty strings, so return a 0.0
-        # if this is the case (see #2407 for discussion)
-        if key in ['', None]:
-            return 0.0
+        if key.startswith('param'):
+            try:
+                return self._params[key]
+            except KeyError:
+                return self.network._params[key]
 
         # If key starts with conduit, then call the get_conduit_data method
         # to build an Nt-by-3 array of pore1-throat-pore2 values
@@ -282,6 +293,9 @@ class Base2(dict):
     def network(self):
         return self.project.network
 
+    def params(self):
+        return self._params
+
     # TODO: Delete this once codes stops asking for it
     @property
     def _domain(self):
@@ -424,6 +438,8 @@ class Base2(dict):
                     defined = sum([sum(~np.isnan(self[item][i])) for i in k])
                 lines.append(fmt.format(i + 1, prop, defined, required))
         lines.append(horizontal_rule)
+        # lines = lines.rpartition('\n')[0]
+        # lines = lines.append(self._params.__str__())
         return '\n'.join(lines)
 
 
@@ -534,7 +550,7 @@ class ModelMixin2:
                     self[propname + '.' + k][self[element+'.'+domain]] = v
 
 
-class Domain(ParserMixin, ParamMixin, LabelMixin, ModelMixin2, Base2):
+class Domain(ParserMixin, LabelMixin, ModelMixin2, Base2):
     ...
 
 

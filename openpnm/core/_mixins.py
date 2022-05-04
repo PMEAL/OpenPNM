@@ -1,8 +1,8 @@
 import numpy as np
 from collections import namedtuple
-from openpnm.utils import PrintableDict, PrintableList
+from openpnm.utils import PrintableList
 
-__all__ = ['ParserMixin', 'ParamMixin', 'LabelMixin', 'LegacyMixin']
+__all__ = ['ParserMixin', 'LabelMixin', 'LegacyMixin']
 
 
 class ParserMixin:
@@ -269,51 +269,6 @@ class LegacyMixin:
         """
         ids = origin['throat._id'][throats]
         return self._map(element='throat', ids=ids, filtered=filtered)
-
-
-
-
-class ParamMixin:
-    """Brief explanation of ParamMixin"""
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._params = PrintableDict()
-        self._params._key = "Parameters"
-        self._params._value = "Values"
-
-    def __getitem__(self, key):
-        # If the key is a just a numerical value, the kick it directly back
-        # This allows one to do either value='pore.blah' or value=1.0
-        if isinstance(key, (int, float, bool, complex)):
-            return key
-
-        if key.startswith('param'):
-            try:
-                vals = self._params[key]
-            except KeyError:
-                vals = self.network._params[key]
-        else:
-            vals = super().__getitem__(key)
-        return vals
-
-    def __setitem__(self, key, value):
-        if key.startswith('param'):
-            self._params[key] = value
-        else:
-            super().__setitem__(key, value)
-
-    def __str__(self):
-        s = super().__str__()
-        s = s.rpartition('\n')[0]
-        s = s + '\n' + self._params.__str__()
-        return s
-
-    def params(self):
-        r"""
-        Return parameter names and values in a dictionary
-        """
-        return self._params
 
 
 class LabelMixin:
