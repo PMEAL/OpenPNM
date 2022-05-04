@@ -201,13 +201,9 @@ def linear(target, X, A1='', A2=''):
             rate = S_{1} X + S_{2}
 
     """
-    A = _parse_args(target=target, key=A1, default=0.0)
-    B = _parse_args(target=target, key=A2, default=0.0)
-    X = target[X]
-
-    r = A * X + B
-    S1 = A
-    S2 = B
+    r = target[A1] * target[X] + target[A2]
+    S1 = target[A1]
+    S2 = target[A2]
     values = {'S1': S1, 'S2': S2, 'rate': r}
     return values
 
@@ -679,7 +675,7 @@ def butler_volmer_conc(
     S1 = drdC
     S2 = r - drdC * X
 
-    values = {"pore.S1": S1, "pore.S2": S2, "pore.rate": r}
+    values = {"S1": S1, "S2": S2, "rate": r}
     return values
 
 
@@ -805,5 +801,5 @@ def butler_volmer_voltage(
     S1 = drdV
     S2 = r - drdV * X
 
-    values = {"pore.S1": S1, "pore.S2": S2, "pore.rate": r}
+    values = {"S1": S1, "S2": S2, "rate": r}
     return values
