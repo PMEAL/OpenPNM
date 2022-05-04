@@ -20,7 +20,6 @@ class ThermalConductanceTest:
         desired = 1 / (1/(0.4*0.5) + 1/(0.2*0.5) + 1/(0.3*0.5))
         assert_allclose(actual, desired)
 
-
     def test_series_resistors(self):
         mod = op.models.physics.thermal_conductance.series_resistors
         self.phase.add_model(propname='throat.thermal_conductance', model=mod)

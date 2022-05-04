@@ -1,6 +1,5 @@
 import logging
 import numpy as np
-from openpnm.models.physics._utils import _get_key_props
 
 
 logger = logging.getLogger(__name__)
@@ -18,8 +17,8 @@ def general_toroidal(
     throat_scale_b='throat.scale_b',
     throat_diameter='throat.diameter',
     touch_length='throat.touch_length',
-    surface_tension='pore.surface_tension',
-    contact_angle='pore.contact_angle'
+    surface_tension='throat.surface_tension',
+    contact_angle='throat.contact_angle'
 ):
     r"""
     The general model for meniscus properties inside a toroidal throat
@@ -96,13 +95,8 @@ def general_toroidal(
 
     # Get data from dictionary keys
     network = target.project.network
-    phase = target
-    (element,
-     surface_tension,
-     contact) = _get_key_props(phase=phase,
-                               diameter=throat_diameter,
-                               surface_tension=surface_tension,
-                               contact_angle=contact_angle)
+    surface_tension = target[surface_tension]
+    contact = target[contact_angle]
     # Contact Angle in radians
     contact = np.deg2rad(contact)
     # Network properties
@@ -236,8 +230,8 @@ def sinusoidal(
     throat_diameter='throat.diameter',
     pore_diameter='pore.diameter',
     touch_length='throat.touch_length',
-    surface_tension='pore.surface_tension',
-    contact_angle='pore.contact_angle'
+    surface_tension='throat.surface_tension',
+    contact_angle='throat.contact_angle'
 ):
     r"""
     Wrapper for the toroidal model to implement a sinusoidal profile.
@@ -290,8 +284,8 @@ def purcell(
     r_toroid=5e-6,
     throat_diameter='throat.diameter',
     touch_length='throat.touch_length',
-    surface_tension='pore.surface_tension',
-    contact_angle='pore.contact_angle'
+    surface_tension='throat.surface_tension',
+    contact_angle='throat.contact_angle'
 ):
     r"""
     Wrapper for the general toroidal model to implement the Purcell

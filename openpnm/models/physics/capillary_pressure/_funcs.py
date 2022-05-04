@@ -70,8 +70,8 @@ def washburn(target,
 @_doctxt
 def purcell(target,
             r_toroid,
-            surface_tension="pore.surface_tension",
-            contact_angle="pore.contact_angle",
+            surface_tension="throat.surface_tension",
+            contact_angle="throat.contact_angle",
             diameter="throat.diameter"):
     r"""
     Computes the throat capillary entry pressure assuming the throat is a
@@ -83,11 +83,9 @@ def purcell(target,
     r_toroid : float or array_like
         The radius of the toroid surrounding the pore
     surface_tension : str
-        %(dict_blurb)s surface tension. If a pore property is given, it is
-        interpolated to a throat list.
+        %(dict_blurb)s surface tension.
     contact_angle : str
-        %(dict_blurb)s contact angle. If a pore property is given, it is
-        interpolated to a throat list.
+        %(dict_blurb)s contact angle.
     diameter : str
         %(dict_blurb)s throat diameter
 
@@ -116,12 +114,8 @@ def purcell(target,
     """
     network = target.project.network
     phase = target
-    element, sigma, theta = _get_key_props(
-        phase=phase,
-        diameter=diameter,
-        surface_tension=surface_tension,
-        contact_angle=contact_angle,
-    )
+    sigma = target[surface_tension]
+    theta = target[contact_angle]
     r = network[diameter] / 2
     R = r_toroid
     alpha = (

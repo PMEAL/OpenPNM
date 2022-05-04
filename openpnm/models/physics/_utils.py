@@ -69,8 +69,8 @@ def _parse_input(obj, arg):
 
 def _get_key_props(phase=None,
                    diameter="throat.diameter",
-                   surface_tension="pore.surface_tension",
-                   contact_angle="pore.contact_angle"):
+                   surface_tension="throat.surface_tension",
+                   contact_angle="throat.contact_angle"):
     """
     Returns desired properties in the correct format! See Notes.
 
