@@ -40,12 +40,8 @@ def _poisson_conductance(target,
     throats = domain.throats(target.name)
     phase = target
     cn = network.conns[throats]
-    # TODO: Uncomment the following 2 lines once #2087 is merged
-    # Dt = phase[throat_conductivity][throats]
-    # D1, D2 = phase[pore_conductivity][cn].T
-    # TODO: Delete the following 2 lines once #2087 is merged
-    Dt = _parse_input(phase, throat_conductivity)[throats]
-    D1, D2 = _parse_input(phase, pore_conductivity)[cn].T
+    Dt = phase[throat_conductivity][throats]
+    D1, D2 = phase[pore_conductivity][cn].T
     # If individual size factors for conduit constiuents are known
     SF = network[size_factors]
     if isinstance(SF, dict):
@@ -58,13 +54,6 @@ def _poisson_conductance(target,
         # Otherwise, i.e., the size factor for the entire conduit is only known
         F = network[size_factors]
         return Dt * F[throats]
-
-
-def _parse_input(obj, arg):
-    """
-    Returns obj[arg] if arg is string, otherwise returns arg.
-    """
-    return obj[arg] if isinstance(arg, str) else arg
 
 
 def _get_key_props(phase=None,
