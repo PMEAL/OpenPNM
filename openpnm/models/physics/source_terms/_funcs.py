@@ -678,11 +678,11 @@ def butler_volmer_conc(
     F = _sp.constants.physical_constants["Faraday constant"][0]
     R = _sp.constants.R
     # Linearize with respect to X (electrolyte concentration)
-    eta = phi_met - phi_soln - U_eq
+    eta_s = phi_met - phi_soln - U_eq
     cte = i0_ref * A_rxn / (n * F)
     m1 = (1-beta) * n * F / (R * T)
     m2 = beta * n * F / (R * T)
-    fV = _np.exp(m1 * eta) - _np.exp(-m2 * eta)
+    fV = _np.exp(m1 * eta_s) - _np.exp(-m2 * eta_s)
     fC = (X / c_ref)**gamma
     r = cte * fC * fV
     drdC = cte * (X / c_ref)**(gamma - 1) * (1 / c_ref) * fV
