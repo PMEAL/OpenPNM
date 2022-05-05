@@ -1,5 +1,6 @@
 import re
 import numpy as np
+from pandas import read_table
 from openpnm.io._pandas import Pandas
 from openpnm.io import GenericIO, Dict
 from openpnm.utils import Workspace
@@ -64,7 +65,7 @@ class CSV(GenericIO):
         project, network, phases = cls._parse_args(network=network,
                                                    phases=phases)
         df = Pandas.export_data(network=network, phases=phases,
-                                 join=True, delim=delim)
+                                join=True, delim=delim)
         # Write to file
         if filename == '':
             filename = project.name
@@ -72,7 +73,7 @@ class CSV(GenericIO):
         df.to_csv(fname, index=False)
 
     @classmethod
-    def import_data(cls, filename, project=None, delim=' | '):
+    def import_data(cls, filename, delim=' | '):
         r"""
         Opens a 'csv' file, reads in the data, and adds it to the **Network**
 
@@ -94,11 +95,6 @@ class CSV(GenericIO):
             versions of the objects from which it was exported.
 
         """
-        from pandas import read_table
-
-        if project is None:
-            project = ws.new_project()
-
         fname = cls._parse_filename(filename, ext='csv')
         a = read_table(filepath_or_buffer=fname,
                        sep=',',
@@ -127,13 +123,13 @@ class CSV(GenericIO):
             else:
                 dct[item] = np.array(a.pop(item))
 
-        project = Dict.from_dict(dct, project=project, delim=delim)
+        project = Dict.from_dict(dct, delim=delim)
 
         return project
 
 
-def from_csv(filename, project=None, delim=' | '):
-    project = CSV.import_data(filename=filename, project=project, delim=delim)
+def from_csv(filename, delim=' | '):
+    project = CSV.import_data(filename=filename, delim=delim)
     return project
 
 

@@ -20,7 +20,9 @@ pn.regenerate_models()
 pn.regenerate_models()
 
 air = op.phase.Air(network=pn)
-air.add_model_collection(op.models.collections.physics.standard, domain='all')
+air.models.update(op.models.collections.physics.standard)
+air.add_model_collection(op.models.collections.physics.standard, domain='domain1')
+air.add_model_collection(op.models.collections.physics.standard, domain='domain2')
 air.regenerate_models()
 
 air['pore.reaction_sites'] = False

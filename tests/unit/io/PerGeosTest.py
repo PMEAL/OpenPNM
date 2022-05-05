@@ -45,9 +45,6 @@ class PerGeosTest:
         fname = tmpdir.join(net.project.name)
         len_before = len(tmpdir.listdir())
         op.io.to_pergeos(network=net, phases=water, filename=fname)
-        print(tmpdir.listdir())
-        print(len(tmpdir.listdir()))
-        print(len_before)
         assert len(tmpdir.listdir()) == (len_before + 1)
         os.remove(fname.dirpath().join(net.project.name + '.am'))
 

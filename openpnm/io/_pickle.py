@@ -22,57 +22,6 @@ class Pickle(GenericIO):
     """
 
     @classmethod
-    def save_object_to_file(cls, objs):
-        r"""
-        Saves an OpenPNM object or list of objects to a file of set of files
-
-        Parameters
-        ----------
-        objs : Base or list of objects
-            The object(s) to be saved
-
-        """
-        if not isinstance(objs, list):
-            objs = [objs]
-        for item in objs:
-            fname = cls._parse_filename(filename=item.name,
-                                        ext=item.settings['prefix'])
-            with open(fname, 'wb') as f:
-                pickle.dump({item.name: item}, f)
-
-    @classmethod
-    def load_object_from_file(cls, filename, project=None):
-        r"""
-        Loads an OpenPNM object from a file on disk
-
-        Parameters
-        ----------
-        filename : str or path object
-            The name of the file containing the object to open. Can be a
-            relative or absolute path, and can be a string or path object such
-            as that produced by ``pathlib``.
-        project : Project
-            If not provided one will be created and returned by this function,
-            otherwise the loaded object will be added to the given ``project``.
-
-        Returns
-        -------
-        project : Project
-            If no Project object is specified then one is created. A handle to
-            the Project is returned.
-
-        """
-        if project is None:
-            project = Project()
-        p = cls._parse_filename(filename)
-        with open(p, 'rb') as f:
-            d = pickle.load(f)
-        obj = project._new_object(objtype=p.suffix.strip('.'),
-                                  name=p.name.split('.')[0])
-        obj.update(d)
-        return project
-
-    @classmethod
     def save_project(cls, project, filename=''):
         r"""
         Saves an OpenPNM Project to a file on disk

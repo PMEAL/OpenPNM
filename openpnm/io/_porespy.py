@@ -1,7 +1,6 @@
 import pickle as pk
 from openpnm.io import GenericIO
 from openpnm.network import GenericNetwork
-from openpnm.geometry import Imported
 
 
 class PoreSpy(GenericIO):
@@ -9,7 +8,7 @@ class PoreSpy(GenericIO):
     """
 
     @classmethod
-    def import_data(cls, filename, project=None, settings=None):
+    def import_data(cls, filename):
         r"""
         Load a network extracted using the PoreSpy package
 
@@ -32,15 +31,14 @@ class PoreSpy(GenericIO):
             with open(filename, mode='rb') as f:
                 net = pk.load(f)
 
-        network = GenericNetwork(project=project)
-        network = cls._update_network(network=network, net=net)
-        Imported(network=network, settings=settings)
+        network = GenericNetwork()
+        network.update(net)
 
         return network.project
 
 
-def from_porespy(filename, project=None, settings=None):
-    project = PoreSpy.import_data(filename=filename, project=project, settings=settings)
+def from_porespy(filename):
+    project = PoreSpy.import_data(filename=filename)
     return project
 
 

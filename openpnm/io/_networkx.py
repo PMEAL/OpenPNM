@@ -40,7 +40,7 @@ class NetworkX(GenericIO):
     """
 
     @classmethod
-    def import_data(cls, G, project=None):
+    def import_data(cls, G):
         r"""
         Add data to an OpenPNM Network from a undirected NetworkX graph object.
 
@@ -142,8 +142,8 @@ class NetworkX(GenericIO):
                 net['throat.'+item][i] = val
             i += 1
 
-        network = GenericNetwork(project=project)
-        network = cls._update_network(network=network, net=net)
+        network = GenericNetwork()
+        network.update(net)
         return network.project
 
     @classmethod
@@ -177,7 +177,7 @@ class NetworkX(GenericIO):
         G.add_edges_from(conns)
 
         # Attach Network properties to G
-        for prop in network.props(deep=True) + network.labels():
+        for prop in network.props() + network.labels():
             if 'pore.' in prop:
                 if len(network[prop].shape) > 1:
                     val = {i: list(network[prop][i]) for i in network.Ps}
@@ -193,7 +193,7 @@ class NetworkX(GenericIO):
 
 
 def from_networkx(G, project=None):
-    project = NetworkX.import_data(G=G, project=project)
+    project = NetworkX.import_data(G=G)
     return project
 
 

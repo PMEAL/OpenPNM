@@ -81,13 +81,4 @@ class GenericIO:
 
     @classmethod
     def _is_transient(cls, phases):
-        # Check if any of the phases has time series
-        transient = False
-        if isinstance(phases, str):
-            transient = True in ["@" in k for k in phases.keys()]
-        elif isinstance(phases, list):
-            for phase in phases:
-                transient = True in ["@" in k for k in phase.keys()]
-                if transient:
-                    break
-        return transient
+        raise Exception("this function does not work any more!")

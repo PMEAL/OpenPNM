@@ -10,18 +10,8 @@ class NetworkXTest:
         ws = op.Workspace()
         ws.settings['local_data'] = True
         self.net = op.network.Cubic(shape=[2, 2, 2])
-        Ps = [0, 1, 2, 3]
-        Ts = self.net.find_neighbor_throats(pores=Ps)
-        self.geo_1 = op.geometry.GenericGeometry(network=self.net,
-                                                 pores=Ps, throats=Ts)
-        self.geo_1['pore.boo'] = 1
-        self.geo_1['throat.boo'] = 1
-        Ps = [4, 5, 6, 7]
-        Ts = self.net.find_neighbor_throats(pores=Ps, mode='xnor')
-        self.geo_2 = op.geometry.GenericGeometry(network=self.net,
-                                                 pores=Ps, throats=Ts)
-        self.geo_2['pore.boo'] = 1
-        self.geo_2['throat.boo'] = 1
+        self.net['pore.boo'] = 1
+        self.net['throat.boo'] = 1
 
     def teardown_class(self):
         ws = op.Workspace()

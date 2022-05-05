@@ -18,17 +18,17 @@ from ._dict import Dict
 from ._vtk import to_vtk, from_vtk
 from ._csv import to_csv, from_csv
 from ._networkx import to_networkx, from_networkx
-from ._mat import to_matlab, from_matlab
+# from ._mat import to_matlab, from_matlab
 from ._marock import from_marock
-from ._statoil import to_statoil, from_statoil
+# from ._statoil import to_statoil, from_statoil
 from ._pergeos import to_pergeos, from_pergeos
 from ._porespy import from_porespy
 from ._pandas import to_pandas
-from ._hdf5 import to_hdf5, print_hdf5
-from ._xdmf import to_xdmf
+# from ._hdf5 import to_hdf5, print_hdf5
+# from ._xdmf import to_xdmf
 from ._jsongraph import to_jsongraph, from_jsongraph
-from ._stl import to_stl
-from ._comsol import to_comsol
-from ._salome import to_salome
-from ._pnm import PNM
-from ._paraview import ParaView, to_paraview
+# from ._stl import to_stl
+# from ._comsol import to_comsol
+# from ._salome import to_salome
+# from ._pnm import PNM
+# from ._paraview import ParaView, to_paraview

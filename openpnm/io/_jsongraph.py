@@ -5,8 +5,6 @@ import logging
 import numpy as np
 from pathlib import Path
 from openpnm.io import GenericIO
-from openpnm.geometry import Imported
-import openpnm.models.geometry as gmods
 from openpnm.network import GenericNetwork
 logger = logging.getLogger(__name__)
 
@@ -159,7 +157,9 @@ class JSONGraph(GenericIO):
             [edge['metadata']['link_squared_radius'] for edge in edges])
 
         # Generate network object
-        network = GenericNetwork(Np=number_of_nodes, Nt=number_of_links)
+        network = GenericNetwork()
+        network['pore.all'] = np.ones([number_of_nodes, ], dtype=bool)
+        network['throat.all'] = np.ones([number_of_links, ], dtype=bool)
 
         # Define primitive throat properties
         network['throat.length'] = link_length
@@ -170,24 +170,6 @@ class JSONGraph(GenericIO):
         network['pore.index'] = np.arange(number_of_nodes)
         network['pore.coords'] = np.column_stack([x, y, z])
         network['pore.diameter'] = np.zeros(number_of_nodes)
-
-        geom = Imported(network=network)
-
-        # Define derived throat properties
-        geom.add_model(propname='throat.cross_sectional_area',
-                       model=gmods.throat_cross_sectional_area.cylinder)
-        geom.add_model(propname='throat.volume',
-                       model=gmods.throat_volume.cylinder)
-        geom.add_model(propname='throat.perimeter',
-                       model=gmods.throat_perimeter.cylinder)
-        geom.add_model(propname='throat.surface_area',
-                       model=gmods.throat_surface_area.cylinder)
-
-        # Define derived pore properties
-        geom.add_model(propname='pore.area',
-                       model=gmods.pore_cross_sectional_area.sphere)
-        geom.add_model(propname='pore.volume',
-                       model=gmods.pore_volume.sphere)
 
         return network.project
 

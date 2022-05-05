@@ -20,7 +20,6 @@ class MARockTest:
         project = op.io.from_marock(path=path)
         assert len(project) == 1
         net = project.network
-        print(net.props())
         assert net.Np == 9915
         assert net.Nt == 21805
         a = {'pore.ID_number', 'pore.boundary_type', 'pore.coordination',

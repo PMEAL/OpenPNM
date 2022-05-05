@@ -348,6 +348,8 @@ class Base2(dict):
         return np.where(mask)[0]
 
     def props(self, element=['pore', 'throat']):
+        if element is None:
+            element = ['pore', 'throat']
         if isinstance(element, str):
             element = [element]
         props = []
