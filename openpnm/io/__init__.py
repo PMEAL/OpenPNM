@@ -23,8 +23,8 @@ from ._statoil import to_statoil, from_statoil
 from ._pergeos import to_pergeos, from_pergeos
 from ._porespy import from_porespy
 from ._pandas import to_pandas
-# from ._hdf5 import to_hdf5, print_hdf5
-# from ._xdmf import to_xdmf
+from ._hdf5 import to_hdf5, print_hdf5
+from ._xdmf import to_xdmf
 from ._jsongraph import to_jsongraph, from_jsongraph
 # from ._stl import to_stl
 # from ._comsol import to_comsol
