@@ -136,7 +136,6 @@ def hagen_poiseuille_power_law(
     %(return_arr)s hydraulic conductance
 
     """
-    # Fetch GenericPhysicss
     network = target.project.network
     domain = target._domain
     throats = domain.throats(target.name)
@@ -265,7 +264,6 @@ def valvatne_blunt(
     J. Colloid Interface Sci., 236, 295–304.
 
     """
-    # Fetch GenericPhysicss
     network = target.network
     conns = network["throat.conns"]
     mu_p = target[pore_viscosity]

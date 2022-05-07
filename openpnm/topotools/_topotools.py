@@ -1216,7 +1216,6 @@ def add_reservoir_pore(cls, network, pores, offset=0.1):
         represent the newly added pore and throats.
 
     """
-    from openpnm.geometry import GenericGeometry
     import openpnm.models.geometry as mods
     # Check if a label was given and fetch actual indices
     if isinstance(pores, str):
@@ -1250,15 +1249,14 @@ def add_reservoir_pore(cls, network, pores, offset=0.1):
         raise Exception('Geometrical properties should be moved to a '
                         + 'geometry object first')
         # or just do this?:  geo = Imported(network=network)
-    geo = GenericGeometry(network=network, pores=Ps, throats=Ts)
-    geo.add_model(propname='pore.diameter',
-                  model=mods.geometry.pore_size.largest_sphere)
-    geo.add_model(propname='throat.diameter_temp',
-                  model=mods.geometry.throat_size.from_neighbor_pores,
-                  mode='min')
-    geo.add_model(propname='throat.diameter',
-                  model=mods.misc.scaled,
-                  prop='throat.diameter_temp', factor=0.5)
-    geo.add_model(propname='throat.volume',
-                  model=mods.geometry.throat_volume.cylinder)
+    network.add_model(propname='pore.diameter',
+                      model=mods.geometry.pore_size.largest_sphere)
+    network.add_model(propname='throat.diameter_temp',
+                      model=mods.geometry.throat_size.from_neighbor_pores,
+                      mode='min')
+    network.add_model(propname='throat.diameter',
+                      model=mods.misc.scaled,
+                      prop='throat.diameter_temp', factor=0.5)
+    network.add_model(propname='throat.volume',
+                      model=mods.geometry.throat_volume.cylinder)
     return network.project

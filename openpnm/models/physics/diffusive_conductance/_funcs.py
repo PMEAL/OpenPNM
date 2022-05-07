@@ -107,7 +107,6 @@ def mixed_diffusion(target,
     %(return_arr)s diffusive conductance
 
     """
-    # Fetch GenericPhysicss
     network = target.network
     phase = target
 
@@ -171,7 +170,6 @@ def taylor_aris_diffusion(target,
     %(return_arr)s diffusive conductance
 
     """
-    # Fetch GenericPhysicss
     network = target.network
     domain = target._domain
     throats = domain.throats(target.name)
@@ -233,7 +231,6 @@ def multiphase_diffusion(target,
     more information.
 
     """
-    # Fetch GenericPhysicss
     network = target.network
     throats = target.throats(to_global=True)
     phase = target

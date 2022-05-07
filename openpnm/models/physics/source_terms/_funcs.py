@@ -682,7 +682,7 @@ def butler_volmer_voltage(
 
     Parameters
     ----------
-    target : GenericPhysics
+    target : OpenPNM Phase
         The Physics object where the result will be applied.
     X : str
         The dictionary key of the quantity of interest (i.e. main variable

@@ -112,13 +112,13 @@ if __name__ == "__main__":
     plt.rcParams['axes.facecolor'] = 'grey'
     np.random.seed(0)
     pn = op.network.Cubic([20, 20, 1], spacing=1e-5)
-    geo = op.geometry.SpheresAndCylinders(network=pn, pores=pn.Ps, throats=pn.Ts)
+    pn.add_model_collection(op.models.collections.geometry.spheres_and_cylinders)
+    pn.regenerate_models()
     nwp = op.phase.GenericPhase(network=pn)
     nwp['throat.surface_tension'] = 0.480
     nwp['throat.contact_angle'] = 140
-    phys = op.physics.GenericPhysics(network=pn, phase=nwp, geometry=geo)
-    phys.add_model(propname='throat.entry_pressure',
-                   model=op.models.physics.capillary_pressure.washburn)
+    nwp.add_model(propname='throat.entry_pressure',
+                  model=op.models.physics.capillary_pressure.washburn)
 
     pressure = 1e6
     drn = Drainage(network=pn, phase=nwp)

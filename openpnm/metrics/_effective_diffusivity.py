@@ -1,7 +1,6 @@
 import logging
 from openpnm.utils import Workspace, SettingsAttr, Docorator
 from openpnm.phase import GenericPhase
-from openpnm.physics import GenericPhysics
 from openpnm.algorithms import FickianDiffusion
 from openpnm.metrics import GenericTransportMetrics
 from openpnm import models
@@ -60,7 +59,8 @@ class EffectiveDiffusivity(GenericTransportMetrics):
     >>> import numpy as np
     >>> np.random.seed(5)
     >>> pn = op.network.Cubic(shape=[10, 10, 10], spacing=1e-5)
-    >>> geo = op.geometry.SpheresAndCylinders(network=pn, pores=pn.Ps, throats=pn.Ts)
+    >>> pn.add_model_collection(op.models.collections.geometry.spheres_and_cylinders)
+    >>> pn.regenerate_models()
 
     Now find the effective diffusivity of the network:
 
@@ -84,10 +84,7 @@ class EffectiveDiffusivity(GenericTransportMetrics):
         phase['pore.diffusivity'] = 1.0
         phase['throat.diffusivity'] = 1.0
         mod = models.physics.diffusive_conductance.ordinary_diffusion
-        for geom in self.project.geometries().values():
-            phys = GenericPhysics(network=self.network,
-                                  phase=phase, geometry=geom)
-            phys.add_model(propname='throat.diffusive_conductance', model=mod)
+        phase.add_model(propname='throat.diffusive_conductance', model=mod)
         inlet = self.network.pores(self.settings['inlet'])
         outlet = self.network.pores(self.settings['outlet'])
         Diff = FickianDiffusion(network=self.project.network, phase=phase)

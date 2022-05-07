@@ -158,9 +158,11 @@ class AdvectionDiffusion(ReactiveTransport):
 if __name__ == "__main__":
     import openpnm as op
     pn = op.network.Cubic(shape=[10, 10, 1])
-    geo = op.geometry.SpheresAndCylinders(network=pn, pores=pn.Ps, throats=pn.Ts)
+    pn.add_model_collection(op.models.collections.geometry.spheres_and_cylinders)
+    pn.regenerate_models()
     air = op.phase.Air(network=pn)
-    phys = op.physics.Standard(network=pn, phase=air, geometry=geo)
+    air.add_model_collection(op.models.collections.physics.standard)
+    air.regenerate_models()
     flow = op.algorithms.StokesFlow(network=pn, phase=air)
     flow.set_value_BC(pores=pn.pores('left'), values=1)
     flow.set_value_BC(pores=pn.pores('right'), values=0)

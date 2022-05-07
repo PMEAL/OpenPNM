@@ -311,13 +311,9 @@ class Base(dict):
         >>> pn.clear(mode='labels')
         >>> len(pn.labels())  # Kept only 'pore.all' and 'throat.all'
         2
-        >>> geom = op.geometry.GenericGeometry(network=pn, pores=pn.Ps,
-        ...                                    throats=pn.Ts, name='geo1')
         >>> len(pn.labels())  # 2 new labels were added for geometry locations
         4
         >>> pn.clear(mode='labels')
-        >>> 'pore.'+geom.name in pn.keys()  # The geometry labels were kept
-        True
         >>> len(pn.props())  # The network has two properties
         2
         >>> pn.clear(element='pore', mode='props')
@@ -656,29 +652,6 @@ class Base(dict):
         a geometry or the network contains multiple geometries and data
         does not exist on all. Float and boolean data is fine, but missing
         ints are converted to float when nans are inserted.
-
-        Examples
-        --------
-        >>> import openpnm as op
-        >>> pn = op.network.Cubic(shape=[2, 2, 2])
-        >>> Ps = pn['pore.top']
-        >>> Ts = pn.find_neighbor_throats(pores=Ps)
-        >>> g1 = op.geometry.GenericGeometry(network=pn, pores=Ps, throats=Ts)
-        >>> Ts = ~pn.to_mask(throats=Ts)
-        >>> g2 = op.geometry.GenericGeometry(network=pn, pores=~Ps, throats=Ts)
-        >>> g1['pore.value'] = 1
-        >>> print(g1['pore.value'])
-        [1 1 1 1]
-        >>> print(g2['pore.value'])  # 'pore.value' is defined on g1, not g2
-        [nan nan nan nan]
-        >>> print(pn['pore.value'])
-        [nan  1. nan  1. nan  1. nan  1.]
-        >>> g2['pore.value'] = 20
-        >>> print(pn['pore.value'])
-        [20  1 20  1 20  1 20  1]
-        >>> pn['pore.label'] = False
-        >>> print(g1['pore.label'])  # 'pore.label' is defined on pn, not g1
-        [False False False False]
 
         """
         # Fetch subdomains list depending on type of self

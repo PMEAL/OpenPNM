@@ -12,7 +12,7 @@ def _poisson_conductance(target,
 
     Parameters
     ----------
-    target : GenericPhysics
+    target : OpenPNM Phase
         The object which this model is associated with. This controls the
         length of the calculated array, and also provides access to other
         necessary properties.
