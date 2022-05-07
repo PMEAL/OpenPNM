@@ -20,7 +20,7 @@ from ._csv import to_csv, from_csv
 from ._networkx import to_networkx, from_networkx
 # from ._mat import to_matlab, from_matlab
 from ._marock import from_marock
-# from ._statoil import to_statoil, from_statoil
+from ._statoil import to_statoil, from_statoil
 from ._pergeos import to_pergeos, from_pergeos
 from ._porespy import from_porespy
 from ._pandas import to_pandas
