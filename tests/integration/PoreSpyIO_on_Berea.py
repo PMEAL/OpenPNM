@@ -44,7 +44,14 @@ snow = ps.networks.snow2(im, voxel_size=data['resolution'],
 pn = op.io.from_porespy(snow.network)[0]
 pn['pore.diameter'] = pn['pore.equivalent_diameter']
 pn['throat.diameter'] = pn['throat.inscribed_diameter']
-pn.add_model_collection(op.models.collections.geometry.pyramids_and_cuboids)
+pn['throat.spacing'] = pn['throat.total_length']
+# pn.add_model(propname='throat.conduit_lengths',
+#              model=op.models.geometry.conduit_lengths.pyramids_and_cuboids)
+pn.add_model(propname='throat.hydraulic_size_factors',
+             model=op.models.geometry.hydraulic_size_factors.pyramids_and_cuboids)
+pn.add_model(propname='throat.diffusive_size_factors',
+             model=op.models.geometry.diffusive_size_factors.pyramids_and_cuboids)
+
 pn.regenerate_models()
 h = op.utils.check_network_health(pn)
 op.topotools.trim(network=pn, pores=h['disconnected_pores'])
