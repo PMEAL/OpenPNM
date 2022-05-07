@@ -441,7 +441,7 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
             raise Exception('Must specify either pores or throats')
 
         network = self.project.network
-        phase = self.project.phases()[self.settings['phase']]
+        phase = self.project[self.settings['phase']]
         g = phase[self.settings['conductance']]
         quantity = self[self.settings['quantity']]
 
@@ -457,14 +457,15 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
             R = np.absolute(Qt[throats])
             if mode == 'group':
                 R = np.sum(R)
-
-        if pores.size:
+        elif pores.size:
             Qp = np.zeros((self.Np, ))
             np.add.at(Qp, P12[:, 0], -Qt)
             np.add.at(Qp, P12[:, 1], Qt)
             R = Qp[pores]
             if mode == 'group':
                 R = np.sum(R)
+        else:
+            raise Exception('Either pores or throats must be specified')
 
         return np.array(R, ndmin=1)
 
