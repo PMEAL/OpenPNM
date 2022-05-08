@@ -534,7 +534,7 @@ class ModelMixin2:
                         if v.shape[0] == 1:  # Returned item was a scalar
                             v = np.tile(v, self._count(element))
                         vals[k] = v[self[element+'.'+domain]]
-                elif isinstance(vals, float):  # Handle models that return a float
+                elif isinstance(vals, (int, float)):  # Handle models that return a float
                     vals = np.atleast_1d(vals)
                 else:  # Index into full domain result for use below
                     vals = vals[self[element+'.'+domain]]
