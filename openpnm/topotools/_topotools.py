@@ -550,17 +550,6 @@ def merge_networks(network, donor=[]):
     else:
         donors = [donor]
 
-    # First fix up geometries
-    # main_proj = network.project
-    # main_geoms = main_proj.geometries()
-    for donor in donors:
-        proj = donor.project
-        geoms = proj.geometries().values()
-        for geo in geoms:
-            if geo.name in network.project.names:
-                geo.name = network.project._generate_name(geo)
-            network.project.append(geo)
-
     for donor in donors:
         network['pore.coords'] = np.vstack((network['pore.coords'],
                                             donor['pore.coords']))
@@ -710,10 +699,6 @@ def stitch(network, donor, P_network, P_donor, method='nearest',
 
     # Add the new stitch throats to the Network
     extend(network=network, throat_conns=conns, labels=label_stitches)
-
-    if len(network.project.geometries()) > 0:
-        logger.warning(str(conns.shape[0]) + ' newly created throats are not '
-                       + 'assigned to a geometry')
 
     # Remove donor from Workspace, if present
     # This check allows for the reuse of a donor Network multiple times

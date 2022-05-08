@@ -29,7 +29,7 @@ class TopotoolsTest:
     def test_label_faces(self):
         net = op.network.Cubic(shape=[3, 3, 3], connectivity=6)
         net.clear(mode='labels')
-        assert net.labels() == ['pore.all', 'throat.all']
+        assert net.labels() == []
         topotools.label_faces(network=net)
         assert net.num_pores('surface') == 26
         assert net.num_pores('left') == 9
@@ -56,14 +56,14 @@ class TopotoolsTest:
         from skimage.morphology import ball
         net = op.network.CubicTemplate(template=ball(3), spacing=1)
         net.clear(mode='labels')
-        assert net.labels() == ['pore.all', 'throat.all']
+        assert net.labels() == []
         topotools.find_surface_pores(network=net)
         assert net.num_pores('surface') == 66
 
     def test_find_surface_pores_custom_markers_2d(self):
         net = op.network.Cubic(shape=[4, 4, 1], spacing=1)
         net.clear(mode='labels')
-        assert net.labels() == ['pore.all', 'throat.all']
+        assert net.labels() == []
         markers = [[-1, 2], [2, -1], [2, 5], [5, 2]]
         topotools.find_surface_pores(network=net, markers=markers)
         assert net.num_pores('surface') == 12
@@ -77,7 +77,7 @@ class TopotoolsTest:
     def test_find_surface_pores_custom_markers_3d(self):
         net = op.network.Cubic(shape=[4, 4, 4], spacing=1)
         net.clear(mode='labels')
-        assert net.labels() == ['pore.all', 'throat.all']
+        assert net.labels() == []
         markers = [[-1, 2, 2], [2, -1, 2], [2, 5, 2], [5, 2, 2]]
         topotools.find_surface_pores(network=net, markers=markers)
         assert net.num_pores('surface') == 48
@@ -172,17 +172,15 @@ class TopotoolsTest:
         assert 'pore.test2' not in net2
 
     def test_merge_networks_with_active_geometries(self):
-        pn = op.network.Cubic(shape=[3, 3, 3])
-        pn2 = op.network.Cubic(shape=[3, 3, 3])
+        pn = op.network.Cubic(shape=[3, 3, 3], name='net_01')
+        pn2 = op.network.Cubic(shape=[3, 3, 3], name='net_02')
         pn2['pore.coords'] += [0, 0, 3]
         pn2['pore.net_02'] = True
         pn2['throat.net_02'] = True
-        op.geometry.SpheresAndCylinders(network=pn, pores=pn.Ps, throats=pn.Ts)
-        geo2 = op.geometry.SpheresAndCylinders(network=pn2, pores=pn2.Ps, throats=pn2.Ts)
-        geo2['pore.test_vals'] = 1.5
+        pn2['pore.test_vals'] = 1.5
         op.topotools.merge_networks(network=pn, donor=pn2)
         assert isinstance(pn['pore.test_vals'], np.ndarray)
-        assert ('pore.' + geo2.name) in pn.keys()
+        assert ('pore.' + pn2.name) in pn.keys()
 
     def test_merge_pores(self):
         testnet = op.network.Cubic(shape=[10, 10, 10])
@@ -258,29 +256,29 @@ class TopotoolsTest:
         pn = op.network.Cubic(shape=[2, 2, 2], spacing=1)
         Ps = pn.pores()[:4]
         Ts = pn.find_neighbor_throats(pores=Ps, mode='xnor')
-        geo1 = op.geometry.GenericGeometry(network=pn, pores=Ps, throats=Ts)
+        pn.set_label(pores=Ps, throats=Ts, label='domain1')
         Ps = pn.pores()[4:]
         Ts = pn.find_neighbor_throats(pores=Ps, mode='union')
-        geo2 = op.geometry.GenericGeometry(network=pn, pores=Ps, throats=Ts)
-        geo1['pore.random'] = np.random.random(geo1.Np)
-        geo2['pore.random'] = np.random.random(geo2.Np)
+        pn.set_label(pores=Ps, throats=Ts, label='domain2')
+        pn['pore.random@domain1'] = np.random.random(pn.num_pores('domain1'))
+        pn['pore.random@domain2'] = np.random.random(pn.num_pores('domain2'))
         trimmers = pn['pore.random'] < 0.25
         topotools.trim(pn, pores=pn.pores()[trimmers])
         assert ~np.any(pn['pore.random'] < 0.25)
 
     def test_trim_throats(self):
         np.random.seed(1)
-        pn = op.network.Cubic(shape=[2, 2, 2], spacing=5)
+        pn = op.network.Cubic(shape=[2, 2, 2], spacing=1)
         Ps = pn.pores()[:4]
-        Ts1 = pn.find_neighbor_throats(pores=Ps, mode='or')
-        geo1 = op.geometry.GenericGeometry(network=pn, pores=Ps, throats=Ts1)
+        Ts = pn.find_neighbor_throats(pores=Ps, mode='xnor')
+        pn.set_label(pores=Ps, throats=Ts, label='domain1')
         Ps = pn.pores()[4:]
-        Ts2 = pn.find_neighbor_throats(pores=Ps, mode='xnor')
-        geo2 = op.geometry.GenericGeometry(network=pn, pores=Ps, throats=Ts2)
-        geo1['throat.random'] = np.random.random(geo1.Nt)
-        geo2['throat.random'] = np.random.random(geo2.Nt)
+        Ts = pn.find_neighbor_throats(pores=Ps, mode='union')
+        pn.set_label(pores=Ps, throats=Ts, label='domain2')
+        pn['throat.random@domain1'] = np.random.random(pn.num_throats('domain1'))
+        pn['throat.random@domain2'] = np.random.random(pn.num_throats('domain2'))
         trimmers = pn['throat.random'] < 0.25
-        topotools.trim(pn, throats=pn.throats()[trimmers])
+        topotools.trim(pn, throats=pn.Ts[trimmers])
         assert ~np.any(pn['throat.random'] < 0.25)
 
     def test_iscoplanar(self):
@@ -307,29 +305,28 @@ class TopotoolsTest:
         assert np.any(np.isnan(pn['pore.test_int']))
         assert pn['pore.test_bool'].sum() < pn['pore.test_bool'].size
 
-    def test_extend_geometry_present(self):
-        pn = op.network.Cubic(shape=[2, 2, 1])
-        geo = op.geometry.SpheresAndCylinders(network=pn)
-        geo['pore.test_float'] = 1.0
-        geo['pore.test_int'] = 1
-        geo['pore.test_bool'] = True
-        op.topotools.extend(network=pn, pore_coords=[[3, 3, 3], [3, 3, 4]])
-        assert ~np.any(np.isnan(geo['pore.test_float']))
-        assert ~np.any(np.isnan(geo['pore.test_int']))
-        assert geo['pore.test_bool'].sum() == geo['pore.test_bool'].size
+    # def test_extend_geometry_present(self):
+    #     pn = op.network.Cubic(shape=[2, 2, 1])
+    #     geo['pore.test_float'] = 1.0
+    #     geo['pore.test_int'] = 1
+    #     geo['pore.test_bool'] = True
+    #     op.topotools.extend(network=pn, pore_coords=[[3, 3, 3], [3, 3, 4]])
+    #     assert ~np.any(np.isnan(geo['pore.test_float']))
+    #     assert ~np.any(np.isnan(geo['pore.test_int']))
+    #     assert geo['pore.test_bool'].sum() == geo['pore.test_bool'].size
 
-    def test_extend_phase_present(self):
-        pn = op.network.Cubic(shape=[2, 2, 1])
-        air = op.phase.Air(network=pn)
-        air['pore.test_float'] = 1.0
-        air['pore.test_int'] = 1
-        air['pore.test_bool'] = True
-        Np = air.Np
-        Nt = air.Nt
-        op.topotools.extend(network=pn, coords=[[3, 3, 3], [3, 3, 4]])
-        assert air.Np == (Np + 2)
-        op.topotools.extend(network=pn, conns=[[0, 4], [1, 5]])
-        assert air.Nt == (Nt + 2)
+    # def test_extend_phase_present(self):
+    #     pn = op.network.Cubic(shape=[2, 2, 1])
+    #     air = op.phase.Air(network=pn)
+    #     air['pore.test_float'] = 1.0
+    #     air['pore.test_int'] = 1
+    #     air['pore.test_bool'] = True
+    #     Np = air.Np
+    #     Nt = air.Nt
+    #     op.topotools.extend(network=pn, coords=[[3, 3, 3], [3, 3, 4]])
+    #     assert air.Np == (Np + 2)
+    #     op.topotools.extend(network=pn, conns=[[0, 4], [1, 5]])
+    #     assert air.Nt == (Nt + 2)
 
     def test_stitch_radius_no_connections(self):
         Nx, Ny, Nz = (10, 10, 1)

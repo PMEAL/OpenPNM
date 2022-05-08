@@ -63,8 +63,8 @@ class PlotToolsTest:
 
     def test_generate_voxel_image(self):
         pn = op.network.Cubic(shape=[5, 5, 1])
-        geo = op.geometry.SpheresAndCylinders(network=pn,
-                                              pores=pn.Ps, throats=pn.Ts)
+        pn.add_model_collection(op.models.collections.geometry.spheres_and_cylinders)
+        pn.regenerate_models()
         im = op.topotools.generate_voxel_image(network=pn,
                                                pore_shape='sphere',
                                                throat_shape='cylinder',
