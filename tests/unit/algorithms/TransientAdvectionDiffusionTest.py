@@ -6,17 +6,14 @@ class TransientAdvectionDiffusionTest:
 
     def setup_class(self):
         self.net = op.network.Cubic(shape=[4, 3, 1], spacing=1.0)
-        self.geo = op.geometry.GenericGeometry(network=self.net,
-                                               pores=self.net.Ps,
-                                               throats=self.net.Ts)
-
+        self.net.add_model_collection(
+            op.models.collections.geometry.spheres_and_cylinders
+        )
+        self.net.regenerate_models()
         self.phase = op.phase.GenericPhase(network=self.net)
-        self.phys = op.physics.GenericPhysics(network=self.net,
-                                              phase=self.phase,
-                                              geometry=self.geo)
-        self.phys['throat.diffusive_conductance'] = 1e-15
-        self.phys['throat.hydraulic_conductance'] = 1e-15
-        self.geo['pore.volume'] = 1e-14
+        self.phase['throat.diffusive_conductance'] = 1e-15
+        self.phase['throat.hydraulic_conductance'] = 1e-15
+        self.net['pore.volume'] = 1e-14
         self.sf = op.algorithms.StokesFlow(network=self.net, phase=self.phase)
         self.sf.settings._update({'quantity': 'pore.pressure',
                                   'conductance': 'throat.hydraulic_conductance'})
@@ -25,17 +22,16 @@ class TransientAdvectionDiffusionTest:
         self.sf.run()
         self.phase[self.sf.settings['quantity']] = self.sf.x
         mod = op.models.physics.ad_dif_conductance.ad_dif
-        self.phys.add_model(propname='throat.ad_dif_conductance', model=mod,
-                            s_scheme='powerlaw')
-        self.phys.regenerate_models()
-
+        self.phase.add_model(propname='throat.ad_dif_conductance', model=mod,
+                             s_scheme='powerlaw')
+        self.phase.regenerate_models()
 
     def test_transient_advection_diffusion(self):
         ad = op.algorithms.TransientAdvectionDiffusion(network=self.net,
                                                        phase=self.phase)
         ad.settings._update({
             'quantity': 'pore.concentration',
-            'conductance':'throat.ad_dif_conductance',
+            'conductance': 'throat.ad_dif_conductance',
             'diffusive_conductance': 'throat.diffusive_conductance',
             'hydraulic_conductance': 'throat.hydraulic_conductance',
             'pressure': 'pore.pressure'
