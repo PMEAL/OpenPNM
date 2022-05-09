@@ -1,20 +1,13 @@
 import logging
 import numpy as np
-from openpnm.core import Base
+from openpnm.metrics import GenericMetric
 from openpnm.topotools import get_domain_area, get_domain_length
 logger = logging.getLogger(__name__)
 
 
-class GenericTransportMetrics(Base):
+class GenericTransportMetrics(GenericMetric):
     r"""
     """
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        project = self.project
-        self['pore.all'] = np.ones((project.network.Np, ), dtype=bool)
-        self['throat.all'] = np.ones((project.network.Nt, ), dtype=bool)
-
     def _calc_eff_prop(self, inlets=None, outlets=None,
                        domain_area=None, domain_length=None, rates=None,
                        prop_diff=None):
