@@ -66,6 +66,4 @@ class GenericPhase(Domain):
             elif (element == 'throat') and ('pore.'+prop not in self.keys()):
                 raise KeyError(f"Cannot interpolate '{element+'.'+prop}' without 'pore.{prop}'")
             vals = self.interpolate_data(element + '.' + prop)
-            if '@' in key:
-                vals = vals[self[element + '.' + key]]
             return vals
