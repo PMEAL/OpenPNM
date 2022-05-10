@@ -302,27 +302,6 @@ class Base(dict):
         prompt. This can also be done in a for-loop to remove a list of
         items.
 
-        Examples
-        --------
-        >>> import openpnm as op
-        >>> pn = op.network.Cubic(shape=[5, 5, 5])
-        >>> len(pn.labels())  # There are 10 total labels on the network
-        12
-        >>> pn.clear(mode='labels')
-        >>> len(pn.labels())  # Kept only 'pore.all' and 'throat.all'
-        2
-        >>> len(pn.labels())  # 2 new labels were added for geometry locations
-        4
-        >>> pn.clear(mode='labels')
-        >>> len(pn.props())  # The network has two properties
-        2
-        >>> pn.clear(element='pore', mode='props')
-        >>> 'pore.coords' in pn.keys()  # The pore property was removed
-        True
-        >>> pn.clear()  # Remove everything except protected labels and arrays
-        >>> print(sorted(list(pn.keys(element='pore', mode='all'))))
-        ['pore.all', 'pore.coords', 'pore.geo1']
-
         """
         protected = ['pore.all', 'throat.all', 'pore.coords', 'throat.conns']
         allowed = ['props', 'labels', 'model_data', 'all']
@@ -385,15 +364,6 @@ class Base(dict):
         kinds of data.  It's use augments ``props`` and ``labels`` by
         returning a list containing both types, but possibly limited by
         element type ('pores' or 'throats'.)
-
-        Examples
-        --------
-        >>> import openpnm as op
-        >>> pn = op.network.Cubic([5, 5, 5])
-        >>> pn.keys(mode='props')  # Get all props
-        ['pore.coords', 'throat.conns']
-        >>> pn.keys(mode='props', element='pore')  # Get only pore props
-        ['pore.coords']
 
         """
         if mode is None:
@@ -460,16 +430,6 @@ class Base(dict):
         labels
         keys
 
-        Examples
-        --------
-        >>> import openpnm as op
-        >>> pn = op.network.Cubic(shape=[3, 3, 3])
-        >>> pn.props('pore')
-        ['pore.coords']
-        >>> pn.props('throat')
-        ['throat.conns']
-        >>> pn.props()
-        ['pore.coords', 'throat.conns']
         """
         # Parse Inputs
         element = self._parse_element(element=element)
@@ -776,14 +736,6 @@ class Base(dict):
         -------
         vals : ndarray
             An array containing interpolated pore (or throat) data
-
-        Examples
-        --------
-        >>> import openpnm as op
-        >>> pn = op.network.Cubic(shape=[3, 1, 1])
-        >>> pn['pore.value'] = [1, 2, 3]
-        >>> pn.interpolate_data('pore.value')
-        array([1.5, 2.5])
 
         """
         from openpnm.models.misc import from_neighbor_throats, from_neighbor_pores
