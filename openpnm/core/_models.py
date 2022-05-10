@@ -209,6 +209,19 @@ class ModelsDict(PrintableDict):
                 if item.startswith(key):
                     self.__delitem__(item)
 
+    def __getitem__(self, key):
+        try:
+            return super().__getitem__(key)
+        except KeyError:
+            d = {}
+            for k, v in self.items():
+                if k.startswith(key):
+                    d[k] = v
+            if len(d) > 0:
+                return d
+            else:
+                raise KeyError(key)
+
 
 class ModelWrapper(dict):
     r"""
