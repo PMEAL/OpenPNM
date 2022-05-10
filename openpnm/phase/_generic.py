@@ -55,12 +55,17 @@ class GenericPhase(Domain):
             except KeyError:
                 return self.network[key]
         except KeyError:
+            # But also need to handle the @ look-ups somehow
+            if '@' in key:
+                raise Exception('Interpolation of @domain values is not supported')
             # Before interpolating, ensure other prop is present, to avoid
             # infinite recurrsion
             element, prop = key.split('.', 1)
             if (element == 'pore') and ('throat.'+prop not in self.keys()):
-                raise KeyError(f"Cannot interpolate {key} without 'throat.{prop}'")
+                raise KeyError(f"Cannot interpolate '{element+'.'+prop}' without 'throat.{prop}'")
             elif (element == 'throat') and ('pore.'+prop not in self.keys()):
-                raise KeyError(f"Cannot interpolate {key} without 'pore.{prop}'")
-            vals = self.interpolate_data(key)
+                raise KeyError(f"Cannot interpolate '{element+'.'+prop}' without 'pore.{prop}'")
+            vals = self.interpolate_data(element + '.' + prop)
+            if '@' in key:
+                vals = vals[self[element + '.' + key]]
             return vals
