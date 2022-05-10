@@ -44,7 +44,7 @@ def generic_function(target, prop, func, **kwargs):
     >>> import openpnm as op
     >>> import numpy as np
     >>> pn = op.network.Cubic(shape=[5, 5, 5])
-    >>> pn['pore.rand'] = np.random.rand(geo.Np)
+    >>> pn['pore.rand'] = np.random.rand(pn.Np)
     >>> pn.add_model(propname='pore.cos',
     ...              model=op.models.misc.generic_function,
     ...              func=np.cos,
