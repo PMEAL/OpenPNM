@@ -365,7 +365,7 @@ class LabelMixin:
         >>> import openpnm as op
         >>> pn = op.network.Cubic(shape=[5, 5, 5])
         >>> pn.labels(pores=[11, 12])
-        ['pore.all', 'pore.internal', 'pore.left', 'pore.surface']
+        ['pore.left', 'pore.surface']
         """
         # Short-circuit query when no pores or throats are given
         if (np.size(pores) == 0) and (np.size(throats) == 0):
