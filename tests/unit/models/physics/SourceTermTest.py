@@ -251,11 +251,11 @@ class GenericSourceTermTest:
         self.phase['pore.open_circuit_voltage'] = 1.2
         self.phase['pore.electrolyte_concentration'] = np.random.rand(self.net.Np)
         BV_params = {
-            "z": 4,
-            "j0": 1e-3,
+            "n": 4,
+            "i0_ref": 1e-3,
             "c_ref": 1000,
-            "alpha_anode": 0.4,
-            "alpha_cathode": 0.6
+            "beta": 0.5,
+            "gamma": 1
         }
         self.phase.add_model(propname='pore.rxn_BV_c',
                              model=pm.source_terms.butler_volmer_conc,
@@ -269,17 +269,17 @@ class GenericSourceTermTest:
         rate_BV_c = self.phase["pore.rxn_BV_c.rate"]
         eps = np.finfo(float).eps * np.abs(rate_BV_c).max()
         assert_allclose(S2_BV_c.mean(), 0, atol=eps)
-        assert_allclose(S1_BV_c.mean(), -2.744732328358524e-10)
-        assert_allclose(rate_BV_c.mean(), -1.2661585976335576e-10)
+        assert_allclose(S1_BV_c.mean(), -0.0008190647392381356)
+        assert_allclose(rate_BV_c.mean(), -0.00040556020470030826)
         # Check Butler-Volmer model (voltage)
         S1_BV_v = self.phase["pore.rxn_BV_v.S1"]
         S2_BV_v = self.phase["pore.rxn_BV_v.S2"]
         rate_BV_v = self.phase["pore.rxn_BV_v.rate"]
-        assert_allclose(S2_BV_v.mean(), 0.00012658874867221232)
-        assert_allclose(S1_BV_v.mean(), -0.0011423824344684425)
-        assert_allclose(rate_BV_v.mean(), -4.886629312370691e-05)
-        # The two Butler-Volmer models must only differ by z*F (unit conversion)
-        assert_allclose(rate_BV_v, rate_BV_c * BV_params["z"] * 96485.33212)
+        assert_allclose(S2_BV_v.mean(), 2104.1093852527683)
+        assert_allclose(S1_BV_v.mean(), -12190.386173792602)
+        assert_allclose(rate_BV_v.mean(), -156.52244418065774)
+        # The two Butler-Volmer models must only differ by n*F (unit conversion)
+        assert_allclose(rate_BV_v, rate_BV_c * BV_params["n"] * 96485.33212)
 
 
 if __name__ == '__main__':
