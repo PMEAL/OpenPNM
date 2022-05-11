@@ -84,7 +84,7 @@ class UtilsTest:
         sf.set_value_BC(pores=net.pores("left"), values=1.0)
         sf.set_value_BC(pores=net.pores("right"), values=0.0)
         sf.run()
-        air.update(sf.results())
+        air.update(sf.soln)
         ad.settings._update({"cache": False})
         ad._build_A()
         # Non-uniform pressure field --> positive advection --> non-symmetric

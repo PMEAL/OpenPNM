@@ -16,12 +16,6 @@ class GenericTransportTest:
         self.phase['pore.mole_fraction'] = 0
         self.phase['throat.diffusive_conductance'] = 1.0
 
-    def test_results(self):
-        alg = op.algorithms.GenericTransport(network=self.net,
-                                             phase=self.phase)
-        with pytest.raises(Exception):
-            alg.results()
-
     def test_undefined_elements(self):
         net = op.network.Cubic(shape=[3, 3, 3])
         phase = op.phase.GenericPhase(network=net)
