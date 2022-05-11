@@ -53,7 +53,7 @@ class GenericSourceTermTest:
         self.alg.set_source(propname='pore.source1',
                             pores=self.source_pores)
         self.alg.run()
-        self.phase.update(self.alg.results())
+        self.phase.update(self.alg.soln)
         self.phase.regenerate_models(propnames='pore.source1')
         X = self.phase['pore.mole_fraction']
         r1 = np.round(np.sum(0.5e-11 * X[self.source_pores] + 1.5e-12), 20)
@@ -79,7 +79,7 @@ class GenericSourceTermTest:
         self.alg.settings._update({'conductance': 'throat.diffusive_conductance',
                                    'quantity': 'pore.mole_fraction'})
         self.alg.run()
-        self.phase.update(self.alg.results())
+        self.phase.update(self.alg.soln)
         self.phase.regenerate_models(propnames='pore.source1')
         X = self.phase['pore.mole_fraction']
         r1 = np.sum(0.5e-12 * X[self.source_pores]**2.5 - 1.4e-11)
@@ -111,7 +111,7 @@ class GenericSourceTermTest:
         self.alg.settings._update({'conductance': 'throat.diffusive_conductance',
                                    'quantity': 'pore.mole_fraction'})
         self.alg.run()
-        self.phase.update(self.alg.results())
+        self.phase.update(self.alg.soln)
         self.phase.regenerate_models(propnames='pore.source1')
         X = self.phase['pore.mole_fraction']
         r1 = np.sum(0.8e-11 * 3 ** (0.5 * X[self.source_pores]**2 - 0.34) + 2e-14)
@@ -141,7 +141,7 @@ class GenericSourceTermTest:
         self.alg.settings._update({'conductance': 'throat.diffusive_conductance',
                                    'quantity': 'pore.mole_fraction'})
         self.alg.run()
-        self.phase.update(self.alg.results())
+        self.phase.update(self.alg.soln)
         self.phase.regenerate_models(propnames='pore.source1')
         X = self.phase['pore.mole_fraction']
         r1 = np.sum(0.8e-11 * np.exp(0.5 * X[self.source_pores]**2 - 0.34) + 2e-14)
@@ -173,7 +173,7 @@ class GenericSourceTermTest:
         self.alg.settings._update({'conductance': 'throat.diffusive_conductance',
                                    'quantity': 'pore.mole_fraction'})
         self.alg.run()
-        self.phase.update(self.alg.results())
+        self.phase.update(self.alg.soln)
         self.phase.regenerate_models(propnames='pore.source1')
         X = self.phase['pore.mole_fraction']
         r1 = np.sum(0.16e-13 * np.log(4*X[self.source_pores]**(1.4) + 0.133)
@@ -204,7 +204,7 @@ class GenericSourceTermTest:
         self.alg.settings._update({'conductance': 'throat.diffusive_conductance',
                                    'quantity': 'pore.mole_fraction'})
         self.alg.run()
-        self.phase.update(self.alg.results())
+        self.phase.update(self.alg.soln)
         self.phase.regenerate_models(propnames='pore.source1')
         X = self.phase['pore.mole_fraction']
         r1 = np.sum(0.16e-14*np.log(4*X[self.source_pores]**1.4 + 0.133) - 5.1e-14)
