@@ -50,6 +50,7 @@ class GenericNetwork(Domain):
     Examples
     --------
     >>> import openpnm as op
+    >>> import numpy as np
 
     Create some pore coordinates and connections manually and assign to a
     GenericNetwork instance. Consider a linear network of 4 pores and 3
@@ -59,8 +60,8 @@ class GenericNetwork(Domain):
 
         0 ―― 1 ―― 3 ―― 2
 
-    >>> coords = [[0, 0, 0], [1, 0, 0], [2, 0, 0], [3, 0, 0]]
-    >>> conns = [[0, 1], [1, 3], [2, 3]]
+    >>> coords = np.array([[0, 0, 0], [1, 0, 0], [2, 0, 0], [3, 0, 0]])
+    >>> conns = np.array([[0, 1], [1, 3], [2, 3]])
     >>> pn = op.network.GenericNetwork(conns=conns, coords=coords)
 
     Networks have two required properties: 'pore.coords' and
