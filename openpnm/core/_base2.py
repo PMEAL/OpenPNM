@@ -187,7 +187,7 @@ class Base2(dict):
                 vals = {}  # Gather any arrays into a dict
                 for k in self.keys():
                     if k.startswith(key+'.'):
-                        vals.update({k.removeprefix(key+'.'): self[k]})
+                        vals.update({k.replace(key+'.', ''): self[k]})
                 if len(vals) > 0:
                     return vals
                 else:
