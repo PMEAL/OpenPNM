@@ -12,9 +12,10 @@ pore scale-models and parameters.
 
 """
 
+from ._utils import *
 from ._generic_io import GenericIO
 from ._dict import Dict
-from ._vtk import to_vtk
+from ._vtk import project_to_vtk
 from ._csv import to_csv
 from ._networkx import to_networkx, from_networkx
 from ._marock import from_marock
