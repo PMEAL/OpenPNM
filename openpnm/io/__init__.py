@@ -13,7 +13,6 @@ pore scale-models and parameters.
 """
 
 from ._generic_io import GenericIO
-from ._pickle import Pickle, to_pickle, from_pickle
 from ._dict import Dict
 from ._vtk import to_vtk
 from ._csv import to_csv
