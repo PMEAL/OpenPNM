@@ -222,6 +222,11 @@ class ModelsDict(PrintableDict):
             else:
                 raise KeyError(key)
 
+    def update(self, d, domain='all'):
+        parent = self._find_parent()
+        for k, v in d.items():
+            parent.add_model(propname=k, domain=domain, **v)
+
 
 class ModelWrapper(dict):
     r"""

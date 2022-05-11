@@ -19,5 +19,5 @@ class Water(GenericPhase):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.add_model_collection(water)
+        self.models.update(water)
         self.regenerate_models()

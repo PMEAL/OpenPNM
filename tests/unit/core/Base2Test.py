@@ -109,7 +109,7 @@ class Base2Test:
         assert g['pore.dict.item1'].sum() == 12
         assert g['pore.dict.item2'].sum() == 21
         g['pore.dict'] = {'item3@left': 1, 'item3@right': 2.0}
-        # Double dots...not sure how these should work
+        # Double dots
         g['pore.nested.name1'] = 10
         g['pore.nested.name2'] = 20
         assert isinstance(g['pore.nested'], dict)
