@@ -16,7 +16,7 @@ from ._generic_io import GenericIO
 from ._pickle import Pickle, to_pickle, from_pickle
 from ._dict import Dict
 from ._vtk import to_vtk
-from ._csv import to_csv, from_csv
+from ._csv import to_csv
 from ._networkx import to_networkx, from_networkx
 from ._marock import from_marock
 from ._statoil import to_statoil, from_statoil
