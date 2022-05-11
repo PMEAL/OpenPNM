@@ -434,7 +434,7 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
         if isinstance(variable_props, str):
             variable_props = [variable_props]
         # Handle mode
-        mode = self._parse_mode(mode, allowed=['merge', 'overwrite'],
+        mode = self._parse_mode(mode, allowed=['add', 'overwrite'],
                                 single=True)
         if mode == 'overwrite':
             self.settings['variable_props'].clear()

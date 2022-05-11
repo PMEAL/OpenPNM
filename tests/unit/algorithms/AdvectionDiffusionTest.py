@@ -27,7 +27,7 @@ class AdvectionDiffusionTest:
         self.sf.set_value_BC(pores=self.net.pores('left'), values=0)
         self.sf.run()
 
-        self.phase.update(self.sf.results())
+        self.phase.update(self.sf.soln)
 
         self.ad = AdvectionDiffusion(network=self.net, phase=self.phase)
         self.ad.settings._update({"cache": False})
