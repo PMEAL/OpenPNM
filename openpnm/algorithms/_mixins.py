@@ -3,13 +3,15 @@ import numpy as np
 import warnings
 from openpnm.utils import prettify_logger_message
 from openpnm.utils import Docorator
-docstr = Docorator()
-logger = logging.getLogger(__name__)
 
 
 __all__ = [
     'BCsMixin'
 ]
+
+
+docstr = Docorator()
+logger = logging.getLogger(__name__)
 
 
 class BCsMixin:
@@ -178,7 +180,7 @@ class BCsMixin:
             raise Exception('The number of values must match the number of locations')
 
         # Catch pores with existing BCs
-        if mode == 'merge':         # Remove offenders, and warn user
+        if mode == 'merge':
             existing_bcs = np.isfinite(self[f"pore.bc_{othertype}"])
             inds = pores[existing_bcs[pores]]
         elif mode == 'overwrite':   # Remove existing BCs and write new ones

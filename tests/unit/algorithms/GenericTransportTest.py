@@ -201,55 +201,55 @@ class GenericTransportTest:
     #     # Net rate must always be zero at steady state conditions
     #     assert np.isclose(alg.rate(pores=net.Ps), 0.0)
 
-    def test_reset_settings_and_data(self):
-        alg = op.algorithms.GenericTransport(network=self.net,
-                                             phase=self.phase)
-        alg.settings['conductance'] = 'throat.diffusive_conductance'
-        alg.settings['quantity'] = 'pore.mole_fraction'
-        alg.set_rate_BC(pores=self.net.pores('bottom'), values=1)
-        alg.set_value_BC(pores=self.net.pores('top'), values=0)
-        alg.run()
-        assert ~np.all(np.isnan(alg['pore.bc_value']))
-        assert ~np.all(np.isnan(alg['pore.bc_rate']))
-        assert 'pore.mole_fraction' in alg.keys()
-        alg.reset(bcs=True, results=False)
-        assert np.all(np.isnan(alg['pore.bc_value']))
-        assert np.all(np.isnan(alg['pore.bc_rate']))
-        assert 'pore.mole_fraction' in alg.keys()
-        alg.reset(bcs=True, results=True)
-        assert 'pore.mole_fraction' not in alg.keys()
-        alg.set_rate_BC(pores=self.net.pores('bottom'), values=1)
-        alg.set_value_BC(pores=self.net.pores('top'), values=0)
-        alg.run()
+    # def test_reset_settings_and_data(self):
+    #     alg = op.algorithms.GenericTransport(network=self.net,
+    #                                          phase=self.phase)
+    #     alg.settings['conductance'] = 'throat.diffusive_conductance'
+    #     alg.settings['quantity'] = 'pore.mole_fraction'
+    #     alg.set_rate_BC(pores=self.net.pores('bottom'), values=1)
+    #     alg.set_value_BC(pores=self.net.pores('top'), values=0)
+    #     alg.run()
+    #     assert ~np.all(np.isnan(alg['pore.bc_value']))
+    #     assert ~np.all(np.isnan(alg['pore.bc_rate']))
+    #     assert 'pore.mole_fraction' in alg.keys()
+    #     alg.reset(bcs=True, results=False)
+    #     assert np.all(np.isnan(alg['pore.bc_value']))
+    #     assert np.all(np.isnan(alg['pore.bc_rate']))
+    #     assert 'pore.mole_fraction' in alg.keys()
+    #     alg.reset(bcs=True, results=True)
+    #     assert 'pore.mole_fraction' not in alg.keys()
+    #     alg.set_rate_BC(pores=self.net.pores('bottom'), values=1)
+    #     alg.set_value_BC(pores=self.net.pores('top'), values=0)
+    #     alg.run()
 
-    def test_reset_actual_results(self):
-        alg = op.algorithms.GenericTransport(network=self.net,
-                                             phase=self.phase)
-        alg.settings['conductance'] = 'throat.diffusive_conductance_temp'
-        self.phase['throat.diffusive_conductance_temp'] = 1.0
-        alg.settings['quantity'] = 'pore.concentration'
-        alg.set_value_BC(pores=self.net.pores('bottom'), values=1)
-        alg.set_value_BC(pores=self.net.pores('top'), values=0)
-        alg.run()
-        m1 = alg.rate(pores=self.net.pores('top'))
-        m2 = -alg.rate(pores=self.net.pores('bottom'))
-        # This should pass because the alg has only run once
-        np.testing.assert_allclose(m1, m2)
-        # Now adjust conductance values and re-run
-        self.phase['throat.diffusive_conductance_temp'][[0, 1, 2]] *= 0.1
-        alg.run()
-        m1 = alg.rate(pores=self.net.pores('top'))
-        m2 = -alg.rate(pores=self.net.pores('bottom'))
-        # The mass won't balance, so the same test will fail
-        with pytest.raises(AssertionError):
-            np.testing.assert_allclose(m1, m2)
-        # Now use reset method
-        alg.reset()
-        alg.run()
-        m1 = alg.rate(pores=self.net.pores('top'))
-        m2 = -alg.rate(pores=self.net.pores('bottom'))
-        # Now this will pass again
-        np.testing.assert_allclose(m1, m2)
+    # def test_reset_actual_results(self):
+    #     alg = op.algorithms.GenericTransport(network=self.net,
+    #                                          phase=self.phase)
+    #     alg.settings['conductance'] = 'throat.diffusive_conductance_temp'
+    #     self.phase['throat.diffusive_conductance_temp'] = 1.0
+    #     alg.settings['quantity'] = 'pore.concentration'
+    #     alg.set_value_BC(pores=self.net.pores('bottom'), values=1)
+    #     alg.set_value_BC(pores=self.net.pores('top'), values=0)
+    #     alg.run()
+    #     m1 = alg.rate(pores=self.net.pores('top'))
+    #     m2 = -alg.rate(pores=self.net.pores('bottom'))
+    #     # This should pass because the alg has only run once
+    #     np.testing.assert_allclose(m1, m2)
+    #     # Now adjust conductance values and re-run
+    #     self.phase['throat.diffusive_conductance_temp'][[0, 1, 2]] *= 0.1
+    #     alg.run()
+    #     m1 = alg.rate(pores=self.net.pores('top'))
+    #     m2 = -alg.rate(pores=self.net.pores('bottom'))
+    #     # The mass won't balance, so the same test will fail
+    #     with pytest.raises(AssertionError):
+    #         np.testing.assert_allclose(m1, m2)
+    #     # Now use reset method
+    #     alg.reset()
+    #     alg.run()
+    #     m1 = alg.rate(pores=self.net.pores('top'))
+    #     m2 = -alg.rate(pores=self.net.pores('bottom'))
+    #     # Now this will pass again
+    #     np.testing.assert_allclose(m1, m2)
 
     # def test_validate_data_health(self):
     #     alg = op.algorithms.GenericTransport(network=self.net,
