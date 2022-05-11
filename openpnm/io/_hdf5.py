@@ -1,6 +1,6 @@
 import logging
 from flatdict import FlatDict
-from openpnm.io import Dict, _parse_filename
+from openpnm.io import project_to_dict, _parse_filename
 from h5py import File as hdfFile
 
 
@@ -26,14 +26,11 @@ def project_to_hdf5(project, filename=''):
         A handle to an hdf5 file.  This must be closed when done (i.e.
         ``f.close()``.
     """
-    network = project.network
-    phases = project.phases
-
     if filename == '':
         filename = project.name
     filename = _parse_filename(filename, ext='hdf')
 
-    dct = Dict.to_dict(network=network, phases=phases)
+    dct = project_to_dict(project=project)
     d = FlatDict(dct, delimiter='/')
 
     f = hdfFile(filename, "w")

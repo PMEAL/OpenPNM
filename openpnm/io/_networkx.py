@@ -1,7 +1,5 @@
 import logging
 import numpy as np
-from openpnm.io import GenericIO
-from openpnm.network import GenericNetwork
 logger = logging.getLogger(__name__)
 
 
@@ -47,6 +45,7 @@ def network_from_networkx(G):
 
     """
     import networkx as nx
+    from openpnm.network import GenericNetwork
 
     net = {}
 
@@ -146,6 +145,7 @@ def network_to_networkx(network):
         A NetworkX object with all pore/throat properties attached to it
     """
     import networkx as nx
+    from openpnm.network import GenericNetwork
 
     # Ensure network is an GenericNetwork.
     if not isinstance(network, GenericNetwork):

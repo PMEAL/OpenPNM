@@ -13,8 +13,7 @@ pore scale-models and parameters.
 """
 
 from ._utils import *
-from ._generic_io import GenericIO
-from ._dict import Dict
+from ._dict import project_to_dict
 from ._vtk import project_to_vtk
 from ._pandas import project_to_pandas
 from ._csv import project_to_csv

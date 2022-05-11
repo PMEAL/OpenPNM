@@ -2,7 +2,7 @@ import logging
 import numpy as np
 from flatdict import FlatDict
 from xml.etree import ElementTree as ET
-from openpnm.io import Dict, _parse_args, _parse_filename
+from openpnm.io import project_to_dict, _parse_filename
 from openpnm.utils import Workspace
 logger = logging.getLogger(__name__)
 ws = Workspace()
@@ -72,11 +72,8 @@ def project_to_vtk(project, filename="", delim=" | ",
         filename = project.name
     filename = _parse_filename(filename=filename, ext="vtp")
 
-    am = Dict.to_dict(
-        network=network,
-        phases=phases,
-        categorize_by=["object", "data"],
-    )
+    am = project_to_dict(project=project,
+                         categorize_by=["object", "data"])
     am = FlatDict(am, delimiter=delim)
     key_list = list(sorted(am.keys()))
 

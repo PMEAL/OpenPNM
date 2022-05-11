@@ -1,7 +1,7 @@
 import logging
 from flatdict import FlatDict
 import xml.etree.cElementTree as ET
-from openpnm.io import Dict, _parse_filename
+from openpnm.io import project_to_dict, _parse_filename
 import h5py
 
 
@@ -40,8 +40,8 @@ def project_to_xdmf(project, filename=''):
     path = _parse_filename(filename=filename, ext='xmf')
     # Path is a pathlib object, so slice it up as needed
     fname_xdf = path.name
-    d = Dict.to_dict(network, phases=phases, flatten=False,
-                     categorize_by=['element', 'data'])
+    d = project_to_dict(project=project, flatten=False,
+                        categorize_by=['element', 'data'])
     D = FlatDict(d, delimiter='/')
     # Identify time steps
     t_steps = []

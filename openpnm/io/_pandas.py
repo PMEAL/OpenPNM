@@ -1,6 +1,6 @@
 import numpy as np
 from pandas import DataFrame
-from openpnm.io import Dict
+from openpnm.io import project_to_dict
 from openpnm.utils import sanitize_dict
 
 
@@ -29,13 +29,12 @@ def project_to_pandas(project, join=False, delim='.'):
 
     """
     network = project.network
-    phases = project.phases
 
     # Initialize pore and throat data dictionary using Dict class
-    pdata = Dict.to_dict(network=network, phases=phases, element='pore',
-                         flatten=True, categorize_by=[], delim=delim)
-    tdata = Dict.to_dict(network=network, phases=phases, element='throat',
-                         flatten=True, categorize_by=[], delim=delim)
+    pdata = project_to_dict(project=project, element='pore',
+                            flatten=True, categorize_by=[], delim=delim)
+    tdata = project_to_dict(project=project, element='throat',
+                            flatten=True, categorize_by=[], delim=delim)
 
     # Scan data and convert non-1d arrays to multiple columns
     for key in list(pdata.keys()):
