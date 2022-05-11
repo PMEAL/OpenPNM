@@ -20,14 +20,12 @@ from ._pandas import project_to_pandas
 from ._csv import project_to_csv
 from ._hdf5 import project_to_hdf5, print_hdf5
 from ._xdmf import project_to_xdmf
-from ._networkx import to_networkx, from_networkx
-from ._marock import from_marock
-from ._statoil import to_statoil, from_statoil
-from ._pergeos import to_pergeos, from_pergeos
-from ._porespy import from_porespy
-from ._jsongraph import to_jsongraph, from_jsongraph
+from ._marock import network_from_marock
+from ._porespy import network_from_porespy
+from ._networkx import network_to_networkx, network_from_networkx
+from ._statoil import network_to_statoil, network_from_statoil
+from ._pergeos import project_to_pergeos, network_from_pergeos
+from ._jsongraph import network_to_jsongraph, network_from_jsongraph
 # from ._stl import to_stl
 # from ._comsol import to_comsol
 # from ._salome import to_salome
-# from ._pnm import PNM
-# from ._paraview import ParaView, to_paraview
