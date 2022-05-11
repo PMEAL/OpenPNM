@@ -4,25 +4,29 @@ import matplotlib.pyplot as plt
 
 pn = op.network.Cubic(shape=[25, 25, 1])
 pn['pore.domain1'] = pn.coords[:, 0] < 13
-pn['throat.domain1'] = pn.find_neighbor_throats(pn.pores('domain1'), asmask=True)
+pn['throat.domain1'] = pn.find_neighbor_throats(pn.pores('domain1'),
+                                                asmask=True)
 pn.add_model_collection(op.models.collections.geometry.cones_and_cylinders,
                         domain='domain1')
 
 pn['pore.domain2'] = pn.coords[:, 0] >= 13
-pn['throat.domain2'] = pn.find_neighbor_throats(pn.pores('domain2'), mode='xnor',
+pn['throat.domain2'] = pn.find_neighbor_throats(pn.pores('domain2'),
+                                                mode='xnor',
                                                 asmask=True)
 pn.add_model_collection(op.models.collections.geometry.cones_and_cylinders,
                         domain='domain2')
 
 pn.regenerate_models()
-# TODO: Need to run twice since there were nans! This needs the dependency handler
-# to be fixed up
+# TODO: Need to run twice since there were nans! This needs the dependency
+# handler to be fixed up
 pn.regenerate_models()
 
 air = op.phase.Air(network=pn)
 air.models.update(op.models.collections.physics.standard)
-air.add_model_collection(op.models.collections.physics.standard, domain='domain1')
-air.add_model_collection(op.models.collections.physics.standard, domain='domain2')
+air.add_model_collection(op.models.collections.physics.standard,
+                         domain='domain1')
+air.add_model_collection(op.models.collections.physics.standard,
+                         domain='domain2')
 air.regenerate_models()
 
 air['pore.reaction_sites'] = False

@@ -6,10 +6,13 @@ from scipy.optimize.nonlin import TerminationCondition
 from openpnm.algorithms import GenericTransport
 from openpnm.utils import TypedList, Docorator, SettingsAttr
 from tqdm import tqdm
-docstr = Docorator()
-logger = logging.getLogger(__name__)
+
 
 __all__ = ['ReactiveTransport']
+
+
+docstr = Docorator()
+logger = logging.getLogger(__name__)
 
 
 @docstr.get_sections(base='ReactiveTransportSettings', sections=['Parameters'])
@@ -22,7 +25,7 @@ class ReactiveTransportSettings:
     %(GenericTransportSettings.parameters)s
     sources : list
         List of source terms that have been added
-    relaxation_quantity : float (default = 1.0)
+    relaxation_factor : float (default = 1.0)
         A relaxation factor to control under-relaxation for the quantity
         solving for. Factor approaching 0 leads to improved stability but
         slower simulation. Factor approaching 1 gives fast simulation but
@@ -37,7 +40,7 @@ class ReactiveTransportSettings:
 
     """
     prefix = 'react_trans'
-    relaxation_quantity = 1.0
+    relaxation_factor = 1.0
     sources = TypedList(types=[str])
     newton_maxiter = 5000
     f_rtol = 1e-6
@@ -66,30 +69,9 @@ class ReactiveTransport(GenericTransport):
         super().__init__(phase=phase, settings=self.settings, **kwargs)
         self.settings['phase'] = phase.name
 
-    @docstr.dedent
-    def reset(self, source_terms=False, **kwargs):
-        r"""
-        %(GenericTransport.reset.full_desc)s
-
-        Parameters
-        ----------
-        %(GenericTransport.reset.parameters)s
-        source_terms : bool
-            If ``True`` removes source terms. The default is ``False``.
-
-        """
-        super().reset(**kwargs)
-        if not source_terms:
-            return
-        # Remove item from label dictionary
-        for item in self.settings['sources']:
-            self.pop(item, None)
-        # Reset the settings dict
-        self.settings['sources'] = []
-
     def set_source(self, propname, pores, mode='overwrite'):
         r"""
-        Applies a given source term to the specified pores.
+        Applies a given source term to the specified pores
 
         Parameters
         ----------
@@ -132,24 +114,6 @@ class ReactiveTransport(GenericTransport):
         # Check if propname already in source term list
         if propname not in self.settings['sources']:
             self.settings['sources'].append(propname)
-
-    def remove_source(self, propname, pores=None):
-        r"""
-        Removes source terms from specified pores.
-
-        Parameters
-        ----------
-        propname : str
-            The property name of the source term model to be removed.
-        pores : array_like
-            The pore indices where the source term should be applied.
-
-        """
-        propname = self._parse_prop(propname, 'pore')
-        if pores is None:
-            self.pop(propname, None)
-        else:
-            self[propname][pores] = False
 
     def _update_iterative_props(self):
         """
@@ -223,7 +187,7 @@ class ReactiveTransport(GenericTransport):
             Initial guess of the unknown variable
 
         """
-        w = self.settings['relaxation_quantity']
+        w = self.settings['relaxation_factor']
         maxiter = self.settings['newton_maxiter']
         f_rtol = self.settings['f_rtol']
         x_rtol = self.settings['x_rtol']
