@@ -76,8 +76,8 @@ class PlotToolsTest:
     def test_plot_connections_color_by(self):
         pn = op.network.Cubic(shape=[5, 5, 1])
         np.random.seed(10)
-        geo = op.geometry.SpheresAndCylinders(network=pn,
-                                              pores=pn.Ps, throats=pn.Ts)
+        pn.add_model_collection(op.models.collections.geometry.spheres_and_cylinders)
+        pn.regenerate_models()
         Ts = np.array([0, 4, 6, 18])
         im = op.topotools.plot_connections(pn, throats=Ts,
                                            color_by=pn['throat.diameter'])
@@ -90,8 +90,8 @@ class PlotToolsTest:
     def test_plot_coordinates_color_by(self):
         pn = op.network.Cubic(shape=[5, 5, 1])
         np.random.seed(10)
-        geo = op.geometry.SpheresAndCylinders(network=pn,
-                                              pores=pn.Ps, throats=pn.Ts)
+        pn.add_model_collection(op.models.collections.geometry.spheres_and_cylinders)
+        pn.regenerate_models()
         Ps = np.array([0, 4, 6, 18])
         im = op.topotools.plot_coordinates(pn, pores=Ps,
                                            color_by=pn['pore.diameter'])
