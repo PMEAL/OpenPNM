@@ -142,6 +142,7 @@ def plot_connections(network,
     color = mcolors.to_rgb(color) + tuple([alpha])
     # Override colors with color_by if given
     if color_by is not None:
+        color_by = color_by[Ts]
         color = cm.get_cmap(name=cmap)(color_by / color_by.max())
         color[:, 3] = alpha
     if size_by is not None:
@@ -290,6 +291,7 @@ def plot_coordinates(network,
     if 's' in kwargs.keys():
         markersize = kwargs.pop('s')
     if color_by is not None:
+        color_by = color_by[Ps]
         color = cm.get_cmap(name=cmap)(color_by / color_by.max())
     if size_by is not None:
         markersize = size_by / size_by.max() * markersize
