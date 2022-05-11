@@ -18,8 +18,8 @@ from ._dict import Dict
 from ._vtk import project_to_vtk
 from ._pandas import project_to_pandas
 from ._csv import project_to_csv
-from ._hdf5 import to_hdf5, print_hdf5
-from ._xdmf import to_xdmf
+from ._hdf5 import project_to_hdf5, print_hdf5
+from ._xdmf import project_to_xdmf
 from ._networkx import to_networkx, from_networkx
 from ._marock import from_marock
 from ._statoil import to_statoil, from_statoil
