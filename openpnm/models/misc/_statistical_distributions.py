@@ -146,16 +146,15 @@ def generic_distribution(target, seeds, func):
        import matplotlib.pyplot as plt
 
        pn = op.network.Cubic(shape=[3, 3, 3])
-       geo = op.geometry.GenericGeometry(network=pn, pores=pn.Ps, throats=pn.Ts)
-       geo.add_model(propname='pore.seed',
-                     model=op.models.geometry.pore_seed.random)
+       pn.add_model(propname='pore.seed',
+                    model=op.models.geometry.pore_seed.random)
 
        # Now retrieve the stats distribution and add to ``geo`` as a model
        stats_obj = scipy.stats.weibull_min(c=2, scale=.0001, loc=0)
-       geo.add_model(propname='pore.size',
-                     model=op.models.geometry.pore_size.generic_distribution,
-                     seeds='pore.seed',
-                     func=stats_obj)
+       pn.add_model(propname='pore.size',
+                    model=op.models.geometry.pore_size.generic_distribution,
+                    seeds='pore.seed',
+                    func=stats_obj)
 
        plt.hist(stats_obj.ppf(q=numpy.random.rand(1000)), bins=50)
 

@@ -1,6 +1,5 @@
 import numpy as np
-from flatdict import FlatDict
-from collections import namedtuple
+from pandas import DataFrame
 from openpnm.io import Dict, GenericIO
 from openpnm.utils import sanitize_dict
 
@@ -25,7 +24,7 @@ class Pandas(GenericIO):
     """
 
     @classmethod
-    def export_data(cls, network=None, phases=[], join=False, delim=' | '):
+    def export_data(cls, network=None, phases=[], join=False, delim='.'):
         r"""
         Convert the Network (and optionally Phase) data to Pandas DataFrames.
 
@@ -33,10 +32,8 @@ class Pandas(GenericIO):
         ----------
         network: GenericNetwork
             The network containing the data to be stored
-
         phases : list[GenericPhase]s
             The data on each supplied phase will be added to DataFrame
-
         join : bool
             If ``False`` (default), two DataFrames are returned with *pore*
             data in one, and *throat* data in the other.  If ``True`` the pore
@@ -46,27 +43,21 @@ class Pandas(GenericIO):
 
         Returns
         -------
-        Pandas ``DataFrame`` object containing property and label data in each
-        column.  If ``join`` was ``False`` (default) the two DataFrames are
-        returned in a named tuple, otherwise a single DataFrame with pore and
+        Pandas ``DataFrame`` object(s) containing property and label data in
+        each column. If ``join`` was ``False`` (default) the two DataFrames are
+        returned in a dict, otherwise a single DataFrame with pore and
         throat data in the same file, despite the column length being
         different.
 
         """
-        from pandas import DataFrame
-
         project, network, phases = cls._parse_args(network=network,
                                                    phases=phases)
 
         # Initialize pore and throat data dictionary using Dict class
         pdata = Dict.to_dict(network=network, phases=phases, element='pore',
-                             interleave=True, flatten=True,
-                             categorize_by=['object'])
+                             flatten=True, categorize_by=[], delim=delim)
         tdata = Dict.to_dict(network=network, phases=phases, element='throat',
-                             interleave=True, flatten=True,
-                             categorize_by=['object'])
-        pdata = FlatDict(pdata, delimiter=delim)
-        tdata = FlatDict(tdata, delimiter=delim)
+                             flatten=True, categorize_by=[], delim=delim)
 
         # Scan data and convert non-1d arrays to multiple columns
         for key in list(pdata.keys()):
@@ -92,13 +83,12 @@ class Pandas(GenericIO):
         if join:
             data = tdata.join(other=pdata, how='left')
         else:
-            nt = namedtuple('dataframes', ('pore', 'throat'))
-            data = nt(pore=pdata, throat=tdata)
+            data = {'pore': pdata, 'throat': tdata}
 
         return data
 
 
-def to_pandas(network, phases=[], filename='', join=False, delim=' | '):
+def to_pandas(network, phases=[], join=False, delim='.'):
     return Pandas.export_data(network=network, phases=phases,
                               join=join, delim=delim)
 

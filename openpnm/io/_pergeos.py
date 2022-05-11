@@ -31,7 +31,7 @@ class PerGeos(GenericIO):
 
         # Add phase properties to network, if any
         for phase in phases:
-            for item in phase.keys(mode='props', deep=True):
+            for item in phase.keys(mode='props'):
                 temp = item.split('.', 1)
                 new_name = temp[0] + '.' + phase.name + '.' + temp[1]
                 network[new_name] = phase[item]
@@ -128,7 +128,7 @@ class PerGeos(GenericIO):
             f.write(''.join(s))
 
     @classmethod
-    def import_data(cls, filename, network=None):
+    def import_data(cls, filename):
         r"""
         """
         net = {}
@@ -193,15 +193,14 @@ class PerGeos(GenericIO):
         net['pore.coords'] = net['pore.VertexCoordinates']
         net['throat.conns'] = np.sort(net['throat.EdgeConnectivity'], axis=1)
 
-        if network is None:
-            network = GenericNetwork()
-        network = cls._update_network(network=network, net=net)
+        network = GenericNetwork()
+        network.update(net)
 
         return network.project
 
 
-def from_pergeos(filename, network=None):
-    project = PerGeos.import_data(filename=filename, network=network)
+def from_pergeos(filename):
+    project = PerGeos.import_data(filename=filename)
     return project
 
 

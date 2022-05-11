@@ -149,7 +149,7 @@ class JSONGraphTest:
                     '../../../fixtures/JSONGraphFormat')
         filename = Path(path.resolve(), 'valid.json')
         project = op.io.from_jsongraph(filename)
-        assert len(project) == 2
+        assert len(project) == 1
 
         # Ensure overal network properties
         net = project.network
@@ -157,9 +157,7 @@ class JSONGraphTest:
         assert net.Nt == 1
 
         # Ensure correctness of pore properties
-        assert np.array_equal(net['pore.area'], np.array([0, 0]))
         assert np.array_equal(net['pore.index'], np.array([0, 1]))
-        assert np.array_equal(net['pore.volume'], np.array([0, 0]))
         assert np.array_equal(net['pore.diameter'], np.array([0, 0]))
         assert np.array_equal(net['pore.coords'][0], np.array([0, 0, 0]))
         assert np.array_equal(net['pore.coords'][1], np.array([1, 1, 1]))
@@ -168,13 +166,8 @@ class JSONGraphTest:
         length = 1.73205080757
         squared_radius = 5.169298742047715
         assert net['throat.length'] == length
-        assert net['throat.cross_sectional_area'] == np.pi * squared_radius
         assert np.array_equal(net['throat.conns'], np.array([[0, 1]]))
         assert net['throat.diameter'] == 2.0 * np.sqrt(squared_radius)
-        assert net['throat.volume'] == np.pi * squared_radius * length
-        assert net['throat.perimeter'] == 2.0 * np.pi * np.sqrt(squared_radius)
-        assert net['throat.surface_area'] == 2.0 * \
-            np.sqrt(squared_radius) * np.pi * length
 
 
 if __name__ == '__main__':
@@ -189,4 +182,4 @@ if __name__ == '__main__':
             try:
                 t.__getattribute__(item)()
             except TypeError:
-                t.__getattribute__(item)(tmpdir=tmpdir)
+                t.__getattribute__(item)()

@@ -42,15 +42,15 @@ class XDMF(GenericIO):
                                                    phases=phases)
         network = network[0]
         # Check if any of the phases has time series
-        transient = GenericIO._is_transient(phases=phases)
+        transient = False
 
         if filename == '':
             filename = project.name
         path = cls._parse_filename(filename=filename, ext='xmf')
         # Path is a pathlib object, so slice it up as needed
         fname_xdf = path.name
-        d = Dict.to_dict(network, phases=phases, interleave=True,
-                         flatten=False, categorize_by=['element', 'data'])
+        d = Dict.to_dict(network, phases=phases, flatten=False,
+                         categorize_by=['element', 'data'])
         D = FlatDict(d, delimiter='/')
         # Identify time steps
         t_steps = []

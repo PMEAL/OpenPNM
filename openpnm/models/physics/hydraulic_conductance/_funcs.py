@@ -38,15 +38,15 @@ def generic_hydraulic(
     network = target.network
     throats = target.throats(to_global=True)
     conns = network.conns[throats]
-    phase = target.project.find_phase(target)
+    phase = target
     F = network[size_factors]
     mu1, mu2 = phase[pore_viscosity][conns].T
     mut = phase[throat_viscosity][throats]
 
     if isinstance(F, dict):
-        g1 = F[f"{size_factors}.pore1"][throats] / mu1
-        gt = F[f"{size_factors}.throat"][throats] / mut
-        g2 = F[f"{size_factors}.pore2"][throats] / mu2
+        g1 = F["pore1"][throats] / mu1
+        gt = F["throat"][throats] / mut
+        g2 = F["pore2"][throats] / mu2
         return 1 / (1/g1 + 1/gt + 1/g2)
     return F[throats] / mut
 
@@ -136,11 +136,10 @@ def hagen_poiseuille_power_law(
     %(return_arr)s hydraulic conductance
 
     """
-    # Fetch GenericPhysicss
     network = target.project.network
     domain = target._domain
     throats = domain.throats(target.name)
-    phase = target.project.find_phase(target)
+    phase = target
     cn = network.conns[throats]
 
     # Fetch model parameters
@@ -150,7 +149,8 @@ def hagen_poiseuille_power_law(
     L2 = network[conduit_lengths + ".pore2"][throats]
     Lt = network[conduit_lengths + ".throat"][throats]
     P = phase[pore_pressure]
-    Pt = phase.interpolate_data(propname=pore_pressure)[throats]
+    t_prop = 'throat.'+pore_pressure.split('.', 1)[-1]
+    Pt = phase.interpolate_data(propname=t_prop)[throats]
 
     mu_min = phase[pore_viscosity_min][cn]
     mu_mint = phase[throat_viscosity_min][throats]
@@ -264,7 +264,6 @@ def valvatne_blunt(
     J. Colloid Interface Sci., 236, 295–304.
 
     """
-    # Fetch GenericPhysicss
     network = target.network
     conns = network["throat.conns"]
     mu_p = target[pore_viscosity]

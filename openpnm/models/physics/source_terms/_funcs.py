@@ -149,20 +149,8 @@ def standard_kinetics(target, X, prefactor, exponent):
     return values
 
 
-def _parse_args(target, key, default):
-    r"""
-    Parses the passed ``key``: returns ``default`` if ``key`` is empty,
-    otherwise fetches and returns the values from ``target``.
-    """
-    if key == '':
-        val = default
-    else:
-        val = target[key]
-    return val
-
-
 @_doctxt
-def linear(target, X, A1='', A2=''):
+def linear(target, X, A1=0.0, A2=0.0):
     r"""
     Calculates the rate, as well as slope and intercept of the following
     function at the given value of ``X``:
@@ -201,19 +189,15 @@ def linear(target, X, A1='', A2=''):
             rate = S_{1} X + S_{2}
 
     """
-    A = _parse_args(target=target, key=A1, default=0.0)
-    B = _parse_args(target=target, key=A2, default=0.0)
-    X = target[X]
-
-    r = A * X + B
-    S1 = A
-    S2 = B
+    r = target[A1] * target[X] + target[A2]
+    S1 = target[A1]
+    S2 = target[A2]
     values = {'S1': S1, 'S2': S2, 'rate': r}
     return values
 
 
 @_doctxt
-def power_law(target, X, A1='', A2='', A3=''):
+def power_law(target, X, A1=0.0, A2=0.0, A3=0.0):
     r"""
     Calculates the rate, as well as slope and intercept of the following
     function at the given value of *X*:
@@ -252,9 +236,9 @@ def power_law(target, X, A1='', A2='', A3=''):
             rate = S_{1} X + S_{2}
 
     """
-    A = _parse_args(target=target, key=A1, default=0.0)
-    B = _parse_args(target=target, key=A2, default=1.0)
-    C = _parse_args(target=target, key=A3, default=0.0)
+    A = target[A1]
+    B = target[A2]
+    C = target[A3]
     X = target[X]
 
     r = A * X ** B + C
@@ -265,7 +249,7 @@ def power_law(target, X, A1='', A2='', A3=''):
 
 
 @_doctxt
-def exponential(target, X, A1='', A2='', A3='', A4='', A5='', A6=''):
+def exponential(target, X, A1=0.0, A2=1.0, A3=1.0, A4=1.0, A5=0.0, A6=0.0):
     r"""
     Calculates the rate, as well as slope and intercept of the following
     function at the given value of `X`:
@@ -304,12 +288,12 @@ def exponential(target, X, A1='', A2='', A3='', A4='', A5='', A6=''):
             rate = S_{1} X + S_{2}
 
     """
-    A = _parse_args(target=target, key=A1, default=0.0)
-    B = _parse_args(target=target, key=A2, default=1.0)
-    C = _parse_args(target=target, key=A3, default=1.0)
-    D = _parse_args(target=target, key=A4, default=1.0)
-    E = _parse_args(target=target, key=A5, default=0.0)
-    F = _parse_args(target=target, key=A6, default=0.0)
+    A = target[A1]
+    B = target[A2]
+    C = target[A3]
+    D = target[A4]
+    E = target[A5]
+    F = target[A6]
     X = target[X]
 
     r = A * B ** (C * X ** D + E) + F
@@ -320,7 +304,7 @@ def exponential(target, X, A1='', A2='', A3='', A4='', A5='', A6=''):
 
 
 @_doctxt
-def natural_exponential(target, X, A1='', A2='', A3='', A4='', A5=''):
+def natural_exponential(target, X, A1=0.0, A2=0.0, A3=0.0, A4=0.0, A5=0.0):
     r"""
     Calculates the rate, as well as slope and intercept of the following
     function at the given value of `X`:
@@ -359,11 +343,11 @@ def natural_exponential(target, X, A1='', A2='', A3='', A4='', A5=''):
             rate = S_{1} X + S_{2}
 
     """
-    A = _parse_args(target=target, key=A1, default=0.0)
-    B = _parse_args(target=target, key=A2, default=0.0)
-    C = _parse_args(target=target, key=A3, default=0.0)
-    D = _parse_args(target=target, key=A4, default=0.0)
-    E = _parse_args(target=target, key=A5, default=0.0)
+    A = target[A1]
+    B = target[A2]
+    C = target[A3]
+    D = target[A4]
+    E = target[A5]
     X = target[X]
 
     r = A * _np.exp(B * X ** C + D) + E
@@ -374,7 +358,7 @@ def natural_exponential(target, X, A1='', A2='', A3='', A4='', A5=''):
 
 
 @_doctxt
-def logarithm(target, X, A1='', A2='', A3='', A4='', A5='', A6=''):
+def logarithm(target, X, A1=0.0, A2=10.0, A3=1.0, A4=1.0, A5=0.0, A6=0.0):
     r"""
     Calculates the rate, as well as slope and intercept of the following
     function at the given value of `X`:
@@ -413,12 +397,12 @@ def logarithm(target, X, A1='', A2='', A3='', A4='', A5='', A6=''):
             rate = S_{1} X + S_{2}
 
     """
-    A = _parse_args(target=target, key=A1, default=0.0)
-    B = _parse_args(target=target, key=A2, default=10.0)
-    C = _parse_args(target=target, key=A3, default=1.0)
-    D = _parse_args(target=target, key=A4, default=1.0)
-    E = _parse_args(target=target, key=A5, default=0.0)
-    F = _parse_args(target=target, key=A6, default=0.0)
+    A = target[A1]
+    B = target[A2]
+    C = target[A3]
+    D = target[A4]
+    E = target[A5]
+    F = target[A6]
     X = target[X]
 
     r = (A * _np.log(C * X ** D + E)/_np.log(B) + F)
@@ -430,7 +414,7 @@ def logarithm(target, X, A1='', A2='', A3='', A4='', A5='', A6=''):
 
 
 @_doctxt
-def natural_logarithm(target, X, A1='', A2='', A3='', A4='', A5=''):
+def natural_logarithm(target, X, A1=0.0, A2=1.0, A3=1.0, A4=0.0, A5=0.0):
     r"""
     Calculates the rate, as well as slope and intercept of the following
     function at the given value of `X`:
@@ -469,11 +453,11 @@ def natural_logarithm(target, X, A1='', A2='', A3='', A4='', A5=''):
             rate = S_{1} X + S_{2}
 
     """
-    A = _parse_args(target=target, key=A1, default=0.0)
-    B = _parse_args(target=target, key=A2, default=1.0)
-    C = _parse_args(target=target, key=A3, default=1.0)
-    D = _parse_args(target=target, key=A4, default=0.0)
-    E = _parse_args(target=target, key=A5, default=0.0)
+    A = target[A1]
+    B = target[A2]
+    C = target[A3]
+    D = target[A4]
+    E = target[A5]
     X = target[X]
 
     r = A*_np.log(B*X**C + D) + E
@@ -690,7 +674,7 @@ def butler_volmer_conc(
     S1 = drdC
     S2 = r - drdC * X
 
-    values = {"pore.S1": S1, "pore.S2": S2, "pore.rate": r}
+    values = {"S1": S1, "S2": S2, "rate": r}
     return values
 
 
@@ -709,7 +693,7 @@ def butler_volmer_voltage(
 
     Parameters
     ----------
-    target : GenericPhysics
+    target : OpenPNM Phase
         The Physics object where the result will be applied.
     X : str
         The dictionary key of the quantity of interest (i.e. main variable
@@ -827,5 +811,5 @@ def butler_volmer_voltage(
     S1 = drdV
     S2 = r - drdV * X
 
-    values = {"pore.S1": S1, "pore.S2": S2, "pore.rate": r}
+    values = {"S1": S1, "S2": S2, "rate": r}
     return values

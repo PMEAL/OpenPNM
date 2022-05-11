@@ -63,7 +63,7 @@ def ad_dif_mig(target,
     network = target.project.network
     domain = target._domain
     throats = domain.throats(target.name)
-    phase = target.project.find_phase(target)
+    phase = target
     cn = network["throat.conns"][throats]
     T = phase[throat_temperature][throats]
     # Check if pressure and potential values exist, otherwise, assign zeros

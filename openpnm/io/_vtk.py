@@ -74,7 +74,7 @@ class VTK(GenericIO):
         """
         project, network, phases = cls._parse_args(network=network, phases=phases)
         # Check if any of the phases has time series
-        transient = GenericIO._is_transient(phases=phases)
+        transient = False
         if transient:
             logger.warning(
                 "vtp format does not support transient data, " + "use xdmf instead"
@@ -86,7 +86,6 @@ class VTK(GenericIO):
         am = Dict.to_dict(
             network=network,
             phases=phases,
-            interleave=True,
             categorize_by=["object", "data"],
         )
         am = FlatDict(am, delimiter=delim)
@@ -149,60 +148,6 @@ class VTK(GenericIO):
             f.write(string)
 
     @classmethod
-    def import_data(cls, filename, project=None, delim=" | "):
-        r"""
-        Read in pore and throat data from a saved VTK file.
-
-        Parameters
-        ----------
-        filename : str (optional)
-            The name of the file containing the data to import. The formatting
-            of this file is outlined below.
-        project : Project
-            A GenericNetwork is created and added to the specified Project.
-            If no Project is supplied then one will be created and returned.
-
-        """
-        net = {}
-
-        filename = cls._parse_filename(filename, ext="vtp")
-        tree = ET.parse(filename)
-        piece_node = tree.find("PolyData").find("Piece")
-
-        # Extract connectivity
-        conn_element = piece_node.find("Lines").find("DataArray")
-        conns = VTK._element_to_array(conn_element, 2)
-        # Extract coordinates
-        coord_element = piece_node.find("Points").find("DataArray")
-        coords = VTK._element_to_array(coord_element, 3)
-
-        # Extract pore data
-        for item in piece_node.find("PointData").iter("DataArray"):
-            key = item.get("Name")
-            array = VTK._element_to_array(item)
-            net[key] = array
-        # Extract throat data
-        for item in piece_node.find("CellData").iter("DataArray"):
-            key = item.get("Name")
-            array = VTK._element_to_array(item)
-            net[key] = array
-
-        if project is None:
-            project = ws.new_project()
-        project = Dict.from_dict(dct=net, project=project, delim=delim)
-
-        # Clean up data values, if necessary, like convert array's of
-        # 1's and 0's into boolean.
-        project = cls._convert_data(project)
-
-        # Add coords and conns to network
-        network = project.network
-        network.update({"throat.conns": conns})
-        network.update({"pore.coords": coords})
-
-        return project
-
-    @classmethod
     def _array_to_element(cls, name, array, n=1):
         dtype_map = {
             "int8": "Int8",
@@ -235,14 +180,6 @@ class VTK(GenericIO):
         if n != 1:
             array = array.reshape(array.size // n, n)
         return array
-
-
-def from_vtk(filename, project=None, delim=' | '):
-    project = VTK.import_data(filename=filename, project=project, delim=delim)
-    return project
-
-
-from_vtk.__doc__ = VTK.import_data.__doc__
 
 
 def to_vtk(network, phases=[], filename="", delim=" | ",

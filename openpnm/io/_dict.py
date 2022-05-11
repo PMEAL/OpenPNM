@@ -9,14 +9,7 @@ ws = Workspace()
 
 class Dict(GenericIO):
     r"""
-    Generates hierarchical ``dicts`` with a high degree of control over the
-    structure.
-
-    This is the most important class in the ``io`` module, since many other
-    classes use this to manipulate and format the data structures.
-
-    Also, it is possible to use Python's ``pickle`` module to save ``dicts``
-    to file.
+    Merges the network and phase data onto a single dict
 
     """
 
@@ -102,8 +95,8 @@ class Dict(GenericIO):
         return project
 
     @classmethod
-    def to_dict(cls, network=None, phases=[], element=['pore', 'throat'],
-                interleave=True, flatten=True, categorize_by=[]):
+    def to_dict(cls, network=None, phases=[], categorize_by=[],
+                flatten=False, element=None, delim=' | '):
         r"""
         Returns a single dictionary object containing data from the given
         OpenPNM objects, with the keys organized differently depending on
@@ -111,29 +104,11 @@ class Dict(GenericIO):
 
         Parameters
         ----------
-        network : GenericNetwork (optional)
+        network : Network Object
             The network containing the desired data
-
         phases : list[GenericPhase]s (optional, default is none)
             A list of phase objects whose data are to be included
 
-        element : str or list[str]
-            An indication of whether 'pore' and/or 'throat' data are desired.
-            The default is both.
-
-        interleave : bool (default is ``True``)
-            When ``True`` (default) the data from all Geometry objects (and
-            Physics objects if ``phases`` are given) is interleaved into
-            a single array and stored as a network property (or Phase
-            property for Physics data). When ``False``, the data for each
-            object are stored under their own dictionary key, the structuring
-            of which depends on the value of the ``flatten`` argument.
-
-        flatten : bool (default is ``True``)
-            When ``True``, all objects are accessible from the top level
-            of the dictionary.  When ``False`` objects are nested under their
-            parent object.  If ``interleave`` is ``True`` this argument is
-            ignored.
 
         categorize_by : str or list[str]
             Indicates how the dictionaries should be organized.  The list can
@@ -141,10 +116,7 @@ class Dict(GenericIO):
 
             **'object'** : If specified the dictionary keys will be stored
             under a general level corresponding to their type (e.g.
-            'network/net_01/pore.all'). If  ``interleave`` is ``True`` then
-            only the only categories are *network* and *phase*, since
-            *geometry* and *physics* data get stored under their respective
-            *network* and *phase*.
+            'network/net_01/pore.all').
 
             **'data'** : If specified the data arrays are additionally
             categorized by ``label`` and ``property`` to separate *boolean*
@@ -160,29 +132,24 @@ class Dict(GenericIO):
         A dictionary with the data stored in a hierarchical data structure, the
         actual format of which depends on the arguments to the function.
 
-        Notes
-        -----
-        There is a handy package called *flatdict* that can be used to
-        access this dictionary using a single key such that:
-
-        ``d[level_1][level_2] == d[level_1/level_2]``
-
-        Importantly, converting to a *flatdict* allows it be converted to an
-        *HDF5* file directly, since the hierarchy is dictated by the placement
-        of '/' characters.
         """
         project, network, phases = cls._parse_args(network=network,
                                                    phases=phases)
-        delim = ' | '
-        d = NestedDict(delimiter=delim)
+        if flatten:
+            d = {}
+        else:
+            d = NestedDict(delimiter=delim)
 
         def build_path(obj, key):
             propname = delim + key
-            prefix = 'root'
+            prefix = ''
             datatype = ''
             arr = obj[key]
             if 'object' in categorize_by:
-                prefix = obj._isa()
+                if hasattr(obj, 'coords'):
+                    prefix = 'network' + delim
+                else:
+                    prefix = 'phase' + delim
             if 'element' in categorize_by:
                 propname = delim + key.replace('.', delim)
             if 'data' in categorize_by:
@@ -190,66 +157,19 @@ class Dict(GenericIO):
                     datatype = delim + 'labels'
                 else:
                     datatype = delim + 'properties'
-            path = prefix + delim + obj.name + datatype + propname
+            path = prefix + obj.name + datatype + propname
             return path
 
         for net in network:
-            for key in net.keys(element=element, mode='all'):
+            for key in net.props(element=element) + net.labels(element=element):
                 path = build_path(obj=net, key=key)
                 d[path] = net[key]
 
-            for geo in project.geometries().values():
-                for key in geo.keys(element=element, mode='all'):
-                    if interleave:
-                        path = build_path(obj=net, key=key)
-                        d[path] = net[key]
-                    else:
-                        path = build_path(obj=geo, key=key)
-                        if flatten:
-                            d[path] = geo[key]
-                        elif 'object' in categorize_by:
-                            path = path.split(delim)
-                            path.insert(0, 'network')
-                            path.insert(1, net.name)
-                            path = delim.join(path)
-                        else:
-                            path = path.split(delim)
-                            path.insert(1, net.name)
-                            path = delim.join(path)
-                        d[path] = geo[key]
-
         for phase in phases:
-            for key in phase.keys(element=element, mode='all'):
+            for key in phase.props(element=element) + phase.labels(element=element):
                 path = build_path(obj=phase, key=key)
                 d[path] = phase[key]
 
-            for phys in project.find_physics(phase=phase):
-                if phys:
-                    for key in phys.keys(element=element, mode='all'):
-                        if interleave:
-                            path = build_path(obj=phase, key=key)
-                            d[path] = phase[key]
-                        else:
-                            path = build_path(obj=phys, key=key)
-                            if flatten:
-                                d[path] = phys[key]
-                            elif 'object' in categorize_by:
-                                path = path.split(delim)
-                                path.insert(0, 'phase')
-                                path.insert(1, phase.name)
-                                path = delim.join(path)
-                            else:
-                                path = path.split(delim)
-                                path.insert(1, phase.name)
-                                path = delim.join(path)
-                            d[path] = phys[key]
-
-        if 'root' in d.keys():
-            d = d['root']
-        if 'project' in categorize_by:
-            new_d = NestedDict()
-            new_d[project.name] = d
-            d = new_d
         return d
 
     @classmethod

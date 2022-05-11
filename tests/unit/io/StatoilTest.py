@@ -24,6 +24,7 @@ class StatoilTest:
         project = op.io.from_statoil(path=path.resolve(), prefix='F42A')
         assert len(project) == 1
         net = project.network
+        self.net = net
         assert net.Np == 1246
         assert net.Nt == 2654
         assert np.shape(net['pore.coords']) == (1246, 3)

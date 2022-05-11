@@ -89,11 +89,10 @@ def electroneutrality(
     if ions == []:
         raise Exception('List of ions must be provided')
 
-    # Fetch GenericPhysicss
     network = target.network
     domain = target._domain
     throats = domain.throats(target.name)
-    phase = target.project.find_phase(target)
+    phase = target
     cn = network.conns[throats]
 
     # Fetch model parameters

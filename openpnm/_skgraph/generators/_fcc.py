@@ -98,10 +98,10 @@ def fcc(shape, spacing=1, mode='kdtree', node_prefix='node', edge_prefix='edge')
     conns = np.vstack((net1[edge_prefix+'.conns'], conns))
 
     d = {}
-    d[node_prefix + '.corner'] = corner_labels
-    d[node_prefix + '.face'] = ~corner_labels
     d[node_prefix + '.coords'] = crds*spacing
     d[edge_prefix + '.conns'] = conns
+    d[node_prefix + '.corner'] = corner_labels
+    d[node_prefix + '.face'] = ~corner_labels
     return d
 
 

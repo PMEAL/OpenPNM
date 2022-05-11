@@ -1,7 +1,6 @@
 import logging
 import numpy as np
 from openpnm.phase import Mercury
-from openpnm.physics import GenericPhysics
 from openpnm.algorithms import OrdinaryPercolation
 from openpnm import models
 from openpnm import topotools
@@ -26,7 +25,8 @@ class MercuryIntrusion(OrdinaryPercolation):
     --------
     >>> import openpnm as op
     >>> pn = op.network.Cubic(shape=[10, 10, 10], spacing=1e-5)
-    >>> geo = op.geometry.SpheresAndCylinders(network=pn)
+    >>> pn.add_model_collection(op.models.collections.geometry.spheres_and_cylinders)
+    >>> pn.regenerate_models()
     >>> mip = op.metrics.MercuryIntrusion(network=pn)
     >>> mip.run()
 
@@ -43,14 +43,9 @@ class MercuryIntrusion(OrdinaryPercolation):
     def __init__(self, network, settings=None, **kwargs):
         hg = Mercury(network=network)
         super().__init__(network=network, phase=hg, settings=self.settings, **kwargs)
-        project = self.project
         self.settings['phase'] = hg.name
         mod = models.physics.capillary_pressure.washburn
-        for geom in project.geometries().values():
-            phys = GenericPhysics(network=network, phase=hg, geometry=geom)
-            phys.add_model(propname='throat.entry_pressure', model=mod)
-        if not project.geometries():
-            hg.add_model(propname='throat.entry_pressure', model=mod)
+        hg.add_model(propname='throat.entry_pressure', model=mod)
         topotools.find_surface_pores(network=network)
         self.set_inlets(pores=network.pores('surface'))
         del self['pore.outlets']

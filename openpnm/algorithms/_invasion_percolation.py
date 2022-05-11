@@ -486,9 +486,11 @@ if __name__ == '__main__':
     import matplotlib.pyplot as plt
     from scipy.stats import rankdata
     pn = op.network.Cubic(shape=[25, 25, 1], spacing=1e-4)
-    geo = op.geometry.SpheresAndCylinders(network=pn, pores=pn.Ps, throats=pn.Ts)
+    pn.add_model_collection(op.models.collections.geometry.spheres_and_cylinders)
+    pn.regenerate_models()
     water = op.phase.Water(network=pn, name='h2o')
-    phys_water = op.physics.Standard(network=pn, phase=water, geometry=geo)
+    water.add_model_collection(op.models.collections.physics.standard)
+    water.regenerate_models()
     ip = InvasionPercolation(network=pn, phase=water)
     ip.set_inlets(pn.pores('left'))
     ip.run()

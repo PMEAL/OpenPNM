@@ -4,7 +4,6 @@ import numpy as np
 from openpnm.topotools import trim, extend
 from openpnm.io import GenericIO
 from openpnm.network import GenericNetwork
-from openpnm.geometry import GenericGeometry
 import openpnm.models as mods
 from pathlib import Path
 from pandas import read_table, DataFrame
@@ -208,9 +207,8 @@ class Statoil(GenericIO):
                 s = s + '\n'  # Remove trailing tab and a new line
                 f.write(s)
 
-
     @classmethod
-    def import_data(cls, path, prefix, network=None):
+    def import_data(cls, path, prefix):
         r"""
         Load data from the \'dat\' files located in specified folder.
 
@@ -313,9 +311,8 @@ class Statoil(GenericIO):
         net['pore.area'] = ((net['pore.radius']**2)
                             / (4.0*net['pore.shape_factor']))
 
-        if network is None:
-            network = GenericNetwork()
-        network = cls._update_network(network=network, net=net)
+        network = GenericNetwork()
+        network.update(net)
 
         # Use OpenPNM Tools to clean up network
         # Trim throats connected to 'inlet' or 'outlet' reservoirs
@@ -337,7 +334,7 @@ class Statoil(GenericIO):
 
 
 def from_statoil(path, prefix, network=None):
-    project = Statoil.import_data(path=path, prefix=prefix, network=network)
+    project = Statoil.import_data(path=path, prefix=prefix)
     return project
 
 

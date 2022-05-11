@@ -2,7 +2,6 @@ import logging
 import os as os
 import numpy as np
 from pathlib import Path
-from openpnm.utils import Project
 from openpnm.network import GenericNetwork
 from openpnm.io import GenericIO
 from openpnm.topotools import trim
@@ -25,7 +24,7 @@ class MARock(GenericIO):
     """
 
     @classmethod
-    def import_data(cls, path, voxel_size=1, project=None):
+    def import_data(cls, path, voxel_size=1):
         r"""
         Load data from a 3DMA-Rock extracted network.  This format consists of
         two files: 'rockname.np2th' and 'rockname.th2pn'.  They should be
@@ -48,10 +47,6 @@ class MARock(GenericIO):
             the linear length of eac voxel. The default is 1.  This is used to
             scale the voxel counts to actual dimension. It is recommended that
             this value be in SI units [m] to work well with OpenPNM.
-
-        project : Project
-            A GenericNetwork is created and added to the specified Project.
-            If no Project is supplied then one will be created and returned.
 
         """
 
@@ -96,11 +91,12 @@ class MARock(GenericIO):
 
         with open(th2np_file, mode='rb') as f:
             Nt = np.fromfile(file=f, count=1, dtype='u4')[0]
-            net['throat.cross_sectional_area'] = np.ones([Nt, ], dtype=int)*(-1)
+            net['throat.cross_sectional_area'] = \
+                np.ones([Nt, ], dtype=int)*(-1)
             for i in range(0, Nt):
                 ID = np.fromfile(file=f, count=1, dtype='u4')
-                net['throat.cross_sectional_area'][i] = np.fromfile(file=f, count=1,
-                                                    dtype='f4')
+                net['throat.cross_sectional_area'][i] = \
+                    np.fromfile(file=f, count=1, dtype='f4')
                 # numvox = np.fromfile(file=f, count=1, dtype='u4')
                 att_pores = np.fromfile(file=f, count=2, dtype='u4')
             nx = np.fromfile(file=f, count=1, dtype='u4')
@@ -114,23 +110,22 @@ class MARock(GenericIO):
             net['pore.internal'] = net['pore.boundary_type'] == 0
 
         # Convert voxel area and volume to actual dimensions
-        net['throat.cross_sectional_area'] = (voxel_size**2)*net['throat.cross_sectional_area']
+        net['throat.cross_sectional_area'] = \
+            (voxel_size**2)*net['throat.cross_sectional_area']
         net['pore.volume'] = (voxel_size**3)*net['pore.volume']
 
-        if project is None:
-            project = Project(name=path)
-        network = GenericNetwork(project=project)
-        network = cls._update_network(network=network, net=net)
+        network = GenericNetwork()
+        network.update(net)
 
         # Trim headless throats before returning
         ind = np.where(network['throat.conns'][:, 0] == -1)[0]
         trim(network=network, throats=ind)
 
-        return project
+        return network.project
 
 
 def from_marock(path, voxel_size=1, project=None):
-    project = MARock.import_data(path=path, voxel_size=voxel_size, project=project)
+    project = MARock.import_data(path=path, voxel_size=voxel_size)
     return project
 
 

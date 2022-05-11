@@ -92,15 +92,15 @@ def plot_connections(network,
     >>> mpl.use('Agg')
     >>> pn = op.network.Cubic(shape=[10, 10, 3])
     >>> pn.add_boundary_pores()
-    >>> Ts = pn.throats('*boundary', mode='not')        # find internal throats
-    >>> fig, ax = plt.subplots()                        # create empty figure
+    >>> Ts = pn.throats('*boundary', mode='not')  # find internal throats
+    >>> fig, ax = plt.subplots()  # create empty figure
     >>> _ = op.topotools.plot_connections(network=pn,
-    ...                                   throats=Ts)   # plot internal throats
-    >>> Ts = pn.throats('*boundary')                    # find boundary throats
+    ...                                   throats=Ts)  # plot internal throats
+    >>> Ts = pn.throats('*boundary')  # find boundary throats
     >>> _ = op.topotools.plot_connections(network=pn,
     ...                                   throats=Ts,
     ...                                   ax=ax,
-    ...                                   color='r')    # plot boundary throats in red
+    ...                                   color='r')  # plot boundary throats in red
 
     """
     import matplotlib.pyplot as plt
@@ -237,18 +237,19 @@ def plot_coordinates(network,
     >>> import matplotlib.pyplot as plt
     >>> mpl.use('Agg')
     >>> pn = op.network.Cubic(shape=[10, 10, 3])
+    >>> pn['pore.internal'] = True
     >>> pn.add_boundary_pores()
-    >>> Ps = pn.pores('internal')                       # find internal pores
-    >>> fig, ax = plt.subplots()                        # create empty figure
+    >>> Ps = pn.pores('internal')  # find internal pores
+    >>> fig, ax = plt.subplots()  # create empty figure
     >>> _ = op.topotools.plot_coordinates(network=pn,
     ...                                   pores=Ps,
     ...                                   color='b',
-    ...                                   ax=ax)        # plot internal pores
-    >>> Ps = pn.pores('*boundary')                      # find boundary pores
+    ...                                   ax=ax)  # plot internal pores
+    >>> Ps = pn.pores('*boundary')  # find boundary pores
     >>> _ = op.topotools.plot_coordinates(network=pn,
     ...                                   pores=Ps,
     ...                                   color='r',
-    ...                                   ax=ax)        # plot boundary pores in red
+    ...                                   ax=ax)  # plot boundary pores in red
 
     """
     import matplotlib.pyplot as plt
