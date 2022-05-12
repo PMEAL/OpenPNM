@@ -62,7 +62,7 @@ def project_to_dict(project, categorize_by=['name'], flatten=False, element=None
             else:
                 prefix = 'phase' + delim
         if 'element' in categorize_by:
-            propname = key.replace('.', delim) + delim
+            propname = key.replace('.', delim)
         if 'data' in categorize_by:
             if arr.dtype == bool:
                 datatype = 'labels' + delim
