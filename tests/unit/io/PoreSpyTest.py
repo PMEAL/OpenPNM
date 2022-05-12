@@ -12,13 +12,13 @@ class PoreSpyTest:
             self.net = pickle.load(f)
 
     def test_load_PoreSpy_from_pickle(self):
-        proj = op.io.from_porespy(self.net)
+        proj = op.io.network_from_porespy(self.net)
         net = proj.network
         assert net.Np == 1637
         assert net.Nt == 2785
 
     def test_load_PoreSpy_from_file(self):
-        proj = op.io.from_porespy(filename=self.path)
+        proj = op.io.network_from_porespy(filename=self.path)
         net = proj.network
         assert net.Np == 1637
         assert net.Nt == 2785

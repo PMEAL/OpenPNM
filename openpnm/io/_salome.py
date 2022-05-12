@@ -1,21 +1,12 @@
 import logging
 import numpy as np
-from openpnm.io import GenericIO
+from openpnm.io import _parse_filename
+
+
 logger = logging.getLogger(__name__)
 
 
-class Salome(GenericIO):
-    r"""
-    Writes a Salome .py script to generate a geometry.
-
-    The exported .py file should be loaded from Salome with "load script".
-
-    Notes
-    -----
-    Visit salome-platform.org for more information.
-
-    """
-    _header = """
+_header = """
 import numpy as np
 def pnm_2_salome(cylinder_head, cylinder_tail, cylinder_r,
                  sphere_c, sphere_r, explicit=False):
@@ -72,86 +63,76 @@ def pnm_2_salome(cylinder_head, cylinder_tail, cylinder_r,
         salome.sg.updateObjBrowser()
 
     """
-    _footer = """
+_footer = """
 pnm_2_salome(cylinder_head, cylinder_tail, cylinder_r,
              sphere_c, sphere_r, explicit=explicit)
 
     """
 
-    @classmethod
-    def export_data(cls, network, filename=None, explicit=False):
-        r"""
-        Saves the network data and writes a Salome .py instruction file.
 
-        Parameters
-        ----------
-        network : GenericNetwork
-            The network containing the desired data
+def network_to_salome(network, filename=None, explicit=False):
+    r"""
+    Saves the network data and writes a Salome .py instruction file.
 
-        Notes
-        -----
-        This method only saves the data, not any of the pore-scale models
-        or other attributes. To save an actual OpenPNM Project use the
-        ``Workspace`` object.
+    Parameters
+    ----------
+    network : GenericNetwork
+        The network containing the desired data
 
-        """
-        project, network, phases = cls._parse_args(network=network, phases=[])
-        net = network = network[0]
+    Notes
+    -----
+    This method only saves the data, not any of the pore-scale models
+    or other attributes. To save an actual OpenPNM Project use the
+    ``Workspace`` object.
 
-        # Temporarily add endpoints to network so STL class works
-        network["throat.endpoints.head"] = network.coords[network.conns[:, 0]]
-        network["throat.endpoints.tail"] = network.coords[network.conns[:, 1]]
+    """
+    # Temporarily add endpoints to network so STL class works
+    network["throat.endpoints.head"] = network.coords[network.conns[:, 0]]
+    network["throat.endpoints.tail"] = network.coords[network.conns[:, 1]]
 
-        filename = network.name if filename is None else filename
-        filename = cls._parse_filename(filename=filename, ext='py')
+    filename = network.name if filename is None else filename
+    filename = _parse_filename(filename=filename, ext='py')
 
-        f = open(filename, 'w')
-        f.write(cls._header+'\n')
+    f = open(filename, 'w')
+    f.write(_header+'\n')
 
-        x = net['throat.endpoints.head']
-        s = str(x.shape)
-        f.write('cylinder_head = np.array([')
-        np.savetxt(f, X=[x.flatten()], fmt='%.18e', delimiter=',', newline='')
-        f.write('])\n')
-        f.write('cylinder_head = np.reshape(cylinder_head, '+s+')\n')
+    x = network['throat.endpoints.head']
+    s = str(x.shape)
+    f.write('cylinder_head = np.array([')
+    np.savetxt(f, X=[x.flatten()], fmt='%.18e', delimiter=',', newline='')
+    f.write('])\n')
+    f.write('cylinder_head = np.reshape(cylinder_head, '+s+')\n')
 
-        x = net['throat.endpoints.tail']
-        s = str(x.shape)
-        f.write('cylinder_tail = np.array([')
-        np.savetxt(f, X=[x.flatten()], fmt='%.18e', delimiter=',', newline='')
-        f.write('])\n')
-        f.write('cylinder_tail = np.reshape(cylinder_tail, '+s+')\n')
+    x = network['throat.endpoints.tail']
+    s = str(x.shape)
+    f.write('cylinder_tail = np.array([')
+    np.savetxt(f, X=[x.flatten()], fmt='%.18e', delimiter=',', newline='')
+    f.write('])\n')
+    f.write('cylinder_tail = np.reshape(cylinder_tail, '+s+')\n')
 
-        x = net['throat.diameter']/2
-        s = str(x.shape)
-        f.write('cylinder_r = np.array([')
-        np.savetxt(f, X=[x.flatten()], fmt='%.18e', delimiter=',', newline='')
-        f.write('])\n')
-        f.write('cylinder_r = np.reshape(cylinder_r, '+s+')\n')
+    x = network['throat.diameter']/2
+    s = str(x.shape)
+    f.write('cylinder_r = np.array([')
+    np.savetxt(f, X=[x.flatten()], fmt='%.18e', delimiter=',', newline='')
+    f.write('])\n')
+    f.write('cylinder_r = np.reshape(cylinder_r, '+s+')\n')
 
-        x = net['pore.coords']
-        s = str(x.shape)
-        f.write('sphere_c = np.array([')
-        np.savetxt(f, X=[x.flatten()], fmt='%.18e', delimiter=',', newline='')
-        f.write('])\n')
-        f.write('sphere_c = np.reshape(sphere_c, '+s+')\n')
+    x = network['pore.coords']
+    s = str(x.shape)
+    f.write('sphere_c = np.array([')
+    np.savetxt(f, X=[x.flatten()], fmt='%.18e', delimiter=',', newline='')
+    f.write('])\n')
+    f.write('sphere_c = np.reshape(sphere_c, '+s+')\n')
 
-        x = net['pore.diameter']/2
-        s = str(x.shape)
-        f.write('sphere_r = np.array([')
-        np.savetxt(f, X=[x.flatten()], fmt='%.18e', delimiter=',', newline='')
-        f.write('])\n')
-        f.write('sphere_r = np.reshape(sphere_r, '+s+')\n')
+    x = network['pore.diameter']/2
+    s = str(x.shape)
+    f.write('sphere_r = np.array([')
+    np.savetxt(f, X=[x.flatten()], fmt='%.18e', delimiter=',', newline='')
+    f.write('])\n')
+    f.write('sphere_r = np.reshape(sphere_r, '+s+')\n')
 
-        f.write('explicit = '+str(explicit))
+    f.write('explicit = '+str(explicit))
 
-        f.write(cls._footer)
+    f.write(_footer)
 
-        f.close()
-
-
-def to_salome(network, filename=None, explicit=False):
-    Salome.export_data(network=network, filename=filename, explicit=explicit)
-
-
-to_salome.__doc__ = Salome.export_data.__doc__
+    f.close()

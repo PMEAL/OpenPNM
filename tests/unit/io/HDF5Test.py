@@ -26,24 +26,13 @@ class HDF5Test:
         ws = op.Workspace()
         ws.clear()
 
-    def test_to_hdf5(self, tmpdir):
+    def test_project_to_hdf5(self, tmpdir):
         fname = tmpdir.join(self.net.project.name)
-        f = op.io.to_hdf5(network=[self.net],
-                          phases=[self.phase_1, self.phase_2],
-                          filename=fname)
+        f = op.io.project_to_hdf5(project=self.net.project, filename=fname)
         assert list(f.keys()) == [self.net.name, self.phase_1.name, self.phase_2.name]
         filename = f.filename
         f.close()
         os.remove(filename)
-
-    def test_print(self, tmpdir):
-        fname = tmpdir.join(self.net.project.name)
-        f = op.io.to_hdf5(network=[self.net], filename=fname,
-                          interleave=False)
-        op.io.print_hdf5(f)
-        op.io.print_hdf5(f, flat=True)
-        f.close()
-        os.remove(fname.dirpath().join(self.net.project.name + '.hdf'))
 
 
 if __name__ == '__main__':

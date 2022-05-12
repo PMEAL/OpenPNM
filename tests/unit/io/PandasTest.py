@@ -25,16 +25,16 @@ class PandasTest:
         ws = op.Workspace()
         ws.clear()
 
-    def test_to_dataframe_not_joined(self):
-        df = op.io.to_pandas(network=self.net, phases=[self.phase_1],
-                             join=False)
-        assert len(df['pore'].keys()) == 16
-        assert len(df['throat'].keys()) == 7
+    def test_project_to_dataframe_not_joined(self):
+        df = op.io.project_to_pandas(project=self.net.project,
+                                     join=False)
+        assert len(df['pore'].keys()) == 21
+        assert len(df['throat'].keys()) == 10
 
-    def test_to_dataframe_joined(self):
-        df = op.io.to_pandas(network=self.net, phases=[self.phase_1],
-                             join=True)
-        assert len(df.keys()) == 23
+    def test_project_to_dataframe_joined(self):
+        df = op.io.project_to_pandas(project=self.net.project,
+                                     join=True)
+        assert len(df.keys()) == 31
         assert np.isnan(df['bob.pore.coords[0]']).sum() > 0
 
 

@@ -18,15 +18,14 @@ class PerGeosTest:
     def test_load_PerGeos_simple(self, tmpdir):
         path = Path(os.path.realpath(__file__),
                     '../../../fixtures/PerGeos/simplePNM.am')
-        project = op.io.from_pergeos(path)
-        network = project.network
+        network = op.io.network_from_pergeos(path)
         assert network.Np == 3
         assert network.Nt == 3
 
     def test_load_PerGeos_mandatory(self, tmpdir):
         path = Path(os.path.realpath(__file__),
                     '../../../fixtures/PerGeos/mandatory.am')
-        project = op.io.from_pergeos(path)
+        project = op.io.network_from_pergeos(path)
         network = project.network
         assert network.Np == 3
         assert network.Nt == 3
@@ -34,17 +33,15 @@ class PerGeosTest:
     def test_load_PerGeos_flooded(self, tmpdir):
         path = Path(os.path.realpath(__file__),
                     '../../../fixtures/PerGeos/flooded.am')
-        project = op.io.from_pergeos(path)
-        network = project.network
+        network = op.io.network_from_pergeos(path)
         assert network.Np == 225
         assert network.Nt == 301
 
     def test_save_PerGeos(self, tmpdir):
         net = op.network.Cubic(shape=[5, 5, 5])
-        water = op.phase.Water(network=net)
         fname = tmpdir.join(net.project.name)
         len_before = len(tmpdir.listdir())
-        op.io.to_pergeos(network=net, phases=water, filename=fname)
+        op.io.network_to_pergeos(net, filename=fname)
         assert len(tmpdir.listdir()) == (len_before + 1)
         os.remove(fname.dirpath().join(net.project.name + '.am'))
 

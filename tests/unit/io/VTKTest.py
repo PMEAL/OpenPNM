@@ -28,14 +28,8 @@ class VTKTest:
         ws.clear()
 
     def test_save_network(self, tmpdir):
-        fname = Path(tmpdir,  'test_save_vtk_1.vtp')
-        op.io.to_vtk(network=self.net, filename=fname)
-        assert fname.is_file()
-        os.remove(fname)
-
-    def test_save_network_and_phases(self, tmpdir):
-        fname = Path(tmpdir,  'test_save_vtk_2.vtp')
-        op.io.to_vtk(network=self.net, phases=self.phase_1, filename=fname)
+        fname = Path(tmpdir, 'test_save_vtk_1.vtp')
+        op.io.project_to_vtk(self.net.project, filename=fname)
         assert fname.is_file()
         os.remove(fname)
 

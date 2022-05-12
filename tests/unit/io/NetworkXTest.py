@@ -26,11 +26,10 @@ class NetworkXTest:
         set_node_attributes(G, name='diameter', values=1.123)
         set_edge_attributes(G, name='length', values=1.123)
         set_edge_attributes(G, name='perimeter', values=1.123)
-        project = op.io.from_networkx(G=G)
-        assert len(project) == 1
+        net = op.io.network_from_networkx(G=G)
+        assert hasattr(net, 'conns')
         num_nodes = len(G.nodes())
         num_edges = len(G.edges())
-        net = project.network
         assert net.Np == num_nodes
         assert net.Nt == num_edges
         assert np.shape(net['pore.coords']) == (num_nodes, 3)
@@ -39,10 +38,9 @@ class NetworkXTest:
         assert a.issubset(net.props())
 
     def test_save_and_load_networkx_no_phases(self):
-        G = op.io.to_networkx(network=self.net)
-        project = op.io.from_networkx(G)
-        assert len(project) == 1
-        net = project.network
+        G = op.io.network_to_networkx(network=self.net)
+        net = op.io.network_from_networkx(G)
+        assert hasattr(net, 'conns')
         assert net.Np == 8
         assert net.Nt == 12
         assert np.shape(net['pore.coords']) == (8, 3)
