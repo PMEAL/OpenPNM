@@ -41,7 +41,7 @@ snow = ps.networks.snow2(im, voxel_size=data['resolution'],
 # ps.imshow(snow.regions/snow.phase)
 
 # %% Open network in OpenPNM
-pn = op.io.from_porespy(snow.network)[0]
+pn = op.io.network_from_porespy(snow.network)
 pn['pore.diameter'] = pn['pore.equivalent_diameter']
 pn['throat.diameter'] = pn['throat.inscribed_diameter']
 pn['throat.spacing'] = pn['throat.total_length']

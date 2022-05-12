@@ -1,7 +1,5 @@
 import openpnm as op
-from openpnm.io import Dict
 import py
-import os
 
 
 class DictTest:

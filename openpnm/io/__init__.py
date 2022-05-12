@@ -26,6 +26,6 @@ from ._networkx import network_to_networkx, network_from_networkx
 from ._statoil import network_to_statoil, network_from_statoil
 from ._pergeos import network_to_pergeos, network_from_pergeos
 from ._jsongraph import network_to_jsongraph, network_from_jsongraph
-# from ._stl import to_stl
-# from ._comsol import to_comsol
-# from ._salome import to_salome
+from ._stl import network_to_stl
+from ._comsol import network_to_comsol
+from ._salome import network_to_salome
