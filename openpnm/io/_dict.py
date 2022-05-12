@@ -67,10 +67,9 @@ def project_to_dict(project, categorize_by=[], flatten=False, element=None,
         path = prefix + obj.name + datatype + propname
         return path
 
-    for net in network:
-        for key in net.props(element=element) + net.labels(element=element):
-            path = build_path(obj=net, key=key)
-            d[path] = net[key]
+    for key in network.props(element=element) + network.labels(element=element):
+        path = build_path(obj=network, key=key)
+        d[path] = network[key]
 
     for phase in phases:
         for key in phase.props(element=element) + phase.labels(element=element):

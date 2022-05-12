@@ -95,7 +95,7 @@ def network_to_jsongraph(network, filename=''):
         json.dump(json_obj, file, indent=2)
 
 
-def network_from_jsongraph(cls, filename):
+def network_from_jsongraph(filename):
     r"""
     Loads the JGF file onto the given project.
 

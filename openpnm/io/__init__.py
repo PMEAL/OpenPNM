@@ -21,9 +21,10 @@ from ._hdf5 import project_to_hdf5, print_hdf5
 from ._xdmf import project_to_xdmf
 from ._marock import network_from_marock
 from ._porespy import network_from_porespy
+from ._paraview import project_to_paraview
 from ._networkx import network_to_networkx, network_from_networkx
 from ._statoil import network_to_statoil, network_from_statoil
-from ._pergeos import project_to_pergeos, network_from_pergeos
+from ._pergeos import network_to_pergeos, network_from_pergeos
 from ._jsongraph import network_to_jsongraph, network_from_jsongraph
 # from ._stl import to_stl
 # from ._comsol import to_comsol

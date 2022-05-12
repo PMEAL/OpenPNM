@@ -15,10 +15,7 @@ def project_to_csv(project, filename=''):
         The name of the file to store the data
 
     """
-    network = project.network
-    phases = project.phases
-    df = project_to_pandas(network=network, phases=phases,
-                           join=True, delim='.')
+    df = project_to_pandas(project=project, join=True, delim='.')
     if filename == '':
         filename = project.name
     fname = _parse_filename(filename=filename, ext='csv')

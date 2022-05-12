@@ -28,10 +28,10 @@ class CSVTest:
         ws = op.Workspace()
         ws.clear()
 
-    def test_save(self, tmpdir):
+    def test_project_to_csv(self, tmpdir):
         fname = tmpdir.join(self.net.project.name)
         len_before = len(tmpdir.listdir())
-        op.io.to_csv(network=self.net, phases=self.phase_1, filename=fname)
+        op.io.project_to_csv(self.net.project, filename=fname)
         assert len(tmpdir.listdir()) == (len_before + 1)
         os.remove(fname.dirpath().join(self.net.project.name + '.csv'))
 

@@ -7,14 +7,11 @@ from openpnm.network import GenericNetwork
 logger = logging.getLogger(__name__)
 
 
-def project_to_pergeos(project, filename=''):
+def network_to_pergeos(network, filename=''):
     r"""
     """
     # avoid printing truncated array
     np.set_printoptions(threshold=np.inf)
-
-    network = project.network
-    phases = project.phases
 
     # Ensure network has PerGeos' expected properties
     if 'pore.EqRadius' not in network.props():
@@ -22,13 +19,6 @@ def project_to_pergeos(project, filename=''):
             network['pore.EqRadius'] = network['pore.diameter']/2
         except KeyError:
             network['pore.EqRadius'] = np.ones([network.Np, ])
-
-    # Add phase properties to network, if any
-    for phase in phases:
-        for item in phase.keys(mode='props'):
-            temp = item.split('.', 1)
-            new_name = temp[0] + '.' + phase.name + '.' + temp[1]
-            network[new_name] = phase[item]
 
     s = ["# Avizo 3D ASCII 3.0\n\n"]
     s.append("define VERTEX " + str(network.Np) + '\n')
@@ -116,7 +106,7 @@ def project_to_pergeos(project, filename=''):
 
     # Write to file
     if filename == '':
-        filename = project.name
+        filename = network.name
     fname = _parse_filename(filename=filename, ext='am')
     with open(fname, 'w') as f:
         f.write(''.join(s))
