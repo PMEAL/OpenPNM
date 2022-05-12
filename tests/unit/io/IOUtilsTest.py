@@ -5,7 +5,7 @@ import pytest
 from pathlib import Path
 
 
-class GenericIOTest:
+class IOUtilsTest:
 
     def setup_class(self):
         self._count = 0
@@ -41,49 +41,49 @@ class GenericIOTest:
 
     def test_parse_filename_dot_extension_no_path(self, tmpdir):
         filename = 'test'+str(self.count())+'.ext'
-        fname = op.io.GenericIO._parse_filename(filename=filename)
+        fname = op.io._parse_filename(filename=filename)
         self.create_write_and_close_file(fname)
 
     def test_parse_filename_arg_extension_no_path(self):
         filename = 'test'+str(self.count())
-        fname = op.io.GenericIO._parse_filename(filename=filename, ext='ext')
+        fname = op.io._parse_filename(filename=filename, ext='ext')
         self.create_write_and_close_file(fname)
 
     def test_parse_filename_arg_and_dot_extension_no_path(self):
         filename = 'test'+str(self.count())+'.ext'
-        fname = op.io.GenericIO._parse_filename(filename=filename, ext='other')
+        fname = op.io._parse_filename(filename=filename, ext='other')
         self.create_write_and_close_file(fname)
 
     def test_parse_filename_dot_extension_with_path(self, tmpdir):
         filename = 'test'+str(self.count())+'.ext'
         filename = os.path.join(tmpdir.dirname, filename)
-        fname = op.io.GenericIO._parse_filename(filename=filename)
+        fname = op.io._parse_filename(filename=filename)
         self.create_write_and_close_file(fname)
 
     def test_parse_filename_path_in_filename_dot_extension(self, tmpdir):
         filename = Path(tmpdir.join('test'+str(self.count())+'.ext'))
-        fname = op.io.GenericIO._parse_filename(filename=filename)
+        fname = op.io._parse_filename(filename=filename)
         self.create_write_and_close_file(fname)
 
     def test_parse_args_no_input_lists(self):
-        proj, net, phases = op.io.GenericIO._parse_args(network=self.net,
-                                                        phases=self.phase)
+        proj, net, phases = op.io._parse_args(network=self.net,
+                                              phases=self.phase)
         assert isinstance(proj, list)
         assert isinstance(net, list)
         assert isinstance(phases, list)
 
     def test_parse_args_all_input_lists(self):
-        proj, net, phases = op.io.GenericIO._parse_args(network=[self.net],
-                                                        phases=[self.phase])
+        proj, net, phases = op.io._parse_args(network=[self.net],
+                                              phases=[self.phase])
         assert isinstance(proj, list)
         assert isinstance(net, list)
         assert isinstance(phases, list)
 
     def test_parse_args_repeated(self):
-        proj1, net1, phases1 = op.io.GenericIO._parse_args(network=[self.net],
-                                                           phases=[self.phase])
-        proj2, net2, phases2 = op.io.GenericIO._parse_args(network=[net1],
-                                                           phases=[phases1])
+        proj1, net1, phases1 = op.io._parse_args(network=[self.net],
+                                                 phases=[self.phase])
+        proj2, net2, phases2 = op.io._parse_args(network=[net1],
+                                                 phases=[phases1])
         assert proj1 == proj2
         assert net1 == net2
         assert phases1 == phases2
@@ -91,7 +91,7 @@ class GenericIOTest:
 
 if __name__ == '__main__':
     # All the tests in this file can be run with 'playing' this file
-    t = GenericIOTest()
+    t = IOUtilsTest()
     self = t  # For interacting with the tests at the command line
     t.setup_class()
     for item in t.__dir__():
