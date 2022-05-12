@@ -5,7 +5,7 @@ from openpnm.utils import NestedDict
 logger = logging.getLogger(__name__)
 
 
-def project_to_dict(project, categorize_by=[], flatten=False, element=None,
+def project_to_dict(project, categorize_by=['name'], flatten=False, element=None,
                     delim=' | '):
     r"""
     Returns a single dictionary object containing data from the given
@@ -23,6 +23,9 @@ def project_to_dict(project, categorize_by=[], flatten=False, element=None,
         **'object'** : If specified the dictionary keys will be stored
         under a general level corresponding to their type (e.g.
         'network/net_01/pore.all').
+
+        **'name'** : If specified, then the data arrays are additionally
+        categorized by their name.  This is enabled by default.
 
         **'data'** : If specified the data arrays are additionally
         categorized by ``label`` and ``property`` to separate *boolean*
@@ -48,7 +51,8 @@ def project_to_dict(project, categorize_by=[], flatten=False, element=None,
         d = NestedDict(delimiter=delim)
 
     def build_path(obj, key):
-        propname = delim + key
+        propname = key
+        name = ''
         prefix = ''
         datatype = ''
         arr = obj[key]
@@ -58,13 +62,15 @@ def project_to_dict(project, categorize_by=[], flatten=False, element=None,
             else:
                 prefix = 'phase' + delim
         if 'element' in categorize_by:
-            propname = delim + key.replace('.', delim)
+            propname = key.replace('.', delim) + delim
         if 'data' in categorize_by:
             if arr.dtype == bool:
-                datatype = delim + 'labels'
+                datatype = 'labels' + delim
             else:
-                datatype = delim + 'properties'
-        path = prefix + obj.name + datatype + propname
+                datatype = 'properties' + delim
+        if 'name' in categorize_by:
+            name = obj.name + delim
+        path = prefix + name + datatype + propname
         return path
 
     for key in network.props(element=element) + network.labels(element=element):

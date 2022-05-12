@@ -1,7 +1,19 @@
 import numpy as np
 from pandas import DataFrame
 from openpnm.io import project_to_dict
-from openpnm.utils import sanitize_dict
+from openpnm.utils import sanitize_dict, Project
+
+
+def network_to_pandas(network, join=False, delim='.'):
+    proj = Project()
+    proj.append(network)
+    # Initialize pore and throat data dictionary using Dict class
+    pdata = project_to_dict(project=proj, element='pore',
+                            flatten=True, categorize_by=[], delim=delim)
+    tdata = project_to_dict(project=proj, element='throat',
+                            flatten=True, categorize_by=[], delim=delim)
+    data = _to_pandas(pdata, tdata, join, Np=network.Np, Nt=network.Nt)
+    return data
 
 
 def project_to_pandas(project, join=False, delim='.'):
@@ -32,20 +44,24 @@ def project_to_pandas(project, join=False, delim='.'):
 
     # Initialize pore and throat data dictionary using Dict class
     pdata = project_to_dict(project=project, element='pore',
-                            flatten=True, categorize_by=[], delim=delim)
+                            flatten=True, categorize_by=['name'], delim=delim)
     tdata = project_to_dict(project=project, element='throat',
-                            flatten=True, categorize_by=[], delim=delim)
+                            flatten=True, categorize_by=['name'], delim=delim)
+    data = _to_pandas(pdata, tdata, join, Np=network.Np, Nt=network.Nt)
+    return data
 
+
+def _to_pandas(pdata, tdata, join, Np, Nt):
     # Scan data and convert non-1d arrays to multiple columns
     for key in list(pdata.keys()):
-        if np.shape(pdata[key]) != (network.Np,):
+        if np.shape(pdata[key]) != (Np,):
             arr = pdata.pop(key)
             tmp = np.split(arr, arr.shape[1], axis=1)
             cols = range(len(tmp))
             pdata.update({key+'['+str(i)+']': tmp[i].squeeze()
                           for i in cols})
     for key in list(tdata.keys()):
-        if np.shape(tdata[key]) != (network.Nt,):
+        if np.shape(tdata[key]) != (Nt,):
             arr = tdata.pop(key)
             tmp = np.split(arr, arr.shape[1], axis=1)
             cols = range(len(tmp))

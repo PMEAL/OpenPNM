@@ -1,11 +1,10 @@
-
-
 __all__ = [
     'from_porespy',
     'from_marock',
     'from_networkx',
     'from_pergeos',
     'from_jsongraph',
+    'from_csv',
 ]
 
 
@@ -36,4 +35,10 @@ def from_pergeos(*args, **kwargs):
 def from_jsongraph(*args, **kwargs):
     from openpnm.io import network_from_jsongraph
     net = network_from_jsongraph(*args, **kwargs)
+    return net
+
+
+def from_csv(*args, **kwargs):
+    from openpnm.io import network_from_csv
+    net = network_from_csv(*args, **kwargs)
     return net
