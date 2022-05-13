@@ -321,11 +321,11 @@ class OrdinaryPercolation(GenericAlgorithm):
 
             # Store current applied pressure in newly invaded pores
             pinds = (self['pore.invasion_pressure'] == np.inf) * \
-                    (labels.sites >= 0)
+                    (labels.site_labels >= 0)
             self['pore.invasion_pressure'][pinds] = inv_val
             # Store current applied pressure in newly invaded throats
             tinds = (self['throat.invasion_pressure'] == np.inf) * \
-                    (labels.bonds >= 0)
+                    (labels.bond_labels >= 0)
             self['throat.invasion_pressure'][tinds] = inv_val
 
         # Convert invasion pressures in sequence values

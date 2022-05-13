@@ -106,8 +106,7 @@ class Porosimetry(OrdinaryPercolation):
                 # Set pressure on phase to current capillary pressure
                 phase['pore.'+quantity] = Pc
                 # Regenerate corresponding physics model
-                for phys in self.project.find_physics(phase=phase):
-                    phys.regenerate_models(self.settings['pore_partial_filling'])
+                phase.regenerate_models(self.settings['pore_partial_filling'])
                 # Fetch partial filling fraction from phase object (0->1)
                 lpf = phase[self.settings['pore_partial_filling']]
             # Calculate filled throat volumes
@@ -116,8 +115,7 @@ class Porosimetry(OrdinaryPercolation):
                 # Set pressure on phase to current capillary pressure
                 phase['throat.'+quantity] = Pc
                 # Regenerate corresponding physics model
-                for phys in self.project.find_physics(phase=phase):
-                    phys.regenerate_models(self.settings['throat_partial_filling'])
+                phase.regenerate_models(self.settings['throat_partial_filling'])
                 # Fetch partial filling fraction from phase object (0->1)
                 ltf = phase[self.settings['throat_partial_filling']]
             p_inv = p_inv*lpf

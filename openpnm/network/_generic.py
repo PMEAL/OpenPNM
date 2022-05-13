@@ -2,7 +2,7 @@ import logging
 import numpy as np
 import scipy.sparse as sprs
 import scipy.spatial as sptl
-from openpnm.core import Base, ModelsMixin, LabelMixin, ParamMixin
+from openpnm.core import Domain
 from openpnm import topotools
 from openpnm.utils import Docorator, SettingsAttr
 from openpnm.utils import Workspace
@@ -26,7 +26,7 @@ class NetworkSettings:
 
 @docstr.get_sections(base='GenericNetwork', sections=['Parameters'])
 @docstr.dedent
-class GenericNetwork(ParamMixin, LabelMixin, Base, ModelsMixin):
+class GenericNetwork(Domain):
     r"""
     This generic class contains the main functionality used by all
     networks.
@@ -43,13 +43,14 @@ class GenericNetwork(ParamMixin, LabelMixin, Base, ModelsMixin):
         not given one will be generated.
 
     coords : array_like (optional)
-        An Np-by-3 array of [x, y, z] coordinates for each pore.
+        An Np-by-3 array of [x, y, z] coordinates for each pore
     conns : array_like (optional)
-        An Nt-by-2 array of [head, tail] connections between pores.
+        An Nt-by-2 array of [head, tail] connections between pores
 
     Examples
     --------
     >>> import openpnm as op
+    >>> import numpy as np
 
     Create some pore coordinates and connections manually and assign to a
     GenericNetwork instance. Consider a linear network of 4 pores and 3
@@ -59,8 +60,8 @@ class GenericNetwork(ParamMixin, LabelMixin, Base, ModelsMixin):
 
         0 ―― 1 ―― 3 ―― 2
 
-    >>> coords = [[0, 0, 0], [1, 0, 0], [2, 0, 0], [3, 0, 0]]
-    >>> conns = [[0, 1], [1, 3], [2, 3]]
+    >>> coords = np.array([[0, 0, 0], [1, 0, 0], [2, 0, 0], [3, 0, 0]])
+    >>> conns = np.array([[0, 1], [1, 3], [2, 3]])
     >>> pn = op.network.GenericNetwork(conns=conns, coords=coords)
 
     Networks have two required properties: 'pore.coords' and
@@ -90,20 +91,22 @@ class GenericNetwork(ParamMixin, LabelMixin, Base, ModelsMixin):
     stored for future use to save construction time.
 
     """
+
     def __init__(self, conns=None, coords=None, settings=None, **kwargs):
         self.settings = SettingsAttr(NetworkSettings, settings)
         super().__init__(settings=self.settings, **kwargs)
+
         self._am = {}
         self._im = {}
+
         if coords is not None:
-            Np = np.shape(coords)[0]
-            self['pore.all'] = np.ones(Np, dtype=bool)
             self['pore.coords'] = np.array(coords)
+            self['pore.all'] = np.ones(coords.shape[0], dtype=bool)
 
         if conns is not None:
-            Nt = np.shape(conns)[0]
-            self['throat.all'] = np.ones(Nt, dtype=bool)
             self['throat.conns'] = np.array(conns)
+            self['throat.all'] = np.ones(conns.shape[0], dtype=bool)
+
         self.add_model(propname='pore.coordination_number',
                        model=mods.coordination_number,
                        regen_mode='deferred')
@@ -113,34 +116,10 @@ class GenericNetwork(ParamMixin, LabelMixin, Base, ModelsMixin):
 
     def __setitem__(self, key, value):
         if key == 'throat.conns':
-            if np.shape(value)[1] != 2:
-                logger.error('Wrong size for throat conns!')
-            else:
-                if np.any(value[:, 0] > value[:, 1]):
-                    logger.debug('Converting throat.conns to be upper triangular')
-                    value = np.sort(value, axis=1)
+            if np.any(value[:, 0] > value[:, 1]):
+                logger.debug('Converting throat.conns to be upper triangular')
+                value = np.sort(value, axis=1)
         super().__setitem__(key, value)
-
-    def __getitem__(self, key):
-        # If the key is a just a numerical value, the kick it directly back
-        # This allows one to do either value='pore.blah' or value=1.0
-        if isinstance(key, (int, float, bool, complex)):
-            return key
-
-        element, prop = key.split('.', 1)
-        # Deal with special keys first
-        if key.split('.')[-1] == self.name:
-            element = key.split('.')[0]
-            return self[f"{element}.all"]
-        if key.split('.')[-1] == '_id':
-            self._gen_ids()
-            return self.get(f"{element}._id")
-        vals = super().__getitem__(key)
-        return vals
-
-    @property
-    def _subdomains(self):
-        return list(self.project.geometries().values())
 
     def _gen_ids(self):
         IDs = self.get('pore._id', np.array([], ndmin=1, dtype=np.int64))
@@ -464,8 +443,7 @@ class GenericNetwork(ParamMixin, LabelMixin, Base, ModelsMixin):
 
         """
         Ts = self._parse_indices(throats)
-        am = self.get_adjacency_matrix(fmt='coo')
-        pores = topotools.find_connected_sites(bonds=Ts, am=am,
+        pores = topotools.find_connected_sites(bonds=Ts, g=self,
                                                flatten=flatten, logic=mode)
         return pores
 
@@ -501,12 +479,11 @@ class GenericNetwork(ParamMixin, LabelMixin, Base, ModelsMixin):
         >>> pn = op.network.Cubic(shape=[5, 5, 5])
         >>> Ts = pn.find_connecting_throat([0, 1, 2], [2, 2, 2])
         >>> print(Ts)
-        [None, 1, None]
+        [nan  1. nan]
 
         """
-        am = self.create_adjacency_matrix(weights=self.Ts, fmt='coo')
         sites = np.vstack((P1, P2)).T
-        Ts = topotools.find_connecting_bonds(sites=sites, am=am)
+        Ts = topotools.find_connecting_bonds(sites=sites, g=self)
         return Ts
 
     def find_neighbor_pores(self, pores, mode='union', flatten=True,
@@ -600,10 +577,8 @@ class GenericNetwork(ParamMixin, LabelMixin, Base, ModelsMixin):
         pores = self._parse_indices(pores)
         if np.size(pores) == 0:
             return np.array([], ndmin=1, dtype=int)
-        if 'lil' not in self._am.keys():
-            self.get_adjacency_matrix(fmt='lil')
         neighbors = topotools.find_neighbor_sites(sites=pores, logic=mode,
-                                                  am=self._am['lil'],
+                                                  g=self,
                                                   flatten=flatten,
                                                   include_input=include_input)
         if asmask is False:
@@ -687,15 +662,12 @@ class GenericNetwork(ParamMixin, LabelMixin, Base, ModelsMixin):
         if np.size(pores) == 0:
             return np.array([], ndmin=1, dtype=int)
         if flatten is False:
-            if 'lil' not in self._im.keys():
-                self.get_incidence_matrix(fmt='lil')
             neighbors = topotools.find_neighbor_bonds(sites=pores, logic=mode,
-                                                      im=self._im['lil'],
+                                                      g=self,
                                                       flatten=flatten)
         else:
-            am = self.create_adjacency_matrix(fmt='coo', triu=True)
             neighbors = topotools.find_neighbor_bonds(sites=pores, logic=mode,
-                                                      am=am, flatten=True)
+                                                      g=self, flatten=True)
         if asmask is False:
             return neighbors
         elif flatten is True:
@@ -880,29 +852,3 @@ class GenericNetwork(ParamMixin, LabelMixin, Base, ModelsMixin):
     def coords(self):
         r"""Returns the list of pore coordinates of the network."""
         return self['pore.coords']
-
-    def check_network_health(self):
-        r"""
-        This method check the network topological health.
-
-        Specifically, it checks for:
-            1. Isolated pores
-            2. Islands or isolated clusters of pores
-            3. Duplicate throats
-            4. Bidirectional throats (ie. symmetrical adjacency matrix)
-            5. Headless throats
-
-        Returns
-        -------
-        dict
-            A dictionary containing the offending pores or throat numbers
-            under each named key.
-
-        Notes
-        -----
-        - Does not yet check for duplicate pores
-        - Does not yet suggest which throats to remove
-        - This is just a 'check' and does not 'fix' the problems it finds
-
-        """
-        return self.project.check_network_health()

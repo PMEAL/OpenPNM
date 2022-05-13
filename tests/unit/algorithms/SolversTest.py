@@ -10,13 +10,10 @@ class SolversTest:
 
     def setup_class(self):
         self.net = op.network.Cubic(shape=[10, 10, 10])
-        self.geom = op.geometry.SpheresAndCylinders(network=self.net,
-                                              pores=self.net.Ps,
-                                              throats=self.net.Ts)
+        self.net.add_model_collection(op.models.collections.geometry.spheres_and_cylinders)
+        self.net.regenerate_models()
         self.phase = op.phase.GenericPhase(network=self.net)
-        self.phys = op.physics.GenericPhysics(
-            network=self.net, phase=self.phase, geometry=self.geom)
-        self.phys['throat.conductance'] = np.linspace(1, 5, num=self.net.Nt)
+        self.phase['throat.conductance'] = np.linspace(1, 5, num=self.net.Nt)
         self.alg = op.algorithms.GenericTransport(network=self.net, phase=self.phase)
         self.alg.settings._update({'quantity': 'pore.x',
                                    'conductance': 'throat.conductance'})
@@ -39,7 +36,7 @@ class SolversTest:
 
     # def test_scipy_iterative(self):
     #     solvers = ['bicg', 'bicgstab', 'cg', 'cgs', 'qmr', 'gcrotmk',
-    #                'gmres', 'lgmres']
+    #                 'gmres', 'lgmres']
     #     self.alg.settings['solver_family'] = 'scipy'
     #     self.alg.settings['solver_rtol'] = 1e-08
     #     for solver in solvers:
@@ -50,14 +47,14 @@ class SolversTest:
 
     # def test_scipy_iterative_diverge(self):
     #     solvers = ['bicg', 'bicgstab', 'cg', 'cgs', 'qmr', 'gcrotmk',
-    #                'gmres', 'lgmres']
-    #     self.alg.settings.update(solver_family='scipy',
-    #                              solver_max_iter=1)
+    #                 'gmres', 'lgmres']
+    #     self.alg.settings._update(solver_family='scipy',
+    #                               solver_max_iter=1)
     #     for solver in solvers:
     #         self.alg.settings['solver_type'] = solver
     #         with nt.assert_raises(Exception):
     #             self.alg.run()
-    #     self.alg.settings.update(solver_max_iter=5000)
+    #     self.alg.settings._update(solver_max_iter=5000)
 
     # def test_pyamg_exception_if_not_found(self):
     #     self.alg.settings['solver_family'] = 'pyamg'
@@ -124,5 +121,5 @@ if __name__ == '__main__':
     self = t
     for item in t.__dir__():
         if item.startswith('test'):
-            print('Running test: {item}')
+            print(f'Running test: {item}')
             t.__getattribute__(item)()

@@ -19,8 +19,8 @@ __all__ = [
 
 @_doctxt
 def washburn(target,
-             surface_tension="pore.surface_tension",
-             contact_angle="pore.contact_angle",
+             surface_tension="throat.surface_tension",
+             contact_angle="throat.contact_angle",
              diameter="throat.diameter"):
     r"""
     Computes the capillary entry pressure assuming the throat in a
@@ -53,14 +53,10 @@ def washburn(target,
     suitable for highly non-wetting invading phases in most materials.
 
     """
-    network = target.project.network
-    phase = target.project.find_phase(target)
-    element, sigma, theta = _get_key_props(
-        phase=phase,
-        diameter=diameter,
-        surface_tension=surface_tension,
-        contact_angle=contact_angle,
-    )
+    network = target.network
+    phase = target
+    sigma = phase[surface_tension]
+    theta = phase[contact_angle]
     r = network[diameter] / 2
     value = -2 * sigma * _np.cos(_np.radians(theta)) / r
     if diameter.split(".")[0] == "throat":
@@ -74,8 +70,8 @@ def washburn(target,
 @_doctxt
 def purcell(target,
             r_toroid,
-            surface_tension="pore.surface_tension",
-            contact_angle="pore.contact_angle",
+            surface_tension="throat.surface_tension",
+            contact_angle="throat.contact_angle",
             diameter="throat.diameter"):
     r"""
     Computes the throat capillary entry pressure assuming the throat is a
@@ -87,11 +83,9 @@ def purcell(target,
     r_toroid : float or array_like
         The radius of the toroid surrounding the pore
     surface_tension : str
-        %(dict_blurb)s surface tension. If a pore property is given, it is
-        interpolated to a throat list.
+        %(dict_blurb)s surface tension.
     contact_angle : str
-        %(dict_blurb)s contact angle. If a pore property is given, it is
-        interpolated to a throat list.
+        %(dict_blurb)s contact angle.
     diameter : str
         %(dict_blurb)s throat diameter
 
@@ -119,13 +113,9 @@ def purcell(target,
 
     """
     network = target.project.network
-    phase = target.project.find_phase(target)
-    element, sigma, theta = _get_key_props(
-        phase=phase,
-        diameter=diameter,
-        surface_tension=surface_tension,
-        contact_angle=contact_angle,
-    )
+    phase = target
+    sigma = target[surface_tension]
+    theta = target[contact_angle]
     r = network[diameter] / 2
     R = r_toroid
     alpha = (
@@ -189,7 +179,7 @@ def ransohoff_snap_off(target,
     33(5), pp.753-765.
 
     """
-    phase = target.project.find_phase(target)
+    phase = target
     geometry = target.project.find_geometry(target)
     element, sigma, theta = _get_key_props(
         phase=phase,

@@ -41,10 +41,10 @@ have a z-component (but set to 0).
 
 from ._generic import GenericNetwork
 from ._cubic import Cubic
-from ._cubic_dual import CubicDual
 from ._bravais import Bravais
 from ._cubic_template import CubicTemplate
 from ._delaunay_voronoi_dual import DelaunayVoronoiDual
 from ._voronoi import Voronoi
 from ._delaunay import Delaunay
 from ._gabriel import Gabriel
+from ._imported import *

@@ -107,9 +107,8 @@ def mixed_diffusion(target,
     %(return_arr)s diffusive conductance
 
     """
-    # Fetch GenericPhysicss
     network = target.network
-    phase = target.project.find_phase(target)
+    phase = target
 
     # Fetch model parameters
     Dp = phase[pore_diffusivity]
@@ -117,7 +116,7 @@ def mixed_diffusion(target,
     dp = network[pore_diameter]
     dt = network[throat_diameter]
     MWp = phase[molecular_weight]
-    MWt = phase.interpolate_data(propname=molecular_weight)
+    MWt = phase.interpolate_data(propname='throat.'+molecular_weight.split('.', 1)[-1])
     Tp = phase[pore_temperature]
     Tt = phase[throat_temperature]
 
@@ -171,11 +170,10 @@ def taylor_aris_diffusion(target,
     %(return_arr)s diffusive conductance
 
     """
-    # Fetch GenericPhysicss
     network = target.network
     domain = target._domain
     throats = domain.throats(target.name)
-    phase = target.project.find_phase(target)
+    phase = target
     cn = network['throat.conns'][throats]
     F = network[size_factors]
 
@@ -196,9 +194,9 @@ def taylor_aris_diffusion(target,
 
     # Calculate diffusive conductance
     if isinstance(F, dict):
-        g1 = D1 * (1 + Pe1**2 / 192) * F[f"{size_factors}.pore1"][throats]
-        gt = Dt * (1 + Pet**2 / 192) * F[f"{size_factors}.throat"][throats]
-        g2 = D2 * (1 + Pe2**2 / 192) * F[f"{size_factors}.pore2"][throats]
+        g1 = D1 * (1 + Pe1**2 / 192) * F["pore1"][throats]
+        gt = Dt * (1 + Pet**2 / 192) * F["throat"][throats]
+        g2 = D2 * (1 + Pe2**2 / 192) * F["pore2"][throats]
         return 1 / (1/g1 + 1/gt + 1/g2)
     return Dt * (1 + Pet**2 / 192) * F[throats]
 
@@ -233,10 +231,9 @@ def multiphase_diffusion(target,
     more information.
 
     """
-    # Fetch GenericPhysicss
     network = target.network
     throats = target.throats(to_global=True)
-    phase = target.project.find_phase(target)
+    phase = target
     cn = network.conns[throats]
     F = network[size_factors]
 

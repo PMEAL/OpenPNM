@@ -478,8 +478,7 @@ class MixedInvasionPercolation(GenericAlgorithm):
                 # Set pressure on phase to current capillary pressure
                 phase["pore.pressure"] = Pc
                 # Regenerate corresponding physics model
-                for phys in self.project.find_physics(phase=phase):
-                    phys.regenerate_models(self.settings["late_pore_filling"])
+                phase.regenerate_models(self.settings["late_pore_filling"])
                 # Fetch partial filling fraction from phase object (0->1)
                 frac = phase[self.settings["late_pore_filling"]]
                 p_vol = net["pore.volume"] * frac
@@ -489,8 +488,7 @@ class MixedInvasionPercolation(GenericAlgorithm):
                 # Set pressure on phase to current capillary pressure
                 phase["throat.pressure"] = Pc
                 # Regenerate corresponding physics model
-                for phys in self.project.find_physics(phase=phase):
-                    phys.regenerate_models(self.settings["late_throat_filling"])
+                phase.regenerate_models(self.settings["late_throat_filling"])
                 # Fetch partial filling fraction from phase object (0->1)
                 frac = phase[self.settings["late_throat_filling"]]
                 t_vol = net["throat.volume"] * frac
@@ -832,7 +830,7 @@ class MixedInvasionPercolation(GenericAlgorithm):
         residual = self["pore.residual"]
         net = self.project.network
         conns = net["throat.conns"]
-        rclusters = site_percolation(conns, residual).sites
+        rclusters = site_percolation(conns, residual).site_labels
         rcluster_ids = np.unique(rclusters[rclusters > -1])
         initial_num = len(self.queue) - 1
         for rcluster_id in rcluster_ids:

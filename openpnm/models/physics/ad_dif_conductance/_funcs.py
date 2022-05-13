@@ -50,7 +50,7 @@ def ad_dif(
     network = target.project.network
     domain = target._domain
     throats = domain.throats(target.name)
-    phase = target.project.find_phase(target)
+    phase = target
     cn = network['throat.conns'][throats]
     # Find g for half of pore 1, throat, and half of pore 2
     P = phase[pore_pressure]

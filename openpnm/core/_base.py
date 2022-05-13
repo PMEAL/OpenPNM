@@ -123,32 +123,6 @@ class Base(dict):
         if element not in ['pore', 'throat']:
             raise Exception('All keys must start with either pore, or throat')
 
-        # Check 2: If adding a new key, make sure it has no conflicts
-        if self.project:
-            proj = self.project
-            boss = proj.find_full_domain(self)
-            keys = boss.keys(mode='all', deep=True)
-        else:
-            boss = None
-            keys = self.keys()
-        # Prevent 'pore.foo.bar' when 'pore.foo' present
-        long_keys = [i for i in keys if i.count('.') > 1]
-        key_root = '.'.join(key.split('.')[:2])
-        if (key.count('.') > 1) and (key_root in keys):
-            raise Exception('Cannot create ' + key + ' when '
-                            + key_root + ' is already defined')
-        # Prevent 'pore.foo' when 'pore.foo.bar' is present
-        if (key.count('.') == 1) and any([i.startswith(key) for i in long_keys]):
-            hit = [i for i in keys if i.startswith(key)][0]
-            raise Exception('Cannot create ' + key + ' when '
-                            + hit + ' is already defined')
-        # Prevent writing pore.foo on boss when present on subdomain
-        if boss:
-            if boss is self and (key not in ['pore.all', 'throat.all']):
-                if (key in keys) and (key not in self.keys()):
-                    raise Exception('Cannot create ' + key + ' when it is'
-                                    + ' already defined on a subdomain')
-
         # This check allows subclassed numpy arrays through, eg. with units
         if not isinstance(value, np.ndarray):
             value = np.array(value, ndmin=1)  # Convert value to an ndarray
@@ -328,31 +302,6 @@ class Base(dict):
         prompt. This can also be done in a for-loop to remove a list of
         items.
 
-        Examples
-        --------
-        >>> import openpnm as op
-        >>> pn = op.network.Cubic(shape=[5, 5, 5])
-        >>> len(pn.labels())  # There are 10 total labels on the network
-        12
-        >>> pn.clear(mode='labels')
-        >>> len(pn.labels())  # Kept only 'pore.all' and 'throat.all'
-        2
-        >>> geom = op.geometry.GenericGeometry(network=pn, pores=pn.Ps,
-        ...                                    throats=pn.Ts, name='geo1')
-        >>> len(pn.labels())  # 2 new labels were added for geometry locations
-        4
-        >>> pn.clear(mode='labels')
-        >>> 'pore.'+geom.name in pn.keys()  # The geometry labels were kept
-        True
-        >>> len(pn.props())  # The network has two properties
-        2
-        >>> pn.clear(element='pore', mode='props')
-        >>> 'pore.coords' in pn.keys()  # The pore property was removed
-        True
-        >>> pn.clear()  # Remove everything except protected labels and arrays
-        >>> print(sorted(list(pn.keys(element='pore', mode='all'))))
-        ['pore.all', 'pore.coords', 'pore.geo1']
-
         """
         protected = ['pore.all', 'throat.all', 'pore.coords', 'throat.conns']
         allowed = ['props', 'labels', 'model_data', 'all']
@@ -415,15 +364,6 @@ class Base(dict):
         kinds of data.  It's use augments ``props`` and ``labels`` by
         returning a list containing both types, but possibly limited by
         element type ('pores' or 'throats'.)
-
-        Examples
-        --------
-        >>> import openpnm as op
-        >>> pn = op.network.Cubic([5, 5, 5])
-        >>> pn.keys(mode='props')  # Get all props
-        ['pore.coords', 'throat.conns']
-        >>> pn.keys(mode='props', element='pore')  # Get only pore props
-        ['pore.coords']
 
         """
         if mode is None:
@@ -490,16 +430,6 @@ class Base(dict):
         labels
         keys
 
-        Examples
-        --------
-        >>> import openpnm as op
-        >>> pn = op.network.Cubic(shape=[3, 3, 3])
-        >>> pn.props('pore')
-        ['pore.coords']
-        >>> pn.props('throat')
-        ['throat.conns']
-        >>> pn.props()
-        ['pore.coords', 'throat.conns']
         """
         # Parse Inputs
         element = self._parse_element(element=element)
@@ -683,29 +613,6 @@ class Base(dict):
         does not exist on all. Float and boolean data is fine, but missing
         ints are converted to float when nans are inserted.
 
-        Examples
-        --------
-        >>> import openpnm as op
-        >>> pn = op.network.Cubic(shape=[2, 2, 2])
-        >>> Ps = pn['pore.top']
-        >>> Ts = pn.find_neighbor_throats(pores=Ps)
-        >>> g1 = op.geometry.GenericGeometry(network=pn, pores=Ps, throats=Ts)
-        >>> Ts = ~pn.to_mask(throats=Ts)
-        >>> g2 = op.geometry.GenericGeometry(network=pn, pores=~Ps, throats=Ts)
-        >>> g1['pore.value'] = 1
-        >>> print(g1['pore.value'])
-        [1 1 1 1]
-        >>> print(g2['pore.value'])  # 'pore.value' is defined on g1, not g2
-        [nan nan nan nan]
-        >>> print(pn['pore.value'])
-        [nan  1. nan  1. nan  1. nan  1.]
-        >>> g2['pore.value'] = 20
-        >>> print(pn['pore.value'])
-        [20  1 20  1 20  1 20  1]
-        >>> pn['pore.label'] = False
-        >>> print(g1['pore.label'])  # 'pore.label' is defined on pn, not g1
-        [False False False False]
-
         """
         # Fetch subdomains list depending on type of self
         proj = self.project
@@ -829,14 +736,6 @@ class Base(dict):
         -------
         vals : ndarray
             An array containing interpolated pore (or throat) data
-
-        Examples
-        --------
-        >>> import openpnm as op
-        >>> pn = op.network.Cubic(shape=[3, 1, 1])
-        >>> pn['pore.value'] = [1, 2, 3]
-        >>> pn.interpolate_data('pore.value')
-        array([1.5, 2.5])
 
         """
         from openpnm.models.misc import from_neighbor_throats, from_neighbor_pores

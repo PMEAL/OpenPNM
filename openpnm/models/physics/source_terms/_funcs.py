@@ -149,20 +149,8 @@ def standard_kinetics(target, X, prefactor, exponent):
     return values
 
 
-def _parse_args(target, key, default):
-    r"""
-    Parses the passed ``key``: returns ``default`` if ``key`` is empty,
-    otherwise fetches and returns the values from ``target``.
-    """
-    if key == '':
-        val = default
-    else:
-        val = target[key]
-    return val
-
-
 @_doctxt
-def linear(target, X, A1='', A2=''):
+def linear(target, X, A1=0.0, A2=0.0):
     r"""
     Calculates the rate, as well as slope and intercept of the following
     function at the given value of ``X``:
@@ -201,19 +189,15 @@ def linear(target, X, A1='', A2=''):
             rate = S_{1} X + S_{2}
 
     """
-    A = _parse_args(target=target, key=A1, default=0.0)
-    B = _parse_args(target=target, key=A2, default=0.0)
-    X = target[X]
-
-    r = A * X + B
-    S1 = A
-    S2 = B
+    r = target[A1] * target[X] + target[A2]
+    S1 = target[A1]
+    S2 = target[A2]
     values = {'S1': S1, 'S2': S2, 'rate': r}
     return values
 
 
 @_doctxt
-def power_law(target, X, A1='', A2='', A3=''):
+def power_law(target, X, A1=0.0, A2=0.0, A3=0.0):
     r"""
     Calculates the rate, as well as slope and intercept of the following
     function at the given value of *X*:
@@ -252,9 +236,9 @@ def power_law(target, X, A1='', A2='', A3=''):
             rate = S_{1} X + S_{2}
 
     """
-    A = _parse_args(target=target, key=A1, default=0.0)
-    B = _parse_args(target=target, key=A2, default=1.0)
-    C = _parse_args(target=target, key=A3, default=0.0)
+    A = target[A1]
+    B = target[A2]
+    C = target[A3]
     X = target[X]
 
     r = A * X ** B + C
@@ -265,7 +249,7 @@ def power_law(target, X, A1='', A2='', A3=''):
 
 
 @_doctxt
-def exponential(target, X, A1='', A2='', A3='', A4='', A5='', A6=''):
+def exponential(target, X, A1=0.0, A2=1.0, A3=1.0, A4=1.0, A5=0.0, A6=0.0):
     r"""
     Calculates the rate, as well as slope and intercept of the following
     function at the given value of `X`:
@@ -304,12 +288,12 @@ def exponential(target, X, A1='', A2='', A3='', A4='', A5='', A6=''):
             rate = S_{1} X + S_{2}
 
     """
-    A = _parse_args(target=target, key=A1, default=0.0)
-    B = _parse_args(target=target, key=A2, default=1.0)
-    C = _parse_args(target=target, key=A3, default=1.0)
-    D = _parse_args(target=target, key=A4, default=1.0)
-    E = _parse_args(target=target, key=A5, default=0.0)
-    F = _parse_args(target=target, key=A6, default=0.0)
+    A = target[A1]
+    B = target[A2]
+    C = target[A3]
+    D = target[A4]
+    E = target[A5]
+    F = target[A6]
     X = target[X]
 
     r = A * B ** (C * X ** D + E) + F
@@ -320,7 +304,7 @@ def exponential(target, X, A1='', A2='', A3='', A4='', A5='', A6=''):
 
 
 @_doctxt
-def natural_exponential(target, X, A1='', A2='', A3='', A4='', A5=''):
+def natural_exponential(target, X, A1=0.0, A2=0.0, A3=0.0, A4=0.0, A5=0.0):
     r"""
     Calculates the rate, as well as slope and intercept of the following
     function at the given value of `X`:
@@ -359,11 +343,11 @@ def natural_exponential(target, X, A1='', A2='', A3='', A4='', A5=''):
             rate = S_{1} X + S_{2}
 
     """
-    A = _parse_args(target=target, key=A1, default=0.0)
-    B = _parse_args(target=target, key=A2, default=0.0)
-    C = _parse_args(target=target, key=A3, default=0.0)
-    D = _parse_args(target=target, key=A4, default=0.0)
-    E = _parse_args(target=target, key=A5, default=0.0)
+    A = target[A1]
+    B = target[A2]
+    C = target[A3]
+    D = target[A4]
+    E = target[A5]
     X = target[X]
 
     r = A * _np.exp(B * X ** C + D) + E
@@ -374,7 +358,7 @@ def natural_exponential(target, X, A1='', A2='', A3='', A4='', A5=''):
 
 
 @_doctxt
-def logarithm(target, X, A1='', A2='', A3='', A4='', A5='', A6=''):
+def logarithm(target, X, A1=0.0, A2=10.0, A3=1.0, A4=1.0, A5=0.0, A6=0.0):
     r"""
     Calculates the rate, as well as slope and intercept of the following
     function at the given value of `X`:
@@ -413,12 +397,12 @@ def logarithm(target, X, A1='', A2='', A3='', A4='', A5='', A6=''):
             rate = S_{1} X + S_{2}
 
     """
-    A = _parse_args(target=target, key=A1, default=0.0)
-    B = _parse_args(target=target, key=A2, default=10.0)
-    C = _parse_args(target=target, key=A3, default=1.0)
-    D = _parse_args(target=target, key=A4, default=1.0)
-    E = _parse_args(target=target, key=A5, default=0.0)
-    F = _parse_args(target=target, key=A6, default=0.0)
+    A = target[A1]
+    B = target[A2]
+    C = target[A3]
+    D = target[A4]
+    E = target[A5]
+    F = target[A6]
     X = target[X]
 
     r = (A * _np.log(C * X ** D + E)/_np.log(B) + F)
@@ -430,7 +414,7 @@ def logarithm(target, X, A1='', A2='', A3='', A4='', A5='', A6=''):
 
 
 @_doctxt
-def natural_logarithm(target, X, A1='', A2='', A3='', A4='', A5=''):
+def natural_logarithm(target, X, A1=0.0, A2=1.0, A3=1.0, A4=0.0, A5=0.0):
     r"""
     Calculates the rate, as well as slope and intercept of the following
     function at the given value of `X`:
@@ -469,11 +453,11 @@ def natural_logarithm(target, X, A1='', A2='', A3='', A4='', A5=''):
             rate = S_{1} X + S_{2}
 
     """
-    A = _parse_args(target=target, key=A1, default=0.0)
-    B = _parse_args(target=target, key=A2, default=1.0)
-    C = _parse_args(target=target, key=A3, default=1.0)
-    D = _parse_args(target=target, key=A4, default=0.0)
-    E = _parse_args(target=target, key=A5, default=0.0)
+    A = target[A1]
+    B = target[A2]
+    C = target[A3]
+    D = target[A4]
+    E = target[A5]
     X = target[X]
 
     r = A*_np.log(B*X**C + D) + E
@@ -560,8 +544,8 @@ def general_symbolic(target, eqn, x, **kwargs):
 
 @_doctxt
 def butler_volmer_conc(
-    target, X, z, j0, c_ref, alpha_anode, alpha_cathode, z_rds=1,
-    reaction_order=1,
+    target, X, n, i0_ref, c_ref, beta,
+    gamma=1,
     temperature="pore.temperature",
     reaction_area="pore.reaction_area",
     solid_voltage="pore.solid_voltage",
@@ -579,26 +563,28 @@ def butler_volmer_conc(
     X : str
         The dictionary key of the quantity of interest (i.e. main variable
         to be solved; in this case, concentration).
-    z : float
+    n : float
         Number of electrons transferred in the redox reaction.
-    j0 : float
-        Exchange current density [A/m^2].
+    i0_ref : float
+        Exchange current density for some conveniently selected value of
+        c_ref [A/m^2].
     c_ref : float
         Reference concentration [mol/m^3].
-    alpha_anode : float
-        Anodic transfer coefficient.
-    alpha_cathode : float
-        Cathodic transfer coefficient.
-    z_rds : float
-        Number of electrons transferred in the rate determining step.
-    reaction_order : float
-        Reaction order, i.e. the exponent of the concentration term
+    beta : float
+        Symmetry factor. The value of beta represents the
+        fraction of the applied potential that promotes the
+        cathodic reaction. Frequently, beta is assummed to be
+        0.5, although the theoretical justification for this
+        is not completely rigorous. This kinetic parameter must be determined
+        to agree with experimental data.
+    gamma : float
+        The exponent of the concentration term
     solid_voltage : str
         The dictionary key of solid phase voltages [V].
     electrolyte_voltage : str
         The dictionary key of electrolyte phase voltages [V].
     open_circuit_voltage : str
-        The dictionary key of open-circuit voltage values [V].
+        The dictionary key of equilibrium potential values [V].
     reaction_area : str
         The dictionary key of reaction area values [m^2].
     temperature : str
@@ -624,32 +610,43 @@ def butler_volmer_conc(
     identical, they should both produce the same **rate** with the only
     difference that the rate generated by butler_volmer_conc has the units
     [mol/s] whereas that generated by butler_volmer_voltage has the units
-    [C/s]. Therefore, the two rates will differ by z * F, where z is the
-    number of electrons transferred and F is the Faraday's constant.
+    [C/s]. Therefore, the two rates will differ by n * F, where n is the
+    number of electrons transferred and F is the Faraday's constant. The
+    Butler-Volmer equation used in this function is based on Eq. 8.24
+    of the Electrochemical Systems reference book cited here.
 
     .. math::
-        r =  j_0 A_{rxn} (\frac{ 1 }{ z F })(\frac{ X }{ c_{ref} }) ^ {\nu}
+        r_{mass} = \frac{ i A }{ n F }=
+        i_{0ref} A_{rxn} (\frac{ 1 }{ n F })(\frac{ X }{ c_{ref} }) ^ {\gamma}
         \Big(
-            \exp(  \frac{\alpha_a z_{rds} F}{RT} \eta )
-          - \exp( -\frac{\alpha_c z_{rds} F}{RT} \eta )
+            \exp(  \frac{(1-\beta) n F}{RT} \eta_s )
+          - \exp( -\frac{\beta n F}{RT} \eta_s )
         \Big)
 
     where:
 
     .. math::
-        \eta = V_s - V_{\ell} - V_{oc}
+        \eta_s = \phi_{met} - \phi_{soln} - U_{eq}
 
-    where ``V_s`` is the solid voltage, ``V_l`` is the electrolyte voltage,
-    and ``V_oc`` is the open-circuit voltage.
+    where :math:`{\phi_{met}}` is the electrostatic potential of the electrode,
+    :math:`{\phi_{soln}}` is the electrostatic potential of the electrolyte
+    solution, and :math:`{U_{eq}}` is the equilibrium potential, which is
+    the potential at which the net rate of reaction is zero. Here, we
+    assume U_{eq} is equal to the open-circuit voltage and is constant.
+    Alternatively, the dependency of the  U_{eq}  to the consentration
+    of species can be defined as a function and assigned to the
+    phase['pore.open_circuit_voltage'] (e.g. Eq.8.20 of
+    the reference book (Electrochemical Systems).
 
     The slope and intercept provide a linearized source term equation
     about the current value of X as follow:
 
     .. math::
         rate = S_{1} X + S_{2}
-    
-    Reference: Rahn, Christopher D. Wang, Chao-Yang. (2013). Battery Systems Engineering - 
-    3.2.1 The Butler-Volmer Equation. (pp. 27). John Wiley & Sons.
+
+    Reference: John Newman, Karen E. Thomas-Alyea, Electrochemical Systems,
+    John Wiley & Sons, third edition, 2004.
+    For more details read Chapter8:Electrode kinetics (e.g. Eqs: 8.6,8.10,8.24).
 
     """
     network = target.project.network
@@ -659,33 +656,31 @@ def butler_volmer_conc(
     # Fetch model variables
     X = target[X]
     T = target[temperature]
-    Vs = target[solid_voltage]
-    Ve = target[electrolyte_voltage]
-    Voc = target[open_circuit_voltage]
+    phi_met = target[solid_voltage]
+    phi_soln = target[electrolyte_voltage]
+    U_eq = target[open_circuit_voltage]
     A_rxn = network[reaction_area][pores]
     F = _sp.constants.physical_constants["Faraday constant"][0]
     R = _sp.constants.R
-    nu = reaction_order
-
     # Linearize with respect to X (electrolyte concentration)
-    eta = Vs - Ve - Voc
-    cte = j0 * A_rxn / (z * F)
-    m1 = alpha_anode * z_rds * F / (R * T)
-    m2 = alpha_cathode * z_rds * F / (R * T)
-    fV = _np.exp(m1 * eta) - _np.exp(-m2 * eta)
-    fC = (X / c_ref)**nu
+    eta_s = phi_met - phi_soln - U_eq
+    cte = i0_ref * A_rxn / (n * F)
+    m1 = (1-beta) * n * F / (R * T)
+    m2 = beta * n * F / (R * T)
+    fV = _np.exp(m1 * eta_s) - _np.exp(-m2 * eta_s)
+    fC = (X / c_ref)**gamma
     r = cte * fC * fV
-    drdC = cte * (X / c_ref)**(nu - 1) * (1 / c_ref) * fV
+    drdC = cte * (X / c_ref)**(gamma - 1) * (1 / c_ref) * fV
     S1 = drdC
     S2 = r - drdC * X
 
-    values = {"pore.S1": S1, "pore.S2": S2, "pore.rate": r}
+    values = {"S1": S1, "S2": S2, "rate": r}
     return values
 
 
 def butler_volmer_voltage(
-    target, X, z, j0, c_ref, alpha_anode, alpha_cathode, z_rds=1,
-    reaction_order=1,
+    target, X, n, i0_ref, c_ref, beta,
+    gamma=1,
     temperature="pore.temperature",
     reaction_area="pore.reaction_area",
     solid_voltage="pore.solid_voltage",
@@ -698,33 +693,35 @@ def butler_volmer_voltage(
 
     Parameters
     ----------
-    target : GenericPhysics
+    target : OpenPNM Phase
         The Physics object where the result will be applied.
     X : str
         The dictionary key of the quantity of interest (i.e. main variable
         to be solved; in this case, electrolyte voltage).
-    z : float
+    n : float
         Number of electrons transferred in the redox reaction.
-    j0 : float
-        Exchange current density [A/m^2].
+    i0_ref : float
+        Exchange current density for some conveniently selected value of
+        c_ref [A/m^2].
     c_ref : float
         Reference concentration [mol/m^3].
-    alpha_anode : float
-        Anodic transfer coefficient.
-    alpha_cathode : float
-        Cathodic transfer coefficient.
-    z_rds : float
-        Number of electrons transferred in the rate determining step.
+    beta : float
+        Symmetry factor. The value of beta represents the
+        fraction of the applied potential that promotes the
+        cathodic reaction. Frequently, beta is assummed to be
+        0.5, although the theoretical justification for this
+        is not completely rigorous. This kinetic parameter must be determined
+        to agree with experimental data.
+    gamma : float
+        The exponent of the concentration term
     electrolyte_concentration : str
         The dictionary key of the electrolyte concentrations [mol/m^3].
-    reaction_order : float
-        Reaction order, i.e. the exponent of the concentration term
     solid_voltage : str
         The dictionary key of solid phase voltages [V].
     electrolyte_voltage : str
         The dictionary key of electrolyte phase voltages [V].
     open_circuit_voltage : str
-        The dictionary key of open-circuit voltage values [V].
+        The dictionary key of equilibrium potential values [V].
     reaction_area : str
         The dictionary key of reaction area values [m^2].
     temperature : str
@@ -750,32 +747,42 @@ def butler_volmer_voltage(
     identical, they should both produce the same **rate** with the only
     difference that the rate generated by butler_volmer_conc has the units
     [mol/s] whereas that generated by butler_volmer_voltage has the units
-    [C/s]. Therefore, the two rates will differ by z * F, where z is the
-    number of electrons transferred and F is the Faraday's constant.
+    [C/s]. Therefore, the two rates will differ by n * F, where n is the
+    number of electrons transferred and F is the Faraday's constant. The
+    Butler-Volmer equation used in this function is based on Eq. 8.24
+    of the Electrochemical Systems reference book cited here.
 
     .. math::
-        r = j_0 A_{rxn} (\frac{ c }{ c_{ref} }) ^ {\nu}
+        r_{charge}=i A = i_{0ref} A_{rxn} (\frac{ c }{ c_{ref} }) ^ {\gamma}
         \Big(
-            \exp(  \frac{\alpha_a z_{rds} F}{RT} \eta )
-          - \exp( -\frac{\alpha_c z_{rds} F}{RT} \eta )
+            \exp(  \frac{(1-\beta) n F}{RT} \eta_s )
+          - \exp( -\frac{\beta n F}{RT} \eta_s )
         \Big)
 
     where:
 
     .. math::
-        \eta = V_s - X - V_{oc}
+        \eta_s = \phi_{met} - \phi_{soln} - U_{eq}
 
-    where ``V_s`` is the solid voltage, ``X`` is the electrolyte voltage,
-    and ``V_oc`` is the open-circuit voltage.
+    where :math:`{\phi_{met}}` is the electrostatic potential of the electrode,
+    :math:`{\phi_{soln}}` is the electrostatic potential of the electrolyte
+    solution, and :math:`{U_{eq}}` is the equilibrium potential, which is
+    the potential at which the net rate of reaction is zero. Here, we
+    assume U_{eq} is equal to the open-circuit voltage and is constant.
+    Alternatively, the dependency of the  U_{eq}  to the consentration
+    of species can be defined as a function and assigned to the
+    phase['pore.open_circuit_voltage'] (e.g. Eq.8.20 of
+    the reference book (Electrochemical Systems).
 
     The slope and intercept provide a linearized source term equation
     about the current value of X as follow:
 
     .. math::
         rate = S_{1} X + S_{2}
-    
-    Reference: Rahn, Christopher D. Wang, Chao-Yang. (2013). Battery Systems Engineering - 
-    3.2.1 The Butler-Volmer Equation. (pp. 27). John Wiley & Sons.
+
+    Reference: John Newman, Karen E. Thomas-Alyea, Electrochemical Systems,
+    John Wiley & Sons, third edition, 2004.
+    For more details read Chapter8:Electrode kinetics (e.g. Eqs: 8.6,8.10,8.24).
     """
     network = target.project.network
     domain = target._domain
@@ -783,27 +790,26 @@ def butler_volmer_voltage(
 
     # Fetch model variables
     A_rxn = network[reaction_area][pores]
-    Vs = target[solid_voltage]
-    Voc = target[open_circuit_voltage]
+    phi_met = target[solid_voltage]
+    U_eq = target[open_circuit_voltage]
     c = target[electrolyte_concentration]
     T = target[temperature]
     X = target[X]
     F = _sp.constants.physical_constants["Faraday constant"][0]
     R = _sp.constants.R
-    nu = reaction_order
 
     # Linearize with respect to X (electrolyte voltage)
-    eta = Vs - X - Voc
-    cte = j0 * A_rxn
-    m1 = alpha_anode * z_rds * F / (R * T)
-    m2 = alpha_cathode * z_rds * F / (R * T)
-    fV = _np.exp(m1 * eta) - _np.exp(-m2 * eta)
-    dfVdV = -(m1 * _np.exp(m1 * eta) + m2 * _np.exp(-m2 * eta))
-    fC = (c / c_ref)**nu
+    eta_s = phi_met - X - U_eq
+    cte = i0_ref * A_rxn
+    m1 = (1-beta) * n * F / (R * T)
+    m2 = beta * n * F / (R * T)
+    fV = _np.exp(m1 * eta_s) - _np.exp(-m2 * eta_s)
+    dfVdV = -(m1 * _np.exp(m1 * eta_s) + m2 * _np.exp(-m2 * eta_s))
+    fC = (c / c_ref)**gamma
     r = cte * fC * fV
     drdV = cte * fC * dfVdV
     S1 = drdV
     S2 = r - drdV * X
 
-    values = {"pore.S1": S1, "pore.S2": S2, "pore.rate": r}
+    values = {"S1": S1, "S2": S2, "rate": r}
     return values

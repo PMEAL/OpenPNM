@@ -7,34 +7,38 @@ import matplotlib.pyplot as plt
 class IPTest:
     def setup_class(self):
         self.net = op.network.Cubic(shape=[10, 10, 10], spacing=0.0005)
-        self.geo = op.geometry.SpheresAndCylinders(
-            network=self.net, pores=self.net.Ps, throats=self.net.Ts)
+        self.net.add_model_collection(op.models.collections.geometry.spheres_and_cylinders)
+        self.net.regenerate_models()
         self.water = op.phase.Water(network=self.net)
-        self.air = op.phase.Air(network=self.net)
-        self.phys = op.physics.GenericPhysics(
-            network=self.net, phase=self.water, geometry=self.geo)
+        self.water.add_model_collection(op.models.collections.physics.basic)
+        self.water.regenerate_models()
         mod = op.models.physics.capillary_pressure.washburn
-        self.phys.add_model(propname="throat.entry_pressure", model=mod)
+        self.water.add_model(propname="throat.entry_pressure", model=mod)
 
     def test_set_inlets_overwrite(self):
         alg = op.algorithms.InvasionPercolation(network=self.net, phase=self.water)
         alg.set_inlets(pores=self.net.pores("top"))
         assert np.sum(alg["pore.invasion_sequence"] == 0) == 100
 
-        alg.set_inlets(pores=self.net.pores("bottom"))
+        alg.set_inlets(pores=self.net.pores("bottom"), mode='add')
         assert np.sum(alg["pore.invasion_sequence"] == 0) == 200
 
-        alg.set_inlets(pores=self.net.pores("top"), overwrite=True)
+        alg.set_inlets(pores=self.net.pores("top"), mode='overwrite')
         assert np.sum(alg["pore.invasion_sequence"] == 0) == 100
 
-        alg.set_inlets(overwrite=True)
+        alg.set_inlets(mode='overwrite')
         assert np.sum(alg["pore.invasion_sequence"] == 0) == 0
 
     def test_run(self):
         alg = op.algorithms.InvasionPercolation(network=self.net, phase=self.water)
         alg.set_inlets(pores=self.net.pores("top"))
         alg.run()
-        assert alg["throat.invasion_sequence"].max() == (alg.Nt - 1)
+        assert alg["throat.invasion_sequence"].max() == alg.Nt
+
+    def test_multiple_calls_to_run(self):
+        alg = op.algorithms.InvasionPercolation(network=self.net, phase=self.water)
+        alg.set_inlets(pores=self.net.pores("top"))
+        alg.run(n_steps=10)
 
     def test_results(self):
         alg = op.algorithms.InvasionPercolation(network=self.net, phase=self.water)

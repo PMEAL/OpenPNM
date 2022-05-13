@@ -1,10 +1,10 @@
 import logging
 import numpy as np
-from openpnm.core import Base
+from openpnm.core import Base2
 logger = logging.getLogger(__name__)
 
 
-class GenericMetric(Base):
+class GenericMetric(Base2):
     r"""
     """
 

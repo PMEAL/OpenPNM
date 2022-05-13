@@ -1,19 +1,18 @@
-import logging
 import numpy as np
 import scipy.spatial as sptl
-from openpnm.network import Delaunay
-from openpnm.topotools import trim
+from openpnm.network import GenericNetwork
+from openpnm._skgraph.generators import gabriel
+from openpnm._skgraph.operations import trim_nodes
 
 
-logger = logging.getLogger(__name__)
 __all__ = ['Gabriel']
 
 
-class Gabriel(Delaunay):
+class Gabriel(GenericNetwork):
     r"""
     Random network formed by Gabriel tessellation of arbitrary base points
 
-    This operates by performing a Deluanay tessellation, then removing
+    This operates by performing a Delaunay tessellation, then removing
     connections that do not adhere to the definition of the `Gabriel graph
     <https://en.wikipedia.org/wiki/Gabriel_graph>`_
 
@@ -35,49 +34,24 @@ class Gabriel(Delaunay):
 
         [x, y, 0] - will produce a 2D square domain of size x by y
 
-    name : str
-        An optional name for the object to help identify it. If not given,
-        one will be generated.
-
-    Examples
-    --------
-    .. plot::
-
-       import openpnm as op
-       import matplotlib.pyplot as plt
-
-       pts = np.random.rand(100, 3) * [1, 1, 0]  # Set z-axis to 0
-       gn = op.network.Gabriel(shape=[1, 1, 0], points=pts)
-       dn = op.network.Delaunay(shape=[1, 1, 0], points=pts)
-
-       # Now compare them side by side
-       gn['pore.coords'] += [1, 0, 0]
-       op.topotools.merge_networks(dn, gn)
-
-       # Visualization
-       fig, ax = plt.subplots(figsize=(6, 3))
-       op.topotools.plot_connections(dn, ax=ax)
-       op.topotools.plot_coordinates(dn, c='r', s=100, ax=ax)
-
-       plt.axis("off")
-       plt.show()
 
     """
 
-    def __init__(self, shape=[1, 1, 1], points=None, **kwargs):
-        # Generate Delaunay tessellation from super class, then trim
-        super().__init__(shape=shape, points=points, **kwargs)
-        if 'pore.coords' in self.keys():
-            points = self['pore.coords']
-            conns = self['throat.conns']
-            # Find centroid of each pair of nodes
-            c = points[conns]
-            m = (c[:, 0, :] + c[:, 1, :])/2
-            # Find radius of circle connecting each pair of nodes
-            r = np.sqrt(np.sum((c[:, 0, :] - c[:, 1, :])**2, axis=1))/2
-            # Use KD-Tree to find distance to nearest neighbors
-            tree = sptl.cKDTree(points)
-            n = tree.query(x=m, k=1)[0]
-            # Identify throats whose centroid is not near an unconnected node
-            g = np.around(n, decimals=5) == np.around(r, decimals=5)
-            trim(self, throats=~g)
+    def __init__(self, shape=[1, 1, 1], points=None, trim=True, **kwargs):
+        super().__init__(**kwargs)
+        net = gabriel(shape=shape, points=points,
+                      node_prefix='pore', edge_prefix='throat')
+        points = net['pore.coords']
+        conns = net['throat.conns']
+        # Find centroid of each pair of nodes
+        c = points[conns]
+        m = (c[:, 0, :] + c[:, 1, :])/2
+        # Find radius of circle connecting each pair of nodes
+        r = np.sqrt(np.sum((c[:, 0, :] - c[:, 1, :])**2, axis=1))/2
+        # Use KD-Tree to find distance to nearest neighbors
+        tree = sptl.cKDTree(points)
+        n = tree.query(x=m, k=1)[0]
+        # Identify throats whose centroid is not near an unconnected node
+        g = np.around(n, decimals=5) == np.around(r, decimals=5)
+        net = trim_nodes(net, inds=~g)
+        self.update(net)

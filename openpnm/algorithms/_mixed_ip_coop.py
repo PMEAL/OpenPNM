@@ -333,7 +333,6 @@ class MixedInvasionPercolationCoop(MixedInvasionPercolation):
         start = time.time()
         net = self.project.network
         phase = self.project[self.settings.phase]
-        all_phys = self.project.find_physics(phase=phase)
         if inv_points is None:
             inv_points = np.arange(0, 1.01, 0.01) * self._max_pressure()
         # Throat centroids
@@ -350,12 +349,15 @@ class MixedInvasionPercolationCoop(MixedInvasionPercolation):
                 - net["pore.coords"][net["throat.conns"][:, 0]]
             )
         cpf = self.settings["cooperative_pore_filling"]
-        model = all_phys[0].models[cpf]
         # Throat Diameter and fiber radius
-        try:
-            t_rad = net[model["throat_diameter"]] / 2 + model["r_toroid"]
-        except KeyError:
-            t_rad = net["throat.diameter"] / 2
+        # FIXME: This is supposed to try getting unique throat diameter
+        # used in model, instead of just generic 'throat.diameter'
+        # model = phase.models[cpf]
+        # try:
+        #     t_rad = net[model["throat_diameter"]] / 2 + model["r_toroid"]
+        # except KeyError:
+        #     t_rad = net["throat.diameter"] / 2
+        t_rad = net["throat.diameter"] / 2
         # Equations of throat planes at the center of each throat
         planes = self._transform_point_normal(t_centroids, t_norms)
         Nt = net.Nt
@@ -393,9 +395,8 @@ class MixedInvasionPercolationCoop(MixedInvasionPercolation):
             if Pc == 0.0:
                 Pc = 1e-6
             # regenerate model with new target Pc
-            for phys in all_phys:
-                phys.models[cpf]["target_Pc"] = Pc
-                phys.regenerate_models(propnames=cpf)
+            phase.models[cpf]["target_Pc"] = Pc
+            phase.regenerate_models(propnames=cpf)
             # check whether this throat pair already has a coop value
             check_nans = np.asarray(np.isnan(self.tt_Pc[T1, T2]).tolist()[0])
             fill_angle_sum = np.sum(phase[tfill_angle][pairs], axis=1)
