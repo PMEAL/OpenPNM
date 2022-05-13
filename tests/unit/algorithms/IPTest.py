@@ -7,14 +7,13 @@ import matplotlib.pyplot as plt
 class IPTest:
     def setup_class(self):
         self.net = op.network.Cubic(shape=[10, 10, 10], spacing=0.0005)
-        self.geo = op.geometry.SpheresAndCylinders(
-            network=self.net, pores=self.net.Ps, throats=self.net.Ts)
+        self.net.add_model_collection(op.models.collections.geometry.spheres_and_cylinders)
+        self.net.regenerate_models()
         self.water = op.phase.Water(network=self.net)
-        self.air = op.phase.Air(network=self.net)
-        self.phys = op.physics.GenericPhysics(
-            network=self.net, phase=self.water, geometry=self.geo)
+        self.water.add_model_collection(op.models.collections.physics.basic)
+        self.water.regenerate_models()
         mod = op.models.physics.capillary_pressure.washburn
-        self.phys.add_model(propname="throat.entry_pressure", model=mod)
+        self.water.add_model(propname="throat.entry_pressure", model=mod)
 
     def test_set_inlets_overwrite(self):
         alg = op.algorithms.InvasionPercolation(network=self.net, phase=self.water)

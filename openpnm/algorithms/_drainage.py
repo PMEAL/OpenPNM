@@ -204,30 +204,13 @@ if __name__ == "__main__":
 
     np.random.seed(0)
     pn = op.network.Cubic([20, 20, 1], spacing=1e-5)
-
-    geo = op.geometry.SpheresAndCylinders(network=pn, pores=pn.Ps, throats=pn.Ts)
-
+    pn.add_model_collection(op.models.collections.geometry.spheres_and_cylinders)
+    pn.regenerate_models()
     nwp = op.phase.GenericPhase(network=pn)
     nwp['throat.surface_tension'] = 0.480
     nwp['throat.contact_angle'] = 140
-    nwp['throat.pc_star'] = nwp['throat.surface_tension']/pn['throat.diameter']
-    nwp['pore.pc_star'] = nwp['pore.surface_tension']/pn['pore.diameter']
-
-    phys = op.physics.GenericPhysics(network=pn, phase=nwp, geometry=geo)
-    phys.add_model(propname='throat.entry_pressure',
-                   model=op.models.physics.capillary_pressure.washburn)
-    phys.add_model(propname='throat.snwp',
-                   model=late_filling,
-                   pressure='throat.pc',
-                   pc_star='throat.pc_star',
-                   eta=.8, swp_star=0.5,
-                   regen_mode='deferred')
-    phys.add_model(propname='pore.snwp',
-                   model=late_filling,
-                   pressure='pore.pc',
-                   pc_star='pore.pc_star',
-                   eta=.8, swp_star=0.5,
-                   regen_mode='deferred')
+    nwp.add_model(propname='throat.entry_pressure',
+                  model=op.models.physics.capillary_pressure.washburn)
 
     drn = Drainage(network=pn, phase=nwp)
     drn.set_residual(pores=np.random.randint(0, 50, 350))

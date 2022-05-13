@@ -276,7 +276,7 @@ def extend(network, coords=[], conns=[], labels=[], **kwargs):
         network['throat.conns'] = conns
 
     # Increase size of any prop or label arrays already on network and phases
-    objs = list(network.project.phases().values())
+    objs = list(network.project.phases)
     objs.append(network)
     for obj in objs:
         obj.update({'pore.all': np.ones([Np, ], dtype=bool),
@@ -293,7 +293,7 @@ def extend(network, coords=[], conns=[], labels=[], **kwargs):
                 obj[item][:arr.shape[0]] = arr
 
     # Regenerate models on all objects to fill new elements
-    for obj in network.project.phases().values():
+    for obj in network.project.phases:
         if hasattr(obj, 'models'):
             obj.regenerate_models()
 
@@ -550,17 +550,6 @@ def merge_networks(network, donor=[]):
     else:
         donors = [donor]
 
-    # First fix up geometries
-    # main_proj = network.project
-    # main_geoms = main_proj.geometries()
-    for donor in donors:
-        proj = donor.project
-        geoms = proj.geometries().values()
-        for geo in geoms:
-            if geo.name in network.project.names:
-                geo.name = network.project._generate_name(geo)
-            network.project.append(geo)
-
     for donor in donors:
         network['pore.coords'] = np.vstack((network['pore.coords'],
                                             donor['pore.coords']))
@@ -710,10 +699,6 @@ def stitch(network, donor, P_network, P_donor, method='nearest',
 
     # Add the new stitch throats to the Network
     extend(network=network, throat_conns=conns, labels=label_stitches)
-
-    if len(network.project.geometries()) > 0:
-        logger.warning(str(conns.shape[0]) + ' newly created throats are not '
-                       + 'assigned to a geometry')
 
     # Remove donor from Workspace, if present
     # This check allows for the reuse of a donor Network multiple times
@@ -1216,7 +1201,6 @@ def add_reservoir_pore(cls, network, pores, offset=0.1):
         represent the newly added pore and throats.
 
     """
-    from openpnm.geometry import GenericGeometry
     import openpnm.models.geometry as mods
     # Check if a label was given and fetch actual indices
     if isinstance(pores, str):
@@ -1250,15 +1234,14 @@ def add_reservoir_pore(cls, network, pores, offset=0.1):
         raise Exception('Geometrical properties should be moved to a '
                         + 'geometry object first')
         # or just do this?:  geo = Imported(network=network)
-    geo = GenericGeometry(network=network, pores=Ps, throats=Ts)
-    geo.add_model(propname='pore.diameter',
-                  model=mods.geometry.pore_size.largest_sphere)
-    geo.add_model(propname='throat.diameter_temp',
-                  model=mods.geometry.throat_size.from_neighbor_pores,
-                  mode='min')
-    geo.add_model(propname='throat.diameter',
-                  model=mods.misc.scaled,
-                  prop='throat.diameter_temp', factor=0.5)
-    geo.add_model(propname='throat.volume',
-                  model=mods.geometry.throat_volume.cylinder)
+    network.add_model(propname='pore.diameter',
+                      model=mods.geometry.pore_size.largest_sphere)
+    network.add_model(propname='throat.diameter_temp',
+                      model=mods.geometry.throat_size.from_neighbor_pores,
+                      mode='min')
+    network.add_model(propname='throat.diameter',
+                      model=mods.misc.scaled,
+                      prop='throat.diameter_temp', factor=0.5)
+    network.add_model(propname='throat.volume',
+                      model=mods.geometry.throat_volume.cylinder)
     return network.project

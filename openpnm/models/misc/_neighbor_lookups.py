@@ -45,10 +45,8 @@ def from_neighbor_throats(target, prop, mode='min', ignore_nans=True):
         Array containing customized values based on those of adjacent throats.
 
     """
-    prj = target.project
-    network = prj.network
-    boss = prj.find_full_domain(target)
-    data = boss[prop]
+    network = target.network
+    data = target[prop]
     nans = np.isnan(data)
     im = network.create_incidence_matrix()
     if mode == 'min':
@@ -71,8 +69,7 @@ def from_neighbor_throats(target, prop, mode='min', ignore_nans=True):
         if ignore_nans:
             np.subtract.at(counts, im.row, nans[im.col])
         values = values/counts
-    Ps = boss.pores(target.name)
-    return np.array(values)[Ps]
+    return values
 
 
 def from_neighbor_pores(target, prop, mode='min', ignore_nans=True):
@@ -112,13 +109,10 @@ def from_neighbor_pores(target, prop, mode='min', ignore_nans=True):
         Array containing customized values based on those of adjacent pores.
 
     """
-    prj = target.project
-    lookup = prj.find_full_domain(target)
-    network = prj.network
-    domain = target._domain
-    throats = domain.throats(target.name)
+    network = target.network
+    throats = target.Ts
     P12 = network.find_connected_pores(throats)
-    pvalues = lookup[prop][P12]
+    pvalues = target[prop][P12]
     if ignore_nans:
         pvalues = np.ma.MaskedArray(data=pvalues, mask=np.isnan(pvalues))
     try:  # If pvalues is not empty

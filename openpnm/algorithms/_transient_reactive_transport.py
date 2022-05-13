@@ -4,10 +4,13 @@ from openpnm.algorithms import ReactiveTransport
 from openpnm.utils import Docorator, SettingsAttr
 from openpnm.integrators import ScipyRK45
 from openpnm.algorithms._solution import SolutionContainer
-docstr = Docorator()
-logger = logging.getLogger(__name__)
+
 
 __all__ = ['TransientReactiveTransport']
+
+
+docstr = Docorator()
+logger = logging.getLogger(__name__)
 
 
 @docstr.get_sections(base='TransientReactiveTransportSettings',

@@ -19,9 +19,7 @@ from . import core
 from . import models
 from . import topotools
 from . import network
-from . import geometry
 from . import phase
-from . import physics
 from . import algorithms
 from . import solvers
 from . import integrators

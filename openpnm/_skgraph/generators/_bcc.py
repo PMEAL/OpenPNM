@@ -83,10 +83,10 @@ def bcc(shape, spacing=1, mode='kdtree', node_prefix='node', edge_prefix='edge')
         conns = np.vstack((am.row, am.col)).T
 
     d = {}
-    d[node_prefix+'.corner'] = corner_label
-    d[node_prefix+'.body'] = body_label
     d[node_prefix+'.coords'] = crds*spacing
     d[edge_prefix+'.conns'] = conns
+    d[node_prefix+'.corner'] = corner_label
+    d[node_prefix+'.body'] = body_label
     return d
 
 

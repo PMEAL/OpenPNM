@@ -63,10 +63,6 @@ class Cubic(GenericNetwork):
                                     connectivity=connectivity,
                                     node_prefix='pore', edge_prefix='throat')
         self.update(net)
-        self["pore.all"] = np.ones(net['pore.coords'].shape[0], dtype=bool)
-        self["throat.all"] = np.ones(net['throat.conns'].shape[0], dtype=bool)
-        self["pore.internal"] = True
-        self["throat.internal"] = True
         self["pore.surface"] = skgr.tools.find_surface_nodes_cubic(self)
         Ps = self["pore.surface"]
         self["throat.surface"] = np.all(Ps[self["throat.conns"]], axis=1)

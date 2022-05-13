@@ -4,15 +4,18 @@ import scipy.sparse.csgraph as spgr
 from openpnm.topotools import is_fully_connected
 from openpnm.algorithms import GenericAlgorithm
 from openpnm.algorithms import BCsMixin
-from openpnm.utils import prettify_logger_message
 from openpnm.utils import Docorator, SettingsAttr, TypedSet, Workspace
+from openpnm.utils import check_data_health
 from openpnm import solvers
 from ._solution import SteadyStateSolution, SolutionContainer
+
+
+__all__ = ['GenericTransport', 'GenericTransportSettings']
+
+
 docstr = Docorator()
 logger = logging.getLogger(__name__)
 ws = Workspace()
-
-__all__ = ['GenericTransport', 'GenericTransportSettings']
 
 
 @docstr.get_sections(base='GenericTransportSettings', sections=['Parameters'])
@@ -79,37 +82,6 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
     def x(self, value):
         self[self.settings['quantity']] = value
 
-    @docstr.get_full_description(base='GenericTransport.reset')
-    @docstr.get_sections(base='GenericTransport.reset', sections=['Parameters'])
-    @docstr.dedent
-    def reset(self, bcs=False, results=True):
-        r"""
-        Resets the algorithm to enable re-use.
-
-        This allows the reuse of an algorithm inside a for-loop for
-        parametric studies. The default behavior means that only
-        ``alg.reset()`` and ``alg.run()`` must be called inside a loop.
-        To reset the algorithm more completely requires overriding the
-        default arguments.
-
-        Parameters
-        ----------
-        results : bool
-            If ``True`` all previously calculated values pertaining to
-            results of the algorithm are removed. The default value is
-            ``True``.
-        bcs : bool
-            If ``True`` all previous boundary conditions are removed.
-
-        """
-        self._pure_b = self._b = None
-        self._pure_A = self._A = None
-        if bcs:
-            self['pore.bc_value'] = np.nan
-            self['pore.bc_rate'] = np.nan
-        if results:
-            self.pop(self.settings['quantity'], None)
-
     @docstr.dedent
     def _build_A(self):
         r"""
@@ -119,10 +91,6 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
         -----
         The conductance to use is specified in stored in the algorithm's
         settings under ``alg.settings['conductance']``.
-
-        In subclasses, conductance is set by default. For instance, in
-        ``FickianDiffusion``, it is set to
-        ``throat.diffusive_conductance``, although it can be changed.
 
         """
         gvals = self.settings['conductance']
@@ -144,7 +112,7 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
     def _build_b(self):
         r"""
         Builds the RHS vector, without applying any boundary conditions or
-        source terms. This method is trivial an basically creates a column
+        source terms. This method is trivial as it just creates a column
         vector of 0's.
         """
         b = np.zeros(self.Np, dtype=float)
@@ -153,7 +121,7 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
 
     @property
     def A(self):
-        """The coefficients matrix, A (in Ax = b)"""
+        """The coefficient matrix, A (in Ax = b)"""
         if self._A is None:
             self._build_A()
         return self._A
@@ -187,7 +155,7 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
             # Update b (impose bc values)
             ind = np.isfinite(self['pore.bc_value'])
             self.b[ind] = self['pore.bc_value'][ind] * f
-            # Update b (substract quantities from b to keep A symmetric)
+            # Update b (subtract quantities from b to keep A symmetric)
             x_BC = np.zeros_like(self.b)
             x_BC[ind] = self['pore.bc_value'][ind]
             self.b[~ind] -= (self.A * x_BC)[~ind]
@@ -215,7 +183,7 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
         Notes
         -----
         This method doesn't return anything. The solution is stored on
-        the object under ``pore.quantity`` where *quantity* is specified
+        the object under ``pore.<quantity>`` where *<quantity>* is specified
         in the ``settings`` attribute.
 
         """
@@ -225,7 +193,7 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
         # Perform pre-solve validations
         self._validate_settings()
         self._validate_data_health()
-        # Write x0 to algorithm the obj (needed by _update_iterative_props)
+        # Write x0 to algorithm (needed by _update_iterative_props)
         self.x = x0 = np.zeros_like(self.b) if x0 is None else x0.copy()
         self["pore.initial_guess"] = x0
         self._validate_x0()
@@ -238,7 +206,7 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
         self._run_special(solver=solver, x0=x0, verbose=verbose)
         return self.soln
 
-    def _run_special(self, solver, x0, w=1, verbose=None):
+    def _run_special(self, solver, x0, w=1.0, verbose=None):
         # Make sure A,b are STILL well-defined
         self._validate_data_health()
         # Solve and apply under-relaxation
@@ -276,18 +244,6 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
             raise Exception("'conductance' hasn't been defined on this algorithm")
         if self.settings['phase'] is None:
             raise Exception("'phase' hasn't been defined on this algorithm")
-
-    def _validate_geometry_health(self):
-        """
-        Ensures the geometry doesn't contain nans.
-        """
-        h = self.project.check_geometry_health()
-        issues = [k for k, v in h.items() if v]
-        if issues:
-            msg = (r"Found the following critical issues with your geomet"
-                   f"ry objects: {', '.join(issues)}. Run project.check_g"
-                   "eometry_health() for more details.")
-            raise Exception(msg)
 
     def _validate_topology_health(self):
         """
@@ -329,43 +285,38 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
         # Short-circuit subsequent checks if data are healthy
         if np.isfinite(self.A.data).all() and np.isfinite(self.b).all():
             return True
-        # Validate geometry health
-        self._validate_geometry_health()
 
         # Fetch phase/geometries/physics
         prj = self.project
         phase = prj.phases(self.settings.phase)
-        geometries = prj.geometries().values()
-        physics = prj.physics().values()
 
         # Locate the root of NaNs
         unaccounted_nans = []
-        for geom, phys in zip(geometries, physics):
-            objs = [phase, geom, phys]
-            # Generate global dependency graph
-            dg = nx.compose_all([x.models.dependency_graph(deep=True) for x in objs])
-            d = {}  # maps prop -> obj.name
-            for obj in objs:
-                for k, v in prj.check_data_health(obj).items():
-                    if "Has NaNs" in v:
-                        # FIXME: The next line doesn't cover multi-level props
-                        base_prop = ".".join(k.split(".")[:2])
-                        if base_prop in dg.nodes:
-                            d[base_prop] = obj.name
-                        else:
-                            unaccounted_nans.append(base_prop)
-            # Generate dependency subgraph for props with NaNs
-            dg_nans = nx.subgraph(dg, d.keys())
-            # Find prop(s)/object(s) from which NaNs have propagated
-            root_props = [n for n in d.keys() if not nx.ancestors(dg_nans, n)]
-            root_objs = unique([d[x] for x in nx.topological_sort(dg_nans)])
-            # Throw error with helpful info on how to resolve the issue
-            if root_props:
-                msg = ("Found NaNs in A matrix, possibly caused by NaNs in"
-                       f" {', '.join(root_props)}. The issue might get resolved"
-                       " if you call `regenerate_models` on the following"
-                       f" object(s): {', '.join(root_objs)}")
-                raise Exception(msg)
+        objs = [phase]
+        # Generate global dependency graph
+        dg = nx.compose_all([x.models.dependency_graph(deep=True) for x in objs])
+        d = {}  # maps prop -> obj.name
+        for obj in objs:
+            for k, v in check_data_health(obj).items():
+                if "Has NaNs" in v:
+                    # FIXME: The next line doesn't cover multi-level props
+                    base_prop = ".".join(k.split(".")[:2])
+                    if base_prop in dg.nodes:
+                        d[base_prop] = obj.name
+                    else:
+                        unaccounted_nans.append(base_prop)
+        # Generate dependency subgraph for props with NaNs
+        dg_nans = nx.subgraph(dg, d.keys())
+        # Find prop(s)/object(s) from which NaNs have propagated
+        root_props = [n for n in d.keys() if not nx.ancestors(dg_nans, n)]
+        root_objs = unique([d[x] for x in nx.topological_sort(dg_nans)])
+        # Throw error with helpful info on how to resolve the issue
+        if root_props:
+            msg = ("Found NaNs in A matrix, possibly caused by NaNs in"
+                   f" {', '.join(root_props)}. The issue might get resolved"
+                   " if you call `regenerate_models` on the following"
+                   f" object(s): {', '.join(root_objs)}")
+            raise Exception(msg)
 
         # Raise Exception for throats without an assigned conductance model
         self._validate_conductance_model_health()
@@ -382,14 +333,6 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
                " `alg.settings['cache'] = False` after instantiating the"
                " algorithm object fixes the problem.")
         raise Exception(msg)
-
-    def results(self):
-        r"""
-        Fetches the calculated quantity from the algorithm and returns it
-        as an array.
-        """
-        quantity = self.settings['quantity']
-        return {quantity: self[quantity]}
 
     def rate(self, pores=[], throats=[], mode='group'):
         r"""
@@ -434,18 +377,17 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
 
         if throats.size > 0 and pores.size > 0:
             raise Exception('Must specify either pores or throats, not both')
-        if throats.size == pores.size == 0:
+        if (throats.size == 0) and (pores.size == 0):
             raise Exception('Must specify either pores or throats')
 
         network = self.project.network
-        phase = self.project.phases()[self.settings['phase']]
+        phase = self.project[self.settings['phase']]
         g = phase[self.settings['conductance']]
-        quantity = self[self.settings['quantity']]
 
         P12 = network['throat.conns']
-        X12 = quantity[P12]
+        X12 = self.x[P12]
         if g.size == self.Nt:
-            g = np.tile(g, (2, 1)).T    # Make conductance a Nt by 2 matrix
+            g = np.tile(g, (2, 1)).T    # Make conductance an Nt by 2 matrix
         # The next line is critical for rates to be correct
         g = np.flip(g, axis=1)
         Qt = np.diff(g*X12, axis=1).squeeze()
@@ -454,8 +396,7 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
             R = np.absolute(Qt[throats])
             if mode == 'group':
                 R = np.sum(R)
-
-        if pores.size:
+        elif pores.size:
             Qp = np.zeros((self.Np, ))
             np.add.at(Qp, P12[:, 0], -Qt)
             np.add.at(Qp, P12[:, 1], Qt)
@@ -465,7 +406,7 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
 
         return np.array(R, ndmin=1)
 
-    def set_variable_props(self, variable_props, mode='merge'):
+    def set_variable_props(self, variable_props, mode='add'):
         r"""
         This method is useful for setting variable_props to the settings
         dictionary of the target object. Variable_props and their dependent
@@ -477,12 +418,12 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
             A single string or list of strings to be added as variable_props
         mode : str, optional
             Controls how the variable_props are applied. The default value is
-            'merge'. Options are:
+            'add'. Options are:
 
             ===========  =====================================================
             mode         meaning
             ===========  =====================================================
-            'merge'      Adds supplied variable_props to already existing list
+            'add'        Adds supplied variable_props to already existing list
                          (if any), and prevents duplicates
             'overwrite'  Deletes all exisitng variable_props and then adds
                          the specified new ones
@@ -493,9 +434,10 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
         if isinstance(variable_props, str):
             variable_props = [variable_props]
         # Handle mode
-        mode = self._parse_mode(mode, allowed=['merge', 'overwrite'], single=True)
+        mode = self._parse_mode(mode, allowed=['add', 'overwrite'],
+                                single=True)
         if mode == 'overwrite':
-            self.settings['variable_props'] = TypedSet()
+            self.settings['variable_props'].clear()
         # parse each propname and append to variable_props in settings
         for variable_prop in variable_props:
             variable_prop = self._parse_prop(variable_prop, 'pore')

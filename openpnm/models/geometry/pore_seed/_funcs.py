@@ -71,9 +71,8 @@ def spatially_correlated(target, weights=None, strel=None):
     >>> import openpnm as op
     >>> pn = op.network.Cubic(shape=[10, 10, 10])
     >>> Ps, Ts = pn.Ps, pn.Ts
-    >>> geom = op.geometry.GenericGeometry(network=pn, pores=Ps, throats=Ts)
     >>> mod = op.models.geometry.pore_seed.spatially_correlated
-    >>> geom.add_model(propname='pore.seed', model=mod, weights=[2, 2, 2])
+    >>> pn.add_model(propname='pore.seed', model=mod, weights=[2, 2, 2])
 
     """
     import scipy.ndimage as spim

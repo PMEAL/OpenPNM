@@ -21,9 +21,8 @@ class StatoilTest:
     def test_load_F42A(self, tmpdir):
         path = Path(os.path.realpath(__file__),
                     '../../../fixtures/ICL-SandPack(F42A)')
-        project = op.io.from_statoil(path=path.resolve(), prefix='F42A')
-        assert len(project) == 1
-        net = project.network
+        net = op.io.network_from_statoil(path=path.resolve(), prefix='F42A')
+        self.net = net
         assert net.Np == 1246
         assert net.Nt == 2654
         assert np.shape(net['pore.coords']) == (1246, 3)
@@ -33,9 +32,7 @@ class StatoilTest:
     def test_load_Berea(self, tmpdir):
         path = Path(os.path.realpath(__file__),
                     '../../../fixtures/ICL-Sandstone(Berea)')
-        project = op.io.from_statoil(path=path, prefix='Berea')
-        assert len(project) == 1
-        net = project.network
+        net = op.io.network_from_statoil(path=path, prefix='Berea')
         assert net.Np == 6298
         assert net.Nt == 12098
         assert np.shape(net['pore.coords']) == (6298, 3)

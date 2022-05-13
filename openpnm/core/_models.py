@@ -7,7 +7,7 @@ from openpnm.utils import prettify_logger_message
 logger = logging.getLogger(__name__)
 ws = Workspace()
 
-__all__ = ['ModelsDict', 'ModelsMixin']
+__all__ = ['ModelsDict', 'ModelsMixin', 'ModelWrapper']
 
 
 class ModelsDict(PrintableDict):
@@ -23,11 +23,6 @@ class ModelsDict(PrintableDict):
     ``dependency_graph``, and ``dependency_map``.
 
     """
-
-    def update(self, models):
-        target = self._find_parent()
-        for item in models.keys():
-            target.add_model(propname=item, **models[item])
 
     def _find_parent(self):
         r"""
@@ -85,42 +80,19 @@ class ModelsDict(PrintableDict):
         dependency_list
         dependency_map
 
-        Notes
-        -----
-        To visualize the dependencies, the following NetworkX function and
-        settings is helpful:
-
-        .. plot::
-
-           import networkx as nx
-           import openpnm as op
-           import matplotlib.pyplot as plt
-
-           net = op.network.Cubic(shape=[3, 3, 3])
-           geo = op.geometry.SpheresAndCylinders(network=net,
-                                                 pores=net.Ps,
-                                                 throats=net.Ts)
-
-           dtree = geo.models.dependency_graph()
-           nx.draw_spectral(dtree,
-                            arrowsize=50,
-                            font_size=32,
-                            with_labels=True,
-                            node_size=2000,
-                            width=3.0,
-                            edge_color='lightgrey',
-                            font_weight='bold')
-
-           plt.show()
-
         """
         import networkx as nx
 
         dtree = nx.DiGraph()
         models = list(self.keys())
+
+        # The following line is needed to remove the @ from model names
+        # but this isn't the full solution.
+        # models = list(set([i.split('@')[0] for i in self.keys()]))
+
         # Fetch model-less props: those w/o any model, like temperature
         # otherwise, they won't get picked up in the dependency graph.
-        all_props = list(self._find_parent().keys())
+        all_props = list(self.keys())
         exclude_keys = ["pore.all", "throat.all"]
         pure_props = np.setdiff1d(all_props, models + exclude_keys).tolist()
 
@@ -229,6 +201,32 @@ class ModelsDict(PrintableDict):
             lines.append(horizontal_rule)
         return '\n'.join(lines)
 
+    def __delitem__(self, key):
+        if '@' in key:
+            super().__delitem__(key)
+        else:  # Delete all models with the same prefix
+            for item in list(self.keys()):
+                if item.startswith(key):
+                    self.__delitem__(item)
+
+    def __getitem__(self, key):
+        try:
+            return super().__getitem__(key)
+        except KeyError:
+            d = {}
+            for k, v in self.items():
+                if k.startswith(key):
+                    d[k] = v
+            if len(d) > 0:
+                return d
+            else:
+                raise KeyError(key)
+
+    def update(self, d, domain='all'):
+        parent = self._find_parent()
+        for k, v in d.items():
+            parent.add_model(propname=k, domain=domain, **v)
+
 
 class ModelWrapper(dict):
     r"""
@@ -243,6 +241,9 @@ class ModelWrapper(dict):
                     for key, mod in obj.models.items():
                         if mod is self:
                             return key
+
+    # def __repr__(self):
+    #     return self.__str__()
 
     def __str__(self):
         horizontal_rule = '―' * 78
@@ -331,20 +332,14 @@ class ModelsMixin:
 
         Parameters
         ----------
-        propnames : str or list[str]
-            The list of property names to be regenerated.  If None are given
+        propnames : str or list of str
+            The list of property names to be regenerated.  If none are given
             then ALL models are re-run (except for those whose ``regen_mode``
             is 'constant').
-        exclude : list[str]
+        exclude : list of str
             Since the default behavior is to run ALL models, this can be used
             to exclude specific models.  It may be more convenient to supply
             as list of 2 models to exclude than to specify 8 models to include.
-        deep : bool
-            Specifies whether or not to regenerate models on all associated
-            objects.  For instance, if ``True``, then all Physics models will
-            be regenerated when method is called on the corresponding Phase.
-            The default is ``False``.  The method does not work in reverse,
-            so regenerating models on a Physics will not update a Phase.
 
         """
         # If empty list of propnames was given, do nothing and return
@@ -364,36 +359,12 @@ class ModelsMixin:
         # Re-order given propnames according to dependency tree
         self_models = self.models.dependency_list()
         propnames = [i for i in self_models if i in propnames]
-
-        if deep:
-            other_models = None  # Will trigger regen of ALL models
-        else:
-            # Make list of given propnames that are not in self
-            other_models = list(set(propnames).difference(set(self_models)))
-        # The following has some redundant lines, but is easier to understand
-        if self._isa('phase'):
-            # Start be regenerating models on self
-            for item in propnames:
-                self._regen(item)
-            # Then regen models on associated objects, if any in other_models
-            for phys in self.project.find_physics(phase=self):
-                phys.regenerate_models(propnames=other_models, deep=False)
-        elif self._isa('network'):  # Repeat for other object types
-            for item in propnames:
-                self._regen(item)
-            for geom in self.project.geometries().values():
-                geom.regenerate_models(propnames=other_models, deep=False)
-        else:
-            for item in propnames:
-                self._regen(item)
+        for item in propnames:
+            self._regen(item)
 
     def _regen(self, prop):
         # Create a temporary dict of all model arguments
-        try:
-            kwargs = self.models[prop].copy()
-        except KeyError:
-            logger.info(f'{prop} not found, will retry if deep is True')
-            return
+        kwargs = self.models[prop].copy()
         # Pop model and regen_mode from temporary dict
         model = kwargs.pop('model')
         regen_mode = kwargs.pop('regen_mode', None)

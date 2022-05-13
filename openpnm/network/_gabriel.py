@@ -12,7 +12,7 @@ class Gabriel(GenericNetwork):
     r"""
     Random network formed by Gabriel tessellation of arbitrary base points
 
-    This operates by performing a Deluanay tessellation, then removing
+    This operates by performing a Delaunay tessellation, then removing
     connections that do not adhere to the definition of the `Gabriel graph
     <https://en.wikipedia.org/wiki/Gabriel_graph>`_
 

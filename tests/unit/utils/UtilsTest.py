@@ -8,9 +8,6 @@ class UtilsTest:
 
     def setup_class(self):
         self.net = op.network.Cubic(shape=[3, 3, 3])
-        self.geo = op.geometry.SpheresAndCylinders(network=self.net,
-                                                   pores=self.net.Ps,
-                                                   throats=self.net.Ts)
 
     def teardown_class(self):
         ws = op.Workspace()
@@ -59,11 +56,12 @@ class UtilsTest:
 
     def test_is_symmetric_FickianDiffusion_must_be_symmetric(self):
         net = op.network.Cubic(shape=[5, 5, 5])
-        geom = op.geometry.SpheresAndCylinders(network=net,
-                                               pores=net.Ps,
-                                               throats=net.Ts)
+        net.add_model_collection(op.models.collections.geometry.cones_and_cylinders)
+        net.regenerate_models()
         air = op.phase.Air(network=net)
-        _ = op.physics.Standard(network=net, phase=air, geometry=geom)
+        air.add_model_collection(op.models.collections.phase.air)
+        air.add_model_collection(op.models.collections.physics.standard)
+        air.regenerate_models()
         fd = op.algorithms.FickianDiffusion(network=net, phase=air)
         fd.set_value_BC(pores=net.pores("left"), values=1.0)
         fd.set_value_BC(pores=net.pores("right"), values=0.1)
@@ -71,11 +69,12 @@ class UtilsTest:
 
     def test_is_symmetric_AdvectionDiffusion_must_be_nonsymmetric(self):
         net = op.network.Cubic(shape=[5, 5, 5])
-        geom = op.geometry.SpheresAndCylinders(network=net,
-                                               pores=net.Ps,
-                                               throats=net.Ts)
+        net.add_model_collection(op.models.collections.geometry.cones_and_cylinders)
+        net.regenerate_models()
         air = op.phase.Air(network=net)
-        phys = op.physics.Standard(network=net, phase=air, geometry=geom)
+        air.add_model_collection(op.models.collections.phase.air)
+        air.add_model_collection(op.models.collections.physics.standard)
+        air.regenerate_models()
         ad = op.algorithms.AdvectionDiffusion(network=net, phase=air)
         ad.set_value_BC(pores=net.pores("left"), values=1.0)
         ad.set_value_BC(pores=net.pores("right"), values=0.1)
@@ -85,8 +84,7 @@ class UtilsTest:
         sf.set_value_BC(pores=net.pores("left"), values=1.0)
         sf.set_value_BC(pores=net.pores("right"), values=0.0)
         sf.run()
-        air.update(sf.results())
-        phys.regenerate_models()
+        air.update(sf.soln)
         ad.settings._update({"cache": False})
         ad._build_A()
         # Non-uniform pressure field --> positive advection --> non-symmetric

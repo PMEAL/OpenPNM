@@ -84,9 +84,8 @@ class PrintableList(list):
         lines.append(horizontal_rule)
         return "\n".join(lines)
 
-    def __repr__(self):
-        self.sort()
-        return super().__repr__()
+    # def __repr__(self):
+    #     return self.__str__()
 
 
 class PrintableDict(OrderedDict):
@@ -118,8 +117,8 @@ class PrintableDict(OrderedDict):
         self._key = "Key"
         super().__init__(*args, **kwargs)
 
-    def __repr__(self):
-        return self.__str__()
+    # def __repr__(self):
+    #     return self.__str__()
 
     def __str__(self):
         header = "―" * 78

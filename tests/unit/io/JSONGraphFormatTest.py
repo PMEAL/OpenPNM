@@ -6,7 +6,7 @@ import pytest
 import numpy as np
 import openpnm as op
 from pathlib import Path
-from openpnm.io._jsongraph import JSONGraph as jgf
+from openpnm.io import network_from_jsongraph, network_to_jsongraph
 
 
 class JSONGraphTest:
@@ -24,34 +24,26 @@ class JSONGraphTest:
         ws = op.Workspace()
         ws.clear()
 
-    def test_validation_success(self):
-        json_obj = {'graph': {'nodes': [{'id': "0"}]}}  # 'id' is a string
-        assert jgf._validate_json(json_obj)
+    # def test_save_failure(self, tmpdir):
+    #     path = Path(os.path.realpath(tmpdir),
+    #                 '../../../fixtures/JSONGraphFormat')
+    #     filename = Path(path.resolve(), 'save_failure.json')
 
-    def test_validation_failure(self):
-        json_obj = {'graph': {'nodes': [{'id': 0}]}}    # 'id' is not a string
-        assert not jgf._validate_json(json_obj)
+    #     # Create a deep copy of network with one required property missing
+    #     net = copy.deepcopy(self.net)
+    #     net.pop('pore.diameter')
 
-    def test_save_failure(self):
-        path = Path(os.path.realpath(__file__),
-                    '../../../fixtures/JSONGraphFormat')
-        filename = Path(path.resolve(), 'save_failure.json')
-
-        # Create a deep copy of network with one required property missing
-        net = copy.deepcopy(self.net)
-        net.pop('pore.diameter')
-
-        # Ensure an exception was thrown
-        with pytest.raises(Exception) as e_info:
-            op.io.to_jsongraph(net, filename=filename)
-        expected_error = 'Error - network is missing one of:'
-        assert expected_error in str(e_info.value)
+    #     # Ensure an exception was thrown
+    #     with pytest.raises(Exception) as e_info:
+    #         op.io.network_to_jsongraph(net.project, filename=filename)
+    #     expected_error = 'Error - network is missing one of:'
+    #     assert expected_error in str(e_info.value)
 
     def test_save_success(self):
         path = Path(os.path.realpath(__file__),
                     '../../../fixtures/JSONGraphFormat')
         filename = Path(path.resolve(), 'save_success.json')
-        op.io.to_jsongraph(self.net, filename=filename)
+        op.io.network_to_jsongraph(self.net, filename=filename)
 
         # Read newly created file
         with open(filename, 'r') as file:
@@ -148,18 +140,15 @@ class JSONGraphTest:
         path = Path(os.path.realpath(__file__),
                     '../../../fixtures/JSONGraphFormat')
         filename = Path(path.resolve(), 'valid.json')
-        project = op.io.from_jsongraph(filename)
-        assert len(project) == 2
+        net = op.io.network_from_jsongraph(filename)
+        assert hasattr(net, 'conns')
 
         # Ensure overal network properties
-        net = project.network
         assert net.Np == 2
         assert net.Nt == 1
 
         # Ensure correctness of pore properties
-        assert np.array_equal(net['pore.area'], np.array([0, 0]))
         assert np.array_equal(net['pore.index'], np.array([0, 1]))
-        assert np.array_equal(net['pore.volume'], np.array([0, 0]))
         assert np.array_equal(net['pore.diameter'], np.array([0, 0]))
         assert np.array_equal(net['pore.coords'][0], np.array([0, 0, 0]))
         assert np.array_equal(net['pore.coords'][1], np.array([1, 1, 1]))
@@ -168,13 +157,8 @@ class JSONGraphTest:
         length = 1.73205080757
         squared_radius = 5.169298742047715
         assert net['throat.length'] == length
-        assert net['throat.cross_sectional_area'] == np.pi * squared_radius
         assert np.array_equal(net['throat.conns'], np.array([[0, 1]]))
         assert net['throat.diameter'] == 2.0 * np.sqrt(squared_radius)
-        assert net['throat.volume'] == np.pi * squared_radius * length
-        assert net['throat.perimeter'] == 2.0 * np.pi * np.sqrt(squared_radius)
-        assert net['throat.surface_area'] == 2.0 * \
-            np.sqrt(squared_radius) * np.pi * length
 
 
 if __name__ == '__main__':
@@ -189,4 +173,4 @@ if __name__ == '__main__':
             try:
                 t.__getattribute__(item)()
             except TypeError:
-                t.__getattribute__(item)(tmpdir=tmpdir)
+                t.__getattribute__(item)()

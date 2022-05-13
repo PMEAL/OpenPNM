@@ -42,10 +42,7 @@ def spheres_and_cylinders(
 
     """
     L_ctc = target['throat.spacing']
-    D1, Dt, D2 = target.get_conduit_data(
-        poreprop=pore_diameter,
-        throatprop=throat_diameter
-    ).T
+    D1, Dt, D2 = target.get_conduit_data(pore_diameter.split('.', 1)[-1]).T
 
     # Handle the case where Dt > Dp
     if (Dt > D1).any() or (Dt > D2).any():
@@ -117,10 +114,7 @@ def cones_and_cylinders(
 
     """
     L_ctc = target['throat.spacing']
-    D1, Dt, D2 = target.get_conduit_data(
-        poreprop=pore_diameter,
-        throatprop=throat_diameter
-    ).T
+    D1, Dt, D2 = target.get_conduit_data(pore_diameter.split('.')[-1]).T
 
     L1 = D1 / 2
     L2 = D2 / 2
@@ -159,10 +153,7 @@ def trapezoids_and_rectangles(
 
     """
     L_ctc = target['throat.spacing']
-    D1, Dt, D2 = target.get_conduit_data(
-        poreprop=pore_diameter,
-        throatprop=throat_diameter
-    ).T
+    D1, Dt, D2 = target.get_conduit_data(pore_diameter.split('.')[-1]).T
 
     L1 = D1 / 2
     L2 = D2 / 2
@@ -220,10 +211,7 @@ def cubes_and_cuboids(
 
     """
     L_ctc = target['throat.spacing']
-    D1, Dt, D2 = target.get_conduit_data(
-        poreprop=pore_diameter,
-        throatprop=throat_diameter
-    ).T
+    D1, Dt, D2 = target.get_conduit_data(pore_diameter.split('.')[-1]).T
 
     L1 = D1 / 2
     L2 = D2 / 2

@@ -50,34 +50,6 @@ class MultiPhase(GenericPhase):
         mixture
     %(GenericPhase.parameters)s
 
-    Examples
-    --------
-    >>> import scipy as sp
-    >>> import openpnm as op
-    >>> from openpnm.phase import Air, Water
-    >>> from openpnm.contrib import MultiPhase
-    >>> net = op.network.Cubic(shape=[5, 5, 5])
-    >>> air = Air(network=net, name='air')  # Create two pure phases
-    >>> water = Water(network=net, name='water')
-    >>> mphase = MultiPhase(network=net, phases=[air, water], name='multi')
-    >>> Ps = net['pore.coords'][:, 0] < 3  # Pick some pores to be air filled
-    >>> Ts = net.find_neighbor_throats(pores=Ps)  # Find neighboring throats
-    >>> Ts = net.to_mask(throats=Ts)  # Convert throat indices to mask
-    >>> mphase.set_occupancy(phase=air, Pvals=Ps, Tvals=Ts)  # Assign occupancies
-    >>> mphase.set_occupancy(phase=water, Pvals=~Ps, Tvals=~Ts)
-
-    Air and water have uniform viscosity values throughout, so the
-    peak-to-peak distance is 0, while the mixture phase has the viscosity
-    of air in some locations and water in others, hence a heterogenous
-    viscosity array:
-
-    >>> np.ptp(water['pore.viscosity']) == 0.
-    True
-    >>> np.ptp(air['pore.viscosity']) == 0.
-    True
-    >>> np.ptp(mphase['pore.viscosity']) == 0.
-    False
-
     """
 
     def __init__(self, phases=[], settings=None, **kwargs):
@@ -158,44 +130,6 @@ class MultiPhase(GenericPhase):
         kwargs : dict
             Keyword arguments to be passed to the ``model``.
 
-        Examples
-        --------
-        >>> import openpnm as op
-        >>> from openpnm.phase import Air, Water
-        >>> from openpnm.contrib import MultiPhase
-        >>> from openpnm.models.misc import constant
-
-        >>> net = op.network.Cubic(shape=[5, 5, 5])
-        >>> air = Air(network=net, name='air')  # Create two pure phases
-        >>> water = Water(network=net, name='water')
-        >>> mphase = MultiPhase(network=net, phases=[air, water], name='multi')
-
-        Now, assign some pores to air and the rest to water
-
-        >>> Ps = net['pore.coords'][:, 0] < 3  # Pick some pores to be air filled
-        >>> Ts = net.find_neighbor_throats(pores=Ps)  # Find neighboring throats
-        >>> Ts = net.to_mask(throats=Ts)  # Convert throat indices to mask
-        >>> mphase.set_occupancy(phase=air, Pvals=Ps, Tvals=Ts)  # Assign occupancies
-        >>> mphase.set_occupancy(phase=water, Pvals=~Ps, Tvals=~Ts)
-
-        Now, add an interface model for binary partition coefficient
-
-        >>> mphase.set_binary_partition_coef(phases=[air, water],
-        ...                                  model=constant,
-        ...                                  value=0.5)
-
-        Now, verify that K12 for interface throats is 0.5
-
-        >>> Ts_interface = net.find_neighbor_throats(Ps, mode="xor")
-        >>> K12_interface = mphase["throat.partition_coef.all"][Ts_interface]
-        >>> assert K12_interface.mean() == 0.5
-
-        Finally, verify that K12 for non-interface throats is 1.
-
-        >>> Ts_rest = ~ np.isin(net.Ts, Ts_interface)
-        >>> K12_rest = mphase["throat.partition_coef.all"][Ts_rest]
-        >>> assert K12_rest.mean() == 1.
-
         """
         if np.size(phases) != 2:
             raise Exception("'phases' must contain exactly two elements!")
@@ -256,16 +190,6 @@ class MultiPhase(GenericPhase):
             Dictionary key of the interface property.
         phases : List[GenericPhase]
             List of two phases that together form the interface property.
-
-        Examples
-        --------
-        >>> import openpnm as op
-        >>> net = op.network.Cubic(shape=[5, 5, 5])
-        >>> air = op.phase.Air(network=net, name='air')
-        >>> water = op.phase.Water(network=net, name='water')
-        >>> mphase = op.contrib.MultiPhase(network=net, phases=[air, water])
-        >>> mphase._format_interface_prop(propname="throat.foo", phases=[air, water])
-        'throat.foo.air:water'
 
         """
         prefix = propname

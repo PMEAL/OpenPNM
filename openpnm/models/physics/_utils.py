@@ -12,7 +12,7 @@ def _poisson_conductance(target,
 
     Parameters
     ----------
-    target : GenericPhysics
+    target : OpenPNM Phase
         The object which this model is associated with. This controls the
         length of the calculated array, and also provides access to other
         necessary properties.
@@ -38,36 +38,28 @@ def _poisson_conductance(target,
     network = target.network
     domain = target._domain
     throats = domain.throats(target.name)
-    phase = target.project.find_phase(target)
+    phase = target
     cn = network.conns[throats]
-    F = network[size_factors]
-    # TODO: Uncomment the following 2 lines once #2087 is merged
-    # Dt = phase[throat_conductivity][throats]
-    # D1, D2 = phase[pore_conductivity][cn].T
-    # TODO: Delete the following 2 lines once #2087 is merged
-    Dt = _parse_input(phase, throat_conductivity)[throats]
-    D1, D2 = _parse_input(phase, pore_conductivity)[cn].T
+    Dt = phase[throat_conductivity][throats]
+    D1, D2 = phase[pore_conductivity][cn].T
     # If individual size factors for conduit constiuents are known
-    if isinstance(F, dict):
-        g1 = D1 * F[f"{size_factors}.pore1"][throats]
-        gt = Dt * F[f"{size_factors}.throat"][throats]
-        g2 = D2 * F[f"{size_factors}.pore2"][throats]
+    SF = network[size_factors]
+    if isinstance(SF, dict):
+        F1, Ft, F2 = SF.values()
+        g1 = D1 * F1[throats]
+        gt = Dt * Ft[throats]
+        g2 = D2 * F2[throats]
         return 1 / (1 / g1 + 1 / gt + 1 / g2)
-    # Otherwise, i.e., the size factor for the entire conduit is only known
-    return Dt * F[throats]
-
-
-def _parse_input(obj, arg):
-    """
-    Returns obj[arg] if arg is string, otherwise returns arg.
-    """
-    return obj[arg] if isinstance(arg, str) else arg
+    else:
+        # Otherwise, i.e., the size factor for the entire conduit is only known
+        F = network[size_factors]
+        return Dt * F[throats]
 
 
 def _get_key_props(phase=None,
                    diameter="throat.diameter",
-                   surface_tension="pore.surface_tension",
-                   contact_angle="pore.contact_angle"):
+                   surface_tension="throat.surface_tension",
+                   contact_angle="throat.contact_angle"):
     """
     Returns desired properties in the correct format! See Notes.
 
