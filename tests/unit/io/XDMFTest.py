@@ -19,6 +19,9 @@ class XDMFTest:
         self.phase_2 = op.phase.GenericPhase(network=self.net)
         self.phase_2['pore.bar'] = 2
         self.phase_2['throat.bar'] = 2
+        # The follow is confirmation that bug 1456 is fixed
+        self.phase_2['throat.blah.de.blah'] = 1
+        self.phase_2['throat.blah.bloo'] = 1
 
         self.net['pore.object'] = np.ones(self.net.Np, dtype=object)
 
