@@ -233,6 +233,28 @@ class ModelWrapper(dict):
     This class is used to hold individual models and provide some extra
     functionality, such as pretty-printing.
     """
+
+    def __call__(self):
+        f = self['model']
+        target = self._find_parent()
+        kwargs = self.copy()
+        for kw in ['regen_mode', 'target', 'model']:
+            kwargs.pop(kw, None)
+        vals = f(target=target, **kwargs)
+        return vals
+
+    def _find_parent(self):
+        r"""
+        Finds and returns the parent object to self.
+        """
+        for proj in ws.values():
+            for obj in proj:
+                if hasattr(obj, "models"):
+                    for mod in obj.models.keys():
+                        if obj.models[mod] is self:
+                            return obj
+        raise Exception("No parent object found!")
+
     @property
     def propname(self):
         for proj in ws.values():
