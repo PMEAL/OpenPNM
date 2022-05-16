@@ -37,7 +37,7 @@ class GenericTransportSettings:
         If ``True``, A matrix is cached and rather than getting rebuilt.
 
     """
-    prefix = 'transport'
+    name = 'transport_01'
     phase = ''
     quantity = ''
     conductance = ''

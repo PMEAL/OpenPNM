@@ -22,13 +22,10 @@ class BaseSettings:
 
     Parameters
     ----------
-    prefix : str
-        The default prefix to use when generating a name
     name : str
         The name of the object, which will be generated if not given
 
     """
-    prefix = 'base'
     name = ''
 
 
@@ -40,7 +37,7 @@ class Base2(dict):
         instance._settings_docs = None
         return instance
 
-    def __init__(self, project=None, network=None, settings=None, name=None):
+    def __init__(self, project=None, network=None, settings=None, name='obj'):
         super().__init__()
         self.settings = SettingsAttr(BaseSettings, settings)
         if project is None:
@@ -48,11 +45,9 @@ class Base2(dict):
                 project = ws.new_project()
             else:
                 project = network.project
-        project.extend(self)
-        if name is None:
-            name = project._generate_name(self)
-        project._validate_name(name)
+        name = project._generate_name(name)
         self.settings['name'] = name
+        project.extend(self)
         # Add parameters attr
         self._params = PrintableDict()
         self._params._key = "Parameters"
@@ -252,10 +247,7 @@ class Base2(dict):
         old_name = self.settings['name']
         if name == old_name:
             return
-        if name is None:
-            name = self.project._generate_name(self)
-        if validate:
-            self.project._validate_name(name)
+        name = self.project._generate_name(name)
         self.settings['name'] = name
         if self.Np is not None:
             self['pore.'+name] = np.ones([self.Np, ], dtype=bool)

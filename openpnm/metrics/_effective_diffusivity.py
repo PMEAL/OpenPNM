@@ -17,8 +17,6 @@ class EffectiveDiffusivitySettings:
     Defines the settings for EffectiveDiffusivity
 
     ----------
-    prefix : str
-        The default prefix to use when generating a name
     inlet : str
         The pore labels for diffusion inlet.
     outlet : str
@@ -29,7 +27,7 @@ class EffectiveDiffusivitySettings:
         The length of the network relative to the inlet and outlet
 
     """
-    prefix = 'edif'
+    name = 'deff_01'
     inlet = 'left'
     outlet = 'right'
     area = None

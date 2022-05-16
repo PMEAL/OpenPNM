@@ -15,12 +15,17 @@ class ProjectTest:
         self.phase1 = op.phase.GenericPhase(network=self.net)
         self.phase2 = op.phase.GenericPhase(network=self.net)
 
-    def test_change_simulation_name_by_assignment(self):
+    def test_change_project_name_by_assignment(self):
         proj = self.ws.new_project()
         new_name = self.ws._validate_name()
         proj.name = new_name
         assert proj.name == new_name
         assert proj.name in self.ws.keys()
+
+    def test_object_naming(self):
+        pn = op.network.Cubic([3, 3, 3], name='bob')
+        proj = pn.project
+        assert 'bob' in proj.names
 
     # def test_change_simulation_name_by_moving_in_dict(self):
     #     proj = self.ws.new_project()

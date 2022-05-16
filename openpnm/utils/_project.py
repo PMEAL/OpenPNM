@@ -1,3 +1,4 @@
+import re
 import pickle
 import logging
 import uuid
@@ -20,7 +21,7 @@ class ProjectSettings(SettingsAttr):
     uuid : str
         A universally unique identifier for the object to keep things straight
     """
-    prefix = 'proj'
+    name = 'proj_01'
     uuid = ''
     original_uuid = ''
 
@@ -30,7 +31,7 @@ class ProjectSettings(SettingsAttr):
 
     @name.setter
     def name(self, name):
-        name = ws._validate_name(name, self.prefix)
+        name = ws._validate_name(name)
         for v in list(ws.values()):
             if v.settings is self:
                 ws[name] = ws.pop(v.settings.name)
@@ -126,7 +127,7 @@ class Project(list):
         is also stored (``obj.settings['original_uuid']``) for reference.
 
         """
-        name = ws._validate_name(name, self.settings.prefix)
+        name = ws._validate_name(name)
         proj = deepcopy(self)
         for item in proj:
             item.settings['uuid'] = str(uuid.uuid4())
@@ -151,14 +152,21 @@ class Project(list):
                 if key.split('.')[1] == name:
                     raise Exception('A property/label is already named '+name)
 
-    def _generate_name(self, obj):
-        prefix = obj.settings['prefix']
-        num = len(self) + 1
-        name = prefix + '_' + str(num).zfill(2)
-        try:
-            self._validate_name(name)
-        except Exception:
-            name = prefix + '_' + str(np.random.randint(100, 999))
+    def _generate_name(self, name=''):
+        if name in [None, '']:
+            name = 'obj_01'  # Give basic name, then let rest of func fix it
+        if name in self.names:  # If proposed name is taken, increment it
+            proposed_name = name
+            if not re.search(r'_\d+$', name):  # If name does not end with _##
+                name = name + '_01'
+            prefix, count = name.rsplit('_', 1)
+            n = [0]
+            for item in self:
+                if item.name.startswith(prefix+'_'):
+                    n.append(int(item.name.split(prefix+'_')[1]))
+            name = prefix+'_'+str(max(n)+1).zfill(2)
+            logger.warn(f'{proposed_name} is already taken, using {name} instead')
+        self._validate_name(name)
         return name
 
     @property

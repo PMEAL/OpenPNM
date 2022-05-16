@@ -16,7 +16,7 @@ class FickianDiffusionSettings():
     %(ReactiveTransportSettings.parameters)s
 
     """
-    prefix = 'fick'
+    name = 'fick_01'
     quantity = 'pore.concentration'
     conductance = 'throat.diffusive_conductance'
 

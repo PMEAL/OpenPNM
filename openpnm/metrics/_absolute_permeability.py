@@ -17,8 +17,6 @@ class AbsolutePermeabilitySettings:
     Defines the settings for AbsolutePermeablity
 
     ----------
-    prefix : str
-        The default prefix to use when generating a name
     inlet : str
         The pore labels for flow inlet.
     outlet : str
@@ -29,7 +27,7 @@ class AbsolutePermeabilitySettings:
         The length of the network relative to the inlet and outlet
 
     """
-    prefix = 'perm'
+    name = 'perm_01'
     inlet = 'left'
     outlet = 'right'
     area = None

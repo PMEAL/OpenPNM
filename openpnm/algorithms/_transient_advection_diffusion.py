@@ -16,7 +16,7 @@ class TransientAdvectionDiffusionSettings:
     %(TransientReactiveTransportSettings.parameters)s
 
     """
-    prefix = 'trans_ad'
+    name = 'trans_ad_01'
 
 
 class TransientAdvectionDiffusion(TransientReactiveTransport,

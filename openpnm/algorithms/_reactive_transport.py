@@ -39,7 +39,7 @@ class ReactiveTransportSettings:
         Relative tolerance for the solution vector
 
     """
-    prefix = 'react_trans'
+    name = 'react_trans_01'
     relaxation_factor = 1.0
     sources = TypedList(types=[str])
     newton_maxiter = 5000

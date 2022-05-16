@@ -29,7 +29,7 @@ class AdvectionDiffusionSettings:
         algorithm.
 
     """
-    prefix = 'ad'
+    name = 'ad_01'
     quantity = 'pore.concentration'
     conductance = 'throat.ad_dif_conductance'
     diffusive_conductance = 'throat.diffusive_conductance'

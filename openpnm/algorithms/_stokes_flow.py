@@ -10,7 +10,7 @@ __all__ = ['StokesFlow']
 
 
 class StokesFlowSettings:
-    prefix = 'stokes'
+    name = 'stokes_01'
     quantity = 'pore.pressure'
     conductance = 'throat.hydraulic_conductance'
 
