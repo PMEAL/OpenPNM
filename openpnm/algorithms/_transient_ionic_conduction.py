@@ -24,4 +24,6 @@ class TransientIonicConduction(TransientReactiveTransport,
 
     def __init__(self, settings=None, **kwargs):
         self.settings = SettingsAttr(TransientIonicConductionSettings, settings)
+        if 'name' not in kwargs.keys():
+            kwargs['name'] = 'trans_ionic_01'
         super().__init__(settings=self.settings, **kwargs)

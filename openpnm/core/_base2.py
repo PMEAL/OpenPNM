@@ -26,7 +26,7 @@ class BaseSettings:
         The name of the object, which will be generated if not given
 
     """
-    name = ''
+    name = 'obj'
 
 
 class Base2(dict):
@@ -37,14 +37,13 @@ class Base2(dict):
         instance._settings_docs = None
         return instance
 
-    def __init__(self, project=None, network=None, settings=None, name='obj'):
+    def __init__(self, network=None, settings=None, name='obj'):
         super().__init__()
         self.settings = SettingsAttr(BaseSettings, settings)
-        if project is None:
-            if network is None:
-                project = ws.new_project()
-            else:
-                project = network.project
+        if network is None:
+            project = ws.new_project()
+        else:
+            project = network.project
         name = project._generate_name(name)
         self.settings['name'] = name
         project.extend(self)

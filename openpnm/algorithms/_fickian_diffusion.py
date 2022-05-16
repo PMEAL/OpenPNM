@@ -1,8 +1,11 @@
 import logging
 from openpnm.algorithms import ReactiveTransport
 from openpnm.utils import Docorator, SettingsAttr
+
+
 docstr = Docorator()
 logger = logging.getLogger(__name__)
+
 
 __all__ = ['FickianDiffusion']
 
@@ -16,7 +19,6 @@ class FickianDiffusionSettings():
     %(ReactiveTransportSettings.parameters)s
 
     """
-    name = 'fick_01'
     quantity = 'pore.concentration'
     conductance = 'throat.diffusive_conductance'
 
@@ -49,4 +51,6 @@ class FickianDiffusion(ReactiveTransport):
 
     def __init__(self, settings=None, **kwargs):
         self.settings = SettingsAttr(FickianDiffusionSettings, settings)
+        if 'name' not in kwargs.keys():
+            kwargs['name'] = 'fick_01'
         super().__init__(settings=self.settings, **kwargs)

@@ -29,7 +29,6 @@ class AdvectionDiffusionSettings:
         algorithm.
 
     """
-    name = 'ad_01'
     quantity = 'pore.concentration'
     conductance = 'throat.ad_dif_conductance'
     diffusive_conductance = 'throat.diffusive_conductance'
@@ -44,6 +43,8 @@ class AdvectionDiffusion(ReactiveTransport):
 
     def __init__(self, settings=None, **kwargs):
         self.settings = SettingsAttr(AdvectionDiffusionSettings, settings)
+        if 'name' not in kwargs.keys():
+            kwargs['name'] = 'ad_01'
         super().__init__(settings=self.settings, **kwargs)
 
     @docstr.dedent

@@ -21,7 +21,6 @@ class NetworkSettings:
     ----------
     %(BaseSettings.parameters)s
     """
-    prefix = 'net'
 
 
 @docstr.get_sections(base='GenericNetwork', sections=['Parameters'])
@@ -94,6 +93,8 @@ class GenericNetwork(Domain):
 
     def __init__(self, conns=None, coords=None, settings=None, **kwargs):
         self.settings = SettingsAttr(NetworkSettings, settings)
+        if 'name' not in kwargs.keys():
+            kwargs['name'] = 'net'
         super().__init__(settings=self.settings, **kwargs)
 
         self._am = {}
