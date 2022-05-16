@@ -78,6 +78,8 @@ class MixedInvasionPercolation(GenericAlgorithm):
 
     def __init__(self, settings=None, **kwargs):
         self.settings = SettingsAttr(MixedIPSettings, settings)
+        if 'name' not in kwargs.keys():
+            kwargs['name'] = 'mixed_IP_01'
         super().__init__(settings=self.settings, **kwargs)
 
     def setup(

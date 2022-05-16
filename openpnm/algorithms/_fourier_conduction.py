@@ -12,6 +12,8 @@ __all__ = ['FourierConduction']
 
 @docstr.dedent
 class FourierConductionSettings:
+    r'''
+    '''
     quantity = 'pore.temperature'
     conductance = 'throat.thermal_conductance'
 

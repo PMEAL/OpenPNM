@@ -44,9 +44,8 @@ class Base2(dict):
             project = ws.new_project()
         else:
             project = network.project
-        name = project._generate_name(name)
-        self.settings['name'] = name
         project.extend(self)
+        self.name = name
         # Add parameters attr
         self._params = PrintableDict()
         self._params._key = "Parameters"

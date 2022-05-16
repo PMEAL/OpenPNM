@@ -53,6 +53,8 @@ class MixedInvasionPercolationCoop(MixedInvasionPercolation):
 
     def __init__(self, settings=None, **kwargs):
         self.settings = SettingsAttr(MixedIPCoopSettings, settings)
+        if 'name' not in kwargs.keys():
+            kwargs['name'] = 'mixed_IP_coop_01'
         super().__init__(settings=self.settings, **kwargs)
 
     def setup(

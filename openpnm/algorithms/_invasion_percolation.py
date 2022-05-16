@@ -56,8 +56,11 @@ class InvasionPercolation(GenericAlgorithm):
     structure is very efficient at this.
 
     """
+
     def __init__(self, phase, settings=None, **kwargs):
         self.settings = SettingsAttr(IPSettings, settings)
+        if 'name' not in kwargs.keys():
+            kwargs['name'] = 'invasion_01'
         super().__init__(settings=self.settings, **kwargs)
         self.settings['phase'] = phase.name
         self['pore.invasion_sequence'] = -1
