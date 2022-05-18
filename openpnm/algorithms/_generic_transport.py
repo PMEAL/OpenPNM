@@ -253,8 +253,7 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
         Ps = ~np.isnan(self['pore.bc_rate']) + ~np.isnan(self['pore.bc_value'])
         if not is_fully_connected(network=self.network, pores_BC=Ps):
             msg = ("Your network is clustered. Run h = net.check_network_"
-                   "health() followed by op.topotools.trim(net, pores=h['"
-                   "trim_pores']) to make your network fully connected.")
+                   "health() followed by op.topotools.trim(net, pores=h['disconnected_pores']) to make your network fully connected.")
             raise Exception(msg)
 
     def _validate_conductance_model_health(self):
