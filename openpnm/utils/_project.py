@@ -21,7 +21,6 @@ class ProjectSettings(SettingsAttr):
     uuid : str
         A universally unique identifier for the object to keep things straight
     """
-    name = 'proj_01'
     uuid = ''
     original_uuid = ''
 

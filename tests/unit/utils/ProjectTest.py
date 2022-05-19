@@ -10,8 +10,8 @@ class ProjectTest:
     def setup_class(self):
         self.ws = op.Workspace()
         self.ws.clear()
-        self.proj = self.ws.new_project()
-        self.net = op.network.Cubic(shape=[2, 2, 2], project=self.proj)
+        self.net = op.network.Cubic(shape=[2, 2, 2])
+        self.proj = self.net.project
         self.phase1 = op.phase.GenericPhase(network=self.net)
         self.phase2 = op.phase.GenericPhase(network=self.net)
 

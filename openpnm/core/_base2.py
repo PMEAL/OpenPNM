@@ -4,6 +4,7 @@ from openpnm.utils import Workspace, SettingsAttr, PrintableList, PrintableDict
 from openpnm.utils import parse_mode
 from copy import deepcopy
 import inspect
+import uuid
 import numpy.lib.recfunctions as rf
 
 
@@ -22,34 +23,31 @@ class BaseSettings:
 
     Parameters
     ----------
-    name : str
-        The name of the object, which will be generated if not given
+    uuid : str
+        A universally unique identifier for the object to keep things straight
 
     """
-    name = 'obj'
 
 
 class Base2(dict):
 
-    def __new__(cls, *args, **kwargs):
-        instance = super().__new__(cls, *args, **kwargs)
-        instance._settings = None
-        instance._settings_docs = None
-        return instance
-
     def __init__(self, network=None, settings=None, name='obj'):
         super().__init__()
-        self.settings = SettingsAttr(BaseSettings, settings)
+        # Add settings attribute
+        self._settings = SettingsAttr(BaseSettings)
+        self.settings._update(settings)
+        self.settings['uuid'] = str(uuid.uuid4())
+        # Add parameters attr
+        self._params = PrintableDict()
+        self._params._key = "Parameters"
+        self._params._value = "Values"
+        # Associate with project
         if network is None:
             project = ws.new_project()
         else:
             project = network.project
         project.extend(self)
         self.name = name
-        # Add parameters attr
-        self._params = PrintableDict()
-        self._params._key = "Parameters"
-        self._params._value = "Values"
 
     def __eq__(self, other):
         return hex(id(self)) == hex(id(other))
@@ -242,11 +240,13 @@ class Base2(dict):
             return PrintableList(vals)
 
     def _set_name(self, name, validate=True):
-        old_name = self.settings['name']
+        if not hasattr(self, '_name'):
+            self._name = None
+        old_name = self._name
         if name == old_name:
             return
         name = self.project._generate_name(name)
-        self.settings['name'] = name
+        self._name = name
         if self.Np is not None:
             self['pore.'+name] = np.ones([self.Np, ], dtype=bool)
         if self.Nt is not None:
@@ -254,7 +254,7 @@ class Base2(dict):
 
     def _get_name(self):
         try:
-            return self.settings['name']
+            return self._name
         except AttributeError:
             return None
 
@@ -269,14 +269,14 @@ class Base2(dict):
 
     def _set_settings(self, settings):
         self._settings = deepcopy(settings)
-        if (self._settings_docs is None) and (settings.__doc__ is not None):
-            self._settings_docs = settings.__doc__
+        # if (self._settings_docs is None) and (settings.__doc__ is not None):
+        #     self._settings_docs = settings.__doc__
 
     def _get_settings(self):
         if self._settings is None:
             self._settings = SettingsAttr()
-        if self._settings_docs is not None:
-            self._settings.__dict__['__doc__'] = self._settings_docs
+        # if self._settings_docs is not None:
+        #     self._settings.__dict__['__doc__'] = self._settings_docs
         return self._settings
 
     def _del_settings(self):
