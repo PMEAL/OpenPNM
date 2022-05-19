@@ -485,17 +485,17 @@ class ModelMixin2:
                            regen_mode='deferred', **v)
 
     def regenerate_models(self, propnames=None, exclude=[]):
-        if isinstance(propnames, list) and len(propnames) == 0:
-            return  # Short-circuit function and return
-        elif isinstance(propnames, str):  # Convert string to list if necessary
-            propnames = [propnames]
-        elif propnames is None:  # If no props given, then regenerate them all
+        if not np.size(propnames):
+            return
+        # Regenerate all properties by default
+        if propnames is None:
             propnames = self.models.dependency_list()
+        else:
+            propnames = np.array(propnames, ndmin=1)
         # Remove any that are specifically excluded
         propnames = [i for i in propnames if i not in exclude]
-        # Re-order given propnames according to dependency tree
-        # all_models = self.models.dependency_list()
-        all_models = self.models.keys()
+        # Reorder given propnames according to dependency tree
+        all_models = self.models.dependency_list()
         propnames = [i for i in all_models if i in propnames]
         # Now run each on in sequence
         for item in propnames:
@@ -701,22 +701,3 @@ if __name__ == '__main__':
     g.run_model('pore.dict3')
     assert g['pore.dict3.item1@left'].sum() == 3
     assert g['pore.dict3.item1@right'].sum() == 3
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
