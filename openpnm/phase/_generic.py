@@ -3,7 +3,6 @@ import numpy as np
 from openpnm.core import Domain
 from openpnm.utils import Workspace
 from openpnm.utils import Docorator, SettingsAttr
-import openpnm.models as mods
 
 
 docstr = Docorator()
