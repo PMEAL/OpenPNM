@@ -75,7 +75,7 @@ class MultiPhase(GenericPhase):
         try:
             vals = super().__getitem__(key)
         except KeyError:
-            vals = self.interleave_data(key)
+            vals = self._interleave_data(key)
         return vals
 
     @property
@@ -99,14 +99,76 @@ class MultiPhase(GenericPhase):
 
         Parameters
         ----------
-        phases : list[GenericPhase]
+        phases : list[GenericPhase] or GenericPhase
 
         """
         phases = np.array(phases, ndmin=1)
         for phase in phases:
+            if phase.name in self.settings["phases"]:
+                continue
             self.settings['phases'].add(phase.name)
             self[f'pore.occupancy.{phase.name}'] = 0.0
             self[f'throat.occupancy.{phase.name}'] = 0.0
+
+    def set_occupancy(self, phase, *, pores=[], throats=[], values=1):
+        r"""
+        Specifies occupancy of a phase in each pore or throat. This
+        method doesn't return any value.
+
+        Parameters
+        ----------
+        phase : GenericPhase
+            The phase whose occupancy is being specified.
+        pores : ndarray
+            The location of pores whose occupancy is to be set.
+        throats : ndarray
+            The location of throats whose occupancy is to be set.
+        values : ndarray or float
+            Pore/throat occupancy values.
+
+        """
+        pores = np.array(pores, ndmin=1)
+        throats = np.array(throats, ndmin=1)
+
+        if not(pores.size ^ throats.size):
+            raise Exception("Must either pass 'pores' or 'throats'")
+        if phase not in self.project:
+            raise Exception(f"{phase.name} doesn't belong to this project")
+        self.add_phases(phase)
+
+        if pores.size:
+            self[f'pore.occupancy.{phase.name}'][pores] = values
+        if throats.size:
+            self[f'throat.occupancy.{phase.name}'][throats] = values
+
+        if self.settings["throat_occupancy"] == "automatic":
+            self.regenerate_models(propnames=f"throat.occupancy.{phase.name}")
+
+    def regenerate_models(self, propnames=None, exclude=[]):
+        r"""
+        Regenerate models associated with the Multiphase object
+
+        This method works by first regenerating the models associated with
+        the constituent phases, and then regenerating Multiphase models.
+
+        Parameters
+        ----------
+        propnames : list[str] or str
+            The list of property names to be regenerated. If None are
+            given then ALL models are re-run (except for those whose
+            ``regen_mode`` is 'constant').
+        exclude : list[str]
+            Since the default behavior is to run ALL models, this can be
+            used to exclude specific models. It may be more convenient to
+            supply as list of 2 models to exclude than to specify 8 models
+            to include.
+
+        """
+        # Regenerate models associated with phases within MultiPhase object
+        for phase in self.phases.values():
+            phase.regenerate_models(propnames=propnames, exclude=exclude)
+        # Regenerate models specific to MultiPhase object
+        super().regenerate_models(propnames=propnames, exclude=exclude)
 
     def set_binary_partition_coef(self, phases, model, **kwargs):
         """
@@ -190,74 +252,17 @@ class MultiPhase(GenericPhase):
         # Store a reference in self as a propname for convenience
         self[f"{prefix}.global"][:] = self._K
 
-    def interleave_data(self, prop):
-        """
-        Gathers property values from component phases to build a single
-        array.
-
-        If the requested ``prop`` is not on this MultiPhase, then a search
-        is conducted on all associated phase objects, and values from each
-        are assembled into a single array.
-
-        Parameters
-        ----------
-        prop : str
-            The property to be retrieved.
-
-        Returns
-        -------
-        ndarray
-            An array containing the specified property retrieved from each
-            component phase and assembled based on the specified mixing
-            rule.
-
-        """
+    def _interleave_data(self, prop):
+        """Gathers property values from component phases to build a single array."""
         element = self._parse_element(prop)[0]
-        vals = np.zeros([self._count(element=element)], dtype=float)
+        vals = np.zeros(self._count(element=element), dtype=float)
         # Retrieve property from constituent phases (weight = occupancy)
-        try:
-            for phase in self.phases.values():
-                vals += phase[prop] * self[f"{element}.occupancy.{phase.name}"]
-        # Otherwise (if not found) retrieve from super class
-        except KeyError:
-            vals = super().interleave_data(prop)
+        for phase in self.phases.values():
+            vals += phase[prop] * self[f"{element}.occupancy.{phase.name}"]
         return vals
 
-    def regenerate_models(self, propnames=None, exclude=[], deep=False):
-        r"""
-        Regenerate models associated with the Multiphase object
-
-        This method works by first regenerating the models associated with
-        the constituent phases, and then regenerating Multiphase models.
-
-        Parameters
-        ----------
-        propnames : list[str] or str
-            The list of property names to be regenerated. If None are
-            given then ALL models are re-run (except for those whose
-            ``regen_mode`` is 'constant').
-        exclude : list[str]
-            Since the default behavior is to run ALL models, this can be
-            used to exclude specific models. It may be more convenient to
-            supply as list of 2 models to exclude than to specify 8 models
-            to include.
-        deep : bool
-            Specifies whether or not to regenerate models on all
-            associated objects. For instance, if ``True``, then all
-            Physics models will be regenerated when method is called on
-            the corresponding Phase. The default is ``False``. The method
-            does not work in reverse, so regenerating models on a Physics
-            will not update a Phase.
-
-        """
-        # Regenerate models associated with phases within MultiPhase object
-        for phase in self.phases.values():
-            phase.regenerate_models(propnames=propnames, exclude=exclude, deep=deep)
-        # Regenerate models specific to MultiPhase object
-        super().regenerate_models(propnames=propnames, exclude=exclude, deep=deep)
-
     def _set_automatic_throat_occupancy(self, mode="mean"):
-        r"""
+        """
         Automatically interpolates throat occupancy based on that in
         adjacent pores. This method doesn't return any value.
 
@@ -284,38 +289,3 @@ class MultiPhase(GenericPhase):
                            model=misc.from_neighbor_pores,
                            prop=f"pore.occupancy.{phase.name}",
                            mode=mode)
-
-    def set_occupancy(self, phase, *, pores=[], throats=[], values=1):
-        r"""
-        Specifies occupancy of a phase in each pore or throat. This
-        method doesn't return any value.
-
-        Parameters
-        ----------
-        phase : GenericPhase
-            The phase whose occupancy is being specified.
-        pores : ndarray
-            The location of pores whose occupancy is to be set.
-        throats : ndarray
-            The location of throats whose occupancy is to be set.
-        values : ndarray or float
-            Pore/throat occupancy values.
-
-        """
-        pores = np.array(pores, ndmin=1)
-        throats = np.array(throats, ndmin=1)
-
-        if not(pores.size ^ throats.size):
-            raise Exception("Must either pass 'pores' or 'throats'")
-        if phase not in self.project:
-            raise Exception(f"{phase.name} doesn't belong to this project")
-        if phase.name not in self.settings['phases']:
-            self.add_phases(phase)
-
-        if pores.size:
-            self[f'pore.occupancy.{phase.name}'][pores] = values
-        if throats.size:
-            self[f'throat.occupancy.{phase.name}'][throats] = values
-
-        if self.settings["throat_occupancy"] == "automatic":
-            self.regenerate_models(propnames=f"throat.occupancy.{phase.name}")
