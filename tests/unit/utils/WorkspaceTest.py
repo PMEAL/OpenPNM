@@ -42,8 +42,7 @@ class WorkspaceTest:
     #     self.ws.clear()
 
     def test_str(self):
-        proj = self.ws.new_project()
-        op.network.Cubic(shape=[3, 3, 3], project=proj)
+        op.network.Cubic(shape=[3, 3, 3])
         s = self.ws.__str__().split('\n')
         assert len(s) == 8
         self.ws.clear()

@@ -39,7 +39,8 @@ class GenericAlgorithm(Domain):
     """
 
     def __init__(self, network, settings=None, **kwargs):
-        self.settings = SettingsAttr(GenericAlgorithmSettings, settings)
+        self._settings = SettingsAttr(GenericAlgorithmSettings)
+        self.settings._update(settings)
         if 'name' not in kwargs.keys():
             kwargs['name'] = 'alg_01'
         super().__init__(network=network, settings=self.settings, **kwargs)
