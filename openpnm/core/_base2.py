@@ -241,7 +241,7 @@ class Base2(dict):
 
     def _set_name(self, name, validate=True):
         if not hasattr(self, '_name'):
-            self._name = None
+            self._name = ''
         old_name = self._name
         if name == old_name:
             return
