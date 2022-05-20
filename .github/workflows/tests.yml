@@ -20,8 +20,9 @@ jobs:
         include:
         - os: ubuntu-latest
           path: ~/.cache/pip
-        - os: macos-latest
-          path: ~/Library/Caches/pip
+        # Uncomment the next two lines once #2451 is fixed
+        # - os: macos-latest
+        #   path: ~/Library/Caches/pip
         - os: windows-latest
           path: ~\AppData\Local\pip\Cache
 
