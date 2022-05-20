@@ -22,6 +22,7 @@ __all__ = [
     'toc',
     'unique_list',
     'flat_list',
+    'flat_list2',
     'sanitize_dict',
     'methods_to_table',
     'models_to_table',
@@ -372,6 +373,17 @@ def unique_list(input_list):
 
 
 def flat_list(input_list):
+    r"""
+    Given a list of nested lists of arbitrary depth, returns a single
+    level or 'flat' list.
+    """
+    x = input_list
+    if isinstance(x, list):
+        return [a for i in x for a in flat_list(i)]
+    return [x]
+
+
+def flat_list2(input_list):
     r"""
     Given a list of nested lists of arbitrary depth, returns a single
     level or 'flat' list.
