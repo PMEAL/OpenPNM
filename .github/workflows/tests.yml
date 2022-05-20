@@ -15,7 +15,8 @@ jobs:
       max-parallel: 9
       matrix:
         python-version: ['3.8', '3.9', '3.10']
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        # Add macos-latest to the next line once #2451 is fixed
+        os: [ubuntu-latest, windows-latest]
         include:
         - os: ubuntu-latest
           path: ~/.cache/pip
