@@ -485,18 +485,18 @@ class ModelMixin2:
                            regen_mode='deferred', **v)
 
     def regenerate_models(self, propnames=None, exclude=[]):
-        if not np.size(propnames):
-            return
         # Regenerate all properties by default
         if propnames is None:
             propnames = self.models.dependency_list()
         else:
-            propnames = np.array(propnames, ndmin=1)
+            propnames = np.array(propnames, ndmin=1).tolist()
         # Remove any that are specifically excluded
         propnames = [i for i in propnames if i not in exclude]
         # Reorder given propnames according to dependency tree
         all_models = self.models.dependency_list()
-        propnames = [i for i in all_models if i in propnames]
+        tmp = [e.split("@")[0] for e in propnames]
+        idx_sort = [all_models.index(e) for e in tmp]
+        propnames = [e for _, e in sorted(zip(idx_sort, propnames))]
         # Now run each on in sequence
         for item in propnames:
             try:
@@ -561,32 +561,28 @@ class Domain(ParserMixin, LabelMixin, ModelMixin2, Base2):
     ...
 
 
-def random_seed(target, domain, seed=None, lim=[0, 1]):
-    inds = target[domain]
-    np.random.seed(seed)
-    seeds = np.random.rand(inds.sum())*(lim[1]-lim[0]) + lim[0]
-    return seeds
-
-
-def factor(target, prop, f=1):
-    vals = target[prop]*f
-    return vals
-
-
-def dolittle(target, domain):
-    N = target[domain].sum()
-    d = {}
-    d['item1'] = np.ones([N, ])
-    d['item2'] = np.ones([N, ])*2
-    d['item3'] = np.ones([N, ])*3
-    return d
-
-
 if __name__ == '__main__':
-    import openpnm as op
     import pytest
+    import openpnm as op
 
-    # %%
+    def random_seed(target, domain, seed=None, lim=[0, 1]):
+        inds = target[domain]
+        np.random.seed(seed)
+        seeds = np.random.rand(inds.sum())*(lim[1]-lim[0]) + lim[0]
+        return seeds
+
+    def factor(target, prop, f=1):
+        vals = target[prop]*f
+        return vals
+
+    def dolittle(target, domain):
+        N = target[domain].sum()
+        d = {}
+        d['item1'] = np.ones([N, ])
+        d['item2'] = np.ones([N, ])*2
+        d['item3'] = np.ones([N, ])*3
+        return d
+
     g = op.network.Cubic(shape=[3, 3, 1])
 
     g.add_model(propname='pore.seed@left',
@@ -620,7 +616,8 @@ if __name__ == '__main__':
                 domain='right',
                 regen_mode='deferred',)
 
-    # %% Run some basic tests
+    ## Run some basic tests
+
     # Use official args
     g.run_model('pore.seed', domain='pore.left')
     assert np.sum(~np.isnan(g['pore.seed'])) == g['pore.left'].sum()
