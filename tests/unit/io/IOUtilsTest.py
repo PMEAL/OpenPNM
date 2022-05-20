@@ -1,8 +1,7 @@
-import openpnm as op
-import py
 import os
-import pytest
+import py
 from pathlib import Path
+import openpnm as op
 
 
 class IOUtilsTest:
@@ -96,7 +95,7 @@ if __name__ == '__main__':
     t.setup_class()
     for item in t.__dir__():
         if item.startswith('test'):
-            print('running test: '+item)
+            print(f'Running test: {item}')
             try:
                 t.__getattribute__(item)()
             except TypeError:

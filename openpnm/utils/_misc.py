@@ -7,6 +7,7 @@ import functools
 import numpy as np
 import scipy.sparse as sparse
 from collections import OrderedDict
+from collections.abc import Iterable
 from docrep import DocstringProcessor
 
 
@@ -21,6 +22,7 @@ __all__ = [
     'toc',
     'unique_list',
     'flat_list',
+    'flat_list2',
     'sanitize_dict',
     'methods_to_table',
     'models_to_table',
@@ -379,6 +381,21 @@ def flat_list(input_list):
     if isinstance(x, list):
         return [a for i in x for a in flat_list(i)]
     return [x]
+
+
+def flat_list2(input_list):
+    r"""
+    Given a list of nested lists of arbitrary depth, returns a single
+    level or 'flat' list.
+    """
+    def _flatten(l):
+        for el in l:
+            if isinstance(el, Iterable) and not isinstance(el, (str, bytes)):
+                yield from _flatten(el)
+            else:
+                yield el
+
+    return list(_flatten(input_list))
 
 
 def sanitize_dict(input_dict):
