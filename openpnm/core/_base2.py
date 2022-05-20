@@ -80,11 +80,11 @@ class Base2(dict):
         if '@' in key:
             element, prop = key.split('@')[0].split('.', 1)
             domain = key.split('@')[1].split('.')[-1]
-            locs = super().__getitem__(element+'.'+domain)
+            locs = super().__getitem__(f'{element}.{domain}')
             try:
-                vals = self[element+'.'+prop]
+                vals = self[f'{element}.{prop}']
                 vals[locs] = value
-                self[element+'.'+prop] = vals
+                self[f'{element}.{prop}'] = vals
             except KeyError:
                 value = np.array(value)
                 if value.dtype == bool:
@@ -93,22 +93,22 @@ class Base2(dict):
                 else:
                     temp = np.zeros([self._count(element), *value.shape[1:]],
                                     dtype=float)*np.nan
-                self.__setitem__(element+'.'+prop, temp)
-                self[element+'.'+prop][locs] = value
+                self.__setitem__(f'{element}.{prop}', temp)
+                self[f'{element}.{prop}'][locs] = value
             return
 
         element, prop = key.split('.', 1)
         # Catch dictionaries and break them up
         if isinstance(value, dict):
             for k, v in value.items():
-                self[key+'.'+k] = v
+                self[f'{key}.{k}'] = v
             return
         # Catch dictionaries and convert to struct arrays and back
         # if isinstance(value, dict):
         #     s = self._dict_to_struct(d=value, element=element)
         #     d = self._struct_to_dict(s=s)
         #     for k, v in d.items():
-        #         self[element+'.'+prop+'.'+k] = v
+        #         self[f'{element}.{prop}.{k}'] = v
         #     return
 
         # Enfore correct dict naming
@@ -157,8 +157,8 @@ class Base2(dict):
         if '@' in key:
             element, prop = key.split('@')[0].split('.', 1)
             domain = key.split('@')[1].split('.')[-1]
-            locs = self[element+'.'+domain]
-            vals = self[element+'.'+prop]
+            locs = self[f'{element}.{domain}']
+            vals = self[f'{element}.{prop}']
             return vals[locs]
 
         # This allows for lookup of all data that 'ends with' a certain
@@ -186,8 +186,8 @@ class Base2(dict):
             else:
                 vals = {}  # Gather any arrays into a dict
                 for k in self.keys():
-                    if k.startswith(key+'.'):
-                        vals.update({k.replace(key+'.', ''): self[k]})
+                    if k.startswith(f'{key}.'):
+                        vals.update({k.replace(f'{key}.', ''): self[k]})
                 if len(vals) > 0:
                     return vals
                 else:
@@ -199,7 +199,7 @@ class Base2(dict):
         except KeyError:
             d = self[key]  # If key is a nested dict, get all values
             for item in d.keys():
-                super().__delitem__(key+'.'+item)
+                super().__delitem__(f'{key}.{item}')
 
     def clear(self, mode=None):
         if mode is None:
@@ -485,18 +485,18 @@ class ModelMixin2:
                            regen_mode='deferred', **v)
 
     def regenerate_models(self, propnames=None, exclude=[]):
+        all_models = self.models.dependency_list()
         # Regenerate all properties by default
         if propnames is None:
-            propnames = self.models.dependency_list()
+            propnames = all_models
         else:
-            propnames = np.array(propnames, ndmin=1).tolist()
+            propnames = np.atleast_1d(propnames).tolist()
         # Remove any that are specifically excluded
-        propnames = [i for i in propnames if i not in exclude]
+        propnames = np.setdiff1d(propnames, exclude).tolist()
         # Reorder given propnames according to dependency tree
-        all_models = self.models.dependency_list()
         tmp = [e.split("@")[0] for e in propnames]
-        idx_sort = [all_models.index(e) for e in tmp]
-        propnames = [e for _, e in sorted(zip(idx_sort, propnames))]
+        idx_sorted = [all_models.index(e) for e in tmp]
+        propnames = [elem for i, elem in sorted(zip(idx_sorted, propnames))]
         # Now run each on in sequence
         for item in propnames:
             try:
@@ -517,10 +517,10 @@ class ModelMixin2:
         else:  # domain was given explicitly
             domain = domain.split('.')[-1]
             element, prop = propname.split('@')[0].split('.', 1)
-            propname = element+'.'+prop
+            propname = f'{element}.{prop}'
             mod_dict = self.models[propname+'@'+domain]
             # Collect kwargs
-            kwargs = {'target': self, 'domain': element+'.'+domain}
+            kwargs = {'target': self, 'domain': f'{element}.{domain}'}
             for item in mod_dict.keys():
                 if item not in ['model', 'regen_mode']:
                     kwargs[item] = mod_dict[item]
@@ -533,11 +533,11 @@ class ModelMixin2:
                         v = np.atleast_1d(v)
                         if v.shape[0] == 1:  # Returned item was a scalar
                             v = np.tile(v, self._count(element))
-                        vals[k] = v[self[element+'.'+domain]]
+                        vals[k] = v[self[f'{element}.{domain}']]
                 elif isinstance(vals, (int, float)):  # Handle models that return a float
                     vals = np.atleast_1d(vals)
                 else:  # Index into full domain result for use below
-                    vals = vals[self[element+'.'+domain]]
+                    vals = vals[self[f'{element}.{domain}']]
             else:  # Model that accepts domain arg
                 vals = mod_dict['model'](**kwargs)
             # Finally add model results to self
@@ -546,15 +546,14 @@ class ModelMixin2:
                     # Create empty array if not found
                     self[propname] = np.nan*np.ones([self._count(element),
                                                      *vals.shape[1:]])
-                self[propname][self[element+'.'+domain]] = vals
+                self[propname][self[f'{element}.{domain}']] = vals
             elif isinstance(vals, dict):  # If model returns a dict of arrays
                 for k, v in vals.items():
-                    if propname + '.' + k not in self.keys():
+                    if f'{propname}.{k}' not in self.keys():
                         # Create empty array if not found
-                        self[propname + '.' + k] = \
-                            np.nan*np.ones([self._count(element),
-                                            *v.shape[1:]])
-                    self[propname + '.' + k][self[element+'.'+domain]] = v
+                        self[f'{propname}.{k}'] = \
+                            np.nan*np.ones([self._count(element), *v.shape[1:]])
+                    self[f'{propname}.{k}'][self[f'{element}.{domain}']] = v
 
 
 class Domain(ParserMixin, LabelMixin, ModelMixin2, Base2):
