@@ -38,9 +38,7 @@ class Base2(dict):
         self.settings._update(settings)
         self.settings['uuid'] = str(uuid.uuid4())
         # Add parameters attr
-        self._params = PrintableDict()
-        self._params._key = "Parameters"
-        self._params._value = "Values"
+        self._params = PrintableDict(key="Parameters", value="Value")
         # Associate with project
         if network is None:
             project = ws.new_project()

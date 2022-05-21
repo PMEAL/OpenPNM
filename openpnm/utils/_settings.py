@@ -158,9 +158,7 @@ class SettingsAttr:
         setattr(self, key, value)
 
     def __str__(self):
-        d = PrintableDict()
-        d._key = 'Settings'
-        d._value = 'Values'
+        d = PrintableDict(key="Settings", value="Values")
         d.update(self.__dict__)
         for item in self.__dir__():
             if not item.startswith('_'):
