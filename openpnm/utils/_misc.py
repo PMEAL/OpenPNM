@@ -114,9 +114,9 @@ class PrintableDict(OrderedDict):
 
     """
 
-    def __init__(self, *args, **kwargs):
-        self._value = "Value"
-        self._key = "Key"
+    def __init__(self, *args, key="Key", value="Value", **kwargs):
+        self._value = value
+        self._key = key
         super().__init__(*args, **kwargs)
 
     # def __repr__(self):

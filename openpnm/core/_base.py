@@ -20,8 +20,6 @@ class BaseSettings:
 
     Parameters
     ----------
-    prefix : str
-        The default prefix to use when generating a name
     name : str
         The name of the object, which will be generated if not given
     uuid : str

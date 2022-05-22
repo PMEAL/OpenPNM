@@ -17,8 +17,6 @@ class FormationFactorSettings:
     Defines the settings for FormationFactor
 
     ----------
-    prefix : str
-        The default prefix to use when generating a name
     inlet : str
         The pore labels for diffusion inlet.
     outlet : str
@@ -29,7 +27,7 @@ class FormationFactorSettings:
         The length of the network relative to the inlet and outlet
 
     """
-    prefix = 'ff'
+    name = 'ff_01'
     inlet = 'left'
     outlet = 'right'
     area = None

@@ -18,7 +18,6 @@ class PhaseSettings:
     ----------
     %(BaseSettings.parameters)s
     """
-    prefix = 'phase'
 
 
 @docstr.get_sections(base='GenericPhase', sections=['Parameters'])
@@ -37,6 +36,8 @@ class GenericPhase(Domain):
 
     def __init__(self, network, settings=None, **kwargs):
         self.settings = SettingsAttr(PhaseSettings, settings)
+        if 'name' not in kwargs.keys():
+            kwargs['name'] = 'phase_01'
         super().__init__(network=network, settings=self.settings, **kwargs)
 
         self['pore.all'] = np.ones([network.Np, ], dtype=bool)

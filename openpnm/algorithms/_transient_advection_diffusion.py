@@ -16,7 +16,6 @@ class TransientAdvectionDiffusionSettings:
     %(TransientReactiveTransportSettings.parameters)s
 
     """
-    prefix = 'trans_ad'
 
 
 class TransientAdvectionDiffusion(TransientReactiveTransport,
@@ -28,4 +27,6 @@ class TransientAdvectionDiffusion(TransientReactiveTransport,
 
     def __init__(self, phase, settings=None, **kwargs):
         self.settings = SettingsAttr(TransientAdvectionDiffusionSettings, settings)
+        if 'name' not in kwargs.keys():
+            kwargs['name'] = 'trans_ad_01'
         super().__init__(phase=phase, settings=self.settings, **kwargs)

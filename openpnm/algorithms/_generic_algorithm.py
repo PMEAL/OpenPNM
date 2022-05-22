@@ -21,8 +21,6 @@ class GenericAlgorithmSettings:
     %(BaseSettings.parameters)s
 
     """
-    prefix = 'alg'
-    name = ''
 
 
 @docstr.get_sections(base='GenericAlgorithm', sections=['Parameters'])
@@ -41,7 +39,10 @@ class GenericAlgorithm(Domain):
     """
 
     def __init__(self, network, settings=None, **kwargs):
-        self.settings = SettingsAttr(GenericAlgorithmSettings, settings)
+        self._settings = SettingsAttr(GenericAlgorithmSettings)
+        self.settings._update(settings)
+        if 'name' not in kwargs.keys():
+            kwargs['name'] = 'alg_01'
         super().__init__(network=network, settings=self.settings, **kwargs)
         self['pore.all'] = np.ones(network.Np, dtype=bool)
         self['throat.all'] = np.ones(network.Nt, dtype=bool)

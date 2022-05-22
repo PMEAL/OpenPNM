@@ -23,7 +23,7 @@ class GenericMixtureSettings:
     """
 
     components = []
-    prefix = 'mix'
+    name = 'mix_01'
 
 
 @docstr.get_sections(base='GenericMixture', sections=['Parameters'])

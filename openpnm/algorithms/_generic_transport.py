@@ -37,7 +37,6 @@ class GenericTransportSettings:
         If ``True``, A matrix is cached and rather than getting rebuilt.
 
     """
-    prefix = 'transport'
     phase = ''
     quantity = ''
     conductance = ''
@@ -68,6 +67,8 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
 
     def __init__(self, phase, settings=None, **kwargs):
         self.settings = SettingsAttr(GenericTransportSettings, settings)
+        if 'name' not in kwargs.keys():
+            kwargs['name'] = 'trans_01'
         super().__init__(settings=self.settings, **kwargs)
         self.settings['phase'] = phase.name
         self['pore.bc_rate'] = np.nan
