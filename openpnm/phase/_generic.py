@@ -17,7 +17,12 @@ class PhaseSettings:
     Parameters
     ----------
     %(BaseSettings.parameters)s
+    auto_interpolate : boolean
+        If ``True`` then calls to a missing 'throat.<prop>' will automatically
+        interpolate 'pore.<prop>', if present, and vice versa.  If ``False``
+        a normal ``KeyError`` is raised.
     """
+    auto_interpolate = True
 
 
 @docstr.get_sections(base='GenericPhase', sections=['Parameters'])
@@ -49,21 +54,57 @@ class GenericPhase(Domain):
 
     def __getitem__(self, key):
         try:
-            # return super().__getitem__(key)
-            try:
-                return super().__getitem__(key)
-            except KeyError:
-                return self.network[key]
+            return super().__getitem__(key)
         except KeyError:
-            # But also need to handle the @ look-ups somehow
-            if '@' in key:
-                raise Exception('Interpolation of @domain values is not supported')
-            # Before interpolating, ensure other prop is present, to avoid
-            # infinite recurrsion
-            element, prop = key.split('.', 1)
-            if (element == 'pore') and ('throat.'+prop not in self.keys()):
-                raise KeyError(f"Cannot interpolate '{element+'.'+prop}' without 'throat.{prop}'")
-            elif (element == 'throat') and ('pore.'+prop not in self.keys()):
-                raise KeyError(f"Cannot interpolate '{element+'.'+prop}' without 'pore.{prop}'")
-            vals = self.interpolate_data(element + '.' + prop)
-            return vals
+            pass
+
+        try:
+            return self.network[key]
+        except KeyError:
+            pass
+
+        # Parse the key
+        element, prop, domain = key.split('.', 1) + ['all']
+        if '@' in prop:
+            prop, domain = prop.split('@')
+
+        # Start by getting locs
+        if domain == 'all':
+            locs = np.ones(self._count(element), dtype=bool)
+        elif element + '.' + domain in self.keys():
+            locs = super().__getitem__(element + '.' + domain)
+        elif element + '.' + domain in self.network.keys():
+            locs = self.network[element + '.' + domain]
+        else:
+            raise KeyError(element + '.' + domain)
+
+        # Next get the data arrays
+        if element + '.' + prop in self.keys():
+            vals = super().__getitem__(element + '.' + prop)
+        elif element + '.' + prop in self.network.keys():
+            vals = self.network[element + '.' + prop]
+        else:
+            if self.settings['auto_interpolate']:
+                if (element == 'pore') and ('throat.'+prop not in self.keys()):
+                    msg = f"Cannot interpolate '{element+'.'+prop}' without 'throat.{prop}'"
+                    raise KeyError(msg)
+                elif (element == 'throat') and ('pore.'+prop not in self.keys()):
+                    msg = f"Cannot interpolate '{element+'.'+prop}' without 'pore.{prop}'"
+                    raise KeyError(msg)
+                vals = self.interpolate_data(element + '.' + prop)
+            else:
+                raise KeyError(key)
+        return vals[locs]
+
+
+
+
+
+
+
+
+
+
+
+
+
