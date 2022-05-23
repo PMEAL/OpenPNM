@@ -12,7 +12,7 @@ ws = Workspace()
 
 @docstr.get_sections(base='PhaseSettings', sections=['Parameters'])
 @docstr.dedent
-class PhaseSettings:
+class PhaseSettings(SettingsAttr):
     r"""
     Parameters
     ----------
@@ -40,7 +40,8 @@ class GenericPhase(Domain):
     """
 
     def __init__(self, network, settings=None, **kwargs):
-        self.settings = SettingsAttr(PhaseSettings, settings)
+        self.settings = PhaseSettings()
+        self.settings._update(settings)
         if 'name' not in kwargs.keys():
             kwargs['name'] = 'phase_01'
         super().__init__(network=network, settings=self.settings, **kwargs)
@@ -86,10 +87,10 @@ class GenericPhase(Domain):
         else:
             if self.settings['auto_interpolate']:
                 if (element == 'pore') and ('throat.'+prop not in self.keys()):
-                    msg = f"Cannot interpolate '{element+'.'+prop}' without 'throat.{prop}'"
+                    msg = f"'throat.{prop}' not found, cannot interpolate '{element+'.'+prop}'"
                     raise KeyError(msg)
                 elif (element == 'throat') and ('pore.'+prop not in self.keys()):
-                    msg = f"Cannot interpolate '{element+'.'+prop}' without 'pore.{prop}'"
+                    msg = f"'pore.{prop}', cannot interpolate '{element+'.'+prop}'"
                     raise KeyError(msg)
                 vals = self.interpolate_data(element + '.' + prop)
             else:
