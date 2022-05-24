@@ -76,6 +76,14 @@ class TypedList(TypedMixin, list):
         super().insert(index, value)
 
 
+class SettingsDict:
+    def update(self, d):
+        for k, v in d:
+            self[k] = v
+        if "Parameters" in d.__doc__:
+            pass
+
+
 class SettingsAttr:
     r"""
     A custom data class that holds settings for objects.
