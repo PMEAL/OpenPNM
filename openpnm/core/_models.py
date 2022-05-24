@@ -202,6 +202,9 @@ class ModelsDict(PrintableDict):
                 raise KeyError(key)
 
     def update(self, d, domain='all'):
+        # Catch un-run function
+        if hasattr(d, '__call__'):
+            d = d()
         parent = self._find_parent()
         for k, v in d.items():
             parent.add_model(propname=k, domain=domain, **v)
