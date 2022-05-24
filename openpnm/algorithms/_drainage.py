@@ -102,13 +102,13 @@ class Drainage(GenericAlgorithm):
         pressures = np.array(pressures, ndmin=1)
         Nx = pressures.size
         self.soln['pore.invaded'] = \
-            PressureScan(pressures, np.zeros([self.Np, Nx], dtype=int))
+            PressureScan(pressures, np.zeros([self.Np, Nx], dtype=bool))
         self.soln['throat.invaded'] = \
-            PressureScan(pressures, np.zeros([self.Nt, Nx], dtype=int))
+            PressureScan(pressures, np.zeros([self.Nt, Nx], dtype=bool))
         self.soln['pore.trapped'] = \
-            PressureScan(pressures, np.zeros([self.Np, Nx], dtype=int))
+            PressureScan(pressures, np.zeros([self.Np, Nx], dtype=bool))
         self.soln['throat.trapped'] = \
-            PressureScan(pressures, np.zeros([self.Nt, Nx], dtype=int))
+            PressureScan(pressures, np.zeros([self.Nt, Nx], dtype=bool))
         self.soln['pore.snwp'] = \
             PressureScan(pressures, np.zeros([self.Np, Nx], dtype=float))
         self.soln['throat.snwp'] = \
@@ -221,29 +221,27 @@ if __name__ == "__main__":
                   regen_mode='deferred')
     # drn.set_residual(pores=np.random.randint(0, 50, 350))
     drn.set_inlets(pores=pn.pores('left'))
-    # drn.set_outlets(pores=pn.pores('right'))
+    drn.set_outlets(pores=pn.pores('right'))
     pressures = np.logspace(np.log10(0.2e6), np.log10(5e6), 50)
     sol = drn.run(pressures)
 
     # %%
     if 0:
         fig, ax = plt.subplots(1, 1)
-        ax.plot(*drn.pc_curve(), 'o-')
+        ax.semilogx(*drn.pc_curve(), 'o-')
         # ax.set_ylim([0, 1])
 
     # %%
-    if 0:
-        ax = op.topotools.plot_coordinates(pn, pores=drn['pore.inlets'], c='m')
-        ax = op.topotools.plot_coordinates(pn, pores=pn['pore.right'], ax=ax, c='m')
-        ax = op.topotools.plot_connections(pn, throats=nwp['throat.entry_pressure'] <= pressures[20], c='white', ax=ax)
-        ax = op.topotools.plot_connections(pn, throats=drn['throat.invaded'], ax=ax)
-        ax = op.topotools.plot_coordinates(pn, pores=drn['pore.invaded'], ax=ax)
-        ax = op.topotools.plot_coordinates(pn, pores=drn['pore.trapped'], c='green', ax=ax)
+    if 1:
+        p = 23
+        ax = op.topotools.plot_coordinates(pn, pores=drn['pore.inlets'], c='m', s=100)
+        ax = op.topotools.plot_coordinates(pn, pores=pn['pore.right'], ax=ax, c='m', s=100)
+        ax = op.topotools.plot_connections(pn, throats=nwp['throat.entry_pressure'] <= pressures[p], c='white', ax=ax)
+        ax = op.topotools.plot_connections(pn, throats=sol['throat.invaded'][:, p], ax=ax)
+        ax = op.topotools.plot_coordinates(pn, pores=sol['pore.invaded'][:, p], s=100, ax=ax)
+        ax = op.topotools.plot_coordinates(pn, pores=sol['pore.trapped'][:, p], c='green', s=100, ax=ax)
         # ax = op.topotools.plot_coordinates(pn, pores=~drn['pore.invaded'], c='grey', ax=ax)
 
-    # %%
-    # ax = op.topotools.plot_connections(pn, throats=drn['throat.invaded'], c='grey', ax=ax)
-    # ax = op.topotools.plot_coordinates(pn, pores=drn['pore.invaded'], c='blue', ax=ax)
 
 
 
