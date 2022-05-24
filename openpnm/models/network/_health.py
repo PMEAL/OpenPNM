@@ -100,7 +100,7 @@ def headless_throats(target):
     Find any throats that point to a non-existent pore
     """
     net = target.network
-    hits = np.any(net.conns > (net.Np -1), axis=1)
+    hits = np.any(net.conns > (net.Np - 1), axis=1)
     return hits
 
 
