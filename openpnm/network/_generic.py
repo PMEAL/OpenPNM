@@ -38,7 +38,7 @@ class GenericNetwork(Domain):
         dicionary of key-value pairs. Settings are stored in the ``settings``
         attribute of the object.
     name : str, optional
-        A unique name to assign to the object for easier identification.  If
+        A unique name to assign to the object for easier identification. If
         not given one will be generated.
 
     coords : array_like (optional)
@@ -121,16 +121,6 @@ class GenericNetwork(Domain):
                 logger.debug('Converting throat.conns to be upper triangular')
                 value = np.sort(value, axis=1)
         super().__setitem__(key, value)
-
-    def _gen_ids(self):
-        IDs = self.get('pore._id', np.array([], ndmin=1, dtype=np.int64))
-        if len(IDs) < self.Np:
-            temp = ws._gen_ids(size=self.Np - len(IDs))
-            self['pore._id'] = np.concatenate((IDs, temp))
-        IDs = self.get('throat._id', np.array([], ndmin=1, dtype=np.int64))
-        if len(IDs) < self.Nt:
-            temp = ws._gen_ids(size=self.Nt - len(IDs))
-            self['throat._id'] = np.concatenate((IDs, temp))
 
     def get_adjacency_matrix(self, fmt='coo'):
         r"""

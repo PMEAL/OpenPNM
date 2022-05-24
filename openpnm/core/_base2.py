@@ -27,6 +27,7 @@ class BaseSettings:
         A universally unique identifier for the object to keep things straight
 
     """
+    uuid = ''
 
 
 class Base2(dict):
@@ -146,6 +147,8 @@ class Base2(dict):
         if '@' in key:
             element, prop = key.split('@')[0].split('.', 1)
             domain = key.split('@')[1].split('.')[-1]
+            if f'{element}.{domain}' not in self.keys():
+                raise KeyError(key)
             locs = self[f'{element}.{domain}']
             vals = self[f'{element}.{prop}']
             return vals[locs]
