@@ -41,6 +41,8 @@ class IonicConduction(ReactiveTransport):
 
     def __init__(self, settings=None, **kwargs):
         self.settings = SettingsAttr(IonicConductionSettings, settings)
+        if 'name' not in kwargs.keys():
+            kwargs['name'] = 'ionic_01'
         super().__init__(settings=self.settings, **kwargs)
 
     def _charge_conservation_eq_source_term(self, e_alg):

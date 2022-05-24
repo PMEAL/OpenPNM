@@ -40,9 +40,9 @@ class MercuryIntrusion(OrdinaryPercolation):
 
     """
 
-    def __init__(self, network, settings=None, **kwargs):
+    def __init__(self, network, **kwargs):
         hg = Mercury(network=network)
-        super().__init__(network=network, phase=hg, settings=self.settings, **kwargs)
+        super().__init__(network=network, phase=hg, **kwargs)
         self.settings['phase'] = hg.name
         mod = models.physics.capillary_pressure.washburn
         hg.add_model(propname='throat.entry_pressure', model=mod)

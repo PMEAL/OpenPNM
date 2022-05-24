@@ -37,7 +37,6 @@ class GenericTransportSettings:
         If ``True``, A matrix is cached and rather than getting rebuilt.
 
     """
-    prefix = 'transport'
     phase = ''
     quantity = ''
     conductance = ''
@@ -68,6 +67,8 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
 
     def __init__(self, phase, settings=None, **kwargs):
         self.settings = SettingsAttr(GenericTransportSettings, settings)
+        if 'name' not in kwargs.keys():
+            kwargs['name'] = 'trans_01'
         super().__init__(settings=self.settings, **kwargs)
         self.settings['phase'] = phase.name
         self['pore.bc_rate'] = np.nan
@@ -180,11 +181,10 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
         x0 : ndarray
             Initial guess of unknown variable
 
-        Notes
-        -----
-        This method doesn't return anything. The solution is stored on
-        the object under ``pore.<quantity>`` where *<quantity>* is specified
-        in the ``settings`` attribute.
+        Returns
+        -------
+        SolutionContainer
+            Dict containing the solution with self.settings.quantity as key
 
         """
         logger.info('Running GenericTransport')
@@ -235,7 +235,7 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
         """
         x0 = self["pore.initial_guess"]
         if not np.isfinite(x0).all():
-            raise Exception("x0 contains Inf/NaN values")
+            raise Exception("x0 contains inf/nan values")
 
     def _validate_settings(self):
         if self.settings['quantity'] is None:
@@ -252,9 +252,9 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
         """
         Ps = ~np.isnan(self['pore.bc_rate']) + ~np.isnan(self['pore.bc_value'])
         if not is_fully_connected(network=self.network, pores_BC=Ps):
-            msg = ("Your network is clustered. Run h = net.check_network_"
-                   "health() followed by op.topotools.trim(net, pores=h['"
-                   "trim_pores']) to make your network fully connected.")
+            msg = ("Your network is clustered. Run h = net.check_network_health()"
+                   " followed by op.topotools.trim(net, pores=h['disconnected_pores'])"
+                   " to make your network fully connected.")
             raise Exception(msg)
 
     def _validate_conductance_model_health(self):
@@ -262,14 +262,14 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
         Ensures all throats have a conductance model assigned.
         """
         conductance = self.settings.conductance
-        g = self.project.phases(self.settings.phase)[conductance]
+        g = self.project[self.settings.phase][conductance]
         Ts_nan = self.Ts[np.isnan(g)]
         Ts_with_model = []
         for obj in self.project:
             if conductance in obj.keys():
                 Ts_with_model.extend(obj.throats(to_global=True))
         if not np.in1d(Ts_nan, Ts_with_model).all():
-            msg = ("Found NaNs in A matrix, possibly because some throats"
+            msg = ("Found nans in A matrix, possibly because some throats"
                    f" don't have conductance model assigned: {conductance}")
             raise Exception(msg)
 
@@ -287,8 +287,7 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
             return True
 
         # Fetch phase/geometries/physics
-        prj = self.project
-        phase = prj.phases(self.settings.phase)
+        phase = self.project[self.settings.phase]
 
         # Locate the root of NaNs
         unaccounted_nans = []
@@ -312,7 +311,7 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
         root_objs = unique([d[x] for x in nx.topological_sort(dg_nans)])
         # Throw error with helpful info on how to resolve the issue
         if root_props:
-            msg = ("Found NaNs in A matrix, possibly caused by NaNs in"
+            msg = ("Found nans in A matrix, possibly caused by nans in"
                    f" {', '.join(root_props)}. The issue might get resolved"
                    " if you call `regenerate_models` on the following"
                    f" object(s): {', '.join(root_objs)}")
@@ -323,12 +322,12 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
 
         # Raise Exception for unaccounted properties
         if unaccounted_nans:
-            msg = ("Found NaNs in A matrix, possibly caused by NaNs in"
+            msg = ("Found nans in A matrix, possibly caused by nans in"
                    f" {', '.join(unaccounted_nans)}.")
             raise Exception(msg)
 
         # Raise Exception otherwise if root cannot be found
-        msg = ("Found NaNs in A matrix but couldn't locate the root cause."
+        msg = ("Found nans in A matrix but couldn't locate the root cause."
                " It's likely that disabling caching of A matrix via"
                " `alg.settings['cache'] = False` after instantiating the"
                " algorithm object fixes the problem.")

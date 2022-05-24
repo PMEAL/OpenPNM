@@ -40,11 +40,6 @@ jobs:
           pip install -r requirements/pip_requirements.txt
           pip install -e . --no-deps
 
-      # - name: Install dependencies
-      #   run: |
-      #     pip install -r requirements/pip_requirements.txt
-      #     pip install -r requirements/doc_requirements.txt
-
       - name: Build the documentation
         run: |
           cd docs

@@ -17,8 +17,8 @@ class MultiPhaseTest:
         phases = [self.air, self.water]
         m = op.contrib.MultiPhase(network=self.net, phases=phases)
 
-        assert np.all(m['pore.occupancy.all'] == 0.0)
-        assert np.all(m['throat.occupancy.all'] == 0.0)
+        assert_allclose(m['pore.occupancy.air'], 0)
+        assert_allclose(m['throat.occupancy.water'], 0)
 
         assert self.air.name in m.settings['phases']
         assert self.water.name in m.settings['phases']
@@ -26,12 +26,8 @@ class MultiPhaseTest:
     def test_multiphase_no_occupancy_yet(self):
         phases = [self.air, self.water]
         m = op.contrib.MultiPhase(network=self.net, phases=phases)
-        self.water['pore.temperature'] = 300
-
-        assert np.all(self.water['pore.temperature'] == 300)
-
-        with pytest.raises(Exception):
-            m['pore.temperature']
+        self.water['pore.temperature'] = 300.0
+        assert_allclose(m['pore.temperature'], 0)
 
     def test_multiphase_set_occupancy_w_indices_only(self):
         phases = [self.air, self.water]
@@ -42,12 +38,13 @@ class MultiPhaseTest:
         Ts_water = np.array([4, 12, 22])
         Ts_water_mask = self.net.to_mask(throats=Ts_water)
 
-        m.set_occupancy(self.water, pores=Ps_water, throats=Ts_water)
+        m.set_occupancy(self.water, pores=Ps_water)
+        m.set_occupancy(self.water, throats=Ts_water)
 
-        assert m["pore.occupancy.water"][Ps_water_mask].mean() == 1
-        assert m["pore.occupancy.water"][~Ps_water_mask].mean() == 0
-        assert m["throat.occupancy.water"][Ts_water_mask].mean() == 1
-        assert m["throat.occupancy.water"][~Ts_water_mask].mean() == 0
+        assert_allclose(m["pore.occupancy.water"][Ps_water_mask], 1)
+        assert_allclose(m["pore.occupancy.water"][~Ps_water_mask], 0)
+        assert_allclose(m["throat.occupancy.water"][Ts_water_mask], 1)
+        assert_allclose(m["throat.occupancy.water"][~Ts_water_mask], 0)
 
     def test_multiphase_set_occupancy_w_values_only(self):
         phases = [self.air, self.water]
@@ -56,26 +53,18 @@ class MultiPhaseTest:
         Pvals = np.array([0.5, 0.9, 0.01])
         Tvals = np.array([0.9, 0.01])
 
-        # Pvals must be Np-long if not accompanied by "pores" argument
-        with pytest.raises(Exception):
-            m.set_occupancy(self.water, Pvals=Pvals)
-
-        # Tvals must be Nt-long if not accompanied by "throats" argument
-        with pytest.raises(Exception):
-            m.set_occupancy(self.water, Tvals=Tvals)
-
         # Set pore occupancy
-        m.set_occupancy(self.water, Pvals=1)
-        assert m["pore.occupancy.water"].mean() == 1
+        m.set_occupancy(self.water, pores=m.Ps, values=1)
+        assert_allclose(m["pore.occupancy.water"], 1)
         Pvals = np.ones(self.net.Np) * 0.5
-        m.set_occupancy(self.water, Pvals=Pvals)
-        assert m["pore.occupancy.water"].mean() == 0.5
+        m.set_occupancy(self.water, pores=m.Ps, values=Pvals)
+        assert_allclose(m["pore.occupancy.water"], 0.5)
 
         # Setting throat occupancy
-        m.set_occupancy(self.water, Tvals=1)
+        m.set_occupancy(self.water, throats=m.Ts, values=1)
         assert m["throat.occupancy.water"].mean() == 1
         Tvals = np.ones(self.net.Nt) * 0.54
-        m.set_occupancy(self.water, Tvals=Tvals)
+        m.set_occupancy(self.water, throats=m.Ts, values=Tvals)
         assert m["throat.occupancy.water"].mean() == 0.54
 
     def test_multiphase_set_occupancy_w_pore_indices_and_Pvals(self):
@@ -90,48 +79,37 @@ class MultiPhaseTest:
         Tvals = np.array([0.3, 0.4, 0.1])
 
         # Pvals/Tvals and pores/throats; same array length
-        m.set_occupancy(
-            phase=self.water,
-            pores=Ps_water,
-            throats=Ts_water,
-            Pvals=Pvals,
-            Tvals=Tvals
-        )
+        m.set_occupancy(self.water, pores=Ps_water, values=Pvals)
+        m.set_occupancy(self.water, throats=Ts_water, values=Tvals)
         assert_allclose(m["pore.occupancy.water"][Ps_water], Pvals)
         assert_allclose(m["throat.occupancy.water"][Ts_water], Tvals)
-        assert m["pore.occupancy.water"][~Ps_water_mask].mean() == 0
-        assert m["throat.occupancy.water"][~Ts_water_mask].mean() == 0
+        assert_allclose(m["pore.occupancy.water"][~Ps_water_mask], 0)
+        assert_allclose(m["throat.occupancy.water"][~Ts_water_mask], 0)
 
         # Pvals and pores; inconsistent size
         with pytest.raises(Exception):
-            m.set_occupancy(self.water, pores=[1, 5, 10], Pvals=[0.5, 0])
+            m.set_occupancy(self.water, pores=[1, 5, 10], values=[0.5, 0])
 
         # Tvals and throats; inconsistent size
         with pytest.raises(Exception):
-            m.set_occupancy(self.water, throats=[10, 52, 0], Tvals=[0.5, 0.01])
+            m.set_occupancy(self.water, throats=[10, 52, 0], values=[0.5, 0.01])
 
         # Pvals/Tvals.size = 1 and pores/throats.size > 1
-        m.set_occupancy(
-            phase=self.water,
-            pores=Ps_water,
-            throats=Ts_water,
-            Pvals=0.25,
-            Tvals=0.23
-        )
-        assert m["pore.occupancy.water"][Ps_water].mean() == 0.25
-        assert m["throat.occupancy.water"][Ts_water].mean() == 0.23
+        m.set_occupancy(phase=self.water, pores=Ps_water, values=0.25)
+        m.set_occupancy(phase=self.water, throats=Ts_water, values=0.23)
+        assert_allclose(m["pore.occupancy.water"][Ps_water], 0.25)
+        assert_allclose(m["throat.occupancy.water"][Ts_water], 0.23)
 
     def test_multiphase_automatic_throat_occupancy(self):
-        m = op.contrib.MultiPhase(network=self.net, phases=[self.air,
-                                                           self.water])
+        m = op.contrib.MultiPhase(network=self.net, phases=[self.air, self.water])
         pores = np.random.choice(self.net.Ps, size=100, replace=False)
         Pvals = np.random.random(pores.size)
-        m.set_occupancy(self.water, pores=pores, Pvals=Pvals)
+        m.set_occupancy(self.water, pores=pores, values=Pvals)
         P1, P2 = self.net["throat.conns"].T
         oc1, oc2 = [m["pore.occupancy.water"][x] for x in (P1, P2)]
         # Throats take average occupancy of adjacent pores
         m._set_automatic_throat_occupancy(mode="mean")
-        assert_allclose(m["throat.occupancy.water"], (oc1+oc2)/2)
+        assert_allclose(m["throat.occupancy.water"], np.mean([oc1, oc2], axis=0))
         # Throats take maximum occupancy of adjacent pores
         m._set_automatic_throat_occupancy(mode="max")
         assert_allclose(m["throat.occupancy.water"], np.maximum(oc1, oc2))
@@ -143,7 +121,8 @@ class MultiPhaseTest:
         m = op.contrib.MultiPhase(network=self.net)
         self.water['pore.temperature'] = 300
         assert np.all(self.water['pore.temperature'] == 300)
-        m.set_occupancy(phase=self.water, Pvals=1, Tvals=1)
+        m.set_occupancy(phase=self.water, pores=m.Ps, values=1)
+        m.set_occupancy(phase=self.water, throats=m.Ts, values=1)
         assert np.all(m['pore.temperature'] == 300)
 
     def test_multiphase_occupancy_set_two_phase(self):
@@ -157,13 +136,15 @@ class MultiPhaseTest:
         Ps = self.net['pore.coords'][:, 0] < 3
         Ts = self.net.to_mask(throats=self.net.find_neighbor_throats(Ps))
 
-        m.set_occupancy(phase=self.water, Pvals=Ps, Tvals=Ts)
-        m.set_occupancy(phase=self.air, Pvals=~Ps, Tvals=~Ts)
+        m.set_occupancy(phase=self.water, pores=Ps, values=1)
+        m.set_occupancy(phase=self.water, throats=Ts, values=1)
+        m.set_occupancy(phase=self.air, pores=~Ps, values=1)
+        m.set_occupancy(phase=self.air, throats=~Ts, values=1)
 
         assert np.all(m['pore.temperature'] >= 200)
         assert np.all(m['pore.temperature'] <= 300)
 
-    def test_mutliphase_partition_coef(self):
+    def test_multiphase_partition_coef(self):
         phases = [self.water, self.air, self.oil]
         m = op.contrib.MultiPhase(network=self.net, phases=phases)
 
@@ -181,20 +162,14 @@ class MultiPhaseTest:
         K_air_oil = 1.8
         K_water_oil = 0.73
 
-        m.set_binary_partition_coef(
-            phases=[self.air, self.water], model=constant, value=K_air_water
-        )
-        m.set_binary_partition_coef(
-            phases=[self.air, self.oil], model=constant, value=K_air_oil
-        )
-        m.set_binary_partition_coef(
-            phases=[self.water, self.oil], model=constant, value=K_water_oil
-        )
+        m.set_binary_partition_coef([self.air, self.water], model=constant, value=K_air_water)
+        m.set_binary_partition_coef([self.air, self.oil], model=constant, value=K_air_oil)
+        m.set_binary_partition_coef([self.water, self.oil], model=constant, value=K_water_oil)
 
         K_aw = m["throat.partition_coef.air:water"]
         K_ao = m["throat.partition_coef.air:oil"]
         K_wo = m["throat.partition_coef.water:oil"]
-        K_global = m["throat.partition_coef.all"]
+        K_global = m["throat.partition_coef.global"]
 
         assert np.isclose(K_aw.mean(), K_air_water)
         assert np.isclose(K_ao.mean(), K_air_oil)
@@ -237,8 +212,8 @@ class MultiPhaseTest:
 
     def test_multiphase_invalid_occupancy(self):
         m = op.contrib.MultiPhase(network=self.net, phases=[self.water, self.air])
-        # The next line ideally should throw an Exception, but warning for now
-        m.set_occupancy(phase=self.water, Pvals=1.5, Tvals=2.5)
+        m.set_occupancy(phase=self.water, pores=m.Ps, values=1.5)
+        m.set_occupancy(phase=self.water, throats=m.Ts, values=2.5)
 
     def test_format_interface_prop(self):
         phases = [self.water, self.air]
@@ -249,7 +224,7 @@ class MultiPhaseTest:
     def test_get_phases_names(self):
         phases = [self.water, self.air]
         m = op.contrib.MultiPhase(network=self.net, phases=phases)
-        names = m._get_phases_names("throat.foo.air:water")
+        names = m._get_phase_labels("throat.foo.air:water")
         assert names[0] == "air"
         assert names[1] == "water"
 
@@ -267,16 +242,14 @@ class MultiPhaseTest:
         m.set_occupancy(oil, pores=[4, 5])
 
         # Check if K_global is initially ones
-        K_actual = m._assemble_partition_coef_global()
-        assert_allclose(K_actual, 1.)
+        assert_allclose(m.K, 1.)
 
         # Add binary partition coefficient models
         m.set_binary_partition_coef([water, air], model=constant, value=0.7)
         m.set_binary_partition_coef([water, oil], model=constant, value=1.1)
 
         # Check if K_global is correctly populated after models were added
-        K_actual = m._assemble_partition_coef_global()
-        assert_allclose(K_actual, [1., 1/0.7, 1., 1.1, 1])
+        assert_allclose(m.K, [1., 1/0.7, 1., 1.1, 1])
 
 
 if __name__ == '__main__':

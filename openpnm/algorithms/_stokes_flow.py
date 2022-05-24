@@ -10,7 +10,6 @@ __all__ = ['StokesFlow']
 
 
 class StokesFlowSettings:
-    prefix = 'stokes'
     quantity = 'pore.pressure'
     conductance = 'throat.hydraulic_conductance'
 
@@ -22,4 +21,6 @@ class StokesFlow(ReactiveTransport):
 
     def __init__(self, settings=None, **kwargs):
         self.settings = SettingsAttr(StokesFlowSettings, settings)
+        if 'name' not in kwargs.keys():
+            kwargs['name'] = 'stokes_01'
         super().__init__(settings=deepcopy(self.settings), **kwargs)

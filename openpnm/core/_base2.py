@@ -4,6 +4,7 @@ from openpnm.utils import Workspace, SettingsAttr, PrintableList, PrintableDict
 from openpnm.utils import parse_mode
 from copy import deepcopy
 import inspect
+import uuid
 import numpy.lib.recfunctions as rf
 
 
@@ -22,41 +23,30 @@ class BaseSettings:
 
     Parameters
     ----------
-    prefix : str
-        The default prefix to use when generating a name
-    name : str
-        The name of the object, which will be generated if not given
+    uuid : str
+        A universally unique identifier for the object to keep things straight
 
     """
-    prefix = 'base'
-    name = ''
+    uuid = ''
 
 
 class Base2(dict):
 
-    def __new__(cls, *args, **kwargs):
-        instance = super().__new__(cls, *args, **kwargs)
-        instance._settings = None
-        instance._settings_docs = None
-        return instance
-
-    def __init__(self, project=None, network=None, settings=None, name=None):
+    def __init__(self, network=None, settings=None, name='obj'):
         super().__init__()
-        self.settings = SettingsAttr(BaseSettings, settings)
-        if project is None:
-            if network is None:
-                project = ws.new_project()
-            else:
-                project = network.project
-        project.extend(self)
-        if name is None:
-            name = project._generate_name(self)
-        project._validate_name(name)
-        self.settings['name'] = name
+        # Add settings attribute
+        self._settings = SettingsAttr(BaseSettings)
+        self.settings._update(settings)
+        self.settings['uuid'] = str(uuid.uuid4())
         # Add parameters attr
-        self._params = PrintableDict()
-        self._params._key = "Parameters"
-        self._params._value = "Values"
+        self._params = PrintableDict(key="Parameters", value="Value")
+        # Associate with project
+        if network is None:
+            project = ws.new_project()
+        else:
+            project = network.project
+        project.extend(self)
+        self.name = name
 
     def __eq__(self, other):
         return hex(id(self)) == hex(id(other))
@@ -80,11 +70,11 @@ class Base2(dict):
         if '@' in key:
             element, prop = key.split('@')[0].split('.', 1)
             domain = key.split('@')[1].split('.')[-1]
-            locs = super().__getitem__(element+'.'+domain)
+            locs = super().__getitem__(f'{element}.{domain}')
             try:
-                vals = self[element+'.'+prop]
+                vals = self[f'{element}.{prop}']
                 vals[locs] = value
-                self[element+'.'+prop] = vals
+                self[f'{element}.{prop}'] = vals
             except KeyError:
                 value = np.array(value)
                 if value.dtype == bool:
@@ -93,22 +83,22 @@ class Base2(dict):
                 else:
                     temp = np.zeros([self._count(element), *value.shape[1:]],
                                     dtype=float)*np.nan
-                self.__setitem__(element+'.'+prop, temp)
-                self[element+'.'+prop][locs] = value
+                self.__setitem__(f'{element}.{prop}', temp)
+                self[f'{element}.{prop}'][locs] = value
             return
 
         element, prop = key.split('.', 1)
         # Catch dictionaries and break them up
         if isinstance(value, dict):
             for k, v in value.items():
-                self[key+'.'+k] = v
+                self[f'{key}.{k}'] = v
             return
         # Catch dictionaries and convert to struct arrays and back
         # if isinstance(value, dict):
         #     s = self._dict_to_struct(d=value, element=element)
         #     d = self._struct_to_dict(s=s)
         #     for k, v in d.items():
-        #         self[element+'.'+prop+'.'+k] = v
+        #         self[f'{element}.{prop}.{k}'] = v
         #     return
 
         # Enfore correct dict naming
@@ -157,8 +147,10 @@ class Base2(dict):
         if '@' in key:
             element, prop = key.split('@')[0].split('.', 1)
             domain = key.split('@')[1].split('.')[-1]
-            locs = self[element+'.'+domain]
-            vals = self[element+'.'+prop]
+            if f'{element}.{domain}' not in self.keys():
+                raise KeyError(key)
+            locs = self[f'{element}.{domain}']
+            vals = self[f'{element}.{prop}']
             return vals[locs]
 
         # This allows for lookup of all data that 'ends with' a certain
@@ -186,8 +178,8 @@ class Base2(dict):
             else:
                 vals = {}  # Gather any arrays into a dict
                 for k in self.keys():
-                    if k.startswith(key+'.'):
-                        vals.update({k.replace(key+'.', ''): self[k]})
+                    if k.startswith(f'{key}.'):
+                        vals.update({k.replace(f'{key}.', ''): self[k]})
                 if len(vals) > 0:
                     return vals
                 else:
@@ -199,7 +191,7 @@ class Base2(dict):
         except KeyError:
             d = self[key]  # If key is a nested dict, get all values
             for item in d.keys():
-                super().__delitem__(key+'.'+item)
+                super().__delitem__(f'{key}.{item}')
 
     def clear(self, mode=None):
         if mode is None:
@@ -249,14 +241,13 @@ class Base2(dict):
             return PrintableList(vals)
 
     def _set_name(self, name, validate=True):
-        old_name = self.settings['name']
+        if not hasattr(self, '_name'):
+            self._name = ''
+        old_name = self._name
         if name == old_name:
             return
-        if name is None:
-            name = self.project._generate_name(self)
-        if validate:
-            self.project._validate_name(name)
-        self.settings['name'] = name
+        name = self.project._generate_name(name)
+        self._name = name
         if self.Np is not None:
             self['pore.'+name] = np.ones([self.Np, ], dtype=bool)
         if self.Nt is not None:
@@ -264,7 +255,7 @@ class Base2(dict):
 
     def _get_name(self):
         try:
-            return self.settings['name']
+            return self._name
         except AttributeError:
             return None
 
@@ -279,14 +270,14 @@ class Base2(dict):
 
     def _set_settings(self, settings):
         self._settings = deepcopy(settings)
-        if (self._settings_docs is None) and (settings.__doc__ is not None):
-            self._settings_docs = settings.__doc__
+        # if (self._settings_docs is None) and (settings.__doc__ is not None):
+        #     self._settings_docs = settings.__doc__
 
     def _get_settings(self):
         if self._settings is None:
             self._settings = SettingsAttr()
-        if self._settings_docs is not None:
-            self._settings.__dict__['__doc__'] = self._settings_docs
+        # if self._settings_docs is not None:
+        #     self._settings.__dict__['__doc__'] = self._settings_docs
         return self._settings
 
     def _del_settings(self):
@@ -485,18 +476,18 @@ class ModelMixin2:
                            regen_mode='deferred', **v)
 
     def regenerate_models(self, propnames=None, exclude=[]):
-        if isinstance(propnames, list) and len(propnames) == 0:
-            return  # Short-circuit function and return
-        elif isinstance(propnames, str):  # Convert string to list if necessary
-            propnames = [propnames]
-        elif propnames is None:  # If no props given, then regenerate them all
-            propnames = self.models.dependency_list()
+        all_models = self.models.dependency_list()
+        # Regenerate all properties by default
+        if propnames is None:
+            propnames = all_models
+        else:
+            propnames = np.atleast_1d(propnames).tolist()
         # Remove any that are specifically excluded
-        propnames = [i for i in propnames if i not in exclude]
-        # Re-order given propnames according to dependency tree
-        # all_models = self.models.dependency_list()
-        all_models = self.models.keys()
-        propnames = [i for i in all_models if i in propnames]
+        propnames = np.setdiff1d(propnames, exclude).tolist()
+        # Reorder given propnames according to dependency tree
+        tmp = [e.split("@")[0] for e in propnames]
+        idx_sorted = [all_models.index(e) for e in tmp]
+        propnames = [elem for i, elem in sorted(zip(idx_sorted, propnames))]
         # Now run each on in sequence
         for item in propnames:
             try:
@@ -517,10 +508,10 @@ class ModelMixin2:
         else:  # domain was given explicitly
             domain = domain.split('.')[-1]
             element, prop = propname.split('@')[0].split('.', 1)
-            propname = element+'.'+prop
+            propname = f'{element}.{prop}'
             mod_dict = self.models[propname+'@'+domain]
             # Collect kwargs
-            kwargs = {'target': self, 'domain': element+'.'+domain}
+            kwargs = {'target': self, 'domain': f'{element}.{domain}'}
             for item in mod_dict.keys():
                 if item not in ['model', 'regen_mode']:
                     kwargs[item] = mod_dict[item]
@@ -533,11 +524,11 @@ class ModelMixin2:
                         v = np.atleast_1d(v)
                         if v.shape[0] == 1:  # Returned item was a scalar
                             v = np.tile(v, self._count(element))
-                        vals[k] = v[self[element+'.'+domain]]
+                        vals[k] = v[self[f'{element}.{domain}']]
                 elif isinstance(vals, (int, float)):  # Handle models that return a float
                     vals = np.atleast_1d(vals)
                 else:  # Index into full domain result for use below
-                    vals = vals[self[element+'.'+domain]]
+                    vals = vals[self[f'{element}.{domain}']]
             else:  # Model that accepts domain arg
                 vals = mod_dict['model'](**kwargs)
             # Finally add model results to self
@@ -546,47 +537,42 @@ class ModelMixin2:
                     # Create empty array if not found
                     self[propname] = np.nan*np.ones([self._count(element),
                                                      *vals.shape[1:]])
-                self[propname][self[element+'.'+domain]] = vals
+                self[propname][self[f'{element}.{domain}']] = vals
             elif isinstance(vals, dict):  # If model returns a dict of arrays
                 for k, v in vals.items():
-                    if propname + '.' + k not in self.keys():
+                    if f'{propname}.{k}' not in self.keys():
                         # Create empty array if not found
-                        self[propname + '.' + k] = \
-                            np.nan*np.ones([self._count(element),
-                                            *v.shape[1:]])
-                    self[propname + '.' + k][self[element+'.'+domain]] = v
+                        self[f'{propname}.{k}'] = \
+                            np.nan*np.ones([self._count(element), *v.shape[1:]])
+                    self[f'{propname}.{k}'][self[f'{element}.{domain}']] = v
 
 
 class Domain(ParserMixin, LabelMixin, ModelMixin2, Base2):
     ...
 
 
-def random_seed(target, domain, seed=None, lim=[0, 1]):
-    inds = target[domain]
-    np.random.seed(seed)
-    seeds = np.random.rand(inds.sum())*(lim[1]-lim[0]) + lim[0]
-    return seeds
-
-
-def factor(target, prop, f=1):
-    vals = target[prop]*f
-    return vals
-
-
-def dolittle(target, domain):
-    N = target[domain].sum()
-    d = {}
-    d['item1'] = np.ones([N, ])
-    d['item2'] = np.ones([N, ])*2
-    d['item3'] = np.ones([N, ])*3
-    return d
-
-
 if __name__ == '__main__':
-    import openpnm as op
     import pytest
+    import openpnm as op
 
-    # %%
+    def random_seed(target, domain, seed=None, lim=[0, 1]):
+        inds = target[domain]
+        np.random.seed(seed)
+        seeds = np.random.rand(inds.sum())*(lim[1]-lim[0]) + lim[0]
+        return seeds
+
+    def factor(target, prop, f=1):
+        vals = target[prop]*f
+        return vals
+
+    def dolittle(target, domain):
+        N = target[domain].sum()
+        d = {}
+        d['item1'] = np.ones([N, ])
+        d['item2'] = np.ones([N, ])*2
+        d['item3'] = np.ones([N, ])*3
+        return d
+
     g = op.network.Cubic(shape=[3, 3, 1])
 
     g.add_model(propname='pore.seed@left',
@@ -620,7 +606,8 @@ if __name__ == '__main__':
                 domain='right',
                 regen_mode='deferred',)
 
-    # %% Run some basic tests
+    ## Run some basic tests
+
     # Use official args
     g.run_model('pore.seed', domain='pore.left')
     assert np.sum(~np.isnan(g['pore.seed'])) == g['pore.left'].sum()
@@ -701,22 +688,3 @@ if __name__ == '__main__':
     g.run_model('pore.dict3')
     assert g['pore.dict3.item1@left'].sum() == 3
     assert g['pore.dict3.item1@right'].sum() == 3
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

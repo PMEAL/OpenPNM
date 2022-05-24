@@ -116,7 +116,7 @@ class ReactiveTransportTest:
         self.alg['pore.bc_value'] = np.nan
         _ = [self.alg.__setitem__(k, False) for k in self.alg.settings.sources]
         self.alg.set_source(pores=self.net.pores('left'), propname='pore.reaction')
-        assert "pore.reaction@all" in self.alg._get_iterative_props()
+        assert "pore.reaction" in self.alg._get_iterative_props()
 
     def test_quantity_relaxation_consistency_w_base_solution(self):
         self.alg['pore.bc_rate'] = np.nan

@@ -20,7 +20,7 @@ class IdealGas(GenericMixture):
     """
 
     def __init__(self, settings=None, **kwargs):
-        super().__init__(settings={'prefix': 'mix'}, **kwargs)
+        super().__init__(settings={'name': 'mix'}, **kwargs)
         self.settings._update(settings)
 
         self.add_model(propname='pore.molar_density',

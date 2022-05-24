@@ -11,4 +11,6 @@ class TransientFickianDiffusion(TransientReactiveTransport, FickianDiffusion):
     """
 
     def __init__(self, **kwargs):
+        if 'name' not in kwargs.keys():
+            kwargs['name'] = 'trans_fick_01'
         super().__init__(**kwargs)

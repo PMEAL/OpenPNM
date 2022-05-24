@@ -39,7 +39,6 @@ class ReactiveTransportSettings:
         Relative tolerance for the solution vector
 
     """
-    prefix = 'react_trans'
     relaxation_factor = 1.0
     sources = TypedList(types=[str])
     newton_maxiter = 5000
@@ -66,6 +65,8 @@ class ReactiveTransport(GenericTransport):
 
     def __init__(self, phase, settings=None, **kwargs):
         self.settings = SettingsAttr(ReactiveTransportSettings, settings)
+        if 'name' not in kwargs.keys():
+            kwargs['name'] = 'react_trans_01'
         super().__init__(phase=phase, settings=self.settings, **kwargs)
         self.settings['phase'] = phase.name
 

@@ -1,3 +1,4 @@
+import re
 import logging
 import pickle
 from datetime import datetime
@@ -94,11 +95,16 @@ class Workspace(dict):
         for item in project:
             __main__.__dict__[item.name] = item
 
-    def _validate_name(self, name=None, prefix='proj'):
+    def _validate_name(self, name=None):
         r"""
         Generates a valid name for projects
         """
-        if (name in self.keys()) or (name in [None, '']):
+        if name in [None, '']:
+            name = 'proj_01'  # Give basic name, then let rest of func fix it
+        if name in self.keys():  # If proposed name is taken, increment it
+            if not re.search(r'_\d+$', name):  # If name does not end with _##
+                name = name + '_01'
+            prefix, count = name.rsplit('_', 1)
             n = [0]
             for item in self.keys():
                 if item.startswith(prefix+'_'):
