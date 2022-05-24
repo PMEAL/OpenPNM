@@ -58,7 +58,7 @@ op.topotools.trim(network=pn, pores=h['disconnected_pores'])
 gas = op.phase.GenericPhase(network=pn)
 gas['pore.diffusivity'] = 1.0
 gas['pore.viscosity'] = 1.0
-gas.add_model_collection(op.models.collections.physics.basic)
+gas.add_model_collection(op.models.collections.physics.basic())
 gas.regenerate_models()
 
 
