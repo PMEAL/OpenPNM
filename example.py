@@ -21,8 +21,8 @@ pn['pore.domain2'] = Ps
 pn['throat.domain2'] = Ts
 
 # Add network/geometry models to both domains
-pn.add_model_collection(collections.geometry.cones_and_cylinders, domain='domain1')
-pn.add_model_collection(collections.geometry.pyramids_and_cuboids, domain='domain2')
+pn.add_model_collection(collections.geometry.cones_and_cylinders(), domain='domain1')
+pn.add_model_collection(collections.geometry.pyramids_and_cuboids(), domain='domain2')
 
 # FIXME: Must regenerate network models, otherwise, phase models will complain
 pn.regenerate_models()
@@ -40,8 +40,9 @@ air['pore.reaction_sites'][[310, 212, 113]] = True
 air.add_model(propname='pore.reaction',
               model=source_terms.power_law,
               X='pore.concentration',
+              A1=-1, A2=2, A3=0,
               domain='reaction_sites',
-              A1=-1, A2=2, A3=0, regen_mode='deferred')
+              regen_mode='deferred')
 
 # Run Fickian diffusion with reaction
 rxn = op.algorithms.FickianDiffusion(network=pn, phase=air)
