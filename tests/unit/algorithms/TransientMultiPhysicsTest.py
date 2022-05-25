@@ -12,7 +12,9 @@ class TransientMultiPhysicsTest:
         spacing = 1e-1
         # 2d network
         self.net = op.network.Cubic(shape=[10, 10, 1], spacing=spacing)
-        self.net.add_model_collection(op.models.collections.geometry.spheres_and_cylinders)
+        self.net.add_model_collection(
+            op.models.collections.geometry.spheres_and_cylinders()
+        )
         self.net.regenerate_models()
         # phase and physics
         self.air = op.phase.Air(network=self.net)

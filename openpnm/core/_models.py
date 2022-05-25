@@ -25,16 +25,17 @@ class ModelsDict(PrintableDict):
 
     """
 
-    def _find_parent(self):
+    def _find_target(self):
         """
-        Finds and returns the parent object to self.
+        Finds and returns the target object to which this ModelsDict is
+        associated.
         """
         for proj in ws.values():
             for obj in proj:
                 if hasattr(obj, "models"):
                     if obj.models is self:
                         return obj
-        raise Exception("No parent object found!")
+        raise Exception("No target object found!")
 
     def dependency_list(self):
         r"""
@@ -202,7 +203,10 @@ class ModelsDict(PrintableDict):
                 raise KeyError(key)
 
     def update(self, d, domain='all'):
-        parent = self._find_parent()
+        # Catch un-run function
+        if hasattr(d, '__call__'):
+            raise Exception('Received dict argument is a function, try running it')
+        parent = self._find_target()
         for k, v in d.items():
             parent.add_model(propname=k, domain=domain, **v)
 
@@ -210,7 +214,7 @@ class ModelsDict(PrintableDict):
 class ModelWrapper(dict):
     """
     This class is used to hold individual models and provide some extra
-    functionality, such as pretty-printing.
+    functionality, such as pretty-printing and the ability to run itself.
     """
 
     def __call__(self):
@@ -258,6 +262,27 @@ class ModelWrapper(dict):
         lines.append(strg.format('', 'regeneration mode:', regen_mode))
         lines.append(horizontal_rule)
         return '\n'.join(lines)
+
+    def _find_target(self):
+        """
+        Finds and returns the parent object to self.
+        """
+        for proj in ws.values():
+            for obj in proj:
+                if hasattr(obj, "models"):
+                    for mod in obj.models.values():
+                        if mod is self:
+                            return obj
+        raise Exception("No target object found!")
+
+    def __call__(self):
+        target = self._find_target()
+        model = self['model']
+        kwargs = {}
+        for k, v in self.items():
+            if k not in ['model', 'regen_mode']:
+                kwargs[k] = v
+        return model(target=target, **kwargs)
 
 
 class ModelsMixin:
@@ -362,10 +387,12 @@ class ModelsMixin:
 
     def _regen(self, prop):
         # Create a temporary dict of all model arguments
-        kwargs = self.models[prop].copy()
-        # Pop model and regen_mode from temporary dict
-        model = kwargs.pop('model')
-        regen_mode = kwargs.pop('regen_mode', None)
+        model = self.models[prop]['model']
+        regen_mode = self.models[prop]['regen_mode']
+        kwargs = {}
+        for k, v in self.models[prop].items():
+            if k not in ['model', 'regen_mode']:
+                kwargs[k] = v
         # Only regenerate model if regen_mode is correct
         if regen_mode == 'constant':
             # Only regenerate if data not already in dictionary

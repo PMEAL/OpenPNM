@@ -32,7 +32,7 @@ def check_data_health(obj):
             health[item] = 'No checks on object'
         elif np.sum(np.isnan(obj[item])) > 0:
             health[item] = 'Has NaNs'
-        elif np.shape(obj[item])[0] != obj._count(item.split('.')[0]):
+        elif np.shape(obj[item])[0] != obj._count(item.split('.', 1)[0]):
             health[item] = 'Wrong Length'
     return health
 

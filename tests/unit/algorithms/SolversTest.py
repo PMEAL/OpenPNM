@@ -10,7 +10,9 @@ class SolversTest:
 
     def setup_class(self):
         self.net = op.network.Cubic(shape=[10, 10, 10])
-        self.net.add_model_collection(op.models.collections.geometry.spheres_and_cylinders)
+        self.net.add_model_collection(
+            op.models.collections.geometry.spheres_and_cylinders()
+        )
         self.net.regenerate_models()
         self.phase = op.phase.GenericPhase(network=self.net)
         self.phase['throat.conductance'] = np.linspace(1, 5, num=self.net.Nt)

@@ -7,7 +7,9 @@ class MeniscusTest:
     def setup_class(self):
         np.random.seed(1)
         self.net = op.network.Cubic(shape=[5, 1, 5], spacing=5e-5)
-        self.net.add_model_collection(op.models.collections.geometry.spheres_and_cylinders)
+        self.net.add_model_collection(
+            op.models.collections.geometry.spheres_and_cylinders()
+        )
         self.net.regenerate_models()
         self.phase = op.phase.Water(network=self.net)
 
