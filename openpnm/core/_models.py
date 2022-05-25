@@ -27,14 +27,15 @@ class ModelsDict(PrintableDict):
 
     def _find_target(self):
         """
-        Finds and returns the parent object to self.
+        Finds and returns the target object to which this ModelsDict is
+        associated.
         """
         for proj in ws.values():
             for obj in proj:
                 if hasattr(obj, "models"):
                     if obj.models is self:
                         return obj
-        raise Exception("No parent object found!")
+        raise Exception("No target object found!")
 
     def dependency_list(self):
         r"""
