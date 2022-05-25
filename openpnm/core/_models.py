@@ -202,6 +202,9 @@ class ModelsDict(PrintableDict):
                 raise KeyError(key)
 
     def update(self, d, domain='all'):
+        # Catch un-run function
+        if hasattr(d, '__call__'):
+            raise Exception('Received dict argument is a function, try running it')
         parent = self._find_parent()
         for k, v in d.items():
             parent.add_model(propname=k, domain=domain, **v)

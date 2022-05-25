@@ -467,13 +467,16 @@ class ModelMixin2:
         if regen_mode != 'deferred':
             self.run_model(propname+'@'+domain)
 
-    def add_model_collection(self, models, domain='all'):
-        models = deepcopy(models)
+    def add_model_collection(self, models, regen_mode='deferred', domain='all'):
+        # Catch un-run function
+        if hasattr(models, '__call__'):
+            models = models()
         for k, v in models.items():
-            _ = v.pop('regen_mode', None)
-            model = v.pop('model')
-            self.add_model(propname=k, model=model, domain=domain,
-                           regen_mode='deferred', **v)
+            if 'domain' not in v.keys():
+                v['domain'] = domain
+            if 'regen_mode' not in v.keys():
+                v['regen_mode'] = regen_mode
+            self.add_model(propname=k, **v)
 
     def regenerate_models(self, propnames=None, exclude=[]):
         all_models = self.models.dependency_list()

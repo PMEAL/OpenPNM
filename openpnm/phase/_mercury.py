@@ -24,5 +24,5 @@ class Mercury(GenericPhase):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.add_model_collection(mercury)
+        self.add_model_collection(mercury())
         self.regenerate_models()
