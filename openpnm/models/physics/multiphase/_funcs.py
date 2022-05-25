@@ -106,7 +106,7 @@ def late_filling(target, pressure='pore.pressure',
     percolation algorithm of some sort.
 
     """
-    element = pressure.split('.')[0]
+    element = pressure.split('.', 1)[0]
     domain = target._domain
     phase = target
     pc_star = phase[Pc_star]

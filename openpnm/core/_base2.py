@@ -69,7 +69,7 @@ class Base2(dict):
         # Intercept @ symbol
         if '@' in key:
             element, prop = key.split('@')[0].split('.', 1)
-            domain = key.split('@')[1].split('.')[-1]
+            domain = key.split('@')[1]
             locs = super().__getitem__(f'{element}.{domain}')
             try:
                 vals = self[f'{element}.{prop}']
@@ -146,7 +146,7 @@ class Base2(dict):
         # requested locations, by recursively calling __getitem__
         if '@' in key:
             element, prop = key.split('@')[0].split('.', 1)
-            domain = key.split('@')[1].split('.')[-1]
+            domain = key.split('@')[1]
             if f'{element}.{domain}' not in self.keys():
                 raise KeyError(key)
             locs = self[f'{element}.{domain}']
@@ -418,7 +418,7 @@ class Base2(dict):
         props.sort()
         for i, item in enumerate(props):
             prop = item
-            required = self._count(item.split('.')[0])
+            required = self._count(item.split('.', 1)[0])
             if len(prop) > 35:  # Trim overly long prop names
                 prop = prop[0:32] + '...'
             if self[item].dtype == object:  # Print objects differently
@@ -452,7 +452,7 @@ class ModelMixin2:
         if '@' in propname:
             propname, domain = propname.split('@')
         else:
-            domain = domain.split('.')[-1]
+            domain = domain.split('.', 1)[-1]
 
         # Add model and regen_mode to kwargs dictionary
         kwargs.update({'model': model, 'regen_mode': regen_mode})
@@ -509,7 +509,7 @@ class ModelMixin2:
                         domain = item.split('@')[-1]
                         self.run_model(propname=propname, domain=domain)
         else:  # domain was given explicitly
-            domain = domain.split('.')[-1]
+            domain = domain.split('.', 1)[-1]
             element, prop = propname.split('@')[0].split('.', 1)
             propname = f'{element}.{prop}'
             mod_dict = self.models[propname+'@'+domain]
