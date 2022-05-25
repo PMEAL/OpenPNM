@@ -8,10 +8,14 @@ class OrdinaryPercolationTest:
 
     def setup_class(self):
         self.net = op.network.Cubic(shape=[5, 5, 5], spacing=0.0005)
-        self.net.add_model_collection(op.models.collections.geometry.spheres_and_cylinders)
+        self.net.add_model_collection(
+            op.models.collections.geometry.spheres_and_cylinders()
+        )
         self.net.regenerate_models()
         self.water = op.phase.Water(network=self.net)
-        self.water.add_model_collection(op.models.collections.physics.standard)
+        self.water.add_model_collection(
+            op.models.collections.physics.standard()
+        )
         self.water.regenerate_models()
         self.air = op.phase.Air(network=self.net)
         mod = op.models.physics.capillary_pressure.washburn

@@ -17,7 +17,7 @@ class MixedPercolationTest:
         # Create Topological Network object
         self.net = op.network.Cubic([Np, Np, 1], spacing=1)
         self.net.add_model_collection(
-            op.models.collections.geometry.spheres_and_cylinders
+            op.models.collections.geometry.spheres_and_cylinders()
         )
         self.net.regenerate_models()
         self.net['pore.diameter'] = 0.5
@@ -404,7 +404,7 @@ class MixedPercolationTest:
     # def test_bidirectional_entry_pressure(self):
     #     pn = op.network.Cubic(shape=[3, 3, 3], spacing=2.5e-5)
     #     pn.add_model_collection(
-    #         op.models.collections.geometry.spheres_and_cylinders
+    #         op.models.collections.geometry.spheres_and_cylinders()
     #     )
     #     pn.regenerate_models()
     #     pn['throat.diameter'] = 2.0e-5
