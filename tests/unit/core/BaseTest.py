@@ -929,13 +929,13 @@ class BaseTest:
         # Should only issue warning
 
     def test_renaming_to_current_name_is_allowed(self):
-        obj = op.core.Base(name="temp")
+        obj = op.core.Base2(name="temp")
         obj.name = "temp"
 
     def test_object_names_must_be_unique_within_project(self):
-        obj = op.core.Base(name="temp")
+        obj = op.core.Base2(name="temp")
         with pytest.raises(Exception):
-            op.core.Base(name="temp", project=obj.project)
+            op.core.Base2(name="temp", project=obj.project)
 
     def test_get_conduit_data(self):
         pn = op.network.Cubic(shape=[3, 3, 3])

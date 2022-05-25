@@ -70,7 +70,7 @@ class ParserMixin:
         if isinstance(element, str):
             element = [element]
         # Convert 'pore.prop' and 'throat.prop' into just 'pore' and 'throat'
-        element = [item.split('.')[0] for item in element]
+        element = [item.split('.', 1)[0] for item in element]
         # Make sure all are lowercase
         element = [item.lower() for item in element]
         # Deal with an plurals
@@ -113,10 +113,10 @@ class ParserMixin:
         for label in labels:
             # Remove element from label, if present
             if element in label:
-                label = label.split('.')[-1]
+                label = label.split('.', 1)[-1]
             # Deal with wildcards
             if '*' in label:
-                Ls = [L.split('.')[-1] for L in self.labels(element=element)]
+                Ls = [L.split('.', 1)[-1] for L in self.labels(element=element)]
                 if label.startswith('*'):
                     temp = [L for L in Ls if L.endswith(label.strip('*'))]
                 if label.endswith('*'):
@@ -174,7 +174,9 @@ class ParserMixin:
 
     def _parse_prop(self, propname, element):
         element = self._parse_element(element, single=True)
-        return element + '.' + propname.split('.')[-1]
+        if propname.split('.', 1)[0] in ['pore', 'throat']:
+            propname = propname.split('.', 1)[-1]
+        return element + '.' + propname
 
 
 class LegacyMixin:
@@ -283,7 +285,7 @@ class LabelMixin:
         locations = self._parse_indices(locations)
         element = self._parse_element(element=element)
         # Collect list of all pore OR throat labels
-        labels = [i for i in self.keys(mode='labels') if i.split('.')[0] in element]
+        labels = [i for i in self.keys(mode='labels') if i.split('.', 1)[0] in element]
         labels.sort()
         labels = np.array(labels)  # Convert to ndarray for following checks
         # Make an 2D array with locations in rows and labels in cols
@@ -375,7 +377,7 @@ class LabelMixin:
                 element = [element]
             labels = PrintableList()
             for k, v in self.items():
-                if (k.split('.')[0] in element) and (v.dtype == bool):
+                if (k.split('.', 1)[0] in element) and (v.dtype == bool):
                     labels.append(k)
         elif (np.size(pores) > 0) and (np.size(throats) > 0):
             raise Exception('Cannot perform label query on pores and '
@@ -429,7 +431,7 @@ class LabelMixin:
                          allowed=['add', 'overwrite', 'remove', 'purge',
                                   'clear'])
 
-        if label.split('.')[0] in ['pore', 'throat']:
+        if label.split('.', 1)[0] in ['pore', 'throat']:
             label = label.split('.', 1)[1]
 
         if (pores is not None) and (throats is not None):
@@ -472,35 +474,35 @@ class LabelMixin:
         if mode in ['or', 'any', 'union']:
             union = np.zeros([self._count(element), ], dtype=bool)
             for item in labels:  # Iterate over labels and collect all indices
-                union = union + self[element+'.'+item.split('.')[-1]]
+                union = union + self[element+'.'+item.split('.', 1)[-1]]
             ind = union
         elif mode in ['and', 'all', 'intersection']:
             intersect = np.ones([self._count(element), ], dtype=bool)
             for item in labels:  # Iterate over labels and collect all indices
-                intersect = intersect*self[element+'.'+item.split('.')[-1]]
+                intersect = intersect*self[element+'.'+item.split('.', 1)[-1]]
             ind = intersect
         elif mode in ['xor', 'exclusive_or']:
             xor = np.zeros([self._count(element), ], dtype=int)
             for item in labels:  # Iterate over labels and collect all indices
-                info = self[element+'.'+item.split('.')[-1]]
+                info = self[element+'.'+item.split('.', 1)[-1]]
                 xor = xor + np.int8(info)
             ind = (xor == 1)
         elif mode in ['nor', 'not', 'none']:
             nor = np.zeros([self._count(element), ], dtype=int)
             for item in labels:  # Iterate over labels and collect all indices
-                info = self[element+'.'+item.split('.')[-1]]
+                info = self[element+'.'+item.split('.', 1)[-1]]
                 nor = nor + np.int8(info)
             ind = (nor == 0)
         elif mode in ['nand']:
             nand = np.zeros([self._count(element), ], dtype=int)
             for item in labels:  # Iterate over labels and collect all indices
-                info = self[element+'.'+item.split('.')[-1]]
+                info = self[element+'.'+item.split('.', 1)[-1]]
                 nand = nand + np.int8(info)
             ind = (nand < len(labels)) * (nand > 0)
         elif mode in ['xnor', 'nxor']:
             xnor = np.zeros([self._count(element), ], dtype=int)
             for item in labels:  # Iterate over labels and collect all indices
-                info = self[element+'.'+item.split('.')[-1]]
+                info = self[element+'.'+item.split('.', 1)[-1]]
                 xnor = xnor + np.int8(info)
             ind = (xnor > 1)
         else:
@@ -724,7 +726,7 @@ class LabelMixin:
         else:
             return(np.array([], dtype=int))
         labels = self._parse_labels(labels=labels, element=element)
-        labels = [element+'.'+item.split('.')[-1] for item in labels]
+        labels = [element+'.'+item.split('.', 1)[-1] for item in labels]
         all_locs = self._get_indices(element=element, labels=labels, mode=mode)
         mask = self._tomask(indices=all_locs, element=element)
         ind = mask[locations]
