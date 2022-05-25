@@ -214,7 +214,7 @@ class ModelsDict(PrintableDict):
 class ModelWrapper(dict):
     """
     This class is used to hold individual models and provide some extra
-    functionality, such as pretty-printing.
+    functionality, such as pretty-printing and the ability to run itself.
     """
     @property
     def propname(self):
