@@ -2,7 +2,7 @@ import openpnm.models as mods
 from openpnm.utils import get_model_collection
 
 
-def trapezoids_and_rectangles(regen_mode='deferred', domain=None):
+def trapezoids_and_rectangles(regen_mode=None, domain=None):
     return get_model_collection(collection=_trapezoids_and_rectangles,
                                 regen_mode=regen_mode,
                                 domain=domain)

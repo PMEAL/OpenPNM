@@ -2,7 +2,7 @@ import openpnm.models.physics as mods
 from openpnm.utils import get_model_collection
 
 
-def standard(regen_mode='deferred', domain=None):
+def standard(regen_mode=None, domain=None):
     return get_model_collection(collection=_standard,
                                 regen_mode=regen_mode,
                                 domain=domain)
