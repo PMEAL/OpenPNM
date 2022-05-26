@@ -70,8 +70,8 @@ class TransientMultiPhysicsTest:
         self.c0[self.net.pores('left')] = 100
 
         # add variable props to algs
-        self.tfd.set_variable_props('pore.temperature')
-        self.tfc.set_variable_props('pore.concentration')
+        self.tfd.settings.variable_props.add('pore.temperature')
+        self.tfc.settings.variable_props.add('pore.concentration')
 
         # multiphysics algorithm
         algs = [self.tfc, self.tfd]

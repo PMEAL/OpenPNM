@@ -1,13 +1,25 @@
 import numpy as np
-from openpnm.core import LabelMixin, ModelsDict, ModelWrapper, ParserMixin
-from openpnm.utils import Workspace, SettingsAttr, PrintableList, PrintableDict
-from openpnm.utils import parse_mode
+from openpnm.core import (
+    LabelMixin,
+    ModelsDict,
+    ModelWrapper,
+    ParserMixin,
+)
+from openpnm.utils import (
+    Workspace,
+    SettingsAttr,
+    PrintableList,
+    PrintableDict,
+    Docorator,
+    parse_mode,
+)
 from copy import deepcopy
 import inspect
 import uuid
 import numpy.lib.recfunctions as rf
 
 
+docstr = Docorator()
 ws = Workspace()
 
 
@@ -17,6 +29,8 @@ __all__ = [
 ]
 
 
+@docstr.get_sections(base='BaseSettings', sections=docstr.all_sections)
+@docstr.dedent
 class BaseSettings:
     r"""
     The default settings to use on instance of Base
@@ -30,7 +44,17 @@ class BaseSettings:
     uuid = ''
 
 
+@docstr.get_sections(base='Base', sections=['Parameters'])
+@docstr.dedent
 class Base2(dict):
+    r"""
+    Base class
+
+    Parameters
+    ----------
+    network : dict
+        An OpenPNM Network object, which is a subclass of a dict
+    """
 
     def __init__(self, network=None, settings=None, name='obj'):
         super().__init__()
