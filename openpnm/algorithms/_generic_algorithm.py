@@ -32,10 +32,7 @@ class GenericAlgorithm(ParserMixin, LabelMixin, Base2):
 
     Parameters
     ----------
-    network : OpenPNM Network
-        The network object to which this algorithm will apply
-    name : str, optional
-        Name of the algorithm. If not provided one is generated.
+    %(Base.parameters)s
 
     """
 
