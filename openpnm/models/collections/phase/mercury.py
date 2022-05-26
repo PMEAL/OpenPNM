@@ -2,7 +2,7 @@ import openpnm.models as mods
 from openpnm.utils import get_model_collection
 
 
-def mercury(regen_mode='deferred', domain=None):
+def mercury(regen_mode=None, domain=None):
     return get_model_collection(collection=_mercury,
                                 regen_mode=regen_mode,
                                 domain=domain)

@@ -2,7 +2,7 @@ import openpnm.models as mods
 from openpnm.utils import get_model_collection
 
 
-def spheres_and_cylinders(regen_mode='deferred', domain=None):
+def spheres_and_cylinders(regen_mode=None, domain=None):
     return get_model_collection(collection=_spheres_and_cylinders,
                                 regen_mode=regen_mode,
                                 domain=domain)
