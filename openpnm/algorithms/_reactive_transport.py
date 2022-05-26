@@ -117,29 +117,6 @@ class ReactiveTransport(GenericTransport):
         if propname not in self.settings['sources']:
             self.settings['sources'].append(propname)
 
-    def _update_iterative_props(self):
-        """
-        Regenerates phase, geometries, and physics objects using the
-        current value of ``quantity``.
-
-        Notes
-        -----
-        The algorithm directly writes the value of 'quantity' into the
-        phase, which is against one of the OpenPNM rules of objects not
-        being able to write into each other.
-
-        """
-        iterative_props = self._get_iterative_props
-        if not iterative_props:
-            return
-        # Fetch objects associated with the algorithm
-        phase = self.project[self.settings.phase]
-        # Update 'quantity' on phase with the most recent value
-        quantity = self.settings['quantity']
-        phase[quantity] = self.x
-        # Regenerate all associated objects
-        phase.regenerate_models(propnames=iterative_props)
-
     def _apply_sources(self):
         """
         Updates ``A`` and ``b``, applying source terms to specified pores.
@@ -243,30 +220,6 @@ class ReactiveTransport(GenericTransport):
         self._update_iterative_props()
         super()._update_A_and_b()
         self._apply_sources()
-
-    @functools.cached_property
-    def _get_iterative_props(self):
-        r"""
-        Finds and returns properties that need to be iterated while
-        running the algorithm.
-        """
-        import networkx as nx
-        phase = self.project[self.settings.phase]
-        # Generate global dependency graph
-        dg = nx.compose_all([x.models.dependency_graph(deep=True)
-                             for x in [phase]])
-        variable_props = self.settings["variable_props"].copy()
-        variable_props.add(self.settings["quantity"])
-        base = list(variable_props)
-        # Find all props downstream that depend on base props
-        dg = nx.DiGraph(nx.edge_dfs(dg, source=base))
-        if len(dg.nodes) == 0:
-            return []
-        iterative_props = list(nx.dag.lexicographical_topological_sort(dg))
-        # "variable_props" should be in the returned list but not "quantity"
-        if self.settings.quantity in iterative_props:
-            iterative_props.remove(self.settings["quantity"])
-        return iterative_props
 
     def _get_residual(self, x=None):
         r"""
