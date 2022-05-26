@@ -8,7 +8,9 @@ class TransientFickianDiffusionTest:
     def setup_class(self):
         np.random.seed(0)
         self.net = op.network.Cubic(shape=[4, 3, 1], spacing=1.0)
-        self.net.add_model_collection(op.models.collections.geometry.spheres_and_cylinders)
+        self.net.add_model_collection(
+            op.models.collections.geometry.spheres_and_cylinders()
+        )
         self.net.regenerate_models()
         self.net['pore.volume'] = 1e-14
         self.phase = op.phase.GenericPhase(network=self.net)

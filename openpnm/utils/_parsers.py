@@ -68,7 +68,7 @@ def parse_element(obj, element, single=False):
     if isinstance(element, str):
         element = [element]
     # Convert 'pore.prop' and 'throat.prop' into just 'pore' and 'throat'
-    element = [item.split('.')[0] for item in element]
+    element = [item.split('.', 1)[0] for item in element]
     # Make sure all are lowercase
     element = [item.lower() for item in element]
     # Deal with an plurals
@@ -111,10 +111,10 @@ def parse_labels(obj, labels, element):
     for label in labels:
         # Remove element from label, if present
         if element in label:
-            label = label.split('.')[-1]
+            label = label.split('.', 1)[-1]
         # Deal with wildcards
         if '*' in label:
-            Ls = [L.split('.')[-1] for L in obj.labels(element=element)]
+            Ls = [L.split('.', 1)[-1] for L in obj.labels(element=element)]
             if label.startswith('*'):
                 temp = [L for L in Ls if L.endswith(label.strip('*'))]
             if label.endswith('*'):
@@ -173,4 +173,6 @@ def parse_mode(obj, mode, allowed=None, single=False):
 
 def parse_prop(obj, propname, element):
     element = obj._parse_element(element, single=True)
-    return element + '.' + propname.split('.')[-1]
+    if propname.split('.', 1)[0] in ['pore', 'throat']:
+        propname = propname.split('.', 1)[-1]
+    return element + '.' + propname

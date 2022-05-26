@@ -9,6 +9,7 @@ import scipy.sparse as sparse
 from collections import OrderedDict
 from collections.abc import Iterable
 from docrep import DocstringProcessor
+from copy import deepcopy
 
 
 __all__ = [
@@ -32,6 +33,7 @@ __all__ = [
     'is_valid_propname',
     'prettify_logger_message',
     'remove_prop_deep',
+    'get_model_collection',
 ]
 
 
@@ -620,3 +622,13 @@ def remove_prop_deep(obj, propname):
         obj._parse_element(propname)
         if k.startswith(propname):
             del obj[k]
+
+
+def get_model_collection(collection, regen_mode=None, domain=None):
+    d = deepcopy(collection)
+    for k, v in d.items():
+        if regen_mode:
+            v['regen_mode'] = regen_mode
+        if domain:
+            v['domain'] = domain
+    return d

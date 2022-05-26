@@ -100,7 +100,7 @@ class Porosimetry(OrdinaryPercolation):
         else:
             p_inv, t_inv = super().results(Pc).values()
             phase = self.project[self.settings.phase]
-            quantity = self.settings['quantity'].split('.')[-1]
+            quantity = self.settings['quantity'].split('.', 1)[-1]
             lpf = np.array([1])
             if self.settings['pore_partial_filling']:
                 # Set pressure on phase to current capillary pressure

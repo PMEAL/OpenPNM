@@ -12,7 +12,9 @@ class TransientMultiPhysicsTest:
         spacing = 1e-1
         # 2d network
         self.net = op.network.Cubic(shape=[10, 10, 1], spacing=spacing)
-        self.net.add_model_collection(op.models.collections.geometry.spheres_and_cylinders)
+        self.net.add_model_collection(
+            op.models.collections.geometry.spheres_and_cylinders()
+        )
         self.net.regenerate_models()
         # phase and physics
         self.air = op.phase.Air(network=self.net)
@@ -68,8 +70,8 @@ class TransientMultiPhysicsTest:
         self.c0[self.net.pores('left')] = 100
 
         # add variable props to algs
-        self.tfd.set_variable_props('pore.temperature')
-        self.tfc.set_variable_props('pore.concentration')
+        self.tfd.settings.variable_props.add('pore.temperature')
+        self.tfc.settings.variable_props.add('pore.concentration')
 
         # multiphysics algorithm
         algs = [self.tfc, self.tfd]

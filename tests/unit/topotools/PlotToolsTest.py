@@ -65,7 +65,9 @@ class PlotToolsTest:
 
     def test_generate_voxel_image(self):
         pn = op.network.Cubic(shape=[5, 5, 1])
-        pn.add_model_collection(op.models.collections.geometry.spheres_and_cylinders)
+        pn.add_model_collection(
+            op.models.collections.geometry.spheres_and_cylinders()
+        )
         pn.regenerate_models()
         im = op.topotools.generate_voxel_image(network=pn,
                                                pore_shape='sphere',
@@ -76,7 +78,9 @@ class PlotToolsTest:
     def test_plot_connections_color_by(self):
         pn = op.network.Cubic(shape=[5, 5, 1])
         np.random.seed(10)
-        pn.add_model_collection(op.models.collections.geometry.spheres_and_cylinders)
+        pn.add_model_collection(
+            op.models.collections.geometry.spheres_and_cylinders()
+        )
         pn.regenerate_models()
         Ts = np.array([0, 4, 6, 18])
         im = op.topotools.plot_connections(pn, throats=Ts,
@@ -90,7 +94,9 @@ class PlotToolsTest:
     def test_plot_coordinates_color_by(self):
         pn = op.network.Cubic(shape=[5, 5, 1])
         np.random.seed(10)
-        pn.add_model_collection(op.models.collections.geometry.spheres_and_cylinders)
+        pn.add_model_collection(
+            op.models.collections.geometry.spheres_and_cylinders()
+        )
         pn.regenerate_models()
         Ps = np.array([0, 4, 6, 18])
         im = op.topotools.plot_coordinates(pn, pores=Ps,
