@@ -48,7 +48,8 @@ class GenericAlgorithm(ParserMixin, LabelMixin, Base2):
         self['pore.all'] = np.ones(network.Np, dtype=bool)
         self['throat.all'] = np.ones(network.Nt, dtype=bool)
 
-    @functools.cached_property
+    # @functools.cached_property
+    @property
     def iterative_props(self):
         r"""
         Finds and returns properties that need to be iterated while
@@ -72,7 +73,7 @@ class GenericAlgorithm(ParserMixin, LabelMixin, Base2):
             iterative_props.remove(self.settings["quantity"])
         return iterative_props
 
-    def _update_iterative_props(self):
+    def _update_iterative_props(self, iterative_props=None):
         """
         Regenerates phase, geometries, and physics objects using the
         current value of ``quantity``.
@@ -84,7 +85,8 @@ class GenericAlgorithm(ParserMixin, LabelMixin, Base2):
         being able to write into each other.
 
         """
-        iterative_props = self.iterative_props
+        if iterative_props is None:
+            iterative_props = self.iterative_props
         if not iterative_props:
             return
         # Fetch objects associated with the algorithm
