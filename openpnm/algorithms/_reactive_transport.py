@@ -6,7 +6,6 @@ from scipy.optimize.nonlin import TerminationCondition
 from openpnm.algorithms import GenericTransport
 from openpnm.utils import TypedList, Docorator, SettingsAttr
 from tqdm import tqdm
-import functools
 
 
 __all__ = ['ReactiveTransport']

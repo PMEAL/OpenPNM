@@ -1,6 +1,6 @@
 import logging
 import numpy as np
-from openpnm.core import Domain
+from openpnm.core import ParserMixin, LabelMixin, Base2
 from openpnm.utils import Docorator, SettingsAttr
 import functools
 
@@ -26,7 +26,7 @@ class GenericAlgorithmSettings:
 
 @docstr.get_sections(base='GenericAlgorithm', sections=['Parameters'])
 @docstr.dedent
-class GenericAlgorithm(Domain):
+class GenericAlgorithm(ParserMixin, LabelMixin, Base2):
     r"""
     Generic class to define the foundation of Algorithms
 

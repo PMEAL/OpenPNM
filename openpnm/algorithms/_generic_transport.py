@@ -28,13 +28,19 @@ class GenericTransportSettings:
     ----------
     %(GenericAlgorithmSettings.parameters)s
     quantity : str
-        The name of the physical quantity to be calculated
+        The name of the physical quantity to be solved for (i.e.
+        'pore.concentration')
     conductance : str
-        The name of the pore-scale transport conductance values. These are
-        typically calculated by a model attached to a *Physics* object
-        associated with the given *Phase*.
+        The name of the pore-scale transport conductance values (i.e
+        'throat.diffusive_conductance')
     cache : bool
-        If ``True``, A matrix is cached and rather than getting rebuilt.
+        If ``True``, the ``A`` matrix is cached and rather than getting
+        rebuilt.
+    variable_props : list of strings
+        This list (actually a set) indicates which properties are variable
+        and should be updated by the algorithm on each iteration. Note that
+        any properties which already depend on ``'quantity'`` will
+        automatically be updated.
 
     """
     phase = ''
@@ -95,12 +101,8 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
 
         """
         gvals = self.settings['conductance']
-        # FIXME: this needs to be properly addressed (see issue #1548)
-        try:
-            if gvals in self._get_iterative_props:
-                self.settings.cache = False
-        except AttributeError:
-            pass
+        if gvals in self.iterative_props:
+            self.settings.cache = False
         if not self.settings['cache']:
             self._pure_A = None
         if self._pure_A is None:
@@ -404,40 +406,3 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
                 R = np.sum(R)
 
         return np.array(R, ndmin=1)
-
-    def set_variable_props(self, variable_props, mode='add'):
-        r"""
-        This method is useful for setting variable_props to the settings
-        dictionary of the target object. Variable_props and their dependent
-        properties get updated iteratively.
-
-        Parameters
-        ----------
-        variable_props : str, or List(str)
-            A single string or list of strings to be added as variable_props
-        mode : str, optional
-            Controls how the variable_props are applied. The default value is
-            'add'. Options are:
-
-            ===========  =====================================================
-            mode         meaning
-            ===========  =====================================================
-            'add'        Adds supplied variable_props to already existing list
-                         (if any), and prevents duplicates
-            'overwrite'  Deletes all exisitng variable_props and then adds
-                         the specified new ones
-            ===========  =====================================================
-
-        """
-        # If single string, make it a list
-        if isinstance(variable_props, str):
-            variable_props = [variable_props]
-        # Handle mode
-        mode = self._parse_mode(mode, allowed=['add', 'overwrite'],
-                                single=True)
-        if mode == 'overwrite':
-            self.settings['variable_props'].clear()
-        # parse each propname and append to variable_props in settings
-        for variable_prop in variable_props:
-            variable_prop = self._parse_prop(variable_prop, 'pore')
-            self.settings['variable_props'].add(variable_prop)
