@@ -97,7 +97,7 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
         gvals = self.settings['conductance']
         # FIXME: this needs to be properly addressed (see issue #1548)
         try:
-            if gvals in self._get_iterative_props():
+            if gvals in self._get_iterative_props:
                 self.settings.cache = False
         except AttributeError:
             pass

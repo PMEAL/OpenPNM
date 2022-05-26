@@ -6,6 +6,7 @@ from scipy.optimize.nonlin import TerminationCondition
 from openpnm.algorithms import GenericTransport
 from openpnm.utils import TypedList, Docorator, SettingsAttr
 from tqdm import tqdm
+import functools
 
 
 __all__ = ['ReactiveTransport']
@@ -128,7 +129,7 @@ class ReactiveTransport(GenericTransport):
         being able to write into each other.
 
         """
-        iterative_props = self._get_iterative_props()
+        iterative_props = self._get_iterative_props
         if not iterative_props:
             return
         # Fetch objects associated with the algorithm
@@ -243,6 +244,7 @@ class ReactiveTransport(GenericTransport):
         super()._update_A_and_b()
         self._apply_sources()
 
+    @functools.cached_property
     def _get_iterative_props(self):
         r"""
         Finds and returns properties that need to be iterated while
