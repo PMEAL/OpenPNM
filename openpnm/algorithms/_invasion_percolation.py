@@ -3,13 +3,16 @@ import warnings
 import heapq as hq
 import numpy as np
 from collections import namedtuple
-from openpnm.utils import SettingsAttr, Docorator
+from openpnm.utils import Docorator
 from openpnm.topotools import find_clusters
 from openpnm.algorithms import GenericAlgorithm
-logger = logging.getLogger(__name__)
-docstr = Docorator()
+
 
 __all__ = ['InvasionPercolation']
+
+
+logger = logging.getLogger(__name__)
+docstr = Docorator()
 
 
 @docstr.get_sections(base='IPSettings',
@@ -57,11 +60,11 @@ class InvasionPercolation(GenericAlgorithm):
 
     """
 
-    def __init__(self, phase, settings=None, **kwargs):
-        self.settings = SettingsAttr(IPSettings, settings)
+    def __init__(self, phase, **kwargs):
         if 'name' not in kwargs.keys():
             kwargs['name'] = 'invasion_01'
-        super().__init__(settings=self.settings, **kwargs)
+        super().__init__(**kwargs)
+        self.settings._update(IPSettings())
         self.settings['phase'] = phase.name
         self['pore.invasion_sequence'] = -1
         self['throat.invasion_sequence'] = -1

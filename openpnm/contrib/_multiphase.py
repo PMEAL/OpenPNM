@@ -2,7 +2,7 @@ import logging
 import numpy as np
 import openpnm.models.misc as misc
 from openpnm.phase import GenericPhase as GenericPhase
-from openpnm.utils import SettingsAttr, Docorator, TypedSet
+from openpnm.utils import Docorator, TypedSet
 
 
 logger = logging.getLogger(__name__)
@@ -55,9 +55,9 @@ class MultiPhase(GenericPhase):
 
     """
 
-    def __init__(self, phases=[], settings=None, **kwargs):
-        self.settings = SettingsAttr(MultiPhaseSettings, settings)
+    def __init__(self, phases=[], **kwargs):
         super().__init__(settings=self.settings, **kwargs)
+        self.settings._update(MultiPhaseSettings())
 
         # Pressure/temperature must come from constituent phases
         self.pop('pore.temperature', None)

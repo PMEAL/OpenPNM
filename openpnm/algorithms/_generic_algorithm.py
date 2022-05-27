@@ -1,7 +1,7 @@
 import logging
 import numpy as np
 from openpnm.core import ParserMixin, LabelMixin, Base2
-from openpnm.utils import Docorator, SettingsAttr
+from openpnm.utils import Docorator
 import functools
 
 
@@ -36,12 +36,11 @@ class GenericAlgorithm(ParserMixin, LabelMixin, Base2):
 
     """
 
-    def __init__(self, network, settings=None, **kwargs):
-        self._settings = SettingsAttr(GenericAlgorithmSettings)
-        self.settings._update(settings)
+    def __init__(self, network, **kwargs):
         if 'name' not in kwargs.keys():
             kwargs['name'] = 'alg_01'
-        super().__init__(network=network, settings=self.settings, **kwargs)
+        super().__init__(network=network, **kwargs)
+        self.settings._update(GenericAlgorithmSettings())
         self['pore.all'] = np.ones(network.Np, dtype=bool)
         self['throat.all'] = np.ones(network.Nt, dtype=bool)
 

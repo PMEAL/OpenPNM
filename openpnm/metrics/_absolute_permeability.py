@@ -1,5 +1,5 @@
 import logging
-from openpnm.utils import Workspace, SettingsAttr, Docorator
+from openpnm.utils import Workspace, Docorator
 from openpnm.phase import GenericPhase
 from openpnm.algorithms import StokesFlow
 from openpnm.metrics import GenericTransportMetrics
@@ -45,9 +45,9 @@ class AbsolutePermeability(GenericTransportMetrics):
 
     """
 
-    def __init__(self, settings=None, **kwargs):
-        self.settings = SettingsAttr(AbsolutePermeabilitySettings, settings)
+    def __init__(self, **kwargs):
         super().__init__(settings=self.settings, **kwargs)
+        self.settings._update(AbsolutePermeabilitySettings())
 
     def run(self):
         r"""

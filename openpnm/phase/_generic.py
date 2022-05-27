@@ -1,8 +1,7 @@
 import logging
 import numpy as np
 from openpnm.core import Domain
-from openpnm.utils import Workspace
-from openpnm.utils import Docorator, SettingsAttr
+from openpnm.utils import Workspace, Docorator
 
 
 docstr = Docorator()
@@ -12,7 +11,7 @@ ws = Workspace()
 
 @docstr.get_sections(base='PhaseSettings', sections=['Parameters'])
 @docstr.dedent
-class PhaseSettings(SettingsAttr):
+class PhaseSettings:
     r"""
     Parameters
     ----------
@@ -39,17 +38,14 @@ class GenericPhase(Domain):
 
     """
 
-    def __init__(self, network, settings=None, **kwargs):
-        self.settings = PhaseSettings()
-        self.settings._update(settings)
+    def __init__(self, network, **kwargs):
         if 'name' not in kwargs.keys():
             kwargs['name'] = 'phase_01'
-        super().__init__(network=network, settings=self.settings, **kwargs)
-
+        super().__init__(network=network, **kwargs)
+        self.settings._update(PhaseSettings())
         self['pore.all'] = np.ones([network.Np, ], dtype=bool)
         self['throat.all'] = np.ones([network.Nt, ], dtype=bool)
-
-        # Set standard conditions on the fluid to get started
+        # Set standard conditions on the phase
         self['pore.temperature'] = 298.0
         self['pore.pressure'] = 101325.0
 

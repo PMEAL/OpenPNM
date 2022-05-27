@@ -76,12 +76,18 @@ class TypedList(TypedMixin, list):
         super().insert(index, value)
 
 
-class SettingsDict:
+class SettingsDict(dict):
     def update(self, d):
         for k, v in d:
             self[k] = v
         if "Parameters" in d.__doc__:
             pass
+
+    def __getattr__(self, key):
+        return self[key]
+
+    def __setattr__(self, key, value):
+        self[key] = value
 
 
 class SettingsAttr:

@@ -4,7 +4,7 @@ import numpy as np
 from numpy.linalg import norm
 from scipy.optimize.nonlin import TerminationCondition
 from openpnm.algorithms import GenericTransport
-from openpnm.utils import TypedList, Docorator, SettingsAttr
+from openpnm.utils import TypedList, Docorator
 from tqdm import tqdm
 
 
@@ -63,12 +63,11 @@ class ReactiveTransport(GenericTransport):
 
     """
 
-    def __init__(self, phase, settings=None, **kwargs):
-        self.settings = SettingsAttr(ReactiveTransportSettings, settings)
+    def __init__(self, **kwargs):
         if 'name' not in kwargs.keys():
             kwargs['name'] = 'react_trans_01'
-        super().__init__(phase=phase, settings=self.settings, **kwargs)
-        self.settings['phase'] = phase.name
+        super().__init__(**kwargs)
+        self.settings._update(ReactiveTransportSettings())
 
     def set_source(self, propname, pores, mode='overwrite'):
         r"""

@@ -4,7 +4,7 @@ import scipy.sparse.csgraph as spgr
 from openpnm.topotools import is_fully_connected
 from openpnm.algorithms import GenericAlgorithm
 from openpnm.algorithms import BCsMixin
-from openpnm.utils import Docorator, SettingsAttr, TypedSet, Workspace
+from openpnm.utils import Docorator, TypedSet, Workspace
 from openpnm.utils import check_data_health
 from openpnm import solvers
 from ._solution import SteadyStateSolution, SolutionContainer
@@ -62,23 +62,18 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
 
     """
 
-    def __new__(cls, *args, **kwargs):
-        instance = super(GenericTransport, cls).__new__(cls, *args, **kwargs)
-        # Create some instance attributes
-        instance._A = None
-        instance._b = None
-        instance._pure_A = None
-        instance._pure_b = None
-        return instance
-
-    def __init__(self, phase, settings=None, **kwargs):
-        self.settings = SettingsAttr(GenericTransportSettings, settings)
+    def __init__(self, phase, **kwargs):
         if 'name' not in kwargs.keys():
             kwargs['name'] = 'trans_01'
-        super().__init__(settings=self.settings, **kwargs)
+        super().__init__(**kwargs)
+        self.settings._update(GenericTransportSettings())
         self.settings['phase'] = phase.name
         self['pore.bc_rate'] = np.nan
         self['pore.bc_value'] = np.nan
+        self._A = None
+        self._b = None
+        self._pure_A = None
+        self._pure_b = None
 
     @property
     def x(self):

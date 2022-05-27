@@ -1,5 +1,5 @@
 import logging
-from openpnm.utils import Workspace,  SettingsAttr, Docorator
+from openpnm.utils import Workspace, Docorator
 from openpnm.phase import GenericPhase
 from openpnm.algorithms import FickianDiffusion
 from openpnm.metrics import GenericTransportMetrics
@@ -16,6 +16,7 @@ class FormationFactorSettings:
     r"""
     Defines the settings for FormationFactor
 
+    Parameters
     ----------
     inlet : str
         The pore labels for diffusion inlet.
@@ -81,9 +82,9 @@ class FormationFactor(GenericTransportMetrics):
 
     """
 
-    def __init__(self, settings=None, **kwargs):
-        self.settings = SettingsAttr(FormationFactorSettings, settings)
-        super().__init__(settings=self.settings, **kwargs)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.settings._update(FormationFactorSettings())
 
     def run(self, verbose=False):
         r"""

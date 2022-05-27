@@ -1,7 +1,7 @@
 import logging
 import numpy as np
 from openpnm.algorithms import OrdinaryPercolation
-from openpnm.utils import SettingsAttr, Docorator
+from openpnm.utils import Docorator
 docstr = Docorator()
 logger = logging.getLogger(__name__)
 
@@ -11,6 +11,9 @@ __all__ = ['Porosimetry']
 @docstr.dedent
 class PorosimetrySettings:
     r"""
+
+    Parameters
+    ----------
     %(OrdinaryPercolationSettings.parameters)s
     pore_partial_filling : str
         The name of the model used to determine partial pore filling as
@@ -50,9 +53,9 @@ class Porosimetry(OrdinaryPercolation):
 
     """
 
-    def __init__(self, phase, settings=None, **kwargs):
-        self.settings = SettingsAttr(PorosimetrySettings, settings)
+    def __init__(self, phase, **kwargs):
         super().__init__(phase=phase, settings=self.settings, **kwargs)
+        self.settings._update(PorosimetrySettings())
         # Use the reset method to initialize all arrays
         self.reset()
         self.settings['phase'] = phase.name

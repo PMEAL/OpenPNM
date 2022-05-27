@@ -4,7 +4,7 @@ from openpnm._skgraph.simulations import bond_percolation
 from openpnm._skgraph.simulations import find_connected_clusters
 from openpnm._skgraph.simulations import find_trapped_clusters
 from openpnm.topotools import remove_isolated_clusters, ispercolating
-from openpnm.utils import SettingsAttr, Docorator
+from openpnm.utils import Docorator
 
 
 __all__ = ['Drainage']
@@ -51,11 +51,11 @@ class DrainageSettings:
 
 class Drainage(GenericAlgorithm):
 
-    def __init__(self, phase, settings=None, **kwargs):
-        self.settings = SettingsAttr(DrainageSettings, settings)
+    def __init__(self, phase, **kwargs):
         if 'name' not in kwargs.keys():
             kwargs['name'] = 'drainage_01'
-        super().__init__(settings=self.settings, **kwargs)
+        super().__init__(**kwargs)
+        self.settings._update(DrainageSettings())
         self.settings['phase'] = phase.name
         self.reset()
 

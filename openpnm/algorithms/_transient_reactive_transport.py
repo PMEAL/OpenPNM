@@ -1,7 +1,7 @@
 import logging
 import numpy as np
 from openpnm.algorithms import ReactiveTransport
-from openpnm.utils import Docorator, SettingsAttr
+from openpnm.utils import Docorator
 from openpnm.integrators import ScipyRK45
 from openpnm.algorithms._solution import SolutionContainer
 
@@ -42,11 +42,11 @@ class TransientReactiveTransport(ReactiveTransport):
 
     """
 
-    def __init__(self, phase, settings=None, **kwargs):
-        self.settings = SettingsAttr(TransientReactiveTransportSettings, settings)
+    def __init__(self, phase, **kwargs):
         if 'name' not in kwargs.keys():
             kwargs['name'] = 'trans_react_01'
-        super().__init__(phase=phase, settings=self.settings, **kwargs)
+        super().__init__(phase=phase, **kwargs)
+        self.settings._update(TransientReactiveTransportSettings())
         self.settings['phase'] = phase.name
         self["pore.ic"] = np.nan
 

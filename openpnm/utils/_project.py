@@ -5,8 +5,7 @@ import uuid
 import numpy as np
 from copy import deepcopy
 from datetime import datetime
-from openpnm.utils import Workspace
-from openpnm.utils import SettingsAttr
+from openpnm.utils import Workspace, SettingsAttr
 
 
 ws = Workspace()

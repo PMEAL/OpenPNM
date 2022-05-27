@@ -4,12 +4,15 @@ from collections import namedtuple
 from openpnm.algorithms import GenericAlgorithm
 from openpnm.topotools import site_percolation, bond_percolation
 from openpnm.topotools import remove_isolated_clusters, ispercolating
-from openpnm.utils import SettingsAttr, Docorator
+from openpnm.utils import Docorator
 from openpnm.utils import prettify_logger_message
-docstr = Docorator()
-logger = logging.getLogger(__name__)
+
 
 __all__ = ['OrdinaryPercolation']
+
+
+docstr = Docorator()
+logger = logging.getLogger(__name__)
 
 
 @docstr.get_sections(base='OrdinaryPercolationSettings',
@@ -85,9 +88,9 @@ class OrdinaryPercolation(GenericAlgorithm):
 
     """
 
-    def __init__(self, phase, settings=None, **kwargs):
-        self.settings = SettingsAttr(OrdinaryPercolationSettings, settings)
-        super().__init__(settings=self.settings, **kwargs)
+    def __init__(self, phase, **kwargs):
+        super().__init__(**kwargs)
+        self.settings._update(OrdinaryPercolationSettings())
         # Use the reset method to initialize all arrays
         self.reset()
         self.settings['phase'] = phase.name
