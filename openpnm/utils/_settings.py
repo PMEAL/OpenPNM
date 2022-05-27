@@ -135,6 +135,7 @@ class SettingsAttr:
         if isinstance(settings, dict):
             docs = False
             for k, v in settings.items():
+                v = deepcopy(v)
                 if override:
                     super().__setattr__(k, v)
                 else:
@@ -142,7 +143,7 @@ class SettingsAttr:
         else:  # Dataclass
             attrs = [i for i in dir(settings) if not i.startswith('_')]
             for k in attrs:
-                v = getattr(settings, k)
+                v = deepcopy(getattr(settings, k))
                 if override:
                     super().__setattr__(k, v)
                 else:
