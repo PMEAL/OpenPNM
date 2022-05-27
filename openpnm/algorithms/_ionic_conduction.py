@@ -42,10 +42,8 @@ class IonicConduction(ReactiveTransport):
         given, one is generated.
     """
 
-    def __init__(self, **kwargs):
-        if 'name' not in kwargs.keys():
-            kwargs['name'] = 'ionic_01'
-        super().__init__(**kwargs)
+    def __init__(self, name='ionic_#', **kwargs):
+        super().__init__(name=name, **kwargs)
         self.settings._update(IonicConductionSettings())
 
     def _charge_conservation_eq_source_term(self, e_alg):

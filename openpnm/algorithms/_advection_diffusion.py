@@ -44,10 +44,8 @@ class AdvectionDiffusion(ReactiveTransport):
     A subclass of ReactiveTransport to simulate advection-diffusion
     """
 
-    def __init__(self, **kwargs):
-        if 'name' not in kwargs.keys():
-            kwargs['name'] = 'ad_01'
-        super().__init__(**kwargs)
+    def __init__(self, name='ad_#', **kwargs):
+        super().__init__(name=name, **kwargs)
         self.settings._update(AdvectionDiffusionSettings())
 
     def set_outflow_BC(self, pores, mode='merge'):

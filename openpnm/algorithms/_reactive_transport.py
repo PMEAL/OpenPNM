@@ -63,10 +63,8 @@ class ReactiveTransport(GenericTransport):
 
     """
 
-    def __init__(self, **kwargs):
-        if 'name' not in kwargs.keys():
-            kwargs['name'] = 'react_trans_01'
-        super().__init__(**kwargs)
+    def __init__(self, name='react_trans_#', **kwargs):
+        super().__init__(name=name, **kwargs)
         self.settings._update(ReactiveTransportSettings())
 
     def set_source(self, propname, pores, mode='overwrite'):

@@ -29,8 +29,6 @@ class FourierConduction(ReactiveTransport):
 
     """
 
-    def __init__(self, **kwargs):
-        if 'name' not in kwargs.keys():
-            kwargs['name'] = 'fourier_01'
-        super().__init__(**kwargs)
+    def __init__(self, name='fourier_#', **kwargs):
+        super().__init__(name=name, **kwargs)
         self.settings._update(FourierConductionSettings())

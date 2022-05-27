@@ -36,10 +36,8 @@ class GenericAlgorithm(ParserMixin, LabelMixin, Base2):
 
     """
 
-    def __init__(self, network, **kwargs):
-        if 'name' not in kwargs.keys():
-            kwargs['name'] = 'alg_01'
-        super().__init__(network=network, **kwargs)
+    def __init__(self, network, name='alg_#', **kwargs):
+        super().__init__(network=network, name=name, **kwargs)
         self.settings._update(GenericAlgorithmSettings())
         self['pore.all'] = np.ones(network.Np, dtype=bool)
         self['throat.all'] = np.ones(network.Nt, dtype=bool)

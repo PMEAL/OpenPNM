@@ -32,8 +32,6 @@ class OhmicConduction(ReactiveTransport):
 
     """
 
-    def __init__(self, **kwargs):
-        if 'name' not in kwargs.keys():
-            kwargs['name'] = 'ohmic_01'
-        super().__init__(**kwargs)
+    def __init__(self, name='ohmic_#', **kwargs):
+        super().__init__(name=name, **kwargs)
         self.settings._update(OhmicConductionSettings())

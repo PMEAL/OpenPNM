@@ -60,10 +60,8 @@ class InvasionPercolation(GenericAlgorithm):
 
     """
 
-    def __init__(self, phase, **kwargs):
-        if 'name' not in kwargs.keys():
-            kwargs['name'] = 'invasion_01'
-        super().__init__(**kwargs)
+    def __init__(self, phase, name='ip_#', **kwargs):
+        super().__init__(name=name, **kwargs)
         self.settings._update(IPSettings())
         self.settings['phase'] = phase.name
         self['pore.invasion_sequence'] = -1

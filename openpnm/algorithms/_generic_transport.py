@@ -62,10 +62,8 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
 
     """
 
-    def __init__(self, phase, **kwargs):
-        if 'name' not in kwargs.keys():
-            kwargs['name'] = 'trans_01'
-        super().__init__(**kwargs)
+    def __init__(self, phase, name='trans_#', **kwargs):
+        super().__init__(name=name, **kwargs)
         self.settings._update(GenericTransportSettings())
         self.settings['phase'] = phase.name
         self['pore.bc_rate'] = np.nan

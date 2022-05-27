@@ -91,10 +91,8 @@ class GenericNetwork(Domain):
 
     """
 
-    def __init__(self, conns=None, coords=None, settings=None, **kwargs):
-        if 'name' not in kwargs.keys():
-            kwargs['name'] = 'net'
-        super().__init__(**kwargs)
+    def __init__(self, conns=None, coords=None, name='net', **kwargs):
+        super().__init__(name=name, **kwargs)
         self.settings._update(NetworkSettings())
         self._am = {}
         self._im = {}

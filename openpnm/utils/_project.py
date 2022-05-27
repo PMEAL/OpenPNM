@@ -153,6 +153,10 @@ class Project(list):
     def _generate_name(self, name=''):
         if name in [None, '']:
             name = 'obj_01'  # Give basic name, then let rest of func fix it
+        warn = True
+        if name.endswith('_#'):
+            name = name.replace('_#', '_01')
+            warn = False
         if name in self.names:  # If proposed name is taken, increment it
             proposed_name = name
             if not re.search(r'_\d+$', name):  # If name does not end with _##
@@ -163,7 +167,8 @@ class Project(list):
                 if item.name.startswith(prefix+'_'):
                     n.append(int(item.name.split(prefix+'_')[1]))
             name = prefix+'_'+str(max(n)+1).zfill(2)
-            logger.warn(f'{proposed_name} is already taken, using {name} instead')
+            if warn:
+                logger.warn(f'{proposed_name} is already taken, using {name} instead')
         self._validate_name(name)
         return name
 

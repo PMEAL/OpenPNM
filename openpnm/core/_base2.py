@@ -63,7 +63,7 @@ class Base2(dict):
         instance.settings['uuid'] = str(uuid.uuid4())
         return instance
 
-    def __init__(self, network=None, name='obj'):
+    def __init__(self, network=None, name='obj_#'):
         super().__init__()
         # Add default settings
         self.settings._update(BaseSettings())
