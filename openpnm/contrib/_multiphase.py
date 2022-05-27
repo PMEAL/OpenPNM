@@ -55,8 +55,8 @@ class MultiPhase(GenericPhase):
 
     """
 
-    def __init__(self, phases=[], **kwargs):
-        super().__init__(settings=self.settings, **kwargs)
+    def __init__(self, phases=[], name='mphase_#', **kwargs):
+        super().__init__(name=name, **kwargs)
         self.settings._update(MultiPhaseSettings())
 
         # Pressure/temperature must come from constituent phases

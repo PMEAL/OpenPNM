@@ -45,8 +45,8 @@ class AbsolutePermeability(GenericTransportMetrics):
 
     """
 
-    def __init__(self, **kwargs):
-        super().__init__(settings=self.settings, **kwargs)
+    def __init__(self, name='abs_perm_#', **kwargs):
+        super().__init__(name=name, **kwargs)
         self.settings._update(AbsolutePermeabilitySettings())
 
     def run(self):

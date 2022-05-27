@@ -28,7 +28,7 @@ class TransientMultiPhysics(GenericAlgorithm):
     A subclass for transient multiphysics simulations.
     """
 
-    def __init__(self, algorithms, settings=None, **kwargs):
+    def __init__(self, algorithms, **kwargs):
         super().__init__(**kwargs)
         self.settings._update(TransientMultiPhysicsSettings())
         self.settings.algorithms = [alg.name for alg in algorithms]
