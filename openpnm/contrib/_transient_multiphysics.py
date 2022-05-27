@@ -4,8 +4,15 @@ from openpnm.utils import Docorator
 from openpnm.integrators import ScipyRK45
 from openpnm.algorithms import GenericAlgorithm
 from openpnm.algorithms._solution import SolutionContainer, TransientSolution
+
+
 logger = logging.getLogger(__name__)
 docstr = Docorator()
+
+
+__all__ = [
+    'TransientMultiPhysics',
+]
 
 
 @docstr.dedent
