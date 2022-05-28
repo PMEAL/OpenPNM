@@ -37,7 +37,7 @@ def plot_3d(
     view = canvas.central_widget.add_view()
     view.camera = 'turntable'
     view.camera.fov = 30
-    view.camera.distance = 3*np.max(pn['pore.coords'])
+    view.camera.distance = 3*np.max(network['pore.coords'])
 
     if pore_color is None:
         pore_color = create_pore_colors_from_array(network['pore.diameter'],
@@ -52,14 +52,14 @@ def plot_3d(
         throat_color = create_throat_colors_from_array(throat_color,
                                                        cmap='viridis')
     if pore_size is None:
-        pore_size = pn['pore.diameter']
+        pore_size = network['pore.diameter']
     if throat_size is None:
         throat_size = 2
     else:
         throat_size = np.max(throat_size)  # Arrays not supported here
     # plot spheres
     vis = scene.visuals.Markers(
-        pos=pn['pore.coords'],
+        pos=network['pore.coords'],
         size=pore_size,
         antialias=0,
         face_color=pore_color,
@@ -102,4 +102,5 @@ if __name__ == '__main__':
     plot_3d(network=pn,
             pore_color=pn['pore.diameter'],
             throat_color=pn['throat.diameter'],
+            throat_size=10*pn['throat.diameter'],
             bgcolor='grey')
