@@ -67,7 +67,8 @@ setup(
         'terminaltables',
         'tqdm',
         'traits',
-        'transforms3d'
+        'transforms3d',
+        'vispy'
     ],
     author='OpenPNM Team',
     author_email='jgostick@uwaterloo.ca',

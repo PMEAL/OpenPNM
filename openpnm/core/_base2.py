@@ -41,7 +41,6 @@ class BaseSettings:
         A universally unique identifier for the object to keep things straight
 
     """
-    uuid = ''
 
 
 @docstr.get_sections(base='Base', sections=['Parameters'])
@@ -56,12 +55,18 @@ class Base2(dict):
         An OpenPNM Network object, which is a subclass of a dict
     """
 
-    def __init__(self, network=None, settings=None, name='obj'):
+    def __new__(cls, *args, **kwargs):
+        instance = super(Base2, cls).__new__(cls, *args, **kwargs)
+        # It is necessary to set the SettingsAttr here since some classes
+        # use it before calling super.__init__()
+        instance.settings = SettingsAttr()
+        instance.settings['uuid'] = str(uuid.uuid4())
+        return instance
+
+    def __init__(self, network=None, name='obj_#'):
         super().__init__()
-        # Add settings attribute
-        self._settings = SettingsAttr(BaseSettings)
-        self.settings._update(settings)
-        self.settings['uuid'] = str(uuid.uuid4())
+        # Add default settings
+        self.settings._update(BaseSettings())
         # Add parameters attr
         self._params = PrintableDict(key="Parameters", value="Value")
         # Associate with project

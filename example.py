@@ -36,7 +36,13 @@ air.regenerate_models()
 # Add a nonlinear reaction
 air['pore.reaction_sites'] = False
 air['pore.reaction_sites'][[310, 212, 113]] = True
-air.add_model(propname='pore.reaction',
+air.add_model(propname='pore.reaction1',
+              model=source_terms.power_law,
+              X='pore.concentration',
+              A1=-1, A2=2, A3=0,
+              domain='reaction_sites',
+              regen_mode='deferred')
+air.add_model(propname='pore.reaction2',
               model=source_terms.power_law,
               X='pore.concentration',
               A1=-1, A2=2, A3=0,
@@ -46,8 +52,14 @@ air.add_model(propname='pore.reaction',
 # Run Fickian diffusion with reaction
 rxn = op.algorithms.FickianDiffusion(network=pn, phase=air)
 rxn.set_value_BC(pores=pn.pores('left'), values=1)
-rxn.set_source(pores=air.pores('reaction_sites'), propname='pore.reaction')
+rxn.set_source(pores=air.pores('reaction_sites'), propname='pore.reaction1')
 rxn.run()
+
+# Run Fickian diffusion with reaction
+rxn2 = op.algorithms.FickianDiffusion(network=pn, phase=air)
+rxn2.set_value_BC(pores=pn.pores('left'), values=1)
+rxn2.set_source(pores=air.pores('reaction_sites'), propname='pore.reaction2')
+rxn2.run()
 
 # Plot concentration profile
 fig, ax = plt.subplots()

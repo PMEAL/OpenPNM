@@ -1,23 +1,17 @@
-r"""
-========================
-MixedInvasionPercolation
-========================
-
-IP allowing pores and throats to invade separately.
-
-"""
 import logging
 import heapq as hq
 import numpy as np
 from collections import namedtuple
 from openpnm.algorithms import GenericAlgorithm
 from openpnm.topotools import find_clusters, site_percolation
-from openpnm.utils import SettingsAttr, Docorator
-docstr = Docorator()
-logger = logging.getLogger(__name__)
+from openpnm.utils import Docorator
 
 
 __all__ = ['MixedInvasionPercolation']
+
+
+docstr = Docorator()
+logger = logging.getLogger(__name__)
 
 
 @docstr.get_sections(base='MixedIPSettings',
@@ -76,11 +70,9 @@ class MixedInvasionPercolation(GenericAlgorithm):
 
     """
 
-    def __init__(self, settings=None, **kwargs):
-        self.settings = SettingsAttr(MixedIPSettings, settings)
-        if 'name' not in kwargs.keys():
-            kwargs['name'] = 'mixed_IP_01'
-        super().__init__(settings=self.settings, **kwargs)
+    def __init__(self, name='mixedip_#', **kwargs):
+        super().__init__(name=name, **kwargs)
+        self.settings._update(MixedIPSettings())
 
     def setup(
         self,

@@ -741,9 +741,9 @@ def stitch_pores(network, pores1, pores2, mode='gabriel'):
     C2 = network.coords[pores2, :]
     crds = np.vstack((C1, C2))
     if mode == 'delaunay':
-        net = Delaunay(points=crds, settings={'trim': False})
+        net = Delaunay(points=crds)
     if mode == 'gabriel':
-        net = Gabriel(points=crds, settings={'trim': False})
+        net = Gabriel(points=crds)
     net.set_label(pores=range(len(pores1)), label='pore.one')
     net.set_label(pores=range(len(pores2)), label='pore.two')
     Ts = net.find_neighbor_throats(pores=net.pores('one'), mode='xor')

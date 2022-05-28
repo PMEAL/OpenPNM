@@ -76,6 +76,20 @@ class TypedList(TypedMixin, list):
         super().insert(index, value)
 
 
+class SettingsDict(dict):
+    def update(self, d):
+        for k, v in d:
+            self[k] = v
+        if "Parameters" in d.__doc__:
+            pass
+
+    def __getattr__(self, key):
+        return self[key]
+
+    def __setattr__(self, key, value):
+        self[key] = value
+
+
 class SettingsAttr:
     r"""
     A custom data class that holds settings for objects.
@@ -121,6 +135,7 @@ class SettingsAttr:
         if isinstance(settings, dict):
             docs = False
             for k, v in settings.items():
+                v = deepcopy(v)
                 if override:
                     super().__setattr__(k, v)
                 else:
@@ -128,7 +143,7 @@ class SettingsAttr:
         else:  # Dataclass
             attrs = [i for i in dir(settings) if not i.startswith('_')]
             for k in attrs:
-                v = getattr(settings, k)
+                v = deepcopy(getattr(settings, k))
                 if override:
                     super().__setattr__(k, v)
                 else:

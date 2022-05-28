@@ -14,7 +14,7 @@ import numpy as np
 from scipy.sparse import coo_matrix, dok_matrix
 from openpnm.algorithms import MixedInvasionPercolation
 from transforms3d._gohlketransforms import angle_between_vectors
-from openpnm.utils import SettingsAttr, Docorator
+from openpnm.utils import Docorator
 docstr = Docorator()
 logger = logging.getLogger(__name__)
 
@@ -51,11 +51,9 @@ class MixedInvasionPercolationCoop(MixedInvasionPercolation):
 
     """
 
-    def __init__(self, settings=None, **kwargs):
-        self.settings = SettingsAttr(MixedIPCoopSettings, settings)
-        if 'name' not in kwargs.keys():
-            kwargs['name'] = 'mixed_IP_coop_01'
-        super().__init__(settings=self.settings, **kwargs)
+    def __init__(self, name='mixedip_coop_#', **kwargs):
+        super().__init__(name=name, **kwargs)
+        self.settings._update(MixedIPCoopSettings())
 
     def setup(
         self,
