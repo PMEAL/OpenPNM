@@ -1,6 +1,6 @@
 import logging
 from openpnm.algorithms import ReactiveTransport
-from openpnm.utils import Docorator, SettingsAttr
+from openpnm.utils import Docorator
 
 
 logger = logging.getLogger(__name__)
@@ -13,6 +13,11 @@ __all__ = ['FourierConduction']
 @docstr.dedent
 class FourierConductionSettings:
     r'''
+
+    Parameters
+    ----------
+    %(ReactiveTransportSettings.parameters)s
+
     '''
     quantity = 'pore.temperature'
     conductance = 'throat.thermal_conductance'
@@ -24,8 +29,6 @@ class FourierConduction(ReactiveTransport):
 
     """
 
-    def __init__(self, settings=None, **kwargs):
-        self.settings = SettingsAttr(FourierConductionSettings, settings)
-        if 'name' not in kwargs.keys():
-            kwargs['name'] = 'fourier_01'
-        super().__init__(settings=self.settings, **kwargs)
+    def __init__(self, name='fourier_#', **kwargs):
+        super().__init__(name=name, **kwargs)
+        self.settings._update(FourierConductionSettings())

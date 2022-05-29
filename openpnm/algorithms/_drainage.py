@@ -40,11 +40,9 @@ class DrainageSettings:
 
 class Drainage(GenericAlgorithm):
 
-    def __init__(self, phase, settings=None, **kwargs):
-        self.settings = SettingsAttr(DrainageSettings, settings)
-        if 'name' not in kwargs.keys():
-            kwargs['name'] = 'drainage_01'
-        super().__init__(settings=self.settings, **kwargs)
+    def __init__(self, phase, name='drainage_#', **kwargs):
+        super().__init__(name=name, **kwargs)
+        self.settings._update(DrainageSettings())
         self.settings['phase'] = phase.name
         self.reset()
 

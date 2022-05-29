@@ -1,11 +1,18 @@
 import logging
 import numpy as np
-from openpnm.utils import SettingsAttr, Docorator
+from openpnm.utils import Docorator
 from openpnm.integrators import ScipyRK45
 from openpnm.algorithms import GenericAlgorithm
 from openpnm.algorithms._solution import SolutionContainer, TransientSolution
+
+
 logger = logging.getLogger(__name__)
 docstr = Docorator()
+
+
+__all__ = [
+    'TransientMultiPhysics',
+]
 
 
 @docstr.dedent
@@ -28,11 +35,11 @@ class TransientMultiPhysics(GenericAlgorithm):
     A subclass for transient multiphysics simulations.
     """
 
-    def __init__(self, algorithms, settings=None, **kwargs):
-        self.settings = SettingsAttr(TransientMultiPhysicsSettings, settings)
+    def __init__(self, algorithms, **kwargs):
+        super().__init__(**kwargs)
+        self.settings._update(TransientMultiPhysicsSettings())
         self.settings.algorithms = [alg.name for alg in algorithms]
         self._algs = algorithms
-        super().__init__(settings=self.settings, **kwargs)
 
     def run(self, x0, tspan, saveat=None, integrator=None):
         """

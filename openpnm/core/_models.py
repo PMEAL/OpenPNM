@@ -239,13 +239,23 @@ class ModelWrapper(dict):
         raise Exception("No parent object found!")
 
     @property
-    def propname(self):
+    def name(self):
         for proj in ws.values():
             for obj in proj:
                 if hasattr(obj, 'models'):
                     for key, mod in obj.models.items():
                         if mod is self:
                             return key
+
+    @property
+    def propname(self):
+        return self.name.split('@')[0]
+
+    @property
+    def domain(self):
+        element, prop = self.name.split('.', 1)
+        prop, domain = prop.split('@')
+        return element + '.' + domain
 
     def __str__(self):
         horizontal_rule = '―' * 78

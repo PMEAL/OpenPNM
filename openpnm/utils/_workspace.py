@@ -13,6 +13,13 @@ __all__ = ['Workspace']
 
 class WorkspaceSettings(SettingsAttr):
     r"""
+
+    Parameters
+    ----------
+    default_solver : str
+        The solver to use by default, if user does not specify one explicitly.
+        The default values is PardisoSpsolve, but a good option is ScipySpsolve
+        if the Pardiso is causing problems.
     loglevel : int
         Sets the threshold for the severity of logger message which appear.
         Ranges are as follows:
@@ -71,6 +78,7 @@ class Workspace(dict):
 
     __instance__ = None
 
+    # This __new__ method makes the Workspace a Singleton
     def __new__(cls, *args, **kwargs):
         if Workspace.__instance__ is None:
             Workspace.__instance__ = dict.__new__(cls)
@@ -78,7 +86,6 @@ class Workspace(dict):
 
     def __init__(self):
         super().__init__()
-        self._projects = {}
         self.settings = WorkspaceSettings()
         self.settings.loglevel = 30
 

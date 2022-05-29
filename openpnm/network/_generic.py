@@ -4,7 +4,7 @@ import scipy.sparse as sprs
 import scipy.spatial as sptl
 from openpnm.core import Domain
 from openpnm import topotools
-from openpnm.utils import Docorator, SettingsAttr
+from openpnm.utils import Docorator
 from openpnm.utils import Workspace
 import openpnm.models.network as mods
 logger = logging.getLogger(__name__)
@@ -91,12 +91,9 @@ class GenericNetwork(Domain):
 
     """
 
-    def __init__(self, conns=None, coords=None, settings=None, **kwargs):
-        self.settings = SettingsAttr(NetworkSettings, settings)
-        if 'name' not in kwargs.keys():
-            kwargs['name'] = 'net'
-        super().__init__(settings=self.settings, **kwargs)
-
+    def __init__(self, conns=None, coords=None, name='net', **kwargs):
+        super().__init__(name=name, **kwargs)
+        self.settings._update(NetworkSettings())
         self._am = {}
         self._im = {}
 

@@ -41,6 +41,7 @@ have a z-component (but set to 0).
 
 from ._generic import GenericNetwork
 from ._cubic import Cubic
+from ._demo import Demo
 from ._bravais import Bravais
 from ._cubic_template import CubicTemplate
 from ._delaunay_voronoi_dual import DelaunayVoronoiDual

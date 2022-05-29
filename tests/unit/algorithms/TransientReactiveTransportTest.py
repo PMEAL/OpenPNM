@@ -25,11 +25,8 @@ class TransientReactiveTransportTest:
                              exponent='pore.k',
                              X='pore.concentration',
                              regen_mode='deferred')
-        self.settings = {'conductance': 'throat.diffusive_conductance',
-                         'quantity': 'pore.concentration'}
         self.alg = op.algorithms.TransientReactiveTransport(network=self.net,
-                                                            phase=self.phase,
-                                                            settings=self.settings)
+                                                            phase=self.phase)
         self.alg.settings._update({'quantity': 'pore.concentration',
                                    'conductance': 'throat.diffusive_conductance'})
         self.alg.set_value_BC(pores=self.net.pores('front'), values=2)

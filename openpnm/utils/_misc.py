@@ -624,7 +624,7 @@ def remove_prop_deep(obj, propname):
             del obj[k]
 
 
-def get_model_collection(collection, regen_mode='deferred', domain=None):
+def get_model_collection(collection, regen_mode=None, domain=None):
     d = deepcopy(collection)
     for k, v in d.items():
         if regen_mode:

@@ -1,13 +1,25 @@
 import numpy as np
-from openpnm.core import LabelMixin, ModelsDict, ModelWrapper, ParserMixin
-from openpnm.utils import Workspace, SettingsAttr, PrintableList, PrintableDict
-from openpnm.utils import parse_mode
+from openpnm.core import (
+    LabelMixin,
+    ModelsDict,
+    ModelWrapper,
+    ParserMixin,
+)
+from openpnm.utils import (
+    Workspace,
+    SettingsAttr,
+    PrintableList,
+    PrintableDict,
+    Docorator,
+    parse_mode,
+)
 from copy import deepcopy
 import inspect
 import uuid
 import numpy.lib.recfunctions as rf
 
 
+docstr = Docorator()
 ws = Workspace()
 
 
@@ -17,6 +29,8 @@ __all__ = [
 ]
 
 
+@docstr.get_sections(base='BaseSettings', sections=docstr.all_sections)
+@docstr.dedent
 class BaseSettings:
     r"""
     The default settings to use on instance of Base
@@ -27,17 +41,32 @@ class BaseSettings:
         A universally unique identifier for the object to keep things straight
 
     """
-    uuid = ''
 
 
+@docstr.get_sections(base='Base', sections=['Parameters'])
+@docstr.dedent
 class Base2(dict):
+    r"""
+    Base class
 
-    def __init__(self, network=None, settings=None, name='obj'):
+    Parameters
+    ----------
+    network : dict
+        An OpenPNM Network object, which is a subclass of a dict
+    """
+
+    def __new__(cls, *args, **kwargs):
+        instance = super(Base2, cls).__new__(cls, *args, **kwargs)
+        # It is necessary to set the SettingsAttr here since some classes
+        # use it before calling super.__init__()
+        instance.settings = SettingsAttr()
+        instance.settings['uuid'] = str(uuid.uuid4())
+        return instance
+
+    def __init__(self, network=None, name='obj_#'):
         super().__init__()
-        # Add settings attribute
-        self._settings = SettingsAttr(BaseSettings)
-        self.settings._update(settings)
-        self.settings['uuid'] = str(uuid.uuid4())
+        # Add default settings
+        self.settings._update(BaseSettings())
         # Add parameters attr
         self._params = PrintableDict(key="Parameters", value="Value")
         # Associate with project

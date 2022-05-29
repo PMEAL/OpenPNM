@@ -1,5 +1,5 @@
 import logging
-from openpnm.utils import Workspace, SettingsAttr, Docorator
+from openpnm.utils import Workspace, Docorator
 from openpnm.phase import GenericPhase
 from openpnm.algorithms import FickianDiffusion
 from openpnm.metrics import GenericTransportMetrics
@@ -16,6 +16,7 @@ class EffectiveDiffusivitySettings:
     r"""
     Defines the settings for EffectiveDiffusivity
 
+    Parameters
     ----------
     inlet : str
         The pore labels for diffusion inlet.
@@ -69,9 +70,9 @@ class EffectiveDiffusivity(GenericTransportMetrics):
 
     """
 
-    def __init__(self, settings=None, **kwargs):
-        self.settings = SettingsAttr(EffectiveDiffusivitySettings, settings)
-        super().__init__(settings=self.settings, **kwargs)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.settings._update(EffectiveDiffusivitySettings())
 
     def run(self, verbose=False):
         r"""
