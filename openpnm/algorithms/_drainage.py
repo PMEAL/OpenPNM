@@ -1,15 +1,20 @@
 import numpy as np
+from openpnm.core import ModelMixin2
 from openpnm.algorithms import GenericAlgorithm
 from openpnm.algorithms._solution import SolutionContainer, PressureScan
-from openpnm._skgraph.simulations import bond_percolation
-from openpnm._skgraph.simulations import find_connected_clusters
-from openpnm._skgraph.simulations import find_trapped_clusters
-from openpnm.topotools import remove_isolated_clusters, ispercolating
-from openpnm.utils import SettingsAttr, Docorator, TypedSet
+from openpnm.utils import Docorator, TypedSet
+from openpnm._skgraph.simulations import (
+    bond_percolation,
+    find_connected_clusters,
+    find_trapped_sites,
+    find_trapped_bonds,
+)
+
+
+docstr = Docorator()
 
 
 __all__ = ['Drainage']
-docstr = Docorator()
 
 
 @docstr.get_sections(base='DrainageSettings',
@@ -38,7 +43,7 @@ class DrainageSettings:
     variable_props = TypedSet()
 
 
-class Drainage(GenericAlgorithm):
+class Drainage(ModelMixin2, GenericAlgorithm):
 
     def __init__(self, phase, name='drainage_#', **kwargs):
         super().__init__(name=name, **kwargs)
@@ -125,21 +130,36 @@ class Drainage(GenericAlgorithm):
         phase = self.project[self.settings.phase]
         # Perform Percolation -------------------------------------------------
         Tinv = phase[self.settings.throat_entry_pressure] <= pressure
+        # ax = op.topotools.plot_connections(pn, throats=Tinv)
+
         # Pre-seed invaded locations with residual, if any
         Tinv += self['throat.invaded']
+        # op.topotools.plot_connections(pn, throats=self['throat.invaded'], c='r', ax=ax)
+
         # Remove trapped throats from this list, if any
         Tinv[self['throat.trapped']] = False
+        # op.topotools.plot_connections(pn, throats=self['throat.trapped'], c='g', ax=ax)
+
         # Perform bond_percolation to label invaded clusters
         s_labels, b_labels = bond_percolation(self.network.conns, Tinv)
+        # ax = op.topotools.plot_connections(pn, color_by=(b_labels + 10)*(b_labels >= 0))
+        # op.topotools.plot_coordinates(pn, color_by=(s_labels + 10)*(s_labels >= 0), ax=ax, s=200)
+
         # Remove label from any clusters not connected to the inlets
         s_labels, b_labels = find_connected_clusters(
             b_labels, s_labels, self['pore.inlets'], asmask=False)
+        # ax = op.topotools.plot_connections(pn, color_by=(b_labels + 10)*(b_labels >= 0))
+        # op.topotools.plot_coordinates(pn, color_by=(s_labels + 10)*(s_labels >= 0), ax=ax, s=200)
+
         # Add result to existing invaded locations
         self['pore.invaded'][s_labels >= 0] = True
         self['throat.invaded'][b_labels >= 0] = True
+        # ax = op.topotools.plot_connections(pn, c='w', linestyle='--')
+        # op.topotools.plot_connections(pn, throats=self['throat.invaded'], c='b', ax=ax)
+        # op.topotools.plot_coordinates(pn, pores=self['pore.invaded'], c='b', ax=ax, s=200)
 
         # Partial Filling -----------------------------------------------------
-        # Update invasion status and pressure onto phase as 'quantity'
+        # Update invasion status and pressure
         pc = self.settings.nwp_pressure
         self['pore.'+pc] = self['pore.invaded']*pressure
         self['throat.'+pc] = self['throat.invaded']*pressure
@@ -148,11 +168,15 @@ class Drainage(GenericAlgorithm):
         # Trapping ------------------------------------------------------------
         # If any outlets were specified, evaluate trapping
         if np.any(self['pore.outlets']):
-            s, b = find_trapped_clusters(conns=self.network.conns,
-                                         occupied_bonds=self['throat.invaded'],
-                                         outlets=self['pore.outlets'])
-            self['pore.trapped'][s >= 0] = True
-            self['throat.trapped'][b >= 0] = True
+            s, b = find_trapped_sites(conns=self.network.conns,
+                                      occupied_sites=self['pore.invaded'],
+                                      outlets=self['pore.outlets'])
+            P_trapped = s >= 0
+            T_trapped = P_trapped[self.network.conns].any(axis=1)
+            # ax = op.topotools.plot_connections(pn, throats=(b >= 0))
+            # op.topotools.plot_coordinates(pn, color_by=(s + 10)*(s >= 0), ax=ax, s=200)
+            self['pore.trapped'] += P_trapped
+            self['throat.trapped'] += T_trapped
 
     def pc_curve(self, pressures=None):
         if pressures is None:
@@ -224,21 +248,43 @@ if __name__ == "__main__":
     sol = drn.run(pressures)
 
     # %%
-    if 0:
+    if 1:
         fig, ax = plt.subplots(1, 1)
-        ax.semilogx(*drn.pc_curve(), 'o-')
-        # ax.set_ylim([0, 1])
+        ax.semilogx(*drn.pc_curve(), 'wo-')
+        ax.set_ylim([0, 1])
 
     # %%
     if 1:
-        p = 23
-        ax = op.topotools.plot_coordinates(pn, pores=drn['pore.inlets'], c='m', s=100)
-        ax = op.topotools.plot_coordinates(pn, pores=pn['pore.right'], ax=ax, c='m', s=100)
-        ax = op.topotools.plot_connections(pn, throats=nwp['throat.entry_pressure'] <= pressures[p], c='white', ax=ax)
-        ax = op.topotools.plot_connections(pn, throats=sol['throat.invaded'][:, p], ax=ax)
-        ax = op.topotools.plot_coordinates(pn, pores=sol['pore.invaded'][:, p], s=100, ax=ax)
-        ax = op.topotools.plot_coordinates(pn, pores=sol['pore.trapped'][:, p], c='green', s=100, ax=ax)
-        # ax = op.topotools.plot_coordinates(pn, pores=~drn['pore.invaded'], c='grey', ax=ax)
+        for p, _ in enumerate(pressures):
+            p = p + 21
+            ax = op.topotools.plot_coordinates(
+                network=pn, pores=drn['pore.inlets'],
+                marker='s', edgecolor='k', c='grey', s=400, label='inlets')
+            ax = op.topotools.plot_coordinates(
+                network=pn, pores=pn['pore.right'],
+                ax=ax, marker='d', edgecolor='k', c='grey', s=400, label='outlets')
+            ax = op.topotools.plot_connections(
+                network=pn, throats=nwp['throat.entry_pressure'] <= pressures[p],
+                c='white', ax=ax, label='Invadable throats')
+            ax = op.topotools.plot_connections(
+                network=pn, throats=sol['throat.invaded'][:, p],
+                ax=ax, label='Invaded throats')
+            ax = op.topotools.plot_coordinates(
+                network=pn, pores=sol['pore.invaded'][:, p],
+                s=100, ax=ax, label='Invaded pores')
+            ax = op.topotools.plot_coordinates(
+                network=pn, pores=sol['pore.trapped'][:, p],
+                c='green', s=100, ax=ax, label='Trapped pores')
+            ax = op.topotools.plot_connections(
+                network=pn, throats=sol['throat.trapped'][:, p],
+                c='black', linestyle='--', ax=ax, label='Trapped throats')
+            fig = plt.gcf()
+            fig.legend(loc='center left', fontsize='large')
+            fig.savefig(f"Presssure_{p}.png")
+        # ax = op.topotools.plot_coordinates(
+        #     network=pn, pores=~drn['pore.invaded'],
+        #     c='grey', ax=ax)
+
 
 
 

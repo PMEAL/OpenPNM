@@ -25,6 +25,7 @@ ws = Workspace()
 
 __all__ = [
     'Base2',
+    'ModelMixin2',
     'Domain',
 ]
 

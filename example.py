@@ -21,16 +21,20 @@ pn['pore.domain2'] = Ps
 pn['throat.domain2'] = Ts
 
 # Add network/geometry models to both domains
-pn.add_model_collection(collections.geometry.cones_and_cylinders(), domain='domain1')
-pn.add_model_collection(collections.geometry.pyramids_and_cuboids(), domain='domain2')
+pn.add_model_collection(collections.geometry.cones_and_cylinders(),
+                        domain='domain1')
+pn.add_model_collection(collections.geometry.pyramids_and_cuboids(),
+                        domain='domain2')
 
 # FIXME: Must regenerate network models, otherwise, phase models will complain
 pn.regenerate_models()
 
 # Create phase and add phase/physics models
 air = op.phase.Air(network=pn, name="air")
-air.add_model_collection(collections.physics.standard(), domain='domain1')
-air.add_model_collection(collections.physics.standard(), domain='domain2')
+air.add_model_collection(collections.physics.standard(),
+                         domain='domain1')
+air.add_model_collection(collections.physics.standard(),
+                         domain='domain2')
 air.regenerate_models()
 
 # Add a nonlinear reaction

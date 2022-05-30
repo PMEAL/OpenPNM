@@ -157,9 +157,10 @@ def plot_connections(network,
                             antialiaseds=np.ones_like(network.Ts), **kwargs)
     ax.add_collection(lc)
 
-    _scale_axes(ax=ax, X=X, Y=Y, Z=Z)
-    _label_axes(ax=ax, X=X, Y=Y, Z=Z)
-    fig.tight_layout()
+    if np.size(Ts) > 0:
+        _scale_axes(ax=ax, X=X, Y=Y, Z=Z)
+        _label_axes(ax=ax, X=X, Y=Y, Z=Z)
+        fig.tight_layout()
 
     return lc
 

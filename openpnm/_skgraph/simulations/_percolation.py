@@ -12,7 +12,8 @@ __all__ = [
     'bond_percolation',
     'site_percolation',
     'find_connected_clusters',
-    'find_trapped_clusters',
+    'find_trapped_bonds',
+    'find_trapped_sites',
     'find_connected_clusters',
 ]
 
@@ -121,8 +122,18 @@ def find_connected_clusters(bond_labels, site_labels, inlets, asmask=True):
     return occupied_sites, occupied_bonds
 
 
-def find_trapped_clusters(conns, occupied_bonds, outlets):
+def find_trapped_bonds(conns, outlets, occupied_bonds):
     s_labels, b_labels = bond_percolation(conns, ~occupied_bonds)
+    s_labels2, b_labels2 = find_connected_clusters(b_labels, s_labels,
+                                                   outlets, asmask=False)
+    # Set sites and bonds connected to outlets to -1, keeping
+    s_labels[s_labels2 >= 0] = -1
+    b_labels[b_labels2 >= 0] = -1
+    return s_labels, b_labels
+
+
+def find_trapped_sites(conns, outlets, occupied_sites):
+    s_labels, b_labels = site_percolation(conns, ~occupied_sites)
     s_labels2, b_labels2 = find_connected_clusters(b_labels, s_labels,
                                                    outlets, asmask=False)
     # Set sites and bonds connected to outlets to -1, keeping
