@@ -55,14 +55,16 @@ class Drainage(ModelMixin2, GenericAlgorithm):
         self['pore.outlets'] = False
         self['pore.invaded'] = False
         self['throat.invaded'] = False
+        self['pore.residual'] = False
+        self['throat.residual'] = False
         snwp = self.settings['nwp_saturation']
         self['pore.'+snwp] = 0.0
         self['throat.'+snwp] = 0.0
         self['pore.trapped'] = False
         self['throat.trapped'] = False
         pc = self.settings['nwp_pressure']
-        self['pore.'+pc] = False
-        self['throat.'+pc] = False
+        self['pore.'+pc] = -np.inf
+        self['throat.'+pc] = -np.inf
         self.soln = SolutionContainer()
 
     def set_inlets(self, pores, mode='add'):
@@ -94,8 +96,10 @@ class Drainage(ModelMixin2, GenericAlgorithm):
     def set_residual(self, pores=None, throats=None, mode='add'):
         if pores is not None:
             self['pore.invaded'][pores] = True
+            self['pore.residual'][pores] = True
         if throats is not None:
             self['throat.invaded'][throats] = True
+            self['throat.residual'][throats] = True
 
     def set_trapped(self, pores=None, throats=None, mode='add'):
         # A pore/throat cannot be both trapped and invaded so set invaded=False
@@ -165,12 +169,10 @@ class Drainage(ModelMixin2, GenericAlgorithm):
         # op.topotools.plot_connections(pn, throats=self['throat.invaded'], c='b', ax=ax)
         # op.topotools.plot_coordinates(pn, pores=self['pore.invaded'], c='b', ax=ax, s=200)
 
-        # Partial Filling -----------------------------------------------------
         # Update invasion status and pressure
         pc = self.settings.nwp_pressure
-        self['pore.'+pc] = self['pore.invaded']*pressure
-        self['throat.'+pc] = self['throat.invaded']*pressure
-        self.regenerate_models()
+        self['pore.'+pc][self['pore.invaded']] = pressure
+        self['throat.'+pc][self['throat.invaded']] = pressure
 
         # Trapping ------------------------------------------------------------
         # If any outlets were specified, evaluate trapping
@@ -184,6 +186,9 @@ class Drainage(ModelMixin2, GenericAlgorithm):
             # op.topotools.plot_coordinates(pn, color_by=(s + 10)*(s >= 0), ax=ax, s=200)
             self['pore.trapped'] += P_trapped
             self['throat.trapped'] += T_trapped
+
+        # Lastly, regenerate any models if present
+        self.regenerate_models()
 
     def pc_curve(self, pressures=None):
         if pressures is None:
@@ -210,12 +215,29 @@ class Drainage(ModelMixin2, GenericAlgorithm):
 def late_filling(target,
                  pnwp='pore.pc',
                  pc_star='pore.pc_star',
-                 eta=3,
-                 swp_star=0.5):
+                 eta=1,
+                 swp_star=0.2):
+    r"""
+    Computes the saturation of each pore at the given pressure
+
+    Parameters
+    ----------
+    target : dict
+        The algorithm dictionary
+
+    Notes
+    -----
+    This function computes a saturation for all pores regardless of whether
+    they are actually filled, so the result must be masked by the invasion
+    state of each pore.
+    """
     pc = target[pnwp]
     pc_star = target[pc_star]
-    swp = swp_star*(pc_star/pc)**eta
-    swp[np.isinf(swp)] = 1
+    swp = np.ones_like(pc)
+    mask = pc > pc_star
+    if np.any(mask):
+        temp = swp_star*(pc_star/pc)**eta
+        swp[mask] = temp[mask]
     snwp = 1 - swp
     return snwp
 
@@ -227,7 +249,7 @@ if __name__ == "__main__":
     plt.rcParams['axes.facecolor'] = 'grey'
 
     np.random.seed(0)
-    Nx, Ny, Nz = 30, 60, 1
+    Nx, Ny, Nz = 20, 20, 1
     pn = op.network.Cubic([Nx, Ny, Nz], spacing=1e-5)
     pn.add_model_collection(op.models.collections.geometry.spheres_and_cylinders)
     pn.regenerate_models()
@@ -236,24 +258,31 @@ if __name__ == "__main__":
     nwp['throat.contact_angle'] = 140
     nwp.add_model(propname='throat.entry_pressure',
                   model=op.models.physics.capillary_pressure.washburn)
+    nwp.add_model(propname='pore.entry_pressure',
+                  model=op.models.physics.capillary_pressure.washburn,
+                  contact_angle=140,
+                  surface_tension=0.480,
+                  diameter='pore.diameter')
 
     drn = Drainage(network=pn, phase=nwp)
     drn.add_model(propname='pore.snwp',
                   model=late_filling,
                   pnwp='pore.pc',
-                  pc_star=0.5e6,
-                  eta=1.5,
+                  pc_star=nwp['pore.entry_pressure'],
+                  eta=1,
+                  swp_star=0.3,
                   regen_mode='deferred')
     drn.add_model(propname='throat.snwp',
                   model=late_filling,
                   pnwp='throat.pc',
-                  pc_star=0.5e6,
-                  eta=1.5,
+                  pc_star=nwp['throat.entry_pressure'],
+                  eta=1,
+                  swp_star=0.3,
                   regen_mode='deferred')
     drn.set_residual(pores=np.random.randint(0, Nx*Ny, int(Nx*Ny/10)))
     drn.set_inlets(pores=pn.pores('left'))
-    drn.set_outlets(pores=pn.pores('right'))
-    pressures = np.logspace(np.log10(0.2e6), np.log10(6e6), 40)
+    # drn.set_outlets(pores=pn.pores('right'))
+    pressures = np.logspace(np.log10(0.3e6), np.log10(3e6), 40)
     sol = drn.run(pressures)
 
     # %%
