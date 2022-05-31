@@ -2,6 +2,7 @@ import logging
 from flatdict import FlatDict
 import xml.etree.cElementTree as ET
 from openpnm.io import project_to_dict, _parse_filename
+from openpnm.utils._misc import _is_transient
 import h5py
 
 
@@ -31,9 +32,10 @@ def project_to_xdmf(project, filename=''):
 
     network = project.network
     phases = project.phases
+    algs = project.algorithms
 
     # Check if any of the phases has time series
-    transient = False
+    transient = _is_transient(algs)
 
     if filename == '':
         filename = project.name
