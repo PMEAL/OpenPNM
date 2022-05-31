@@ -632,3 +632,16 @@ def get_model_collection(collection, regen_mode=None, domain=None):
         if domain:
             v['domain'] = domain
     return d
+
+
+def _is_transient(algorithms):
+    # check that algorithms is a list
+    if type(algorithms) is not list:
+        algorithms = [algorithms]
+    # return True if any algorithm is transient
+    for alg in algorithms:
+        quantity = alg.settings['quantity']
+        soln_type = type(alg.soln[quantity])
+        if 'TransientSolution' in str(soln_type):
+            return True
+    return False
