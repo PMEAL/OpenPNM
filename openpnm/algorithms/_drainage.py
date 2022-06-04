@@ -105,6 +105,19 @@ class Drainage(ModelMixin2, GenericAlgorithm):
 
     def run(self, pressures):
         pressures = np.array(pressures, ndmin=1)
+        self._run_setup(pressures)
+        for i, p in enumerate(pressures):
+            self._run_special(p)
+            self.soln['pore.invaded'][:, i] = self['pore.invaded']
+            self.soln['throat.invaded'][:, i] = self['throat.invaded']
+            self.soln['pore.trapped'][:, i] = self['pore.trapped']
+            self.soln['throat.trapped'][:, i] = self['throat.trapped']
+            for item in self.models.keys():
+                key = item.split('@')[0]
+                self.soln[key][:, i] = self[key]
+        return self.soln
+
+    def _run_setup(self, pressures):
         Nx = pressures.size
         self.soln['pore.invaded'] = \
             PressureScan(pressures, np.zeros([self.Np, Nx], dtype=bool))
@@ -120,16 +133,6 @@ class Drainage(ModelMixin2, GenericAlgorithm):
             self.soln[key] = \
                 PressureScan(pressures, np.zeros([self._count(element), Nx],
                                                  dtype=float))
-        for i, p in enumerate(pressures):
-            self._run_special(p)
-            self.soln['pore.invaded'][:, i] = self['pore.invaded']
-            self.soln['throat.invaded'][:, i] = self['throat.invaded']
-            self.soln['pore.trapped'][:, i] = self['pore.trapped']
-            self.soln['throat.trapped'][:, i] = self['throat.trapped']
-            for item in self.models.keys():
-                key = item.split('@')[0]
-                self.soln[key][:, i] = self[key]
-        return self.soln
 
     def _run_special(self, pressure):
         phase = self.project[self.settings.phase]

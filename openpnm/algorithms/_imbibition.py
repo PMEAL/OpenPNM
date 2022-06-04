@@ -1,6 +1,6 @@
 import numpy as np
 from openpnm.core import ModelMixin2
-from openpnm.algorithms import GenericAlgorithm
+from openpnm.algorithms import Drainage
 from openpnm.algorithms._solution import SolutionContainer, PressureScan
 from openpnm.utils import Docorator, TypedSet
 from openpnm._skgraph.simulations import (
@@ -43,86 +43,18 @@ class ImbibitionSettings:
     variable_props = TypedSet()
 
 
-class Imbibition(ModelMixin2, GenericAlgorithm):
+class Imbibition(Drainage):
 
     def __init__(self, phase, name='imbibition_#', **kwargs):
-        super().__init__(name=name, **kwargs)
+        super().__init__(phase=phase, name=name, **kwargs)
         self.settings._update(ImbibitionSettings())
         self.settings['phase'] = phase.name
         self._im = self.project.network.im.tolil()
         self.reset()
 
-    def reset(self):
-        self['pore.inlets'] = False
-        self['pore.outlets'] = False
-        self['pore.invaded'] = False
-        self['throat.invaded'] = False
-        self['pore.residual'] = False
-        self['throat.residual'] = False
-        self['pore.trapped'] = False
-        self['throat.trapped'] = False
-        self.soln = SolutionContainer()
-
-    def set_inlets(self, pores, mode='add'):
-        if mode == 'add':
-            self['pore.inlets'][pores] = True
-        elif mode == 'drop':
-            self['pore.inlets'][pores] = False
-        elif mode == 'clear':
-            self['pore.inlets'] = False
-        elif mode == 'overwrite':
-            self['pore.inlets'] = False
-            self['pore.inlets'][pores] = True
-        else:
-            raise Exception(f'Unrecognized mode {mode}')
-
-    def set_outlets(self, pores, mode='add'):
-        if mode == 'add':
-            self['pore.outlets'][pores] = True
-        elif mode == 'drop':
-            self['pore.outlets'][pores] = False
-        elif mode == 'clear':
-            self['pore.outlets'] = False
-        elif mode == 'overwrite':
-            self['pore.outlets'] = False
-            self['pore.outlets'][pores] = True
-        else:
-            raise Exception(f'Unrecognized mode {mode}')
-
-    def set_residual(self, pores=None, throats=None, mode='add'):
-        if pores is not None:
-            self['pore.invaded'][pores] = True
-            self['pore.residual'][pores] = True
-        if throats is not None:
-            self['throat.invaded'][throats] = True
-            self['throat.residual'][throats] = True
-
-    def set_trapped(self, pores=None, throats=None, mode='add'):
-        # A pore/throat cannot be both trapped and invaded so set invaded=False
-        if pores is not None:
-            self['pore.invaded'][pores] = False
-            self['pore.trapped'][pores] = True
-        if throats is not None:
-            self['throat.invaded'][throats] = False
-            self['throat.trapped'][throats] = True
-
     def run(self, pressures):
         pressures = np.sort(np.array(pressures, ndmin=1))[-1::-1]
-        Nx = pressures.size
-        self.soln['pore.invaded'] = \
-            PressureScan(pressures, np.zeros([self.Np, Nx], dtype=bool))
-        self.soln['throat.invaded'] = \
-            PressureScan(pressures, np.zeros([self.Nt, Nx], dtype=bool))
-        self.soln['pore.trapped'] = \
-            PressureScan(pressures, np.zeros([self.Np, Nx], dtype=bool))
-        self.soln['throat.trapped'] = \
-            PressureScan(pressures, np.zeros([self.Nt, Nx], dtype=bool))
-        for item in self.models.keys():
-            key = item.split('@')[0]
-            element, prop = key.split('.', 1)
-            self.soln[key] = \
-                PressureScan(pressures, np.zeros([self._count(element), Nx],
-                                                 dtype=float))
+        super()._run_setup(pressures)
         for i, p in enumerate(pressures):
             self._run_special(p)
             self.soln['pore.invaded'][:, i] = self['pore.invaded']
@@ -199,23 +131,7 @@ class Imbibition(ModelMixin2, GenericAlgorithm):
             self['throat.trapped'] += T_trapped
 
     def pc_curve(self, pressures=None, y='invaded'):
-        if pressures is None:
-            pressures = self.soln['pore.invaded'].p
-        elif isinstance(pressures, int):
-            pressures = np.linspace(self.soln['pore.invaded'].p[0],
-                                    self.soln['pore.invaded'].p[-1],
-                                    pressures)
-        else:
-            pressures = np.array(pressures)
-        pc = []
-        s = []
-        Snwp_p = self.soln['pore.'+y]
-        Snwp_t = self.soln['throat.'+y]
-        Vp = self.network[self.settings.pore_volume]
-        Vt = self.network[self.settings.throat_volume]
-        for p in pressures:
-            pc.append(p)
-            s.append(((Snwp_p(p)*Vp).sum() + (Snwp_t(p)*Vt).sum())/(Vp.sum() + Vt.sum()))
+        pc, s = super().pc_curve(pressures=pressures, y=y)
         s = 1 - np.array(s)
         pc = np.array(pc)
         return pc, s
