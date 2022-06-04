@@ -194,20 +194,25 @@ if __name__ == "__main__":
     # Perform Drainage
     drn = op.algorithms.Drainage(network=pn, phase=nwp)
     drn.set_inlets(pores=pn.pores('left'))
+    drn.set_outlets(pores=pn.pores('right'))
     pressures = np.logspace(np.log10(0.1e6), np.log10(8e6), 40)
     sol = drn.run(pressures)
 
     imb = Imbibition(network=pn, phase=nwp)
-    imb.set_inlets(pores=pn.pores('left'))
+    imb.set_inlets(pores=pn.pores('right'))
+    imb.set_residual(pores=~drn['pore.invaded'], throats=~drn['throat.invaded'])
     pressures = np.logspace(np.log10(0.1e6), np.log10(8e6), 40)
     sol = imb.run(pressures)
 
     # %%
     if 1:
         fig, ax = plt.subplots(1, 1)
-        ax.semilogx(*drn.pc_curve(y='invaded'), 'wo-')
-        ax.semilogx(*imb.pc_curve(y='invaded'), 'ko-')
+        ax.semilogx(*drn.pc_curve(y='invaded'), 'wo-', label='drainage')
+        ax.semilogx(*imb.pc_curve(y='invaded'), 'ko-', label='imbibition')
         ax.set_ylim([-.05, 1.05])
+        ax.set_xlabel('Capillary Pressure [Pa]')
+        ax.set_ylabel('Non-wetting Phase Saturation')
+        fig.legend()
 
     # # %%
     # if 0:
