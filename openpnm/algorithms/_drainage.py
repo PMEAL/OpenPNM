@@ -1,4 +1,5 @@
 import numpy as np
+from tqdm import tqdm
 from openpnm.core import ModelMixin2
 from openpnm.algorithms import GenericAlgorithm
 from openpnm.algorithms._solution import SolutionContainer, PressureScan
@@ -106,7 +107,8 @@ class Drainage(ModelMixin2, GenericAlgorithm):
     def run(self, pressures):
         pressures = np.array(pressures, ndmin=1)
         self._run_setup(pressures)
-        for i, p in enumerate(pressures):
+        msg = 'Performing drainage simulation'
+        for i, p in enumerate(tqdm(pressures, msg)):
             self._run_special(p)
             self.soln['pore.invaded'][:, i] = self['pore.invaded']
             self.soln['throat.invaded'][:, i] = self['throat.invaded']

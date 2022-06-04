@@ -1,4 +1,5 @@
 import numpy as np
+from tqdm import tqdm
 from openpnm.core import ModelMixin2
 from openpnm.algorithms import Drainage
 from openpnm.algorithms._solution import SolutionContainer, PressureScan
@@ -55,7 +56,8 @@ class Imbibition(Drainage):
     def run(self, pressures):
         pressures = np.sort(np.array(pressures, ndmin=1))[-1::-1]
         super()._run_setup(pressures)
-        for i, p in enumerate(pressures):
+        msg = 'Performing imbibition simulation'
+        for i, p in enumerate(tqdm(pressures, msg)):
             self._run_special(p)
             self.soln['pore.invaded'][:, i] = self['pore.invaded']
             self.soln['throat.invaded'][:, i] = self['throat.invaded']
@@ -176,7 +178,7 @@ if __name__ == "__main__":
     plt.rcParams['axes.facecolor'] = 'grey'
 
     np.random.seed(0)
-    Nx, Ny, Nz = 20, 20, 1
+    Nx, Ny, Nz = 40, 40, 40
     pn = op.network.Cubic([Nx, Ny, Nz], spacing=1e-5)
     pn.add_model_collection(op.models.collections.geometry.spheres_and_cylinders)
     pn.regenerate_models()
@@ -194,14 +196,14 @@ if __name__ == "__main__":
     # Perform Drainage
     drn = op.algorithms.Drainage(network=pn, phase=nwp)
     drn.set_inlets(pores=pn.pores('left'))
-    # drn.set_outlets(pores=pn.pores('right'))
+    drn.set_outlets(pores=pn.pores('right'))
     pressures = np.logspace(np.log10(0.1e6), np.log10(8e6), 40)
     sol1 = drn.run(pressures)
 
     imb = Imbibition(network=pn, phase=nwp)
-    imb.set_inlets(pores=pn.pores('right'))
+    imb.set_inlets(pores=pn.pores('left'))
     imb.set_residual(pores=~drn['pore.invaded'], throats=~drn['throat.invaded'])
-    imb.set_outlets(pores=pn.pores('left'))
+    imb.set_outlets(pores=pn.pores('right'))
     pressures = np.logspace(np.log10(0.1e6), np.log10(8e6), 40)
     sol2 = imb.run(pressures)
 
@@ -225,8 +227,7 @@ if __name__ == "__main__":
 
     # %%
     if 0:
-        for p in range(len(pressures) - 1, 0, -1):
-            print(p)
+        for p in range(len(pressures)):
             ax = op.topotools.plot_coordinates(
                 network=pn, pores=imb['pore.inlets'],
                 marker='s', edgecolor='k', c='grey', s=400, label='inlets')
@@ -237,16 +238,16 @@ if __name__ == "__main__":
                 network=pn, throats=nwp['throat.entry_pressure'] > pressures[p],
                 c='white', ax=ax, label='Invadable throats')
             ax = op.topotools.plot_connections(
-                network=pn, throats=sol['throat.invaded'][:, p],
+                network=pn, throats=sol2['throat.invaded'][:, p],
                 ax=ax, label='Invaded throats')
             ax = op.topotools.plot_coordinates(
-                network=pn, pores=sol['pore.invaded'][:, p],
+                network=pn, pores=sol2['pore.invaded'][:, p],
                 s=100, ax=ax, label='Invaded pores')
             ax = op.topotools.plot_coordinates(
-                network=pn, pores=sol['pore.trapped'][:, p],
+                network=pn, pores=sol2['pore.trapped'][:, p],
                 c='green', s=100, ax=ax, label='Trapped pores')
             ax = op.topotools.plot_connections(
-                network=pn, throats=sol['throat.trapped'][:, p],
+                network=pn, throats=sol2['throat.trapped'][:, p],
                 c='black', linestyle='--', ax=ax, label='Trapped throats')
             fig = plt.gcf()
             fig.legend(loc='center left', fontsize='large')
