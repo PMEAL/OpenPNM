@@ -2,7 +2,6 @@ import numpy as np
 from tqdm import tqdm
 from openpnm.core import ModelMixin2
 from openpnm.algorithms import GenericAlgorithm
-from openpnm.algorithms._solution import SolutionContainer, PressureScan
 from openpnm.utils import Docorator, TypedSet
 from openpnm._skgraph.simulations import (
     bond_percolation,
@@ -53,13 +52,14 @@ class Drainage(ModelMixin2, GenericAlgorithm):
         self.reset()
 
     def reset(self):
+        self['pore.invasion_pressure'] = np.inf
+        self['throat.invasion_pressure'] = np.inf
         self['pore.invaded'] = False
         self['throat.invaded'] = False
         self['pore.residual'] = False
         self['throat.residual'] = False
         self['pore.trapped'] = False
         self['throat.trapped'] = False
-        self.soln = SolutionContainer()
 
     def set_inlets(self, pores, mode='add'):
         if mode == 'add':
@@ -95,46 +95,15 @@ class Drainage(ModelMixin2, GenericAlgorithm):
             self['throat.invaded'][throats] = True
             self['throat.residual'][throats] = True
 
-    def set_trapped(self, pores=None, throats=None, mode='add'):
-        # A pore/throat cannot be both trapped and invaded so set invaded=False
-        if pores is not None:
-            self['pore.invaded'][pores] = False
-            self['pore.trapped'][pores] = True
-        if throats is not None:
-            self['throat.invaded'][throats] = False
-            self['throat.trapped'][throats] = True
-
     def run(self, pressures):
         pressures = np.array(pressures, ndmin=1)
-        self._run_setup(pressures)
         msg = 'Performing drainage simulation'
         for i, p in enumerate(tqdm(pressures, msg)):
             self._run_special(p)
-            self.soln['pore.invaded'][:, i] = self['pore.invaded']
-            self.soln['throat.invaded'][:, i] = self['throat.invaded']
-            self.soln['pore.trapped'][:, i] = self['pore.trapped']
-            self.soln['throat.trapped'][:, i] = self['throat.trapped']
-            for item in self.models.keys():
-                key = item.split('@')[0]
-                self.soln[key][:, i] = self[key]
-        return self.soln
-
-    def _run_setup(self, pressures):
-        Nx = pressures.size
-        self.soln['pore.invaded'] = \
-            PressureScan(pressures, np.zeros([self.Np, Nx], dtype=bool))
-        self.soln['throat.invaded'] = \
-            PressureScan(pressures, np.zeros([self.Nt, Nx], dtype=bool))
-        self.soln['pore.trapped'] = \
-            PressureScan(pressures, np.zeros([self.Np, Nx], dtype=bool))
-        self.soln['throat.trapped'] = \
-            PressureScan(pressures, np.zeros([self.Nt, Nx], dtype=bool))
-        for item in self.models.keys():
-            key = item.split('@')[0]
-            element, prop = key.split('.', 1)
-            self.soln[key] = \
-                PressureScan(pressures, np.zeros([self._count(element), Nx],
-                                                 dtype=float))
+            pmask = self['pore.invaded'] * (self['pore.invasion_pressure'] == np.inf)
+            self['pore.invasion_pressure'][pmask] = p
+            tmask = self['throat.invaded'] * (self['throat.invasion_pressure'] == np.inf)
+            self['throat.invasion_pressure'][tmask] = p
 
     def _run_special(self, pressure):
         phase = self.project[self.settings.phase]
@@ -168,43 +137,48 @@ class Drainage(ModelMixin2, GenericAlgorithm):
         # op.topotools.plot_connections(pn, throats=self['throat.invaded'], c='b', ax=ax)
         # op.topotools.plot_coordinates(pn, pores=self['pore.invaded'], c='b', ax=ax, s=200)
 
-        # Update invasion status and pressure
-        pc = self.settings.quantity
-        self['pore.'+pc] = pressure*self['pore.invaded']
-        self['throat.'+pc] = pressure*self['throat.invaded']
-        self.regenerate_models()
-
-        # Trapping ------------------------------------------------------------
         # If any outlets were specified, evaluate trapping
         if np.any(self['pore.outlets']):
+            self.apply_trapping(pressures=pressure)
+
+    def apply_trapping(self, pressures=None):
+        if not np.any(self['pore.outlets']):
+            raise Exception('pore outlets must be specified first')
+        if pressures is None:
+            pressures = np.unique(self['pore.invasion_pressure'])
+        else:
+            pressures = np.array([pressures])
+        for p in pressures:
+            pmask = self['pore.invasion_pressure'] < p
             s, b = find_trapped_sites(conns=self.network.conns,
-                                      occupied_sites=self['pore.invaded'],
+                                      occupied_sites=pmask,
                                       outlets=self['pore.outlets'])
-            P_trapped = s >= 0
+            P_trapped = (s >= 0)
             T_trapped = P_trapped[self.network.conns].any(axis=1)
             # ax = op.topotools.plot_connections(pn, throats=(b >= 0))
             # op.topotools.plot_coordinates(pn, color_by=(s + 10)*(s >= 0), ax=ax, s=200)
-            self['pore.trapped'] += P_trapped
-            self['throat.trapped'] += T_trapped
+            self['pore.trapped'][P_trapped] = p
+            self['throat.trapped'][T_trapped] = p
+            self['pore.invaded'][P_trapped] = False
+            self['throat.invaded'][T_trapped] = False
+        self['pore.invasion_pressure'][self['pore.trapped']] = np.inf
+        self['throat.invasion_pressure'][self['throat.trapped']] = np.inf
 
-    def pc_curve(self, pressures=None, y='invaded'):
-        if pressures is None:
-            pressures = self.soln['pore.invaded'].p
-        elif isinstance(pressures, int):
-            pressures = np.linspace(self.soln['pore.invaded'].p[0],
-                                    self.soln['pore.invaded'].p[-1],
-                                    pressures)
+    def pc_curve(self, pressures=25):
+        if isinstance(pressures, int):
+            p = np.unique(self['pore.invasion_pressure'])
+            pressures = np.logspace(np.log10(p.min()/2), np.log10(p.max()*2), pressures)
         else:
             pressures = np.array(pressures)
         pc = []
         s = []
-        Snwp_p = self.soln['pore.'+y]
-        Snwp_t = self.soln['throat.'+y]
         Vp = self.network[self.settings.pore_volume]
         Vt = self.network[self.settings.throat_volume]
         for p in pressures:
+            Snwp_p = self['pore.invasion_pressure'] <= p
+            Snwp_t = self['throat.invasion_pressure'] <= p
             pc.append(p)
-            s.append(((Snwp_p(p)*Vp).sum() + (Snwp_t(p)*Vt).sum())/(Vp.sum() + Vt.sum()))
+            s.append(((Snwp_p*Vp).sum() + (Snwp_t*Vt).sum())/(Vp.sum() + Vt.sum()))
         return pc, s
 
 
@@ -247,7 +221,7 @@ if __name__ == "__main__":
     plt.rcParams['axes.facecolor'] = 'grey'
 
     np.random.seed(0)
-    Nx, Ny, Nz = 20, 20, 1
+    Nx, Ny, Nz = 60, 60, 1
     pn = op.network.Cubic([Nx, Ny, Nz], spacing=1e-5)
     pn.add_model_collection(op.models.collections.geometry.spheres_and_cylinders)
     pn.regenerate_models()
@@ -261,37 +235,31 @@ if __name__ == "__main__":
                   contact_angle=140,
                   surface_tension=0.480,
                   diameter='pore.diameter')
-
+    # %%
     drn = Drainage(network=pn, phase=nwp)
-    drn.add_model(propname='pore.snwp',
-                  model=late_filling,
-                  pc='pore.pressure',
-                  pc_star=nwp['pore.entry_pressure'],
-                  eta=1,
-                  swp_star=0.3,
-                  regen_mode='deferred')
-    drn.add_model(propname='throat.snwp',
-                  model=late_filling,
-                  pc='throat.pressure',
-                  pc_star=nwp['throat.entry_pressure'],
-                  eta=1,
-                  swp_star=0.3,
-                  regen_mode='deferred')
     drn.set_residual(pores=np.random.randint(0, Nx*Ny, int(Nx*Ny/10)))
     drn.set_inlets(pores=pn.pores('left'))
-    # drn.set_outlets(pores=pn.pores('right'))
     pressures = np.logspace(np.log10(0.1e6), np.log10(8e6), 40)
-    sol = drn.run(pressures)
+    drn.set_outlets(pores=pn.pores('right'))
+    drn.run(pressures)
+    # drn.apply_trapping()
 
     # %%
     if 1:
         fig, ax = plt.subplots(1, 1)
-        ax.semilogx(*drn.pc_curve(y='snwp'), 'wo-')
+        ax.semilogx(*drn.pc_curve(pressures), 'wo-')
         ax.set_ylim([-.05, 1.05])
 
     # %%
     if 0:
-        p = 22
+        drn.reset()
+        p = .9e6
+        ps = np.logspace(np.log10(1e5), np.log10(p), 20)
+        # drn.run(ps)
+        # drn.apply_trapping()
+        for p in ps:
+            drn.run(p)
+            drn.apply_trapping()
         ax = op.topotools.plot_coordinates(
             network=pn, pores=drn['pore.inlets'],
             marker='s', edgecolor='k', c='grey', s=400, label='inlets')
@@ -299,19 +267,19 @@ if __name__ == "__main__":
             network=pn, pores=pn['pore.right'],
             ax=ax, marker='d', edgecolor='k', c='grey', s=400, label='outlets')
         ax = op.topotools.plot_connections(
-            network=pn, throats=nwp['throat.entry_pressure'] <= pressures[p],
+            network=pn, throats=nwp['throat.entry_pressure'] <= p,
             c='white', ax=ax, label='Invadable throats')
         ax = op.topotools.plot_connections(
-            network=pn, throats=sol['throat.invaded'][:, p],
+            network=pn, throats=drn['throat.invaded'],
             ax=ax, label='Invaded throats')
         ax = op.topotools.plot_coordinates(
-            network=pn, pores=sol['pore.invaded'][:, p],
+            network=pn, pores=drn['pore.invaded'],
             s=100, ax=ax, label='Invaded pores')
         ax = op.topotools.plot_coordinates(
-            network=pn, pores=sol['pore.trapped'][:, p],
+            network=pn, pores=drn['pore.trapped'],
             c='green', s=100, ax=ax, label='Trapped pores')
         ax = op.topotools.plot_connections(
-            network=pn, throats=sol['throat.trapped'][:, p],
+            network=pn, throats=drn['throat.trapped'],
             c='black', linestyle='--', ax=ax, label='Trapped throats')
         fig = plt.gcf()
         fig.legend(loc='center left', fontsize='large')
