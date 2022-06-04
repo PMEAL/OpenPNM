@@ -107,7 +107,7 @@ class Imbibition(ModelMixin2, GenericAlgorithm):
             self['throat.trapped'][throats] = True
 
     def run(self, pressures):
-        pressures = np.array(pressures, ndmin=1)
+        pressures = np.sort(np.array(pressures, ndmin=1))[-1::-1]
         Nx = pressures.size
         self.soln['pore.invaded'] = \
             PressureScan(pressures, np.zeros([self.Np, Nx], dtype=bool))
@@ -139,8 +139,8 @@ class Imbibition(ModelMixin2, GenericAlgorithm):
         # Perform Percolation -------------------------------------------------
         Pinv = phase[self.settings.pore_entry_pressure] > pressure
         Tinv = phase[self.settings.throat_entry_pressure] > pressure
-        ax = op.topotools.plot_connections(pn, throats=Tinv)
-        ax = op.topotools.plot_coordinates(pn, pores=Pinv, c='w', s=200, ax=ax)
+        # ax = op.topotools.plot_connections(pn, throats=Tinv)
+        # ax = op.topotools.plot_coordinates(pn, pores=Pinv, c='w', s=200, ax=ax)
 
         # Pre-seed invaded locations with residual, if any
         Pinv += self['pore.invaded']
@@ -162,19 +162,22 @@ class Imbibition(ModelMixin2, GenericAlgorithm):
         # Remove label from any clusters not connected to the inlets
         s_labels, b_labels = find_connected_clusters(
             b_labels, s_labels, self['pore.inlets'], asmask=False)
-        ax = op.topotools.plot_connections(pn, color_by=(b_labels + 10)*(b_labels >= 0))
-        op.topotools.plot_coordinates(pn, color_by=(s_labels + 10)*(s_labels >= 0), ax=ax, s=200)
+        # ax = op.topotools.plot_connections(pn, color_by=(b_labels + 10)*(b_labels >= 0))
+        # op.topotools.plot_coordinates(pn, color_by=(s_labels + 10)*(s_labels >= 0), ax=ax, s=200)
 
         # Mark throats connected to invaded pores as also invaded, if they're small enough
         Pinv = np.where(s_labels >= 0)[0]
-        Tinv = Tinv*self.to_mask(throats=np.unique(np.hstack(self._im.rows[Pinv])))
+        try:
+            Tinv = Tinv*self.to_mask(throats=np.unique(np.hstack(self._im.rows[Pinv])))
+        except ValueError:
+            Tinv = []
 
         # Add result to existing invaded locations
         self['pore.invaded'][Pinv] = True
         self['throat.invaded'][Tinv] = True
-        ax = op.topotools.plot_connections(pn, c='w', linestyle='--')
-        op.topotools.plot_connections(pn, throats=self['throat.invaded'], c='b', ax=ax)
-        op.topotools.plot_coordinates(pn, pores=self['pore.invaded'], c='b', ax=ax, s=200)
+        # ax = op.topotools.plot_connections(pn, c='w', linestyle='--')
+        # op.topotools.plot_connections(pn, throats=self['throat.invaded'], c='b', ax=ax)
+        # op.topotools.plot_coordinates(pn, pores=self['pore.invaded'], c='b', ax=ax, s=200)
 
         # Update invasion status and pressure
         pc = self.settings.quantity
@@ -213,6 +216,8 @@ class Imbibition(ModelMixin2, GenericAlgorithm):
         for p in pressures:
             pc.append(p)
             s.append(((Snwp_p(p)*Vp).sum() + (Snwp_t(p)*Vt).sum())/(Vp.sum() + Vt.sum()))
+        s = 1 - np.array(s)
+        pc = np.array(pc)
         return pc, s
 
 
@@ -270,16 +275,23 @@ if __name__ == "__main__":
                   surface_tension=0.480,
                   diameter='pore.diameter')
 
+    # Perform Drainage
+    drn = op.algorithms.Drainage(network=pn, phase=nwp)
+    drn.set_inlets(pores=pn.pores('left'))
+    pressures = np.logspace(np.log10(0.1e6), np.log10(8e6), 40)
+    sol = drn.run(pressures)
+
     imb = Imbibition(network=pn, phase=nwp)
     imb.set_inlets(pores=pn.pores('left'))
     pressures = np.logspace(np.log10(0.1e6), np.log10(8e6), 40)
-    # sol = imb.run(pressures)
+    sol = imb.run(pressures)
 
-    # # %%
-    # if 0:
-    #     fig, ax = plt.subplots(1, 1)
-    #     ax.semilogx(*drn.pc_curve(y='snwp'), 'wo-')
-    #     ax.set_ylim([-.05, 1.05])
+    # %%
+    if 1:
+        fig, ax = plt.subplots(1, 1)
+        ax.semilogx(*drn.pc_curve(y='invaded'), 'wo-')
+        ax.semilogx(*imb.pc_curve(y='invaded'), 'ko-')
+        ax.set_ylim([-.05, 1.05])
 
     # # %%
     # if 0:
