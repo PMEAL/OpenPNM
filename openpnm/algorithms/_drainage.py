@@ -48,11 +48,11 @@ class Drainage(ModelMixin2, GenericAlgorithm):
         super().__init__(name=name, **kwargs)
         self.settings._update(DrainageSettings())
         self.settings['phase'] = phase.name
+        self['pore.inlets'] = False
+        self['pore.outlets'] = False
         self.reset()
 
     def reset(self):
-        self['pore.inlets'] = False
-        self['pore.outlets'] = False
         self['pore.invaded'] = False
         self['throat.invaded'] = False
         self['pore.residual'] = False
