@@ -51,7 +51,6 @@ class Imbibition(Drainage):
         self.settings._update(ImbibitionSettings())
         self.settings['phase'] = phase.name
         self._im = self.project.network.im.tolil()
-        self.reset()
 
     def run(self, pressures):
         pressures = np.sort(np.array(pressures, ndmin=1))[-1::-1]
@@ -139,38 +138,6 @@ class Imbibition(Drainage):
         return pc, s
 
 
-def late_filling(target,
-                 pc='pore.pressure',
-                 pc_star='pore.pc_star',
-                 eta=1,
-                 swp_star=0.2):
-    r"""
-    Computes the saturation of each pore at the given pressure
-
-    Parameters
-    ----------
-    target : dict
-        The algorithm dictionary
-    pnwp : str
-        The name of the array containing the capillary pressure defined as the
-        pressure difference between the non-wetting and wetting phases. A value
-        less than 0 indicates that the element is not invaded.
-
-    """
-    pc = target[pc]
-    pc_star = target[pc_star]
-    swp = np.ones_like(pc)
-    # Skip calc for
-    mask = pc > pc_star
-    if np.any(mask):
-        temp = swp_star*(pc_star/pc)**eta
-        swp[mask] = temp[mask]
-    mask = (pc < pc_star) * (pc > 0)
-    swp[mask] = swp_star
-    snwp = 1 - swp
-    return snwp
-
-
 if __name__ == "__main__":
     import openpnm as op
     import matplotlib.pyplot as plt
@@ -178,7 +145,7 @@ if __name__ == "__main__":
     plt.rcParams['axes.facecolor'] = 'grey'
 
     np.random.seed(0)
-    Nx, Ny, Nz = 40, 40, 40
+    Nx, Ny, Nz = 20, 20, 1
     pn = op.network.Cubic([Nx, Ny, Nz], spacing=1e-5)
     pn.add_model_collection(op.models.collections.geometry.spheres_and_cylinders)
     pn.regenerate_models()
