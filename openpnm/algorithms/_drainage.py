@@ -52,14 +52,24 @@ class Drainage(ModelMixin2, GenericAlgorithm):
         self.reset()
 
     def reset(self):
-        self['pore.invasion_pressure'] = np.inf
-        self['throat.invasion_pressure'] = np.inf
         self['pore.invaded'] = False
         self['throat.invaded'] = False
         self['pore.residual'] = False
         self['throat.residual'] = False
         self['pore.trapped'] = False
         self['throat.trapped'] = False
+        self['pore.invasion_pressure'] = np.inf
+        self['throat.invasion_pressure'] = np.inf
+
+    def set_residual(self, pores=None, throats=None, mode='add'):
+        if pores is not None:
+            self['pore.invaded'][pores] = True
+            self['pore.residual'][pores] = True
+            self['pore.invasion_pressure'][self['pore.invaded']] = -np.inf
+        if throats is not None:
+            self['throat.invaded'][throats] = True
+            self['throat.residual'][throats] = True
+            self['throat.invasion_pressure'][self['throat.invaded']] = -np.inf
 
     def set_inlets(self, pores, mode='add'):
         if mode == 'add':
@@ -86,14 +96,6 @@ class Drainage(ModelMixin2, GenericAlgorithm):
             self['pore.outlets'][pores] = True
         else:
             raise Exception(f'Unrecognized mode {mode}')
-
-    def set_residual(self, pores=None, throats=None, mode='add'):
-        if pores is not None:
-            self['pore.invaded'][pores] = True
-            self['pore.residual'][pores] = True
-        if throats is not None:
-            self['throat.invaded'][throats] = True
-            self['throat.residual'][throats] = True
 
     def run(self, pressures):
         pressures = np.array(pressures, ndmin=1)
@@ -147,7 +149,7 @@ class Drainage(ModelMixin2, GenericAlgorithm):
         if pressures is None:
             pressures = np.unique(self['pore.invasion_pressure'])
         else:
-            pressures = np.array([pressures])
+            pressures = np.array([pressures]).flatten()
         for p in pressures:
             pmask = self['pore.invasion_pressure'] < p
             s, b = find_trapped_sites(conns=self.network.conns,
@@ -157,16 +159,19 @@ class Drainage(ModelMixin2, GenericAlgorithm):
             T_trapped = P_trapped[self.network.conns].any(axis=1)
             # ax = op.topotools.plot_connections(pn, throats=(b >= 0))
             # op.topotools.plot_coordinates(pn, color_by=(s + 10)*(s >= 0), ax=ax, s=200)
-            self['pore.trapped'][P_trapped] = p
-            self['throat.trapped'][T_trapped] = p
+            self['pore.trapped'][P_trapped] = True
+            self['throat.trapped'][T_trapped] = True
             self['pore.invaded'][P_trapped] = False
             self['throat.invaded'][T_trapped] = False
         self['pore.invasion_pressure'][self['pore.trapped']] = np.inf
         self['throat.invasion_pressure'][self['throat.trapped']] = np.inf
 
-    def pc_curve(self, pressures=25):
-        if isinstance(pressures, int):
+    def pc_curve(self, pressures=None):
+        if pressures is None:
+            pressures = np.unique(self['pore.invasion_pressure'])
+        elif isinstance(pressures, int):
             p = np.unique(self['pore.invasion_pressure'])
+            p = p[np.isfinite(p)]
             pressures = np.logspace(np.log10(p.min()/2), np.log10(p.max()*2), pressures)
         else:
             pressures = np.array(pressures)

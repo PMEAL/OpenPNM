@@ -54,8 +54,14 @@ class Imbibition(Drainage):
 
     def reset(self):
         super().reset()
+        # Uninvaded pores/throats are denoted with a -np.inf
         self['pore.invasion_pressure'] = -np.inf
         self['throat.invasion_pressure'] = -np.inf
+
+    def set_residual(self, pores=[], throats=[]):
+        super().set_residual(pores=pores, throats=throats)
+        self['pore.invasion_pressure'][self['pore.invaded']] = np.inf
+        self['throat.invasion_pressure'][self['throat.invaded']] = np.inf
 
     def run(self, pressures):
         pressures = np.sort(np.array(pressures, ndmin=1))[-1::-1]
@@ -100,7 +106,8 @@ class Imbibition(Drainage):
         # Mark throats connected to invaded pores as also invaded, if they're small enough
         Pinv = np.where(s_labels >= 0)[0]
         try:
-            Tinv = Tinv*self.to_mask(throats=np.unique(np.hstack(self._im.rows[Pinv])))
+            temp = np.unique(np.hstack(self._im.rows[Pinv]))
+            Tinv = Tinv*self.to_mask(throats=temp)
         except ValueError:
             Tinv = []
 
@@ -121,14 +128,14 @@ class Imbibition(Drainage):
         if pressures is None:
             pressures = np.unique(self['pore.invasion_pressure'])
         else:
-            pressures = np.array([pressures])
+            pressures = np.array([pressures]).flatten()
         for p in pressures:
-            pmask = self['pore.invasion_pressure'] > p
+            pmask = self['pore.invasion_pressure'] >= p
             s, b = find_trapped_sites(conns=self.network.conns,
                                       occupied_sites=pmask,
                                       outlets=self['pore.outlets'])
             P_trapped = s >= 0
-            T_trapped = P_trapped[self.network.conns].any(axis=1)
+            T_trapped = P_trapped[self.network.conns].all(axis=1)
             # ax = op.topotools.plot_connections(pn, throats=(b >= 0))
             # op.topotools.plot_coordinates(pn, color_by=(s + 10)*(s >= 0), ax=ax, s=200)
             self['pore.trapped'] += P_trapped
@@ -138,12 +145,16 @@ class Imbibition(Drainage):
         self['pore.invasion_pressure'][self['pore.trapped']] = -np.inf
         self['throat.invasion_pressure'][self['throat.trapped']] = -np.inf
 
-    def pc_curve(self, pressures=25):
-        if isinstance(pressures, int):
+    def pc_curve(self, pressures=None):
+        if pressures is None:
+            pressures = np.unique(self['pore.invasion_pressure'])
+        elif isinstance(pressures, int):
             p = np.unique(self['pore.invasion_pressure'])
+            p = p[np.isfinite(p)]
             pressures = np.logspace(np.log10(p.min()/2), np.log10(p.max()*2), pressures)
         else:
             pressures = np.array(pressures)
+        pressures = np.sort(pressures)[-1::-1]
         pc = []
         s = []
         Vp = self.network[self.settings.pore_volume]
@@ -165,7 +176,7 @@ if __name__ == "__main__":
     plt.rcParams['axes.facecolor'] = 'grey'
 
     np.random.seed(0)
-    Nx, Ny, Nz = 20, 20, 1
+    Nx, Ny, Nz = 20, 20, 20
     pn = op.network.Cubic([Nx, Ny, Nz], spacing=1e-5)
     pn.add_model_collection(op.models.collections.geometry.spheres_and_cylinders)
     pn.regenerate_models()
@@ -179,29 +190,26 @@ if __name__ == "__main__":
                   contact_angle=140,
                   surface_tension=0.480,
                   diameter='pore.diameter')
+    pressures = np.logspace(np.log10(0.1e6), np.log10(8e6), 40)
 
     # %% Perform Drainage
     drn = op.algorithms.Drainage(network=pn, phase=nwp)
     drn.set_inlets(pores=pn.pores('left'))
     drn.set_outlets(pores=pn.pores('right'))
-    pressures = np.logspace(np.log10(0.1e6), np.log10(8e6), 40)
     drn.run(pressures)
 
     # %% Peform Imbibition
     imb = Imbibition(network=pn, phase=nwp)
     imb.set_inlets(pores=pn.pores('left'))
     imb.set_residual(pores=~drn['pore.invaded'], throats=~drn['throat.invaded'])
-    pressures = np.logspace(np.log10(0.1e6), np.log10(8e6), 40)
-    imb.run(pressures)
     imb.set_outlets(pores=pn.pores('right'))
-    imb.apply_trapping()
+    imb.run(pressures)
 
     # %%
     drn2 = op.algorithms.Drainage(network=pn, phase=nwp)
     drn2.set_inlets(pores=pn.pores('left'))
     drn2.set_outlets(pores=pn.pores('right'))
     drn2.set_residual(pores=~imb['pore.invaded'], throats=~imb['throat.invaded'])
-    pressures = np.logspace(np.log10(0.1e6), np.log10(8e6), 40)
     drn2.run(pressures)
 
     # %%
