@@ -8,6 +8,7 @@ from openpnm._skgraph.simulations import (
     bond_percolation,
     find_connected_clusters,
     find_trapped_sites,
+    find_trapped_bonds,
 )
 
 
@@ -152,18 +153,22 @@ class Drainage(ModelMixin2, GenericAlgorithm):
         else:
             pressures = np.array([pressures]).flatten()
         for p in pressures:
-            pmask = self['pore.invasion_pressure'] < p
-            s, b = find_trapped_sites(conns=self.network.conns,
-                                      occupied_sites=pmask,
+            tmask = self['throat.invasion_pressure'] < p
+            s, b = find_trapped_bonds(conns=self.network.conns,
+                                      occupied_bonds=tmask,
                                       outlets=self['pore.outlets'])
             P_trapped = (s >= 0)
-            T_trapped = P_trapped[self.network.conns].any(axis=1)
+            T_trapped = b >= 0
+            P_trapped[self['pore.residual']] = False
+            T_trapped[self['throat.residual']] = False
             # ax = op.topotools.plot_connections(pn, throats=(b >= 0))
             # op.topotools.plot_coordinates(pn, color_by=(s + 10)*(s >= 0), ax=ax, s=200)
             self['pore.trapped'][P_trapped] = True
             self['throat.trapped'][T_trapped] = True
-            self['pore.invaded'][P_trapped] = False
-            self['throat.invaded'][T_trapped] = False
+        self['pore.trapped'][self['pore.residual']] = False
+        self['throat.trapped'][self['throat.residual']] = False
+        self['pore.invaded'][self['pore.trapped']] = False
+        self['throat.invaded'][self['throat.trapped']] = False
         self['pore.invasion_pressure'][self['pore.trapped']] = np.inf
         self['throat.invasion_pressure'][self['throat.trapped']] = np.inf
 
@@ -225,7 +230,7 @@ def late_filling(target,
 if __name__ == "__main__":
     import openpnm as op
     import matplotlib.pyplot as plt
-    plt.rcParams['figure.facecolor'] = 'grey'
+    plt.rcParams['figure.facecolor'] = 'darkgrey'
     plt.rcParams['axes.facecolor'] = 'grey'
 
     np.random.seed(0)
@@ -248,9 +253,9 @@ if __name__ == "__main__":
     drn.set_residual(pores=np.random.randint(0, Nx*Ny, int(Nx*Ny/10)))
     drn.set_inlets(pores=pn.pores('left'))
     pressures = np.logspace(np.log10(0.1e6), np.log10(8e6), 40)
-    drn.set_outlets(pores=pn.pores('right'))
     drn.run(pressures)
-    # drn.apply_trapping()
+    drn.set_outlets(pores=pn.pores('right'))
+    drn.apply_trapping()
 
     # %%
     if 1:

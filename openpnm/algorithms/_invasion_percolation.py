@@ -11,6 +11,7 @@ from openpnm._skgraph.simulations import (
     bond_percolation,
     find_connected_clusters,
     find_trapped_sites,
+    find_trapped_bonds
 )
 
 
@@ -298,9 +299,9 @@ class InvasionPercolation(GenericAlgorithm):
         if not np.any(self['pore.outlets']):
             raise Exception('pore outlets must be specified first')
         # Firstly, any pores/throats with inv_seq > outlets are trapped
-        # N = self['pore.invasion_sequence'][self['pore.outlets']].max()
-        # self['pore.trapped'][self['pore.invasion_sequence'] > N] = True
-        # self['throat.trapped'][self['throat.invasion_sequence'] > N] = True
+        N = self['pore.invasion_sequence'][self['pore.outlets']].max()
+        self['pore.trapped'][self['pore.invasion_sequence'] > N] = True
+        self['throat.trapped'][self['throat.invasion_sequence'] > N] = True
         # Now scan network and find pores/throats disconnected from outlets
         if n_steps is None:
             delta_n = 1
@@ -311,14 +312,17 @@ class InvasionPercolation(GenericAlgorithm):
         # independent of the others
         N = self['pore.invasion_sequence'].max()
         for i in tqdm(range(delta_n, int(N), delta_n), msg):
-            pmask = self['pore.invasion_sequence'] < i
-            s, b = find_trapped_sites(conns=self.network.conns,
-                                      occupied_sites=pmask,
+            tmask = self['throat.invasion_sequence'] < i
+            s, b = find_trapped_bonds(conns=self.network.conns,
+                                      occupied_bonds=tmask,
                                       outlets=self['pore.outlets'])
             P_trapped = s >= 0
-            T_trapped = P_trapped[self.network.conns].any(axis=1)
+            T_trapped = b >= 0
             self['pore.trapped'] += P_trapped
             self['throat.trapped'] += T_trapped
+        # TODO: enable the following 2 lines once residual nwp is supported
+        # self['pore.trapped'][self['pore.residual']] = False
+        # self['throat.trapped'][self['throat.residual']] = False
         # Set trapped pores/throats to uninvaded and adjust invasion sequence
         self['pore.invasion_sequence'][self['pore.trapped']] = -1
         self['throat.invasion_sequence'][self['throat.trapped']] = -1
@@ -380,22 +384,24 @@ if __name__ == '__main__':
     # %%
     ip = InvasionPercolation(network=pn, phase=water)
     ip.set_inlets(pn.pores('left'))
-    # ip.set_outlets(pn.pores('right'))
     ip.run()
-    # ip.apply_trapping(n_steps=None)
+    ip.set_outlets(pn.pores('right'))
+    ip.apply_trapping(n_steps=None)
 
     # %%
     drn = op.algorithms.Drainage(network=pn, phase=water)
     drn.set_inlets(pn.pores('left'))
-    # drn.set_outlets(pn.pores('right'))
     pressures = np.unique(ip['pore.invasion_pressure'])
     # pressures = np.logspace(np.log10(0.1e3), np.log10(2e4), 100)
     drn.run(pressures=pressures)
+    drn.set_outlets(pn.pores('right'))
+    drn.apply_trapping(pressures=None)
 
     # %%
     fig, ax = plt.subplots(1, 1)
     ax.step(*ip.pc_curve(), 'b', where='post')
-    ax.step(*drn.pc_curve(pressures), 'r--', where='post')
+    ax.step(*drn.pc_curve(), 'r--', where='post')
+    ax.set_ylim([0, 1])
 
     # %%
     if 0:

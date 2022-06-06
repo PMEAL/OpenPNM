@@ -137,12 +137,16 @@ class Imbibition(Drainage):
                                       outlets=self['pore.outlets'])
             P_trapped = s >= 0
             T_trapped = P_trapped[self.network.conns].all(axis=1)
+            P_trapped[self['pore.residual']] = False
+            T_trapped[self['throat.residual']] = False
             # ax = op.topotools.plot_connections(pn, throats=(b >= 0))
             # op.topotools.plot_coordinates(pn, color_by=(s + 10)*(s >= 0), ax=ax, s=200)
             self['pore.trapped'] += P_trapped
             self['throat.trapped'] += T_trapped
-            self['pore.invaded'][P_trapped] = False
-            self['throat.invaded'][T_trapped] = False
+        self['pore.trapped'][self['pore.residual']] = False
+        self['throat.trapped'][self['throat.residual']] = False
+        self['pore.invaded'][self['pore.trapped']] = False
+        self['throat.invaded'][self['throat.trapped']] = False
         self['pore.invasion_pressure'][self['pore.trapped']] = -np.inf
         self['throat.invasion_pressure'][self['throat.trapped']] = -np.inf
 
@@ -196,7 +200,7 @@ if __name__ == "__main__":
     # %% Perform Drainage
     drn = op.algorithms.Drainage(network=pn, phase=nwp)
     drn.set_inlets(pores=pn.pores('left'))
-    drn.set_outlets(pores=pn.pores('right'))
+    # drn.set_outlets(pores=pn.pores('right'))
     drn.run(pressures)
 
     # %% Peform Imbibition
@@ -216,9 +220,9 @@ if __name__ == "__main__":
     # %%
     if 1:
         fig, ax = plt.subplots(1, 1)
-        ax.semilogx(*drn.pc_curve(pressures), 'wo-', label='drainage')
+        ax.semilogx(*drn.pc_curve(pressures), 'wo-', label='prinmary drainage')
         ax.semilogx(*imb.pc_curve(pressures), 'ko-', label='imbibition')
-        ax.semilogx(*drn2.pc_curve(pressures), 'wo-', label='drainage')
+        ax.semilogx(*drn2.pc_curve(pressures), 'yo-', label='seconary drainage')
         ax.set_ylim([-.05, 1.05])
         ax.set_xlabel('Capillary Pressure [Pa]')
         ax.set_ylabel('Non-wetting Phase Saturation')
