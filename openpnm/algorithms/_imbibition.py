@@ -1,5 +1,6 @@
 import numpy as np
 from tqdm import tqdm
+from collections import namedtuple
 from openpnm.core import ModelMixin2
 from openpnm.algorithms import Drainage
 from openpnm.algorithms._solution import SolutionContainer, PressureScan
@@ -164,9 +165,9 @@ class Imbibition(Drainage):
             Snwp_t = self['throat.invasion_pressure'] >= p
             pc.append(p)
             s.append(((Snwp_p*Vp).sum() + (Snwp_t*Vt).sum())/(Vp.sum() + Vt.sum()))
-        pc = np.array(pc)
-        s = 1 - np.array(s)
-        return pc, s
+        pc_curve = namedtuple('pc_curve', ('pc', 'snwp'))
+        data = pc_curve(np.array(pc), 1-np.array(s))
+        return data
 
 
 if __name__ == "__main__":

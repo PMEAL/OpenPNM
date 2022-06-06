@@ -298,9 +298,9 @@ class InvasionPercolation(GenericAlgorithm):
         if not np.any(self['pore.outlets']):
             raise Exception('pore outlets must be specified first')
         # Firstly, any pores/throats with inv_seq > outlets are trapped
-        N = self['pore.invasion_sequence'][self['pore.outlets']].max()
-        self['pore.trapped'][self['pore.invasion_sequence'] > N] = True
-        self['throat.trapped'][self['throat.invasion_sequence'] > N] = True
+        # N = self['pore.invasion_sequence'][self['pore.outlets']].max()
+        # self['pore.trapped'][self['pore.invasion_sequence'] > N] = True
+        # self['throat.trapped'][self['throat.invasion_sequence'] > N] = True
         # Now scan network and find pores/throats disconnected from outlets
         if n_steps is None:
             delta_n = 1
@@ -309,12 +309,12 @@ class InvasionPercolation(GenericAlgorithm):
         msg = 'Evaluating trapping'
         # TODO: This could be parallelized with dask since each loop is
         # independent of the others
+        N = self['pore.invasion_sequence'].max()
         for i in tqdm(range(delta_n, int(N), delta_n), msg):
-            s, b = find_trapped_sites(
-                conns=self.network.conns,
-                occupied_sites=self['pore.invasion_sequence'] < i,
-                outlets=self['pore.outlets']
-            )
+            pmask = self['pore.invasion_sequence'] < i
+            s, b = find_trapped_sites(conns=self.network.conns,
+                                      occupied_sites=pmask,
+                                      outlets=self['pore.outlets'])
             P_trapped = s >= 0
             T_trapped = P_trapped[self.network.conns].any(axis=1)
             self['pore.trapped'] += P_trapped
@@ -323,12 +323,12 @@ class InvasionPercolation(GenericAlgorithm):
         self['pore.invasion_sequence'][self['pore.trapped']] = -1
         self['throat.invasion_sequence'][self['throat.trapped']] = -1
         # The -2 is to shift uninvaded pores to -1 and initially invaded to 0
-        self['pore.invasion_sequence'] = \
-            rankdata(self['pore.invasion_sequence'], method='dense') - 2
-        self['throat.invasion_sequence'] = \
-            rankdata(self['throat.invasion_sequence'], method='dense') - 2
+        # self['pore.invasion_sequence'] = \
+        #     rankdata(self['pore.invasion_sequence'], method='dense') - 2
+        # self['throat.invasion_sequence'] = \
+        #     rankdata(self['throat.invasion_sequence'], method='dense') - 2
 
-    def get_intrusion_data(self):
+    def pc_curve(self):
         r"""
         Get the percolation data as the invader volume or number fraction vs
         the capillary pressure.
@@ -342,24 +342,24 @@ class InvasionPercolation(GenericAlgorithm):
         pvols /= tot_vol
         tvols /= tot_vol
         # Remove trapped volume
-        pvols[self['pore.invasion_sequence'] == -1] = 0.0
-        tvols[self['throat.invasion_sequence'] == -1] = 0.0
-        pseq = self['pore.invasion_sequence']
-        tseq = self['throat.invasion_sequence']
-        tPc = self['throat.invasion_pressure']
-        pPc = self['pore.invasion_pressure']
-        # Change the entry pressure for trapped pores and throats to be 0
-        pPc[self['pore.invasion_sequence'] == -1] = 0.0
-        tPc[self['throat.invasion_sequence'] == -1] = 0.0
+        pmask = self['pore.invasion_sequence'] > -1
+        tmask = self['throat.invasion_sequence'] > -1
+        pvols = pvols[pmask]
+        tvols = tvols[tmask]
+        pseq = self['pore.invasion_sequence'][pmask]
+        tseq = self['throat.invasion_sequence'][tmask]
+        pPc = self['pore.invasion_pressure'][pmask]
+        tPc = self['throat.invasion_pressure'][tmask]
+        # Change the entry pressure for trapped pores and throats to be inf
         vols = np.concatenate((pvols, tvols))
         seqs = np.concatenate((pseq, tseq))
         Pcs = np.concatenate((pPc, tPc))
-        data = np.rec.fromarrays([seqs, vols, Pcs], formats=['i', 'f', 'f'],
+        data = np.rec.fromarrays([seqs, vols, Pcs],
+                                 formats=['i', 'f', 'f'],
                                  names=['seq', 'vol', 'Pc'])
         data.sort(axis=0, order='seq')
-        sat = np.cumsum(data.vol)
-        pc_curve = namedtuple('pc_curve', ('Pcap', 'S_tot'))
-        data = pc_curve(data.Pc, sat)
+        pc_curve = namedtuple('pc_curve', ('pc', 'snwp'))
+        data = pc_curve(data.Pc, np.cumsum(data.vol))
         return data
 
 
@@ -367,9 +367,11 @@ if __name__ == '__main__':
     import openpnm as op
     import matplotlib.pyplot as plt
 
+    np.random.seed(0)
     pn = op.network.Cubic(shape=[50, 50, 1], spacing=1e-4)
     pn.add_model_collection(op.models.collections.geometry.spheres_and_cylinders)
     pn.regenerate_models()
+    pn['pore.volume@left'] = 0.0
 
     water = op.phase.Water(network=pn, name='h2o')
     water.add_model_collection(op.models.collections.physics.standard)
@@ -378,19 +380,32 @@ if __name__ == '__main__':
     # %%
     ip = InvasionPercolation(network=pn, phase=water)
     ip.set_inlets(pn.pores('left'))
-    ip.set_outlets(pn.pores('right'))
+    # ip.set_outlets(pn.pores('right'))
     ip.run()
-    ip.apply_trapping(n_steps=None)
+    # ip.apply_trapping(n_steps=None)
 
-    # ip.plot_intrusion_curve()
+    # %%
+    drn = op.algorithms.Drainage(network=pn, phase=water)
+    drn.set_inlets(pn.pores('left'))
+    # drn.set_outlets(pn.pores('right'))
+    pressures = np.unique(ip['pore.invasion_pressure'])
+    # pressures = np.logspace(np.log10(0.1e3), np.log10(2e4), 100)
+    drn.run(pressures=pressures)
+
     # %%
     fig, ax = plt.subplots(1, 1)
-    ax.set_facecolor('grey')
-    # ax = op.topotools.plot_coordinates(network=pn, c='w', ax=ax)
-    ax = op.topotools.plot_connections(network=pn,
-                                       throats=ip['throat.invasion_sequence'] >= 0,
-                                       color_by=ip['throat.invasion_sequence'],
-                                       ax=ax)
+    ax.step(*ip.pc_curve(), 'b', where='post')
+    ax.step(*drn.pc_curve(pressures), 'r--', where='post')
+
+    # %%
+    if 0:
+        fig, ax = plt.subplots(1, 1)
+        ax.set_facecolor('grey')
+        # ax = op.topotools.plot_coordinates(network=pn, c='w', ax=ax)
+        ax = op.topotools.plot_connections(network=pn,
+                                           throats=ip['throat.invasion_sequence'] >= 0,
+                                           color_by=ip['throat.invasion_sequence'],
+                                           ax=ax)
 
 
 
