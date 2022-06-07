@@ -1,6 +1,8 @@
 import logging
 import heapq as hq
 import numpy as np
+from numba import njit
+from numba.typed import List
 from tqdm import tqdm
 from scipy.stats import rankdata
 from collections import namedtuple
@@ -195,6 +197,9 @@ class InvasionPercolation(GenericAlgorithm):
         # TODO: This should be called conditionally so that it doesn't
         # overwrite existing data when doing a few steps at a time
         self._run_setup()
+        # TODO: The following line is supposed to be numba's new list, but the
+        # heap does not work with this
+        # self.queue = List(self.queue)
 
         if n_steps is None:
             n_steps = np.inf
@@ -205,7 +210,7 @@ class InvasionPercolation(GenericAlgorithm):
 
         # Create incidence matrix for use in _run_accelerated which is jit
         incidence_matrix = self.network.create_incidence_matrix(fmt='csr')
-        t_inv, p_inv, p_inv_t = InvasionPercolation._run_accelerated(
+        t_inv, p_inv, p_inv_t = _run_accelerated(
             queue=self.queue,
             t_sorted=self['throat.sorted'],
             t_order=self['throat.order'],
@@ -218,6 +223,7 @@ class InvasionPercolation(GenericAlgorithm):
             n_steps=n_steps
         )
 
+        # Transfer results onto algorithm object
         self['throat.invasion_sequence'] = t_inv
         self['pore.invasion_sequence'] = p_inv
         self['throat.invasion_pressure'] = self['throat.entry_pressure']
@@ -249,56 +255,6 @@ class InvasionPercolation(GenericAlgorithm):
         Ts = self.project.network.find_neighbor_throats(pores=pores)
         for T in self['throat.order'][Ts]:
             hq.heappush(self.queue, T)
-
-    def _run_accelerated(queue, t_sorted, t_order, t_inv, p_inv, p_inv_t,
-                         conns, idx, indptr, n_steps):
-        r"""
-        Numba-jitted run method for InvasionPercolation class.
-
-        Notes
-        -----
-        ``idx`` and ``indptr`` are properties are the network's incidence
-        matrix, and are used to quickly find neighbor throats.
-
-        Numba doesn't like foreign data types (i.e. GenericNetwork), and so
-        ``find_neighbor_throats`` method cannot be called in a jitted method.
-
-        Nested wrapper is for performance issues (reduced OpenPNM import)
-        time due to local numba import
-
-        """
-        from numba import njit
-
-        @njit
-        def wrapper(queue, t_sorted, t_order, t_inv, p_inv, p_inv_t, conns,
-                    idx, indptr, n_steps):
-            count = 1
-            while (len(queue) > 0) and (count < (n_steps + 1)):
-                # Find throat at the top of the queue
-                t = hq.heappop(queue)
-                # Extract actual throat number
-                t_next = t_sorted[t]
-                t_inv[t_next] = count
-                # If throat is duplicated
-                while len(queue) > 0 and queue[0] == t:
-                    _ = hq.heappop(queue)
-                # Find pores connected to newly invaded throat
-                Ps = conns[t_next]
-                # Remove already invaded pores from Ps
-                Ps = Ps[p_inv[Ps] < 0]
-                if len(Ps) > 0:
-                    p_inv[Ps] = count
-                    p_inv_t[Ps] = t_next
-                    for i in Ps:
-                        Ts = idx[indptr[i]:indptr[i+1]]
-                        Ts = Ts[t_inv[Ts] < 0]
-                    for i in np.unique(Ts):  # Exclude repeated neighbor throats
-                        hq.heappush(queue, t_order[i])
-                count += 1
-            return t_inv, p_inv, p_inv_t
-
-        return wrapper(queue, t_sorted, t_order, t_inv, p_inv, p_inv_t, conns,
-                       idx, indptr, n_steps)
 
     def apply_trapping(self, n_steps=10):
         r"""
@@ -393,6 +349,51 @@ class InvasionPercolation(GenericAlgorithm):
         pc_curve = namedtuple('pc_curve', ('pc', 'snwp'))
         data = pc_curve(data.Pc, np.cumsum(data.vol))
         return data
+
+
+@njit
+def _run_accelerated(queue, t_sorted, t_order, t_inv, p_inv, p_inv_t,
+                     conns, idx, indptr, n_steps):
+    r"""
+    Numba-jitted run method for InvasionPercolation class.
+
+    Notes
+    -----
+    ``idx`` and ``indptr`` are properties are the network's incidence
+    matrix, and are used to quickly find neighbor throats.
+
+    Numba doesn't like foreign data types (i.e. GenericNetwork), and so
+    ``find_neighbor_throats`` method cannot be called in a jitted method.
+
+    Nested wrapper is for performance issues (reduced OpenPNM import)
+    time due to local numba import
+
+    """
+
+    count = 1
+    while (len(queue) > 0) and (count < (n_steps + 1)):
+        # Find throat at the top of the queue
+        t = hq.heappop(queue)
+        # Extract actual throat number
+        t_next = t_sorted[t]
+        t_inv[t_next] = count
+        # If throat is duplicated
+        while len(queue) > 0 and queue[0] == t:
+            _ = hq.heappop(queue)
+        # Find pores connected to newly invaded throat
+        Ps = conns[t_next]
+        # Remove already invaded pores from Ps
+        Ps = Ps[p_inv[Ps] < 0]
+        if len(Ps) > 0:
+            p_inv[Ps] = count
+            p_inv_t[Ps] = t_next
+            for i in Ps:
+                Ts = idx[indptr[i]:indptr[i+1]]
+                Ts = Ts[t_inv[Ts] < 0]
+            for i in np.unique(Ts):  # Exclude repeated neighbor throats
+                hq.heappush(queue, t_order[i])
+        count += 1
+    return t_inv, p_inv, p_inv_t
 
 
 if __name__ == '__main__':
