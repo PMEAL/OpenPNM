@@ -83,6 +83,30 @@ class InvasionPercolation(GenericAlgorithm):
         self['throat.residual'] = False
         self.queue = []
 
+    def set_residual(self, pores=None, throats=None, mode='add'):
+        if mode == 'add':
+            if pores is not None:
+                self['pore.residual'][pores] = True
+            if throats is not None:
+                self['throat.residual'][throats] = True
+        elif mode == 'drop':
+            if pores is not None:
+                self['pore.residual'][pores] = False
+            if throats is not None:
+                self['throat.residual'][throats] = False
+        elif mode == 'clear':
+            if pores is not None:
+                self['pore.residual'] = False
+            if throats is not None:
+                self['throat.residual'] = False
+        elif mode == 'overwrite':
+            if pores is not None:
+                self['pore.residual'] = False
+                self['pore.residual'][pores] = True
+            if throats is not None:
+                self['throat.residual'] = False
+                self['throat.residual'][throats] = True
+
     def set_inlets(self, pores=[], mode='add'):
         r"""
         Specifies from which pores the invasion process starts
@@ -179,7 +203,7 @@ class InvasionPercolation(GenericAlgorithm):
             logger.warn('queue is empty, this network is fully invaded')
             return
 
-        # Create incidence matrix to get neighbor throats later in _run method
+        # Create incidence matrix for use in _run_accelerated which is jit
         incidence_matrix = self.network.create_incidence_matrix(fmt='csr')
         t_inv, p_inv, p_inv_t = InvasionPercolation._run_accelerated(
             queue=self.queue,
@@ -198,20 +222,30 @@ class InvasionPercolation(GenericAlgorithm):
         self['pore.invasion_sequence'] = p_inv
         self['throat.invasion_pressure'] = self['throat.entry_pressure']
         self['pore.invasion_pressure'] = self['throat.entry_pressure'][p_inv_t]
+        # Set invasion pressure of inlets to 0
         self['pore.invasion_pressure'][self['pore.invasion_sequence'] == 0] = 0.0
+        # Set invasion sequence and pressure of any residual pores/throats to 0
+        self['throat.invasion_sequence'][self['throat.residual']] = 0
+        self['pore.invasion_sequence'][self['pore.residual']] = 0
+        self['pore.invasion_pressure'][self['pore.residual']] = 0
 
     def _run_setup(self):
         self['pore.invasion_sequence'][self['pore.inlets']] = 0
+        # self['pore.invasion_sequence'][self['pore.residual']] = 0
+        # self['throat.invasion_sequence'][self['throat.residual']] = 0
+        # Set throats between inlets as trapped
         Ts = self.network.find_neighbor_throats(self['pore.inlets'], mode='xnor')
         self['throat.trapped'][Ts] = True
+        # Get throat capillary pressures from phase and update
         phase = self.project[self.settings['phase']]
         self['throat.entry_pressure'] = phase[self.settings['entry_pressure']]
+        self['throat.entry_pressure'][self['throat.residual']] = 0.0
         # Generated indices into t_entry giving a sorted list
         self['throat.sorted'] = np.argsort(self['throat.entry_pressure'], axis=0)
         self['throat.order'] = 0
         self['throat.order'][self['throat.sorted']] = np.arange(0, self.Nt)
         # Perform initial analysis on input pores
-        pores = self['pore.invasion_sequence'] == 0
+        pores = self['pore.inlets']
         Ts = self.project.network.find_neighbor_throats(pores=pores)
         for T in self['throat.order'][Ts]:
             hq.heappush(self.queue, T)
@@ -266,18 +300,17 @@ class InvasionPercolation(GenericAlgorithm):
         return wrapper(queue, t_sorted, t_order, t_inv, p_inv, p_inv_t, conns,
                        idx, indptr, n_steps)
 
-    def apply_trapping(self, n_steps=1000):
+    def apply_trapping(self, n_steps=10):
         r"""
         Analyze which pores and throats are trapped
 
         Parameters
         ----------
-        n_steps : int
-            The number of steps to divide the invasion sequence into between
-            evaluations of trapping. Setting this number equal to the number
-            of throats in the network will provide the "True" result, but this
-            would require very long computational tie since a network
-            clustering is performed for each step. The default is 1000, which
+        n_steps: int
+            The number of steps between between evaluations of trapping.
+            A value of 1 will provide the "True" result, but this
+            would require long computational time since a network
+            clustering is performed for each step. The default is 10, which
             will incur some error (pores and throats are identified as invaded
             that are actually trapped), but is a good compromise.
 
@@ -299,19 +332,15 @@ class InvasionPercolation(GenericAlgorithm):
         if not np.any(self['pore.outlets']):
             raise Exception('pore outlets must be specified first')
         # Firstly, any pores/throats with inv_seq > outlets are trapped
-        N = self['pore.invasion_sequence'][self['pore.outlets']].max()
-        self['pore.trapped'][self['pore.invasion_sequence'] > N] = True
-        self['throat.trapped'][self['throat.invasion_sequence'] > N] = True
+        # N = self['pore.invasion_sequence'][self['pore.outlets']].max()
+        # self['pore.trapped'][self['pore.invasion_sequence'] > N] = True
+        # self['throat.trapped'][self['throat.invasion_sequence'] > N] = True
         # Now scan network and find pores/throats disconnected from outlets
-        if n_steps is None:
-            delta_n = 1
-        else:
-            delta_n = int(self.Nt/n_steps)
         msg = 'Evaluating trapping'
         # TODO: This could be parallelized with dask since each loop is
         # independent of the others
         N = self['pore.invasion_sequence'].max()
-        for i in tqdm(range(delta_n, int(N), delta_n), msg):
+        for i in tqdm(range(0, int(N), n_steps), msg):
             tmask = self['throat.invasion_sequence'] < i
             s, b = find_trapped_bonds(conns=self.network.conns,
                                       occupied_bonds=tmask,
@@ -320,9 +349,9 @@ class InvasionPercolation(GenericAlgorithm):
             T_trapped = b >= 0
             self['pore.trapped'] += P_trapped
             self['throat.trapped'] += T_trapped
-        # TODO: enable the following 2 lines once residual nwp is supported
-        # self['pore.trapped'][self['pore.residual']] = False
-        # self['throat.trapped'][self['throat.residual']] = False
+        # Set any residual pores within trapped clusters back to untrapped
+        self['pore.trapped'][self['pore.residual']] = False
+        self['throat.trapped'][self['throat.residual']] = False
         # Set trapped pores/throats to uninvaded and adjust invasion sequence
         self['pore.invasion_sequence'][self['pore.trapped']] = -1
         self['throat.invasion_sequence'][self['throat.trapped']] = -1
@@ -334,8 +363,8 @@ class InvasionPercolation(GenericAlgorithm):
 
     def pc_curve(self):
         r"""
-        Get the percolation data as the invader volume or number fraction vs
-        the capillary pressure.
+        Get the percolation data as the invader volume vs the capillary
+        pressure.
 
         """
         net = self.project.network
@@ -354,7 +383,6 @@ class InvasionPercolation(GenericAlgorithm):
         tseq = self['throat.invasion_sequence'][tmask]
         pPc = self['pore.invasion_pressure'][pmask]
         tPc = self['throat.invasion_pressure'][tmask]
-        # Change the entry pressure for trapped pores and throats to be inf
         vols = np.concatenate((pvols, tvols))
         seqs = np.concatenate((pseq, tseq))
         Pcs = np.concatenate((pPc, tPc))
@@ -372,7 +400,8 @@ if __name__ == '__main__':
     import matplotlib.pyplot as plt
 
     np.random.seed(0)
-    pn = op.network.Cubic(shape=[50, 50, 1], spacing=1e-4)
+    Nx, Ny, Nz = 25, 25, 1
+    pn = op.network.Cubic(shape=[Nx, Ny, Nz], spacing=1e-4)
     pn.add_model_collection(op.models.collections.geometry.spheres_and_cylinders)
     pn.regenerate_models()
     pn['pore.volume@left'] = 0.0
@@ -381,16 +410,20 @@ if __name__ == '__main__':
     water.add_model_collection(op.models.collections.physics.standard)
     water.regenerate_models()
 
+    p_residual = np.random.randint(0, Nx*Ny, int(Nx*Ny/10))
+    t_residual = pn.find_neighbor_throats(p_residual, mode='or')
     # %%
     ip = InvasionPercolation(network=pn, phase=water)
     ip.set_inlets(pn.pores('left'))
+    ip.set_residual(pores=p_residual, throats=t_residual)
     ip.run()
     ip.set_outlets(pn.pores('right'))
-    ip.apply_trapping(n_steps=None)
+    ip.apply_trapping(n_steps=1)
 
     # %%
     drn = op.algorithms.Drainage(network=pn, phase=water)
     drn.set_inlets(pn.pores('left'))
+    drn.set_residual(pores=p_residual, throats=t_residual)
     pressures = np.unique(ip['pore.invasion_pressure'])
     # pressures = np.logspace(np.log10(0.1e3), np.log10(2e4), 100)
     drn.run(pressures=pressures)
@@ -404,14 +437,16 @@ if __name__ == '__main__':
     ax.set_ylim([0, 1])
 
     # %%
-    if 0:
+    if 1:
         fig, ax = plt.subplots(1, 1)
         ax.set_facecolor('grey')
         # ax = op.topotools.plot_coordinates(network=pn, c='w', ax=ax)
+        tmask = ip['throat.invasion_sequence'] >= 0
         ax = op.topotools.plot_connections(network=pn,
-                                           throats=ip['throat.invasion_sequence'] >= 0,
+                                           throats=tmask,
                                            color_by=ip['throat.invasion_sequence'],
                                            ax=ax)
+        ax = op.topotools.plot_coordinates(network=pn, pores=ip['pore.residual'], c='w', s=200, ax=ax)
 
 
 
