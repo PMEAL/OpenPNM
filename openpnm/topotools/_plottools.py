@@ -141,7 +141,8 @@ def plot_connections(network,
     color = mcolors.to_rgb(color) + tuple([alpha])
     # Override colors with color_by if given
     if color_by is not None:
-        color_by = color_by[Ts]
+        if len(color_by) != len(Ts):
+            color_by = color_by[Ts]
         color = cm.get_cmap(name=cmap)(color_by / color_by.max())
         color[:, 3] = alpha
     if size_by is not None:
