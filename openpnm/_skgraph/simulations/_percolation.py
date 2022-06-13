@@ -23,7 +23,7 @@ __all__ = [
 def bond_percolation(conns, occupied_bonds):
     r"""
     Assigns cluster numbers to sites and bonds acccording to a bond
-    percolation process given a list of occupied site.
+    percolation process given a list of occupied bonds.
 
     Parameters
     ----------
@@ -32,7 +32,7 @@ def bond_percolation(conns, occupied_bonds):
         will also be considered occupied and given the same cluster number
         as the bond.
     occupied_bonds : ndarray
-        A boolean array with one element for each bone, with ``True`` values
+        A boolean array with one element for each bond, with ``True`` values
         indicating that a bond is occupied
 
     Returns
@@ -43,28 +43,25 @@ def bond_percolation(conns, occupied_bonds):
     Notes
     -----
     The ``connected_components`` function of ``scipy.sparse.csgraph`` will give
-     a cluster number to ALL bones whether they are occupied or not, so this
+     a cluster number to ALL bonds whether they are occupied or not, so this
     function essentially adjusts the cluster numbers to represent a
     percolation process.
 
     """
     Np = np.amax(conns) + 1
-    # Find occupied sites based on occupied bonds
-    # (the following 2 lines are not needed but worth keeping for future ref)
-    # occupied_sites = np.zeros([Np, ], dtype=bool)
-    # np.add.at(occupied_sites, conns[occupied_bonds].flatten(), True)
+    # Find occupied sites based on status of shared bonds
+    occupied_sites = np.zeros([Np, ], dtype=bool)
+    np.add.at(occupied_sites, conns[occupied_bonds].flatten(), True)
+    # Perform cluster labeling of network
     adj_mat = sprs.csr_matrix((occupied_bonds, (conns[:, 0], conns[:, 1])),
                               shape=(Np, Np))
     adj_mat.eliminate_zeros()
     clusters = csgraph.connected_components(csgraph=adj_mat, directed=False)[1]
-    # Clusters of size 1 only occur if all a site's bonds are uninvaded
-    valid_clusters = np.bincount(clusters) > 1
-    mapping = -np.ones(shape=(clusters.max()+1, ), dtype=int)
-    mapping[valid_clusters] = np.arange(0, valid_clusters.sum())
-    s_labels = mapping[clusters]
-    # Bond inherit the cluster number of its connected sites
+    # Set cluster number of unoccupied sites to -1
+    s_labels = (clusters + 1)*occupied_sites - 1
+    # Bonds inherit the cluster number of its connected sites
     b_labels = np.amin(s_labels[conns], axis=1)
-    # Set bond cluster to -1 if not actually occupied
+    # Set cluster number of unoccupied bonds to -1
     b_labels[~occupied_bonds] = -1
     tup = namedtuple('cluster_labels', ('site_labels', 'bond_labels'))
     return tup(s_labels, b_labels)
@@ -98,16 +95,19 @@ def site_percolation(conns, occupied_sites):
 
     """
     Np = np.size(occupied_sites)
+    # Find bond occupancy based on status of its connected sites
     occupied_bonds = np.all(occupied_sites[conns], axis=1)
+    # Perform cluster labeling of network
     adj_mat = sprs.csr_matrix((occupied_bonds, (conns[:, 0], conns[:, 1])),
                               shape=(Np, Np))
     adj_mat.eliminate_zeros()
     clusters = csgraph.connected_components(csgraph=adj_mat, directed=False)[1]
-    clusters[~occupied_sites] = -1
-    s_labels = spst.rankdata(clusters + 1, method="dense") - 1
-    if np.any(~occupied_sites):
-        s_labels -= 1
+    # Set cluster number of unoccupied sites to -1
+    s_labels = (clusters + 1)*occupied_sites - 1
+    # Bonds inherit the cluster number of its connected sites
     b_labels = np.amin(s_labels[conns], axis=1)
+    # Set cluster number of unoccupied bonds to -1
+    b_labels[~occupied_bonds] = -1
     tup = namedtuple('cluster_labels', ('site_labels', 'bond_labels'))
     return tup(s_labels, b_labels)
 

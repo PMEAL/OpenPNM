@@ -343,7 +343,7 @@ class InvasionPercolation(GenericAlgorithm):
         self['pore.invasion_sequence'][self['pore.trapped']] = -1
         self['throat.invasion_sequence'][self['throat.trapped']] = -1
 
-    def apply_trapping(self, step_size=10, mode='mixed'):
+    def apply_trapping(self, step_size=1, mode='mixed'):
         r"""
         Analyze which pores and throats are trapped using mixed percolation.
 
@@ -358,17 +358,15 @@ class InvasionPercolation(GenericAlgorithm):
             The number of steps between between evaluations of trapping.
             A value of 1 will provide the "True" result, but this would
             require long computational time since a network clustering is
-            performed for each step. The default is 10, which will incur
-            some error (pores and throats are identified as invaded that
-            are actually trapped), but is a good compromise.
+            performed for each step. The default is 1.
 
         Returns
         -------
         This function does not return anything. It adjusts the
         ``'pore.invasion_sequence'`` and ``'throat.invasion_sequence'`` arrays
-        on the object by setting trapped pores/throats to -1, and adjusting
-        the sequence values to be contiguous.  It also puts ``True`` values
-        into the ``'pore.trapped'`` and ``'throat.trapped'`` arrays
+        on the object by setting trapped pores/throats to -1. It also puts
+        ``True`` values into the ``'pore.trapped'`` and ``'throat.trapped'``
+        arrays.
 
         Notes
         -----
@@ -377,8 +375,6 @@ class InvasionPercolation(GenericAlgorithm):
         raised.
 
         """
-        if not np.any(self['pore.outlets']):
-            raise Exception('pore outlets must be specified first')
         # TODO: This could be parallelized with dask since each loop is
         # independent of the others
         N = self['throat.invasion_sequence'].max()
@@ -397,31 +393,15 @@ class InvasionPercolation(GenericAlgorithm):
                 s, b = mixed_percolation(conns=self.network.conns,
                                          occupied_sites=pseq > i,
                                          occupied_bonds=tseq > i)
-            # Note disconnected pores and throats as trapped
-            s_def = np.unique(s[self['pore.outlets']])
-            self['pore.trapped'] += np.isin(s, s_def, invert=True)*(s >= 0)
-            self['throat.trapped'] += np.isin(b, s_def, invert=True)*(b >= 0)
-        if 0:
-            i += 1
-            # %%
-            s, b = mixed_percolation(conns=self.network.conns, occupied_sites=pseq > i, occupied_bonds=tseq > i)
-            ax = op.topotools.plot_connections(pn, b>=0, color_by=b, linewidth=3)
-            op.topotools.plot_connections(pn, tseq<=i, linestyle='--', c='r', linewidth=3, ax=ax)
-            op.topotools.plot_coordinates(pn, s>=0, c='g', markersize=100, ax=ax)
-            op.topotools.plot_coordinates(pn, pseq<=i, c='r', marker='x', markersize=100, ax=ax)
-        # %%
-
+            clusters = np.unique(s[self['pore.outlets']])
+            self['pore.trapped'] += np.isin(s, clusters, invert=True)*(s >= 0)
+            self['throat.trapped'] += np.isin(b, clusters, invert=True)*(b >= 0)
         # Set trapped pores/throats to uninvaded and adjust invasion sequence
         self['pore.invasion_sequence'][self['pore.trapped']] = -1
         self['throat.invasion_sequence'][self['throat.trapped']] = -1
         # Set any residual pores within trapped clusters back to untrapped
         self['pore.trapped'][self['pore.residual']] = False
         self['throat.trapped'][self['throat.residual']] = False
-        # The -2 is to shift uninvaded pores to -1 and initially invaded to 0
-        # self['pore.invasion_sequence'] = \
-        #     rankdata(self['pore.invasion_sequence'], method='dense') - 2
-        # self['throat.invasion_sequence'] = \
-        #     rankdata(self['throat.invasion_sequence'], method='dense') - 2
 
 
 @njit
@@ -495,17 +475,21 @@ def _run_accelerated(t_start, t_sorted, t_order, t_inv, p_inv, p_inv_t,
         # If throat is duplicated
         while len(queue) > 0 and queue[0] == t:
             _ = hq.heappop(queue)
-        # Find pores connected to newly invaded throat
+        # Find pores connected to newly invaded throat from am in coo format
         Ps = conns[t_next]
         # Remove already invaded pores from Ps
         Ps = Ps[p_inv[Ps] < 0]
+        # If either of the neighboring pores are uninvaded (-1), set it to
+        # invaded and add its neighboring throats to the queue
         if len(Ps) > 0:
             p_inv[Ps] = count
             p_inv_t[Ps] = t_next
             for i in Ps:
+                # Get neighboring throat numbers from im in csr format
                 Ts = idx[indptr[i]:indptr[i+1]]
+                # Keep only throats which are uninvaded
                 Ts = Ts[t_inv[Ts] < 0]
-            for i in np.unique(Ts):  # Exclude repeated neighbor throats
+            for i in Ts:  # Add throat to the queue
                 hq.heappush(queue, t_order[i])
         count += 1
     return t_inv, p_inv, p_inv_t
@@ -534,12 +518,19 @@ if __name__ == '__main__':
     # ip.set_residual(pores=p_residual, throats=t_residual)
     ip.run()
     ip.set_outlets(pn.pores('right'))
-    # ip.apply_trapping(step_size=1, mode='mixed')
+    ip.apply_trapping(step_size=1, mode='bond')
     # ip['pore.trapped_1'] = np.copy(ip['pore.trapped'])
     # ip['throat.trapped_1'] = np.copy(ip['throat.trapped'])
     # ip.reset()
     # ip.run()
-    ip.apply_trapping2()
+    # ip.apply_trapping2()
+
+    # %%
+    if 1:
+        pseq = np.copy(ip['pore.invasion_sequence'])
+        tseq = np.copy(ip['throat.invasion_sequence'])
+        ax = op.topotools.plot_connections(pn, tseq>=0, linestyle='--', c='r', linewidth=3)
+        op.topotools.plot_coordinates(pn, pseq>=0, c='r', marker='x', markersize=100, ax=ax)
 
     # %%
     drn = op.algorithms.Drainage(network=pn, phase=water)
@@ -558,15 +549,6 @@ if __name__ == '__main__':
         ax.step(*drn.pc_curve(), 'r--', where='post')
         ax.set_ylim([0, 1])
 
-    # %%
-    if 1:
-        pseq = np.copy(ip['pore.invasion_sequence'])
-        i = pseq.max()
-        pseq[pseq == -1] = pseq.max() + 1
-        tseq = np.copy(ip['throat.invasion_sequence'])
-        tseq[tseq == -1] = tseq.max() + 1
-        ax = op.topotools.plot_connections(pn, tseq<=i, linestyle='--', c='r', linewidth=3, ax=ax)
-        op.topotools.plot_coordinates(pn, pseq<=i, c='r', marker='x', markersize=100, ax=ax)
 
     # %%
     if 0:
