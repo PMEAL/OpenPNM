@@ -3,6 +3,7 @@ import scipy.sparse as sprs
 import scipy.stats as spst
 from scipy.sparse import csgraph
 from collections import namedtuple
+from openpnm._skgraph.operations import split_edges
 
 
 __all__ = [
@@ -11,6 +12,7 @@ __all__ = [
     'remove_isolated_clusters',
     'bond_percolation',
     'site_percolation',
+    'mixed_percolation',
     'find_connected_clusters',
     'find_trapped_bonds',
     'find_trapped_sites',
@@ -78,7 +80,6 @@ def site_percolation(conns, occupied_sites):
     conns : array_like
         An N x 2 array connections. If two connected sites are both occupied
         they are part of the same cluster, as is the bond connecting them.
-
     occupied_sites : ndarray
         A boolean array with one element for each site, with ``True`` values
         indicating that a site is occupied
@@ -109,6 +110,17 @@ def site_percolation(conns, occupied_sites):
     b_labels = np.amin(s_labels[conns], axis=1)
     tup = namedtuple('cluster_labels', ('site_labels', 'bond_labels'))
     return tup(s_labels, b_labels)
+
+
+def mixed_percolation(conns, occupied_sites, occupied_bonds):
+    r"""
+    """
+    new_conns = split_edges(conns)[0]
+    new_sites = np.hstack((occupied_sites, occupied_bonds))
+    s, b = site_percolation(conns=new_conns, occupied_sites=new_sites)
+    s_labels = s[:occupied_sites.shape[0]]
+    b_labels = s[occupied_sites.shape[0]:]
+    return s_labels, b_labels
 
 
 def find_connected_clusters(bond_labels, site_labels, inlets, asmask=True):
@@ -192,7 +204,6 @@ def remove_isolated_clusters(labels, inlets):
     labels : tuple of node and edge labels
         This information is provided by the ``site_percolation`` or
         ``bond_percolation`` functions
-
     inlets : array_like
         A list of which nodes are inlets.  Can be a boolean mask or an
         array of indices.
@@ -237,6 +248,7 @@ def ispercolating(am, inlets, outlets, mode='site'):
         ===========  =====================================================
         'site'       Applies site percolation
         'bond'       Applies bond percolation
+        'mixed'      Applies combination of site and bond
         ===========  =====================================================
 
     """
@@ -250,6 +262,9 @@ def ispercolating(am, inlets, outlets, mode='site'):
     elif mode.startswith('bond'):
         occupied_bonds = am.data
         clusters = bond_percolation(ij, occupied_bonds)
+    elif mode.startswith('mixed'):
+        # TODO: implement this
+        raise NotImplementedError()
     ins = np.unique(clusters.site_labels[inlets])
     if ins[0] == -1:
         ins = ins[1:]
