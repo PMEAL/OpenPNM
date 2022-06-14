@@ -45,7 +45,7 @@ class DrainageSettings:
     variable_props = TypedSet()
 
 
-class Drainage(ModelMixin2, GenericAlgorithm):
+class Drainage(GenericAlgorithm):
 
     def __init__(self, phase, name='drainage_#', **kwargs):
         super().__init__(name=name, **kwargs)
