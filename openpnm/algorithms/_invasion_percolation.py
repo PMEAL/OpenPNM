@@ -286,7 +286,7 @@ class InvasionPercolation(GenericAlgorithm):
         data = pc_curve(data.Pc, np.cumsum(data.vol))
         return data
 
-    def apply_trapping2(self):
+    def _apply_trapping2(self):
         """
         Apply trapping based on algorithm described by Y. Masson [1].
 
@@ -297,7 +297,6 @@ class InvasionPercolation(GenericAlgorithm):
         """
         # First see if network is fully invaded
         net = self.project.network
-        outlets = self['pore.outlets']
         invaded_ps = self['pore.invasion_sequence'] > -1
         if ~np.all(invaded_ps):
             # Put defending phase into clusters
@@ -306,59 +305,73 @@ class InvasionPercolation(GenericAlgorithm):
             # -1 is the invaded fluid
             # -2 is the defender fluid able to escape
             # All others now trapped clusters which grow as invasion is reversed
-            out_clusters = np.unique(clusters[outlets])
+            out_clusters = np.unique(clusters[self['pore.outlets']])
             for c in out_clusters:
                 if c >= 0:
                     clusters[clusters == c] = -2
         else:
             # Go from end
             clusters = np.ones(net.Np, dtype=int)*-1
-            clusters[outlets] = -2
+            clusters[self['pore.outlets']] = -2
         # Turn into a list for indexing
         inv_seq = np.vstack((self['pore.invasion_sequence'].astype(int),
                              np.arange(0, net.Np, dtype=int))).T
         # Reverse sort list
         inv_seq = inv_seq[inv_seq[:, 0].argsort()][::-1]
-        next_cluster_num = np.max(clusters)+1
         # For all the steps after the inlets are set up to break-through
         # Reverse the sequence and assess the neighbors cluster state
-        stopped_clusters = np.zeros(net.Np, dtype=bool)
-        all_neighbors = net.find_neighbor_pores(net.pores(),
-                                                flatten=False,
-                                                include_input=True)
-        clusters = reverse_ip(inv_seq,
-                              clusters,
-                              stopped_clusters,
-                              next_cluster_num,
-                              all_neighbors,
-                              outlets)
+        am = net.create_adjacency_matrix(fmt='csr')
+        clusters = reverse_ip(inv_seq, clusters, am.indices, am.indptr)
         # And now return clusters
         self['pore.clusters'] = clusters
-        logger.info("Number of trapped clusters"
-                    + str(np.sum(np.unique(clusters) >= 0)))
         self['pore.trapped'] = self['pore.clusters'] > -1
         trapped_ts = net.find_neighbor_throats(self['pore.trapped'])
-        self['throat.trapped'] = np.zeros([net.Nt], dtype=bool)
+        self['throat.trapped'] = False
         self['throat.trapped'][trapped_ts] = True
         self['pore.invasion_sequence'][self['pore.trapped']] = -1
         self['throat.invasion_sequence'][self['throat.trapped']] = -1
+        # Apply a fix to remove incorrectly invaded throats.
+        # TODO: Fix the reverse_ip function to prevent the following problem
+        # from occuring to start with
+        # NOTE: The following fix is not perfect. It seems that pores on the
+        # outlet are not treated as invaded by the clustering, so a few pores
+        # near the outlet get invaded when they should be trapped.
+        tmask = np.stack((self['throat.invasion_sequence'],
+                          self['throat.invasion_sequence'])).T
+        pmask = self['pore.invasion_sequence'][net.conns]
+        hits = ~np.any(pmask == tmask, axis=1)
+        self['throat.trapped'][hits] = True
+        self['throat.invasion_sequence'][hits] = -1
 
     def apply_trapping(self, step_size=1, mode='mixed'):
         r"""
-        Analyze which pores and throats are trapped using mixed percolation.
-
-        Mixed percolation is crucial since it ensures that defending phase
-        must escape via a connected path of throats *and* pores. Using bond
-        percolation erroneously allows via two throats even if their shared
-        pore has been invaded.
+        Analyze which pores and throats are trapped
 
         Parameters
         ----------
         step_size: int
-            The number of steps between between evaluations of trapping.
-            A value of 1 will provide the "True" result, but this would
-            require long computational time since a network clustering is
-            performed for each step. The default is 1.
+            The number of steps between evaluations of trapping. A value
+            of 1 will provide the "True" result, but this would require
+            long computational time since a network clustering is performed
+            for each step. The default is 1.
+        mode : str
+            Which algorithm to use when detecting trapped clusters. Options
+            are:
+            ========== ========================================================
+            Mode       Description
+            ========== ========================================================
+            'reverse'  Uses the method of Masson to compute trapping by
+                       scanning the invasion sequence in reverse and detecting
+                       disconnected clusters using a disjoint data set. This
+                       method is substantially faster than the others.
+            'mixed'    Combines site and bond percolation to enforce that the
+                       defending fluid can only escape via a path of consisting
+                       of uninvaded sites and bonds.
+            'bond'     The defending phase can escape via a path of connected
+                       bonds regardless of whether any sites are invaded.
+            'site'     The defending phase can escapse via path connected sites
+                       regardless of whether any bonds are invaded.
+            ========== ========================================================
 
         Returns
         -------
@@ -375,6 +388,9 @@ class InvasionPercolation(GenericAlgorithm):
         raised.
 
         """
+        if mode == 'reverse':
+            self._apply_trapping2()
+            return
         # TODO: This could be parallelized with dask since each loop is
         # independent of the others
         N = self['throat.invasion_sequence'].max()
@@ -382,8 +398,8 @@ class InvasionPercolation(GenericAlgorithm):
         tseq = self['throat.invasion_sequence']
         msg = 'Evaluating trapping'
         for i in tqdm(range(0, int(N), step_size), msg):
-            # Performing cluster labeling
             if mode == 'bond':
+                i += 1
                 s, b = bond_percolation(conns=self.network.conns,
                                         occupied_bonds=tseq > i)
             elif mode == 'site':
@@ -394,8 +410,8 @@ class InvasionPercolation(GenericAlgorithm):
                                          occupied_sites=pseq > i,
                                          occupied_bonds=tseq > i)
             clusters = np.unique(s[self['pore.outlets']])
-            self['pore.trapped'] += np.isin(s, clusters, invert=True)*(s >= 0)
-            self['throat.trapped'] += np.isin(b, clusters, invert=True)*(b >= 0)
+            self['pore.trapped'] += np.isin(s, clusters, invert=True)*(pseq > i)
+            self['throat.trapped'] += np.isin(b, clusters, invert=True)*(tseq > i)
         # Set trapped pores/throats to uninvaded and adjust invasion sequence
         self['pore.invasion_sequence'][self['pore.trapped']] = -1
         self['throat.invasion_sequence'][self['throat.trapped']] = -1
@@ -407,13 +423,15 @@ class InvasionPercolation(GenericAlgorithm):
 @njit
 def reverse_ip(inv_seq,
                clusters,
-               stopped_clusters,
-               next_cluster_num,
-               all_neighbors,
-               outlets):
+               indices,
+               indptr):
+    stopped_clusters = np.zeros_like(clusters)
+    next_cluster_num = np.max(clusters)+1
     for un_seq, pore in inv_seq:
-        if pore not in outlets and un_seq > 0:  # Skip inlets and outlets
-            nc = clusters[all_neighbors[pore]]  # Neighboring clusters
+        # if pore not in outlets and un_seq > 0:  # Skip inlets and outlets
+        if un_seq > 0:  # Skip inlets and outlets
+            neighbors = indices[indptr[pore]:indptr[pore+1]]
+            nc = clusters[neighbors]  # Neighboring clusters
             unique_ns = np.unique(nc[nc != -1])  # Unique Neighbors
             if np.all(nc == -1):
                 # This is the start of a new trapped cluster
@@ -500,7 +518,7 @@ if __name__ == '__main__':
     import matplotlib.pyplot as plt
 
     np.random.seed(0)
-    Nx, Ny, Nz = 10, 10, 1
+    Nx, Ny, Nz = 20, 20, 1
     pn = op.network.Cubic(shape=[Nx, Ny, Nz], spacing=1e-4)
     pn.add_model_collection(op.models.collections.geometry.spheres_and_cylinders)
     pn.regenerate_models()
@@ -515,32 +533,28 @@ if __name__ == '__main__':
     # %%
     ip = InvasionPercolation(network=pn, phase=water)
     ip.set_inlets(pn.pores('left'))
-    # ip.set_residual(pores=p_residual, throats=t_residual)
     ip.run()
     ip.set_outlets(pn.pores('right'))
-    ip.apply_trapping(step_size=1, mode='bond')
-    # ip['pore.trapped_1'] = np.copy(ip['pore.trapped'])
-    # ip['throat.trapped_1'] = np.copy(ip['throat.trapped'])
-    # ip.reset()
-    # ip.run()
-    # ip.apply_trapping2()
+    ip.apply_trapping(step_size=1, mode='reverse')
 
     # %%
     if 1:
         pseq = np.copy(ip['pore.invasion_sequence'])
         tseq = np.copy(ip['throat.invasion_sequence'])
-        ax = op.topotools.plot_connections(pn, tseq>=0, linestyle='--', c='r', linewidth=3)
+        ax = op.topotools.plot_connections(pn, tseq>=0, linestyle='--', c='b', linewidth=3)
         op.topotools.plot_coordinates(pn, pseq>=0, c='r', marker='x', markersize=100, ax=ax)
+        op.topotools.plot_coordinates(pn, ip['pore.trapped'], c='c', marker='o', markersize=100, ax=ax)
 
     # %%
-    drn = op.algorithms.Drainage(network=pn, phase=water)
-    drn.set_inlets(pn.pores('left'))
-    # drn.set_residual(pores=p_residual, throats=t_residual)
-    pressures = np.unique(ip['pore.invasion_pressure'])
-    # pressures = np.logspace(np.log10(0.1e3), np.log10(2e4), 100)
-    drn.run(pressures=pressures)
-    drn.set_outlets(pn.pores('right'))
-    drn.apply_trapping(pressures=None)
+    if 0:
+        drn = op.algorithms.Drainage(network=pn, phase=water)
+        drn.set_inlets(pn.pores('left'))
+        # drn.set_residual(pores=p_residual, throats=t_residual)
+        pressures = np.unique(ip['pore.invasion_pressure'])
+        # pressures = np.logspace(np.log10(0.1e3), np.log10(2e4), 100)
+        drn.run(pressures=pressures)
+        drn.set_outlets(pn.pores('right'))
+        drn.apply_trapping(mode='mixed')
 
     # %%
     if 0:
@@ -559,11 +573,9 @@ if __name__ == '__main__':
         tseq = ip['throat.invasion_sequence']
         tseq[tseq == -1] = tseq.max() + 1
         for i in tqdm(np.unique(pseq)[:-1]):
-            s, b = mixed_percolation(conns=ip.network.conns, occupied_sites=pseq > i, occupied_bonds=tseq > i)
-            ax = op.topotools.plot_connections(pn, b>=0, color_by=b, linewidth=3)
-            op.topotools.plot_connections(pn, tseq<=i, linestyle='--', c='r', linewidth=3, ax=ax)
-            op.topotools.plot_coordinates(pn, s>=0, c='g', markersize=100, ax=ax)
-            op.topotools.plot_coordinates(pn, pseq<=i, c='r', marker='x', markersize=100, ax=ax)
+            ax = op.topotools.plot_connections(pn, tseq<=i, linestyle='--', c='r', linewidth=3)
+            op.topotools.plot_coordinates(pn, pseq<=i, c='b', marker='x', markersize=100, ax=ax)
+            op.topotools.plot_coordinates(pn, ip['pore.trapped'], c='c', marker='o', markersize=100, ax=ax)
             plt.savefig(f"{str(i).zfill(3)}.png")
             plt.close()
 
