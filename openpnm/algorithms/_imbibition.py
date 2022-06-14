@@ -8,6 +8,7 @@ from openpnm.utils import Docorator, TypedSet
 from openpnm._skgraph.simulations import (
     bond_percolation,
     site_percolation,
+    mixed_percolation,
     find_connected_clusters,
     find_trapped_sites,
 )
@@ -73,6 +74,9 @@ class Imbibition(Drainage):
             self['pore.invasion_pressure'][pmask] = p
             tmask = self['throat.invaded'] * (self['throat.invasion_pressure'] == -np.inf)
             self['throat.invasion_pressure'][tmask] = p
+        # If any outlets were specified, evaluate trapping
+        if np.any(self['pore.outlets']):
+            self.apply_trapping()
 
     def _run_special(self, pressure):
         phase = self.project[self.settings.phase]
@@ -119,30 +123,38 @@ class Imbibition(Drainage):
         # op.topotools.plot_connections(pn, throats=self['throat.invaded'], c='b', ax=ax)
         # op.topotools.plot_coordinates(pn, pores=self['pore.invaded'], c='b', ax=ax, s=200)
 
-        # If any outlets were specified, evaluate trapping
-        if np.any(self['pore.outlets']):
-            self.apply_trapping(pressures=pressure)
-
-    def apply_trapping(self, pressures=None):
-        if not np.any(self['pore.outlets']):
-            raise Exception('pore outlets must be specified first')
-        if pressures is None:
-            pressures = np.unique(self['pore.invasion_pressure'])
-        else:
-            pressures = np.array([pressures]).flatten()
+    def apply_trapping(self, mode='mixed'):
+        pressures = np.unique(self['pore.invasion_pressure'])
+        pseq = self['pore.invasion_pressure']
+        tseq = self['throat.invasion_pressure']
         for p in pressures:
-            pmask = self['pore.invasion_pressure'] >= p
-            s, b = find_trapped_sites(conns=self.network.conns,
-                                      occupied_sites=pmask,
-                                      outlets=self['pore.outlets'])
-            P_trapped = s >= 0
-            T_trapped = P_trapped[self.network.conns].all(axis=1)
-            P_trapped[self['pore.residual']] = False
-            T_trapped[self['throat.residual']] = False
-            # ax = op.topotools.plot_connections(pn, throats=(b >= 0))
-            # op.topotools.plot_coordinates(pn, color_by=(s + 10)*(s >= 0), ax=ax, s=200)
-            self['pore.trapped'] += P_trapped
-            self['throat.trapped'] += T_trapped
+            if mode == 'orig':
+                pmask = self['pore.invasion_pressure'] >= p
+                s, b = find_trapped_sites(conns=self.network.conns,
+                                          occupied_sites=pmask,
+                                          outlets=self['pore.outlets'])
+                P_trapped = s >= 0
+                T_trapped = P_trapped[self.network.conns].all(axis=1)
+                P_trapped[self['pore.residual']] = False
+                T_trapped[self['throat.residual']] = False
+                # ax = op.topotools.plot_connections(pn, throats=(b >= 0))
+                # op.topotools.plot_coordinates(pn, color_by=(s + 10)*(s >= 0), ax=ax, s=200)
+                self['pore.trapped'] += P_trapped
+                self['throat.trapped'] += T_trapped
+            else:
+                if mode == 'bond':
+                    s, b = bond_percolation(conns=self.network.conns,
+                                            occupied_bonds=tseq < p)
+                elif mode == 'site':
+                    s, b = site_percolation(conns=self.network.conns,
+                                            occupied_sites=pseq < p)
+                elif mode == 'mixed':
+                    s, b = mixed_percolation(conns=self.network.conns,
+                                             occupied_sites=pseq < p,
+                                             occupied_bonds=tseq < p)
+                clusters = np.unique(s[self['pore.outlets']])
+                self['pore.trapped'] += np.isin(s, clusters, invert=True)*(s >= 0)
+                self['throat.trapped'] += np.isin(b, clusters, invert=True)*(b >= 0)
         self['pore.trapped'][self['pore.residual']] = False
         self['throat.trapped'][self['throat.residual']] = False
         self['pore.invaded'][self['pore.trapped']] = False
@@ -197,25 +209,28 @@ if __name__ == "__main__":
                   diameter='pore.diameter')
     pressures = np.logspace(np.log10(0.1e6), np.log10(8e6), 40)
 
-    # %% Perform Drainage
+    # %% Perform Primary Drainage
     drn = op.algorithms.Drainage(network=pn, phase=nwp)
     drn.set_inlets(pores=pn.pores('left'))
-    # drn.set_outlets(pores=pn.pores('right'))
     drn.run(pressures)
+    drn.set_outlets(pores=pn.pores('right'))
+    drn.apply_trapping(mode='site')
 
     # %% Peform Imbibition
     imb = Imbibition(network=pn, phase=nwp)
     imb.set_inlets(pores=pn.pores('left'))
     imb.set_residual(pores=~drn['pore.invaded'], throats=~drn['throat.invaded'])
-    imb.set_outlets(pores=pn.pores('right'))
     imb.run(pressures)
+    imb.set_outlets(pores=pn.pores('right'))
+    imb.apply_trapping(mode='orig')
 
-    # %%
+    # %% Perform Secondary Drainage
     drn2 = op.algorithms.Drainage(network=pn, phase=nwp)
     drn2.set_inlets(pores=pn.pores('left'))
-    drn2.set_outlets(pores=pn.pores('right'))
     drn2.set_residual(pores=~imb['pore.invaded'], throats=~imb['throat.invaded'])
     drn2.run(pressures)
+    drn2.set_outlets(pores=pn.pores('right'))
+    drn2.apply_trapping(mode='site')
 
     # %%
     if 1:
