@@ -51,9 +51,9 @@ def bond_percolation(conns, occupied_bonds):
     Np = np.amax(conns) + 1
     # Find occupied sites based on status of shared bonds
     occupied_sites = np.zeros([Np, ], dtype=bool)
-    np.add.at(occupied_sites, conns[occupied_bonds].flatten(), True)
+    occupied_sites[conns[occupied_bonds].flatten()] = True
     # Perform cluster labeling of network
-    adj_mat = sprs.csr_matrix((occupied_bonds, (conns[:, 0], conns[:, 1])),
+    adj_mat = sprs.csr_matrix((occupied_bonds.astype(int), (conns[:, 0], conns[:, 1])),
                               shape=(Np, Np))
     adj_mat.eliminate_zeros()
     clusters = csgraph.connected_components(csgraph=adj_mat, directed=False)[1]
