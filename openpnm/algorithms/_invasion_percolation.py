@@ -479,47 +479,47 @@ def reverse2(inv_seq, indices, indptr, outlets):
     Np = len(inv_seq)
     sorted_seq = np.vstack((inv_seq.astype(int), np.arange(Np))).T
     sorted_seq = sorted_seq[sorted_seq[:, 0].argsort()][::-1]
-    trapped_pores = np.zeros(Np, dtype=bool)
-    # clusters = qupc_initialize(Np)
-    clusters = np.ones(Np, dtype=int)*(Np - 1)
+    clusters = qupc_initialize(Np)
     clusters[outlets] = 0
     next_cluster_num = 1
     i = -1
     for step, pore in sorted_seq:
         i += 1
         step, pore = sorted_seq[i, :]
+        print(step, pore)
         neighbors = indices[indptr[pore]:indptr[pore+1]]
-        hits = inv_seq[neighbors] > step
-        if not np.any(hits):  # Isolated pore, marked as trapped
-            trapped_pores[pore] = True
-            clusters[pore] = next_cluster_num
-            next_cluster_num += 1
-        else:
-            clusters = qupc_update(clusters, pore, clusters[neighbors[hits][0]])
+        nc = clusters[neighbors]
+
+    # clusters = qupc_finalize(clusters, compress=True)
+    print(clusters)
 
 
 
-import openpnm as op
-pn = op.network.Cubic([4, 4, 1])
-pn['pore.invasion_sequence'] = [1, 2, 3, 4, 16, 15, 5, 9, 13, 12, 6, 10, 14, 11, 7, 8]
-inv_seq = pn['pore.invasion_sequence']
-am = pn.create_adjacency_matrix(fmt='csr')
-indices = am.indices
-indptr = am.indptr
-outlets = [12, 13, 14, 15]
+
 
 
 
 # %%
+import openpnm as op
+pn = op.network.Cubic([4, 4, 1])
+pn['pore.invasion_sequence'] = [0, 1, 2, 3, 10, 11, 4, 13, 9, 12, 5, 15, 8, 7, 6, 14]
+inv_seq = pn['pore.invasion_sequence']
+am = pn.create_adjacency_matrix(fmt='csr')
+indices = am.indices
+indptr = am.indptr
+outlets = np.array([12, 13, 14, 15])
+
+
+
+# %%
+
 def qupc_initialize(size):
-    return np.zeros(size, dtype=int)
+    return np.arange(size, dtype=int)
 
 
 @njit
 def _update(arr, ind, val):
     # Update array and do path compression simultaneously
-    if arr[val] == 0:
-        arr[val] = val
     while arr[ind] != val:
         arr[ind] = arr[val]
         ind = val
@@ -528,8 +528,6 @@ def _update(arr, ind, val):
 
 
 def qupc_update(arr, ind, val):
-    if (ind == 0) or (val == 0):
-        raise Exception('0 is resevered for elements without a cluster number')
     if ind == val:
         arr[ind] = val
     else:
@@ -544,21 +542,30 @@ def _finalize(arr):
     return arr
 
 
-def qupc_finalize(arr, compress=True):
+def qupc_reduce(arr, compress=True):
     arr = _finalize(arr)
     if compress:
-        arr = rankdata(arr, method='dense') - 1
+        temp = rankdata(arr, method='dense')
+        arr[:] = temp
+        arr -= 1
     return arr
 
 
 a = qupc_initialize(10)
-a = qupc_update(a, 4, 2)
-a = qupc_update(a, 7, 4)
-a = qupc_update(a, 9, 7)
-a = qupc_update(a, 9, 3)
-a = qupc_update(a, 5, 9)
-a = qupc_update(a, 9, 9)
-a = qupc_finalize(a, compress=True)
+qupc_update(a, 4, 2)
+qupc_update(a, 7, 4)
+qupc_update(a, 9, 6)
+qupc_update(a, 6, 2)
+qupc_update(a, 5, 9)
+assert np.all(a == [0, 1, 2, 3, 2, 6, 2, 2, 8, 6])
+qupc_reduce(a, compress=False)
+assert np.all(a == [0, 1, 2, 3, 2, 2, 2, 2, 8, 2])
+qupc_update(a, 9, 9)
+qupc_update(a, 0, 1)
+qupc_update(a, 8, 0)
+assert np.all(a == [1, 1, 2, 3, 2, 2, 2, 2, 1, 9])
+qupc_reduce(a, compress=True)
+assert np.all(a == [0, 0, 1, 2, 1, 1, 1, 1, 0, 3])
 print(a)
 
 # %%
