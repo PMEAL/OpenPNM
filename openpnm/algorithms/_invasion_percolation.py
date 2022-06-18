@@ -15,7 +15,7 @@ from openpnm._skgraph.simulations import (
     mixed_percolation,
     find_connected_clusters,
     find_trapped_sites,
-    find_trapped_bonds
+    find_trapped_bonds,
 )
 
 
@@ -311,7 +311,7 @@ class InvasionPercolation(GenericAlgorithm):
                     clusters[clusters == c] = -2
         else:
             # Go from end
-            clusters = np.ones(net.Np, dtype=int)*-1
+            clusters = -np.ones(net.Np, dtype=int)
             clusters[self['pore.outlets']] = -2
         # Turn into a list for indexing
         inv_seq = np.vstack((self['pore.invasion_sequence'].astype(int),
@@ -330,12 +330,12 @@ class InvasionPercolation(GenericAlgorithm):
         self['throat.trapped'][trapped_ts] = True
         self['pore.invasion_sequence'][self['pore.trapped']] = -1
         self['throat.invasion_sequence'][self['throat.trapped']] = -1
-        # Apply a fix to remove incorrectly invaded throats.
+        # Apply a fix to remove incorrectly invaded throats
         # TODO: Fix the reverse_ip function to prevent the following problem
         # from occuring to start with
         # NOTE: The following fix is not perfect. It seems that pores on the
-        # outlet are not treated as invaded by the clustering, so a few pores
-        # near the outlet get invaded when they should be trapped.
+        # outlet are not treated as invaded by the clustering, so an escape
+        # route that includes invaded outlet pores is considered valid
         tmask = np.stack((self['throat.invasion_sequence'],
                           self['throat.invasion_sequence'])).T
         pmask = self['pore.invasion_sequence'][net.conns]
@@ -427,42 +427,141 @@ def reverse_ip(inv_seq,
                indptr):
     stopped_clusters = np.zeros_like(clusters)
     next_cluster_num = np.max(clusters)+1
+    i = -1
     for un_seq, pore in inv_seq:
-        # if pore not in outlets and un_seq > 0:  # Skip inlets and outlets
-        if un_seq > 0:  # Skip inlets and outlets
-            neighbors = indices[indptr[pore]:indptr[pore+1]]
-            nc = clusters[neighbors]  # Neighboring clusters
-            unique_ns = np.unique(nc[nc != -1])  # Unique Neighbors
-            if np.all(nc == -1):
-                # This is the start of a new trapped cluster
-                clusters[pore] = next_cluster_num
-                next_cluster_num += 1
-            elif len(unique_ns) == 1:
-                # Grow the only connected neighboring cluster
-                if not stopped_clusters[unique_ns[0]]:
-                    clusters[pore] = unique_ns[0]
-                else:
-                    clusters[pore] = -2
-            elif -2 in unique_ns:
-                # We have reached a sink neighbor, stop growing cluster
+        i += 1
+        un_seq, pore = inv_seq[i]
+        neighbors = indices[indptr[pore]:indptr[pore+1]]
+        nc = clusters[neighbors]  # Get cluster numbers of all neighbor pores
+        unique_ns = np.unique(nc[nc != -1])  # Isolate unique neighbor clusters
+        if np.all(nc == -1):
+            # The current pore and all of its neighbors have not been visited
+            # so it has no cluster label, so let's start growing a new cluster
+            # from this pore
+            clusters[pore] = next_cluster_num
+            next_cluster_num += 1
+            print('case 1')
+        elif (len(unique_ns) == 1) and (-2 not in unique_ns):
+            # If all of the neighbors have the same cluster number, assign that
+            # cluster number to the current pore...unless any of the neighbors
+            # are 'stopped', in which case mark the current pore as stopped too
+            if not stopped_clusters[unique_ns[0]]:
+                clusters[pore] = unique_ns[0]
+            else:
                 clusters[pore] = -2
-                # Stop growth and merging
-                stopped_clusters[unique_ns[unique_ns > -1]] = True
-            else:  # We might be able to do some merging
-                # Check if any stopped clusters are neighbors
-                if np.any(stopped_clusters[unique_ns]):
-                    clusters[pore] = -2
-                    # Stop growing all neighboring clusters
-                    stopped_clusters[unique_ns] = True
-                else:
-                    # Merge multiple un-stopped trapped clusters
-                    new_num = unique_ns[0]
-                    clusters[pore] = new_num
-                    for c in unique_ns:
-                        clusters[clusters == c] = new_num
+            print('case 2')
+        elif -2 in unique_ns:
+            # If any of the neighbors are an outlet, then set current pore to
+            # have a cluster number of -2 also (seems like this may be the problem)
+            clusters[pore] = -2
+            # Label all neighboring pores as stopped
+            stopped_clusters[unique_ns[unique_ns > -1]] = True
+            print('case 3')
+        else:
+            print('case 4')
+            # If any of the neighbors are set to stopped,
+            if np.any(stopped_clusters[unique_ns]):
+                clusters[pore] = -2
+                # Stop growing all neighboring clusters
+                stopped_clusters[unique_ns] = True
+            else:
+                # Merge multiple un-stopped trapped clusters
+                new_num = unique_ns[0]
+                clusters[pore] = new_num
+                for c in unique_ns:
+                    # TODO: This seems like it's a speed bottleneck as it
+                    # does not use the disjoint dataset approach
+                    clusters[clusters == c] = new_num
     return clusters
 
 
+def reverse2(inv_seq, indices, indptr, outlets):
+    Np = len(inv_seq)
+    sorted_seq = np.vstack((inv_seq.astype(int), np.arange(Np))).T
+    sorted_seq = sorted_seq[sorted_seq[:, 0].argsort()][::-1]
+    trapped_pores = np.zeros(Np, dtype=bool)
+    # clusters = qupc_initialize(Np)
+    clusters = np.ones(Np, dtype=int)*(Np - 1)
+    clusters[outlets] = 0
+    next_cluster_num = 1
+    i = -1
+    for step, pore in sorted_seq:
+        i += 1
+        step, pore = sorted_seq[i, :]
+        neighbors = indices[indptr[pore]:indptr[pore+1]]
+        hits = inv_seq[neighbors] > step
+        if not np.any(hits):  # Isolated pore, marked as trapped
+            trapped_pores[pore] = True
+            clusters[pore] = next_cluster_num
+            next_cluster_num += 1
+        else:
+            clusters = qupc_update(clusters, pore, clusters[neighbors[hits][0]])
+
+
+
+import openpnm as op
+pn = op.network.Cubic([4, 4, 1])
+pn['pore.invasion_sequence'] = [1, 2, 3, 4, 16, 15, 5, 9, 13, 12, 6, 10, 14, 11, 7, 8]
+inv_seq = pn['pore.invasion_sequence']
+am = pn.create_adjacency_matrix(fmt='csr')
+indices = am.indices
+indptr = am.indptr
+outlets = [12, 13, 14, 15]
+
+
+
+# %%
+def qupc_initialize(size):
+    return np.zeros(size, dtype=int)
+
+
+@njit
+def _update(arr, ind, val):
+    # Update array and do path compression simultaneously
+    if arr[val] == 0:
+        arr[val] = val
+    while arr[ind] != val:
+        arr[ind] = arr[val]
+        ind = val
+        val = arr[val]
+    return arr
+
+
+def qupc_update(arr, ind, val):
+    if (ind == 0) or (val == 0):
+        raise Exception('0 is resevered for elements without a cluster number')
+    if ind == val:
+        arr[ind] = val
+    else:
+        arr = _update(arr, ind, val)
+    return arr
+
+
+@njit
+def _finalize(arr):
+    for i in range(len(arr)-1, 0, -1):
+        arr[i] = arr[arr[i]]
+    return arr
+
+
+def qupc_finalize(arr, compress=True):
+    arr = _finalize(arr)
+    if compress:
+        arr = rankdata(arr, method='dense') - 1
+    return arr
+
+
+a = qupc_initialize(10)
+a = qupc_update(a, 4, 2)
+a = qupc_update(a, 7, 4)
+a = qupc_update(a, 9, 7)
+a = qupc_update(a, 9, 3)
+a = qupc_update(a, 5, 9)
+a = qupc_update(a, 9, 9)
+a = qupc_finalize(a, compress=True)
+print(a)
+
+# %%
 @njit
 def _run_accelerated(t_start, t_sorted, t_order, t_inv, p_inv, p_inv_t,
                      conns, idx, indptr, n_steps):
@@ -523,6 +622,7 @@ if __name__ == '__main__':
     pn.add_model_collection(op.models.collections.geometry.spheres_and_cylinders)
     pn.regenerate_models()
     pn['pore.volume@left'] = 0.0
+    # op.topotools.trim(pn, pores=[380, 395])
 
     water = op.phase.Water(network=pn, name='h2o')
     water.add_model_collection(op.models.collections.physics.standard)
@@ -535,7 +635,7 @@ if __name__ == '__main__':
     ip.set_inlets(pn.pores('left'))
     ip.run()
     ip.set_outlets(pn.pores('right'))
-    ip.apply_trapping(step_size=1, mode='reverse')
+    # ip.apply_trapping(step_size=1, mode='reverse')
 
     # %%
     if 1:
