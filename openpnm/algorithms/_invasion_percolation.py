@@ -17,6 +17,12 @@ from openpnm._skgraph.simulations import (
     find_trapped_sites,
     find_trapped_bonds,
 )
+from openpnm._skgraph.queries import (
+    qupc_initialize,
+    qupc_update,
+    qupc_reduce,
+    qupc_compress,
+)
 
 
 __all__ = ['InvasionPercolation']
@@ -553,58 +559,6 @@ def reverse2(inv_seq, indices, indptr, outlets):
 
 
 # %%
-
-@njit
-def qupc_initialize(size):
-    return np.arange(size, dtype=np.int_)
-
-
-@njit
-def qupc_update(arr, ind, val):
-    if ind == val:
-        arr[ind] = val
-    else:
-        # Update array and do path compression simultaneously
-        while arr[ind] != val:
-            arr[ind] = arr[val]
-            ind = val
-            val = arr[val]
-    return arr
-
-
-def qupc_compress(arr):
-    temp = rankdata(arr, method='dense')
-    arr[:] = temp
-    arr -= 1
-    return arr
-
-
-@njit
-def qupc_reduce(arr):
-    for i in range(len(arr)-1, 0, -1):
-        arr[i] = arr[arr[i]]
-    return arr
-
-
-if 0:
-    a = qupc_initialize(10)
-    qupc_update(a, 4, 2)
-    qupc_update(a, 7, 4)
-    qupc_update(a, 9, 6)
-    qupc_update(a, 6, 2)
-    qupc_update(a, 5, 9)
-    assert np.all(a == [0, 1, 2, 3, 2, 6, 2, 2, 8, 6])
-    qupc_reduce(a, compress=False)
-    assert np.all(a == [0, 1, 2, 3, 2, 2, 2, 2, 8, 2])
-    qupc_update(a, 9, 9)
-    qupc_update(a, 0, 1)
-    qupc_update(a, 8, 0)
-    assert np.all(a == [1, 1, 2, 3, 2, 2, 2, 2, 1, 9])
-    qupc_reduce(a, compress=True)
-    assert np.all(a == [0, 0, 1, 2, 1, 1, 1, 1, 0, 3])
-    print(a)
-
-# %%
 @njit
 def _run_accelerated(t_start, t_sorted, t_order, t_inv, p_inv, p_inv_t,
                      conns, idx, indptr, n_steps):
@@ -659,6 +613,8 @@ if __name__ == '__main__':
     import openpnm as op
     import matplotlib.pyplot as plt
 
+
+# %%
     for seed in [2]:
         np.random.seed(seed)
         Nx, Ny, Nz = 25, 25, 1
@@ -681,13 +637,13 @@ if __name__ == '__main__':
         ip.set_outlets(pn.pores('right'))
         ip.apply_trapping(step_size=1, mode='reverse2')
 
-        ip2 = InvasionPercolation(network=pn, phase=water)
-        ip2.set_inlets(pn.pores('left'))
-        ip2.run()
-        ip2.set_outlets(pn.pores('right'))
-        ip2.apply_trapping(step_size=1, mode='mixed')
+        # ip2 = InvasionPercolation(network=pn, phase=water)
+        # ip2.set_inlets(pn.pores('left'))
+        # ip2.run()
+        # ip2.set_outlets(pn.pores('right'))
+        # ip2.apply_trapping(step_size=1, mode='mixed')
 
-        assert np.all(ip['pore.trapped'] == ip2['pore.trapped'])
+        # assert np.all(ip['pore.trapped'] == ip2['pore.trapped'])
 
     # %%
     if 1:
@@ -718,7 +674,6 @@ if __name__ == '__main__':
 
     # %%
     if 0:
-        ip = ip2
         from matplotlib import animation
         import openpnm as op
         pseq = ip['pore.invasion_sequence']
