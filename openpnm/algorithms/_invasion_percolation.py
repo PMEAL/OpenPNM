@@ -339,48 +339,43 @@ class InvasionPercolation(GenericAlgorithm):
             outlets = np.where(self['pore.outlets'])[0]
             am = self.network.create_adjacency_matrix(fmt='csr')
             inv_seq = self['pore.invasion_sequence']
-            indices = am.indices
-            indptr = am.indptr
             self['pore.trapped'] = reverse2(inv_seq, am.indices, am.indptr, outlets)
             self['pore.invasion_sequence'][self['pore.trapped']] = -1
-            trapped_ts = self.network.find_neighbor_throats(self['pore.trapped'])
-            self['throat.trapped'] = False
-            self['throat.trapped'][trapped_ts] = True
             self['throat.invasion_sequence'][self['throat.trapped']] = -1
             tmask = np.stack((self['throat.invasion_sequence'],
                               self['throat.invasion_sequence'])).T
             pmask = self['pore.invasion_sequence'][self.network.conns]
             hits = ~np.any(pmask == tmask, axis=1)
-            self['throat.trapped'][hits] = True
+            self['throat.trapped'] = hits
             self['throat.invasion_sequence'][hits] = -1
-            return
-        # TODO: This could be parallelized with dask since each loop is
-        # independent of the others
-        N = self['throat.invasion_sequence'].max()
-        pseq = self['pore.invasion_sequence']
-        tseq = self['throat.invasion_sequence']
-        msg = 'Evaluating trapping'
-        for i in tqdm(range(0, int(N), step_size), msg):
-            if mode == 'bond':
-                i += 1
-                s, b = bond_percolation(conns=self.network.conns,
-                                        occupied_bonds=tseq > i)
-            elif mode == 'site':
-                s, b = site_percolation(conns=self.network.conns,
-                                        occupied_sites=pseq > i)
-            elif mode == 'mixed':
-                s, b = mixed_percolation(conns=self.network.conns,
-                                         occupied_sites=pseq > i,
-                                         occupied_bonds=tseq > i)
-            clusters = np.unique(s[self['pore.outlets']])
-            self['pore.trapped'] += np.isin(s, clusters, invert=True)*(pseq > i)
-            self['throat.trapped'] += np.isin(b, clusters, invert=True)*(tseq > i)
-        # Set trapped pores/throats to uninvaded and adjust invasion sequence
-        self['pore.invasion_sequence'][self['pore.trapped']] = -1
-        self['throat.invasion_sequence'][self['throat.trapped']] = -1
-        # Set any residual pores within trapped clusters back to untrapped
-        self['pore.trapped'][self['pore.residual']] = False
-        self['throat.trapped'][self['throat.residual']] = False
+        else:
+            # TODO: This could be parallelized with dask since each loop is
+            # independent of the others
+            N = self['throat.invasion_sequence'].max()
+            pseq = self['pore.invasion_sequence']
+            tseq = self['throat.invasion_sequence']
+            msg = 'Evaluating trapping'
+            for i in tqdm(range(0, int(N), step_size), msg):
+                if mode == 'bond':
+                    i += 1
+                    s, b = bond_percolation(conns=self.network.conns,
+                                            occupied_bonds=tseq > i)
+                elif mode == 'site':
+                    s, b = site_percolation(conns=self.network.conns,
+                                            occupied_sites=pseq > i)
+                elif mode == 'mixed':
+                    s, b = mixed_percolation(conns=self.network.conns,
+                                             occupied_sites=pseq > i,
+                                             occupied_bonds=tseq > i)
+                clusters = np.unique(s[self['pore.outlets']])
+                self['pore.trapped'] += np.isin(s, clusters, invert=True)*(pseq > i)
+                self['throat.trapped'] += np.isin(b, clusters, invert=True)*(tseq > i)
+            # Set trapped pores/throats to uninvaded and adjust invasion sequence
+            self['pore.invasion_sequence'][self['pore.trapped']] = -1
+            self['throat.invasion_sequence'][self['throat.trapped']] = -1
+            # Set any residual pores within trapped clusters back to untrapped
+            self['pore.trapped'][self['pore.residual']] = False
+            self['throat.trapped'][self['throat.residual']] = False
 
 
 @njit
@@ -413,7 +408,7 @@ def reverse2(inv_seq, indices, indptr, outlets):
             next_cluster_num += 1
         elif len(np.unique(nc)) == 1:
             c = np.unique(nc)[0]
-            # Neighbor have one unique cluster number, so assign it to current pore
+            # Neighbors have one unique cluster number, so assign it to current pore
             cluster[pore] = c
             # If pore is an outlet then note cluster as no longer trapped
             if pore in outlets:
@@ -517,7 +512,7 @@ if __name__ == '__main__':
         ip.set_inlets(pn.pores('left'))
         ip.run()
         ip.set_outlets(pn.pores('right'))
-        ip.apply_trapping(step_size=1, mode='reverse2')
+        ip.apply_trapping(step_size=1, mode='reverse')
 
         # ip2 = InvasionPercolation(network=pn, phase=water)
         # ip2.set_inlets(pn.pores('left'))
