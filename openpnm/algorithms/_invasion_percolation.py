@@ -290,35 +290,10 @@ class InvasionPercolation(GenericAlgorithm):
         data = pc_curve(data.Pc, np.cumsum(data.vol))
         return data
 
-    def apply_trapping(self, step_size=1, mode='mixed'):
+    def apply_trapping(self):
         r"""
-        Analyze which pores and throats are trapped
-
-        Parameters
-        ----------
-        step_size: int
-            The number of steps between evaluations of trapping. A value
-            of 1 will provide the "True" result, but this would require
-            long computational time since a network clustering is performed
-            for each step. The default is 1.
-        mode : str
-            Which algorithm to use when detecting trapped clusters. Options
-            are:
-            ========== ========================================================
-            Mode       Description
-            ========== ========================================================
-            'reverse'  Uses the method of Masson to compute trapping by
-                       scanning the invasion sequence in reverse and detecting
-                       disconnected clusters using a disjoint data set. This
-                       method is substantially faster than the others.
-            'mixed'    Combines site and bond percolation to enforce that the
-                       defending fluid can only escape via a path of consisting
-                       of uninvaded sites and bonds.
-            'bond'     The defending phase can escape via a path of connected
-                       bonds regardless of whether any sites are invaded.
-            'site'     The defending phase can escapse via path connected sites
-                       regardless of whether any bonds are invaded.
-            ========== ========================================================
+        Adjusts the invasion sequence of pores and throats that are trapped
+        using the reverse invasion percolation procedure outlined by Masson [1].
 
         Returns
         -------
