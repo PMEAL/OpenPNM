@@ -1,16 +1,14 @@
 import numpy as np
 from tqdm import tqdm
 from collections import namedtuple
-from openpnm.core import ModelMixin2
 from openpnm.algorithms import GenericAlgorithm
+from openpnm.algorithms import _find_trapped_pores
 from openpnm.utils import Docorator, TypedSet
 from openpnm._skgraph.simulations import (
     bond_percolation,
     site_percolation,
     mixed_percolation,
     find_connected_clusters,
-    find_trapped_sites,
-    find_trapped_bonds,
 )
 
 
@@ -64,16 +62,20 @@ class Drainage(GenericAlgorithm):
         self['throat.trapped'] = False
         self['pore.invasion_pressure'] = np.inf
         self['throat.invasion_pressure'] = np.inf
+        self['pore.invasion_sequence'] = -1
+        self['throat.invasion_sequence'] = -1
 
     def set_residual(self, pores=None, throats=None, mode='add'):
         if pores is not None:
             self['pore.invaded'][pores] = True
             self['pore.residual'][pores] = True
             self['pore.invasion_pressure'][self['pore.invaded']] = -np.inf
+            self['pore.invasion_sequence'][pores] = 0
         if throats is not None:
             self['throat.invaded'][throats] = True
             self['throat.residual'][throats] = True
             self['throat.invasion_pressure'][self['throat.invaded']] = -np.inf
+            self['throat.invasion_sequence'][throats] = 0
 
     def set_inlets(self, pores, mode='add'):
         if mode == 'add':
@@ -108,8 +110,10 @@ class Drainage(GenericAlgorithm):
             self._run_special(p)
             pmask = self['pore.invaded'] * (self['pore.invasion_pressure'] == np.inf)
             self['pore.invasion_pressure'][pmask] = p
+            self['pore.invasion_sequence'][pmask] = i
             tmask = self['throat.invaded'] * (self['throat.invasion_pressure'] == np.inf)
             self['throat.invasion_pressure'][tmask] = p
+            self['throat.invasion_sequence'][tmask] = i
         # If any outlets were specified, evaluate trapping
         if np.any(self['pore.outlets']):
             self.apply_trapping()
@@ -170,6 +174,8 @@ class Drainage(GenericAlgorithm):
         self['throat.invaded'][self['throat.trapped']] = False
         self['pore.invasion_pressure'][self['pore.trapped']] = np.inf
         self['throat.invasion_pressure'][self['throat.trapped']] = np.inf
+        self['pore.invasion_sequence'][self['pore.trapped']] = -1
+        self['throat.invasion_sequence'][self['throat.trapped']] = -1
 
     def pc_curve(self, pressures=None):
         if pressures is None:
@@ -233,7 +239,7 @@ if __name__ == "__main__":
     plt.rcParams['axes.facecolor'] = 'grey'
 
     np.random.seed(0)
-    Nx, Ny, Nz = 60, 60, 1
+    Nx, Ny, Nz = 20, 20, 1
     pn = op.network.Cubic([Nx, Ny, Nz], spacing=1e-5)
     pn.add_model_collection(op.models.collections.geometry.spheres_and_cylinders)
     pn.regenerate_models()
@@ -247,20 +253,36 @@ if __name__ == "__main__":
                   contact_angle=140,
                   surface_tension=0.480,
                   diameter='pore.diameter')
+
     # %%
     drn = Drainage(network=pn, phase=nwp)
-    drn.set_residual(pores=np.random.randint(0, Nx*Ny, int(Nx*Ny/10)))
+    # drn.set_residual(pores=np.random.randint(0, Nx*Ny, int(Nx*Ny/10)))
     drn.set_inlets(pores=pn.pores('left'))
     pressures = np.logspace(np.log10(0.1e6), np.log10(8e6), 40)
     drn.run(pressures)
     drn.set_outlets(pores=pn.pores('right'))
-    drn.apply_trapping(mode='bond')
+    # drn.apply_trapping()
 
     # %%
-    if 1:
-        fig, ax = plt.subplots(1, 1)
-        ax.semilogx(*drn.pc_curve(pressures), 'wo-')
+    if 0:
+        fig, ax = plt.subplots(1, 1, figsize=[20, 20])
+        ax.semilogx(*drn.pc_curve(pressures), 'bo-')
         ax.set_ylim([-.05, 1.05])
+
+
+    if 0:
+        import openpnm as op
+        tseq = drn['throat.invasion_pressure']
+        pseq = drn['pore.invasion_pressure']
+        Pmax = np.amax(tseq[tseq < np.inf])
+        pseq[pseq > Pmax] = Pmax + 1
+        tseq[tseq > Pmax] = Pmax + 1
+        for j, i in enumerate(tqdm(np.unique(tseq)[:-1])):
+            ax = op.topotools.plot_connections(pn, tseq<=i, linestyle='--', c='r', linewidth=3)
+            op.topotools.plot_coordinates(pn, pseq<=i, c='b', marker='x', markersize=100, ax=ax)
+            op.topotools.plot_coordinates(pn, drn['pore.trapped'], c='c', marker='o', markersize=100, ax=ax)
+            plt.savefig(f"{str(j).zfill(3)}.png")
+            plt.close()
 
     # %%
     if 0:
