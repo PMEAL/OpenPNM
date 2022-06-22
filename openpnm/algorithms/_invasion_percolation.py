@@ -1,10 +1,8 @@
 import logging
 import heapq as hq
 import numpy as np
-from numba import njit, jit
-from numba.typed import List
+from numba import njit
 from tqdm import tqdm
-from scipy.stats import rankdata
 from collections import namedtuple
 from openpnm.utils import Docorator
 from openpnm.topotools import find_clusters
@@ -292,63 +290,6 @@ class InvasionPercolation(GenericAlgorithm):
         data = pc_curve(data.Pc, np.cumsum(data.vol))
         return data
 
-    def _apply_trapping2(self):
-        """
-        Apply trapping based on algorithm described by Y. Masson [1].
-
-        References
-        ----------
-        [1] Masson, Y., 2016. A fast two-step algorithm for invasion
-        percolation with trapping. Computers & Geosciences, 90, pp.41-48
-        """
-        # First see if network is fully invaded
-        net = self.project.network
-        invaded_ps = self['pore.invasion_sequence'] > -1
-        if ~np.all(invaded_ps):
-            # Put defending phase into clusters
-            clusters = find_clusters(network=net, mask=~invaded_ps)
-            # Identify clusters that are connected to an outlet and set to -2
-            # -1 is the invaded fluid
-            # -2 is the defender fluid able to escape
-            # All others now trapped clusters which grow as invasion is reversed
-            out_clusters = np.unique(clusters[self['pore.outlets']])
-            for c in out_clusters:
-                if c >= 0:
-                    clusters[clusters == c] = -2
-        else:
-            # Go from end
-            clusters = -np.ones(net.Np, dtype=int)
-            clusters[self['pore.outlets']] = -2
-        # Turn into a list for indexing
-        inv_seq = np.vstack((self['pore.invasion_sequence'].astype(int),
-                             np.arange(0, net.Np, dtype=int))).T
-        # Reverse sort list
-        inv_seq = inv_seq[inv_seq[:, 0].argsort()][::-1]
-        # For all the steps after the inlets are set up to break-through
-        # Reverse the sequence and assess the neighbors cluster state
-        am = net.create_adjacency_matrix(fmt='csr')
-        clusters = reverse_ip(inv_seq, clusters, am.indices, am.indptr)
-        # And now return clusters
-        self['pore.clusters'] = clusters
-        self['pore.trapped'] = self['pore.clusters'] > -1
-        trapped_ts = net.find_neighbor_throats(self['pore.trapped'])
-        self['throat.trapped'] = False
-        self['throat.trapped'][trapped_ts] = True
-        self['pore.invasion_sequence'][self['pore.trapped']] = -1
-        self['throat.invasion_sequence'][self['throat.trapped']] = -1
-        # Apply a fix to remove incorrectly invaded throats
-        # TODO: Fix the reverse_ip function to prevent the following problem
-        # from occuring to start with
-        # NOTE: The following fix is not perfect. It seems that pores on the
-        # outlet are not treated as invaded by the clustering, so an escape
-        # route that includes invaded outlet pores is considered valid
-        tmask = np.stack((self['throat.invasion_sequence'],
-                          self['throat.invasion_sequence'])).T
-        pmask = self['pore.invasion_sequence'][net.conns]
-        hits = ~np.any(pmask == tmask, axis=1)
-        self['throat.trapped'][hits] = True
-        self['throat.invasion_sequence'][hits] = -1
-
     def apply_trapping(self, step_size=1, mode='mixed'):
         r"""
         Analyze which pores and throats are trapped
@@ -395,9 +336,6 @@ class InvasionPercolation(GenericAlgorithm):
 
         """
         if mode == 'reverse':
-            self._apply_trapping2()
-            return
-        if mode == 'reverse2':
             outlets = np.where(self['pore.outlets'])[0]
             am = self.network.create_adjacency_matrix(fmt='csr')
             inv_seq = self['pore.invasion_sequence']
@@ -443,61 +381,6 @@ class InvasionPercolation(GenericAlgorithm):
         # Set any residual pores within trapped clusters back to untrapped
         self['pore.trapped'][self['pore.residual']] = False
         self['throat.trapped'][self['throat.residual']] = False
-
-
-@njit
-def reverse_ip(inv_seq,
-               clusters,
-               indices,
-               indptr):
-    stopped_clusters = np.zeros_like(clusters)
-    next_cluster_num = np.max(clusters)+1
-    i = -1
-    for un_seq, pore in inv_seq:
-        i += 1
-        un_seq, pore = inv_seq[i]
-        neighbors = indices[indptr[pore]:indptr[pore+1]]
-        nc = clusters[neighbors]  # Get cluster numbers of all neighbor pores
-        unique_ns = np.unique(nc[nc != -1])  # Isolate unique neighbor clusters
-        if np.all(nc == -1):
-            # The current pore and all of its neighbors have not been visited
-            # so it has no cluster label, so let's start growing a new cluster
-            # from this pore
-            clusters[pore] = next_cluster_num
-            next_cluster_num += 1
-            print('case 1')
-        elif (len(unique_ns) == 1) and (-2 not in unique_ns):
-            # If all of the neighbors have the same cluster number, assign that
-            # cluster number to the current pore...unless any of the neighbors
-            # are 'stopped', in which case mark the current pore as stopped too
-            if not stopped_clusters[unique_ns[0]]:
-                clusters[pore] = unique_ns[0]
-            else:
-                clusters[pore] = -2
-            print('case 2')
-        elif -2 in unique_ns:
-            # If any of the neighbors are an outlet, then set current pore to
-            # have a cluster number of -2 also (seems like this may be the problem)
-            clusters[pore] = -2
-            # Label all neighboring pores as stopped
-            stopped_clusters[unique_ns[unique_ns > -1]] = True
-            print('case 3')
-        else:
-            print('case 4')
-            # If any of the neighbors are set to stopped,
-            if np.any(stopped_clusters[unique_ns]):
-                clusters[pore] = -2
-                # Stop growing all neighboring clusters
-                stopped_clusters[unique_ns] = True
-            else:
-                # Merge multiple un-stopped trapped clusters
-                new_num = unique_ns[0]
-                clusters[pore] = new_num
-                for c in unique_ns:
-                    # TODO: This seems like it's a speed bottleneck as it
-                    # does not use the disjoint dataset approach
-                    clusters[clusters == c] = new_num
-    return clusters
 
 
 @njit
@@ -558,7 +441,6 @@ def reverse2(inv_seq, indices, indptr, outlets):
     return trapped_pores
 
 
-# %%
 @njit
 def _run_accelerated(t_start, t_sorted, t_order, t_inv, p_inv, p_inv_t,
                      conns, idx, indptr, n_steps):
