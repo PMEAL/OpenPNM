@@ -391,6 +391,25 @@ class InvasionPercolation(GenericAlgorithm):
         if mode == 'reverse':
             self._apply_trapping2()
             return
+        if mode == 'reverse2':
+            outlets = np.where(self['pore.outlets'])[0]
+            am = self.network.create_adjacency_matrix(fmt='csr')
+            inv_seq = self['pore.invasion_sequence']
+            indices = am.indices
+            indptr = am.indptr
+            self['pore.trapped'] = reverse2(inv_seq, am.indices, am.indptr, outlets)
+            self['pore.invasion_sequence'][self['pore.trapped']] = -1
+            trapped_ts = self.network.find_neighbor_throats(self['pore.trapped'])
+            self['throat.trapped'] = False
+            self['throat.trapped'][trapped_ts] = True
+            self['throat.invasion_sequence'][self['throat.trapped']] = -1
+            tmask = np.stack((self['throat.invasion_sequence'],
+                              self['throat.invasion_sequence'])).T
+            pmask = self['pore.invasion_sequence'][self.network.conns]
+            hits = ~np.any(pmask == tmask, axis=1)
+            self['throat.trapped'][hits] = True
+            self['throat.invasion_sequence'][hits] = -1
+            return
         # TODO: This could be parallelized with dask since each loop is
         # independent of the others
         N = self['throat.invasion_sequence'].max()
@@ -479,36 +498,69 @@ def reverse2(inv_seq, indices, indptr, outlets):
     Np = len(inv_seq)
     sorted_seq = np.vstack((inv_seq.astype(int), np.arange(Np))).T
     sorted_seq = sorted_seq[sorted_seq[:, 0].argsort()][::-1]
-    clusters = qupc_initialize(Np)
-    clusters[outlets] = 0
-    next_cluster_num = 1
+    cluster = -np.ones(Np, dtype=int)
+    trapped_pores = np.zeros(Np, dtype=bool)
+    trapped_clusters = np.zeros(Np, dtype=bool)
+    cluster_map = qupc_initialize(Np)
+    next_cluster_num = 0
     i = -1
     for step, pore in sorted_seq:
         i += 1
         step, pore = sorted_seq[i, :]
         print(step, pore)
-        neighbors = indices[indptr[pore]:indptr[pore+1]]
-        nc = clusters[neighbors]
-
-    # clusters = qupc_finalize(clusters, compress=True)
-    print(clusters)
-
-
-
-
-
-
-
-# %%
-import openpnm as op
-pn = op.network.Cubic([4, 4, 1])
-pn['pore.invasion_sequence'] = [0, 1, 2, 3, 10, 11, 4, 13, 9, 12, 5, 15, 8, 7, 6, 14]
-inv_seq = pn['pore.invasion_sequence']
-am = pn.create_adjacency_matrix(fmt='csr')
-indices = am.indices
-indptr = am.indptr
-outlets = np.array([12, 13, 14, 15])
-
+        n = indices[indptr[pore]:indptr[pore+1]]
+        nc = cluster_map[cluster[n]][inv_seq[n] > step]
+        print(nc)
+        if len(nc) == 0:
+            print(f'Pore {pore} is isolated, starting cluster {next_cluster_num}')
+            # Found an isolated pore, start a new cluster
+            cluster[pore] = next_cluster_num
+            # If pore is an outlet then note cluster as no longer trapped
+            if pore in outlets:
+                print(f'Pore {pore} is an outlet, setting cluster to untrapped')
+                trapped_clusters[next_cluster_num] = False
+            else:  # Otherwise note this cluster as being a trapped cluster
+                trapped_clusters[next_cluster_num] = True
+                # Note this pore as trapped as well
+                trapped_pores[pore] = True
+            # Increment cluster number for next time
+            next_cluster_num += 1
+        elif len(np.unique(nc)) == 1:
+            c = np.unique(nc)[0]
+            print(f'Pore {pore} is attached to cluster {c}')
+            # Neighbor have one unique cluster number, so assign it to current pore
+            cluster[pore] = c
+            # If pore is an outlet then note cluster as no longer trapped
+            if pore in outlets:
+                print(f'Pore {pore} is an outlet, setting cluster to untrapped')
+                trapped_clusters[c] = False
+                # Also set all joined clusters to not trapped
+                cluster_map = qupc_reduce(cluster_map, compress=False)
+                hits = np.where(cluster_map == cluster_map[c])[0]
+                trapped_clusters[hits] = False
+            # If this cluster number is part of a trapped cluster then
+            # mark pore as trapped
+            if trapped_clusters[c]:
+                print(f'Cluster {c} is still trapped, so is pore {pore}')
+                trapped_pores[pore] = True
+        elif len(np.unique(nc)) > 1:
+            print('Found multiple neighboring clusters')
+            cluster[pore] = min(np.unique(nc))
+            # Merge all clusters into a single cluster
+            for c in nc:
+                qupc_update(cluster_map, c, min(np.unique(nc)))
+            cluster_map = qupc_reduce(cluster_map, compress=False)
+            # If all neighboring clusters are trapped, then set current pore to
+            # trapped as well
+            if np.all(trapped_clusters[nc]):
+                print(f'All neighboring clusters are trapped, setting pore {pore} to trapped as well')
+                trapped_pores[pore] = True
+            else:  # Otherwise set all neighbor clusters to untrapped!
+                print('At least one neighboring cluster is not trapped, setting others to untrapped')
+                trapped_clusters[nc] = False
+    qupc_reduce(cluster_map, compress=True)
+    cluster = cluster_map[cluster]
+    return trapped_pores
 
 
 # %%
@@ -551,22 +603,23 @@ def qupc_reduce(arr, compress=True):
     return arr
 
 
-a = qupc_initialize(10)
-qupc_update(a, 4, 2)
-qupc_update(a, 7, 4)
-qupc_update(a, 9, 6)
-qupc_update(a, 6, 2)
-qupc_update(a, 5, 9)
-assert np.all(a == [0, 1, 2, 3, 2, 6, 2, 2, 8, 6])
-qupc_reduce(a, compress=False)
-assert np.all(a == [0, 1, 2, 3, 2, 2, 2, 2, 8, 2])
-qupc_update(a, 9, 9)
-qupc_update(a, 0, 1)
-qupc_update(a, 8, 0)
-assert np.all(a == [1, 1, 2, 3, 2, 2, 2, 2, 1, 9])
-qupc_reduce(a, compress=True)
-assert np.all(a == [0, 0, 1, 2, 1, 1, 1, 1, 0, 3])
-print(a)
+if 0:
+    a = qupc_initialize(10)
+    qupc_update(a, 4, 2)
+    qupc_update(a, 7, 4)
+    qupc_update(a, 9, 6)
+    qupc_update(a, 6, 2)
+    qupc_update(a, 5, 9)
+    assert np.all(a == [0, 1, 2, 3, 2, 6, 2, 2, 8, 6])
+    qupc_reduce(a, compress=False)
+    assert np.all(a == [0, 1, 2, 3, 2, 2, 2, 2, 8, 2])
+    qupc_update(a, 9, 9)
+    qupc_update(a, 0, 1)
+    qupc_update(a, 8, 0)
+    assert np.all(a == [1, 1, 2, 3, 2, 2, 2, 2, 1, 9])
+    qupc_reduce(a, compress=True)
+    assert np.all(a == [0, 0, 1, 2, 1, 1, 1, 1, 0, 3])
+    print(a)
 
 # %%
 @njit
@@ -623,8 +676,8 @@ if __name__ == '__main__':
     import openpnm as op
     import matplotlib.pyplot as plt
 
-    np.random.seed(0)
-    Nx, Ny, Nz = 20, 20, 1
+    np.random.seed(2)
+    Nx, Ny, Nz = 6, 6, 1
     pn = op.network.Cubic(shape=[Nx, Ny, Nz], spacing=1e-4)
     pn.add_model_collection(op.models.collections.geometry.spheres_and_cylinders)
     pn.regenerate_models()
@@ -637,12 +690,20 @@ if __name__ == '__main__':
 
     p_residual = np.random.randint(0, Nx*Ny, int(Nx*Ny/10))
     t_residual = pn.find_neighbor_throats(p_residual, mode='or')
-    # %%
+
     ip = InvasionPercolation(network=pn, phase=water)
     ip.set_inlets(pn.pores('left'))
     ip.run()
     ip.set_outlets(pn.pores('right'))
-    # ip.apply_trapping(step_size=1, mode='reverse')
+    ip.apply_trapping(step_size=1, mode='reverse2')
+
+    ip2 = InvasionPercolation(network=pn, phase=water)
+    ip2.set_inlets(pn.pores('left'))
+    ip2.run()
+    ip2.set_outlets(pn.pores('right'))
+    ip2.apply_trapping(step_size=1, mode='mixed')
+
+    assert np.all(ip['pore.trapped'] == ip2['pore.trapped'])
 
     # %%
     if 1:
@@ -650,7 +711,7 @@ if __name__ == '__main__':
         tseq = np.copy(ip['throat.invasion_sequence'])
         ax = op.topotools.plot_connections(pn, tseq>=0, linestyle='--', c='b', linewidth=3)
         op.topotools.plot_coordinates(pn, pseq>=0, c='r', marker='x', markersize=100, ax=ax)
-        op.topotools.plot_coordinates(pn, ip['pore.trapped'], c='c', marker='o', markersize=100, ax=ax)
+        op.topotools.plot_coordinates(pn, pseq<0, c='c', marker='o', markersize=100, ax=ax)
 
     # %%
     if 0:
@@ -672,18 +733,19 @@ if __name__ == '__main__':
 
 
     # %%
-    if 0:
+    if 1:
+        ip = ip2
         from matplotlib import animation
         import openpnm as op
         pseq = ip['pore.invasion_sequence']
         pseq[pseq == -1] = pseq.max() + 1
         tseq = ip['throat.invasion_sequence']
         tseq[tseq == -1] = tseq.max() + 1
-        for i in tqdm(np.unique(pseq)[:-1]):
+        for j, i in enumerate(tqdm(np.unique(tseq)[:-1])):
             ax = op.topotools.plot_connections(pn, tseq<=i, linestyle='--', c='r', linewidth=3)
             op.topotools.plot_coordinates(pn, pseq<=i, c='b', marker='x', markersize=100, ax=ax)
             op.topotools.plot_coordinates(pn, ip['pore.trapped'], c='c', marker='o', markersize=100, ax=ax)
-            plt.savefig(f"{str(i).zfill(3)}.png")
+            plt.savefig(f"{str(j).zfill(3)}.png")
             plt.close()
 
 
