@@ -1,7 +1,7 @@
 import logging
 import heapq as hq
 import numpy as np
-from numba import njit
+from numba import njit, jit
 from numba.typed import List
 from tqdm import tqdm
 from scipy.stats import rankdata
@@ -494,30 +494,27 @@ def reverse_ip(inv_seq,
     return clusters
 
 
+@njit
 def reverse2(inv_seq, indices, indptr, outlets):
     Np = len(inv_seq)
-    sorted_seq = np.vstack((inv_seq.astype(int), np.arange(Np))).T
+    sorted_seq = np.vstack((inv_seq.astype(np.int_), np.arange(Np, dtype=np.int_))).T
     sorted_seq = sorted_seq[sorted_seq[:, 0].argsort()][::-1]
-    cluster = -np.ones(Np, dtype=int)
-    trapped_pores = np.zeros(Np, dtype=bool)
-    trapped_clusters = np.zeros(Np, dtype=bool)
+    cluster = -np.ones(Np, dtype=np.int_)
+    trapped_pores = np.zeros(Np, dtype=np.bool_)
+    trapped_clusters = np.zeros(Np, dtype=np.bool_)
     cluster_map = qupc_initialize(Np)
     next_cluster_num = 0
     i = -1
     for step, pore in sorted_seq:
         i += 1
         step, pore = sorted_seq[i, :]
-        print(step, pore)
         n = indices[indptr[pore]:indptr[pore+1]]
         nc = cluster_map[cluster[n]][inv_seq[n] > step]
-        print(nc)
         if len(nc) == 0:
-            print(f'Pore {pore} is isolated, starting cluster {next_cluster_num}')
             # Found an isolated pore, start a new cluster
             cluster[pore] = next_cluster_num
             # If pore is an outlet then note cluster as no longer trapped
             if pore in outlets:
-                print(f'Pore {pore} is an outlet, setting cluster to untrapped')
                 trapped_clusters[next_cluster_num] = False
             else:  # Otherwise note this cluster as being a trapped cluster
                 trapped_clusters[next_cluster_num] = True
@@ -527,79 +524,65 @@ def reverse2(inv_seq, indices, indptr, outlets):
             next_cluster_num += 1
         elif len(np.unique(nc)) == 1:
             c = np.unique(nc)[0]
-            print(f'Pore {pore} is attached to cluster {c}')
             # Neighbor have one unique cluster number, so assign it to current pore
             cluster[pore] = c
             # If pore is an outlet then note cluster as no longer trapped
             if pore in outlets:
-                print(f'Pore {pore} is an outlet, setting cluster to untrapped')
                 trapped_clusters[c] = False
                 # Also set all joined clusters to not trapped
-                cluster_map = qupc_reduce(cluster_map, compress=False)
+                cluster_map = qupc_reduce(cluster_map)
                 hits = np.where(cluster_map == cluster_map[c])[0]
                 trapped_clusters[hits] = False
             # If this cluster number is part of a trapped cluster then
             # mark pore as trapped
             if trapped_clusters[c]:
-                print(f'Cluster {c} is still trapped, so is pore {pore}')
                 trapped_pores[pore] = True
         elif len(np.unique(nc)) > 1:
-            print('Found multiple neighboring clusters')
             cluster[pore] = min(np.unique(nc))
             # Merge all clusters into a single cluster
             for c in nc:
                 qupc_update(cluster_map, c, min(np.unique(nc)))
-            cluster_map = qupc_reduce(cluster_map, compress=False)
+            cluster_map = qupc_reduce(cluster_map)
             # If all neighboring clusters are trapped, then set current pore to
             # trapped as well
             if np.all(trapped_clusters[nc]):
-                print(f'All neighboring clusters are trapped, setting pore {pore} to trapped as well')
                 trapped_pores[pore] = True
             else:  # Otherwise set all neighbor clusters to untrapped!
-                print('At least one neighboring cluster is not trapped, setting others to untrapped')
                 trapped_clusters[nc] = False
-    qupc_reduce(cluster_map, compress=True)
-    cluster = cluster_map[cluster]
     return trapped_pores
 
 
 # %%
 
+@njit
 def qupc_initialize(size):
-    return np.arange(size, dtype=int)
+    return np.arange(size, dtype=np.int_)
 
 
 @njit
-def _update(arr, ind, val):
-    # Update array and do path compression simultaneously
-    while arr[ind] != val:
-        arr[ind] = arr[val]
-        ind = val
-        val = arr[val]
-    return arr
-
-
 def qupc_update(arr, ind, val):
     if ind == val:
         arr[ind] = val
     else:
-        arr = _update(arr, ind, val)
+        # Update array and do path compression simultaneously
+        while arr[ind] != val:
+            arr[ind] = arr[val]
+            ind = val
+            val = arr[val]
+    return arr
+
+
+def qupc_compress(arr):
+    temp = rankdata(arr, method='dense')
+    arr[:] = temp
+    arr -= 1
     return arr
 
 
 @njit
-def _finalize(arr):
+def qupc_reduce(arr):
     for i in range(len(arr)-1, 0, -1):
         arr[i] = arr[arr[i]]
-    return arr
-
-
-def qupc_reduce(arr, compress=True):
-    arr = _finalize(arr)
-    if compress:
-        temp = rankdata(arr, method='dense')
-        arr[:] = temp
-        arr -= 1
     return arr
 
 
@@ -676,34 +659,35 @@ if __name__ == '__main__':
     import openpnm as op
     import matplotlib.pyplot as plt
 
-    np.random.seed(2)
-    Nx, Ny, Nz = 6, 6, 1
-    pn = op.network.Cubic(shape=[Nx, Ny, Nz], spacing=1e-4)
-    pn.add_model_collection(op.models.collections.geometry.spheres_and_cylinders)
-    pn.regenerate_models()
-    pn['pore.volume@left'] = 0.0
-    # op.topotools.trim(pn, pores=[380, 395])
+    for seed in [2]:
+        np.random.seed(seed)
+        Nx, Ny, Nz = 25, 25, 1
+        pn = op.network.Cubic(shape=[Nx, Ny, Nz], spacing=1e-4)
+        pn.add_model_collection(op.models.collections.geometry.spheres_and_cylinders)
+        pn.regenerate_models()
+        pn['pore.volume@left'] = 0.0
+        # op.topotools.trim(pn, pores=[380, 395])
 
-    water = op.phase.Water(network=pn, name='h2o')
-    water.add_model_collection(op.models.collections.physics.standard)
-    water.regenerate_models()
+        water = op.phase.Water(network=pn, name='h2o')
+        water.add_model_collection(op.models.collections.physics.standard)
+        water.regenerate_models()
 
-    p_residual = np.random.randint(0, Nx*Ny, int(Nx*Ny/10))
-    t_residual = pn.find_neighbor_throats(p_residual, mode='or')
+        p_residual = np.random.randint(0, Nx*Ny, int(Nx*Ny/10))
+        t_residual = pn.find_neighbor_throats(p_residual, mode='or')
 
-    ip = InvasionPercolation(network=pn, phase=water)
-    ip.set_inlets(pn.pores('left'))
-    ip.run()
-    ip.set_outlets(pn.pores('right'))
-    ip.apply_trapping(step_size=1, mode='reverse2')
+        ip = InvasionPercolation(network=pn, phase=water)
+        ip.set_inlets(pn.pores('left'))
+        ip.run()
+        ip.set_outlets(pn.pores('right'))
+        ip.apply_trapping(step_size=1, mode='reverse2')
 
-    ip2 = InvasionPercolation(network=pn, phase=water)
-    ip2.set_inlets(pn.pores('left'))
-    ip2.run()
-    ip2.set_outlets(pn.pores('right'))
-    ip2.apply_trapping(step_size=1, mode='mixed')
+        ip2 = InvasionPercolation(network=pn, phase=water)
+        ip2.set_inlets(pn.pores('left'))
+        ip2.run()
+        ip2.set_outlets(pn.pores('right'))
+        ip2.apply_trapping(step_size=1, mode='mixed')
 
-    assert np.all(ip['pore.trapped'] == ip2['pore.trapped'])
+        assert np.all(ip['pore.trapped'] == ip2['pore.trapped'])
 
     # %%
     if 1:
@@ -733,7 +717,7 @@ if __name__ == '__main__':
 
 
     # %%
-    if 1:
+    if 0:
         ip = ip2
         from matplotlib import animation
         import openpnm as op
