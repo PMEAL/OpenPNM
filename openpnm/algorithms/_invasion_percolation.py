@@ -317,7 +317,7 @@ class InvasionPercolation(GenericAlgorithm):
                                                    am.indptr, outlets)
         # Update invasion sequence
         self['pore.invasion_sequence'][self['pore.trapped']] = -1
-        # Fine which throats are trapped, including throats which were invaded
+        # Find which throats are trapped, including throats which were invaded
         # after both of it's pores were invaded (hence have a unique invasion
         # sequence number).
         pmask = self['pore.invasion_sequence'][self.network.conns]

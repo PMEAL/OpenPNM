@@ -2,7 +2,6 @@ import numpy as np
 from tqdm import tqdm
 from collections import namedtuple
 from openpnm.algorithms import GenericAlgorithm
-from openpnm.algorithms import _find_trapped_pores
 from openpnm.utils import Docorator, TypedSet
 from openpnm._skgraph.simulations import (
     bond_percolation,
@@ -80,7 +79,7 @@ class Drainage(GenericAlgorithm):
     def set_inlets(self, pores, mode='add'):
         if mode == 'add':
             self['pore.inlets'][pores] = True
-        elif mode == 'drop':
+        elif mode == 'remove':
             self['pore.inlets'][pores] = False
         elif mode == 'clear':
             self['pore.inlets'] = False
@@ -93,7 +92,7 @@ class Drainage(GenericAlgorithm):
     def set_outlets(self, pores, mode='add'):
         if mode == 'add':
             self['pore.outlets'][pores] = True
-        elif mode == 'drop':
+        elif mode == 'remove':
             self['pore.outlets'][pores] = False
         elif mode == 'clear':
             self['pore.outlets'] = False
@@ -120,54 +119,72 @@ class Drainage(GenericAlgorithm):
 
     def _run_special(self, pressure):
         phase = self.project[self.settings.phase]
-        # Perform Percolation -------------------------------------------------
         Tinv = phase[self.settings.throat_entry_pressure] <= pressure
-        # ax = op.topotools.plot_connections(pn, throats=Tinv)
-
-        # Pre-seed invaded locations with residual, if any
         Tinv += self['throat.invaded']
-        # op.topotools.plot_connections(pn, throats=self['throat.invaded'], c='r', ax=ax)
-
         # Remove trapped throats from this list, if any
         Tinv[self['throat.trapped']] = False
-        # op.topotools.plot_connections(pn, throats=self['throat.trapped'], c='g', ax=ax)
-
         # Perform bond_percolation to label invaded clusters
         s_labels, b_labels = bond_percolation(self.network.conns, Tinv)
-        # ax = op.topotools.plot_connections(pn, color_by=(b_labels + 10)*(b_labels >= 0))
-        # op.topotools.plot_coordinates(pn, color_by=(s_labels + 10)*(s_labels >= 0), ax=ax, s=200)
-
         # Remove label from any clusters not connected to the inlets
         s_labels, b_labels = find_connected_clusters(
             b_labels, s_labels, self['pore.inlets'], asmask=False)
-        # ax = op.topotools.plot_connections(pn, color_by=(b_labels + 10)*(b_labels >= 0))
-        # op.topotools.plot_coordinates(pn, color_by=(s_labels + 10)*(s_labels >= 0), ax=ax, s=200)
-
         # Add result to existing invaded locations
         self['pore.invaded'][s_labels >= 0] = True
         self['throat.invaded'][b_labels >= 0] = True
-        # ax = op.topotools.plot_connections(pn, c='w', linestyle='--')
-        # op.topotools.plot_connections(pn, throats=self['throat.invaded'], c='b', ax=ax)
-        # op.topotools.plot_coordinates(pn, pores=self['pore.invaded'], c='b', ax=ax, s=200)
 
-    def apply_trapping(self, mode='mixed'):
-        pressures = np.unique(self['pore.invasion_pressure'])
-        tseq = self['throat.invasion_pressure']
+    def apply_trapping(self):
+        r"""
+        Adjusts the invasion history of pores and throats that are trapped.
+
+        Returns
+        -------
+        This function returns nothing, but the following adjustments are made
+        to the data on the object for trapped pores and throats:
+
+        * ``'pore/throat.trapped'`` is set to ``True``
+        * ``'pore/throat.invaded'`` is set to ``False``
+        * ``'pore/throat.invasion_pressure'`` is set to ``np.inf``
+        * ``'pore/throat.invasion_sequence'`` is set to ``0``
+
+        Notes
+        -----
+        This search proceeds by the following 3 steps:
+
+        1. A site percolation is applied to *uninvaded* pores and they are set
+        to trapped if they belong to a cluster that is not connected to the
+        outlets.
+
+        2. All throats which were invaded at a pressure *higher* than either
+        of its two neighboring pores are set to trapped, regardless of
+        whether the pores themselves are trapped.
+
+        3. All throats which are connected to trapped pores are set to trapped
+        as these cannot be invaded since the fluid they contain cannot escape.
+
+        """
         pseq = self['pore.invasion_pressure']
-        for p in pressures:
-            if mode == 'bond':
-                s, b = bond_percolation(conns=self.network.conns,
-                                        occupied_bonds=tseq > p)
-            elif mode == 'site':
-                s, b = site_percolation(conns=self.network.conns,
-                                        occupied_sites=pseq > p)
-            elif mode == 'mixed':
-                s, b = mixed_percolation(conns=self.network.conns,
-                                         occupied_sites=pseq > p,
-                                         occupied_bonds=tseq > p)
+        tseq = self['throat.invasion_pressure']
+        # Firstly, find any throats who were invaded at a pressure higher than
+        # either of its two neighboring pores
+        temp = (pseq[self.network.conns].T > tseq).T
+        self['throat.trapped'][np.all(temp, axis=1)] = True
+        # Now scan through and use site percolation to find other trapped
+        # clusters of pores
+        for p in np.unique(pseq):
+            s, b = site_percolation(conns=self.network.conns,
+                                    occupied_sites=pseq > p)
+            # Identify cluster numbers connected to the outlets
             clusters = np.unique(s[self['pore.outlets']])
+            # Find ALL throats connected to any trapped site, since these
+            # throats must also be trapped, and update their cluster numbers
+            Ts = self.network.find_neighbor_throats(pores=s >= 0)
+            b[Ts] = np.amax(s[self.network.conns], axis=1)[Ts]
+            # Finally, mark pores and throats as trapped if their cluster
+            # numbers are NOT connected to the outlets
             self['pore.trapped'] += np.isin(s, clusters, invert=True)*(s >= 0)
             self['throat.trapped'] += np.isin(b, clusters, invert=True)*(b >= 0)
+        # Use the identified trapped pores and throats to update the other
+        # data on the object accordingly
         self['pore.trapped'][self['pore.residual']] = False
         self['throat.trapped'][self['throat.residual']] = False
         self['pore.invaded'][self['pore.trapped']] = False
@@ -239,7 +256,7 @@ if __name__ == "__main__":
     plt.rcParams['axes.facecolor'] = 'grey'
 
     np.random.seed(0)
-    Nx, Ny, Nz = 20, 20, 1
+    Nx, Ny, Nz = 50, 50, 1
     pn = op.network.Cubic([Nx, Ny, Nz], spacing=1e-5)
     pn.add_model_collection(op.models.collections.geometry.spheres_and_cylinders)
     pn.regenerate_models()
@@ -261,14 +278,13 @@ if __name__ == "__main__":
     pressures = np.logspace(np.log10(0.1e6), np.log10(8e6), 40)
     drn.run(pressures)
     drn.set_outlets(pores=pn.pores('right'))
-    # drn.apply_trapping()
+    drn.apply_trapping()
 
     # %%
     if 0:
         fig, ax = plt.subplots(1, 1, figsize=[20, 20])
-        ax.semilogx(*drn.pc_curve(pressures), 'bo-')
+        ax.semilogx(*drn.pc_curve(pressures), 'ro-')
         ax.set_ylim([-.05, 1.05])
-
 
     if 0:
         import openpnm as op
@@ -289,11 +305,8 @@ if __name__ == "__main__":
         drn.reset()
         p = .9e6
         ps = np.logspace(np.log10(1e5), np.log10(p), 20)
-        # drn.run(ps)
+        drn.run(ps)
         # drn.apply_trapping()
-        for p in ps:
-            drn.run(p)
-            drn.apply_trapping()
         ax = op.topotools.plot_coordinates(
             network=pn, pores=drn['pore.inlets'],
             marker='s', edgecolor='k', c='grey', s=400, label='inlets')
@@ -321,25 +334,26 @@ if __name__ == "__main__":
         #     network=pn, pores=~drn['pore.invaded'],
         #     c='grey', ax=ax)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    # %%
+    if 0:
+        drn = Drainage(network=pn, phase=nwp)
+        drn.set_inlets(pores=pn.pores('left'))
+        pressures = np.logspace(np.log10(0.1e6), np.log10(8e6), 40)
+        drn.run(pressures)
+        drn.set_outlets(pores=pn.pores('right'))
+        pressures = np.unique(drn['pore.invasion_pressure'])
+        pseq = drn['pore.invasion_pressure']
+        p = pressures[4]
+        s, b = site_percolation(conns=pn.conns, occupied_sites=pseq > p)
+        clusters = np.unique(s[drn['pore.outlets']])
+        Ts = pn.find_neighbor_throats(pores=s >= 0)
+        b[Ts] = np.amax(s[pn.conns], axis=1)[Ts]
+        drn['pore.trapped'] += np.isin(s, clusters, invert=True)*(s >= 0)
+        drn['throat.trapped'] += np.isin(b, clusters, invert=True)*(b >= 0)
+        ax = op.topotools.plot_coordinates(pn, pores=drn['pore.trapped'],
+                                           color_by=s)
+        ax = op.topotools.plot_coordinates(pn, pores=pseq <= p, c='k', ax=ax)
+        ax = op.topotools.plot_connections(pn, throats=drn['throat.trapped'],
+                                           color_by=b, ax=ax)
+        t = drn['throat.invasion_pressure'] <= p
+        ax = op.topotools.plot_connections(pn, throats=t, c='k', linestyle='--', ax=ax)
