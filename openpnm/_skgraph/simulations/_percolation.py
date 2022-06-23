@@ -1,6 +1,5 @@
 import numpy as np
 import scipy.sparse as sprs
-import scipy.stats as spst
 from scipy.sparse import csgraph
 from collections import namedtuple
 from openpnm._skgraph.operations import split_edges
