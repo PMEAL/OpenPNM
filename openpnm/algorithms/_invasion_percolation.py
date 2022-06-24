@@ -83,10 +83,11 @@ class InvasionPercolation(GenericAlgorithm):
         self['throat.invasion_sequence'] = -1
         self['pore.trapped'] = False
         self['throat.trapped'] = False
-        self['pore.residual'] = False
-        self['throat.residual'] = False
+        # self['pore.residual'] = False
+        # self['throat.residual'] = False
 
-    def set_residual(self, pores=None, throats=None, mode='add'):
+    def _set_residual(self, pores=None, throats=None, mode='add'):
+        raise NotImplementedError("The ability to add residual nwp is not ready yet")
         if mode == 'add':
             if pores is not None:
                 self['pore.residual'][pores] = True
@@ -233,9 +234,8 @@ class InvasionPercolation(GenericAlgorithm):
         # Set invasion pressure of inlets to 0
         self['pore.invasion_pressure'][self['pore.invasion_sequence'] == 0] = 0.0
         # Set invasion sequence and pressure of any residual pores/throats to 0
-        self['throat.invasion_sequence'][self['throat.residual']] = 0
-        self['pore.invasion_sequence'][self['pore.residual']] = 0
-        self['pore.invasion_pressure'][self['pore.residual']] = 0
+        # self['throat.invasion_sequence'][self['throat.residual']] = 0
+        # self['pore.invasion_sequence'][self['pore.residual']] = 0
 
     def _run_setup(self):
         self['pore.invasion_sequence'][self['pore.inlets']] = 0
@@ -247,7 +247,7 @@ class InvasionPercolation(GenericAlgorithm):
         # Get throat capillary pressures from phase and update
         phase = self.project[self.settings['phase']]
         self['throat.entry_pressure'] = phase[self.settings['entry_pressure']]
-        self['throat.entry_pressure'][self['throat.residual']] = 0.0
+        # self['throat.entry_pressure'][self['throat.residual']] = 0.0
         # Generated indices into t_entry giving a sorted list
         self['throat.sorted'] = np.argsort(self['throat.entry_pressure'], axis=0)
         self['throat.order'] = 0
@@ -351,8 +351,8 @@ class InvasionPercolation(GenericAlgorithm):
         self['pore.invasion_sequence'][self['pore.trapped']] = -1
         self['throat.invasion_sequence'][self['throat.trapped']] = -1
         # Set any residual pores within trapped clusters back to untrapped
-        self['pore.trapped'][self['pore.residual']] = False
-        self['throat.trapped'][self['throat.residual']] = False
+        # self['pore.trapped'][self['pore.residual']] = False
+        # self['throat.trapped'][self['throat.residual']] = False
 
 
 @njit
@@ -479,9 +479,6 @@ if __name__ == '__main__':
     water.add_model_collection(op.models.collections.physics.standard)
     water.regenerate_models()
 
-    p_residual = np.random.randint(0, Nx*Ny, int(Nx*Ny/10))
-    t_residual = pn.find_neighbor_throats(p_residual, mode='or')
-
     ip = InvasionPercolation(network=pn, phase=water)
     ip.set_inlets(pn.pores('left'))
     ip.run()
@@ -501,7 +498,6 @@ if __name__ == '__main__':
     if 0:
         drn = op.algorithms.Drainage(network=pn, phase=water)
         drn.set_inlets(pn.pores('left'))
-        # drn.set_residual(pores=p_residual, throats=t_residual)
         pressures = np.unique(ip['pore.invasion_pressure'])
         # pressures = np.logspace(np.log10(0.1e3), np.log10(2e4), 100)
         drn.run(pressures=pressures)

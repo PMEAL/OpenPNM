@@ -55,8 +55,8 @@ class Drainage(GenericAlgorithm):
     def reset(self):
         self['pore.invaded'] = False
         self['throat.invaded'] = False
-        self['pore.residual'] = False
-        self['throat.residual'] = False
+        # self['pore.residual'] = False
+        # self['throat.residual'] = False
         self['pore.trapped'] = False
         self['throat.trapped'] = False
         self['pore.invasion_pressure'] = np.inf
@@ -64,7 +64,8 @@ class Drainage(GenericAlgorithm):
         self['pore.invasion_sequence'] = -1
         self['throat.invasion_sequence'] = -1
 
-    def set_residual(self, pores=None, throats=None, mode='add'):
+    def _set_residual(self, pores=None, throats=None, mode='add'):
+        raise NotImplementedError("The ability to add residual nwp is not ready yet")
         if pores is not None:
             self['pore.invaded'][pores] = True
             self['pore.residual'][pores] = True
@@ -185,8 +186,8 @@ class Drainage(GenericAlgorithm):
             self['throat.trapped'] += np.isin(b, clusters, invert=True)*(b >= 0)
         # Use the identified trapped pores and throats to update the other
         # data on the object accordingly
-        self['pore.trapped'][self['pore.residual']] = False
-        self['throat.trapped'][self['throat.residual']] = False
+        # self['pore.trapped'][self['pore.residual']] = False
+        # self['throat.trapped'][self['throat.residual']] = False
         self['pore.invaded'][self['pore.trapped']] = False
         self['throat.invaded'][self['throat.trapped']] = False
         self['pore.invasion_pressure'][self['pore.trapped']] = np.inf
@@ -256,7 +257,7 @@ if __name__ == "__main__":
     plt.rcParams['axes.facecolor'] = 'grey'
 
     np.random.seed(0)
-    Nx, Ny, Nz = 50, 50, 1
+    Nx, Ny, Nz = 10, 10, 1
     pn = op.network.Cubic([Nx, Ny, Nz], spacing=1e-5)
     pn.add_model_collection(op.models.collections.geometry.spheres_and_cylinders)
     pn.regenerate_models()
@@ -273,7 +274,6 @@ if __name__ == "__main__":
 
     # %%
     drn = Drainage(network=pn, phase=nwp)
-    # drn.set_residual(pores=np.random.randint(0, Nx*Ny, int(Nx*Ny/10)))
     drn.set_inlets(pores=pn.pores('left'))
     pressures = np.logspace(np.log10(0.1e6), np.log10(8e6), 40)
     drn.run(pressures)
@@ -285,6 +285,18 @@ if __name__ == "__main__":
         fig, ax = plt.subplots(1, 1, figsize=[20, 20])
         ax.semilogx(*drn.pc_curve(pressures), 'ro-')
         ax.set_ylim([-.05, 1.05])
+
+    if 1:
+        pressures = np.unique(drn['pore.invasion_pressure'])
+        n = 6
+        p = drn['pore.invasion_pressure'] <= pressures[n]
+        t = drn['throat.invasion_pressure'] <= pressures[n]
+        ax = op.topotools.plot_coordinates(pn, pores=p, s=500,
+                                           color_by=drn['pore.invasion_pressure'])
+        ax = op.topotools.plot_connections(pn, throats=t, linewidth=5,
+                                           color_by=drn['throat.invasion_pressure'], ax=ax)
+        # t = drn['throat.invasion_pressure'] <= p
+        # ax = op.topotools.plot_connections(pn, throats=t, c='k', linestyle='--', ax=ax)
 
     if 0:
         import openpnm as op
