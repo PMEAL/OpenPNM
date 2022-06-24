@@ -314,40 +314,6 @@ if __name__ == "__main__":
 
     # %%
     if 0:
-        drn.reset()
-        p = .9e6
-        ps = np.logspace(np.log10(1e5), np.log10(p), 20)
-        drn.run(ps)
-        # drn.apply_trapping()
-        ax = op.topotools.plot_coordinates(
-            network=pn, pores=drn['pore.inlets'],
-            marker='s', edgecolor='k', c='grey', s=400, label='inlets')
-        ax = op.topotools.plot_coordinates(
-            network=pn, pores=pn['pore.right'],
-            ax=ax, marker='d', edgecolor='k', c='grey', s=400, label='outlets')
-        ax = op.topotools.plot_connections(
-            network=pn, throats=nwp['throat.entry_pressure'] <= p,
-            c='white', ax=ax, label='Invadable throats')
-        ax = op.topotools.plot_connections(
-            network=pn, throats=drn['throat.invaded'],
-            ax=ax, label='Invaded throats')
-        ax = op.topotools.plot_coordinates(
-            network=pn, pores=drn['pore.invaded'],
-            s=100, ax=ax, label='Invaded pores')
-        ax = op.topotools.plot_coordinates(
-            network=pn, pores=drn['pore.trapped'],
-            c='green', s=100, ax=ax, label='Trapped pores')
-        ax = op.topotools.plot_connections(
-            network=pn, throats=drn['throat.trapped'],
-            c='black', linestyle='--', ax=ax, label='Trapped throats')
-        fig = plt.gcf()
-        fig.legend(loc='center left', fontsize='large')
-        # ax = op.topotools.plot_coordinates(
-        #     network=pn, pores=~drn['pore.invaded'],
-        #     c='grey', ax=ax)
-
-    # %%
-    if 0:
         drn = Drainage(network=pn, phase=nwp)
         drn.set_inlets(pores=pn.pores('left'))
         pressures = np.logspace(np.log10(0.1e6), np.log10(8e6), 40)
