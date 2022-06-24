@@ -61,6 +61,12 @@ class Imbibition(Drainage):
         self['throat.invasion_pressure'][self['throat.invaded']] = np.inf
 
     def run(self, pressures):
+        if isinstance(pressures, int):
+            phase = self.project[self.settings.phase]
+            hi = 1.25*phase[self.settings.pore_entry_pressure].max()
+            low = 0.80*phase[self.settings.pore_entry_pressure].min()
+            pressures = np.logspace(np.log10(low), np.log10(hi), pressures)
+        # Sort pressurse from high to low
         pressures = np.sort(np.array(pressures, ndmin=1))[-1::-1]
         msg = 'Performing imbibition simulation'
         for i, p in enumerate(tqdm(pressures, msg)):
@@ -79,12 +85,12 @@ class Imbibition(Drainage):
         Tinv = phase[self.settings.throat_entry_pressure] > pressure
 
         # Pre-seed invaded locations with residual, if any
-        Pinv += self['pore.invaded']
-        Tinv += self['throat.invaded']
+        # Pinv += self['pore.invaded']
+        # Tinv += self['throat.invaded']
 
         # Remove trapped throats from this list, if any
-        Pinv[self['pore.trapped']] = False
-        Tinv[self['throat.trapped']] = False
+        # Pinv[self['pore.trapped']] = False
+        # Tinv[self['throat.trapped']] = False
 
         # Perform site_percolation to label invaded clusters of pores
         s_labels, b_labels = site_percolation(self.network.conns, Pinv)
@@ -94,16 +100,15 @@ class Imbibition(Drainage):
             b_labels, s_labels, self['pore.inlets'], asmask=False)
 
         # Mark throats connected to invaded pores as also invaded, if they're small enough
-        Pinv = np.where(s_labels >= 0)[0]
+        pmask = s_labels >= 0
         try:
-            temp = np.unique(np.hstack(self._im.rows[Pinv]))
-            Tinv = Tinv*self.to_mask(throats=temp)
+            tmask = np.any(pmask[self.network.conns], axis=1)*Tinv
         except ValueError:
-            Tinv = []
+            tmask = []
 
         # Add result to existing invaded locations
-        self['pore.invaded'][Pinv] = True
-        self['throat.invaded'][Tinv] = True
+        self['pore.invaded'][pmask] = True
+        self['throat.invaded'][tmask] = True
 
     def apply_trapping(self):
         pseq = self['pore.invasion_pressure']
@@ -152,10 +157,13 @@ if __name__ == "__main__":
     plt.rcParams['axes.facecolor'] = 'grey'
 
     np.random.seed(0)
-    Nx, Ny, Nz = 50, 50, 1
+    Nx, Ny, Nz = 20, 20, 1
     pn = op.network.Cubic([Nx, Ny, Nz], spacing=1e-5)
     pn.add_model_collection(op.models.collections.geometry.spheres_and_cylinders)
     pn.regenerate_models()
+    # pn.models['throat.max_size@all']['mode'] = 'max'
+    # pn.models['throat.diameter@all']['factor'] = .8
+    # pn.regenerate_models(['throat.max_size@all', 'throat.diameter@all'])
     nwp = op.phase.GenericPhase(network=pn)
     nwp['throat.surface_tension'] = 0.480
     nwp['throat.contact_angle'] = 140
@@ -166,14 +174,15 @@ if __name__ == "__main__":
                   contact_angle=140,
                   surface_tension=0.480,
                   diameter='pore.diameter')
-    pressures = np.logspace(np.log10(0.1e6), np.log10(2e7), 40)
+
+    pressures = np.logspace(np.log10(5e4), np.log10(5e6), 50)
 
     # %% Perform Primary Drainage
     drn = op.algorithms.Drainage(network=pn, phase=nwp)
     drn.set_inlets(pores=pn.pores('left'))
     drn.run(pressures)
     drn.set_outlets(pores=pn.pores('right'))
-    drn.apply_trapping()
+    # drn.apply_trapping()
 
     # %% Peform Imbibition
     imb = Imbibition(network=pn, phase=nwp)
@@ -183,24 +192,29 @@ if __name__ == "__main__":
     imb.apply_trapping()
 
     # %%
-    if 1:
+    if 0:
         fig, ax = plt.subplots(1, 1)
-        ax.semilogx(*drn.pc_curve(pressures), 'wo-', label='prinmary drainage')
         ax.semilogx(*imb.pc_curve(pressures), 'ko-', label='imbibition')
+        ax.semilogx(*drn.pc_curve(pressures), 'wo-', label='prinmary drainage')
         ax.set_ylim([-.05, 1.05])
         ax.set_xlabel('Capillary Pressure [Pa]')
         ax.set_ylabel('Non-wetting Phase Saturation')
         fig.legend()
 
-    if 0:
+
+    # %%
+    if 1:
         pressures = np.unique(imb['pore.invasion_pressure'])
-        n = 4
+        pressures = pressures[np.isfinite(pressures)]
+        n = 0
         p = imb['pore.invasion_pressure'] >= pressures[n]
         t = imb['throat.invasion_pressure'] >= pressures[n]
-        ax = op.topotools.plot_coordinates(pn, pores=p, s=500,
+        ax = op.topotools.plot_coordinates(pn, pores=p, s=100,
                                            color_by=imb['pore.invasion_pressure'])
-        ax = op.topotools.plot_connections(pn, throats=t, linewidth=5,
+        ax = op.topotools.plot_coordinates(pn, pores=imb['pore.trapped'], marker='s', s=100, c='w', ax=ax)
+        ax = op.topotools.plot_connections(pn, throats=t, linewidth=2,
                                            color_by=imb['throat.invasion_pressure'], ax=ax)
+        ax = op.topotools.plot_connections(pn, throats=imb['throat.trapped'], linewidth=2, c='w', ax=ax)
 
 
 

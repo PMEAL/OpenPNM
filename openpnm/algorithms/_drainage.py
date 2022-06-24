@@ -103,7 +103,12 @@ class Drainage(GenericAlgorithm):
         else:
             raise Exception(f'Unrecognized mode {mode}')
 
-    def run(self, pressures):
+    def run(self, pressures=25):
+        if isinstance(pressures, int):
+            phase = self.project[self.settings.phase]
+            hi = 1.25*phase[self.settings.throat_entry_pressure].max()
+            low = 0.80*phase[self.settings.throat_entry_pressure].min()
+            pressures = np.logspace(np.log10(low), np.log10(hi), pressures)
         pressures = np.array(pressures, ndmin=1)
         msg = 'Performing drainage simulation'
         for i, p in enumerate(tqdm(pressures, msg)):
@@ -121,9 +126,9 @@ class Drainage(GenericAlgorithm):
     def _run_special(self, pressure):
         phase = self.project[self.settings.phase]
         Tinv = phase[self.settings.throat_entry_pressure] <= pressure
-        Tinv += self['throat.invaded']
+        # Tinv += self['throat.invaded']
         # Remove trapped throats from this list, if any
-        Tinv[self['throat.trapped']] = False
+        # Tinv[self['throat.trapped']] = False
         # Perform bond_percolation to label invaded clusters
         s_labels, b_labels = bond_percolation(self.network.conns, Tinv)
         # Remove label from any clusters not connected to the inlets
