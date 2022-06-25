@@ -2,6 +2,7 @@ import logging
 import heapq as hq
 import numpy as np
 from numba import njit
+from numba.typed import List
 from tqdm import tqdm
 from collections import namedtuple
 from openpnm.utils import Docorator
@@ -217,7 +218,7 @@ class InvasionPercolation(GenericAlgorithm):
         t_start = self['throat.order'][Ts]
         t_inv, p_inv, p_inv_t = \
             _run_accelerated(
-                t_start=t_start.astype(np.int32),
+                t_start=t_start,
                 t_sorted=self['throat.sorted'],
                 t_order=self['throat.order'],
                 t_inv=self['throat.invasion_sequence'],
@@ -434,7 +435,7 @@ def _run_accelerated(t_start, t_sorted, t_order, t_inv, p_inv, p_inv_t,
 
     """
     queue = list(t_start)
-    hq.heapify(queue)
+    # hq.heapify(queue)
     count = 1
     while (len(queue) > 0) and (count < (n_steps + 1)):
         # Find throat at the top of the queue
