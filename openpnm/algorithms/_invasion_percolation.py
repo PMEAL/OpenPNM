@@ -2,7 +2,6 @@ import logging
 import heapq as hq
 import numpy as np
 from numba import njit
-from numba.typed import List
 from tqdm import tqdm
 from collections import namedtuple
 from openpnm.utils import Docorator
@@ -19,8 +18,9 @@ from openpnm._skgraph.queries import (
 )
 
 
-__all__ = ['InvasionPercolation',
-           '_find_trapped_pores']
+__all__ = [
+    'InvasionPercolation',
+]
 
 
 logger = logging.getLogger(__name__)
@@ -203,10 +203,6 @@ class InvasionPercolation(GenericAlgorithm):
         # overwrite existing data when doing a few steps at a time
         self._run_setup()
 
-        # TODO: The following line is supposed to be numba's new list, but the
-        # heap does not work with this
-        # self.queue = List(self.queue)
-
         if n_steps is None:
             n_steps = np.inf
 
@@ -374,7 +370,8 @@ def _find_trapped_pores(inv_seq, indices, indptr, outlets):
         step, pore = sorted_seq[i, :]
         n = indices[indptr[pore]:indptr[pore+1]]
         nc = cluster_map[cluster[n]][inv_seq[n] > step]
-        if len(nc) == 0:
+        nc_uniq = np.unique(nc)
+        if nc.size == 0:
             # Found an isolated pore, start a new cluster
             cluster[pore] = next_cluster_num
             # If pore is an outlet then note cluster as no longer trapped
@@ -386,8 +383,8 @@ def _find_trapped_pores(inv_seq, indices, indptr, outlets):
                 trapped_pores[pore] = True
             # Increment cluster number for next time
             next_cluster_num += 1
-        elif len(np.unique(nc)) == 1:
-            c = np.unique(nc)[0]
+        elif nc_uniq.size == 1:
+            c = nc_uniq[0]
             # Neighbors have one unique cluster number, so assign it to current pore
             cluster[pore] = c
             # If pore is an outlet then note cluster as no longer trapped
@@ -401,11 +398,11 @@ def _find_trapped_pores(inv_seq, indices, indptr, outlets):
             # mark pore as trapped
             if trapped_clusters[c]:
                 trapped_pores[pore] = True
-        elif len(np.unique(nc)) > 1:
-            cluster[pore] = min(np.unique(nc))
+        elif nc_uniq.size > 1:
+            cluster[pore] = min(nc_uniq)
             # Merge all clusters into a single cluster
             for c in nc:
-                qupc_update(cluster_map, c, min(np.unique(nc)))
+                qupc_update(cluster_map, c, min(nc_uniq))
             cluster_map = qupc_reduce(cluster_map)
             # If all neighboring clusters are trapped, then set current pore to
             # trapped as well
@@ -434,8 +431,11 @@ def _run_accelerated(t_start, t_sorted, t_order, t_inv, p_inv, p_inv_t,
     time due to local numba import
 
     """
+    # TODO: The following line is supposed to be numba's new list, but the
+    # heap does not work with this
+    # queue = List(t_start)
     queue = list(t_start)
-    # hq.heapify(queue)
+    hq.heapify(queue)
     count = 1
     while (len(queue) > 0) and (count < (n_steps + 1)):
         # Find throat at the top of the queue
@@ -466,7 +466,8 @@ def _run_accelerated(t_start, t_sorted, t_order, t_inv, p_inv, p_inv_t,
     return t_inv, p_inv, p_inv_t
 
 
-if __name__ == '__main__':
+# %%
+def run_examples():
     import openpnm as op
     import matplotlib.pyplot as plt
 
@@ -488,60 +489,44 @@ if __name__ == '__main__':
     ip.set_outlets(pn.pores('right'))
     ip.apply_trapping()
 
-
     # %%
     if 0:
         pseq = np.copy(ip['pore.invasion_sequence'])
         tseq = np.copy(ip['throat.invasion_sequence'])
-        ax = op.topotools.plot_connections(pn, tseq>=0, linestyle='--', c='b', linewidth=3)
-        op.topotools.plot_coordinates(pn, pseq>=0, c='r', marker='x', markersize=100, ax=ax)
-        op.topotools.plot_coordinates(pn, pseq<0, c='c', marker='o', markersize=100, ax=ax)
+        ax = op.topotools.plot_connections(pn, tseq >= 0, linestyle='--', c='b',
+                                           linewidth=3)
+        op.topotools.plot_coordinates(pn, pseq >= 0, c='r', marker='x',
+                                      markersize=100, ax=ax)
+        op.topotools.plot_coordinates(pn, pseq < 0, c='c', marker='o',
+                                      markersize=100, ax=ax)
 
     # %%
-    if 0:
+    if 1:
         drn = op.algorithms.Drainage(network=pn, phase=water)
         drn.set_inlets(pn.pores('left'))
         pressures = np.unique(ip['pore.invasion_pressure'])
         # pressures = np.logspace(np.log10(0.1e3), np.log10(2e4), 100)
         drn.run(pressures=pressures)
         drn.set_outlets(pn.pores('right'))
-        drn.apply_trapping(mode='mixed')
+        drn.apply_trapping()
 
         fig, ax = plt.subplots(1, 1)
         ax.step(*ip.pc_curve(), 'b', where='post')
         ax.step(*drn.pc_curve(), 'r--', where='post')
         ax.set_ylim([0, 1])
 
-
     # %%
     if 0:
-        from matplotlib import animation
-        import openpnm as op
         pseq = ip['pore.invasion_sequence']
         pseq[pseq == -1] = pseq.max() + 1
         tseq = ip['throat.invasion_sequence']
         tseq[tseq == -1] = tseq.max() + 1
         for j, i in enumerate(tqdm(np.unique(tseq)[:-1])):
-            ax = op.topotools.plot_connections(pn, tseq<=i, linestyle='--', c='r', linewidth=3)
-            op.topotools.plot_coordinates(pn, pseq<=i, c='b', marker='x', markersize=100, ax=ax)
-            op.topotools.plot_coordinates(pn, ip['pore.trapped'], c='c', marker='o', markersize=100, ax=ax)
+            ax = op.topotools.plot_connections(pn, tseq <= i, linestyle='--',
+                                               c='r', linewidth=3)
+            op.topotools.plot_coordinates(pn, pseq <= i, c='b', marker='x',
+                                          markersize=100, ax=ax)
+            op.topotools.plot_coordinates(pn, ip['pore.trapped'], c='c',
+                                          marker='o', markersize=100, ax=ax)
             plt.savefig(f"{str(j).zfill(3)}.png")
             plt.close()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
