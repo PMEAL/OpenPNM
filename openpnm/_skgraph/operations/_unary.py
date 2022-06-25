@@ -9,6 +9,7 @@ __all__ = [
     'drop_nodes_from_am',
     'add_nodes',
     'add_edges',
+    'split_edges',
 ]
 
 
@@ -204,3 +205,48 @@ def drop_nodes_from_am(am, inds):
     conns = node_id[conns[~edge_mask]]
     am = sprs.coo_matrix((am.data[~edge_mask], (conns[:, 0], conns[:, 1])))
     return am, edge_mask
+
+
+def split_edges(conns, coords=None):
+    r"""
+    Inserts an new node between each existing node and joins with new edges
+
+    Parameters
+    ----------
+    conns : ndarray
+        The sparse adjacency matrix in COO format
+
+    Returns
+    -------
+    result : tuple
+        A tuple containing ``new_conns`` and optionally ``new_coords`` if
+        ``coords`` was provided.
+
+        ============== ========================================================
+        Value          Description
+        ============== ========================================================
+        ``new_conns``  A new adjacency matrix in COO format with new nodes
+                       added between each original node. If edge 1 connected
+                       nodes 1 and 2, then row 1 of the new sparse adjacency
+                       matrix will be [1, Nt + 1], and row Nt + 1 will be
+                       [Nt + 1, 2].
+        ``new_coords`` A and updated list of node coordinates with the new
+                       nodes appended to the end.  The coordinates of the new
+                       nodes are taken as the average of the two nodes between
+                       which they were inserted.
+        ============== ========================================================
+
+    """
+    Nt = conns.shape[0]
+    Np = conns.max() + 1
+    new_conns = np.zeros([2*Nt, 2], dtype=int)
+    new_conns[:Nt, :] = np.vstack((conns[:, 0], np.arange(Np, Np+Nt))).T
+    new_conns[Nt:, :] = np.vstack((np.arange(Np, Np+Nt), conns[:, 1])).T
+    result = (new_conns, )
+    if coords is not None:
+        Np = coords.shape[0]
+        new_coords = np.zeros([Np + Nt, 3], dtype=float)
+        new_coords[:Np, :] = coords
+        new_coords[Np:, :] = np.mean(coords[conns], axis=1)
+        result = (new_conns, new_coords)
+    return result

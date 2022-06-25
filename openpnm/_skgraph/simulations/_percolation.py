@@ -1,8 +1,8 @@
 import numpy as np
 import scipy.sparse as sprs
-import scipy.stats as spst
 from scipy.sparse import csgraph
 from collections import namedtuple
+from openpnm._skgraph.operations import split_edges
 
 
 __all__ = [
@@ -11,8 +11,10 @@ __all__ = [
     'remove_isolated_clusters',
     'bond_percolation',
     'site_percolation',
+    'mixed_percolation',
     'find_connected_clusters',
-    'find_trapped_clusters',
+    'find_trapped_bonds',
+    'find_trapped_sites',
     'find_connected_clusters',
 ]
 
@@ -20,7 +22,7 @@ __all__ = [
 def bond_percolation(conns, occupied_bonds):
     r"""
     Assigns cluster numbers to sites and bonds acccording to a bond
-    percolation process given a list of occupied site.
+    percolation process given a list of occupied bonds.
 
     Parameters
     ----------
@@ -29,7 +31,7 @@ def bond_percolation(conns, occupied_bonds):
         will also be considered occupied and given the same cluster number
         as the bond.
     occupied_bonds : ndarray
-        A boolean array with one element for each bone, with ``True`` values
+        A boolean array with one element for each bond, with ``True`` values
         indicating that a bond is occupied
 
     Returns
@@ -40,28 +42,25 @@ def bond_percolation(conns, occupied_bonds):
     Notes
     -----
     The ``connected_components`` function of ``scipy.sparse.csgraph`` will give
-     a cluster number to ALL bones whether they are occupied or not, so this
+     a cluster number to ALL bonds whether they are occupied or not, so this
     function essentially adjusts the cluster numbers to represent a
     percolation process.
 
     """
     Np = np.amax(conns) + 1
-    # Find occupied sites based on occupied bonds
-    # (the following 2 lines are not needed but worth keeping for future ref)
-    # occupied_sites = np.zeros([Np, ], dtype=bool)
-    # np.add.at(occupied_sites, conns[occupied_bonds].flatten(), True)
-    adj_mat = sprs.csr_matrix((occupied_bonds, (conns[:, 0], conns[:, 1])),
+    # Find occupied sites based on status of shared bonds
+    occupied_sites = np.zeros([Np, ], dtype=bool)
+    occupied_sites[conns[occupied_bonds].flatten()] = True
+    # Perform cluster labeling of network
+    adj_mat = sprs.csr_matrix((occupied_bonds.astype(int), (conns[:, 0], conns[:, 1])),
                               shape=(Np, Np))
     adj_mat.eliminate_zeros()
     clusters = csgraph.connected_components(csgraph=adj_mat, directed=False)[1]
-    # Clusters of size 1 only occur if all a site's bonds are uninvaded
-    valid_clusters = np.bincount(clusters) > 1
-    mapping = -np.ones(shape=(clusters.max()+1, ), dtype=int)
-    mapping[valid_clusters] = np.arange(0, valid_clusters.sum())
-    s_labels = mapping[clusters]
-    # Bond inherit the cluster number of its connected sites
+    # Set cluster number of unoccupied sites to -1
+    s_labels = (clusters + 1)*occupied_sites - 1
+    # Bonds inherit the cluster number of its connected sites
     b_labels = np.amin(s_labels[conns], axis=1)
-    # Set bond cluster to -1 if not actually occupied
+    # Set cluster number of unoccupied bonds to -1
     b_labels[~occupied_bonds] = -1
     tup = namedtuple('cluster_labels', ('site_labels', 'bond_labels'))
     return tup(s_labels, b_labels)
@@ -77,7 +76,6 @@ def site_percolation(conns, occupied_sites):
     conns : array_like
         An N x 2 array connections. If two connected sites are both occupied
         they are part of the same cluster, as is the bond connecting them.
-
     occupied_sites : ndarray
         A boolean array with one element for each site, with ``True`` values
         indicating that a site is occupied
@@ -96,18 +94,32 @@ def site_percolation(conns, occupied_sites):
 
     """
     Np = np.size(occupied_sites)
+    # Find bond occupancy based on status of its connected sites
     occupied_bonds = np.all(occupied_sites[conns], axis=1)
+    # Perform cluster labeling of network
     adj_mat = sprs.csr_matrix((occupied_bonds, (conns[:, 0], conns[:, 1])),
                               shape=(Np, Np))
     adj_mat.eliminate_zeros()
     clusters = csgraph.connected_components(csgraph=adj_mat, directed=False)[1]
-    clusters[~occupied_sites] = -1
-    s_labels = spst.rankdata(clusters + 1, method="dense") - 1
-    if np.any(~occupied_sites):
-        s_labels -= 1
+    # Set cluster number of unoccupied sites to -1
+    s_labels = (clusters + 1)*occupied_sites - 1
+    # Bonds inherit the cluster number of its connected sites
     b_labels = np.amin(s_labels[conns], axis=1)
+    # Set cluster number of unoccupied bonds to -1
+    b_labels[~occupied_bonds] = -1
     tup = namedtuple('cluster_labels', ('site_labels', 'bond_labels'))
     return tup(s_labels, b_labels)
+
+
+def mixed_percolation(conns, occupied_sites, occupied_bonds):
+    r"""
+    """
+    new_conns = split_edges(conns)[0]
+    new_sites = np.hstack((occupied_sites, occupied_bonds))
+    s, b = site_percolation(conns=new_conns, occupied_sites=new_sites)
+    s_labels = s[:occupied_sites.shape[0]]
+    b_labels = s[occupied_sites.shape[0]:]
+    return s_labels, b_labels
 
 
 def find_connected_clusters(bond_labels, site_labels, inlets, asmask=True):
@@ -121,8 +133,18 @@ def find_connected_clusters(bond_labels, site_labels, inlets, asmask=True):
     return occupied_sites, occupied_bonds
 
 
-def find_trapped_clusters(conns, occupied_bonds, outlets):
+def find_trapped_bonds(conns, outlets, occupied_bonds):
     s_labels, b_labels = bond_percolation(conns, ~occupied_bonds)
+    s_labels2, b_labels2 = find_connected_clusters(b_labels, s_labels,
+                                                   outlets, asmask=False)
+    # Set sites and bonds connected to outlets to -1, keeping
+    s_labels[s_labels2 >= 0] = -1
+    b_labels[b_labels2 >= 0] = -1
+    return s_labels, b_labels
+
+
+def find_trapped_sites(conns, outlets, occupied_sites):
+    s_labels, b_labels = site_percolation(conns, ~occupied_sites)
     s_labels2, b_labels2 = find_connected_clusters(b_labels, s_labels,
                                                    outlets, asmask=False)
     # Set sites and bonds connected to outlets to -1, keeping
@@ -181,7 +203,6 @@ def remove_isolated_clusters(labels, inlets):
     labels : tuple of node and edge labels
         This information is provided by the ``site_percolation`` or
         ``bond_percolation`` functions
-
     inlets : array_like
         A list of which nodes are inlets.  Can be a boolean mask or an
         array of indices.
@@ -226,6 +247,7 @@ def ispercolating(am, inlets, outlets, mode='site'):
         ===========  =====================================================
         'site'       Applies site percolation
         'bond'       Applies bond percolation
+        'mixed'      Applies combination of site and bond
         ===========  =====================================================
 
     """
@@ -239,6 +261,9 @@ def ispercolating(am, inlets, outlets, mode='site'):
     elif mode.startswith('bond'):
         occupied_bonds = am.data
         clusters = bond_percolation(ij, occupied_bonds)
+    elif mode.startswith('mixed'):
+        # TODO: implement this
+        raise NotImplementedError()
     ins = np.unique(clusters.site_labels[inlets])
     if ins[0] == -1:
         ins = ins[1:]
