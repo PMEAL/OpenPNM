@@ -255,7 +255,8 @@ def late_filling(target,
     return snwp
 
 
-if __name__ == "__main__":
+# %%
+def run_examples():
     import openpnm as op
     import matplotlib.pyplot as plt
     plt.rcParams['figure.facecolor'] = 'darkgrey'
@@ -299,7 +300,8 @@ if __name__ == "__main__":
         ax = op.topotools.plot_coordinates(pn, pores=p, s=500,
                                            color_by=drn['pore.invasion_pressure'])
         ax = op.topotools.plot_connections(pn, throats=t, linewidth=5,
-                                           color_by=drn['throat.invasion_pressure'], ax=ax)
+                                           color_by=drn['throat.invasion_pressure'],
+                                           ax=ax)
         # t = drn['throat.invasion_pressure'] <= p
         # ax = op.topotools.plot_connections(pn, throats=t, c='k', linestyle='--', ax=ax)
 
@@ -311,9 +313,12 @@ if __name__ == "__main__":
         pseq[pseq > Pmax] = Pmax + 1
         tseq[tseq > Pmax] = Pmax + 1
         for j, i in enumerate(tqdm(np.unique(tseq)[:-1])):
-            ax = op.topotools.plot_connections(pn, tseq<=i, linestyle='--', c='r', linewidth=3)
-            op.topotools.plot_coordinates(pn, pseq<=i, c='b', marker='x', markersize=100, ax=ax)
-            op.topotools.plot_coordinates(pn, drn['pore.trapped'], c='c', marker='o', markersize=100, ax=ax)
+            ax = op.topotools.plot_connections(pn, tseq <= i, linestyle='--',
+                                               c='r', linewidth=3)
+            op.topotools.plot_coordinates(pn, pseq <= i, c='b', marker='x',
+                                          markersize=100, ax=ax)
+            op.topotools.plot_coordinates(pn, drn['pore.trapped'], c='c',
+                                          marker='o', markersize=100, ax=ax)
             plt.savefig(f"{str(j).zfill(3)}.png")
             plt.close()
 

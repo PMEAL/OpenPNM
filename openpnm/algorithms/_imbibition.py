@@ -132,7 +132,8 @@ class Imbibition(Drainage):
         elif isinstance(pressures, int):
             p = np.unique(self['pore.invasion_pressure'])
             p = p[np.isfinite(p)]
-            pressures = np.logspace(np.log10(p.min()/2), np.log10(p.max()*2), pressures)
+            pressures = np.logspace(np.log10(p.min()/2), np.log10(p.max()*2),
+                                    pressures)
         else:
             pressures = np.array(pressures)
         pressures = np.sort(pressures)[-1::-1]
@@ -150,7 +151,8 @@ class Imbibition(Drainage):
         return data
 
 
-if __name__ == "__main__":
+# %%
+def run_examples():
     import openpnm as op
     import matplotlib.pyplot as plt
     plt.rcParams['figure.facecolor'] = 'grey'
@@ -201,7 +203,6 @@ if __name__ == "__main__":
         ax.set_ylabel('Non-wetting Phase Saturation')
         fig.legend()
 
-
     # %%
     if 1:
         pressures = np.unique(imb['pore.invasion_pressure'])
@@ -211,30 +212,10 @@ if __name__ == "__main__":
         t = imb['throat.invasion_pressure'] >= pressures[n]
         ax = op.topotools.plot_coordinates(pn, pores=p, s=100,
                                            color_by=imb['pore.invasion_pressure'])
-        ax = op.topotools.plot_coordinates(pn, pores=imb['pore.trapped'], marker='s', s=100, c='w', ax=ax)
+        ax = op.topotools.plot_coordinates(pn, pores=imb['pore.trapped'],
+                                           marker='s', s=100, c='w', ax=ax)
         ax = op.topotools.plot_connections(pn, throats=t, linewidth=2,
-                                           color_by=imb['throat.invasion_pressure'], ax=ax)
-        ax = op.topotools.plot_connections(pn, throats=imb['throat.trapped'], linewidth=2, c='w', ax=ax)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+                                           color_by=imb['throat.invasion_pressure'],
+                                           ax=ax)
+        ax = op.topotools.plot_connections(pn, throats=imb['throat.trapped'],
+                                           linewidth=2, c='w', ax=ax)
