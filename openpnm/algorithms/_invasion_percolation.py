@@ -362,7 +362,8 @@ def _find_trapped_pores(inv_seq, indices, indptr, outlets):
     cluster = -np.ones(Np, dtype=np.int_)
     trapped_pores = np.zeros(Np, dtype=np.bool_)
     trapped_clusters = np.zeros(Np, dtype=np.bool_)
-    cluster_map = qupc_initialize(Np)
+    # cluster_map = qupc_initialize(Np)
+    cluster_map = np.arange(Np, dtype=np.int_)
     next_cluster_num = 0
     i = -1
     for step, pore in sorted_seq:
