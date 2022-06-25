@@ -6,10 +6,14 @@ class SubclassedTransportTest:
 
     def setup_class(self):
         self.net = op.network.Cubic(shape=[9, 9, 9])
-        self.net.add_model_collection(op.models.collections.geometry.spheres_and_cylinders)
+        self.net.add_model_collection(
+            op.models.collections.geometry.spheres_and_cylinders()
+        )
         self.net.regenerate_models()
         self.phase = op.phase.GenericPhase(network=self.net)
-        self.phase.add_model_collection(op.models.collections.physics.standard)
+        self.phase.add_model_collection(
+            op.models.collections.physics.standard()
+        )
         self.phase.regenerate_models()
 
     def test_fickian_diffusion(self):

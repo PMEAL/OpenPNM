@@ -7,7 +7,9 @@ import functools
 import numpy as np
 import scipy.sparse as sparse
 from collections import OrderedDict
+from collections.abc import Iterable
 from docrep import DocstringProcessor
+from copy import deepcopy
 
 
 __all__ = [
@@ -21,6 +23,7 @@ __all__ = [
     'toc',
     'unique_list',
     'flat_list',
+    'flat_list2',
     'sanitize_dict',
     'methods_to_table',
     'models_to_table',
@@ -30,6 +33,7 @@ __all__ = [
     'is_valid_propname',
     'prettify_logger_message',
     'remove_prop_deep',
+    'get_model_collection',
 ]
 
 
@@ -112,9 +116,9 @@ class PrintableDict(OrderedDict):
 
     """
 
-    def __init__(self, *args, **kwargs):
-        self._value = "Value"
-        self._key = "Key"
+    def __init__(self, *args, key="Key", value="Value", **kwargs):
+        self._value = value
+        self._key = key
         super().__init__(*args, **kwargs)
 
     # def __repr__(self):
@@ -381,6 +385,21 @@ def flat_list(input_list):
     return [x]
 
 
+def flat_list2(input_list):
+    r"""
+    Given a list of nested lists of arbitrary depth, returns a single
+    level or 'flat' list.
+    """
+    def _flatten(l):
+        for el in l:
+            if isinstance(el, Iterable) and not isinstance(el, (str, bytes)):
+                yield from _flatten(el)
+            else:
+                yield el
+
+    return list(_flatten(input_list))
+
+
 def sanitize_dict(input_dict):
     r"""
     Given a nested dictionary, ensures that all nested dicts are normal
@@ -603,3 +622,13 @@ def remove_prop_deep(obj, propname):
         obj._parse_element(propname)
         if k.startswith(propname):
             del obj[k]
+
+
+def get_model_collection(collection, regen_mode=None, domain=None):
+    d = deepcopy(collection)
+    for k, v in d.items():
+        if regen_mode:
+            v['regen_mode'] = regen_mode
+        if domain:
+            v['domain'] = domain
+    return d

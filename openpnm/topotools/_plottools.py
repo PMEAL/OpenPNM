@@ -141,7 +141,8 @@ def plot_connections(network,
     color = mcolors.to_rgb(color) + tuple([alpha])
     # Override colors with color_by if given
     if color_by is not None:
-        color_by = color_by[Ts]
+        if len(color_by) != len(Ts):
+            color_by = color_by[Ts]
         color = cm.get_cmap(name=cmap)(color_by / color_by.max())
         color[:, 3] = alpha
     if size_by is not None:
@@ -157,9 +158,10 @@ def plot_connections(network,
                             antialiaseds=np.ones_like(network.Ts), **kwargs)
     ax.add_collection(lc)
 
-    _scale_axes(ax=ax, X=X, Y=Y, Z=Z)
-    _label_axes(ax=ax, X=X, Y=Y, Z=Z)
-    fig.tight_layout()
+    if np.size(Ts) > 0:
+        _scale_axes(ax=ax, X=X, Y=Y, Z=Z)
+        _label_axes(ax=ax, X=X, Y=Y, Z=Z)
+        fig.tight_layout()
 
     return lc
 

@@ -1,14 +1,25 @@
 import logging
-from copy import deepcopy
 from openpnm.algorithms import TransientReactiveTransport, IonicConduction
-from openpnm.utils import Docorator, SettingsAttr
-logger = logging.getLogger(__name__)
-docstr = Docorator()
+from openpnm.utils import Docorator
+
 
 __all__ = ['TransientIonicConduction']
 
 
+logger = logging.getLogger(__name__)
+docstr = Docorator()
+
+
+@docstr.dedent
 class TransientIonicConductionSettings:
+    r'''
+
+    Parameters
+    ----------
+    %(ReactiveTransportSettings.parameters)s
+    %(TransientReactiveTransportSettings.parameters)s
+
+    '''
     quantity = 'pore.potential'
     conductance = 'throat.ionic_conductance'
     charge_conservation = 'electroneutrality'
@@ -22,6 +33,6 @@ class TransientIonicConduction(TransientReactiveTransport,
     of pure diffusion and advection-diffusion problems.
     """
 
-    def __init__(self, settings=None, **kwargs):
-        self.settings = SettingsAttr(TransientIonicConductionSettings, settings)
-        super().__init__(settings=self.settings, **kwargs)
+    def __init__(self, name='trans_ionic_#', **kwargs):
+        super().__init__(name=name, **kwargs)
+        self.settings._update(TransientIonicConductionSettings())

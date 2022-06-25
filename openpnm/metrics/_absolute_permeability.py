@@ -1,5 +1,5 @@
 import logging
-from openpnm.utils import Workspace, SettingsAttr, Docorator
+from openpnm.utils import Workspace, Docorator
 from openpnm.phase import GenericPhase
 from openpnm.algorithms import StokesFlow
 from openpnm.metrics import GenericTransportMetrics
@@ -17,8 +17,6 @@ class AbsolutePermeabilitySettings:
     Defines the settings for AbsolutePermeablity
 
     ----------
-    prefix : str
-        The default prefix to use when generating a name
     inlet : str
         The pore labels for flow inlet.
     outlet : str
@@ -29,7 +27,7 @@ class AbsolutePermeabilitySettings:
         The length of the network relative to the inlet and outlet
 
     """
-    prefix = 'perm'
+    name = 'perm_01'
     inlet = 'left'
     outlet = 'right'
     area = None
@@ -47,9 +45,9 @@ class AbsolutePermeability(GenericTransportMetrics):
 
     """
 
-    def __init__(self, settings=None, **kwargs):
-        self.settings = SettingsAttr(AbsolutePermeabilitySettings, settings)
-        super().__init__(settings=self.settings, **kwargs)
+    def __init__(self, name='abs_perm_#', **kwargs):
+        super().__init__(name=name, **kwargs)
+        self.settings._update(AbsolutePermeabilitySettings())
 
     def run(self):
         r"""

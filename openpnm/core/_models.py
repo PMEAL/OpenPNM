@@ -1,17 +1,18 @@
 import logging
 import inspect
-import numpy as np
+import openpnm as op
 from openpnm.utils import PrintableDict, Workspace
 from openpnm.utils import is_valid_propname
 from openpnm.utils import prettify_logger_message
 logger = logging.getLogger(__name__)
 ws = Workspace()
 
+
 __all__ = ['ModelsDict', 'ModelsMixin', 'ModelWrapper']
 
 
 class ModelsDict(PrintableDict):
-    r"""
+    """
     This subclassed dictionary is assigned to the ``models`` attribute of
     all objects that inherit from the ``ModelsMixin`` class.  Each
     dictionary entry corresponds to an entry in the target object's
@@ -24,16 +25,17 @@ class ModelsDict(PrintableDict):
 
     """
 
-    def _find_parent(self):
-        r"""
-        Finds and returns the parent object to self.
+    def _find_target(self):
+        """
+        Finds and returns the target object to which this ModelsDict is
+        associated.
         """
         for proj in ws.values():
             for obj in proj:
                 if hasattr(obj, "models"):
                     if obj.models is self:
                         return obj
-        raise Exception("No parent object found!")
+        raise Exception("No target object found!")
 
     def dependency_list(self):
         r"""
@@ -59,13 +61,13 @@ class ModelsDict(PrintableDict):
         dtree = self.dependency_graph()
         cycles = list(nx.simple_cycles(dtree))
         if cycles:
-            raise Exception('Cyclic dependency found: ' + ' -> '.join(
-                            cycles[0] + [cycles[0][0]]))
+            msg = 'Cyclic dependency: ' + ' -> '.join(cycles[0] + [cycles[0][0]])
+            raise Exception(msg)
         d = nx.algorithms.dag.lexicographical_topological_sort(dtree, sorted)
         return list(d)
 
     def dependency_graph(self, deep=False):
-        r"""
+        """
         Returns a NetworkX graph object of the dependencies
 
         Parameters
@@ -86,35 +88,15 @@ class ModelsDict(PrintableDict):
         dtree = nx.DiGraph()
         models = list(self.keys())
 
-        # The following line is needed to remove the @ from model names
-        # but this isn't the full solution.
-        # models = list(set([i.split('@')[0] for i in self.keys()]))
-
-        # Fetch model-less props: those w/o any model, like temperature
-        # otherwise, they won't get picked up in the dependency graph.
-        all_props = list(self.keys())
-        exclude_keys = ["pore.all", "throat.all"]
-        pure_props = np.setdiff1d(all_props, models + exclude_keys).tolist()
-
         for model in models:
-            dtree.add_node(model)
+            propname = model.split("@")[0]
+            dtree.add_node(propname)
             # Filter pore/throat props only
-            dependencies = set()
-            for param in self[model].values():
-                if type(param) == list:
-                    for element in param:
-                        if is_valid_propname(element):
-                            dependencies.add(element)
-                else:
-                    if is_valid_propname(param):
-                        dependencies.add(param)
-            # Add depenency from model's parameters
+            args = op.utils.flat_list2(self[model].values())
+            dependencies = [arg for arg in args if is_valid_propname(arg)]
+            # Add dependency from model's parameters
             for d in dependencies:
-                if not deep:
-                    if d in models + pure_props:
-                        dtree.add_edge(d, model)
-                else:
-                    dtree.add_edge(d, model)
+                dtree.add_edge(d, propname)
 
         return dtree
 
@@ -123,7 +105,7 @@ class ModelsDict(PrintableDict):
                        figsize=None,
                        deep=False,
                        style='shell'):  # pragma: no cover
-        r"""
+        """
         Create a graph of the dependency graph in a decent format
 
         Parameters
@@ -148,39 +130,37 @@ class ModelsDict(PrintableDict):
             fig.set_size_inches(figsize)
 
         labels = {}
+        node_shapes = {}
         dtree = self.dependency_graph(deep=deep)
         for node in dtree.nodes:
             labels[node] = node.split(".")[1]
-
-        node_shapes = {}
-        for node in dtree.nodes:
-            if node.startswith("pore"):
-                node_shapes[node] = "o"
-            else:
-                node_shapes[node] = "s"
+            node_shapes[node] = "o" if node.startswith("pore") else "s"
         nx.set_node_attributes(dtree, node_shapes, "node_shape")
 
-        style = style.replace('draw_', '')
-        draw = getattr(nx, 'draw_' + style)
+        layout = getattr(nx, f"{style}_layout")
+        pos = layout(dtree)
 
-        pore_props = [prop for prop in dtree.nodes if prop.startswith("pore")]
-        throat_props = [prop for prop in dtree.nodes if prop.startswith("throat")]
+        Pprops = [prop for prop in dtree.nodes if prop.startswith("pore")]
+        Tprops = [prop for prop in dtree.nodes if prop.startswith("throat")]
+        colors = ["yellowgreen", "coral"]
+        shapes = ["o", "s"]
 
-        for props, color, shape in zip([pore_props, throat_props],
-                                       ["yellowgreen", "coral"],
-                                       ["o", "s"]):
-            draw(dtree,
-                 nodelist=props,
-                 node_shape=shape,
-                 labels=labels,
-                 with_labels=True,
-                 edge_color='lightgrey',
-                 node_color=color,
-                 font_size=12,
-                 width=2.0)
+        for props, color, shape in zip([Pprops, Tprops], colors, shapes):
+            nx.draw(
+                dtree,
+                pos=pos,
+                nodelist=props,
+                node_shape=shape,
+                labels=labels,
+                with_labels=True,
+                edge_color='lightgrey',
+                node_color=color,
+                font_size=12,
+                width=2.0
+            )
 
         ax = plt.gca()
-        ax.margins(x=0.2, y=0.02)
+        ax.margins(x=0.2, y=0.05)
 
         return ax
 
@@ -223,18 +203,43 @@ class ModelsDict(PrintableDict):
                 raise KeyError(key)
 
     def update(self, d, domain='all'):
-        parent = self._find_parent()
+        # Catch un-run function
+        if hasattr(d, '__call__'):
+            raise Exception('Received dict argument is a function, try running it')
+        parent = self._find_target()
         for k, v in d.items():
             parent.add_model(propname=k, domain=domain, **v)
 
 
 class ModelWrapper(dict):
-    r"""
-    This class is used to hold individual models and provide some extra
-    functionality, such as pretty-printing.
     """
+    This class is used to hold individual models and provide some extra
+    functionality, such as pretty-printing and the ability to run itself.
+    """
+
+    def __call__(self):
+        f = self['model']
+        target = self._find_parent()
+        kwargs = self.copy()
+        for kw in ['regen_mode', 'target', 'model']:
+            kwargs.pop(kw, None)
+        vals = f(target=target, **kwargs)
+        return vals
+
+    def _find_parent(self):
+        r"""
+        Finds and returns the parent object to self.
+        """
+        for proj in ws.values():
+            for obj in proj:
+                if hasattr(obj, "models"):
+                    for mod in obj.models.keys():
+                        if obj.models[mod] is self:
+                            return obj
+        raise Exception("No parent object found!")
+
     @property
-    def propname(self):
+    def name(self):
         for proj in ws.values():
             for obj in proj:
                 if hasattr(obj, 'models'):
@@ -242,8 +247,15 @@ class ModelWrapper(dict):
                         if mod is self:
                             return key
 
-    # def __repr__(self):
-    #     return self.__str__()
+    @property
+    def propname(self):
+        return self.name.split('@')[0]
+
+    @property
+    def domain(self):
+        element, prop = self.name.split('.', 1)
+        prop, domain = prop.split('@')
+        return element + '.' + domain
 
     def __str__(self):
         horizontal_rule = '―' * 78
@@ -261,6 +273,27 @@ class ModelWrapper(dict):
         lines.append(horizontal_rule)
         return '\n'.join(lines)
 
+    def _find_target(self):
+        """
+        Finds and returns the parent object to self.
+        """
+        for proj in ws.values():
+            for obj in proj:
+                if hasattr(obj, "models"):
+                    for mod in obj.models.values():
+                        if mod is self:
+                            return obj
+        raise Exception("No target object found!")
+
+    def __call__(self):
+        target = self._find_target()
+        model = self['model']
+        kwargs = {}
+        for k, v in self.items():
+            if k not in ['model', 'regen_mode']:
+                kwargs[k] = v
+        return model(target=target, **kwargs)
+
 
 class ModelsMixin:
     """
@@ -272,7 +305,7 @@ class ModelsMixin:
     """
 
     def add_model(self, propname, model, regen_mode='', **kwargs):
-        r"""
+        """
         Adds a new model to the models dictionary.
 
         Parameters
@@ -327,7 +360,7 @@ class ModelsMixin:
             self._regen(propname)
 
     def regenerate_models(self, propnames=None, exclude=[], deep=False):
-        r"""
+        """
         Re-runs the specified model or models.
 
         Parameters
@@ -364,10 +397,12 @@ class ModelsMixin:
 
     def _regen(self, prop):
         # Create a temporary dict of all model arguments
-        kwargs = self.models[prop].copy()
-        # Pop model and regen_mode from temporary dict
-        model = kwargs.pop('model')
-        regen_mode = kwargs.pop('regen_mode', None)
+        model = self.models[prop]['model']
+        regen_mode = self.models[prop]['regen_mode']
+        kwargs = {}
+        for k, v in self.models[prop].items():
+            if k not in ['model', 'regen_mode']:
+                kwargs[k] = v
         # Only regenerate model if regen_mode is correct
         if regen_mode == 'constant':
             # Only regenerate if data not already in dictionary
@@ -383,7 +418,7 @@ class ModelsMixin:
                 self.models[prop]['regen_mode'] = 'deferred'
 
     def remove_model(self, propname=None, mode=['model', 'data']):
-        r"""
+        """
         Removes model and data from object.
 
         Parameters

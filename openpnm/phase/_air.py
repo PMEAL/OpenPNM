@@ -34,5 +34,5 @@ class Air(GenericPhase):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.models.update(air)
+        self.models.update(air())
         self.regenerate_models()

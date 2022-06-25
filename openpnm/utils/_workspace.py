@@ -1,3 +1,4 @@
+import re
 import logging
 import pickle
 from datetime import datetime
@@ -12,6 +13,13 @@ __all__ = ['Workspace']
 
 class WorkspaceSettings(SettingsAttr):
     r"""
+
+    Parameters
+    ----------
+    default_solver : str
+        The solver to use by default, if user does not specify one explicitly.
+        The default values is PardisoSpsolve, but a good option is ScipySpsolve
+        if the Pardiso is causing problems.
     loglevel : int
         Sets the threshold for the severity of logger message which appear.
         Ranges are as follows:
@@ -70,6 +78,7 @@ class Workspace(dict):
 
     __instance__ = None
 
+    # This __new__ method makes the Workspace a Singleton
     def __new__(cls, *args, **kwargs):
         if Workspace.__instance__ is None:
             Workspace.__instance__ = dict.__new__(cls)
@@ -77,7 +86,6 @@ class Workspace(dict):
 
     def __init__(self):
         super().__init__()
-        self._projects = {}
         self.settings = WorkspaceSettings()
         self.settings.loglevel = 30
 
@@ -94,11 +102,16 @@ class Workspace(dict):
         for item in project:
             __main__.__dict__[item.name] = item
 
-    def _validate_name(self, name=None, prefix='proj'):
+    def _validate_name(self, name=None):
         r"""
         Generates a valid name for projects
         """
-        if (name in self.keys()) or (name in [None, '']):
+        if name in [None, '']:
+            name = 'proj_01'  # Give basic name, then let rest of func fix it
+        if name in self.keys():  # If proposed name is taken, increment it
+            if not re.search(r'_\d+$', name):  # If name does not end with _##
+                name = name + '_01'
+            prefix, count = name.rsplit('_', 1)
             n = [0]
             for item in self.keys():
                 if item.startswith(prefix+'_'):

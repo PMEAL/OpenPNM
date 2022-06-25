@@ -39,6 +39,7 @@ class TopologyModelsTest:
         assert pn['pore.nearby'][0] == 0.0
         assert pn['pore.nearby'][1] == 0.0
 
+    # FIXME
     # def test_find_coincident_pores(self):
     #     pn = op.network.Cubic(shape=[3, 3, 3], spacing=1)
     #     pn.add_model(propname='pore.nearby',
@@ -124,6 +125,7 @@ class TopologyModelsTest:
         a = np.mean(net.num_neighbors(pores=net.Ps, flatten=False))
         b = 6.0
         assert_allclose(a, b)
+        # FIXME
         # h = net.project.check_network_health()
         # assert h.health
 

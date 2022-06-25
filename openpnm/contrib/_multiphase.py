@@ -2,7 +2,7 @@ import logging
 import numpy as np
 import openpnm.models.misc as misc
 from openpnm.phase import GenericPhase as GenericPhase
-from openpnm.utils import SettingsAttr, Docorator, TypedList
+from openpnm.utils import Docorator, TypedSet
 
 
 logger = logging.getLogger(__name__)
@@ -11,7 +11,7 @@ docstr = Docorator()
 
 @docstr.dedent
 class MultiPhaseSettings:
-    r"""
+    """
     Parameters
     ----------
     %(PhaseSettings.parameters)s
@@ -32,97 +32,152 @@ class MultiPhaseSettings:
     partition_coef_prefix : str
         The throat property which contains the partition coefficient values
     """
-    phases = TypedList(types=[str])
+    phases = TypedSet(types=[str])
     throat_occupancy = 'manual'
     partition_coef_prefix = 'throat.partition_coef'
 
 
 @docstr.dedent
 class MultiPhase(GenericPhase):
-    r"""
+    """
     Creates Phase object that represents a multiphase system consisting of
     a given list of GenericPhases.
 
     Parameters
     ----------
-    phases : list of OpenPNM Phase objects
-        A list containing the phase objects which comprise the multiphase
-        mixture
+    phases : list[GenericPhase]
+        A list containing the phase objects that make up the multiphase system
     %(GenericPhase.parameters)s
+
+    Notes
+    -----
+    This class assumes that only a SINGLE phase exists in each pore/throat.
 
     """
 
-    def __init__(self, phases=[], settings=None, **kwargs):
-        self.settings = SettingsAttr(MultiPhaseSettings, settings)
-        super().__init__(settings=self.settings, **kwargs)
-
-        self['pore.occupancy.all'] = np.zeros(self.Np, dtype=float)
-        self['throat.occupancy.all'] = np.zeros(self.Nt, dtype=float)
+    def __init__(self, phases=[], name='mphase_#', **kwargs):
+        super().__init__(name=name, **kwargs)
+        self.settings._update(MultiPhaseSettings())
 
         # Pressure/temperature must come from constituent phases
         self.pop('pore.temperature', None)
         self.pop('pore.pressure', None)
 
-        # Add a dummy model for assembling the global parition
-        # coefficients array. The dummy model only accepts 'target' and
-        # kwargs. When a binary partition coefficient is added to the
-        # MultiPhase, we manually append the binary partition coefficient
-        # propname as a keyword argument to this dummy model, so that our
-        # dependency handler is notified of this dependency!
-        partition_coef_global = self.settings['partition_coef_prefix'] + ".all"
-        self.add_model(propname=partition_coef_global, model=_dummy)
+        # Initialize the partition coefficient, K
+        self._K = np.ones(self.Nt, dtype=float)
+        prefix = self.settings["partition_coef_prefix"]
+        self[f"{prefix}.global"] = self._K
 
         # Add supplied phases to phases dict and initialize occupancy to 0
         self.add_phases(phases)
-
-        logger.warning('MultiPhase is a beta feature. Functionality may change!')
 
     def __getitem__(self, key):
         try:
             vals = super().__getitem__(key)
         except KeyError:
-            vals = self.interleave_data(key)
+            vals = self._interleave_data(key)
         return vals
 
-    def _get_phases(self):
+    @property
+    def phases(self):
         phases = {self.project[item].name: self.project[item]
                   for item in self.settings['phases']}
         return phases
 
-    phases = property(fget=_get_phases)
+    @property
+    def K(self):
+        self._build_K()
+        return self._K
 
-    def _update_occupancy(self):
-        r"""Updates 'occupancy.all' by summing up all occupancies"""
-        for elem in ["pore", "throat"]:
-            dict_ = self[f"{elem}.occupancy"]
-            dict_.pop(f"{elem}.occupancy.all")
-            self[f"{elem}.occupancy.all"] = np.sum(list(dict_.values()), axis=0)
+    @K.setter
+    def K(self, value):
+        self._K = value
 
     def add_phases(self, phases):
-        r"""
-        Adds supplied phases to the MultiPhase object and initializes
-        occupancy to 0. It does not return a value.
+        """
+        Adds supplied phases to MultiPhase object and sets occupancy to 0.
 
         Parameters
         ----------
-        phases : List[GenericPhase]
+        phases : list[GenericPhase] or GenericPhase
 
         """
         phases = np.array(phases, ndmin=1)
         for phase in phases:
-            if phase.name not in self.settings['phases']:
-                self.settings['phases'].append(phase.name)
-                self[f'pore.occupancy.{phase.name}'] = 0.
-                self[f'throat.occupancy.{phase.name}'] = 0.
+            if phase.name in self.settings["phases"]:
+                continue
+            self.settings['phases'].add(phase.name)
+            self[f'pore.occupancy.{phase.name}'] = 0.0
+            self[f'throat.occupancy.{phase.name}'] = 0.0
+
+    def set_occupancy(self, phase, *, pores=[], throats=[], values=1):
+        r"""
+        Specifies occupancy of a phase in each pore or throat. This
+        method doesn't return any value.
+
+        Parameters
+        ----------
+        phase : GenericPhase
+            The phase whose occupancy is being specified.
+        pores : ndarray
+            The location of pores whose occupancy is to be set.
+        throats : ndarray
+            The location of throats whose occupancy is to be set.
+        values : ndarray or float
+            Pore/throat occupancy values.
+
+        """
+        pores = np.array(pores, ndmin=1)
+        throats = np.array(throats, ndmin=1)
+
+        if not(pores.size ^ throats.size):
+            raise Exception("Must either pass 'pores' or 'throats'")
+        if phase not in self.project:
+            raise Exception(f"{phase.name} doesn't belong to this project")
+        self.add_phases(phase)
+
+        if pores.size:
+            self[f'pore.occupancy.{phase.name}'][pores] = values
+        if throats.size:
+            self[f'throat.occupancy.{phase.name}'][throats] = values
+
+        if self.settings["throat_occupancy"] == "automatic":
+            self.regenerate_models(propnames=f"throat.occupancy.{phase.name}")
+
+    def regenerate_models(self, propnames=None, exclude=[]):
+        r"""
+        Regenerate models associated with the Multiphase object
+
+        This method works by first regenerating the models associated with
+        the constituent phases, and then regenerating Multiphase models.
+
+        Parameters
+        ----------
+        propnames : list[str] or str
+            The list of property names to be regenerated. If None are
+            given then ALL models are re-run (except for those whose
+            ``regen_mode`` is 'constant').
+        exclude : list[str]
+            Since the default behavior is to run ALL models, this can be
+            used to exclude specific models. It may be more convenient to
+            supply as list of 2 models to exclude than to specify 8 models
+            to include.
+
+        """
+        # Regenerate models associated with phases within MultiPhase object
+        for phase in self.phases.values():
+            phase.regenerate_models(propnames=propnames, exclude=exclude)
+        # Regenerate models specific to MultiPhase object
+        super().regenerate_models(propnames=propnames, exclude=exclude)
 
     def set_binary_partition_coef(self, phases, model, **kwargs):
-        r"""
+        """
         Sets binary partition coefficient as defined by the interface
         concentration ratio of phase 1 to phase 2.
 
         Parameters
         ----------
-        phases : List[GenericPhase]
+        phases : list[GenericPhase]
             List of the two phases for which the binary partition
             coefficient model is being added.
         model : OpenPNM model
@@ -131,36 +186,18 @@ class MultiPhase(GenericPhase):
             Keyword arguments to be passed to the ``model``.
 
         """
-        if np.size(phases) != 2:
-            raise Exception("'phases' must contain exactly two elements!")
-
+        assert len(phases) == 2
         # Add partition coefficient interface model to the MultiPhase
         propname_prefix = self.settings["partition_coef_prefix"]
         self._add_interface_prop(propname_prefix, phases, model, **kwargs)
-
-        # Update global partition coef. model's args (for dependency handling)
-        partition_coef_global = self.settings['partition_coef_prefix'] + ".all"
-        K_global_model = self.models[partition_coef_global]
-        # Append binary partition coefficient propname to model args
-        propname = self._format_interface_prop(propname_prefix, phases)
-        key = f"K_{phases[0].name}_{phases[1].name}"
-        K_global_model[key] = propname
-
-        # Regenerate 'throat.parition_coef.all'
-        self.regenerate_models(partition_coef_global)
+        self._build_K()
 
     def _add_interface_prop(self, propname, phases, model, **kwargs):
-        r"""
-        Helper method used to add interface models to the ``MultiPhase``
-        object by augmenting.
+        """
+        Adds an interface model to the MultiPhase object. See Notes.
 
         Notes
         -----
-        For convenience and as an OpenPNM convention, the ``propname`` is
-        augmented as outlined by the following example.
-
-        Examples
-        --------
         Let's say the two phases corresponding to the interface model are
         named: 'air' and 'water', and the interface propname to be added
         is 'throat.foo'. After augmentation, 'throat.foo.air:water' will
@@ -181,127 +218,51 @@ class MultiPhase(GenericPhase):
         self.add_model(propname, model, **kwargs)
 
     def _format_interface_prop(self, propname, phases):
-        r"""
-        Returns formatted interface propname.
-
-        Parameters
-        ----------
-        propname : str
-            Dictionary key of the interface property.
-        phases : List[GenericPhase]
-            List of two phases that together form the interface property.
-
-        """
+        """Formats propname as {propname}.{phase[0].name}:{phase[1].name}"""
         prefix = propname
         suffix = ":".join(phase.name for phase in phases)
         return f"{prefix}.{suffix}"
 
-    def _get_phases_names(self, formatted_propname):
-        r"""Retrieves phases' names from a formatted propname"""
-        return formatted_propname.split(".")[2].split(":")
+    def _get_phase_labels(self, formatted_propname):
+        """Retrieves phases names from a formatted propname"""
+        assert ":" in formatted_propname
+        return formatted_propname.split(".")[-1].split(":")
 
-    def _assemble_partition_coef_global(self):
-        r"""Updates the global partition coefficient array"""
+    def _get_interface_throats(self, phase1, phase2):
         conns = self.network.conns
-        partition_coef_models = []
+        occ1 = self[f"pore.occupancy.{phase1}"][conns]
+        occ2 = self[f"pore.occupancy.{phase2}"][conns]
+        idx12, = np.where((occ1[:, 0] == 1) & (occ2[:, 1] == 1))
+        idx21, = np.where((occ2[:, 0] == 1) & (occ1[:, 1] == 1))
+        return idx12, idx21
+
+    def _build_K(self):
+        """Updates the global partition coefficient array"""
         prefix = self.settings["partition_coef_prefix"]
-        K_global = np.ones(self.Nt)
-        partition_coef_global = prefix + ".all"
-
+        self._K = np.ones(self.Nt, dtype=float)
         # Find all binary partition coefficient models
-        for model_key in self.models.keys():
-            if model_key.startswith(prefix):
-                if model_key != partition_coef_global:
-                    partition_coef_models.append(model_key)
-
+        models = [k for k in self.models.keys() if k.startswith(prefix)]
         # Modify the global partition coefficient for each phase pair
-        for propname in partition_coef_models:
-            K12 = self[propname]
-            phases_names = self._get_phases_names(propname)
-            S1 = self[f"pore.occupancy.{phases_names[0]}"][conns]
-            S2 = self[f"pore.occupancy.{phases_names[1]}"][conns]
-            mask = (S1[:, 0] + S2[:, 1]) == 2.
-            K_global[mask] = K12[mask]
-            mask = (S2[:, 0] + S1[:, 1]) == 2.
-            K_global[mask] = 1 / K12[mask]
+        for model in models:
+            K12 = self[model]
+            phase1, phase2 = self._get_phase_labels(model)
+            idx12, idx21 = self._get_interface_throats(phase1, phase2)
+            self._K[idx12] = K12[idx12]
+            self._K[idx21] = 1 / K12[idx21]
+        # Store a reference in self as a propname for convenience
+        self[f"{prefix}.global"][:] = self._K
 
-        return K_global
-
-    def interleave_data(self, prop):
-        r"""
-        Gathers property values from component phases to build a single
-        array.
-
-        If the requested ``prop`` is not on this MultiPhase, then a search
-        is conducted on all associated phase objects, and values from each
-        are assembled into a single array.
-
-        Parameters
-        ----------
-        prop : str
-            The property to be retrieved.
-
-        Returns
-        -------
-        ndarray
-            An array containing the specified property retrieved from each
-            component phase and assembled based on the specified mixing
-            rule.
-
-        """
+    def _interleave_data(self, prop):
+        """Gathers property values from component phases to build a single array."""
         element = self._parse_element(prop)[0]
-        vals = np.zeros([self._count(element=element)], dtype=float)
+        vals = np.zeros(self._count(element=element), dtype=float)
         # Retrieve property from constituent phases (weight = occupancy)
-        try:
-            for phase in self.phases.values():
-                vals += phase[prop] * self[f"{element}.occupancy.{phase.name}"]
-        # Otherwise - if not found - retrieve from super class
-        except KeyError:
-            vals = super().interleave_data(prop)
-
-        # Check for consistency of occupancy values (i.e. add up to 1)
-        if np.any(self[f"{element}.occupancy.all"] != 1.0):
-            self._update_occupancy()
-            if np.any(self[f"{element}.occupancy.all"] != 1.0):
-                raise Exception(f"Occupancy doesn't add to unity in all {element}s")
-
+        for phase in self.phases.values():
+            vals += phase[prop] * self[f"{element}.occupancy.{phase.name}"]
         return vals
 
-    def regenerate_models(self, propnames=None, exclude=[], deep=False):
-        r"""
-        Regenerate models associated with the Multiphase object
-
-        This method works by first regenerating the models associated with
-        the constituent phases, and then regenerating Multiphase models.
-
-        Parameters
-        ----------
-        propnames : List[str] or str
-            The list of property names to be regenerated. If None are
-            given then ALL models are re-run (except for those whose
-            ``regen_mode`` is 'constant').
-        exclude : List[str]
-            Since the default behavior is to run ALL models, this can be
-            used to exclude specific models. It may be more convenient to
-            supply as list of 2 models to exclude than to specify 8 models
-            to include.
-        deep : bool
-            Specifies whether or not to regenerate models on all
-            associated objects. For instance, if ``True``, then all
-            Physics models will be regenerated when method is called on
-            the corresponding Phase. The default is ``False``. The method
-            does not work in reverse, so regenerating models on a Physics
-            will not update a Phase.
-
-        """
-        # Regenerate models associated with phases within MultiPhase object
-        for phase in self.phases.values():
-            phase.regenerate_models(propnames=propnames, exclude=exclude, deep=deep)
-        # Regenerate models specific to MultiPhase object
-        super().regenerate_models(propnames=propnames, exclude=exclude, deep=deep)
-
     def _set_automatic_throat_occupancy(self, mode="mean"):
-        r"""
+        """
         Automatically interpolates throat occupancy based on that in
         adjacent pores. This method doesn't return any value.
 
@@ -324,90 +285,7 @@ class MultiPhase(GenericPhase):
         """
         self.settings['throat_occupancy'] = 'automatic'
         for phase in self.phases.values():
-            self.add_model(
-                propname=f"throat.occupancy.{phase.name}",
-                model=misc.from_neighbor_pores,
-                prop=f"pore.occupancy.{phase.name}",
-                mode=mode
-            )
-
-    def set_occupancy(self, phase, Pvals=[], Tvals=[], pores=[], throats=[]):
-        r"""
-        Specifies occupancy of a phase in each pore and/or throat. This
-        method doesn't return any value.
-
-        Parameters
-        ----------
-        phase : GenericPhase
-            The phase whose occupancy is being specified.
-        Pvals : array_like
-            The volume fraction of ``phase`` in each pore. This array must
-            be Np-long, except when ``pores`` is also specified, where in
-            that case they must be of equal length. If a scalar is
-            received, it is applied to all the pores. If nothing is passed,
-            ``Pvals=1.0`` will be assumed.
-        Tvals : array_like
-            The volume fraction of ``phase`` in each throat. This array
-            must be Nt-long, except when ``throats`` is also specified,
-            where in that case they must be of equal length. If a scalar
-            is received it is applied to all the throats. If nothing is
-            passed, ``Tvals=1.0`` will be assumed.
-        pores : array_like
-            The location of pores whose occupancy is to be set.
-        throats : array_like
-            The location of throats whose occupancy is to be set.
-
-        """
-        # TODO: pores/throats could also be masks
-
-        Pvals = np.array(Pvals, ndmin=1)
-        Tvals = np.array(Tvals, ndmin=1)
-        pores = np.array(pores, ndmin=1)
-        throats = np.array(throats, ndmin=1)
-
-        # Check for size consistency of the arguments
-        if Pvals.size and pores.size:
-            if Pvals.size != 1 and pores.size != 1:
-                if Pvals.size != pores.size:
-                    raise Exception("Pvals and pores must be the same size.")
-        if Tvals.size and throats.size:
-            if Tvals.size != 1 and throats.size != 1:
-                if Tvals.size != throats.size:
-                    raise Exception("Tvals and throats must be the same size.")
-
-        # Check if the passed phase is already part of MultiPhase object
-        if phase not in self.project:
-            raise Exception(f"{phase.name} doesn't belong to this project")
-        # Add the passed phase to MultiPhase object if not found
-        if phase.name not in self.settings['phases']:
-            self.add_phases(phase)
-
-        # Check for value consistency of the arguments
-        if np.any(Pvals > 1.0) or np.any(Pvals < 0.0):
-            logger.critical('Received Pvals contain volume fractions outside '
-                            + 'the range of 0 to 1')
-        if np.any(Tvals > 1.0) or np.any(Tvals < 0.0):
-            logger.critical('Received Tvals contain volume fractions outside '
-                            + 'the range of 0 to 1')
-
-        if Pvals.size and not pores.size:
-            pores = self.pores()
-        if Tvals.size and not throats.size:
-            throats = self.throats()
-
-        if pores.size:
-            Pvals = Pvals if Pvals.size else 1.0
-            self['pore.occupancy.' + phase.name][pores] = Pvals
-        if throats.size:
-            Tvals = Tvals if Tvals.size else 1.0
-            self['throat.occupancy.' + phase.name][throats] = Tvals
-
-        if self.settings["throat_occupancy"] == "automatic":
-            self.regenerate_models(propnames=f"throat.occupancy.{phase.name}")
-
-        self._update_occupancy()
-
-
-def _dummy(target, **kwargs):
-    r"""Dummy model to store propnames as kwargs for dependency handling"""
-    return target._assemble_partition_coef_global()
+            self.add_model(propname=f"throat.occupancy.{phase.name}",
+                           model=misc.from_neighbor_pores,
+                           prop=f"pore.occupancy.{phase.name}",
+                           mode=mode)

@@ -193,7 +193,7 @@ def trim(network, pores=[], throats=[]):
         if not np.any(Tkeep):
             logger.info('Removing ALL throats from network')
             for item in list(network.keys()):
-                if item.split('.')[0] == 'throat':
+                if item.split('.', 1)[0] == 'throat':
                     del network[item]
             network['throat.all'] = np.array([], ndmin=1)
             return
@@ -217,9 +217,9 @@ def trim(network, pores=[], throats=[]):
             Ts = obj.to_local(throats=Tkeep_inds, missing_vals=None)
         for key in list(obj.keys()):
             temp = obj.pop(key)
-            if key.split('.')[0] == 'throat':
+            if key.split('.', 1)[0] == 'throat':
                 obj.update({key: temp[Ts]})
-            if key.split('.')[0] == 'pore':
+            if key.split('.', 1)[0] == 'pore':
                 obj.update({key: temp[Ps]})
 
     # Remap throat connections
@@ -282,7 +282,7 @@ def extend(network, coords=[], conns=[], labels=[], **kwargs):
         obj.update({'pore.all': np.ones([Np, ], dtype=bool),
                     'throat.all': np.ones([Nt, ], dtype=bool)})
         for item in list(obj.keys()):
-            N = obj._count(element=item.split('.')[0])
+            N = obj._count(element=item.split('.', 1)[0])
             if obj[item].shape[0] < N:
                 arr = obj.pop(item)
                 s = arr.shape
@@ -304,7 +304,7 @@ def extend(network, coords=[], conns=[], labels=[], **kwargs):
             labels = [labels]
         for label in labels:
             # Remove pore or throat from label, if present
-            label = label.split('.')[-1]
+            label = label.split('.', 1)[-1]
             if np.size(coords) > 0:
                 Ps = np.r_[Np_old:Np]
                 if 'pore.'+label not in network.labels():
@@ -571,7 +571,7 @@ def merge_networks(network, donor=[]):
                         if network[key].dtype == bool:  # Deal with labels
                             donor[key] = False
                         else:  # Deal with numerical data
-                            element = key.split('.')[0]
+                            element = key.split('.', 1)[0]
                             shape = list(network[key].shape)
                             N = donor._count(element)
                             shape[0] = N
@@ -741,9 +741,9 @@ def stitch_pores(network, pores1, pores2, mode='gabriel'):
     C2 = network.coords[pores2, :]
     crds = np.vstack((C1, C2))
     if mode == 'delaunay':
-        net = Delaunay(points=crds, settings={'trim': False})
+        net = Delaunay(points=crds)
     if mode == 'gabriel':
-        net = Gabriel(points=crds, settings={'trim': False})
+        net = Gabriel(points=crds)
     net.set_label(pores=range(len(pores1)), label='pore.one')
     net.set_label(pores=range(len(pores2)), label='pore.two')
     Ts = net.find_neighbor_throats(pores=net.pores('one'), mode='xor')
@@ -1000,7 +1000,7 @@ def add_boundary_pores(network, pores, offset=None, move_to=None,
                 temp[:, i] = d
                 network['pore.coords'][newPs] = temp
     # Apply labels to boundary pores (trim leading 'pores' if present)
-    label = apply_label.split('.')[-1]
+    label = apply_label.split('.', 1)[-1]
     plabel = 'pore.' + label
     tlabel = 'throat.' + label
     network[plabel] = False

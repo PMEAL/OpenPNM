@@ -1,11 +1,14 @@
 import logging
 import numpy as np
 from openpnm.algorithms import ReactiveTransport
-from openpnm.utils import Docorator, SettingsAttr
-docstr = Docorator()
-logger = logging.getLogger(__name__)
+from openpnm.utils import Docorator
+
 
 __all__ = ['AdvectionDiffusion']
+
+
+docstr = Docorator()
+logger = logging.getLogger(__name__)
 
 
 @docstr.get_sections(base='AdvectionDiffusionSettings',
@@ -29,7 +32,6 @@ class AdvectionDiffusionSettings:
         algorithm.
 
     """
-    prefix = 'ad'
     quantity = 'pore.concentration'
     conductance = 'throat.ad_dif_conductance'
     diffusive_conductance = 'throat.diffusive_conductance'
@@ -42,18 +44,9 @@ class AdvectionDiffusion(ReactiveTransport):
     A subclass of ReactiveTransport to simulate advection-diffusion
     """
 
-    def __init__(self, settings=None, **kwargs):
-        self.settings = SettingsAttr(AdvectionDiffusionSettings, settings)
-        super().__init__(settings=self.settings, **kwargs)
-
-    @docstr.dedent
-    def _get_settings(self):
-        r"""
-        Dataclass-like attribute for storing settings
-
-        %(AdvectionDiffusionSettings.parameters)s
-        """
-        return super()._get_settings()
+    def __init__(self, name='ad_#', **kwargs):
+        super().__init__(name=name, **kwargs)
+        self.settings._update(AdvectionDiffusionSettings())
 
     def set_outflow_BC(self, pores, mode='merge'):
         r"""

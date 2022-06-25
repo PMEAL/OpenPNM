@@ -4,7 +4,7 @@ import scipy.sparse.csgraph as spgr
 from openpnm.topotools import is_fully_connected
 from openpnm.algorithms import GenericAlgorithm
 from openpnm.algorithms import BCsMixin
-from openpnm.utils import Docorator, SettingsAttr, TypedSet, Workspace
+from openpnm.utils import Docorator, TypedSet, Workspace
 from openpnm.utils import check_data_health
 from openpnm import solvers
 from ._solution import SteadyStateSolution, SolutionContainer
@@ -28,16 +28,21 @@ class GenericTransportSettings:
     ----------
     %(GenericAlgorithmSettings.parameters)s
     quantity : str
-        The name of the physical quantity to be calculated
+        The name of the physical quantity to be solved for (i.e.
+        'pore.concentration')
     conductance : str
-        The name of the pore-scale transport conductance values. These are
-        typically calculated by a model attached to a *Physics* object
-        associated with the given *Phase*.
+        The name of the pore-scale transport conductance values (i.e
+        'throat.diffusive_conductance')
     cache : bool
-        If ``True``, A matrix is cached and rather than getting rebuilt.
+        If ``True``, the ``A`` matrix is cached and rather than getting
+        rebuilt.
+    variable_props : list of strings
+        This list (actually a set) indicates which properties are variable
+        and should be updated by the algorithm on each iteration. Note that
+        any properties which already depend on ``'quantity'`` will
+        automatically be updated.
 
     """
-    prefix = 'transport'
     phase = ''
     quantity = ''
     conductance = ''
@@ -57,21 +62,16 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
 
     """
 
-    def __new__(cls, *args, **kwargs):
-        instance = super(GenericTransport, cls).__new__(cls, *args, **kwargs)
-        # Create some instance attributes
-        instance._A = None
-        instance._b = None
-        instance._pure_A = None
-        instance._pure_b = None
-        return instance
-
-    def __init__(self, phase, settings=None, **kwargs):
-        self.settings = SettingsAttr(GenericTransportSettings, settings)
-        super().__init__(settings=self.settings, **kwargs)
+    def __init__(self, phase, name='trans_#', **kwargs):
+        super().__init__(name=name, **kwargs)
+        self.settings._update(GenericTransportSettings())
         self.settings['phase'] = phase.name
         self['pore.bc_rate'] = np.nan
         self['pore.bc_value'] = np.nan
+        self._A = None
+        self._b = None
+        self._pure_A = None
+        self._pure_b = None
 
     @property
     def x(self):
@@ -94,12 +94,8 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
 
         """
         gvals = self.settings['conductance']
-        # FIXME: this needs to be properly addressed (see issue #1548)
-        try:
-            if gvals in self._get_iterative_props():
-                self.settings.cache = False
-        except AttributeError:
-            pass
+        if gvals in self.iterative_props:
+            self.settings.cache = False
         if not self.settings['cache']:
             self._pure_A = None
         if self._pure_A is None:
@@ -180,11 +176,10 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
         x0 : ndarray
             Initial guess of unknown variable
 
-        Notes
-        -----
-        This method doesn't return anything. The solution is stored on
-        the object under ``pore.<quantity>`` where *<quantity>* is specified
-        in the ``settings`` attribute.
+        Returns
+        -------
+        SolutionContainer
+            Dict containing the solution with self.settings.quantity as key
 
         """
         logger.info('Running GenericTransport')
@@ -235,7 +230,7 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
         """
         x0 = self["pore.initial_guess"]
         if not np.isfinite(x0).all():
-            raise Exception("x0 contains Inf/NaN values")
+            raise Exception("x0 contains inf/nan values")
 
     def _validate_settings(self):
         if self.settings['quantity'] is None:
@@ -252,9 +247,9 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
         """
         Ps = ~np.isnan(self['pore.bc_rate']) + ~np.isnan(self['pore.bc_value'])
         if not is_fully_connected(network=self.network, pores_BC=Ps):
-            msg = ("Your network is clustered. Run h = net.check_network_"
-                   "health() followed by op.topotools.trim(net, pores=h['"
-                   "trim_pores']) to make your network fully connected.")
+            msg = ("Your network is clustered. Run h = net.check_network_health()"
+                   " followed by op.topotools.trim(net, pores=h['disconnected_pores'])"
+                   " to make your network fully connected.")
             raise Exception(msg)
 
     def _validate_conductance_model_health(self):
@@ -262,14 +257,14 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
         Ensures all throats have a conductance model assigned.
         """
         conductance = self.settings.conductance
-        g = self.project.phases(self.settings.phase)[conductance]
+        g = self.project[self.settings.phase][conductance]
         Ts_nan = self.Ts[np.isnan(g)]
         Ts_with_model = []
         for obj in self.project:
             if conductance in obj.keys():
                 Ts_with_model.extend(obj.throats(to_global=True))
         if not np.in1d(Ts_nan, Ts_with_model).all():
-            msg = ("Found NaNs in A matrix, possibly because some throats"
+            msg = ("Found nans in A matrix, possibly because some throats"
                    f" don't have conductance model assigned: {conductance}")
             raise Exception(msg)
 
@@ -287,8 +282,7 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
             return True
 
         # Fetch phase/geometries/physics
-        prj = self.project
-        phase = prj.phases(self.settings.phase)
+        phase = self.project[self.settings.phase]
 
         # Locate the root of NaNs
         unaccounted_nans = []
@@ -312,7 +306,7 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
         root_objs = unique([d[x] for x in nx.topological_sort(dg_nans)])
         # Throw error with helpful info on how to resolve the issue
         if root_props:
-            msg = ("Found NaNs in A matrix, possibly caused by NaNs in"
+            msg = ("Found nans in A matrix, possibly caused by nans in"
                    f" {', '.join(root_props)}. The issue might get resolved"
                    " if you call `regenerate_models` on the following"
                    f" object(s): {', '.join(root_objs)}")
@@ -323,12 +317,12 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
 
         # Raise Exception for unaccounted properties
         if unaccounted_nans:
-            msg = ("Found NaNs in A matrix, possibly caused by NaNs in"
+            msg = ("Found nans in A matrix, possibly caused by nans in"
                    f" {', '.join(unaccounted_nans)}.")
             raise Exception(msg)
 
         # Raise Exception otherwise if root cannot be found
-        msg = ("Found NaNs in A matrix but couldn't locate the root cause."
+        msg = ("Found nans in A matrix but couldn't locate the root cause."
                " It's likely that disabling caching of A matrix via"
                " `alg.settings['cache'] = False` after instantiating the"
                " algorithm object fixes the problem.")
@@ -405,40 +399,3 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
                 R = np.sum(R)
 
         return np.array(R, ndmin=1)
-
-    def set_variable_props(self, variable_props, mode='add'):
-        r"""
-        This method is useful for setting variable_props to the settings
-        dictionary of the target object. Variable_props and their dependent
-        properties get updated iteratively.
-
-        Parameters
-        ----------
-        variable_props : str, or List(str)
-            A single string or list of strings to be added as variable_props
-        mode : str, optional
-            Controls how the variable_props are applied. The default value is
-            'add'. Options are:
-
-            ===========  =====================================================
-            mode         meaning
-            ===========  =====================================================
-            'add'        Adds supplied variable_props to already existing list
-                         (if any), and prevents duplicates
-            'overwrite'  Deletes all exisitng variable_props and then adds
-                         the specified new ones
-            ===========  =====================================================
-
-        """
-        # If single string, make it a list
-        if isinstance(variable_props, str):
-            variable_props = [variable_props]
-        # Handle mode
-        mode = self._parse_mode(mode, allowed=['add', 'overwrite'],
-                                single=True)
-        if mode == 'overwrite':
-            self.settings['variable_props'].clear()
-        # parse each propname and append to variable_props in settings
-        for variable_prop in variable_props:
-            variable_prop = self._parse_prop(variable_prop, 'pore')
-            self.settings['variable_props'].add(variable_prop)
