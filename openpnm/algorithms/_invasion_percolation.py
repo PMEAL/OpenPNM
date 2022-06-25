@@ -145,6 +145,8 @@ class InvasionPercolation(GenericAlgorithm):
             self['pore.inlets'][pores] = True
         else:
             raise Exception(f'Unrecognized mode {mode}')
+        self['pore.invasion_sequence'] = -1
+        self['pore.invasion_sequence'][self['pore.inlets']] = 0
 
     def set_outlets(self, pores=[], mode='add'):
         r"""
