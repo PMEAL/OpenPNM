@@ -1,7 +1,7 @@
 import logging
 import heapq as hq
 import numpy as np
-from numba import njit
+from numba import njit, jit
 from tqdm import tqdm
 from collections import namedtuple
 from openpnm.utils import Docorator
@@ -354,7 +354,7 @@ class InvasionPercolation(GenericAlgorithm):
         # self['throat.trapped'][self['throat.residual']] = False
 
 
-@njit
+@jit
 def _find_trapped_pores(inv_seq, indices, indptr, outlets):
     Np = len(inv_seq)
     sorted_seq = np.vstack((inv_seq.astype(np.int_), np.arange(Np, dtype=np.int_))).T
