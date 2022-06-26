@@ -7,8 +7,6 @@ docstr = Docorator()
 __all__ = [
     "salinity",
     "mole_weighted_average",
-    "fuller_diffusivity",
-    "wilke_fuller_diffusivity"
 ]
 
 @docstr.dedent

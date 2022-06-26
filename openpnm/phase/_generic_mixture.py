@@ -1,9 +1,9 @@
 import numpy as np
+import logging
 from openpnm.phase import GenericPhase
 import openpnm.models.phase as mods
 from openpnm.utils import HealthDict, PrintableList, SubDict
 from openpnm.utils import Docorator, SettingsAttr
-from openpnm.utils import logging
 
 
 logger = logging.getLogger(__name__)
@@ -22,7 +22,6 @@ class GenericMixtureSettings:
     """
 
     components = []
-    prefix = 'mix'
 
 
 @docstr.get_sections(base='GenericMixture', sections=['Parameters'])
@@ -38,17 +37,11 @@ class GenericMixture(GenericPhase):
     components : list
         A list of all components that constitute this mixture
 
-    Notes
-    -----
-    All mixtures assume that mole fractions are always stored as
-    ``'pore.mole_fraction'`` and that concentration is always stored as
-    ``'pore.concentration'``.
-
     """
 
-    def __init__(self, components=[], settings=None, **kwargs):
+    def __init__(self, components=[], settings=None, name='mixture_#', **kwargs):
         self.settings = SettingsAttr(GenericMixtureSettings, settings)
-        super().__init__(settings=self.settings, **kwargs)
+        super().__init__(settings=self.settings, name=name, **kwargs)
 
         # Add any supplied phases to the phases list
         for comp in components:

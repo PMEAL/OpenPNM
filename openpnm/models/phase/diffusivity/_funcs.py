@@ -255,7 +255,7 @@ def fuller_mixture(target,
                    temperature='pore.temperature',
                    pressure='pore.pressure'):
     r"""
-    Estimates the diffusion coeffient of both species in a binary gas
+    Estimates the diffusion coefficient of both species in a binary gas
     mixture using the Fuller correlation
 
     Parameters
@@ -301,16 +301,16 @@ def wilke_fuller_mixture(
     Estimates the diffusion coeffient of each species in a gas mixture
 
     Uses the Fuller equation to estimate binary diffusivity between pairs, then
-    uses the correction of Fairbanks and Wilke to account for the composition
-    of the gas mixture.
+    uses the correction of Fairbanks and Wilke [1] to account for the
+    composition of the gas mixture.
 
     Parameters
     ----------
     %(models.target.parameters)s
-    molecular_weight : string
+    molecular_weight : str
         Dictionary key containing the molecular weight of each species.  The
         default is 'pore.molecular_weight'
-    molar_diffusion_volume : string
+    molar_diffusion_volume : str
         Dictionary key containing the molar diffusion volume of each species.
         This is used by the Fuller correlation.  The default is
         'pore.molar_diffusion_volume'
@@ -325,7 +325,7 @@ def wilke_fuller_mixture(
 
     Reference
     ---------
-    Fairbanks DF and CR Wilke, Diffusion Coefficients in Multicomponent
+    [1] Fairbanks DF and CR Wilke, Diffusion Coefficients in Multicomponent
     Gas Mixtures. Industrial & Engineering Chemistry, 42(3), p471–475 (1950).
     `DOI: 10.1021/ie50483a022 <http://doi.org/10.1021/ie50483a022>`_
     """

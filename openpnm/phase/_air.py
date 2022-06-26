@@ -1,14 +1,15 @@
 from openpnm.models.collections.phase import air
 from openpnm.phase import GenericPhase
-from openpnm.utils import Docorator
+from openpnm.utils import Docorator, Workspace
 
 
 ws = Workspace()
 docstr = Docorator()
+
+
 __all__ = [
     'Air',
-    'AirMixture',
-    ]
+]
 
 
 @docstr.dedent

@@ -2,8 +2,17 @@ from openpnm.phase import GenericSpecies
 import chemicals as chem
 from chemicals.utils import k
 import openpnm.models.phase as mods
-from openpnm.utils import logging
+import logging
+
+
 logger = logging.getLogger(__name__)
+
+
+__all__ = [
+    'SpeciesByName',
+    'GasByName',
+    'LiquidByName',
+]
 
 
 class SpeciesByName(GenericSpecies):
