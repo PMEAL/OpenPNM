@@ -21,7 +21,7 @@ class BCsMixin:
 
     def set_value_BC(self, pores, values, mode='merge'):
         r"""
-        Applues constant value boundary conditons to the specified pores.
+        Applies constant value boundary conditons to the specified pores.
 
         These are sometimes referred to as Dirichlet conditions.
 
@@ -40,15 +40,24 @@ class BCsMixin:
             ===========  =====================================================
             mode         meaning
             ===========  =====================================================
-            'merge'      Adds supplied boundary conditions to already
-                         existing conditions, and also overwrites any
-                         existing values. If BCs of the complementary type
-                         already exist in the given locations, those
-                         values are kept.
+            'merge'      (default) Adds supplied boundary conditions to the
+                         existing conditions, including overwriting any
+                         existing conditions they may be present. This is
+                         equivalent to calling ``'remove'`` on the given
+                         locations followed by ``'add'``.
             'overwrite'  Deletes all boundary conditions of the given type
-                         then adds the specified new ones (unless
-                         locations already have BCs of the other type)
+                         then adds the specified new ones.  This is equivalent
+                         to called ``'clear'`` followed by ``'add'``.
+            'add'        Adds the supplied boundary conditions to the
+                         existing conditions but does *not* overwrite any
+                         conditions they are already present.
+            'remove'     Removes boundary conditions from the specified
+                         locations.
+            'clear'      Removes all boundary conditions from the object.
             ===========  =====================================================
+
+            If BCs of the another type already exist
+            in the given locations, those values are kept.
 
         Notes
         -----
@@ -83,14 +92,20 @@ class BCsMixin:
             ===========  =====================================================
             mode         meaning
             ===========  =====================================================
-            'merge'      Adds supplied boundary conditions to already
-                         existing conditions, and also overwrites any
-                         existing values. If BCs of the complementary type
-                         already exist in the given locations, those
-                         values are kept.
+            'merge'      (default) Adds supplied boundary conditions to the
+                         existing conditions, including overwriting any
+                         existing conditions they may be present. This is
+                         equivalent to calling ``'remove'`` on the given
+                         locations followed by ``'add'``.
             'overwrite'  Deletes all boundary conditions of the given type
-                         then adds the specified new ones (unless
-                         locations already have BCs of the other type)
+                         then adds the specified new ones.  This is equivalent
+                         to called ``'clear'`` followed by ``'add'``.
+            'add'        Adds the supplied boundary conditions to the
+                         existing conditions but does *not* overwrite any
+                         conditions they are already present.
+            'remove'     Removes boundary conditions from the specified
+                         locations.
+            'clear'      Removes all boundary conditions from the object.
             ===========  =====================================================
 
         Notes
@@ -152,50 +167,64 @@ class BCsMixin:
             ===========  =====================================================
             mode         meaning
             ===========  =====================================================
-            'merge'      Adds supplied boundary conditions to already existing
-                         conditions, and also overwrites any existing values.
-                         If BCs of the complementary type already exist in the
-                         given locations, these values are kept.
+            'merge'      (default) Adds supplied boundary conditions to the
+                         existing conditions, including overwriting any
+                         existing conditions they may be present. This is
+                         equivalent to calling ``'remove'`` on the given
+                         locations followed by ``'add'``.
             'overwrite'  Deletes all boundary conditions of the given type
-                         then adds the specified new ones (unless locations
-                         already have BCs of the other type).
+                         then adds the specified new ones.  This is equivalent
+                         to called ``'clear'`` followed by ``'add'``.
+            'add'        Adds the supplied boundary conditions to the
+                         existing conditions but does *not* overwrite any
+                         conditions they are already present.
+            'remove'     Removes boundary conditions from the specified
+                         locations.
+            'clear'      Removes all boundary conditions from the object.
             ===========  =====================================================
 
         Notes
         -----
         It is not possible to have multiple boundary conditions for a
         specified location in one algorithm. Use ``remove_BCs`` to
-        clear existing BCs before applying new ones or ``mode='overwrite'``
-        which removes all existing BC's before applying the new ones.
+        clear existing BCs before applying new ones.
 
         """
         # Hijack the parse_mode function to verify bctype argument
-        bctype = self._parse_mode(bctype, allowed=['value', 'rate'], single=True)
+        bctype = self._parse_mode(
+            bctype,
+            allowed=['value', 'rate'],
+            single=True
+        )
         othertype = np.setdiff1d(['value', 'rate'], bctype).item()
-        mode = self._parse_mode(mode, allowed=['merge', 'overwrite'], single=True)
+        mode = self._parse_mode(
+            mode,
+            allowed=['merge', 'overwrite', 'add', 'remove', 'clear'],
+            single=True
+        )
         pores = self._parse_indices(pores)
 
         values = np.array(bcvalues)
         if values.size > 1 and values.size != pores.size:
             raise Exception('The number of values must match the number of locations')
 
+        other_bcs = np.isfinite(self[f"pore.bc_{othertype}"])
+        other_inds = pores[other_bcs[pores]]
+        current_inds = np.setdiff1d(pores, other_inds)
+
         # Catch pores with existing BCs
-        if mode == 'merge':
-            existing_bcs = np.isfinite(self[f"pore.bc_{othertype}"])
-            inds = pores[existing_bcs[pores]]
+        if mode == 'add':
+            temp = np.setdiff1d(pores, current_inds)
+            self[f"pore.bc_{bctype}"][temp] = np.nan
+        elif mode == 'remove':
+            self[f"pore.bc_{bctype}"][pores] = np.nan
+        elif mode == 'clear':
+            self[f"pore.bc_{bctype}"] = np.nan
+        elif mode == 'merge':
+            self[f"pore.bc_{bctype}"][current_inds] = values
         elif mode == 'overwrite':   # Remove existing BCs and write new ones
             self[f"pore.bc_{bctype}"] = np.nan
-            existing_bcs = np.isfinite(self[f"pore.bc_{othertype}"])
-            inds = pores[existing_bcs[pores]]
-        # Now drop any pore indices which have BCs that should be kept
-        if len(inds) > 0:
-            msg = (r'Boundary conditions are already specified in the following given'
-                   f' pores, so these will be skipped: {inds.__repr__()}')
-            logger.warning(prettify_logger_message(msg))
-            pores = np.setdiff1d(pores, inds)
-
-        # Store boundary values
-        self[f"pore.bc_{bctype}"][pores] = values
+            self[f"pore.bc_{bctype}"][current_inds] = values
 
     def remove_BC(self, pores=None, bctype='all'):
         r"""
