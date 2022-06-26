@@ -4,10 +4,13 @@ from openpnm.utils import Docorator
 
 docstr = Docorator()
 
+
 __all__ = [
-    "salinity",
-    "mole_weighted_average",
+    'salinity',
+    'mole_weighted_average',
+    'mixture_molecular_weight',
 ]
+
 
 @docstr.dedent
 def salinity(

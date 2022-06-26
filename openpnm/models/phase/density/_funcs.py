@@ -5,7 +5,15 @@ import numpy as np
 
 docstr = Docorator()
 
-__all__ = ["standard", "ideal_gas", "water"]
+
+__all__ = [
+    "standard",
+    "ideal_gas",
+    "water",
+    "liquid_density",
+    "liquid_mixture_density",
+]
+
 
 @docstr.get_sections(base='models.phase.density', sections=['Returns'])
 @docstr.dedent

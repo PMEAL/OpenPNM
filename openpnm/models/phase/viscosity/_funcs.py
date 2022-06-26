@@ -2,7 +2,16 @@ import numpy as np
 from chemicals import numba_vectorized
 
 
-__all__ = ["water", "reynolds", "chung"]
+__all__ = [
+    "water",
+    "reynolds",
+    "chung",
+    'liquid_viscosity',
+    'gas_viscosity',
+    'liquid_mixture_viscosity',
+    'gas_mixture_viscosity'
+]
+
 
 def water(target, temperature='pore.temperature', salinity='pore.salinity'):
     r"""

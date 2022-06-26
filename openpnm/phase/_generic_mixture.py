@@ -28,8 +28,8 @@ class GenericMixtureSettings:
 @docstr.dedent
 class GenericMixture(GenericPhase):
     r"""
-    Creates Phase object that represents a multicomponent mixture system
-    consisting of a given list of GenericPhases as components.
+    Creates Phase object that represents a multicomponent mixture
+    consisting of a given list of individual phase objects as components.
 
     Parameters
     ----------
@@ -39,17 +39,14 @@ class GenericMixture(GenericPhase):
 
     """
 
-    def __init__(self, components=[], settings=None, name='mixture_#', **kwargs):
-        self.settings = SettingsAttr(GenericMixtureSettings, settings)
-        super().__init__(settings=self.settings, name=name, **kwargs)
+    def __init__(self, components=[], name='mixture_#', **kwargs):
+        self._components = []
+        super().__init__(name=name, **kwargs)
+        self.settings._update(GenericMixtureSettings())
 
-        # Add any supplied phases to the phases list
+        # Add any supplied phases to the components
         for comp in components:
             self.set_component(comp)
-            # self.set_mole_fraction(comp, np.nan)
-
-        self.add_model(propname='pore.mole_fraction.all',
-                       model=mods.mixtures.mole_summation)
 
     def __getitem__(self, key):
         try:
@@ -105,7 +102,7 @@ class GenericMixture(GenericPhase):
             components = [components]
         # Remove from settings:
         for comp in components:
-            self.settings['components'].remove(comp.name)
+            self._components.remove(comp.name)
         # Remove data from dict:
         for item in list(self.keys()):
             if item.endswith(comp.name):
@@ -115,16 +112,16 @@ class GenericMixture(GenericPhase):
     def _get_comps(self):
         comps = {}
         comps.update({item: self.project[item]
-                      for item in sorted(self.settings['components'])})
+                      for item in sorted(self._components)})
         return comps
 
     def _set_comps(self, components):
         if not isinstance(components, list):
             components = [components]
-        temp = self.settings['components'].copy()
+        temp = self._components.copy()
         temp.extend([val.name for val in components])
         comps = list(set(temp))
-        self.settings['components'] = comps
+        self._components = comps
         # Add mole_fraction array to dict, filled with nans
         for item in comps:
             self['pore.mole_fraction.' + item] = np.nan
@@ -181,15 +178,15 @@ class LiquidMixture(GenericMixture):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.add_model(propname='pore.molecular_weight',
-                       model=mods.mixture.mixture_molecular_weight,)
+                       model=mods.mixtures.mixture_molecular_weight,)
         self.add_model(propname='pore.viscosity',
                        model=mods.viscosity.liquid_mixture_viscosity,)
         self.add_model(propname='pore.critical_volume',
-                       model=mods.critical_properties.liquid_mixture_critical_volume,)
+                       model=mods.critical_props.liquid_mixture_critical_volume,)
         self.add_model(propname='pore.critical_temperature',
-                       model=mods.critical_properties.liquid_mixture_critical_temperature,)
+                       model=mods.critical_props.liquid_mixture_critical_temperature,)
         self.add_model(propname='pore.acentric_factor',
-                       model=mods.critical_properties.mixture_acentric_factor,)
+                       model=mods.critical_props.mixture_acentric_factor,)
         self.add_model(propname='pore.density',
                        model=mods.density.liquid_mixture_density,)
         self.add_model(propname='pore.thermal_conductivity',

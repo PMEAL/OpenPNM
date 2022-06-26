@@ -6,7 +6,13 @@ from chemicals import numba_vectorized
 
 docstr = Docorator()
 
-__all__ = ["antoine", "water"]
+
+__all__ = [
+    "antoine",
+    "water",
+    "vapor_pressure",
+]
+
 
 @docstr.get_sections(base='models.phase.vapor_pressure', sections=['Returns'])
 @docstr.dedent

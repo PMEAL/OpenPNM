@@ -5,13 +5,21 @@ import scipy.constants as const
 
 docstr = Docorator()
 
+
 __all__ = [
     "fuller",
     "fuller_scaling",
     "tyn_calus",
     "tyn_calus_scaling",
-    "chapman_enskog"
+    "chapman_enskog",
+    "wilke_fuller_mixture",
+    "fuller_mixture",
+    "gas_mixture_LJ_collision_integral",
+    "gas_mixture_LJ_epsilon",
+    "gas_mixture_LJ_sigma",
+    "gas_mixture_diffusivity",
 ]
+
 
 @docstr.get_sections(base='models.phase.diffusivity', sections=['Returns'])
 @docstr.dedent

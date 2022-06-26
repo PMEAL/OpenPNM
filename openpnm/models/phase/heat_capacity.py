@@ -17,7 +17,8 @@ def liquid_heat_capacity(
 
     """
     T = target['pore.temperature']
-    Cpgm = target['pore.gas_heat_capacity']
+    # Cpgm = target['pore.gas_heat_capacity']
+    Cpgm = 1.0
     Tc = target['param.critical_temperature']
     omega = target['param.acentric_factor']
     Cplm = numba_vectorized.Rowlinson_Poling(T, Tc, omega, Cpgm)

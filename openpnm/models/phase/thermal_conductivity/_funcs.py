@@ -5,7 +5,17 @@ from chemicals import numba_vectorized, rho_to_Vm
 
 docstr = Docorator()
 
-__all__ = ["water", "chung", "sato"]
+
+__all__ = [
+    'water',
+    'chung',
+    'sato',
+    'gas_thermal_conductivity',
+    'liquid_thermal_conductivity',
+    'liquid_mixture_thermal_conductivity',
+    'gas_mixture_thermal_conductivity',
+]
+
 
 @docstr.dedent
 def water(target, temperature="pore.temperature", salinity="pore.salinity"):

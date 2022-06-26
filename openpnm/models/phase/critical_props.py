@@ -29,6 +29,6 @@ def liquid_mixture_critical_temperature(target, Vc='pore.critical_volume'):
 
 def mixture_acentric_factor(target):
     xs = [target['pore.mole_fraction.' + c.name] for c in target.components.values()]
-    omegas = [c.parameters['acentric_factor'] for c in target.components.values()]
+    omegas = [c['param.acentric_factor'] for c in target.components.values()]
     omega = np.sum([omegas[i]*xs[i] for i in range(len(xs))], axis=0)
     return omega
