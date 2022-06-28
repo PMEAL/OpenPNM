@@ -37,6 +37,7 @@ class AdvectionDiffusionSettings:
     diffusive_conductance = 'throat.diffusive_conductance'
     hydraulic_conductance = 'throat.hydraulic_conductance'
     pressure = 'pore.pressure'
+    cache = False
 
 
 class AdvectionDiffusion(ReactiveTransport):

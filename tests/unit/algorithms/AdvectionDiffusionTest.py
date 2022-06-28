@@ -30,9 +30,12 @@ class AdvectionDiffusionTest:
         self.phase.update(self.sf.soln)
 
         self.ad = AdvectionDiffusion(network=self.net, phase=self.phase)
-        self.ad.settings._update({"cache": False})
         self.ad.set_value_BC(pores=self.net.pores('right'), values=2)
         self.ad.set_value_BC(pores=self.net.pores('left'), values=0)
+        mod = op.models.physics.ad_dif_conductance.ad_dif
+        self.phase.add_model(propname='throat.ad_dif_conductance',
+                             model=mod, s_scheme='powerlaw')
+        self.ad.run()
 
     def test_settings(self):
         self.ad.settings._update({'quantity': "pore.blah",
