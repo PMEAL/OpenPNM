@@ -151,13 +151,34 @@ class AdvectionDiffusion(ReactiveTransport):
 
 
 if __name__ == "__main__":
+
+    # self.sf = StokesFlow(network=self.net, phase=self.phase)
+    # self.sf.set_value_BC(pores=self.net.pores('right'), values=1)
+    # self.sf.set_value_BC(pores=self.net.pores('left'), values=0)
+    # self.sf.run()
+
+    # self.phase.update(self.sf.soln)
+
+    # self.ad = AdvectionDiffusion(network=self.net, phase=self.phase)
+    # self.ad.set_value_BC(pores=self.net.pores('right'), values=2)
+    # self.ad.set_value_BC(pores=self.net.pores('left'), values=0)
+    # mod = op.models.physics.ad_dif_conductance.ad_dif
+    # self.phase.add_model(propname='throat.ad_dif_conductance',
+    #                      model=mod, s_scheme='powerlaw')
+    # self.ad.run()
     import openpnm as op
     pn = op.network.Cubic(shape=[10, 10, 1])
     pn.add_model_collection(op.models.collections.geometry.spheres_and_cylinders)
     pn.regenerate_models()
+
     air = op.phase.Air(network=pn)
     air.add_model_collection(op.models.collections.physics.standard)
     air.regenerate_models()
+    del air.models['throat.diffusive_conductance']
+    del air.models['throat.hydraulic_conductance']
+    air['throat.diffusive_conductance'] = 1e-15
+    air['throat.hydraulic_conductance'] = 1e-15
+
     flow = op.algorithms.StokesFlow(network=pn, phase=air)
     flow.set_value_BC(pores=pn.pores('left'), values=1)
     flow.set_value_BC(pores=pn.pores('right'), values=0)
