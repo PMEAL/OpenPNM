@@ -258,11 +258,14 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
         """
         conductance = self.settings.conductance
         g = self.project[self.settings.phase][conductance]
-        Ts_nan = self.Ts[np.isnan(g)]
+        try:
+            Ts_nan = self.Ts[~np.isfinite(g)]
+        except IndexError:
+            Ts_nan = self.Ts[np.any(~np.isfinite(g), axis=1)]
         Ts_with_model = []
         for obj in self.project:
             if conductance in obj.keys():
-                Ts_with_model.extend(obj.throats(to_global=True))
+                Ts_with_model.extend(obj.throats())
         if not np.in1d(Ts_nan, Ts_with_model).all():
             msg = ("Found nans in A matrix, possibly because some throats"
                    f" don't have conductance model assigned: {conductance}")

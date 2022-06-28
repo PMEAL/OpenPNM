@@ -47,6 +47,7 @@ class AdvectionDiffusion(ReactiveTransport):
     def __init__(self, name='ad_#', **kwargs):
         super().__init__(name=name, **kwargs)
         self.settings._update(AdvectionDiffusionSettings())
+        self['pore.bc_outflow'] = np.nan
 
     def set_outflow_BC(self, pores, mode='merge'):
         r"""
@@ -126,7 +127,7 @@ class AdvectionDiffusion(ReactiveTransport):
         Applies Dirichlet, Neumann, and outflow BCs in order
         """
         # Apply Dirichlet and rate BCs
-        ReactiveTransport._apply_BCs(self)
+        super()._apply_BCs()
         if 'pore.bc_outflow' not in self.keys():
             return
         # Apply outflow BC
@@ -161,8 +162,10 @@ if __name__ == "__main__":
     flow.set_value_BC(pores=pn.pores('right'), values=0)
     flow.run()
     ad = op.algorithms.AdvectionDiffusion(network=pn, phase=air)
+    ad.settings['cache'] = False
     ad.set_value_BC(pores=pn.pores('front'), values=1)
     ad.set_value_BC(pores=pn.pores('back'), values=0)
+    # ad.set_outflow_BC(pores=pn.pores('back'))
     ad.run()
     # import matplotlib.pyplot as plt
     # fig, ax = plt.subplots(1, 1)

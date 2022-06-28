@@ -1,12 +1,11 @@
 import logging
 import numpy as np
 import warnings
-from openpnm.utils import prettify_logger_message
 from openpnm.utils import Docorator
 
 
 __all__ = [
-    'BCsMixin'
+    'BCsMixin',
 ]
 
 
@@ -37,11 +36,11 @@ class BCsMixin:
             Controls how the boundary conditions are applied. The default
             value is 'merge'. Options are:
 
-            ===========  =====================================================
+            ============ =====================================================
             mode         meaning
-            ===========  =====================================================
+            ============ =====================================================
             'merge'      (default) Adds supplied boundary conditions to the
-                         existing conditions, including overwriting any
+                         existing conditions, including replacing any
                          existing conditions they may be present. This is
                          equivalent to calling ``'remove'`` on the given
                          locations followed by ``'add'``.
@@ -54,10 +53,10 @@ class BCsMixin:
             'remove'     Removes boundary conditions from the specified
                          locations.
             'clear'      Removes all boundary conditions from the object.
-            ===========  =====================================================
+            ============ =====================================================
 
-            If BCs of the another type already exist
-            in the given locations, those values are kept.
+            If BCs of the another type already exist in the given locations,
+            those values are kept.
 
         Notes
         -----
@@ -89,11 +88,11 @@ class BCsMixin:
             Controls how the boundary conditions are applied. The default
             value is 'merge'. Options are:
 
-            ===========  =====================================================
+            ============ =====================================================
             mode         meaning
-            ===========  =====================================================
+            ============ =====================================================
             'merge'      (default) Adds supplied boundary conditions to the
-                         existing conditions, including overwriting any
+                         existing conditions, including replacing any
                          existing conditions they may be present. This is
                          equivalent to calling ``'remove'`` on the given
                          locations followed by ``'add'``.
@@ -106,7 +105,7 @@ class BCsMixin:
             'remove'     Removes boundary conditions from the specified
                          locations.
             'clear'      Removes all boundary conditions from the object.
-            ===========  =====================================================
+            ============ =====================================================
 
         Notes
         -----
@@ -114,11 +113,6 @@ class BCsMixin:
         ``settings``, e.g. ``alg.settings['quantity'] = 'pore.pressure'``.
 
         """
-        # support 'values' keyword
-        if 'values' in kwargs.keys():
-            rates = kwargs.pop("values")
-            warnings.warn("'values' has been deprecated, use 'rates' instead.",
-                          DeprecationWarning)
         # handle total_rate feature
         if total_rate is not None:
             if not np.isscalar(total_rate):
@@ -145,12 +139,12 @@ class BCsMixin:
             Specifies the type or the name of boundary condition to apply.
             The types can be one one of the following:
 
-            ===========  =====================================================
+            ============ =====================================================
             bctype       meaning
-            ===========  =====================================================
+            ============ =====================================================
             'value'      Specify the value of the quantity in each pore
             'rate'       Specify the flow rate into each pore
-            ===========  =====================================================
+            ============ =====================================================
 
         bcvalues : int or array_like
             The boundary value to apply, such as concentration or rate.
@@ -164,9 +158,9 @@ class BCsMixin:
             Controls how the boundary conditions are applied. The default
             value is 'merge'. Options are:
 
-            ===========  =====================================================
+            ============ =====================================================
             mode         meaning
-            ===========  =====================================================
+            ============ =====================================================
             'merge'      (default) Adds supplied boundary conditions to the
                          existing conditions, including overwriting any
                          existing conditions they may be present. This is
@@ -181,7 +175,7 @@ class BCsMixin:
             'remove'     Removes boundary conditions from the specified
                          locations.
             'clear'      Removes all boundary conditions from the object.
-            ===========  =====================================================
+            ============ =====================================================
 
         Notes
         -----
@@ -191,12 +185,13 @@ class BCsMixin:
 
         """
         # Hijack the parse_mode function to verify bctype argument
+        bc_types = self._get_bc_types()
         bctype = self._parse_mode(
             bctype,
-            allowed=['value', 'rate'],
+            allowed=bc_types,
             single=True
         )
-        othertype = np.setdiff1d(['value', 'rate'], bctype).item()
+        othertypes = np.setdiff1d(bc_types, bctype).tolist()
         mode = self._parse_mode(
             mode,
             allowed=['merge', 'overwrite', 'add', 'remove', 'clear'],
@@ -208,8 +203,13 @@ class BCsMixin:
         if values.size > 1 and values.size != pores.size:
             raise Exception('The number of values must match the number of locations')
 
-        other_bcs = np.isfinite(self[f"pore.bc_{othertype}"])
+        # Find locations where other bc types are defined
+        other_bcs = np.zeros(self.Np, dtype=bool)
+        for item in othertypes:
+            other_bcs += np.isfinite(self[f"pore.bc_{item}"])
         other_inds = pores[other_bcs[pores]]
+
+        # Find locations which are unique to the current bc type
         current_inds = np.setdiff1d(pores, other_inds)
 
         # Catch pores with existing BCs
@@ -234,20 +234,19 @@ class BCsMixin:
         ----------
         pores : array_like, optional
             The pores from which boundary conditions are to be removed. If
-            no pores are specified, then BCs are removed from all pores.
-            No error is thrown if the provided pores do not have any BCs
-            assigned.
+            no pores are specified, then BCs are removed from all pores. No
+            error is thrown if the provided pores do not have any BCs assigned.
         bctype : str, or List[str]
             Specifies which type of boundary condition to remove. The
             default value is 'all'. Options are:
 
-            ===========  =====================================================
+            ============ =====================================================
             bctype       meaning
-            ===========  =====================================================
+            ============ =====================================================
             'all'        Removes all boundary conditions
             'value'      Removes only value conditions
             'rate'       Removes only rate conditions
-            ===========  =====================================================
+            ============ =====================================================
 
         """
         if isinstance(bctype, str):
@@ -260,3 +259,10 @@ class BCsMixin:
             self['pore.bc_value'][pores] = np.nan
         if ('pore.bc_rate' in self.keys()) and ('rate' in bctype):
             self['pore.bc_rate'][pores] = np.nan
+
+    def _get_bc_types(self):
+        bc_types = set()
+        for item in self.keys():
+            if '.bc_' in item:
+                bc_types.add(item.split('.bc_')[1])
+        return list(bc_types)
