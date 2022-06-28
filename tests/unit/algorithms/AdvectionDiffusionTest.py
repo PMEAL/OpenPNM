@@ -155,6 +155,15 @@ class AdvectionDiffusionTest:
             y = ad[ad.settings['quantity']].mean()
             assert_allclose(actual=y, desired=2, rtol=1e-5)
 
+    def test_outflow_bc_modes(self):
+        ad = AdvectionDiffusion(network=self.net, phase=self.phase)
+        ad.set_rate_BC(pores=[0, 1], total_rate=1)
+        ad.set_value_BC(pores=[2, 3], values=1)
+        ad.set_rate_BC(pores=[2, 3], rate=2)
+        assert (~np.isnan(ad['pore.bc_rate'])).sum() == 2
+        ad.set_rate_BC(pores=[2, 3], rate=2, move='overwrite')
+        assert (~np.isnan(ad['pore.bc_rate'])).sum() == 4
+
     def test_add_outflow_overwrite_rate_and_value_BC(self):
         ad = AdvectionDiffusion(network=self.net, phase=self.phase)
         ad.set_rate_BC(pores=[0, 1], total_rate=1)

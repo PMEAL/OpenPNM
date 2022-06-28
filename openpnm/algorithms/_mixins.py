@@ -1,6 +1,5 @@
 import logging
 import numpy as np
-import warnings
 from openpnm.utils import Docorator
 
 
@@ -149,7 +148,7 @@ class BCsMixin:
         bcvalues : int or array_like
             The boundary value to apply, such as concentration or rate.
             If a single value is given, it's assumed to apply to all
-            locations unless the 'total_rate' bc_type is supplied whereby
+            locations unless the 'total_rate' bc.type is supplied whereby
             a single value corresponds to a total rate to be divded evenly
             among all pores. Otherwise, different values can be applied to
             all pores in the form of an array of the same length as
@@ -185,7 +184,7 @@ class BCsMixin:
 
         """
         # Hijack the parse_mode function to verify bctype argument
-        bc_types = self._get_bc_types()
+        bc_types = list(self['pore.bc'].keys())
         bctype = self._parse_mode(
             bctype,
             allowed=bc_types,
@@ -206,7 +205,7 @@ class BCsMixin:
         # Find locations where other bc types are defined
         other_bcs = np.zeros(self.Np, dtype=bool)
         for item in othertypes:
-            other_bcs += np.isfinite(self[f"pore.bc_{item}"])
+            other_bcs += np.isfinite(self[f"pore.bc.{item}"])
         other_inds = pores[other_bcs[pores]]
 
         # Find locations which are unique to the current bc type
@@ -215,16 +214,16 @@ class BCsMixin:
         # Catch pores with existing BCs
         if mode == 'add':
             temp = np.setdiff1d(pores, current_inds)
-            self[f"pore.bc_{bctype}"][temp] = np.nan
+            self[f"pore.bc.{bctype}"][temp] = np.nan
         elif mode == 'remove':
-            self[f"pore.bc_{bctype}"][pores] = np.nan
+            self[f"pore.bc.{bctype}"][pores] = np.nan
         elif mode == 'clear':
-            self[f"pore.bc_{bctype}"] = np.nan
+            self[f"pore.bc.{bctype}"] = np.nan
         elif mode == 'merge':
-            self[f"pore.bc_{bctype}"][current_inds] = values
+            self[f"pore.bc.{bctype}"][current_inds] = values
         elif mode == 'overwrite':   # Remove existing BCs and write new ones
-            self[f"pore.bc_{bctype}"] = np.nan
-            self[f"pore.bc_{bctype}"][current_inds] = values
+            self[f"pore.bc.{bctype}"] = np.nan
+            self[f"pore.bc.{bctype}"][current_inds] = values
 
     def remove_BC(self, pores=None, bctype='all'):
         r"""
@@ -255,14 +254,7 @@ class BCsMixin:
             bctype = ['value', 'rate']
         if pores is None:
             pores = self.Ps
-        if ('pore.bc_value' in self.keys()) and ('value' in bctype):
-            self['pore.bc_value'][pores] = np.nan
-        if ('pore.bc_rate' in self.keys()) and ('rate' in bctype):
-            self['pore.bc_rate'][pores] = np.nan
-
-    def _get_bc_types(self):
-        bc_types = set()
-        for item in self.keys():
-            if '.bc_' in item:
-                bc_types.add(item.split('.bc_')[1])
-        return list(bc_types)
+        if ('pore.bc.value' in self.keys()) and ('value' in bctype):
+            self['pore.bc.value'][pores] = np.nan
+        if ('pore.bc.rate' in self.keys()) and ('rate' in bctype):
+            self['pore.bc.rate'][pores] = np.nan

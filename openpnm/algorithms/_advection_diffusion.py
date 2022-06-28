@@ -48,7 +48,7 @@ class AdvectionDiffusion(ReactiveTransport):
     def __init__(self, name='ad_#', **kwargs):
         super().__init__(name=name, **kwargs)
         self.settings._update(AdvectionDiffusionSettings())
-        self['pore.bc_outflow'] = np.nan
+        self['pore.bc.outflow'] = np.nan
 
     def set_outflow_BC(self, pores, mode='merge'):
         r"""
@@ -98,20 +98,20 @@ class AdvectionDiffusion(ReactiveTransport):
         np.add.at(Qp, C12[:, 1], Q12)
 
         # Ensure other BCs are not already applied at given pores
-        hits = ~np.isnan(self['pore.bc_rate'][pores])
+        hits = ~np.isnan(self['pore.bc.rate'][pores])
         if np.any(hits):
-            self['pore.bc_rate'][pores] = np.nan
+            self['pore.bc.rate'][pores] = np.nan
             logger.warning('Rate boundary conditions found in some of the '
                            + 'specified pores will be overwritten')
-        hits = ~np.isnan(self['pore.bc_value'][pores])
+        hits = ~np.isnan(self['pore.bc.value'][pores])
         if np.any(hits):
-            self['pore.bc_value'][pores] = np.nan
+            self['pore.bc.value'][pores] = np.nan
             logger.warning('Value boundary conditions found in some of the '
                            + 'specified pores will be overwritten')
         # Store boundary values
-        if ('pore.bc_outflow' not in self.keys()) or (mode == 'overwrite'):
-            self['pore.bc_outflow'] = np.nan
-        self['pore.bc_outflow'][pores] = Qp[pores]
+        if ('pore.bc.outflow' not in self.keys()) or (mode == 'overwrite'):
+            self['pore.bc.outflow'] = np.nan
+        self['pore.bc.outflow'][pores] = Qp[pores]
 
     def remove_BC(self, pores=None, bctype='all'):
         # parse bctype argument
@@ -119,8 +119,8 @@ class AdvectionDiffusion(ReactiveTransport):
             bctype = [bctype]
         if 'all' in bctype:
             bctype = ['value', 'rate', 'outflow']
-        if ('pore.bc_outflow' in self.keys()) and ('outflow' in bctype):
-            self['pore.bc_outflow'][pores] = np.nan
+        if ('pore.bc.outflow' in self.keys()) and ('outflow' in bctype):
+            self['pore.bc.outflow'][pores] = np.nan
         super().remove_BC(pores=pores, bctype=bctype)
 
     def _apply_BCs(self):
@@ -129,19 +129,19 @@ class AdvectionDiffusion(ReactiveTransport):
         """
         # Apply Dirichlet and rate BCs
         super()._apply_BCs()
-        if 'pore.bc_outflow' not in self.keys():
+        if 'pore.bc.outflow' not in self.keys():
             return
         # Apply outflow BC
         diag = self.A.diagonal()
-        ind = np.isfinite(self['pore.bc_outflow'])
-        diag[ind] += self['pore.bc_outflow'][ind]
+        ind = np.isfinite(self['pore.bc.outflow'])
+        diag[ind] += self['pore.bc.outflow'][ind]
         self.A.setdiag(diag)
 
     def _set_BC(self, pores, bctype, bcvalues=None, mode='merge'):
         pores = self._parse_indices(pores)
         # First check that given pores outflow BCs already applied
-        if 'pore.bc_outflow' in self.keys():
-            hits = ~np.isnan(self['pore.bc_outflow'][pores])
+        if 'pore.bc.outflow' in self.keys():
+            hits = ~np.isnan(self['pore.bc.outflow'][pores])
             if np.any(hits):
                 raise Exception('Cannot apply BCs to the following pores '
                                 + 'which already have an outflow BC '
@@ -151,21 +151,6 @@ class AdvectionDiffusion(ReactiveTransport):
 
 
 if __name__ == "__main__":
-
-    # self.sf = StokesFlow(network=self.net, phase=self.phase)
-    # self.sf.set_value_BC(pores=self.net.pores('right'), values=1)
-    # self.sf.set_value_BC(pores=self.net.pores('left'), values=0)
-    # self.sf.run()
-
-    # self.phase.update(self.sf.soln)
-
-    # self.ad = AdvectionDiffusion(network=self.net, phase=self.phase)
-    # self.ad.set_value_BC(pores=self.net.pores('right'), values=2)
-    # self.ad.set_value_BC(pores=self.net.pores('left'), values=0)
-    # mod = op.models.physics.ad_dif_conductance.ad_dif
-    # self.phase.add_model(propname='throat.ad_dif_conductance',
-    #                      model=mod, s_scheme='powerlaw')
-    # self.ad.run()
     import openpnm as op
     pn = op.network.Cubic(shape=[10, 10, 1])
     pn.add_model_collection(op.models.collections.geometry.spheres_and_cylinders)
@@ -187,7 +172,7 @@ if __name__ == "__main__":
     ad.settings['cache'] = False
     ad.set_value_BC(pores=pn.pores('front'), values=1)
     ad.set_value_BC(pores=pn.pores('back'), values=0)
-    # ad.set_outflow_BC(pores=pn.pores('back'))
+    ad.set_outflow_BC(pores=pn.pores('back'))
     ad.run()
     # import matplotlib.pyplot as plt
     # fig, ax = plt.subplots(1, 1)

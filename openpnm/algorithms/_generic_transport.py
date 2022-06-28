@@ -66,8 +66,8 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
         super().__init__(name=name, **kwargs)
         self.settings._update(GenericTransportSettings())
         self.settings['phase'] = phase.name
-        self['pore.bc_rate'] = np.nan
-        self['pore.bc_value'] = np.nan
+        self['pore.bc.rate'] = np.nan
+        self['pore.bc.value'] = np.nan
         self._A = None
         self._b = None
         self._pure_A = None
@@ -142,18 +142,18 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
         Applies all the boundary conditions that have been specified, by
         adding values to the *A* and *b* matrices.
         """
-        if 'pore.bc_rate' in self.keys():
+        if 'pore.bc.rate' in self.keys():
             # Update b
-            ind = np.isfinite(self['pore.bc_rate'])
-            self.b[ind] = self['pore.bc_rate'][ind]
-        if 'pore.bc_value' in self.keys():
+            ind = np.isfinite(self['pore.bc.rate'])
+            self.b[ind] = self['pore.bc.rate'][ind]
+        if 'pore.bc.value' in self.keys():
             f = self.A.diagonal().mean()
             # Update b (impose bc values)
-            ind = np.isfinite(self['pore.bc_value'])
-            self.b[ind] = self['pore.bc_value'][ind] * f
+            ind = np.isfinite(self['pore.bc.value'])
+            self.b[ind] = self['pore.bc.value'][ind] * f
             # Update b (subtract quantities from b to keep A symmetric)
             x_BC = np.zeros_like(self.b)
-            x_BC[ind] = self['pore.bc_value'][ind]
+            x_BC[ind] = self['pore.bc.value'][ind]
             self.b[~ind] -= (self.A * x_BC)[~ind]
             # Update A
             P_bc = self.to_indices(ind)
@@ -245,7 +245,7 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
         Ensures the network is not clustered, and if it is, they're at
         least connected to a boundary condition pore.
         """
-        Ps = ~np.isnan(self['pore.bc_rate']) + ~np.isnan(self['pore.bc_value'])
+        Ps = ~np.isnan(self['pore.bc.rate']) + ~np.isnan(self['pore.bc.value'])
         if not is_fully_connected(network=self.network, pores_BC=Ps):
             msg = ("Your network is clustered. Run h = net.check_network_health()"
                    " followed by op.topotools.trim(net, pores=h['disconnected_pores'])"
