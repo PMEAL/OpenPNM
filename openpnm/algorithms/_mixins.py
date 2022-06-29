@@ -171,7 +171,10 @@ class BCsMixin:
             # Now remove indices that are present for other BCs
             for item in other_types:
                 mask[np.isfinite(self[f'pore.bc.{item}'][pores])] = False
-            self[f"pore.bc.{bctype}"][pores[mask]] = values
+            if mask.sum() > 0:
+                self[f"pore.bc.{bctype}"][pores[mask]] = values
+            else:
+                logger.warning('No valid pore locations were specified')
         elif mode == 'overwrite':
             if force:  # Set locs on other bcs to nan
                 for item in other_types:
@@ -179,7 +182,10 @@ class BCsMixin:
             # Now remove indices that are present for other BCs
             for item in other_types:
                 mask[np.isfinite(self[f'pore.bc.{item}'][pores])] = False
-            self[f"pore.bc.{bctype}"][pores[mask]] = values
+            if mask.sum() > 0:
+                self[f"pore.bc.{bctype}"][pores[mask]] = values
+            else:
+                logger.warning('No valid pore locations were specified')
         elif mode == 'remove':
             if force:  # Set locs on other bcs to nan
                 for item in other_types:
@@ -187,7 +193,10 @@ class BCsMixin:
             # Now remove indices that are present for other BCs
             for item in other_types:
                 mask[np.isfinite(self[f'pore.bc.{item}'][pores])] = False
-            self[f"pore.bc.{bctype}"][pores[mask]] = np.nan
+            if mask.sum():
+                self[f"pore.bc.{bctype}"][pores[mask]] = np.nan
+            else:
+                logger.warning('No valid pore locations were specified')
         elif mode == 'clear':
             self[f"pore.bc.{bctype}"] = np.nan
             if force:  # Set locs on other bcs to nan
