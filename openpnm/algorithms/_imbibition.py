@@ -76,7 +76,7 @@ class Imbibition(Drainage):
             tmask = self['throat.invaded'] * (self['throat.invasion_pressure'] == -np.inf)
             self['throat.invasion_pressure'][tmask] = p
         # If any outlets were specified, evaluate trapping
-        if np.any(self['pore.outlets']):
+        if np.any(self['pore.bc.outlets']):
             self.apply_trapping()
 
     def _run_special(self, pressure):
@@ -97,7 +97,7 @@ class Imbibition(Drainage):
 
         # Remove label from any clusters not connected to the inlets
         s_labels, b_labels = find_connected_clusters(
-            b_labels, s_labels, self['pore.inlets'], asmask=False)
+            b_labels, s_labels, self['pore.bc.inlets'], asmask=False)
 
         # Mark throats connected to invaded pores as also invaded, if they're small enough
         pmask = s_labels >= 0
@@ -116,7 +116,7 @@ class Imbibition(Drainage):
         for p in pseq:
             s, b = site_percolation(conns=self.network.conns,
                                     occupied_sites=pseq < p)
-            clusters = np.unique(s[self['pore.outlets']])
+            clusters = np.unique(s[self['pore.bc.outlets']])
             # Ts = self.network.find_neighbor_throats(pores=s >= 0)
             # b[Ts] = np.amax(s[self.network.conns], axis=1)[Ts]
             self['pore.trapped'] += np.isin(s, clusters, invert=True)*(s >= 0)
@@ -152,7 +152,7 @@ class Imbibition(Drainage):
 
 
 # %%
-def run_examples():
+if __name__ == '__main__':
     import openpnm as op
     import matplotlib.pyplot as plt
     plt.rcParams['figure.facecolor'] = 'grey'

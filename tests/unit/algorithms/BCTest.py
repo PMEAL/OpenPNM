@@ -5,6 +5,7 @@ from openpnm.models import collections
 
 class BCTest:
     def setup_class(self):
+        np.random.seed(0)
         self.pn = op.network.Cubic(shape=[3, 3, 1], spacing=1e-4)
         self.pn.add_model_collection(collections.geometry.cones_and_cylinders())
         self.pn.regenerate_models()
@@ -83,6 +84,25 @@ class BCTest:
         ad.set_value_BC(pores=self.pn.pores('front'), values=1)
         ad.set_outflow_BC(pores=self.pn.pores('back'), mode='overwrite', force=False)
         ad.run()
+
+    def test_inlets_and_outlets(self):
+        nwp = op.phase.GenericPhase(network=self.pn)
+        nwp['throat.surface_tension'] = 0.480
+        nwp['throat.contact_angle'] = 140
+        nwp.add_model(propname='throat.entry_pressure',
+                      model=op.models.physics.capillary_pressure.washburn)
+        nwp.add_model(propname='pore.entry_pressure',
+                      model=op.models.physics.capillary_pressure.washburn,
+                      contact_angle=140,
+                      surface_tension=0.480,
+                      diameter='pore.diameter')
+
+        drn = op.algorithms.Drainage(network=self.pn, phase=nwp)
+        drn.set_inlets(pores=self.pn.pores('left'))
+        pressures = np.logspace(np.log10(0.1e6), np.log10(8e6), 40)
+        drn.run(pressures)
+        drn.set_outlets(pores=self.pn.pores('right'))
+        drn.apply_trapping()
 
 
 if __name__ == "__main__":

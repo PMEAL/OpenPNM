@@ -3,7 +3,6 @@ import numpy as np
 import scipy.sparse.csgraph as spgr
 from openpnm.topotools import is_fully_connected
 from openpnm.algorithms import GenericAlgorithm
-from openpnm.algorithms import BCsMixin
 from openpnm.utils import Docorator, TypedSet, Workspace
 from openpnm.utils import check_data_health
 from openpnm import solvers
@@ -52,7 +51,7 @@ class GenericTransportSettings:
 
 @docstr.get_sections(base='GenericTransport', sections=['Parameters'])
 @docstr.dedent
-class GenericTransport(GenericAlgorithm, BCsMixin):
+class GenericTransport(GenericAlgorithm):
     r"""
     This class implements steady-state linear transport calculations.
 
@@ -402,3 +401,68 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
                 R = np.sum(R)
 
         return np.array(R, ndmin=1)
+
+    def set_value_BC(self, pores=[], values=[], mode='overwrite', force=False):
+        r"""
+        Applies constant value boundary conditons to the specified pores.
+
+        These are sometimes referred to as Dirichlet conditions.
+
+        Parameters
+        ----------
+        pores : array_like
+            The pore indices where the condition should be applied
+        values : float or array_like
+            The value to apply in each pore. If a scalar is supplied
+            it is assigne to all locations, and if a vector is applied is
+            must be the same size as the indices given in ``pores``.
+        mode : str, optional
+            Controls how the boundary conditions are applied. The default
+            value is 'merge'. For definition of various modes, see the
+            docstring for ``set_BC``.
+        force : bool, optional
+            If ``True`` then the ``'mode'`` is applied to all other bctypes as
+            well. The default is ``False``.
+
+        """
+        self.set_BC(pores=pores, bctype='value', bcvalues=values,
+                    mode=mode, force=force)
+
+    def set_rate_BC(self, pores=[], rates=None, total_rate=None, mode='overwrite',
+                    force=False):
+        r"""
+        Apply constant rate boundary conditons to the specified locations.
+
+        Parameters
+        ----------
+        pores : array_like
+            The pore indices where the condition should be applied
+        rates : float or array_like, optional
+            The rates to apply in each pore. If a scalar is supplied that
+            rate is assigned to all locations, and if a vector is supplied
+            it must be the same size as the indices given in ``pores``.
+        total_rate : float, optional
+            The total rate supplied to all pores. The rate supplied by
+            this argument is divided evenly among all pores. A scalar must
+            be supplied! Total_rate cannot be specified if rate is
+            specified.
+        mode : str, optional
+            Controls how the boundary conditions are applied. The default
+            value is 'merge'. For definition of various modes, see the
+            docstring for ``set_BC``.
+        force : bool, optional
+            If ``True`` then the ``'mode'`` is applied to all other bctypes as
+            well. The default is ``False``.
+
+        """
+        # handle total_rate feature
+        if total_rate is not None:
+            if not np.isscalar(total_rate):
+                raise Exception('total_rate argument accepts scalar only!')
+            if rates is not None:
+                raise Exception('Cannot specify both arguments: rate and '
+                                + 'total_rate')
+            pores = self._parse_indices(pores)
+            rates = total_rate/pores.size
+        self.set_BC(pores=pores, bctype='rate', bcvalues=rates, mode=mode,
+                    force=force)
