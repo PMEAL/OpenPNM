@@ -17,7 +17,7 @@ class BCsMixin:
     Mixin class to add boundary condition functionality to algorithms.
     """
 
-    def set_value_BC(self, pores, values, mode='merge', force=False):
+    def set_value_BC(self, pores=[], values=[], mode='overwrite', force=False):
         r"""
         Applies constant value boundary conditons to the specified pores.
 
@@ -33,40 +33,17 @@ class BCsMixin:
             must be the same size as the indices given in ``pores``.
         mode : str, optional
             Controls how the boundary conditions are applied. The default
-            value is 'merge'. Options are:
-
-            ============ =====================================================
-            mode         meaning
-            ============ =====================================================
-            'merge'      (default) Adds supplied boundary conditions to the
-                         existing conditions, including replacing any
-                         existing conditions they may be present. This is
-                         equivalent to calling ``'remove'`` on the given
-                         locations followed by ``'add'``.
-            'overwrite'  Deletes all boundary conditions of the given type
-                         then adds the specified new ones.  This is equivalent
-                         to called ``'clear'`` followed by ``'add'``.
-            'add'        Adds the supplied boundary conditions to the
-                         existing conditions but does *not* overwrite any
-                         conditions they are already present.
-            'remove'     Removes boundary conditions from the specified
-                         locations.
-            'clear'      Removes all boundary conditions from the object.
-            ============ =====================================================
-
-            If BCs of the another type already exist in the given locations,
-            those values are kept.
-
-        Notes
-        -----
-        The definition of ``quantity`` is specified in the algorithm's
-        ``settings``, e.g. ``alg.settings['quantity'] = 'pore.pressure'``.
+            value is 'merge'. For definition of various modes, see the
+            docstring for ``set_BC``.
+        force : bool, optional
+            If ``True`` then the ``'mode'`` is applied to all other bctypes as
+            well. The default is ``False``.
 
         """
         self.set_BC(pores=pores, bctype='value', bcvalues=values,
                     mode=mode, force=force)
 
-    def set_rate_BC(self, pores, rates=None, total_rate=None, mode='merge',
+    def set_rate_BC(self, pores=[], rates=None, total_rate=None, mode='overwrite',
                     force=False):
         r"""
         Apply constant rate boundary conditons to the specified locations.
@@ -86,31 +63,11 @@ class BCsMixin:
             specified.
         mode : str, optional
             Controls how the boundary conditions are applied. The default
-            value is 'merge'. Options are:
-
-            ============ =====================================================
-            mode         meaning
-            ============ =====================================================
-            'merge'      (default) Adds supplied boundary conditions to the
-                         existing conditions, including replacing any
-                         existing conditions they may be present. This is
-                         equivalent to calling ``'remove'`` on the given
-                         locations followed by ``'add'``.
-            'overwrite'  Deletes all boundary conditions of the given type
-                         then adds the specified new ones.  This is equivalent
-                         to called ``'clear'`` followed by ``'add'``.
-            'add'        Adds the supplied boundary conditions to the
-                         existing conditions but does *not* overwrite any
-                         conditions they are already present.
-            'remove'     Removes boundary conditions from the specified
-                         locations.
-            'clear'      Removes all boundary conditions from the object.
-            ============ =====================================================
-
-        Notes
-        -----
-        The definition of ``quantity`` is specified in the algorithm's
-        ``settings``, e.g. ``alg.settings['quantity'] = 'pore.pressure'``.
+            value is 'merge'. For definition of various modes, see the
+            docstring for ``set_BC``.
+        force : bool, optional
+            If ``True`` then the ``'mode'`` is applied to all other bctypes as
+            well. The default is ``False``.
 
         """
         # handle total_rate feature
@@ -127,7 +84,8 @@ class BCsMixin:
 
     @docstr.get_sections(base='GenericTransport._set_BC',
                          sections=['Parameters', 'Notes'])
-    def set_BC(self, pores, bctype, bcvalues=None, mode='replace', force=False):
+    def set_BC(self, pores, bctype, bcvalues=None, mode='replace',
+               force=False):
         r"""
         The main method for setting and adjusting boundary conditions.
 
@@ -156,34 +114,36 @@ class BCsMixin:
             ============ =====================================================
             mode         meaning
             ============ =====================================================
-            'replace'    (default) Adds supplied boundary conditions to the
+            'overwrite'  (default) Adds supplied boundary conditions to the
                          existing conditions, including overwriting any
-                         existing conditions they may be present. This is
+                         existing conditions that may be present. This is
                          equivalent to calling ``'remove'`` on the given
                          locations followed by ``'add'``. If ``force=True``
-                         this also overwrites any BCs of other types.
+                         this also removes any BCs of other types in the
+                         given locations.
             'add'        Adds the supplied boundary conditions to the
                          existing conditions but does *not* overwrite any
-                         conditions they are already present. If ``force=True``
-                         this will overwrite any locations where other BC
-                         types are present.
+                         conditions that are already present. If ``force=True``
+                         this will remove values from  any locations where
+                         other BC types are present.
             'remove'     Removes boundary conditions from the specified
                          locations. if ``force=True`` this also removes
-                         any BCs of the other types.
+                         any BCs of the other types from the specified
+                         locations.
             'clear'      Removes all boundary conditions from the object of
-                         the of the specified type. If ``force=True`` this
-                         clears all BCs of the other types as well.
+                         the of the specified type from all locations. If
+                         ``force=True`` this clears all BCs of the other types
+                         as well.
             ============ =====================================================
 
         force : bool, optional
             If ``True`` then the ``'mode'`` is applied to all other bctypes as
-            well.
+            well. The default is ``False``.
 
         Notes
         -----
         It is not possible to have multiple boundary conditions for a
-        specified location in one algorithm. Use ``remove_BCs`` to
-        clear existing BCs before applying new ones.
+        specified location in one algorithm.
 
         """
         if not isinstance(bctype, str):
@@ -192,7 +152,7 @@ class BCsMixin:
         other_types = np.setdiff1d(bc_types, bctype).tolist()
         mode = self._parse_mode(
             mode,
-            allowed=['replace', 'add', 'remove', 'clear'],
+            allowed=['overwrite', 'add', 'remove', 'clear'],
             single=True
         )
         pores = self._parse_indices(pores)
@@ -201,33 +161,38 @@ class BCsMixin:
         if values.size > 1 and values.size != pores.size:
             raise Exception('The number of values must match the number of locations')
 
-        # Find locations where other bc types are defined
-        other_bcs = np.zeros(self.Np, dtype=bool)
-        for item in other_types:
-            other_bcs += np.isfinite(self[f"pore.bc.{item}"])
-        other_inds = pores[other_bcs[pores]]
-
-        # Find locations which are unique to the current bc type
-        current_inds = np.setdiff1d(pores, other_inds)
-
-        # Catch pores with existing BCs
+        mask = np.ones_like(pores, dtype=bool)  # Indices of pores to keep
         if mode == 'add':
-            mask = np.ones_like(pores, dtype=bool)
+            # Remove indices that are already present for given bc type
+            mask[np.isfinite(self[f'pore.bc.{bctype}'][pores])] = False
+            if force:  # Set locs on other bcs to nan
+                for item in other_types:
+                    self[f"pore.bc.{item}"][pores[mask]] = np.nan
+            # Now remove indices that are present for other BCs
             for item in other_types:
                 mask[np.isfinite(self[f'pore.bc.{item}'][pores])] = False
             self[f"pore.bc.{bctype}"][pores[mask]] = values
-            if force:
+        elif mode == 'overwrite':
+            if force:  # Set locs on other bcs to nan
                 for item in other_types:
-                    self[f"pore.bc.{bctype}"][pores] = values
+                    self[f"pore.bc.{item}"][pores[mask]] = np.nan
+            # Now remove indices that are present for other BCs
+            for item in other_types:
+                mask[np.isfinite(self[f'pore.bc.{item}'][pores])] = False
+            self[f"pore.bc.{bctype}"][pores[mask]] = values
         elif mode == 'remove':
-            self[f"pore.bc.{bctype}"][pores] = np.nan
+            if force:  # Set locs on other bcs to nan
+                for item in other_types:
+                    self[f"pore.bc.{item}"][pores[mask]] = np.nan
+            # Now remove indices that are present for other BCs
+            for item in other_types:
+                mask[np.isfinite(self[f'pore.bc.{item}'][pores])] = False
+            self[f"pore.bc.{bctype}"][pores[mask]] = np.nan
         elif mode == 'clear':
             self[f"pore.bc.{bctype}"] = np.nan
-        elif mode == 'merge':
-            self[f"pore.bc.{bctype}"][current_inds] = values
-        elif mode == 'overwrite':   # Remove existing BCs and write new ones
-            self[f"pore.bc.{bctype}"] = np.nan
-            self[f"pore.bc.{bctype}"][current_inds] = values
+            if force:  # Set locs on other bcs to nan
+                for item in other_types:
+                    self[f"pore.bc.{item}"] = np.nan
 
 
 if __name__ == "__main__":
@@ -239,19 +204,55 @@ if __name__ == "__main__":
     air = op.phase.Air(network=pn, name="air")
     air.add_model_collection(collections.physics.standard())
     air.regenerate_models()
-    fd = op.algorithms.FickianDiffusion(network=pn, phase=air)
     # check mode add, with and without force
+    fd = op.algorithms.FickianDiffusion(network=pn, phase=air)
     fd['pore.bc.rate'][1] = 1.0
+    fd['pore.bc.value'][0] = 1.0
     fd.set_value_BC(pores=[0, 1, 2], values=3.0, mode='add')
     mask = np.isfinite(fd['pore.bc.value'])
     assert mask.sum() == 2
-    assert fd['pore.bc.value'][mask].sum() == 6.0
+    assert fd['pore.bc.value'][mask].sum() == 4.0
+    assert np.isfinite(fd['pore.bc.rate']).sum() == 1
     fd.set_value_BC(pores=[0, 1, 2], values=3.0, mode='add', force=True)
     mask = np.isfinite(fd['pore.bc.value'])
     assert mask.sum() == 3
+    assert fd['pore.bc.value'][mask].sum() == 7.0
+    assert np.isfinite(fd['pore.bc.rate']).sum() == 0
+    # check mode overwrite, with and without force
+    fd = op.algorithms.FickianDiffusion(network=pn, phase=air)
+    fd['pore.bc.rate'][1] = 1.0
+    fd['pore.bc.value'][0] = 1.0
+    fd.set_value_BC(pores=[0, 1, 2], values=3.0, mode='overwrite')
+    mask = np.isfinite(fd['pore.bc.value'])
+    assert mask.sum() == 2
+    assert fd['pore.bc.value'][mask].sum() == 6.0
+    assert np.isfinite(fd['pore.bc.rate']).sum() == 1
+    fd.set_value_BC(pores=[0, 1, 2], values=3.0, mode='overwrite', force=True)
+    mask = np.isfinite(fd['pore.bc.value'])
+    assert mask.sum() == 3
     assert fd['pore.bc.value'][mask].sum() == 9.0
-
-
+    assert np.isfinite(fd['pore.bc.rate']).sum() == 0
+    # check mode remove, with and without force
+    fd = op.algorithms.FickianDiffusion(network=pn, phase=air)
+    fd['pore.bc.rate'][1] = 1.0
+    fd['pore.bc.value'][0] = 1.0
+    fd.set_value_BC(pores=[0, 1], mode='remove')
+    mask = np.isfinite(fd['pore.bc.value'])
+    assert mask.sum() == 0
+    assert np.isfinite(fd['pore.bc.rate']).sum() == 1
+    fd.set_value_BC(pores=[0, 1], mode='remove', force=True)
+    assert np.isfinite(fd['pore.bc.value']).sum() == 0
+    assert np.isfinite(fd['pore.bc.value']).sum() == 0
+    assert np.isfinite(fd['pore.bc.rate']).sum() == 0
+    # check mode clear, with and without force
+    fd = op.algorithms.FickianDiffusion(network=pn, phase=air)
+    fd['pore.bc.rate'][1] = 1.0
+    fd['pore.bc.value'][0] = 1.0
+    fd.set_value_BC(mode='clear')
+    assert np.isfinite(fd['pore.bc.value']).sum() == 0
+    assert np.isfinite(fd['pore.bc.rate']).sum() == 1
+    fd.set_value_BC(mode='clear', force=True)
+    assert np.isfinite(fd['pore.bc.rate']).sum() == 0
 
 
 
