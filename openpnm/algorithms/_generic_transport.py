@@ -425,6 +425,7 @@ class GenericTransport(GenericAlgorithm):
             well. The default is ``False``.
 
         """
+        self._check_for_source_terms(pores=pores)
         self.set_BC(pores=pores, bctype='value', bcvalues=values,
                     mode=mode, force=force)
 
@@ -455,6 +456,7 @@ class GenericTransport(GenericAlgorithm):
             well. The default is ``False``.
 
         """
+        self._check_for_source_terms(pores=pores)
         # handle total_rate feature
         if total_rate is not None:
             if not np.isscalar(total_rate):
@@ -466,3 +468,8 @@ class GenericTransport(GenericAlgorithm):
             rates = total_rate/pores.size
         self.set_BC(pores=pores, bctype='rate', bcvalues=rates, mode=mode,
                     force=force)
+
+    def _check_for_source_terms(self, pores):
+        for item in self.settings['sources']:
+            if np.any(self[item][pores]):
+                raise Exception('Source terms already present in specified pores')
