@@ -78,14 +78,15 @@ class ReactiveTransport(GenericTransport):
         propname : str
             The property name of the source term model to be applied.
         mode : str
-            Controls how the sources are applied (see table under Notes).
-            The default is 'overwrite'. Options are:
+            Controls how the sources are applied. Options are:
 
             ===========  =====================================================
             mode         meaning
             ===========  =====================================================
-            'add'        Adds supplied source term to already existing
-                         ones. This ignores the ``force`` argument since
+            'add'        (default) Adds supplied source term to already
+                         existing ones. This ignores the ``force`` argument
+                         since there is no need to overwrite other source
+                         terms.
             'remove'     Deletes given source term from the specified
                          locations. If ``force=True`` then this removes all
                          source terms from the given locations (ignores the
