@@ -27,10 +27,10 @@ class IPTest:
         alg.set_inlets(pores=self.net.pores("bottom"), mode='add')
         assert np.sum(alg["pore.invasion_sequence"] == 0) == 200
 
-        alg.set_inlets(pores=self.net.pores("top"), mode='overwrite')
+        alg.set_inlets(pores=self.net.pores("top"), mode=['clear', 'add'])
         assert np.sum(alg["pore.invasion_sequence"] == 0) == 100
 
-        alg.set_inlets(mode='overwrite')
+        alg.set_inlets(mode='clear')
         assert np.sum(alg["pore.invasion_sequence"] == 0) == 0
 
     def test_run(self):

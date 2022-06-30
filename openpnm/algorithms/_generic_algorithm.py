@@ -181,7 +181,7 @@ class GenericAlgorithm(ParserMixin, LabelMixin, Base2):
         values = np.array(bcvalues)
         if values.size == 1:  # Expand to array if scalar given
             values = np.ones_like(pores, dtype=values.dtype)*values
-        no_bc = np.nan if values.dtype == float else False
+        no_bc = np.nan if values.dtype in (float, int) else False
 
         if values.size > 1 and values.size != pores.size:
             raise Exception('The number of values must match the number of locations')
@@ -223,10 +223,10 @@ class GenericAlgorithm(ParserMixin, LabelMixin, Base2):
             else:
                 logger.warning('No valid pore locations were specified')
         elif mode == 'clear':
-            self[f"pore.bc.{bctype}"] = np.nan
+            self[f"pore.bc.{bctype}"] = no_bc
             if force:  # Set locs on other bcs to nan
                 for item in other_types:
-                    self[f"pore.bc.{item}"] = np.nan
+                    self[f"pore.bc.{item}"] = no_bc
 
 
 def isfinite(arr, inf=None):
