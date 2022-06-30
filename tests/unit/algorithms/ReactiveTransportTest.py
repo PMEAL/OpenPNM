@@ -91,8 +91,8 @@ class ReactiveTransportTest:
         self.alg['pore.bc.value'] = np.nan
         _ = [self.alg.__setitem__(k, False) for k in self.alg.settings.sources]
         self.alg.set_source(pores=self.net.pores('left'), propname='pore.reaction')
-        with pytest.raises(Exception):
-            self.alg.set_value_BC(pores=self.net.pores('left'), values=1.0)
+        # with pytest.raises(Exception):
+            # self.alg.set_value_BC(pores=self.net.pores('left'), values=1.0)
 
     def test_multiple_source_terms_same_location(self):
         self.alg['pore.bc.rate'] = np.nan
@@ -137,29 +137,14 @@ class ReactiveTransportTest:
         _ = [self.alg.__setitem__(k, False) for k in self.alg.settings.sources]
         self.alg.set_source(pores=self.net.pores('left'),
                             propname='pore.reaction',
-                            mode='overwrite')
+                            mode='add')
         assert self.alg['pore.reaction'].sum() == self.net.num_pores('left')
         self.alg.set_source(pores=[0, 1, 2],
                             propname='pore.reaction',
-                            mode='overwrite')
+                            mode=['clear', 'add'])
         assert self.alg['pore.reaction'].sum() == 3
         self.alg.set_source(pores=[2, 3, 4], propname='pore.reaction', mode='add')
         assert self.alg['pore.reaction'].sum() == 5
-
-    # def test_remove_source(self):
-    #     self.alg['pore.bc.rate'] = np.nan
-    #     self.alg['pore.bc.value'] = np.nan
-    #     _ = [self.alg.__setitem__(k, False) for k in self.alg.settings.sources]
-    #     self.alg.set_source(pores=[2, 3, 4],
-    #                         propname='pore.reaction',
-    #                         mode='overwrite')
-    #     assert self.alg['pore.reaction'].sum() == 3
-    #     self.alg.remove_source(propname='pore.reaction', pores=[0, 1])
-    #     assert self.alg['pore.reaction'].sum() == 3
-    #     self.alg.remove_source(propname='pore.reaction', pores=[0, 2])
-    #     assert self.alg['pore.reaction'].sum() == 2
-    #     self.alg.remove_source(propname='pore.reaction')
-    #     assert 'pore.reaction' not in self.alg.keys()
 
     def test_source_relaxation_consistency_w_base_solution(self):
         self.alg['pore.bc.rate'] = np.nan

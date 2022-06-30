@@ -67,7 +67,7 @@ class ReactiveTransport(GenericTransport):
         super().__init__(name=name, **kwargs)
         self.settings._update(ReactiveTransportSettings())
 
-    def set_source(self, pores, propname, mode='overwrite', force=False):
+    def set_source(self, pores, propname, mode='add', force=False):
         r"""
         Applies a given source term to the specified pores
 
@@ -85,9 +85,15 @@ class ReactiveTransport(GenericTransport):
             mode         meaning
             ===========  =====================================================
             'add'        Adds supplied source term to already existing
-                         ones.
-            'overwrite'  Deletes all existing source terms of the given
-                         ``propname`` then adds the specified new ones.
+                         ones. This ignores the ``force`` argument since
+            'remove'     Deletes given source term from the specified
+                         locations. If ``force=True`` then this removes all
+                         source terms from the given locations (ignores the
+                         ``propname`` argument.
+            'clear'      Deletes given source term from all locations (ignores
+                         the ``pores`` argument). If ``force=True`` then all
+                         source terms are removed from all locations (ignores
+                         the ``propname`` argument.
             ===========  =====================================================
 
         Notes
@@ -97,6 +103,12 @@ class ReactiveTransport(GenericTransport):
         being raised.
 
         """
+        # If a list of modes was sent, do them each in order
+        if isinstance(mode, list):
+            for item in mode:
+                self.set_source(pores=pores, propname=propname,
+                                mode=item, force=force)
+            return
         propname = self._parse_prop(propname, "pore")
         # Check if any BC is already set in the same locations
         locs_BC = np.zeros(self.Np, dtype=bool)
@@ -104,12 +116,22 @@ class ReactiveTransport(GenericTransport):
             locs_BC = np.isfinite(self[f'pore.bc.{item}'])
         if np.any(locs_BC[pores]):
             raise Exception("BCs present in given pores, can't assign source term")
-        if mode == 'overwrite':
-            self[propname] = False
         if mode == 'add':
             if propname not in self.keys():
                 self[propname] = False
-        self[propname][pores] = True
+            self[propname][pores] = True
+        elif mode == 'remove':
+            self[propname][pores] = False
+            if force:
+                for item in self.settings['sources']:
+                    self[item][pores] = False
+        elif mode == 'clear':
+            self[propname] = False
+            if force:
+                for item in self.settings['sources']:
+                    self[item] = False
+        else:
+            raise Exception(f'Unsupported mode {mode}')
         # Check if propname already in source term list
         if propname not in self.settings['sources']:
             self.settings['sources'].append(propname)
