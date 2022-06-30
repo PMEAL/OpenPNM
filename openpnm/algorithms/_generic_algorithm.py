@@ -91,8 +91,7 @@ class GenericAlgorithm(ParserMixin, LabelMixin, Base2):
         # Regenerate all associated objects
         phase.regenerate_models(propnames=iterative_props)
 
-    def set_BC(self, pores, bctype, bcvalues=None, mode='replace',
-               force=False, no_bc=np.nan):
+    def set_BC(self, pores, bctype, bcvalues=None, mode='overwrite', force=False):
         r"""
         The main method for setting and adjusting boundary conditions.
 
@@ -114,7 +113,7 @@ class GenericAlgorithm(ParserMixin, LabelMixin, Base2):
             among all pores. Otherwise, different values can be applied to
             all pores in the form of an array of the same length as
             ``pores``.
-        mode : str, optional
+        mode : str or list of str, optional
             Controls how the boundary conditions are applied. The default
             value is 'merge'. Options are:
 
@@ -143,13 +142,14 @@ class GenericAlgorithm(ParserMixin, LabelMixin, Base2):
                          as well.
             ============ =====================================================
 
+            If a list of strings is provided, then each mode in the list is
+            handled in order, so that ``['remove', 'add']`` will give the same
+            results add ``'overwrite'``.  Another option would be ``['clear',
+            'add']``, which would remove all existing bcs and add the supplied
+            ones.
         force : bool, optional
             If ``True`` then the ``'mode'`` is applied to all other bctypes as
             well. The default is ``False``.
-        no_bc : scalar
-            The valued used to indicate that no BC is applied.  The default is
-            ``np.nan``, but ``False`` is a common choice for percolation
-            algorithms for instance.
 
         Notes
         -----
@@ -157,10 +157,20 @@ class GenericAlgorithm(ParserMixin, LabelMixin, Base2):
         specified location in one algorithm.
 
         """
+        # If a list of modes was given, handle them each in order
+        if isinstance(mode, list):
+            for item in mode:
+                self.set_BC(pores=pores, bctype=bctype,
+                            bcvalues=bcvalues, mode=item,
+                            force=force)
+            return
+
+        # Begin method
         if not isinstance(bctype, str):
             raise Exception('bctype must be a single string')
         bc_types = list(self['pore.bc'].keys())
         other_types = np.setdiff1d(bc_types, bctype).tolist()
+
         mode = self._parse_mode(
             mode,
             allowed=['overwrite', 'add', 'remove', 'clear'],
@@ -169,8 +179,9 @@ class GenericAlgorithm(ParserMixin, LabelMixin, Base2):
         pores = self._parse_indices(pores)
 
         values = np.array(bcvalues)
-        if values.size == 1:
+        if values.size == 1:  # Expand to array if scalar given
             values = np.ones_like(pores, dtype=values.dtype)*values
+        no_bc = np.nan if values.dtype == float else False
 
         if values.size > 1 and values.size != pores.size:
             raise Exception('The number of values must match the number of locations')

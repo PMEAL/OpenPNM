@@ -67,16 +67,16 @@ class ReactiveTransport(GenericTransport):
         super().__init__(name=name, **kwargs)
         self.settings._update(ReactiveTransportSettings())
 
-    def set_source(self, propname, pores, mode='overwrite'):
+    def set_source(self, pores, propname, mode='overwrite', force=False):
         r"""
         Applies a given source term to the specified pores
 
         Parameters
         ----------
-        propname : str
-            The property name of the source term model to be applied.
         pores : array_like
             The pore indices where the source term should be applied.
+        propname : str
+            The property name of the source term model to be applied.
         mode : str
             Controls how the sources are applied (see table under Notes).
             The default is 'overwrite'. Options are:
@@ -98,17 +98,18 @@ class ReactiveTransport(GenericTransport):
 
         """
         propname = self._parse_prop(propname, "pore")
-        locs = self.to_mask(pores=pores)
         # Check if any BC is already set in the same locations
-        locs_BC = np.isfinite(self['pore.bc.value']) + np.isfinite(self['pore.bc.rate'])
-        if (locs & locs_BC).any():
+        locs_BC = np.zeros(self.Np, dtype=bool)
+        for item in self['pore.bc'].keys():
+            locs_BC = np.isfinite(self[f'pore.bc.{item}'])
+        if np.any(locs_BC[pores]):
             raise Exception("BCs present in given pores, can't assign source term")
         if mode == 'overwrite':
             self[propname] = False
         if mode == 'add':
             if propname not in self.keys():
                 self[propname] = False
-        self[propname][locs] = True
+        self[propname][pores] = True
         # Check if propname already in source term list
         if propname not in self.settings['sources']:
             self.settings['sources'].append(propname)
