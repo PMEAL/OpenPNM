@@ -424,8 +424,7 @@ class GenericTransport(GenericAlgorithm):
         """
         self.set_BC(pores=pores, bctype='value', bcvalues=values, mode=mode)
 
-    def set_rate_BC(self, pores=[], rates=None, total_rate=None,
-                    mode='overwrite'):
+    def set_rate_BC(self, pores=[], rates=None, mode='overwrite'):
         r"""
         Apply constant rate boundary conditons to the specified locations.
 
@@ -437,23 +436,9 @@ class GenericTransport(GenericAlgorithm):
             The rates to apply in each pore. If a scalar is supplied that
             rate is assigned to all locations, and if a vector is supplied
             it must be the same size as the indices given in ``pores``.
-        total_rate : float, optional
-            The total rate supplied to all pores. The rate supplied by
-            this argument is divided evenly among all pores. A scalar must
-            be supplied! Total_rate cannot be specified if rate is
-            specified.
         mode : str, optional
             Controls how the boundary conditions are applied. The default
             value is 'merge'. For definition of various modes, see the
             docstring for ``set_BC``.
         """
-        # handle total_rate feature
-        if total_rate is not None:
-            if not np.isscalar(total_rate):
-                raise Exception('total_rate argument accepts scalar only!')
-            if rates is not None:
-                raise Exception('Cannot specify both arguments: rate and '
-                                + 'total_rate')
-            pores = self._parse_indices(pores)
-            rates = total_rate/pores.size
         self.set_BC(pores=pores, bctype='rate', bcvalues=rates, mode=mode)
