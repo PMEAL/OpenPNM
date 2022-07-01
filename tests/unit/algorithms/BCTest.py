@@ -23,7 +23,8 @@ class BCTest:
         assert mask.sum() == 2
         assert fd['pore.bc.value'][mask].sum() == 4.0
         assert np.isfinite(fd['pore.bc.rate']).sum() == 1
-        fd.set_value_BC(pores=[0, 1, 2], values=3.0, mode='add', force=True)
+        fd.set_rate_BC(pores=[0, 1, 2], mode='remove')
+        fd.set_value_BC(pores=[0, 1, 2], values=3.0, mode='add')
         mask = np.isfinite(fd['pore.bc.value'])
         assert mask.sum() == 3
         assert fd['pore.bc.value'][mask].sum() == 7.0
@@ -39,7 +40,7 @@ class BCTest:
         assert mask.sum() == 2
         assert fd['pore.bc.value'][mask].sum() == 6.0
         assert np.isfinite(fd['pore.bc.rate']).sum() == 1
-        fd.set_value_BC(pores=[0, 1, 2], values=3.0, mode='overwrite', force=True)
+        fd.set_value_BC(pores=[0, 1, 2], values=3.0, mode='overwrite')
         mask = np.isfinite(fd['pore.bc.value'])
         assert mask.sum() == 3
         assert fd['pore.bc.value'][mask].sum() == 9.0
@@ -54,7 +55,7 @@ class BCTest:
         mask = np.isfinite(fd['pore.bc.value'])
         assert mask.sum() == 0
         assert np.isfinite(fd['pore.bc.rate']).sum() == 1
-        fd.set_value_BC(pores=[0, 1], mode='remove', force=True)
+        fd.set_value_BC(pores=[0, 1], mode='remove')
         assert np.isfinite(fd['pore.bc.value']).sum() == 0
         assert np.isfinite(fd['pore.bc.value']).sum() == 0
         assert np.isfinite(fd['pore.bc.rate']).sum() == 0
@@ -67,7 +68,7 @@ class BCTest:
         fd.set_value_BC(mode='clear')
         assert np.isfinite(fd['pore.bc.value']).sum() == 0
         assert np.isfinite(fd['pore.bc.rate']).sum() == 1
-        fd.set_value_BC(mode='clear', force=True)
+        fd.set_value_BC(mode='clear')
         assert np.isfinite(fd['pore.bc.rate']).sum() == 0
 
     def test_outflow(self):
@@ -82,7 +83,7 @@ class BCTest:
         ad = op.algorithms.AdvectionDiffusion(network=self.pn, phase=self.air)
         ad.settings['cache'] = False
         ad.set_value_BC(pores=self.pn.pores('front'), values=1)
-        ad.set_outflow_BC(pores=self.pn.pores('back'), mode='overwrite', force=False)
+        ad.set_outflow_BC(pores=self.pn.pores('back'), mode='overwrite')
         ad.run()
 
     def test_inlets_and_outlets(self):

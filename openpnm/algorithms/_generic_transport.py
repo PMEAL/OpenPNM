@@ -402,7 +402,7 @@ class GenericTransport(GenericAlgorithm):
 
         return np.array(R, ndmin=1)
 
-    def set_value_BC(self, pores=[], values=[], mode='overwrite', force=False):
+    def set_value_BC(self, pores=[], values=[], mode='overwrite'):
         r"""
         Applies constant value boundary conditons to the specified pores.
 
@@ -420,17 +420,12 @@ class GenericTransport(GenericAlgorithm):
             Controls how the boundary conditions are applied. The default
             value is 'merge'. For definition of various modes, see the
             docstring for ``set_BC``.
-        force : bool, optional
-            If ``True`` then the ``'mode'`` is applied to all other bctypes as
-            well. The default is ``False``.
 
         """
-        self._check_for_source_terms(pores=pores)
-        self.set_BC(pores=pores, bctype='value', bcvalues=values,
-                    mode=mode, force=force)
+        self.set_BC(pores=pores, bctype='value', bcvalues=values, mode=mode)
 
-    def set_rate_BC(self, pores=[], rates=None, total_rate=None, mode='overwrite',
-                    force=False):
+    def set_rate_BC(self, pores=[], rates=None, total_rate=None,
+                    mode='overwrite'):
         r"""
         Apply constant rate boundary conditons to the specified locations.
 
@@ -451,12 +446,7 @@ class GenericTransport(GenericAlgorithm):
             Controls how the boundary conditions are applied. The default
             value is 'merge'. For definition of various modes, see the
             docstring for ``set_BC``.
-        force : bool, optional
-            If ``True`` then the ``'mode'`` is applied to all other bctypes as
-            well. The default is ``False``.
-
         """
-        self._check_for_source_terms(pores=pores)
         # handle total_rate feature
         if total_rate is not None:
             if not np.isscalar(total_rate):
@@ -466,10 +456,4 @@ class GenericTransport(GenericAlgorithm):
                                 + 'total_rate')
             pores = self._parse_indices(pores)
             rates = total_rate/pores.size
-        self.set_BC(pores=pores, bctype='rate', bcvalues=rates, mode=mode,
-                    force=force)
-
-    def _check_for_source_terms(self, pores):
-        for item in self.settings['sources']:
-            if np.any(self[item][pores]):
-                raise Exception('Source terms already present in specified pores')
+        self.set_BC(pores=pores, bctype='rate', bcvalues=rates, mode=mode)

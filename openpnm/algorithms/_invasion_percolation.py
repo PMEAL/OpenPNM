@@ -112,15 +112,13 @@ class InvasionPercolation(GenericAlgorithm):
                 self['throat.residual'] = False
                 self['throat.residual'][throats] = True
 
-    def set_inlets(self, pores=[], mode='add', force=False):
-        self.set_BC(pores=pores, bcvalues=True, bctype='inlets', mode=mode,
-                    force=force)
+    def set_inlets(self, pores=[], mode='add'):
+        self.set_BC(pores=pores, bcvalues=True, bctype='inlets', mode=mode)
         self.reset()
         self['pore.invasion_sequence'][self['pore.bc.inlets']] = 0
 
-    def set_outlets(self, pores=[], mode='add', force=False):
-        self.set_BC(pores=pores, bcvalues=True, bctype='outlets', mode=mode,
-                    force=force)
+    def set_outlets(self, pores=[], mode='add'):
+        self.set_BC(pores=pores, bcvalues=True, bctype='outlets', mode=mode)
 
     def run(self, n_steps=None):
         r"""

@@ -77,13 +77,11 @@ class Drainage(GenericAlgorithm):
             self['throat.invasion_pressure'][self['throat.invaded']] = -np.inf
             self['throat.invasion_sequence'][throats] = 0
 
-    def set_inlets(self, pores, mode='add', force=False):
-        self.set_BC(pores=pores, bcvalues=True, bctype='inlets', mode=mode,
-                    force=force, no_bc=False)
+    def set_inlets(self, pores, mode='add'):
+        self.set_BC(pores=pores, bcvalues=True, bctype='inlets', mode=mode)
 
     def set_outlets(self, pores, mode='add', force=False):
-        self.set_BC(pores=pores, bcvalues=True, bctype='outlets', mode=mode,
-                    force=force, no_bc=False)
+        self.set_BC(pores=pores, bcvalues=True, bctype='outlets', mode=mode)
 
     def run(self, pressures=25):
         if isinstance(pressures, int):
