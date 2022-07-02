@@ -253,21 +253,7 @@ class ReactiveTransport(GenericTransport):
             x = self.x
         return self.A * x - self.b
 
-    @docstr.dedent
     def set_BC(self, pores=[], bctype=[], bcvalues=[], mode='overwrite', force=False):
-        r"""
-        Applies boundary conditions to specified pores if no source terms
-        are already assigned to these pores. Otherwise, raise an error.
-
-        Parameters
-        ----------
-        %(GenericTransport.set_BC.parameters)s
-
-        Notes
-        -----
-        %(GenericTransport.set_BC.notes)s
-
-        """
         msg = "Source term already present in given pores, can't assign BCs"
         # Ensure that given pores do not have source terms already set
         for item in self.settings['sources']:
