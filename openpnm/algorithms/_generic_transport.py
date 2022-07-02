@@ -424,7 +424,7 @@ class GenericTransport(GenericAlgorithm):
         """
         self.set_BC(pores=pores, bctype='value', bcvalues=values, mode=mode)
 
-    def set_rate_BC(self, pores=[], rates=None, mode='overwrite'):
+    def set_rate_BC(self, pores=[], rates=[], mode='overwrite'):
         r"""
         Apply constant rate boundary conditons to the specified locations.
 

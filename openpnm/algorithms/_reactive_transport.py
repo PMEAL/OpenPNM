@@ -254,7 +254,7 @@ class ReactiveTransport(GenericTransport):
         return self.A * x - self.b
 
     @docstr.dedent
-    def set_BC(self, pores, bctype, bcvalues=None, mode='overwrite', force=False):
+    def set_BC(self, pores=[], bctype=[], bcvalues=[], mode='overwrite', force=False):
         r"""
         Applies boundary conditions to specified pores if no source terms
         are already assigned to these pores. Otherwise, raise an error.

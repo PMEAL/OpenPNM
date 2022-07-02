@@ -91,7 +91,7 @@ class GenericAlgorithm(ParserMixin, LabelMixin, Base2):
         # Regenerate all associated objects
         phase.regenerate_models(propnames=iterative_props)
 
-    def set_BC(self, pores, bctype, bcvalues=None, mode='overwrite'):
+    def set_BC(self, pores, bctype, bcvalues=[], mode='overwrite'):
         r"""
         The main method for setting and adjusting boundary conditions.
 
@@ -104,7 +104,10 @@ class GenericAlgorithm(ParserMixin, LabelMixin, Base2):
             The pores where the boundary conditions should be applied
         bctype : str
             Specifies the type or the name of boundary condition to apply. This
-            can be anything, but normal options are 'rate' and 'value'.
+            can be anything, but normal options are 'rate' and 'value'. If a
+            list of strings is provided, then each mode in the list is
+            handled in order, so if ``mode='clear' and ``bctype=['value',
+            'rate']`` then these two bc arrays will be set to all ``nans`.
         bcvalues : int or array_like
             The boundary value to apply, such as concentration or rate.
             If a single value is given, it's assumed to apply to all
@@ -147,15 +150,19 @@ class GenericAlgorithm(ParserMixin, LabelMixin, Base2):
 
         """
         # If a list of modes was given, handle them each in order
-        if isinstance(mode, list):
+        if not isinstance(mode, str):
             for item in mode:
                 self.set_BC(pores=pores, bctype=bctype,
                             bcvalues=bcvalues, mode=item)
             return
+        # If a list of bctypes was given, handle them each in order
+        if not isinstance(bctype, str):
+            for item in bctype:
+                self.set_BC(pores=pores, bctype=item,
+                            bcvalues=bcvalues, mode=mode)
+            return
 
         # Begin method
-        if not isinstance(bctype, str):
-            raise Exception('bctype must be a single string')
         bc_types = list(self['pore.bc'].keys())
         other_types = np.setdiff1d(bc_types, bctype).tolist()
 

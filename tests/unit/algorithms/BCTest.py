@@ -35,16 +35,16 @@ class BCTest:
         fd = op.algorithms.FickianDiffusion(network=self.pn, phase=self.air)
         fd['pore.bc.rate'][1] = 1.0
         fd['pore.bc.value'][0] = 1.0
-        fd.set_value_BC(pores=[0, 1, 2], values=3.0, mode='overwrite')
+        fd.set_value_BC(pores=[1, 2], values=3.0, mode='overwrite')
         mask = np.isfinite(fd['pore.bc.value'])
         assert mask.sum() == 2
-        assert fd['pore.bc.value'][mask].sum() == 6.0
+        assert fd['pore.bc.value'][mask].sum() == 4.0
         assert np.isfinite(fd['pore.bc.rate']).sum() == 1
-        fd.set_value_BC(pores=[0, 1, 2], values=3.0, mode='overwrite')
+        fd.set_value_BC(pores=[0, 1, 2], values=5.0, mode='overwrite')
         mask = np.isfinite(fd['pore.bc.value'])
-        assert mask.sum() == 3
-        assert fd['pore.bc.value'][mask].sum() == 9.0
-        assert np.isfinite(fd['pore.bc.rate']).sum() == 0
+        assert mask.sum() == 2
+        assert fd['pore.bc.value'][mask].sum() == 10.0
+        assert np.isfinite(fd['pore.bc.rate']).sum() == 1
 
     def test_remove(self):
         # check mode remove, with and without force
@@ -55,8 +55,7 @@ class BCTest:
         mask = np.isfinite(fd['pore.bc.value'])
         assert mask.sum() == 0
         assert np.isfinite(fd['pore.bc.rate']).sum() == 1
-        fd.set_value_BC(pores=[0, 1], mode='remove')
-        assert np.isfinite(fd['pore.bc.value']).sum() == 0
+        fd.set_BC(pores=[0, 1], bctype=fd['pore.bc'].keys(), mode='remove')
         assert np.isfinite(fd['pore.bc.value']).sum() == 0
         assert np.isfinite(fd['pore.bc.rate']).sum() == 0
 
@@ -68,7 +67,7 @@ class BCTest:
         fd.set_value_BC(mode='clear')
         assert np.isfinite(fd['pore.bc.value']).sum() == 0
         assert np.isfinite(fd['pore.bc.rate']).sum() == 1
-        fd.set_value_BC(mode='clear')
+        fd.set_BC(bctype=fd['pore.bc'].keys(), mode='clear')
         assert np.isfinite(fd['pore.bc.rate']).sum() == 0
 
     def test_outflow(self):
@@ -104,6 +103,15 @@ class BCTest:
         drn.run(pressures)
         drn.set_outlets(pores=self.pn.pores('right'))
         drn.apply_trapping()
+
+    def test_modes_as_list(self):
+        # check mode clear, with and without force
+        fd = op.algorithms.FickianDiffusion(network=self.pn, phase=self.air)
+        fd['pore.bc.rate'][1] = 1.0
+        fd['pore.bc.value'][0] = 1.0
+        fd.set_BC(bctype=['value', 'rate'], mode='clear')
+        assert np.isfinite(fd['pore.bc.value']).sum() == 0
+        assert np.isfinite(fd['pore.bc.rate']).sum() == 0
 
 
 if __name__ == "__main__":
