@@ -157,22 +157,12 @@ class AdvectionDiffusionTest:
 
     def test_outflow_bc_modes(self):
         ad = AdvectionDiffusion(network=self.net, phase=self.phase)
-        ad.set_rate_BC(pores=[0, 1], total_rate=1)
         ad.set_value_BC(pores=[2, 3], values=1)
         ad.set_rate_BC(pores=[2, 3], rates=2)
+        assert (~np.isnan(ad['pore.bc.rate'])).sum() == 0
+        ad.set_value_BC(pores=[2, 3], mode='remove')
+        ad.set_rate_BC(pores=[2, 3], rates=2)
         assert (~np.isnan(ad['pore.bc.rate'])).sum() == 2
-        ad.set_rate_BC(pores=[2, 3], rates=2, mode='overwrite', force=True)
-        assert (~np.isnan(ad['pore.bc.rate'])).sum() == 4
-
-    def test_add_outflow_overwrite_rate_and_value_BC(self):
-        ad = AdvectionDiffusion(network=self.net, phase=self.phase)
-        ad.set_rate_BC(pores=[0, 1], total_rate=1)
-        ad.set_value_BC(pores=[2, 3], values=1)
-        assert np.sum(np.isfinite(ad['pore.bc.rate'])) == 2
-        assert np.sum(np.isfinite(ad['pore.bc.value'])) == 2
-        ad.set_outflow_BC(pores=[0, 1, 2, 3], force=True)
-        assert np.sum(np.isfinite(ad['pore.bc.rate'])) == 0
-        assert np.sum(np.isfinite(ad['pore.bc.value'])) == 0
 
     def test_value_BC_does_not_overwrite_outflow(self):
         ad = AdvectionDiffusion(network=self.net, phase=self.phase)
@@ -183,9 +173,9 @@ class AdvectionDiffusionTest:
     def test_add_rate_BC_fails_when_outflow_BC_present(self):
         ad = AdvectionDiffusion(network=self.net, phase=self.phase)
         ad.set_outflow_BC(pores=[0, 1])
-        ad.set_rate_BC(pores=[0, 1], total_rate=1)
+        ad.set_rate_BC(pores=[0, 1], rates=0.5)
         assert (np.isfinite(ad['pore.bc.rate']).sum()) == 0
-        ad.set_rate_BC(pores=[2, 3], total_rate=1)
+        ad.set_rate_BC(pores=[2, 3], rates=0.5)
         assert np.all(ad['pore.bc.rate'][[2, 3]] == 0.5)
 
     def test_outflow_BC_rigorous(self):
@@ -202,7 +192,7 @@ class AdvectionDiffusionTest:
             regen_mode='deferred',
         )
         internal_pores = self.net.pores(["left", "right"], mode="not")
-        ad.set_source("pore.rxn", pores=internal_pores)
+        ad.set_source(pores=internal_pores, propname="pore.rxn")
         ad.set_value_BC(pores=self.net.pores('right'), values=2)
         ad.set_outflow_BC(pores=self.net.pores('left'))
 
