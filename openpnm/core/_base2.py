@@ -75,7 +75,7 @@ class Base2(dict):
             project = ws.new_project()
         else:
             project = network.project
-        project.extend(self)
+        project.append(self)
         self.name = name
 
     def __eq__(self, other):
