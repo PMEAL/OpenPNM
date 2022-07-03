@@ -1,6 +1,5 @@
 import openpnm as op
 import numpy as np
-# from openpnm.phase import mixtures
 import openpnm.models as mods
 
 
