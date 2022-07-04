@@ -10,7 +10,7 @@ class ReactiveTransportTest:
 
     def setup_class(self):
         self.net = op.network.Cubic(shape=[4, 4, 4])
-        self.phase = op.phase.GenericPhase(network=self.net)
+        self.phase = op.phase.Phase(network=self.net)
         self.phase['throat.diffusive_conductance'] = 1e-15
         self.phase['pore.A'] = -1e-15
         self.phase['pore.k'] = 2

@@ -5,7 +5,7 @@ from numpy.testing import assert_approx_equal
 class MolarDensityTest:
     def setup_class(self):
         self.net = op.network.Cubic(shape=[3, 3, 3])
-        self.phase = op.phase.GenericPhase(network=self.net)
+        self.phase = op.phase.Phase(network=self.net)
         self.phase['pore.molecular_weight'] = 0.0291  # kg/mol
         self.phase['pore.density'] = 1.19  # kg/m3
         self.phase['pore.temperature'] = 298.0  # K

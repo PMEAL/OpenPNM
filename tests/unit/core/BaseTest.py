@@ -783,7 +783,7 @@ class BaseTest:
 
     # def test_subdict_getitem_on_phase_from_phase(self):
     #     pn = op.network.Cubic(shape=[5, 5, 5])
-    #     air = op.phase.GenericPhase(network=pn)
+    #     air = op.phase.Phase(network=pn)
     #     air['pore.foo.bar'] = 1
     #     air['pore.foo.baz'] = 2
     #     d = air['pore.foo']
@@ -795,7 +795,7 @@ class BaseTest:
     #     pn = op.network.Cubic(shape=[5, 5, 5])
     #     geo = op.geometry.GenericGeometry(network=pn, pores=pn.Ps,
     #                                       throats=pn.Ts)
-    #     air = op.phase.GenericPhase(network=pn)
+    #     air = op.phase.Phase(network=pn)
     #     phys = op.physics.GenericPhysics(network=pn, phase=air, geometry=geo)
     #     air['pore.foo.bar'] = 1
     #     air['pore.foo.baz'] = 2
@@ -812,7 +812,7 @@ class BaseTest:
     #     geo2 = op.geometry.GenericGeometry(network=pn,
     #                                        pores=pn.Ps[75:],
     #                                        throats=pn.Ts[75:])
-    #     air = op.phase.GenericPhase(network=pn)
+    #     air = op.phase.Phase(network=pn)
     #     phys1 = op.physics.GenericPhysics(network=pn, phase=air, geometry=geo1)
     #     phys2 = op.physics.GenericPhysics(network=pn, phase=air, geometry=geo2)
     #     air['pore.foo.bar'] = 1

@@ -12,7 +12,7 @@ class DiffusiveConductanceTest:
         self.net['throat.diameter'] = 0.5
         self.net['pore.area'] = 1.0
         self.net['throat.cross_sectional_area'] = 1.0
-        self.phase = op.phase.GenericPhase(network=self.net)
+        self.phase = op.phase.Phase(network=self.net)
         self.phase['pore.diffusivity'] = 1.3
         self.phase['pore.molecular_weight'] = 0.029
         self.phase['pore.temperature'] = 345.0
@@ -38,7 +38,7 @@ class DiffusiveConductanceTest:
 
     def test_generic_diffusive_partial_domain(self):
         net = op.network.Cubic(shape=[5, 5, 5])
-        phase = op.phase.GenericPhase(network=net)
+        phase = op.phase.Phase(network=net)
         phase.set_label('pore.left', pores=net['pore.left'])
         phase.set_label(label='left',
                         throats=net.find_neighbor_throats(net.pores('left')))

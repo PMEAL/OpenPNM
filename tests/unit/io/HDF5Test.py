@@ -13,10 +13,10 @@ class HDF5Test:
         self.net['pore.boo'] = 1
         self.net['throat.boo'] = 1
 
-        self.phase_1 = op.phase.GenericPhase(network=self.net)
+        self.phase_1 = op.phase.Phase(network=self.net)
         self.phase_1['pore.bar'] = 2
         self.phase_1['throat.bar'] = 2
-        self.phase_2 = op.phase.GenericPhase(network=self.net)
+        self.phase_2 = op.phase.Phase(network=self.net)
         self.phase_2['pore.bar'] = 2
         self.phase_2['throat.bar'] = 2
 

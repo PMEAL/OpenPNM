@@ -18,7 +18,7 @@ class AdvectionDiffusionTest:
         self.net['throat.conduit_lengths.throat'] = 0.6
         self.net['throat.conduit_lengths.pore2'] = 0.1
 
-        self.phase = op.phase.GenericPhase(network=self.net)
+        self.phase = op.phase.Phase(network=self.net)
         self.phase['throat.diffusive_conductance'] = 1e-15
         self.phase['throat.hydraulic_conductance'] = 1e-15
 

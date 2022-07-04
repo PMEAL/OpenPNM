@@ -302,7 +302,7 @@ class TransportTest:
     # def test_network_continuity(self):
     #     net = op.network.Cubic([5, 1, 1])
     #     op.topotools.trim(network=net, pores=[2])
-    #     phase = op.phase.GenericPhase(network=net)
+    #     phase = op.phase.Phase(network=net)
     #     phase['throat.diffusive_conductance'] = 1.0
     #     alg = op.algorithms.FickianDiffusion(network=net, phase=phase)
     #     alg.set_value_BC(pores=0, values=1)
