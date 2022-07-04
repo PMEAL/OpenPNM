@@ -124,7 +124,7 @@ class BCTest:
         fd = op.algorithms.FickianDiffusion(network=self.pn, phase=self.air)
         fd['pore.bc.rate'][1] = 1.0
         fd['pore.bc.value'][0] = 1.0
-        fd.set_BC(bctype=['value', 'rate'], mode='clear')
+        fd.set_BC(bctype=['value', 'rate'], mode='remove')
         assert np.isfinite(fd['pore.bc.value']).sum() == 0
         assert np.isfinite(fd['pore.bc.rate']).sum() == 0
 
