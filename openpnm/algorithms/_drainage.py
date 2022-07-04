@@ -1,7 +1,7 @@
 import numpy as np
 from tqdm import tqdm
 from collections import namedtuple
-from openpnm.algorithms import GenericAlgorithm
+from openpnm.algorithms import Algorithm
 from openpnm.utils import Docorator, TypedSet
 from openpnm._skgraph.simulations import (
     bond_percolation,
@@ -24,7 +24,7 @@ class DrainageSettings:
     r"""
     Parameters
     ----------
-    %(GenericAlgorithmSettings.parameters)s
+    %(AlgorithmSettings.parameters)s
 
     throat_entry_pressure : str
         The dictionary key for the pore entry pressure array
@@ -42,7 +42,7 @@ class DrainageSettings:
     variable_props = TypedSet()
 
 
-class Drainage(GenericAlgorithm):
+class Drainage(Algorithm):
 
     def __init__(self, phase, name='drainage_#', **kwargs):
         super().__init__(name=name, **kwargs)

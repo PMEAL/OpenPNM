@@ -24,7 +24,7 @@ class TransientAdvectionDiffusionSettings:
 class TransientAdvectionDiffusion(TransientReactiveTransport,
                                   AdvectionDiffusion):
     r"""
-    A subclass of GenericTransport to perform steady and transient simulations
+    A subclass of Transport to perform steady and transient simulations
     of pure diffusion and advection-diffusion problems.
     """
 

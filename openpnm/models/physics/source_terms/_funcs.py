@@ -27,7 +27,7 @@ def charge_conservation(target, phase, p_alg, e_alg, assumption):
     Parameters
     ----------
     %(target_blurb)s
-    p_alg : GenericAlgorithm
+    p_alg : Algorithm
         The algorithm used to enforce charge conservation.
     e_alg : list
         The list of algorithms used to solve for transport of different

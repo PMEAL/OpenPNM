@@ -2,7 +2,7 @@ import logging
 import numpy as np
 from openpnm.utils import Docorator
 from openpnm.integrators import ScipyRK45
-from openpnm.algorithms import GenericAlgorithm
+from openpnm.algorithms import Algorithm
 from openpnm.algorithms._solution import SolutionContainer, TransientSolution
 
 
@@ -21,7 +21,7 @@ class TransientMultiPhysicsSettings:
 
     Parameters
     ----------
-    %(GenericAlgorithmSettings.parameters)s
+    %(AlgorithmSettings.parameters)s
     algorithms: list
         List of transient algorithm objects to be solved in a coupled manner
 
@@ -30,7 +30,7 @@ class TransientMultiPhysicsSettings:
 
 
 @docstr.dedent
-class TransientMultiPhysics(GenericAlgorithm):
+class TransientMultiPhysics(Algorithm):
     r"""
     A subclass for transient multiphysics simulations.
     """

@@ -194,10 +194,10 @@ class Project(list):
 
     @property
     def algorithms(self):
-        from openpnm.algorithms import GenericAlgorithm
+        from openpnm.algorithms import Algorithm
         algs = []
         for item in self:
-            if isinstance(item, GenericAlgorithm):
+            if isinstance(item, Algorithm):
                 algs.append(item)
         return algs
 

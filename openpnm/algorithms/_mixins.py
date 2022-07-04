@@ -115,7 +115,7 @@ class BCsMixin:
             rates = total_rate/pores.size
         self._set_BC(pores=pores, bctype='rate', bcvalues=rates, mode=mode)
 
-    @docstr.get_sections(base='GenericTransport._set_BC',
+    @docstr.get_sections(base='Transport._set_BC',
                          sections=['Parameters', 'Notes'])
     def _set_BC(self, pores, bctype, bcvalues=None, mode='merge'):
         r"""

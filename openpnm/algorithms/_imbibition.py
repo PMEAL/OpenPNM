@@ -22,7 +22,7 @@ class ImbibitionSettings:
     r"""
     Parameters
     ----------
-    %(GenericAlgorithmSettings.parameters)s
+    %(AlgorithmSettings.parameters)s
 
     throat_entry_pressure : str
         The dictionary key for the pore entry pressure array

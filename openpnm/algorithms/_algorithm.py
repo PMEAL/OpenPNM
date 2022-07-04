@@ -2,19 +2,18 @@ import logging
 import numpy as np
 from openpnm.core import ParserMixin, LabelMixin, Base2
 from openpnm.utils import Docorator
-import functools
 
 
-__all__ = ['GenericAlgorithm']
+__all__ = ['Algorithm']
 
 
 logger = logging.getLogger(__name__)
 docstr = Docorator()
 
 
-@docstr.get_sections(base='GenericAlgorithmSettings', sections=docstr.all_sections)
+@docstr.get_sections(base='AlgorithmSettings', sections=docstr.all_sections)
 @docstr.dedent
-class GenericAlgorithmSettings:
+class AlgorithmSettings:
     r"""
 
     Parameters
@@ -24,9 +23,9 @@ class GenericAlgorithmSettings:
     """
 
 
-@docstr.get_sections(base='GenericAlgorithm', sections=['Parameters'])
+@docstr.get_sections(base='Algorithm', sections=['Parameters'])
 @docstr.dedent
-class GenericAlgorithm(ParserMixin, LabelMixin, Base2):
+class Algorithm(ParserMixin, LabelMixin, Base2):
     r"""
     Generic class to define the foundation of Algorithms
 
@@ -38,7 +37,7 @@ class GenericAlgorithm(ParserMixin, LabelMixin, Base2):
 
     def __init__(self, network, name='alg_#', **kwargs):
         super().__init__(network=network, name=name, **kwargs)
-        self.settings._update(GenericAlgorithmSettings())
+        self.settings._update(AlgorithmSettings())
         self['pore.all'] = np.ones(network.Np, dtype=bool)
         self['throat.all'] = np.ones(network.Nt, dtype=bool)
 

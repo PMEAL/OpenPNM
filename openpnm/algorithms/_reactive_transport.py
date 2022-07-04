@@ -3,7 +3,7 @@ import logging
 import numpy as np
 from numpy.linalg import norm
 from scipy.optimize.nonlin import TerminationCondition
-from openpnm.algorithms import GenericTransport
+from openpnm.algorithms import Transport
 from openpnm.utils import TypedList, Docorator
 from tqdm import tqdm
 
@@ -22,7 +22,7 @@ class ReactiveTransportSettings:
 
     Parameters
     ----------
-    %(GenericTransportSettings.parameters)s
+    %(TransportSettings.parameters)s
     sources : list
         List of source terms that have been added
     relaxation_factor : float (default = 1.0)
@@ -48,13 +48,13 @@ class ReactiveTransportSettings:
 
 @docstr.get_sections(base='ReactiveTransport', sections=['Parameters'])
 @docstr.dedent
-class ReactiveTransport(GenericTransport):
+class ReactiveTransport(Transport):
     r"""
     A subclass for steady-state simulations with (optional) source terms.
 
     Parameters
     ----------
-    %(GenericTransport.parameters)s
+    %(Transport.parameters)s
 
     Notes
     -----
@@ -237,11 +237,11 @@ class ReactiveTransport(GenericTransport):
 
         Parameters
         ----------
-        %(GenericTransport._set_BC.parameters)s
+        %(Transport._set_BC.parameters)s
 
         Notes
         -----
-        %(GenericTransport._set_BC.notes)s
+        %(Transport._set_BC.notes)s
 
         """
         msg = "Source term already present in given pores, can't assign BCs"

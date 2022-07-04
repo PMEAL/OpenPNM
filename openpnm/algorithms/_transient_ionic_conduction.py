@@ -29,7 +29,7 @@ class TransientIonicConductionSettings:
 class TransientIonicConduction(TransientReactiveTransport,
                                IonicConduction):
     r"""
-    A subclass of GenericTransport to perform steady and transient simulations
+    A subclass of Transport to perform steady and transient simulations
     of pure diffusion and advection-diffusion problems.
     """
 
