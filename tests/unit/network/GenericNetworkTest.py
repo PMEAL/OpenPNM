@@ -3,7 +3,7 @@ import openpnm as op
 import pytest
 
 
-class GenericNetworkTest:
+class NetworkTest:
     def setup_class(self):
         self.net = op.network.Cubic(shape=[10, 10, 10])
 
@@ -183,7 +183,7 @@ class GenericNetworkTest:
 
 if __name__ == '__main__':
 
-    t = GenericNetworkTest()
+    t = NetworkTest()
     t.setup_class()
     self = t
     for item in t.__dir__():
