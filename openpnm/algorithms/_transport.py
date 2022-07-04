@@ -20,7 +20,7 @@ ws = Workspace()
 
 @docstr.get_sections(base='TransportSettings', sections=['Parameters'])
 @docstr.dedent
-class GenericTransportSettings:
+class TransportSettings:
     r"""
     Defines the settings for Transport algorithms
 
@@ -64,7 +64,7 @@ class Transport(Algorithm, BCsMixin):
 
     def __init__(self, phase, name='trans_#', **kwargs):
         super().__init__(name=name, **kwargs)
-        self.settings._update(GenericTransportSettings())
+        self.settings._update(TransportSettings())
         self.settings['phase'] = phase.name
         self['pore.bc_rate'] = np.nan
         self['pore.bc_value'] = np.nan
@@ -182,7 +182,7 @@ class Transport(Algorithm, BCsMixin):
             Dict containing the solution with self.settings.quantity as key
 
         """
-        logger.info('Running GenericTransport')
+        logger.info('Running Transport')
         if solver is None:
             solver = getattr(solvers, ws.settings.default_solver)()
         # Perform pre-solve validations
