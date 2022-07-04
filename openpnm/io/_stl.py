@@ -14,7 +14,7 @@ def network_to_stl(network, filename=None, maxsize='auto',
     ----------
     network : GenericNetwork.
         The network containing the desired data.
-    phases : list[GenericPhase] (place holder, default is None).
+    phases : list[Phase] (place holder, default is None).
         List of phases containing the desired data.
     filename : str (optional).
         The name of the file containing the data to export.

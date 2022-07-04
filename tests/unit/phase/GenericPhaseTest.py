@@ -12,7 +12,7 @@ class GenericPhaseTest:
 
     def test_instantiate_without_network_fails(self):
         with pytest.raises(TypeError):
-            op.phase.GenericPhase()
+            op.phase.Phase()
 
 
 if __name__ == '__main__':

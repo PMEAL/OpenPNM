@@ -90,7 +90,7 @@ class MixedInvasionPercolation(GenericAlgorithm):
 
         Parameters
         ----------
-        phase : GenericPhase
+        phase : Phase
             The Phase object containing the physical properties of the invading
             fluid.
 

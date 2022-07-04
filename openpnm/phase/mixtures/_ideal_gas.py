@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 class IdealGas(GenericMixture):
     r"""
     Creates Mixture object that represents a ideal gas system
-    consisting of a given list of GenericPhases as components.
+    consisting of a given list of Phases as components.
 
     Parameters
     ----------

@@ -1,15 +1,15 @@
 from openpnm.models.collections.phase import mercury
-from openpnm.phase import GenericPhase
+from openpnm.phase import Phase
 
 
-class Mercury(GenericPhase):
+class Mercury(Phase):
     r"""
     Creates Phase object with and preset values and pore-scale models for
     mercury
 
     Parameters
     ----------
-    %(GenericPhase.parameters)s
+    %(Phase.parameters)s
 
     References
     ----------

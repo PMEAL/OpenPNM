@@ -1,9 +1,9 @@
 import logging
-from openpnm.phase import GenericPhase as GenericPhase
+from openpnm.phase import Phase as Phase
 logger = logging.getLogger(__name__)
 
 
-class GenericSpecies(GenericPhase):
+class GenericSpecies(Phase):
     r"""
     Creates Phase object that represents a single species in a multicomponent
     mixture system.

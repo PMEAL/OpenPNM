@@ -72,7 +72,7 @@ class MixedInvasionPercolationCoop(MixedInvasionPercolation):
 
         Parameters
         ----------
-        phase : GenericPhase
+        phase : Phase
             The Phase object containing the physical properties of the invading
             fluid.
         pore_entry_pressure : str

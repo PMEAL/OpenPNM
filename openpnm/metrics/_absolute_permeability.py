@@ -1,6 +1,6 @@
 import logging
 from openpnm.utils import Workspace, Docorator
-from openpnm.phase import GenericPhase
+from openpnm.phase import Phase
 from openpnm.algorithms import StokesFlow
 from openpnm.metrics import GenericTransportMetrics
 from openpnm import models
@@ -54,7 +54,7 @@ class AbsolutePermeability(GenericTransportMetrics):
         Execute the diffusion simulations in the principle directions.
 
         """
-        phase = GenericPhase(network=self.network)
+        phase = Phase(network=self.network)
         phase['pore.viscosity'] = 1.0
         phase['throat.viscosity'] = 1.0
         mod = models.physics.hydraulic_conductance.hagen_poiseuille

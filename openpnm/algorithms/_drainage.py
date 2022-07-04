@@ -267,7 +267,7 @@ def run_examples():
     pn = op.network.Cubic([Nx, Ny, Nz], spacing=1e-5)
     pn.add_model_collection(op.models.collections.geometry.spheres_and_cylinders)
     pn.regenerate_models()
-    nwp = op.phase.GenericPhase(network=pn)
+    nwp = op.phase.Phase(network=pn)
     nwp['throat.surface_tension'] = 0.480
     nwp['throat.contact_angle'] = 140
     nwp.add_model(propname='throat.entry_pressure',

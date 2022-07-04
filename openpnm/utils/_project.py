@@ -185,10 +185,10 @@ class Project(list):
 
     @property
     def phases(self):
-        from openpnm.phase import GenericPhase
+        from openpnm.phase import Phase
         phases = []
         for item in self:
-            if isinstance(item, GenericPhase):
+            if isinstance(item, Phase):
                 phases.append(item)
         return phases
 

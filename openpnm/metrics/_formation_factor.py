@@ -1,6 +1,6 @@
 import logging
 from openpnm.utils import Workspace, Docorator
-from openpnm.phase import GenericPhase
+from openpnm.phase import Phase
 from openpnm.algorithms import FickianDiffusion
 from openpnm.metrics import GenericTransportMetrics
 from openpnm import models
@@ -91,7 +91,7 @@ class FormationFactor(GenericTransportMetrics):
         Execute the diffusion simulations in the principle directions.
 
         """
-        phase = GenericPhase(network=self.network)
+        phase = Phase(network=self.network)
         phase['pore.diffusivity'] = 1.0
         phase['throat.diffusivity'] = 1.0
         mod = models.physics.diffusive_conductance.ordinary_diffusion

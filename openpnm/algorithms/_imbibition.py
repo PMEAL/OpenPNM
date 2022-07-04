@@ -166,7 +166,7 @@ def run_examples():
     # pn.models['throat.max_size@all']['mode'] = 'max'
     # pn.models['throat.diameter@all']['factor'] = .8
     # pn.regenerate_models(['throat.max_size@all', 'throat.diameter@all'])
-    nwp = op.phase.GenericPhase(network=pn)
+    nwp = op.phase.Phase(network=pn)
     nwp['throat.surface_tension'] = 0.480
     nwp['throat.contact_angle'] = 140
     nwp.add_model(propname='throat.entry_pressure',

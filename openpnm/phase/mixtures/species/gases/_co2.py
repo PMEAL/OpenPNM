@@ -1,8 +1,8 @@
-from openpnm.phase import GenericPhase
+from openpnm.phase import Phase
 import openpnm.models as mods
 
 
-class CO2(GenericPhase):
+class CO2(Phase):
     r"""
     Creates Phase object with preset models and values for CO2 gas
 
