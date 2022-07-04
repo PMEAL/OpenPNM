@@ -91,7 +91,7 @@ class GenericAlgorithm(ParserMixin, LabelMixin, Base2):
         # Regenerate all associated objects
         phase.regenerate_models(propnames=iterative_props)
 
-    def set_BC(self, pores, bctype, bcvalues=[], mode='overwrite'):
+    def set_BC(self, pores=None, bctype=[], bcvalues=[], mode='overwrite'):
         r"""
         The main method for setting and adjusting boundary conditions.
 
@@ -101,47 +101,46 @@ class GenericAlgorithm(ParserMixin, LabelMixin, Base2):
         Parameters
         ----------
         pores : array_like
-            The pores where the boundary conditions should be applied
+            The pores where the boundary conditions should be applied. If
+            ``None`` is given then *all* pores are assumed.  This is useful
+            when ``mode='remove'``.
         bctype : str
             Specifies the type or the name of boundary condition to apply. This
             can be anything, but normal options are 'rate' and 'value'. If a
             list of strings is provided, then each mode in the list is
-            handled in order, so if ``mode='clear' and ``bctype=['value',
+            handled in order, so if ``mode='remove' and ``bctype=['value',
             'rate']`` then these two bc arrays will be set to all ``nans`.
         bcvalues : int or array_like
             The boundary value to apply, such as concentration or rate.
             If a single value is given, it's assumed to apply to all
-            locations unless the 'total_rate' bc.type is supplied whereby
-            a single value corresponds to a total rate to be divded evenly
-            among all pores. Otherwise, different values can be applied to
-            all pores in the form of an array of the same length as
-            ``pores``.
+            locations. Different values can be applied to all pores in the
+            form of an array of the same length as ``pores``.
         mode : str or list of str, optional
-            Controls how the boundary conditions are applied. The default
-            value is 'merge'. Options are:
+            Controls how the boundary conditions are applied. Options are:
 
             ============ =====================================================
             mode         meaning
             ============ =====================================================
-            'overwrite'  (default) Adds supplied boundary conditions to the
-                         existing conditions, including overwriting any
-                         existing conditions that may be present. This is
-                         equivalent to calling ``'remove'`` on the given
-                         locations followed by ``'add'``.
-            'add'        Adds the supplied boundary conditions to the
-                         existing conditions but does *not* overwrite any
-                         conditions that are already present.
-            'remove'     Removes boundary conditions from the specified
+            'add'        (default) Adds the supplied boundary conditions to
+                         the given locations, including overwriting any
+                         conditions of the *same type* that are already
+                         present. If conditions of another type are already
+                         present they will *not* be overwritten and a warning
+                         will be issued.
+            'overwrite'  Adds supplied boundary conditions to the given
+                         locations, including overwriting conditions of
+                         *other types* that may be present in the given
                          locations.
-            'clear'      Removes all boundary conditions from the object of
-                         the of the specified type from all locations.
+            'remove'     Removes boundary conditions of the specified type
+                         from the specified locations. If ``bctype`` is not
+                         specified then *all* types are removed. If no
+                         locations are given then values are remvoed from
+                         *all* locations.
             ============ =====================================================
 
             If a list of strings is provided, then each mode in the list is
             handled in order, so that ``['remove', 'add']`` will give the same
-            results add ``'overwrite'``.  Another option would be ``['clear',
-            'add']``, which would remove all existing bcs and add the supplied
-            ones.
+            results add ``'overwrite'``.
 
         Notes
         -----
@@ -156,6 +155,8 @@ class GenericAlgorithm(ParserMixin, LabelMixin, Base2):
                             bcvalues=bcvalues, mode=item)
             return
         # If a list of bctypes was given, handle them each in order
+        if len(bctype) == 0:
+            bctype = self['pore.bc'].keys()
         if not isinstance(bctype, str):
             for item in bctype:
                 self.set_BC(pores=pores, bctype=item,
@@ -168,49 +169,57 @@ class GenericAlgorithm(ParserMixin, LabelMixin, Base2):
 
         mode = self._parse_mode(
             mode,
-            allowed=['overwrite', 'add', 'remove', 'clear'],
+            allowed=['overwrite', 'add', 'remove'],
             single=True)
 
+        # Infer the value that indicates "no bc" based on array dtype
+        no_bc = get_no_bc(self[f'pore.bc.{bctype}'])
+
+        if pores is None:
+            pores = self.Ps
         pores = self._parse_indices(pores)
 
-        no_bc = np.nan if self[f'pore.bc.{bctype}'].dtype in (float, int) else False
-
+        # Deal with size of the given bcvalues
         values = np.array(bcvalues)
-        if values.size == 1:  # Expand to array if scalar given
+        if values.size == 1:
             values = np.ones_like(pores, dtype=values.dtype)*values
-
+        # Ensure values and pores are the same size
         if values.size > 1 and values.size != pores.size:
             raise Exception('The number of values must match the number of locations')
 
-        mask = np.ones_like(pores, dtype=bool)  # Indices of pores to keep
+        # Finally adjust the BCs according to mode
         if mode == 'add':
-            # Remove indices that are already present for given bc type
-            mask[isfinite(self[f'pore.bc.{bctype}'][pores])] = False
-            # Now remove indices that are present for other BCs
-            for item in other_types:
+            mask = np.ones_like(pores, dtype=bool)  # Indices of pores to keep
+            for item in other_types:  # Remove pores that are taken by other BCs
                 mask[isfinite(self[f'pore.bc.{item}'][pores])] = False
-            if mask.sum() > 0:
+            if not np.all(mask):  # Raise warning if come conflicts found
+                msg = 'Some of the given locations already have BCs of '
+                + 'another type, try using mode=overwrite if needed'
+                logger.warning(msg)
+            if mask.sum() > 0:  # Update the BCs
                 self[f"pore.bc.{bctype}"][pores[mask]] = values[mask]
-            else:
+            else:  # Rise warning if all locations are already taken
                 logger.warning('No valid pore locations were specified')
         elif mode == 'overwrite':
-            # Now remove indices that are present for other BCs
+            # Put given values in specified BC, sort out conflicts below
+            self[f"pore.bc.{bctype}"][pores] = values
+            # Collect indices that are present for other BCs for removal
+            mask = np.ones_like(pores, dtype=bool)
             for item in other_types:
+                self[f"pore.bc.{item}"][pores] = get_no_bc(self[f"pore.bc.{item}"])
+                # Make a note of any BCs values of other types
                 mask[isfinite(self[f'pore.bc.{item}'][pores])] = False
-            if mask.sum() > 0:
-                self[f"pore.bc.{bctype}"][pores[mask]] = values[mask]
-            else:
-                logger.warning('No valid pore locations were specified')
+            if not np.all(mask):  # Warn that other values were overwritten
+                msg = 'Some of the given locations already have BCs of '
+                + 'another type, these will be overwritten'
+                logger.warning(msg)
         elif mode == 'remove':
-            # Now remove indices that are present for other BCs
-            for item in other_types:
-                mask[isfinite(self[f'pore.bc.{item}'][pores])] = False
-            if mask.sum():
-                self[f"pore.bc.{bctype}"][pores[mask]] = no_bc
-            else:
-                logger.warning('No valid pore locations were specified')
-        elif mode == 'clear':
-            self[f"pore.bc.{bctype}"] = no_bc
+            self[f"pore.bc.{bctype}"][pores] = no_bc
+
+
+def get_no_bc(arr):
+    no_bc = np.nan if arr.dtype in (float, int) else False
+    return no_bc
 
 
 def isfinite(arr, inf=None):
