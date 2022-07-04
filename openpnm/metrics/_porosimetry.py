@@ -34,7 +34,7 @@ class Porosimetry(OrdinaryPercolation):
 
     Parameters
     ----------
-    network : GenericNetwork
+    network : Network
         The Network upon which this simulation should be run
     name : str, optional
         An identifying name for the object.  If none is given then one is

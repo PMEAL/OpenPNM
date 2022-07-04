@@ -12,7 +12,7 @@ def network_to_stl(network, filename=None, maxsize='auto',
 
     Parameters
     ----------
-    network : GenericNetwork.
+    network : Network.
         The network containing the desired data.
     phases : list[Phase] (place holder, default is None).
         List of phases containing the desired data.

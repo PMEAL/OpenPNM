@@ -147,7 +147,7 @@ def network_to_networkx(network):
     import networkx as nx
     from openpnm.network import Network
 
-    # Ensure network is an GenericNetwork.
+    # Ensure network is an Network.
     if not isinstance(network, Network):
         raise Exception('Provided network is not an OpenPNM Network.')
 

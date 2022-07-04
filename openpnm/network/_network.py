@@ -23,7 +23,7 @@ class NetworkSettings:
     """
 
 
-@docstr.get_sections(base='GenericNetwork', sections=['Parameters'])
+@docstr.get_sections(base='Network', sections=['Parameters'])
 @docstr.dedent
 class Network(Domain):
     r"""
@@ -52,7 +52,7 @@ class Network(Domain):
     >>> import numpy as np
 
     Create some pore coordinates and connections manually and assign to a
-    GenericNetwork instance. Consider a linear network of 4 pores and 3
+    Network instance. Consider a linear network of 4 pores and 3
     throats:
 
     ::
@@ -61,7 +61,7 @@ class Network(Domain):
 
     >>> coords = np.array([[0, 0, 0], [1, 0, 0], [2, 0, 0], [3, 0, 0]])
     >>> conns = np.array([[0, 1], [1, 3], [2, 3]])
-    >>> pn = op.network.GenericNetwork(conns=conns, coords=coords)
+    >>> pn = op.network.Network(conns=conns, coords=coords)
 
     Networks have two required properties: 'pore.coords' and
     'throat.conns'. These arrays indicate the spatial location of each
@@ -74,7 +74,7 @@ class Network(Domain):
     2     : throat.conns
     ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 
-    The ``GenericNetwork`` class has several methods for querying the topology.
+    The ``Network`` class has several methods for querying the topology.
 
     >>> Ps = pn.find_neighbor_pores(pores=1)
     >>> print(Ps)

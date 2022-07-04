@@ -14,7 +14,7 @@ def project_to_hdf5(project, filename=''):
 
     Parameters
     ----------
-    network : GenericNetwork
+    network : Network
         The network containing the desired data
 
     phases : list[Phase]s (optional, default is none)

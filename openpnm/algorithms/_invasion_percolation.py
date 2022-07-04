@@ -56,7 +56,7 @@ class InvasionPercolation(Algorithm):
 
     Parameters
     ----------
-    network : GenericNetwork
+    network : Network
         The Network upon which the invasion will occur
 
     Notes
@@ -425,7 +425,7 @@ def _run_accelerated(t_start, t_sorted, t_order, t_inv, p_inv, p_inv_t,
     ``idx`` and ``indptr`` are properties are the network's incidence
     matrix, and are used to quickly find neighbor throats.
 
-    Numba doesn't like foreign data types (i.e. GenericNetwork), and so
+    Numba doesn't like foreign data types (i.e. Network), and so
     ``find_neighbor_throats`` method cannot be called in a jitted method.
 
     Nested wrapper is for performance issues (reduced OpenPNM import)

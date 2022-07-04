@@ -46,7 +46,7 @@ class Bravais(Network):
             'hcp'        Hexagonal close packed (Not Implemented Yet)
             ===========  =====================================================
 
-    %(GenericNetwork.parameters)s
+    %(Network.parameters)s
 
     See Also
     --------

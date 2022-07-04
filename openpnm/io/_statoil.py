@@ -16,7 +16,7 @@ def network_to_statoil(cls, network, shape, prefix=None, path=None, Pin=None, Po
 
     Parameters
     ----------
-    network : GenericNetwork
+    network : Network
         The network
     shape : array_like
         An ndim-by-1 array or list containing the network dimensions
@@ -202,14 +202,14 @@ def network_from_statoil(path, prefix):
     prefix : str
         The file name prefix on each file. The data files are stored
         as \<prefix\>_node1.dat.
-    network : GenericNetwork
+    network : Network
         If given then the data will be loaded on it and returned.  If not
         given, a Network will be created and returned.
 
     Returns
     -------
     Project
-        An OpenPNM Project containing a GenericNetwork holding all the data
+        An OpenPNM Project containing a Network holding all the data
 
     Notes
     -----

@@ -33,7 +33,7 @@ class TransientReactiveTransport(ReactiveTransport):
 
     Parameters
     ----------
-    network : GenericNetwork
+    network : Network
         The Network with which this algorithm is associated.
 
     Notes

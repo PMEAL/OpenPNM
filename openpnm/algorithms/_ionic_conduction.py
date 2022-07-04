@@ -35,7 +35,7 @@ class IonicConduction(ReactiveTransport):
 
     Parameters
     ----------
-    network : GenericNetwork
+    network : Network
         The network on which this algorithm operates
     name : str, optional
         A unique name to give the object for easier identification.  If not

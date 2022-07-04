@@ -53,7 +53,7 @@ class Cubic(Network):
         the face-to-face connections, which can be identified by looking
         for throats with a length equal to the network spacing.
 
-    %(GenericNetwork.parameters)s
+    %(Network.parameters)s
 
     """
 

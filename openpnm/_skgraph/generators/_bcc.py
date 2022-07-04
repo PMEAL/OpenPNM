@@ -94,7 +94,7 @@ if __name__ == '__main__':
     import openpnm as op
     import matplotlib.pyplot as plt
     from openpnm._skgraph import get_node_prefix, get_edge_prefix
-    pn = op.network.GenericNetwork()
+    pn = op.network.Network()
     net = bcc([3, 3, 3], 1, mode='tri')
     net['pore.coords'] = net.pop(get_node_prefix(net) + '.coords')
     net['throat.conns'] = net.pop(get_edge_prefix(net) + '.conns')

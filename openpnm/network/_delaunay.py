@@ -34,7 +34,7 @@ class Delaunay(Network):
         [r]        A 3D spherical domain of radius r
         ========== ============================================================
 
-    %(GenericNetwork.parameters)s
+    %(Network.parameters)s
 
     See Also
     --------

@@ -17,7 +17,7 @@ def project_to_xdmf(project, filename=''):
 
     Parameters
     ----------
-    network : GenericNetwork
+    network : Network
         The network containing the desired data
     phases : list[Phase] (optional, default is None)
         A list of phase objects whose data are to be included

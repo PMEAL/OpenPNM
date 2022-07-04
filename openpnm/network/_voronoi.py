@@ -29,7 +29,7 @@ class Voronoi(Network):
             [x, y, 0]
                 will produce a 2D square domain of size x by y
 
-    %(GenericNetwork.parameters)s
+    %(Network.parameters)s
 
     Notes
     -----

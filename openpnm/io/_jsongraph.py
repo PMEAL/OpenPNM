@@ -34,7 +34,7 @@ def network_to_jsongraph(network, filename=''):
 
     Parameters
     ----------
-    network : GenericNetwork
+    network : Network
 
     filename : str
         Desired file name, defaults to network name if not given

@@ -46,7 +46,7 @@ class MixedInvasionPercolationCoop(MixedInvasionPercolation):
 
     Parameters
     ----------
-    network : GenericNetwork
+    network : Network
         The Network upon which the invasion should occur.
 
     """
