@@ -19,7 +19,7 @@ class IPTest:
         mod = op.models.physics.capillary_pressure.washburn
         self.water.add_model(propname="throat.entry_pressure", model=mod)
 
-    def test_set_inlets_overwrite(self):
+    def test_set_inlets(self):
         alg = op.algorithms.InvasionPercolation(network=self.net, phase=self.water)
         alg.set_inlets(pores=self.net.pores("top"))
         assert np.sum(alg["pore.invasion_sequence"] == 0) == 100
@@ -27,11 +27,8 @@ class IPTest:
         alg.set_inlets(pores=self.net.pores("bottom"), mode='add')
         assert np.sum(alg["pore.invasion_sequence"] == 0) == 200
 
-        alg.set_inlets(pores=self.net.pores("top"), mode=['clear', 'add'])
-        assert np.sum(alg["pore.invasion_sequence"] == 0) == 100
-
-        alg.set_inlets(mode='clear')
-        assert np.sum(alg["pore.invasion_sequence"] == 0) == 0
+        alg.set_inlets(mode='remove')
+        assert np.sum(alg["pore.bc.inlets"] == True) == 0
 
     def test_run(self):
         alg = op.algorithms.InvasionPercolation(network=self.net, phase=self.water)

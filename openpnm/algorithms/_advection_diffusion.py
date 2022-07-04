@@ -50,7 +50,7 @@ class AdvectionDiffusion(ReactiveTransport):
         self.settings._update(AdvectionDiffusionSettings())
         self['pore.bc.outflow'] = np.nan
 
-    def set_outflow_BC(self, pores, mode='overwrite', force=False):
+    def set_outflow_BC(self, pores, mode='add'):
         r"""
         Adds outflow boundary condition to the selected pores
 
@@ -87,7 +87,7 @@ class AdvectionDiffusion(ReactiveTransport):
         np.add.at(Qp, C12[:, 1], Q12)
 
         self.set_BC(pores=pores, bcvalues=Qp[pores], bctype='outflow',
-                    mode=mode, force=force)
+                    mode=mode)
 
     def _apply_BCs(self):
         r"""

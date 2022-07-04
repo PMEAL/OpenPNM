@@ -91,7 +91,7 @@ class GenericAlgorithm(ParserMixin, LabelMixin, Base2):
         # Regenerate all associated objects
         phase.regenerate_models(propnames=iterative_props)
 
-    def set_BC(self, pores=None, bctype=[], bcvalues=[], mode='overwrite'):
+    def set_BC(self, pores=None, bctype=[], bcvalues=[], mode='add'):
         r"""
         The main method for setting and adjusting boundary conditions.
 
@@ -109,12 +109,17 @@ class GenericAlgorithm(ParserMixin, LabelMixin, Base2):
             can be anything, but normal options are 'rate' and 'value'. If a
             list of strings is provided, then each mode in the list is
             handled in order, so if ``mode='remove' and ``bctype=['value',
-            'rate']`` then these two bc arrays will be set to all ``nans`.
+            'rate']`` then these two bc arrays will be set to all ``nans`. If
+            an empty list is provided, then all bc types will be assumed. This
+            is useful for clearing all bcs if ``mode='remove'`` and ``pores=
+            None``.
         bcvalues : int or array_like
             The boundary value to apply, such as concentration or rate.
             If a single value is given, it's assumed to apply to all
             locations. Different values can be applied to all pores in the
-            form of an array of the same length as ``pores``.
+            form of an array of the same length as ``pores``. Note that using
+            ``mode='add'`` and ``values=np.nan`` is equivalent to removing
+            bcs from the given ``pores``.
         mode : str or list of str, optional
             Controls how the boundary conditions are applied. Options are:
 
@@ -124,9 +129,9 @@ class GenericAlgorithm(ParserMixin, LabelMixin, Base2):
             'add'        (default) Adds the supplied boundary conditions to
                          the given locations, including overwriting any
                          conditions of the *same type* that are already
-                         present. If conditions of another type are already
-                         present they will *not* be overwritten and a warning
-                         will be issued.
+                         present. If conditions of another type are present
+                         they will *not* be overwritten and a warning will
+                         be issued.
             'overwrite'  Adds supplied boundary conditions to the given
                          locations, including overwriting conditions of
                          *other types* that may be present in the given
@@ -193,8 +198,8 @@ class GenericAlgorithm(ParserMixin, LabelMixin, Base2):
             for item in other_types:  # Remove pores that are taken by other BCs
                 mask[isfinite(self[f'pore.bc.{item}'][pores])] = False
             if not np.all(mask):  # Raise warning if come conflicts found
-                msg = 'Some of the given locations already have BCs of '
-                + 'another type, try using mode=overwrite if needed'
+                msg = 'Some of the given locations already have BCs of ' \
+                    + 'another type, try using mode=overwrite if needed'
                 logger.warning(msg)
             if mask.sum() > 0:  # Update the BCs
                 self[f"pore.bc.{bctype}"][pores[mask]] = values[mask]
@@ -210,8 +215,8 @@ class GenericAlgorithm(ParserMixin, LabelMixin, Base2):
                 # Make a note of any BCs values of other types
                 mask[isfinite(self[f'pore.bc.{item}'][pores])] = False
             if not np.all(mask):  # Warn that other values were overwritten
-                msg = 'Some of the given locations already have BCs of '
-                + 'another type, these will be overwritten'
+                msg = 'Some of the given locations already have BCs of ' \
+                    + 'another type, these will be overwritten'
                 logger.warning(msg)
         elif mode == 'remove':
             self[f"pore.bc.{bctype}"][pores] = no_bc

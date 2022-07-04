@@ -14,60 +14,75 @@ class BCTest:
         self.air.regenerate_models()
 
     def test_add(self):
-        # check mode add, with and without force
         fd = op.algorithms.FickianDiffusion(network=self.pn, phase=self.air)
         fd['pore.bc.rate'][1] = 1.0
         fd['pore.bc.value'][0] = 1.0
         fd.set_value_BC(pores=[0, 1, 2], values=3.0, mode='add')
         mask = np.isfinite(fd['pore.bc.value'])
         assert mask.sum() == 2
-        assert fd['pore.bc.value'][mask].sum() == 4.0
+        assert fd['pore.bc.value'][mask].sum() == 6.0
         assert np.isfinite(fd['pore.bc.rate']).sum() == 1
         fd.set_rate_BC(pores=[0, 1, 2], mode='remove')
         fd.set_value_BC(pores=[0, 1, 2], values=3.0, mode='add')
         mask = np.isfinite(fd['pore.bc.value'])
         assert mask.sum() == 3
-        assert fd['pore.bc.value'][mask].sum() == 7.0
+        assert fd['pore.bc.value'][mask].sum() == 9.0
         assert np.isfinite(fd['pore.bc.rate']).sum() == 0
 
-    def test_overwite(self):
-        # check mode overwrite, with and without force
+    def test_overwrite(self):
         fd = op.algorithms.FickianDiffusion(network=self.pn, phase=self.air)
         fd['pore.bc.rate'][1] = 1.0
         fd['pore.bc.value'][0] = 1.0
         fd.set_value_BC(pores=[1, 2], values=3.0, mode='overwrite')
         mask = np.isfinite(fd['pore.bc.value'])
-        assert mask.sum() == 2
-        assert fd['pore.bc.value'][mask].sum() == 4.0
-        assert np.isfinite(fd['pore.bc.rate']).sum() == 1
-        fd.set_value_BC(pores=[0, 1, 2], values=5.0, mode='overwrite')
-        mask = np.isfinite(fd['pore.bc.value'])
-        assert mask.sum() == 2
-        assert fd['pore.bc.value'][mask].sum() == 10.0
-        assert np.isfinite(fd['pore.bc.rate']).sum() == 1
+        assert mask.sum() == 3
+        assert fd['pore.bc.value'][mask].sum() == 7.0
+        assert np.isfinite(fd['pore.bc.rate']).sum() == 0
+        fd.set_rate_BC(pores=[0, 1, 2], rates=5.0, mode='overwrite')
+        mask = np.isfinite(fd['pore.bc.rate'])
+        assert mask.sum() == 3
+        assert fd['pore.bc.rate'][mask].sum() == 15.0
+        assert np.isfinite(fd['pore.bc.rate']).sum() == 3
+        assert np.isfinite(fd['pore.bc.value']).sum() == 0
+        # Mimic removal of all bcs
+        fd['pore.bc.rate'][1] = 1.0
+        fd['pore.bc.value'][0] = 1.0
+        fd.set_BC(pores=None, bctype=[], bcvalues=np.nan, mode='overwrite')
+        assert np.isfinite(fd['pore.bc.rate']).sum() == 0
+        assert np.isfinite(fd['pore.bc.value']).sum() == 0
 
     def test_remove(self):
-        # check mode remove, with and without force
         fd = op.algorithms.FickianDiffusion(network=self.pn, phase=self.air)
+        # Remove given type from given pores
         fd['pore.bc.rate'][1] = 1.0
         fd['pore.bc.value'][0] = 1.0
         fd.set_value_BC(pores=[0, 1], mode='remove')
         mask = np.isfinite(fd['pore.bc.value'])
         assert mask.sum() == 0
         assert np.isfinite(fd['pore.bc.rate']).sum() == 1
-        fd.set_BC(pores=[0, 1], bctype=fd['pore.bc'].keys(), mode='remove')
-        assert np.isfinite(fd['pore.bc.value']).sum() == 0
-        assert np.isfinite(fd['pore.bc.rate']).sum() == 0
-
-    def test_clear(self):
-        # check mode clear, with and without force
-        fd = op.algorithms.FickianDiffusion(network=self.pn, phase=self.air)
+        # Remove given type from all pores
         fd['pore.bc.rate'][1] = 1.0
         fd['pore.bc.value'][0] = 1.0
-        fd.set_value_BC(mode='clear')
+        fd.set_BC(pores=None, bctype='rate', mode='remove')
+        assert np.isfinite(fd['pore.bc.value']).sum() == 1
+        assert np.isfinite(fd['pore.bc.rate']).sum() == 0
+        # Remove all types from all pores
+        fd['pore.bc.rate'][1] = 1.0
+        fd['pore.bc.value'][0] = 1.0
+        fd.set_BC(bctype=fd['pore.bc'].keys(), mode='remove')
         assert np.isfinite(fd['pore.bc.value']).sum() == 0
-        assert np.isfinite(fd['pore.bc.rate']).sum() == 1
-        fd.set_BC(bctype=fd['pore.bc'].keys(), mode='clear')
+        assert np.isfinite(fd['pore.bc.rate']).sum() == 0
+        # Remove all types from all pores given bctype is []
+        fd['pore.bc.rate'][1] = 1.0
+        fd['pore.bc.value'][0] = 1.0
+        fd.set_BC(mode='remove')
+        assert np.isfinite(fd['pore.bc.value']).sum() == 0
+        assert np.isfinite(fd['pore.bc.rate']).sum() == 0
+        # Remove all types from given pores
+        fd['pore.bc.rate'][1] = 1.0
+        fd['pore.bc.value'][0] = 1.0
+        fd.set_BC(pores=[0, 1], mode='remove')
+        assert np.isfinite(fd['pore.bc.value']).sum() == 0
         assert np.isfinite(fd['pore.bc.rate']).sum() == 0
 
     def test_outflow(self):

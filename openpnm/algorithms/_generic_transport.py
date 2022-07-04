@@ -402,7 +402,7 @@ class GenericTransport(GenericAlgorithm):
 
         return np.array(R, ndmin=1)
 
-    def set_value_BC(self, pores=[], values=[], mode='overwrite'):
+    def set_value_BC(self, pores=None, values=[], mode='add'):
         r"""
         Applies constant value boundary conditons to the specified pores.
 
@@ -424,7 +424,7 @@ class GenericTransport(GenericAlgorithm):
         """
         self.set_BC(pores=pores, bctype='value', bcvalues=values, mode=mode)
 
-    def set_rate_BC(self, pores=[], rates=[], mode='overwrite'):
+    def set_rate_BC(self, pores=None, rates=[], mode='add'):
         r"""
         Apply constant rate boundary conditons to the specified locations.
 

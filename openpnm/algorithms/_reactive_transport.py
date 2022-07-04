@@ -253,7 +253,7 @@ class ReactiveTransport(GenericTransport):
             x = self.x
         return self.A * x - self.b
 
-    def set_BC(self, pores=[], bctype=[], bcvalues=[], mode='overwrite', force=False):
+    def set_BC(self, pores=None, bctype=[], bcvalues=[], mode='add'):
         msg = "Source term already present in given pores, can't assign BCs"
         # Ensure that given pores do not have source terms already set
         for item in self.settings['sources']:
