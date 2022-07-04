@@ -1,6 +1,6 @@
 import logging
 import numpy as np
-from openpnm.network import GenericNetwork
+from openpnm.network import Network
 from openpnm.utils import Docorator
 from openpnm import topotools
 from openpnm import _skgraph as skgr
@@ -13,7 +13,7 @@ __all__ = ['Cubic']
 
 
 @docstr.dedent
-class Cubic(GenericNetwork):
+class Cubic(Network):
     r"""
     Simple cubic lattice with connectivity from 6 to 26
 

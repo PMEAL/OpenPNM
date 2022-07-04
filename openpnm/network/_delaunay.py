@@ -1,5 +1,5 @@
 import numpy as np
-from openpnm.network import GenericNetwork
+from openpnm.network import Network
 from openpnm.utils import Docorator
 from openpnm._skgraph.generators import delaunay, tools
 from openpnm._skgraph.tools import isoutside
@@ -11,7 +11,7 @@ docstr = Docorator()
 
 
 @docstr.dedent
-class Delaunay(GenericNetwork):
+class Delaunay(Network):
     r"""
     Random network formed by Delaunay tessellation of arbitrary base points
 

@@ -25,7 +25,7 @@ class NetworkSettings:
 
 @docstr.get_sections(base='GenericNetwork', sections=['Parameters'])
 @docstr.dedent
-class GenericNetwork(Domain):
+class Network(Domain):
     r"""
     This generic class contains the main functionality used by all
     networks.

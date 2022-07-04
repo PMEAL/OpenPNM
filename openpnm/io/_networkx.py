@@ -45,7 +45,7 @@ def network_from_networkx(G):
 
     """
     import networkx as nx
-    from openpnm.network import GenericNetwork
+    from openpnm.network import Network
 
     net = {}
 
@@ -125,7 +125,7 @@ def network_from_networkx(G):
             net['throat.'+item][i] = val
         i += 1
 
-    network = GenericNetwork()
+    network = Network()
     network.update(net)
     return network
 
@@ -145,10 +145,10 @@ def network_to_networkx(network):
         A NetworkX object with all pore/throat properties attached to it
     """
     import networkx as nx
-    from openpnm.network import GenericNetwork
+    from openpnm.network import Network
 
     # Ensure network is an GenericNetwork.
-    if not isinstance(network, GenericNetwork):
+    if not isinstance(network, Network):
         raise Exception('Provided network is not an OpenPNM Network.')
 
     G = nx.Graph()

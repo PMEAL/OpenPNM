@@ -37,7 +37,7 @@ def network_to_csv(network, filename=''):
 
 
 def network_from_csv(filename):
-    from openpnm.network import GenericNetwork
+    from openpnm.network import Network
     fname = _parse_filename(filename=filename, ext='csv')
 
     a = read_table(filepath_or_buffer=fname,
@@ -83,6 +83,6 @@ def network_from_csv(filename):
         if k.startswith('throat.'):
             dct[k] = v[:Nt, ...]
 
-    network = GenericNetwork()
+    network = Network()
     network.update(dct)
     return network

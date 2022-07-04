@@ -2,7 +2,7 @@ import os
 import logging
 import numpy as np
 from openpnm.topotools import trim, extend
-from openpnm.network import GenericNetwork
+from openpnm.network import Network
 from pathlib import Path
 from pandas import read_table, DataFrame
 from tqdm import tqdm
@@ -308,7 +308,7 @@ def network_from_statoil(path, prefix):
     net['pore.area'] = ((net['pore.radius']**2)
                         / (4.0*net['pore.shape_factor']))
 
-    network = GenericNetwork()
+    network = Network()
     network.update(net)
 
     # Use OpenPNM Tools to clean up network

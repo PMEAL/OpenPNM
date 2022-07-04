@@ -1,6 +1,6 @@
 import numpy as np
 import scipy.spatial as sptl
-from openpnm.network import GenericNetwork
+from openpnm.network import Network
 from openpnm._skgraph.generators import gabriel
 from openpnm._skgraph.operations import trim_nodes
 
@@ -8,7 +8,7 @@ from openpnm._skgraph.operations import trim_nodes
 __all__ = ['Gabriel']
 
 
-class Gabriel(GenericNetwork):
+class Gabriel(Network):
     r"""
     Random network formed by Gabriel tessellation of arbitrary base points
 
