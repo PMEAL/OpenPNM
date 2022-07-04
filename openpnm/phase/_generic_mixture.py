@@ -1,16 +1,22 @@
 import numpy as np
 import logging
 from openpnm.phase import GenericPhase
-import openpnm.models.phase as mods
+from openpnm.models.collections.phase import liquid_mixture, gas_mixture
 from openpnm.utils import HealthDict, PrintableList, SubDict
-from openpnm.utils import Docorator, SettingsAttr
+from openpnm.utils import Docorator
 
 
 logger = logging.getLogger(__name__)
 docstr = Docorator()
 
 
-class GenericMixtureSettings:
+__all__ = [
+    'Mixture',
+
+]
+
+
+class MixtureSettings:
     r"""
     The following settings are specific to Mixture objects
 
@@ -24,16 +30,16 @@ class GenericMixtureSettings:
     components = []
 
 
-@docstr.get_sections(base='GenericMixture', sections=['Parameters'])
+@docstr.get_sections(base='Mixture', sections=['Parameters'])
 @docstr.dedent
-class GenericMixture(GenericPhase):
+class Mixture(GenericPhase):
     r"""
     Creates Phase object that represents a multicomponent mixture
     consisting of a given list of individual phase objects as components.
 
     Parameters
     ----------
-    %(GenericPhase.parameters)s
+    %(Phase.parameters)s
     components : list
         A list of all components that constitute this mixture
 
@@ -42,7 +48,7 @@ class GenericMixture(GenericPhase):
     def __init__(self, components=[], name='mixture_#', **kwargs):
         self._components = []
         super().__init__(name=name, **kwargs)
-        self.settings._update(GenericMixtureSettings())
+        self.settings._update(MixtureSettings())
 
         # Add any supplied phases to the components
         for comp in components:
@@ -174,43 +180,15 @@ class GenericMixture(GenericPhase):
         return h
 
 
-class LiquidMixture(GenericMixture):
+class LiquidMixture(Mixture):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.add_model(propname='pore.molecular_weight',
-                       model=mods.mixtures.mixture_molecular_weight,)
-        self.add_model(propname='pore.viscosity',
-                       model=mods.viscosity.liquid_mixture_viscosity,)
-        self.add_model(propname='pore.critical_volume',
-                       model=mods.critical_props.liquid_mixture_critical_volume,)
-        self.add_model(propname='pore.critical_temperature',
-                       model=mods.critical_props.liquid_mixture_critical_temperature,)
-        self.add_model(propname='pore.acentric_factor',
-                       model=mods.critical_props.mixture_acentric_factor,)
-        self.add_model(propname='pore.density',
-                       model=mods.density.liquid_mixture_density,)
-        self.add_model(propname='pore.thermal_conductivity',
-                       model=mods.thermal_conductivity.liquid_mixture_thermal_conductivity,)
-        self.add_model(propname='pore.heat_capacity',
-                       model=mods.heat_capacity.mixture_heat_capacity,)
+        self.models.update(liquid_mixture())
+        self.regenerate_models()
 
 
-class GasMixture(GenericMixture):
+class GasMixture(Mixture):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.add_model(propname='pore.molecular_weight',
-                       model=mods.mixtures.mixture_molecular_weight,)
-        self.add_model(propname='pore.gas_viscosity',
-                       model=mods.viscosity.gas_mixture_viscosity,)
-        self.add_model(propname='pore.thermal_conductivity',
-                       model=mods.thermal_conductivity.gas_mixture_thermal_conductivity,)
-        self.add_model(propname='pore.heat_capacity',
-                       model=mods.heat_capacity.mixture_heat_capacity,)
-        self.add_model(propname='pore.LJ_epsilon',
-                       model=mods.diffusivity.gas_mixture_LJ_epsilon,)
-        self.add_model(propname='pore.LJ_sigma',
-                       model=mods.diffusivity.gas_mixture_LJ_sigma,)
-        self.add_model(propname='pore.LJ_omega',
-                       model=mods.diffusivity.gas_mixture_LJ_collision_integral,)
-        self.add_model(propname='pore.diffusivity',
-                       model=mods.diffusivity.gas_mixture_diffusivity,)
+        self.models.update(gas_mixture())
+        self.regenerate_models()
