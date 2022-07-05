@@ -27,8 +27,7 @@ class NetworkSettings:
 @docstr.dedent
 class Network(Domain):
     r"""
-    This generic class contains the main functionality used by all
-    networks.
+    This class contains the main functionality used by all networks.
 
     Parameters
     ----------
