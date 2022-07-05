@@ -69,7 +69,6 @@ class TransientReactiveTransportTest:
         quantity = self.alg.settings['quantity']
         nt.assert_allclose(out1[quantity](0.3), out2[quantity](0.3), rtol=1e-5)
 
-
     def test_adding_bc_over_sources(self):
         with nt.assert_raises(Exception):
             self.alg.set_value_BC(pores=self.net.pores("right"), values=0.3)

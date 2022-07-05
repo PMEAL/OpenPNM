@@ -37,6 +37,7 @@ class AdvectionDiffusionSettings:
     diffusive_conductance = 'throat.diffusive_conductance'
     hydraulic_conductance = 'throat.hydraulic_conductance'
     pressure = 'pore.pressure'
+    cache = False
 
 
 class AdvectionDiffusion(ReactiveTransport):
@@ -47,8 +48,9 @@ class AdvectionDiffusion(ReactiveTransport):
     def __init__(self, name='ad_#', **kwargs):
         super().__init__(name=name, **kwargs)
         self.settings._update(AdvectionDiffusionSettings())
+        self['pore.bc.outflow'] = np.nan
 
-    def set_outflow_BC(self, pores, mode='merge'):
+    def set_outflow_BC(self, pores, mode='add'):
         r"""
         Adds outflow boundary condition to the selected pores
 
@@ -58,19 +60,11 @@ class AdvectionDiffusion(ReactiveTransport):
             The pore indices where the condition should be applied
         mode : str, optional
             Controls how the boundary conditions are applied. The default value
-            is 'merge'. Options are:
-
-            ===========  =====================================================
-            mode         meaning
-            ===========  =====================================================
-            'merge'      Adds supplied boundary conditions to already existing
-                         conditions, and also overwrites any existing values.
-                         If at rate or value BC exists at the given locations,
-                         these are deleted, and outflow conditions are given
-                         priority.
-            'overwrite'  Deletes all boundary conditions of the given type then
-                         adds the specified new ones.
-            ===========  =====================================================
+            is 'merge'. For definition of various modes, see the
+            docstring for ``set_BC``.
+        force : bool, optional
+            If ``True`` then the ``'mode'`` is applied to all other bctypes as
+            well. The default is ``False``.
 
         Notes
         -----
@@ -78,9 +72,6 @@ class AdvectionDiffusion(ReactiveTransport):
         does not change, i.e. is 0.
 
         """
-        # Hijack the parse_mode function to verify mode/pores argument
-        mode = self._parse_mode(mode, allowed=['merge', 'overwrite'],
-                                single=True)
         pores = self._parse_indices(pores)
 
         # Calculating A[i,i] values to ensure the outflow condition
@@ -95,57 +86,22 @@ class AdvectionDiffusion(ReactiveTransport):
         np.add.at(Qp, C12[:, 0], -Q12)
         np.add.at(Qp, C12[:, 1], Q12)
 
-        # Ensure other BCs are not already applied at given pores
-        hits = ~np.isnan(self['pore.bc_rate'][pores])
-        if np.any(hits):
-            self['pore.bc_rate'][pores] = np.nan
-            logger.warning('Rate boundary conditions found in some of the '
-                           + 'specified pores will be overwritten')
-        hits = ~np.isnan(self['pore.bc_value'][pores])
-        if np.any(hits):
-            self['pore.bc_value'][pores] = np.nan
-            logger.warning('Value boundary conditions found in some of the '
-                           + 'specified pores will be overwritten')
-        # Store boundary values
-        if ('pore.bc_outflow' not in self.keys()) or (mode == 'overwrite'):
-            self['pore.bc_outflow'] = np.nan
-        self['pore.bc_outflow'][pores] = Qp[pores]
-
-    def remove_BC(self, pores=None, bctype='all'):
-        # parse bctype argument
-        if isinstance(bctype, str):
-            bctype = [bctype]
-        if 'all' in bctype:
-            bctype = ['value', 'rate', 'outflow']
-        if ('pore.bc_outflow' in self.keys()) and ('outflow' in bctype):
-            self['pore.bc_outflow'][pores] = np.nan
-        super().remove_BC(pores=pores, bctype=bctype)
+        self.set_BC(pores=pores, bcvalues=Qp[pores], bctype='outflow',
+                    mode=mode)
 
     def _apply_BCs(self):
         r"""
         Applies Dirichlet, Neumann, and outflow BCs in order
         """
         # Apply Dirichlet and rate BCs
-        ReactiveTransport._apply_BCs(self)
-        if 'pore.bc_outflow' not in self.keys():
+        super()._apply_BCs()
+        if 'pore.bc.outflow' not in self.keys():
             return
         # Apply outflow BC
         diag = self.A.diagonal()
-        ind = np.isfinite(self['pore.bc_outflow'])
-        diag[ind] += self['pore.bc_outflow'][ind]
+        ind = np.isfinite(self['pore.bc.outflow'])
+        diag[ind] += self['pore.bc.outflow'][ind]
         self.A.setdiag(diag)
-
-    def _set_BC(self, pores, bctype, bcvalues=None, mode='merge'):
-        pores = self._parse_indices(pores)
-        # First check that given pores outflow BCs already applied
-        if 'pore.bc_outflow' in self.keys():
-            hits = ~np.isnan(self['pore.bc_outflow'][pores])
-            if np.any(hits):
-                raise Exception('Cannot apply BCs to the following pores '
-                                + 'which already have an outflow BC '
-                                + 'specified', pores[np.where(hits)])
-        # Then call parent class function if above check passes
-        super()._set_BC(pores=pores, bctype=bctype, bcvalues=bcvalues, mode=mode)
 
 
 if __name__ == "__main__":
@@ -153,17 +109,24 @@ if __name__ == "__main__":
     pn = op.network.Cubic(shape=[10, 10, 1])
     pn.add_model_collection(op.models.collections.geometry.spheres_and_cylinders)
     pn.regenerate_models()
+
     air = op.phase.Air(network=pn)
     air.add_model_collection(op.models.collections.physics.standard)
     air.regenerate_models()
+    del air.models['throat.diffusive_conductance']
+    del air.models['throat.hydraulic_conductance']
+    air['throat.diffusive_conductance'] = 1e-15
+    air['throat.hydraulic_conductance'] = 1e-15
+
     flow = op.algorithms.StokesFlow(network=pn, phase=air)
     flow.set_value_BC(pores=pn.pores('left'), values=1)
     flow.set_value_BC(pores=pn.pores('right'), values=0)
     flow.run()
     ad = op.algorithms.AdvectionDiffusion(network=pn, phase=air)
+    ad.settings['cache'] = False
     ad.set_value_BC(pores=pn.pores('front'), values=1)
-    ad.set_value_BC(pores=pn.pores('back'), values=0)
+    ad.set_outflow_BC(pores=pn.pores('back'), mode='overwrite', force=False)
     ad.run()
-    # import matplotlib.pyplot as plt
-    # fig, ax = plt.subplots(1, 1)
-    # ax.imshow(ad['pore.concentration'].reshape([10, 10]))
+    import matplotlib.pyplot as plt
+    fig, ax = plt.subplots(1, 1)
+    ax.imshow(ad['pore.concentration'].reshape([10, 10]))

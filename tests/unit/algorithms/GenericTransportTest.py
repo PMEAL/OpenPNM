@@ -35,11 +35,11 @@ class TransportTest:
                                              phase=self.phase)
         alg.set_value_BC(pores=self.net.pores('top'), values=1)
         alg.set_value_BC(pores=self.net.pores('bottom'), values=0)
-        assert np.sum(np.isfinite(alg['pore.bc_value'])) > 0
-        alg.remove_BC(pores=self.net.pores('top'))
-        assert np.sum(np.isfinite(alg['pore.bc_value'])) > 0
-        alg.remove_BC(pores=self.net.pores('bottom'))
-        assert np.sum(np.isfinite(alg['pore.bc_value'])) == 0
+        assert np.sum(np.isfinite(alg['pore.bc.value'])) > 0
+        alg.set_value_BC(pores=self.net.pores('top'), mode='remove')
+        assert np.sum(np.isfinite(alg['pore.bc.value'])) > 0
+        alg.set_value_BC(pores=self.net.pores('bottom'), mode='remove')
+        assert np.sum(np.isfinite(alg['pore.bc.value'])) == 0
 
     def test_generic_transport(self):
         alg = op.algorithms.Transport(network=self.net,
@@ -73,7 +73,7 @@ class TransportTest:
                                              phase=self.phase)
         alg.settings['conductance'] = 'throat.diffusive_conductance'
         alg.settings['quantity'] = 'pore.mole_fraction'
-        alg.set_rate_BC(pores=self.net.pores('bottom'), values=1)
+        alg.set_rate_BC(pores=self.net.pores('bottom'), rates=1)
         alg.set_value_BC(pores=self.net.pores('top'), values=0)
         alg.run()
         x = [0., 1., 2., 3., 4., 5., 6., 7., 8.]
@@ -85,28 +85,22 @@ class TransportTest:
                                              phase=self.phase)
         alg.settings['conductance'] = 'throat.diffusive_conductance'
         alg.settings['quantity'] = 'pore.mole_fraction'
-        alg.set_rate_BC(pores=[0, 1], values=1, mode='merge')
-        alg.set_value_BC(pores=[1, 2], values=0, mode='merge')
-        assert np.isfinite(alg['pore.bc_rate']).sum() == 2
-        assert np.isfinite(alg['pore.bc_value']).sum() == 1
-
-    def test_set_value_bc_where_rate_is_already_set_mode_overwrite(self):
-        alg = op.algorithms.Transport(network=self.net,
-                                             phase=self.phase)
-        alg.settings['conductance'] = 'throat.diffusive_conductance'
-        alg.settings['quantity'] = 'pore.mole_fraction'
-        alg.set_rate_BC(pores=[0, 1], values=1, mode='merge')
-        alg.set_value_BC(pores=[2, 3, 4], values=0, mode='merge')
+        alg.set_rate_BC(pores=[0, 1], rates=1, mode='add')
+        with pytest.raises(Exception):
+            alg.set_value_BC(pores=[1, 2], values=0, mode='add')
+        assert np.isfinite(alg['pore.bc.rate']).sum() == 2
+        assert np.isfinite(alg['pore.bc.value']).sum() == 0
+        alg.set_rate_BC(pores=[0, 1], rates=1, mode='overwrite')
         alg.set_value_BC(pores=[1, 2], values=0, mode='overwrite')
-        assert np.isfinite(alg['pore.bc_rate']).sum() == 2
-        assert np.isfinite(alg['pore.bc_value']).sum() == 1
+        assert np.isfinite(alg['pore.bc.rate']).sum() == 1
+        assert np.isfinite(alg['pore.bc.value']).sum() == 2
 
     def test_cache(self):
         alg = op.algorithms.Transport(network=self.net,
                                              phase=self.phase)
         alg.settings['conductance'] = 'throat.diffusive_conductance'
         alg.settings['quantity'] = 'pore.mole_fraction'
-        alg.set_rate_BC(pores=self.net.pores('bottom'), values=1)
+        alg.set_rate_BC(pores=self.net.pores('bottom'), rates=1)
         alg.set_value_BC(pores=self.net.pores('top'), values=0)
         alg.settings["cache"] = True
         alg.run()
@@ -130,7 +124,7 @@ class TransportTest:
         alg.settings['conductance'] = 'throat.diffusive_conductance'
         alg.settings['quantity'] = 'pore.mole_fraction'
         pores = self.net.pores("left")
-        alg.set_rate_BC(pores=pores, values=1.235*np.ones(pores.size))
+        alg.set_rate_BC(pores=pores, rates=1.235*np.ones(pores.size))
         alg.set_value_BC(pores=self.net.pores("right"), values=0.0)
         alg.run()
         rate = alg.rate(pores=self.net.pores("right"))[0]
@@ -143,8 +137,8 @@ class TransportTest:
                                              phase=self.phase)
         alg.settings['conductance'] = 'throat.diffusive_conductance'
         alg.settings['quantity'] = 'pore.mole_fraction'
-        alg.set_rate_BC(pores=[0, 1, 2, 3], values=1.235)
-        alg.set_rate_BC(pores=[5, 6, 19, 35, 0], values=3.455)
+        alg.set_rate_BC(pores=[0, 1, 2, 3], rates=1.235)
+        alg.set_rate_BC(pores=[5, 6, 19, 35, 0], rates=3.455, mode='overwrite')
         # Pore 0 is assigned two rate BCs, only the most recent will be kept
         alg.set_value_BC(pores=[50, 51, 52, 53], values=0.0)
         alg.run()
@@ -159,7 +153,7 @@ class TransportTest:
                                              phase=self.phase)
         alg.settings['conductance'] = 'throat.diffusive_conductance'
         alg.settings['quantity'] = 'pore.mole_fraction'
-        alg.set_rate_BC(pores=[0, 1, 2, 3], values=[0, 3.5, 0.4, -12])
+        alg.set_rate_BC(pores=[0, 1, 2, 3], rates=[0, 3.5, 0.4, -12])
         alg.set_value_BC(pores=[50, 51, 52, 53], values=0.0)
         alg.run()
         rate_individual = alg.rate(pores=[0, 1, 2, 3], mode='single')
@@ -209,12 +203,12 @@ class TransportTest:
     #     alg.set_rate_BC(pores=self.net.pores('bottom'), values=1)
     #     alg.set_value_BC(pores=self.net.pores('top'), values=0)
     #     alg.run()
-    #     assert ~np.all(np.isnan(alg['pore.bc_value']))
-    #     assert ~np.all(np.isnan(alg['pore.bc_rate']))
+    #     assert ~np.all(np.isnan(alg['pore.bc.value']))
+    #     assert ~np.all(np.isnan(alg['pore.bc.rate']))
     #     assert 'pore.mole_fraction' in alg.keys()
     #     alg.reset(bcs=True, results=False)
-    #     assert np.all(np.isnan(alg['pore.bc_value']))
-    #     assert np.all(np.isnan(alg['pore.bc_rate']))
+    #     assert np.all(np.isnan(alg['pore.bc.value']))
+    #     assert np.all(np.isnan(alg['pore.bc.rate']))
     #     assert 'pore.mole_fraction' in alg.keys()
     #     alg.reset(bcs=True, results=True)
     #     assert 'pore.mole_fraction' not in alg.keys()
@@ -279,25 +273,25 @@ class TransportTest:
     #     # Reset network back to original
     #     self.setup_class()
 
-    def test_total_rate(self):
-        alg = op.algorithms.Transport(network=self.net,
-                                             phase=self.phase)
-        h = op.utils.check_network_health(self.net)
-        op.topotools.trim(self.net, pores=h['disconnected_pores'])
-        alg.settings['conductance'] = 'throat.diffusive_conductance'
-        alg.settings['quantity'] = 'pore.mole_fraction'
-        alg.set_rate_BC(pores=[0, 1, 2, 3], total_rate=1)
-        alg.set_value_BC(pores=[50, 51, 52, 53], values=0.0)
-        alg.run()
-        rate_individual = alg.rate(pores=[0, 1, 2, 3], mode='single')
-        nt.assert_allclose(rate_individual, [0.25, 0.25, 0.25, 0.25],
-                           atol=1e-10)
-        # test exceptions that come from adding total_rate feature
-        with pytest.raises(Exception):
-            alg.set_rate_BC(pores=[0, 1, 2, 3],
-                            total_rate=[0.25, 0.25, 0.25, 0.25])
-        with pytest.raises(Exception):
-            alg.set_rate_BC(pores=[0, 1, 2, 3], rates=1, total_rate=1)
+    # def test_total_rate(self):
+    #     alg = op.algorithms.GenericTransport(network=self.net,
+    #                                          phase=self.phase)
+    #     h = op.utils.check_network_health(self.net)
+    #     op.topotools.trim(self.net, pores=h['disconnected_pores'])
+    #     alg.settings['conductance'] = 'throat.diffusive_conductance'
+    #     alg.settings['quantity'] = 'pore.mole_fraction'
+    #     alg.set_rate_BC(pores=[0, 1, 2, 3], total_rate=1)
+    #     alg.set_value_BC(pores=[50, 51, 52, 53], values=0.0)
+    #     alg.run()
+    #     rate_individual = alg.rate(pores=[0, 1, 2, 3], mode='single')
+    #     nt.assert_allclose(rate_individual, [0.25, 0.25, 0.25, 0.25],
+    #                        atol=1e-10)
+    #     # test exceptions that come from adding total_rate feature
+    #     with pytest.raises(Exception):
+    #         alg.set_rate_BC(pores=[0, 1, 2, 3],
+    #                         total_rate=[0.25, 0.25, 0.25, 0.25])
+    #     with pytest.raises(Exception):
+    #         alg.set_rate_BC(pores=[0, 1, 2, 3], rates=1, total_rate=1)
 
     # def test_network_continuity(self):
     #     net = op.network.Cubic([5, 1, 1])

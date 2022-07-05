@@ -67,14 +67,12 @@ class IOUtilsTest:
     def test_parse_args_no_input_lists(self):
         proj, net, phases = op.io._parse_args(network=self.net,
                                               phases=self.phase)
-        assert isinstance(proj, list)
         assert isinstance(net, list)
         assert isinstance(phases, list)
 
     def test_parse_args_all_input_lists(self):
         proj, net, phases = op.io._parse_args(network=[self.net],
                                               phases=[self.phase])
-        assert isinstance(proj, list)
         assert isinstance(net, list)
         assert isinstance(phases, list)
 

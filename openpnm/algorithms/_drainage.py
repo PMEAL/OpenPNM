@@ -48,8 +48,8 @@ class Drainage(Algorithm):
         super().__init__(name=name, **kwargs)
         self.settings._update(DrainageSettings())
         self.settings['phase'] = phase.name
-        self['pore.inlets'] = False
-        self['pore.outlets'] = False
+        self['pore.bc.inlet'] = False
+        self['pore.bc.outlet'] = False
         self.reset()
 
     def reset(self):
@@ -77,31 +77,11 @@ class Drainage(Algorithm):
             self['throat.invasion_pressure'][self['throat.invaded']] = -np.inf
             self['throat.invasion_sequence'][throats] = 0
 
-    def set_inlets(self, pores, mode='add'):
-        if mode == 'add':
-            self['pore.inlets'][pores] = True
-        elif mode == 'remove':
-            self['pore.inlets'][pores] = False
-        elif mode == 'clear':
-            self['pore.inlets'] = False
-        elif mode == 'overwrite':
-            self['pore.inlets'] = False
-            self['pore.inlets'][pores] = True
-        else:
-            raise Exception(f'Unrecognized mode {mode}')
+    def set_inlet_BC(self, pores, mode='add'):
+        self.set_BC(pores=pores, bcvalues=True, bctype='inlet', mode=mode)
 
-    def set_outlets(self, pores, mode='add'):
-        if mode == 'add':
-            self['pore.outlets'][pores] = True
-        elif mode == 'remove':
-            self['pore.outlets'][pores] = False
-        elif mode == 'clear':
-            self['pore.outlets'] = False
-        elif mode == 'overwrite':
-            self['pore.outlets'] = False
-            self['pore.outlets'][pores] = True
-        else:
-            raise Exception(f'Unrecognized mode {mode}')
+    def set_outlet_BC(self, pores, mode='add', force=False):
+        self.set_BC(pores=pores, bcvalues=True, bctype='outlet', mode=mode)
 
     def run(self, pressures=25):
         if isinstance(pressures, int):
@@ -120,7 +100,7 @@ class Drainage(Algorithm):
             self['throat.invasion_pressure'][tmask] = p
             self['throat.invasion_sequence'][tmask] = i
         # If any outlets were specified, evaluate trapping
-        if np.any(self['pore.outlets']):
+        if np.any(self['pore.bc.outlet']):
             self.apply_trapping()
 
     def _run_special(self, pressure):
@@ -133,7 +113,7 @@ class Drainage(Algorithm):
         s_labels, b_labels = bond_percolation(self.network.conns, Tinv)
         # Remove label from any clusters not connected to the inlets
         s_labels, b_labels = find_connected_clusters(
-            b_labels, s_labels, self['pore.inlets'], asmask=False)
+            b_labels, s_labels, self['pore.bc.inlet'], asmask=False)
         # Add result to existing invaded locations
         self['pore.invaded'][s_labels >= 0] = True
         self['throat.invaded'][b_labels >= 0] = True
@@ -180,7 +160,7 @@ class Drainage(Algorithm):
             s, b = site_percolation(conns=self.network.conns,
                                     occupied_sites=pseq > p)
             # Identify cluster numbers connected to the outlets
-            clusters = np.unique(s[self['pore.outlets']])
+            clusters = np.unique(s[self['pore.bc.outlet']])
             # Find ALL throats connected to any trapped site, since these
             # throats must also be trapped, and update their cluster numbers
             Ts = self.network.find_neighbor_throats(pores=s >= 0)
@@ -256,7 +236,8 @@ def late_filling(target,
 
 
 # %%
-def run_examples():
+# def run_examples():
+if __name__ == '__main__':
     import openpnm as op
     import matplotlib.pyplot as plt
     plt.rcParams['figure.facecolor'] = 'darkgrey'
@@ -280,14 +261,14 @@ def run_examples():
 
     # %%
     drn = Drainage(network=pn, phase=nwp)
-    drn.set_inlets(pores=pn.pores('left'))
+    drn.set_inlet_BC(pores=pn.pores('left'))
     pressures = np.logspace(np.log10(0.1e6), np.log10(8e6), 40)
     drn.run(pressures)
-    drn.set_outlets(pores=pn.pores('right'))
+    drn.set_outlet_BC(pores=pn.pores('right'))
     drn.apply_trapping()
 
     # %%
-    if 0:
+    if 1:
         fig, ax = plt.subplots(1, 1, figsize=[20, 20])
         ax.semilogx(*drn.pc_curve(pressures), 'ro-')
         ax.set_ylim([-.05, 1.05])
@@ -333,7 +314,7 @@ def run_examples():
         pseq = drn['pore.invasion_pressure']
         p = pressures[4]
         s, b = site_percolation(conns=pn.conns, occupied_sites=pseq > p)
-        clusters = np.unique(s[drn['pore.outlets']])
+        clusters = np.unique(s[drn['pore.bc.outlet']])
         Ts = pn.find_neighbor_throats(pores=s >= 0)
         b[Ts] = np.amax(s[pn.conns], axis=1)[Ts]
         drn['pore.trapped'] += np.isin(s, clusters, invert=True)*(s >= 0)

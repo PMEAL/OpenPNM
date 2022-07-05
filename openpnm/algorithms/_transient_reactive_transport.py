@@ -123,7 +123,7 @@ class TransientReactiveTransport(ReactiveTransport):
 
     def _merge_inital_and_boundary_values(self):
         x0 = self['pore.ic']
-        bc_pores = ~np.isnan(self['pore.bc_value'])
-        x0[bc_pores] = self['pore.bc_value'][bc_pores]
+        bc_pores = ~np.isnan(self['pore.bc.value'])
+        x0[bc_pores] = self['pore.bc.value'][bc_pores]
         quantity = self.settings['quantity']
         self[quantity] = x0
