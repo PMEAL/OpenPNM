@@ -48,8 +48,8 @@ class Drainage(GenericAlgorithm):
         super().__init__(name=name, **kwargs)
         self.settings._update(DrainageSettings())
         self.settings['phase'] = phase.name
-        self['pore.bc.inlets'] = False
-        self['pore.bc.outlets'] = False
+        self['pore.bc.inlet'] = False
+        self['pore.bc.outlet'] = False
         self.reset()
 
     def reset(self):
@@ -77,11 +77,11 @@ class Drainage(GenericAlgorithm):
             self['throat.invasion_pressure'][self['throat.invaded']] = -np.inf
             self['throat.invasion_sequence'][throats] = 0
 
-    def set_inlets(self, pores, mode='add'):
-        self.set_BC(pores=pores, bcvalues=True, bctype='inlets', mode=mode)
+    def set_inlet_BC(self, pores, mode='add'):
+        self.set_BC(pores=pores, bcvalues=True, bctype='inlet', mode=mode)
 
-    def set_outlets(self, pores, mode='add', force=False):
-        self.set_BC(pores=pores, bcvalues=True, bctype='outlets', mode=mode)
+    def set_outlet_BC(self, pores, mode='add', force=False):
+        self.set_BC(pores=pores, bcvalues=True, bctype='outlet', mode=mode)
 
     def run(self, pressures=25):
         if isinstance(pressures, int):
@@ -100,7 +100,7 @@ class Drainage(GenericAlgorithm):
             self['throat.invasion_pressure'][tmask] = p
             self['throat.invasion_sequence'][tmask] = i
         # If any outlets were specified, evaluate trapping
-        if np.any(self['pore.bc.outlets']):
+        if np.any(self['pore.bc.outlet']):
             self.apply_trapping()
 
     def _run_special(self, pressure):
@@ -113,7 +113,7 @@ class Drainage(GenericAlgorithm):
         s_labels, b_labels = bond_percolation(self.network.conns, Tinv)
         # Remove label from any clusters not connected to the inlets
         s_labels, b_labels = find_connected_clusters(
-            b_labels, s_labels, self['pore.bc.inlets'], asmask=False)
+            b_labels, s_labels, self['pore.bc.inlet'], asmask=False)
         # Add result to existing invaded locations
         self['pore.invaded'][s_labels >= 0] = True
         self['throat.invaded'][b_labels >= 0] = True
@@ -160,7 +160,7 @@ class Drainage(GenericAlgorithm):
             s, b = site_percolation(conns=self.network.conns,
                                     occupied_sites=pseq > p)
             # Identify cluster numbers connected to the outlets
-            clusters = np.unique(s[self['pore.bc.outlets']])
+            clusters = np.unique(s[self['pore.bc.outlet']])
             # Find ALL throats connected to any trapped site, since these
             # throats must also be trapped, and update their cluster numbers
             Ts = self.network.find_neighbor_throats(pores=s >= 0)
@@ -261,10 +261,10 @@ if __name__ == '__main__':
 
     # %%
     drn = Drainage(network=pn, phase=nwp)
-    drn.set_inlets(pores=pn.pores('left'))
+    drn.set_inlet_BC(pores=pn.pores('left'))
     pressures = np.logspace(np.log10(0.1e6), np.log10(8e6), 40)
     drn.run(pressures)
-    drn.set_outlets(pores=pn.pores('right'))
+    drn.set_outlet_BC(pores=pn.pores('right'))
     drn.apply_trapping()
 
     # %%
@@ -314,7 +314,7 @@ if __name__ == '__main__':
         pseq = drn['pore.invasion_pressure']
         p = pressures[4]
         s, b = site_percolation(conns=pn.conns, occupied_sites=pseq > p)
-        clusters = np.unique(s[drn['pore.bc.outlets']])
+        clusters = np.unique(s[drn['pore.bc.outlet']])
         Ts = pn.find_neighbor_throats(pores=s >= 0)
         b[Ts] = np.amax(s[pn.conns], axis=1)[Ts]
         drn['pore.trapped'] += np.isin(s, clusters, invert=True)*(s >= 0)

@@ -91,6 +91,18 @@ class GenericAlgorithm(ParserMixin, LabelMixin, Base2):
         # Regenerate all associated objects
         phase.regenerate_models(propnames=iterative_props)
 
+    def clear_BCs(self, bctype=[]):
+        r"""
+        Clear all BCs of the given type(s)
+
+        Parameters
+        ----------
+        bctype : str or list(str)
+            The specific type of boundary condition to clear. If not provided
+            all types will be cleared.
+        """
+        self.set_BC(pores=None, bctype=bctype, mode='remove')
+
     def set_BC(self, pores=None, bctype=[], bcvalues=[], mode='add'):
         r"""
         The main method for setting and adjusting boundary conditions.
@@ -127,15 +139,12 @@ class GenericAlgorithm(ParserMixin, LabelMixin, Base2):
             mode         meaning
             ============ =====================================================
             'add'        (default) Adds the supplied boundary conditions to
-                         the given locations, including overwriting any
-                         conditions of the *same type* that are already
-                         present. If conditions of another type are present
-                         they will *not* be overwritten and a warning will
-                         be issued.
+                         the given locations. Raises an exception if values
+                         of any type already exist in the given locations.
             'overwrite'  Adds supplied boundary conditions to the given
-                         locations, including overwriting conditions of
-                         *other types* that may be present in the given
-                         locations.
+                         locations, including overwriting conditions of the
+                         given type or any other type that may be present in
+                         the given locations.
             'remove'     Removes boundary conditions of the specified type
                          from the specified locations. If ``bctype`` is not
                          specified then *all* types are removed. If no
@@ -195,16 +204,14 @@ class GenericAlgorithm(ParserMixin, LabelMixin, Base2):
         # Finally adjust the BCs according to mode
         if mode == 'add':
             mask = np.ones_like(pores, dtype=bool)  # Indices of pores to keep
-            for item in other_types:  # Remove pores that are taken by other BCs
+            for item in self['pore.bc'].keys():  # Remove pores that are taken
                 mask[isfinite(self[f'pore.bc.{item}'][pores])] = False
-            if not np.all(mask):  # Raise warning if come conflicts found
-                msg = 'Some of the given locations already have BCs of ' \
-                    + 'another type, try using mode=overwrite if needed'
-                logger.warning(msg)
-            if mask.sum() > 0:  # Update the BCs
-                self[f"pore.bc.{bctype}"][pores[mask]] = values[mask]
-            else:  # Rise warning if all locations are already taken
-                logger.warning('No valid pore locations were specified')
+            if not np.all(mask):  # Raise exception if some conflicts found
+                msg = "Some of the given locations already have BCs, " \
+                    + "either use mode='remove' first or " \
+                    + "use mode='overwrite' instead"
+                raise Exception(msg)
+            self[f"pore.bc.{bctype}"][pores[mask]] = values[mask]
         elif mode == 'overwrite':
             # Put given values in specified BC, sort out conflicts below
             self[f"pore.bc.{bctype}"][pores] = values

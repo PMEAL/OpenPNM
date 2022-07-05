@@ -402,6 +402,18 @@ class GenericTransport(GenericAlgorithm):
 
         return np.array(R, ndmin=1)
 
+    def clear_value_BCs(self):
+        r"""
+        Clear all value BCs
+        """
+        self.set_BC(pores=None, bctype='value', mode='remove')
+
+    def clear_rate_BCs(self):
+        r"""
+        Clear all rate BCs
+        """
+        self.set_BC(pores=None, bctype='rate', mode='remove')
+
     def set_value_BC(self, pores=None, values=[], mode='add'):
         r"""
         Applies constant value boundary conditons to the specified pores.

@@ -1,6 +1,7 @@
 import numpy as np
 import openpnm as op
 from openpnm.models import collections
+import pytest
 
 
 class BCTest:
@@ -15,19 +16,19 @@ class BCTest:
 
     def test_add(self):
         fd = op.algorithms.FickianDiffusion(network=self.pn, phase=self.air)
-        fd['pore.bc.rate'][1] = 1.0
-        fd['pore.bc.value'][0] = 1.0
-        fd.set_value_BC(pores=[0, 1, 2], values=3.0, mode='add')
-        mask = np.isfinite(fd['pore.bc.value'])
-        assert mask.sum() == 2
-        assert fd['pore.bc.value'][mask].sum() == 6.0
-        assert np.isfinite(fd['pore.bc.rate']).sum() == 1
-        fd.set_rate_BC(pores=[0, 1, 2], mode='remove')
         fd.set_value_BC(pores=[0, 1, 2], values=3.0, mode='add')
         mask = np.isfinite(fd['pore.bc.value'])
         assert mask.sum() == 3
         assert fd['pore.bc.value'][mask].sum() == 9.0
         assert np.isfinite(fd['pore.bc.rate']).sum() == 0
+        with pytest.raises(Exception):
+            fd.set_value_BC(pores=[2, 3], values=3.0, mode='add')
+        with pytest.raises(Exception):
+            fd.set_rate_BC(pores=[0, 1, 2], rates=3.0, mode='add')
+        fd.set_value_BC(mode='remove')
+        fd.set_rate_BC(pores=[0, 1, 2], rates=3.0, mode='add')
+        mask = np.isfinite(fd['pore.bc.rate'])
+        assert mask.sum() == 3
 
     def test_overwrite(self):
         fd = op.algorithms.FickianDiffusion(network=self.pn, phase=self.air)
@@ -113,10 +114,10 @@ class BCTest:
                       diameter='pore.diameter')
 
         drn = op.algorithms.Drainage(network=self.pn, phase=nwp)
-        drn.set_inlets(pores=self.pn.pores('left'))
+        drn.set_inlet_BC(pores=self.pn.pores('left'))
         pressures = np.logspace(np.log10(0.1e6), np.log10(8e6), 40)
         drn.run(pressures)
-        drn.set_outlets(pores=self.pn.pores('right'))
+        drn.set_outlet_BC(pores=self.pn.pores('right'))
         drn.apply_trapping()
 
     def test_modes_as_list(self):
@@ -130,7 +131,6 @@ class BCTest:
 
 
 if __name__ == "__main__":
-
     t = BCTest()
     t.setup_class()
     self = t
