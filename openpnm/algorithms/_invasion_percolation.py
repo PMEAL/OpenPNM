@@ -75,8 +75,8 @@ class InvasionPercolation(GenericAlgorithm):
         super().__init__(name=name, **kwargs)
         self.settings._update(IPSettings())
         self.settings['phase'] = phase.name
-        self['pore.inlets'] = False
-        self['pore.outlets'] = False
+        self['pore.bc.inlet'] = False
+        self['pore.bc.outlet'] = False
         self.reset()
 
     def reset(self):
@@ -112,89 +112,17 @@ class InvasionPercolation(GenericAlgorithm):
                 self['throat.residual'] = False
                 self['throat.residual'][throats] = True
 
-    def set_inlets(self, pores=[], mode='add'):
-        r"""
-        Specifies from which pores the invasion process starts
+    def set_inlet_BC(self, pores=None, mode='add'):
+        self.set_BC(pores=pores, bcvalues=True, bctype='inlet', mode=mode)
+        self.reset()
+        self['pore.invasion_sequence'][self['pore.bc.inlet']] = 0
 
-        Parameters
-        ----------
-        pores : array_like
-            The list of pores from which the invading phase can enter the network
-        mode : str
-            Controls how the given inlets are added.  Options are:
+    def set_outlet_BC(self, pores=None, mode='add'):
+        self.set_BC(pores=pores, bcvalues=True, bctype='outlet', mode=mode)
 
-            ============ ======================================================
-            mode         description
-            ============ ======================================================
-            'add'        Adds the given ``pores`` to list of inlets, while
-                         keeping any already defined inlets
-            'drop'       Removes given ``pores`` from list of inlets
-            'clear'      Removes all currently specified inlets
-            'overwrite'  Removes all existing inlets, then adds the given
-                         ``pores``
-            ============ =======================================================
-
-        """
-        if mode == 'add':
-            self['pore.inlets'][pores] = True
-        elif mode == 'drop':
-            self['pore.inlets'][pores] = False
-        elif mode == 'clear':
-            self['pore.inlets'] = False
-        elif mode == 'overwrite':
-            self['pore.inlets'] = False
-            self['pore.inlets'][pores] = True
-        else:
-            raise Exception(f'Unrecognized mode {mode}')
-        self['pore.invasion_sequence'] = -1
-        self['pore.invasion_sequence'][self['pore.inlets']] = 0
-
-    def set_outlets(self, pores=[], mode='add'):
-        r"""
-        Specifies from which pores the defending fluid exits the domain
-
-        Parameters
-        ----------
-        pores : array_like
-            The list of pores from which the defending fluid exits
-        mode : str
-            Controls how the given inlets are added.  Options are:
-
-            ============ ======================================================
-            mode         description
-            ============ ======================================================
-            'add'        Adds the given ``pores`` to list of outlets, while
-                         keeping any already defined outlets
-            'drop'       Removes given ``pores`` from list of outlets
-            'clear'      Removes all currently specified outlets
-            'overwrite'  Removes all existing outlets, then adds the given
-                         ``pores``
-            ============ =======================================================
-
-        """
-        if mode == 'add':
-            self['pore.outlets'][pores] = True
-        elif mode == 'drop':
-            self['pore.outlets'][pores] = False
-        elif mode == 'clear':
-            self['pore.outlets'] = False
-        elif mode == 'overwrite':
-            self['pore.outlets'] = False
-            self['pore.outlets'][pores] = True
-        else:
-            raise Exception(f'Unrecognized mode {mode}')
-
-    def run(self, n_steps=None):
+    def run(self):
         r"""
         Performs the algorithm for the given number of steps
-
-        Parameters
-        ----------
-        n_steps : int
-            The number of throats to invade during the run.  This can be
-            used to incrementally invading the network, allowing for
-            simulations to occur between each call to ``run``. If ``None``
-            (default) then the entire network is invaded.
 
         """
 
@@ -202,15 +130,13 @@ class InvasionPercolation(GenericAlgorithm):
         # TODO: This should be called conditionally so that it doesn't
         # overwrite existing data when doing a few steps at a time
         self._run_setup()
-
-        if n_steps is None:
-            n_steps = np.inf
+        n_steps = np.inf
 
         # Create incidence matrix for use in _run_accelerated which is jit
         im = self.network.create_incidence_matrix(fmt='csr')
 
         # Perform initial analysis on input pores
-        Ts = self.project.network.find_neighbor_throats(pores=self['pore.inlets'])
+        Ts = self.project.network.find_neighbor_throats(pores=self['pore.bc.inlet'])
         t_start = self['throat.order'][Ts]
         t_inv, p_inv, p_inv_t = \
             _run_accelerated(
@@ -237,11 +163,11 @@ class InvasionPercolation(GenericAlgorithm):
         # self['pore.invasion_sequence'][self['pore.residual']] = 0
 
     def _run_setup(self):
-        self['pore.invasion_sequence'][self['pore.inlets']] = 0
+        self['pore.invasion_sequence'][self['pore.bc.inlet']] = 0
         # self['pore.invasion_sequence'][self['pore.residual']] = 0
         # self['throat.invasion_sequence'][self['throat.residual']] = 0
         # Set throats between inlets as trapped
-        Ts = self.network.find_neighbor_throats(self['pore.inlets'], mode='xnor')
+        Ts = self.network.find_neighbor_throats(self['pore.bc.inlet'], mode='xnor')
         self['throat.trapped'][Ts] = True
         # Get throat capillary pressures from phase and update
         phase = self.project[self.settings['phase']]
@@ -300,8 +226,8 @@ class InvasionPercolation(GenericAlgorithm):
 
         Notes
         -----
-        Outlet pores must be specified (using ``set_outlets`` or putting
-        ``True`` values in ``alg['pore.outlets']``) or else an exception is
+        Outlet pores must be specified (using ``set_outlet_BC`` or putting
+        ``True`` values in ``alg['pore.bc.outlet']``) or else an exception is
         raised.
 
         References
@@ -309,7 +235,7 @@ class InvasionPercolation(GenericAlgorithm):
         [1] Masson, Y. https://doi.org/10.1016/j.cageo.2016.02.003
 
         """
-        outlets = np.where(self['pore.outlets'])[0]
+        outlets = np.where(self['pore.bc.outlet'])[0]
         am = self.network.create_adjacency_matrix(fmt='csr')
         inv_seq = self['pore.invasion_sequence']
         self['pore.trapped'] = _find_trapped_pores(inv_seq, am.indices,
@@ -343,7 +269,7 @@ class InvasionPercolation(GenericAlgorithm):
                 s, b = mixed_percolation(conns=self.network.conns,
                                          occupied_sites=pseq > i,
                                          occupied_bonds=tseq > i)
-            clusters = np.unique(s[self['pore.outlets']])
+            clusters = np.unique(s[self['pore.bc.outlet']])
             self['pore.trapped'] += np.isin(s, clusters, invert=True)*(pseq > i)
             self['throat.trapped'] += np.isin(b, clusters, invert=True)*(tseq > i)
         # Set trapped pores/throats to uninvaded and adjust invasion sequence
@@ -468,7 +394,7 @@ def _run_accelerated(t_start, t_sorted, t_order, t_inv, p_inv, p_inv_t,
 
 
 # %%
-def run_examples():
+if __name__ == '__main__':
     import openpnm as op
     import matplotlib.pyplot as plt
 

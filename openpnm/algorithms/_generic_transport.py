@@ -3,7 +3,6 @@ import numpy as np
 import scipy.sparse.csgraph as spgr
 from openpnm.topotools import is_fully_connected
 from openpnm.algorithms import GenericAlgorithm
-from openpnm.algorithms import BCsMixin
 from openpnm.utils import Docorator, TypedSet, Workspace
 from openpnm.utils import check_data_health
 from openpnm import solvers
@@ -52,7 +51,7 @@ class GenericTransportSettings:
 
 @docstr.get_sections(base='GenericTransport', sections=['Parameters'])
 @docstr.dedent
-class GenericTransport(GenericAlgorithm, BCsMixin):
+class GenericTransport(GenericAlgorithm):
     r"""
     This class implements steady-state linear transport calculations.
 
@@ -66,8 +65,8 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
         super().__init__(name=name, **kwargs)
         self.settings._update(GenericTransportSettings())
         self.settings['phase'] = phase.name
-        self['pore.bc_rate'] = np.nan
-        self['pore.bc_value'] = np.nan
+        self['pore.bc.rate'] = np.nan
+        self['pore.bc.value'] = np.nan
         self._A = None
         self._b = None
         self._pure_A = None
@@ -142,18 +141,18 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
         Applies all the boundary conditions that have been specified, by
         adding values to the *A* and *b* matrices.
         """
-        if 'pore.bc_rate' in self.keys():
+        if 'pore.bc.rate' in self.keys():
             # Update b
-            ind = np.isfinite(self['pore.bc_rate'])
-            self.b[ind] = self['pore.bc_rate'][ind]
-        if 'pore.bc_value' in self.keys():
+            ind = np.isfinite(self['pore.bc.rate'])
+            self.b[ind] = self['pore.bc.rate'][ind]
+        if 'pore.bc.value' in self.keys():
             f = self.A.diagonal().mean()
             # Update b (impose bc values)
-            ind = np.isfinite(self['pore.bc_value'])
-            self.b[ind] = self['pore.bc_value'][ind] * f
+            ind = np.isfinite(self['pore.bc.value'])
+            self.b[ind] = self['pore.bc.value'][ind] * f
             # Update b (subtract quantities from b to keep A symmetric)
             x_BC = np.zeros_like(self.b)
-            x_BC[ind] = self['pore.bc_value'][ind]
+            x_BC[ind] = self['pore.bc.value'][ind]
             self.b[~ind] -= (self.A * x_BC)[~ind]
             # Update A
             P_bc = self.to_indices(ind)
@@ -245,7 +244,7 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
         Ensures the network is not clustered, and if it is, they're at
         least connected to a boundary condition pore.
         """
-        Ps = ~np.isnan(self['pore.bc_rate']) + ~np.isnan(self['pore.bc_value'])
+        Ps = ~np.isnan(self['pore.bc.rate']) + ~np.isnan(self['pore.bc.value'])
         if not is_fully_connected(network=self.network, pores_BC=Ps):
             msg = ("Your network is clustered. Run h = net.check_network_health()"
                    " followed by op.topotools.trim(net, pores=h['disconnected_pores'])"
@@ -258,11 +257,14 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
         """
         conductance = self.settings.conductance
         g = self.project[self.settings.phase][conductance]
-        Ts_nan = self.Ts[np.isnan(g)]
+        try:
+            Ts_nan = self.Ts[~np.isfinite(g)]
+        except IndexError:
+            Ts_nan = self.Ts[np.any(~np.isfinite(g), axis=1)]
         Ts_with_model = []
         for obj in self.project:
             if conductance in obj.keys():
-                Ts_with_model.extend(obj.throats(to_global=True))
+                Ts_with_model.extend(obj.throats())
         if not np.in1d(Ts_nan, Ts_with_model).all():
             msg = ("Found nans in A matrix, possibly because some throats"
                    f" don't have conductance model assigned: {conductance}")
@@ -399,3 +401,56 @@ class GenericTransport(GenericAlgorithm, BCsMixin):
                 R = np.sum(R)
 
         return np.array(R, ndmin=1)
+
+    def clear_value_BCs(self):
+        r"""
+        Clear all value BCs
+        """
+        self.set_BC(pores=None, bctype='value', mode='remove')
+
+    def clear_rate_BCs(self):
+        r"""
+        Clear all rate BCs
+        """
+        self.set_BC(pores=None, bctype='rate', mode='remove')
+
+    def set_value_BC(self, pores=None, values=[], mode='add'):
+        r"""
+        Applies constant value boundary conditons to the specified pores.
+
+        These are sometimes referred to as Dirichlet conditions.
+
+        Parameters
+        ----------
+        pores : array_like
+            The pore indices where the condition should be applied
+        values : float or array_like
+            The value to apply in each pore. If a scalar is supplied
+            it is assigne to all locations, and if a vector is applied is
+            must be the same size as the indices given in ``pores``.
+        mode : str, optional
+            Controls how the boundary conditions are applied. The default
+            value is 'merge'. For definition of various modes, see the
+            docstring for ``set_BC``.
+
+        """
+        self.set_BC(pores=pores, bctype='value', bcvalues=values, mode=mode)
+
+    def set_rate_BC(self, pores=None, rates=[], mode='add'):
+        r"""
+        Apply constant rate boundary conditons to the specified locations.
+
+        Parameters
+        ----------
+        pores : array_like
+            The pore indices where the condition should be applied
+        rates : float or array_like, optional
+            The rates to apply in each pore. If a scalar is supplied that
+            rate is assigned to all locations, and if a vector is supplied
+            it must be the same size as the indices given in ``pores``.
+        mode : str, optional
+            Controls how the boundary conditions are applied. The default
+            value is 'merge'. For definition of various modes, see the
+            docstring for ``set_BC``.
+        """
+        self.set_BC(pores=pores, bctype='rate', bcvalues=rates, mode=mode)

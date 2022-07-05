@@ -14,9 +14,6 @@ class AdvectionDiffusionTest:
             op.models.collections.geometry.spheres_and_cylinders()
         )
         self.net.regenerate_models()
-        self.net['throat.conduit_lengths.pore1'] = 0.1
-        self.net['throat.conduit_lengths.throat'] = 0.6
-        self.net['throat.conduit_lengths.pore2'] = 0.1
 
         self.phase = op.phase.GenericPhase(network=self.net)
         self.phase['throat.diffusive_conductance'] = 1e-15
@@ -30,9 +27,12 @@ class AdvectionDiffusionTest:
         self.phase.update(self.sf.soln)
 
         self.ad = AdvectionDiffusion(network=self.net, phase=self.phase)
-        self.ad.settings._update({"cache": False})
         self.ad.set_value_BC(pores=self.net.pores('right'), values=2)
         self.ad.set_value_BC(pores=self.net.pores('left'), values=0)
+        mod = op.models.physics.ad_dif_conductance.ad_dif
+        self.phase.add_model(propname='throat.ad_dif_conductance',
+                             model=mod, s_scheme='powerlaw')
+        self.ad.run()
 
     def test_settings(self):
         self.ad.settings._update({'quantity': "pore.blah",
@@ -60,7 +60,8 @@ class AdvectionDiffusionTest:
                              model=mod, s_scheme='powerlaw')
         g_old = np.copy(self.phase["throat.ad_dif_conductance"])
         # Run StokesFlow with a different BC to change pressure field
-        self.sf.set_value_BC(pores=self.net.pores('right'), values=1.5)
+        self.sf.set_value_BC(pores=self.net.pores('right'), values=1.5,
+                             mode='overwrite')
         # Running the next line should update "throat.ad_dif_conductance"
         P = self.sf.run()
         self.phase.update(P)
@@ -72,7 +73,8 @@ class AdvectionDiffusionTest:
         assert g_old.mean() != g_updated.mean()
         assert_allclose(g_updated.mean(), 1.01258990e-15)
         # Reset BCs for other tests to run properly
-        self.sf.set_value_BC(pores=self.net.pores('right'), values=1)
+        self.sf.set_value_BC(pores=self.net.pores('right'), values=1,
+                             mode='overwrite')
         self.sf.run()
 
     def test_powerlaw_advection_diffusion(self):
@@ -145,39 +147,42 @@ class AdvectionDiffusionTest:
         ad = AdvectionDiffusion(network=self.net, phase=self.phase)
         ad.settings["cache"] = False
         ad.set_value_BC(pores=self.net.pores('right'), values=2)
+        ad.set_outflow_BC(pores=self.net.pores('left'))
 
         for s_scheme in ['upwind', 'hybrid', 'powerlaw', 'exponential']:
             ad.settings._update({'quantity': 'pore.concentration',
                                  'conductance': f'throat.ad_dif_conductance_{s_scheme}'
             })
-            ad.set_outflow_BC(pores=self.net.pores('left'))
             ad.run()
             y = ad[ad.settings['quantity']].mean()
             assert_allclose(actual=y, desired=2, rtol=1e-5)
 
-    def test_add_outflow_overwrite_rate_and_value_BC(self):
+    def test_outflow_bc_modes(self):
         ad = AdvectionDiffusion(network=self.net, phase=self.phase)
-        ad.set_rate_BC(pores=[0, 1], total_rate=1)
         ad.set_value_BC(pores=[2, 3], values=1)
-        assert np.sum(np.isfinite(ad['pore.bc_rate'])) == 2
-        assert np.sum(np.isfinite(ad['pore.bc_value'])) == 2
-        ad.set_outflow_BC(pores=[0, 1, 2, 3])
-        assert np.sum(np.isfinite(ad['pore.bc_rate'])) == 0
-        assert np.sum(np.isfinite(ad['pore.bc_value'])) == 0
+        with pytest.raises(Exception):
+            ad.set_rate_BC(pores=[2, 3], rates=2)
+        ad.set_rate_BC(pores=[2, 3], rates=2, mode='overwrite')
+        assert (~np.isnan(ad['pore.bc.rate'])).sum() == 2
+        ad.set_value_BC(pores=[2, 3], mode='remove')
+        ad.set_rate_BC(pores=[2, 3], rates=2, mode='overwrite')
+        assert (~np.isnan(ad['pore.bc.rate'])).sum() == 2
 
     def test_value_BC_does_not_overwrite_outflow(self):
         ad = AdvectionDiffusion(network=self.net, phase=self.phase)
         ad.set_outflow_BC(pores=[0, 1])
         with pytest.raises(Exception):
             ad.set_value_BC(pores=[0, 1], values=1)
+        assert (np.isfinite(ad['pore.bc.value']).sum()) == 0
 
     def test_add_rate_BC_fails_when_outflow_BC_present(self):
         ad = AdvectionDiffusion(network=self.net, phase=self.phase)
         ad.set_outflow_BC(pores=[0, 1])
         with pytest.raises(Exception):
-            ad.set_rate_BC(pores=[0, 1], total_rate=1)
-        ad.set_rate_BC(pores=[2, 3], total_rate=1)
-        assert np.all(ad['pore.bc_rate'][[2, 3]] == 0.5)
+            ad.set_rate_BC(pores=[0, 1], rates=0.5)
+        assert (np.isfinite(ad['pore.bc.rate']).sum()) == 0
+        ad.set_rate_BC(pores=[2, 3], rates=0.5)
+        assert np.all(ad['pore.bc.rate'][[2, 3]] == 0.5)
 
     def test_outflow_BC_rigorous(self):
         ad = AdvectionDiffusion(network=self.net, phase=self.phase)
@@ -193,7 +198,7 @@ class AdvectionDiffusionTest:
             regen_mode='deferred',
         )
         internal_pores = self.net.pores(["left", "right"], mode="not")
-        ad.set_source("pore.rxn", pores=internal_pores)
+        ad.set_source(pores=internal_pores, propname="pore.rxn")
         ad.set_value_BC(pores=self.net.pores('right'), values=2)
         ad.set_outflow_BC(pores=self.net.pores('left'))
 
