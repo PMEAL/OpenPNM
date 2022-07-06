@@ -40,7 +40,6 @@ class ReactiveTransportSettings:
 
     """
     relaxation_factor = 1.0
-    sources = TypedList(types=[str])
     newton_maxiter = 5000
     f_rtol = 1e-6
     x_rtol = 1e-6
@@ -67,7 +66,7 @@ class ReactiveTransport(Transport):
         super().__init__(name=name, **kwargs)
         self.settings._update(ReactiveTransportSettings())
 
-    def set_source(self, pores, propname, mode='add', force=False):
+    def set_source(self, pores, propname, mode='add'):
         r"""
         Applies a given source term to the specified pores
 
@@ -84,17 +83,11 @@ class ReactiveTransport(Transport):
             mode         meaning
             ===========  =====================================================
             'add'        (default) Adds supplied source term to already
-                         existing ones. This ignores the ``force`` argument
-                         since there is no need to overwrite other source
-                         terms.
+                         existing ones.
             'remove'     Deletes given source term from the specified
-                         locations. If ``force=True`` then this removes all
-                         source terms from the given locations (ignores the
-                         ``propname`` argument.
+                         locations.
             'clear'      Deletes given source term from all locations (ignores
-                         the ``pores`` argument). If ``force=True`` then all
-                         source terms are removed from all locations (ignores
-                         the ``propname`` argument.
+                         the ``pores`` argument).
             ===========  =====================================================
 
         Notes
@@ -107,8 +100,7 @@ class ReactiveTransport(Transport):
         # If a list of modes was sent, do them each in order
         if isinstance(mode, list):
             for item in mode:
-                self.set_source(pores=pores, propname=propname,
-                                mode=item, force=force)
+                self.set_source(pores=pores, propname=propname, mode=item)
             return
         propname = self._parse_prop(propname, "pore")
         # Check if any BC is already set in the same locations
@@ -117,25 +109,17 @@ class ReactiveTransport(Transport):
             locs_BC = np.isfinite(self[f'pore.bc.{item}'])
         if np.any(locs_BC[pores]):
             raise Exception("BCs present in given pores, can't assign source term")
+        prop = 'pore.source.' + propname.split('.', 1)[1]
         if mode == 'add':
-            if propname not in self.keys():
-                self[propname] = False
-            self[propname][pores] = True
+            if prop not in self.keys():
+                self[prop] = False
+            self[prop][pores] = True
         elif mode == 'remove':
-            self[propname][pores] = False
-            if force:
-                for item in self.settings['sources']:
-                    self[item][pores] = False
+            self[prop][pores] = False
         elif mode == 'clear':
-            self[propname] = False
-            if force:
-                for item in self.settings['sources']:
-                    self[item] = False
+            self[prop] = False
         else:
             raise Exception(f'Unsupported mode {mode}')
-        # Check if propname already in source term list
-        if propname not in self.settings['sources']:
-            self.settings['sources'].append(propname)
 
     def _apply_sources(self):
         """
@@ -149,10 +133,10 @@ class ReactiveTransport(Transport):
 
         """
         phase = self.project[self.settings.phase]
-        for item in self.settings['sources']:
+        for item in self['pore.source'].keys():
             # Fetch linearized values of the source term
-            Ps = self[item]
-            S1, S2 = [phase[f"{item}.{Si}"] for Si in ["S1", "S2"]]
+            Ps = self['pore.source.' + item]
+            S1, S2 = [phase[f"pore.{item}.{Si}"] for Si in ["S1", "S2"]]
             # Modify A and b: diag(A) += -S1, b += S2
             diag = self.A.diagonal()
             diag[Ps] += -S1[Ps]
@@ -256,8 +240,11 @@ class ReactiveTransport(Transport):
     def set_BC(self, pores=None, bctype=[], bcvalues=[], mode='add'):
         msg = "Source term already present in given pores, can't assign BCs"
         # Ensure that given pores do not have source terms already set
-        for item in self.settings['sources']:
-            if np.any(self[item][pores]):
-                raise Exception(msg)
+        try:
+            for item in self['pore.source'].keys():
+                if np.any(self['pore.source.'+item][pores]):
+                    raise Exception(msg)
+        except KeyError:
+            pass
         # Assign BCs if above check passes
         super().set_BC(pores=pores, bctype=bctype, bcvalues=bcvalues, mode=mode)
