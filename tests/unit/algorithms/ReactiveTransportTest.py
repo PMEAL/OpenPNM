@@ -79,7 +79,7 @@ class ReactiveTransportTest:
     def test_source_over_BCs(self):
         self.alg['pore.bc.rate'] = np.nan
         self.alg['pore.bc.value'] = np.nan
-        _ = [self.alg.__setitem__(k, False) for k in self.alg.settings.sources]
+        self.alg.pop('pore.source', None)
         self.alg.set_value_BC(pores=self.net.pores('left'), values=1.0)
         self.alg.set_value_BC(pores=self.net.pores('right'), values=0.5)
         with pytest.raises(Exception):
@@ -89,7 +89,7 @@ class ReactiveTransportTest:
     def test_BCs_over_source(self):
         self.alg['pore.bc.rate'] = np.nan
         self.alg['pore.bc.value'] = np.nan
-        _ = [self.alg.__setitem__(k, False) for k in self.alg.settings.sources]
+        self.alg.pop('pore.source', None)
         self.alg.set_source(pores=self.net.pores('left'), propname='pore.reaction')
         # with pytest.raises(Exception):
             # self.alg.set_value_BC(pores=self.net.pores('left'), values=1.0)
@@ -97,7 +97,7 @@ class ReactiveTransportTest:
     def test_multiple_source_terms_same_location(self):
         self.alg['pore.bc.rate'] = np.nan
         self.alg['pore.bc.value'] = np.nan
-        _ = [self.alg.__setitem__(k, False) for k in self.alg.settings.sources]
+        self.alg.pop('pore.source', None)
         std_kinetics = op.models.physics.source_terms.standard_kinetics
         self.phase.add_model(propname='pore.another_reaction', model=std_kinetics,
                              prefactor='pore.A', exponent='pore.k',
@@ -114,14 +114,14 @@ class ReactiveTransportTest:
     def test_source_term_is_set_as_iterative_prop(self):
         self.alg['pore.bc.rate'] = np.nan
         self.alg['pore.bc.value'] = np.nan
-        _ = [self.alg.__setitem__(k, False) for k in self.alg.settings.sources]
+        self.alg.pop('pore.source', None)
         self.alg.set_source(pores=self.net.pores('left'), propname='pore.reaction')
         assert "pore.reaction" in self.alg.iterative_props
 
     def test_quantity_relaxation_consistency_w_base_solution(self):
         self.alg['pore.bc.rate'] = np.nan
         self.alg['pore.bc.value'] = np.nan
-        _ = [self.alg.__setitem__(k, False) for k in self.alg.settings.sources]
+        self.alg.pop('pore.source', None)
         self.alg.set_source(pores=self.net.pores('bottom'), propname='pore.reaction')
         self.alg.set_value_BC(pores=self.net.pores('top'), values=1.0)
         self.alg.run()
@@ -134,22 +134,22 @@ class ReactiveTransportTest:
     def test_set_source_with_modes(self):
         self.alg['pore.bc.rate'] = np.nan
         self.alg['pore.bc.value'] = np.nan
-        _ = [self.alg.__setitem__(k, False) for k in self.alg.settings.sources]
+        self.alg.pop('pore.source', None)
         self.alg.set_source(pores=self.net.pores('left'),
                             propname='pore.reaction',
                             mode='add')
-        assert self.alg['pore.reaction'].sum() == self.net.num_pores('left')
+        assert self.alg['pore.source.reaction'].sum() == self.net.num_pores('left')
         self.alg.set_source(pores=[0, 1, 2],
                             propname='pore.reaction',
                             mode=['clear', 'add'])
-        assert self.alg['pore.reaction'].sum() == 3
+        assert self.alg['pore.source.reaction'].sum() == 3
         self.alg.set_source(pores=[2, 3, 4], propname='pore.reaction', mode='add')
-        assert self.alg['pore.reaction'].sum() == 5
+        assert self.alg['pore.source.reaction'].sum() == 5
 
     def test_source_relaxation_consistency_w_base_solution(self):
         self.alg['pore.bc.rate'] = np.nan
         self.alg['pore.bc.value'] = np.nan
-        _ = [self.alg.__setitem__(k, False) for k in self.alg.settings.sources]
+        self.alg.pop('pore.source', None)
         self.alg.set_source(pores=self.net.pores('bottom'), propname='pore.reaction')
         self.alg.set_value_BC(pores=self.net.pores('top'), values=1.0)
         self.alg.run()
@@ -162,7 +162,7 @@ class ReactiveTransportTest:
     def test_solution_should_diverge_w_large_relaxation(self):
         self.alg['pore.bc.rate'] = np.nan
         self.alg['pore.bc.value'] = np.nan
-        _ = [self.alg.__setitem__(k, False) for k in self.alg.settings.sources]
+        self.alg.pop('pore.source', None)
         self.alg.settings._update({'conductance': 'throat.diffusive_conductance',
                                    'quantity': 'pore.concentration',
                                    'newton_maxiter': 50})
@@ -177,7 +177,7 @@ class ReactiveTransportTest:
     def test_check_divergence_if_maxiter_reached(self):
         self.alg['pore.bc.rate'] = np.nan
         self.alg['pore.bc.value'] = np.nan
-        _ = [self.alg.__setitem__(k, False) for k in self.alg.settings.sources]
+        self.alg.pop('pore.source', None)
         self.alg.settings._update({'conductance': 'throat.diffusive_conductance',
                                    'quantity': 'pore.concentration',
                                    'newton_maxiter': 2})
