@@ -98,7 +98,7 @@ class ReactiveTransportTest:
         self.alg['pore.bc.rate'] = np.nan
         self.alg['pore.bc.value'] = np.nan
         _ = [self.alg.__setitem__(k, False) for k in self.alg.settings.sources]
-        std_kinetics = op.models.physics.generic_source_term.standard_kinetics
+        std_kinetics = op.models.physics.source_terms.standard_kinetics
         self.phase.add_model(propname='pore.another_reaction', model=std_kinetics,
                              prefactor='pore.A', exponent='pore.k',
                              X='pore.concentration',

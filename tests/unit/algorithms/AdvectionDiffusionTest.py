@@ -189,7 +189,7 @@ class AdvectionDiffusionTest:
         ad.settings["cache"] = False
         # Add source term so we get a non-uniform concentration profile
         self.phase["pore.A1"] = -5e-16
-        linear = op.models.physics.generic_source_term.linear
+        linear = op.models.physics.source_terms.linear
         self.phase.add_model(
             propname="pore.rxn",
             model=linear,

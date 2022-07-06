@@ -102,7 +102,7 @@ class BCTest:
         ad.run()
 
     def test_inlets_and_outlets(self):
-        nwp = op.phase.GenericPhase(network=self.pn)
+        nwp = op.phase.Phase(network=self.pn)
         nwp['throat.surface_tension'] = 0.480
         nwp['throat.contact_angle'] = 140
         nwp.add_model(propname='throat.entry_pressure',
