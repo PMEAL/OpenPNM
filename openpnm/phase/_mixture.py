@@ -58,23 +58,20 @@ class Mixture(Phase):
         try:
             vals = super().__getitem__(key)
         except KeyError:
-            try:
-                # If key ends in component name, fetch it
-                if key.split('.')[-1] in self.settings['components']:
-                    comp = self.project[key.split('.')[-1]]
-                    vals = comp[key.rsplit('.', maxsplit=1)[0]]
-                    return vals
-                # If does not end in component name, see if components have it
-                vals = SubDict()
-                for comp in self.components.keys():
-                    vals[key + '.' + comp] = self.components[comp][key]
-            except KeyError:
-                vals = self.interleave_data(key)
+            # If key ends in component name, fetch it
+            if key.split('.')[-1] in self.settings['components']:
+                comp = self.project[key.split('.')[-1]]
+                vals = comp[key.rsplit('.', maxsplit=1)[0]]
+                return vals
+            # If does not end in component name, see if components have it
+            vals = SubDict()
+            for comp in self.components.keys():
+                vals[key + '.' + comp] = self.components[comp][key]
         return vals
 
     def __setitem__(self, key, value):
         # Prevent writing 'element.property.component' on mixture
-        invalid_keys = set(self.props(deep=True)).difference(set(self.props()))
+        invalid_keys = set(self.props()).difference(set(self.props()))
         if key in invalid_keys:
             raise Exception(key + ' already assigned to a component object')
         # If writing a concentration, use set_concentration setter
@@ -82,11 +79,10 @@ class Mixture(Phase):
             self.set_concentration(component=key.split('.')[-1], values=value)
         super().__setitem__(key, value)
 
-    def props(self, deep=False, **kwargs):
+    def props(self, **kwargs):
         temp = PrintableList()
-        if deep:
-            for item in self.components.values():
-                temp.extend([prop+'.'+item.name for prop in item.props(**kwargs)])
+        for item in self.components.values():
+            temp.extend([prop+'.'+item.name for prop in item.props(**kwargs)])
         temp.extend(super().props(**kwargs))
         temp.sort()
         return temp
@@ -98,7 +94,7 @@ class Mixture(Phase):
         lines = '\n'.join((lines, 'Component Phases', horizontal_rule))
         for item in self.components.values():
             lines = '\n'.join((lines, item.__module__.replace('__', '')
-                               + ' : ' + item.name))
+                                + ' : ' + item.name))
         temp.insert(2, lines + '\n')
         lines = horizontal_rule.join(temp)
         return lines
@@ -113,7 +109,6 @@ class Mixture(Phase):
         for item in list(self.keys()):
             if item.endswith(comp.name):
                 self.pop(item)
-        self['pore.mole_fraction.all'] = np.nan
 
     def _get_comps(self):
         comps = {}
@@ -170,9 +165,11 @@ class Mixture(Phase):
         h = HealthDict()
         h['mole_fraction_too_low'] = []
         h['mole_fraction_too_high'] = []
-        self.regenerate_models('pore.mole_fraction.all')
-        lo = np.where(self['pore.mole_fraction.all'] < 1.0)[0]
-        hi = np.where(self['pore.mole_fraction.all'] > 1.0)[0]
+        conc = np.zeros(self.Np)
+        for i in self['pore.mole_fraction'].values():
+            conc += i
+        lo = np.where(conc < 1.0)[0]
+        hi = np.where(conc > 1.0)[0]
         if len(lo) > 0:
             h['mole_fraction_too_low'] = lo
         if len(hi) > 0:
