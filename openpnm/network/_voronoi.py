@@ -1,5 +1,5 @@
 import numpy as np
-from openpnm.network import GenericNetwork
+from openpnm.network import Network
 from openpnm.utils import Docorator
 from openpnm._skgraph.generators import voronoi
 from openpnm._skgraph.generators.tools import parse_points
@@ -10,7 +10,7 @@ __all__ = ['Voronoi']
 
 
 @docstr.dedent
-class Voronoi(GenericNetwork):
+class Voronoi(Network):
     r"""
     Random network formed by Voronoi tessellation of arbitrary base points
 
@@ -29,7 +29,7 @@ class Voronoi(GenericNetwork):
             [x, y, 0]
                 will produce a 2D square domain of size x by y
 
-    %(GenericNetwork.parameters)s
+    %(Network.parameters)s
 
     Notes
     -----

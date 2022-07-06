@@ -1,7 +1,7 @@
 import logging
 import numpy as np
 import openpnm.models.misc as misc
-from openpnm.phase import GenericPhase as GenericPhase
+from openpnm.phase import Phase as Phase
 from openpnm.utils import Docorator, TypedSet
 
 
@@ -38,16 +38,16 @@ class MultiPhaseSettings:
 
 
 @docstr.dedent
-class MultiPhase(GenericPhase):
+class MultiPhase(Phase):
     """
     Creates Phase object that represents a multiphase system consisting of
-    a given list of GenericPhases.
+    a given list of Phases.
 
     Parameters
     ----------
-    phases : list[GenericPhase]
+    phases : list[Phase]
         A list containing the phase objects that make up the multiphase system
-    %(GenericPhase.parameters)s
+    %(Phase.parameters)s
 
     Notes
     -----
@@ -99,7 +99,7 @@ class MultiPhase(GenericPhase):
 
         Parameters
         ----------
-        phases : list[GenericPhase] or GenericPhase
+        phases : list[Phase] or Phase
 
         """
         phases = np.array(phases, ndmin=1)
@@ -117,7 +117,7 @@ class MultiPhase(GenericPhase):
 
         Parameters
         ----------
-        phase : GenericPhase
+        phase : Phase
             The phase whose occupancy is being specified.
         pores : ndarray
             The location of pores whose occupancy is to be set.
@@ -177,7 +177,7 @@ class MultiPhase(GenericPhase):
 
         Parameters
         ----------
-        phases : list[GenericPhase]
+        phases : list[Phase]
             List of the two phases for which the binary partition
             coefficient model is being added.
         model : OpenPNM model

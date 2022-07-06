@@ -110,7 +110,7 @@ if __name__ == '__main__':
     import matplotlib.pyplot as plt
 
     net = fcc([3, 3, 3], 1, mode='tri', node_prefix='pore', edge_prefix='throat')
-    pn = op.network.GenericNetwork()
+    pn = op.network.Network()
     pn.update(net)
     pn['pore.all'] = np.ones((np.shape(pn.coords)[0]), dtype=bool)
     pn['throat.all'] = np.ones((np.shape(pn.conns)[0]), dtype=bool)

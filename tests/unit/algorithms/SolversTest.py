@@ -14,9 +14,9 @@ class SolversTest:
             op.models.collections.geometry.spheres_and_cylinders()
         )
         self.net.regenerate_models()
-        self.phase = op.phase.GenericPhase(network=self.net)
+        self.phase = op.phase.Phase(network=self.net)
         self.phase['throat.conductance'] = np.linspace(1, 5, num=self.net.Nt)
-        self.alg = op.algorithms.GenericTransport(network=self.net, phase=self.phase)
+        self.alg = op.algorithms.Transport(network=self.net, phase=self.phase)
         self.alg.settings._update({'quantity': 'pore.x',
                                    'conductance': 'throat.conductance'})
         self.alg.set_value_BC(pores=self.net.pores('front'), values=1.0)

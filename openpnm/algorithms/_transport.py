@@ -2,14 +2,14 @@ import logging
 import numpy as np
 import scipy.sparse.csgraph as spgr
 from openpnm.topotools import is_fully_connected
-from openpnm.algorithms import GenericAlgorithm
+from openpnm.algorithms import Algorithm
 from openpnm.utils import Docorator, TypedSet, Workspace
 from openpnm.utils import check_data_health
 from openpnm import solvers
 from ._solution import SteadyStateSolution, SolutionContainer
 
 
-__all__ = ['GenericTransport', 'GenericTransportSettings']
+__all__ = ['Transport']
 
 
 docstr = Docorator()
@@ -17,15 +17,15 @@ logger = logging.getLogger(__name__)
 ws = Workspace()
 
 
-@docstr.get_sections(base='GenericTransportSettings', sections=['Parameters'])
+@docstr.get_sections(base='TransportSettings', sections=['Parameters'])
 @docstr.dedent
-class GenericTransportSettings:
+class TransportSettings:
     r"""
-    Defines the settings for GenericTransport algorithms
+    Defines the settings for Transport algorithms
 
     Parameters
     ----------
-    %(GenericAlgorithmSettings.parameters)s
+    %(AlgorithmSettings.parameters)s
     quantity : str
         The name of the physical quantity to be solved for (i.e.
         'pore.concentration')
@@ -49,21 +49,21 @@ class GenericTransportSettings:
     variable_props = TypedSet()
 
 
-@docstr.get_sections(base='GenericTransport', sections=['Parameters'])
+@docstr.get_sections(base='Transport', sections=['Parameters'])
 @docstr.dedent
-class GenericTransport(GenericAlgorithm):
+class Transport(Algorithm):
     r"""
     This class implements steady-state linear transport calculations.
 
     Parameters
     ----------
-    %(GenericAlgorithm.parameters)s
+    %(Algorithm.parameters)s
 
     """
 
     def __init__(self, phase, name='trans_#', **kwargs):
         super().__init__(name=name, **kwargs)
-        self.settings._update(GenericTransportSettings())
+        self.settings._update(TransportSettings())
         self.settings['phase'] = phase.name
         self['pore.bc.rate'] = np.nan
         self['pore.bc.value'] = np.nan
@@ -181,7 +181,7 @@ class GenericTransport(GenericAlgorithm):
             Dict containing the solution with self.settings.quantity as key
 
         """
-        logger.info('Running GenericTransport')
+        logger.info('Running Transport')
         if solver is None:
             solver = getattr(solvers, ws.settings.default_solver)()
         # Perform pre-solve validations

@@ -32,7 +32,7 @@ def plot_connections(network,
 
     Parameters
     ----------
-    network : GenericNetwork
+    network : Network
         The network whose topological connections to plot
     throats : array_like (optional)
         The list of throats to plot if only a sub-sample is desired.  This is
@@ -182,7 +182,7 @@ def plot_coordinates(network,
 
     Parameters
     ----------
-    network : GenericNetwork
+    network : Network
         The network whose topological connections to plot.
     pores : array_like (optional)
         The list of pores to plot if only a sub-sample is desired. This is
@@ -355,7 +355,7 @@ def plot_networkx(network,
 
     Parameters
     ----------
-    network : GenericNetwork
+    network : Network
     plot_throats : bool, optional
         Plots throats as well as pores, if True.
     labels : list, optional
@@ -449,7 +449,7 @@ def plot_tutorial(network,
 
     Parameters
     ----------
-    network : GenericNetwork
+    network : Network
         The network to plot, should be 2D, since the z-coordinate will be
         ignored.
     font_size : int
@@ -519,7 +519,7 @@ def plot_network_jupyter(network,
 
     Parameters
     ----------
-    network : GenericNetwork
+    network : Network
         The network to visualize
     node_color : ndarray
         An array of values used for coloring the pores. If not given, the
@@ -636,7 +636,7 @@ def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200):
 
     Parameters
     ----------
-    network : OpenPNM GenericNetwork
+    network : OpenPNM Network
         Network from which voxel image is to be generated
     pore_shape : str
         Shape of pores in the network, valid choices are "sphere", "cube"
@@ -731,11 +731,11 @@ def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200):
 def generate_voxel_image(network, pore_shape="sphere", throat_shape="cylinder",
                          max_dim=None, rtol=0.1):
     r"""
-    Generate a voxel image from an GenericNetwork
+    Generate a voxel image from an Network
 
     Parameters
     ----------
-    network : OpenPNM GenericNetwork
+    network : OpenPNM Network
         Network from which voxel image is to be generated
     pore_shape : str
         Shape of pores in the network, valid choices are "sphere", "cube"

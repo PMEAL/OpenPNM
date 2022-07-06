@@ -2,7 +2,7 @@ import logging
 import os as os
 import numpy as np
 from pathlib import Path
-from openpnm.network import GenericNetwork
+from openpnm.network import Network
 from openpnm.topotools import trim
 
 
@@ -115,7 +115,7 @@ def network_from_marock(filename, voxel_size=1):
         (voxel_size**2)*net['throat.cross_sectional_area']
     net['pore.volume'] = (voxel_size**3)*net['pore.volume']
 
-    network = GenericNetwork()
+    network = Network()
     network.update(net)
 
     # Trim headless throats before returning

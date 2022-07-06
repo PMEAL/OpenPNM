@@ -1,7 +1,7 @@
 import logging
 import numpy as np
 from collections import namedtuple
-from openpnm.algorithms import GenericAlgorithm
+from openpnm.algorithms import Algorithm
 from openpnm.topotools import site_percolation, bond_percolation
 from openpnm.topotools import remove_isolated_clusters, ispercolating
 from openpnm.utils import Docorator
@@ -22,7 +22,7 @@ class OrdinaryPercolationSettings:
     r"""
     Parameters
     ----------
-    %(GenericAlgorithmSettings.parameters)s
+    %(AlgorithmSettings.parameters)s
     access_limited : bool
         If ``True`` then invading fluid must be connected to the specified
         inlets
@@ -56,13 +56,13 @@ class OrdinaryPercolationSettings:
     throat_volume = 'throat.volume'
 
 
-class OrdinaryPercolation(GenericAlgorithm):
+class OrdinaryPercolation(Algorithm):
     r"""
     Ordinary percolation simulation with or without access limitations.
 
     Parameters
     ----------
-    network : GenericNetwork
+    network : Network
         The Network upon which this simulation should be run
     name : str, optional
         An identifying name for the object. If none is given then one is

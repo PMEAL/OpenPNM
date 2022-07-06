@@ -12,7 +12,7 @@ class HydraulicConductanceTest:
         self.net['throat.diameter'] = 0.5
         self.net['pore.area'] = 1.0
         self.net['throat.cross_sectional_area'] = 0.5
-        self.phase = op.phase.GenericPhase(network=self.net)
+        self.phase = op.phase.Phase(network=self.net)
         self.phase['pore.viscosity'] = 1e-5
         self.size_factors_dict = {"pore1": 0.123, "throat": 0.981, "pore2": 0.551}
 

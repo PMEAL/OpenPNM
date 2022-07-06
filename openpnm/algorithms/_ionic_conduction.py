@@ -1,7 +1,7 @@
 import logging
 import numpy as np
 from openpnm.algorithms import ReactiveTransport
-from openpnm.models.physics import generic_source_term as gst
+from openpnm.models.physics import source_terms as st
 from openpnm.utils import Docorator
 
 
@@ -35,7 +35,7 @@ class IonicConduction(ReactiveTransport):
 
     Parameters
     ----------
-    network : GenericNetwork
+    network : Network
         The network on which this algorithm operates
     name : str, optional
         A unique name to give the object for easier identification.  If not
@@ -51,7 +51,7 @@ class IonicConduction(ReactiveTransport):
         phase = self.project.phase()[self.settings['phase']]
         Ps = (self['pore.all'] * np.isnan(self['pore.bc.value'])
               * np.isnan(self['pore.bc.rate']))
-        mod = gst.charge_conservation
+        mod = st.charge_conservation
         phys = self.project.find_physics(phase=phase)
         phys[0].add_model(propname='pore.charge_conservation', model=mod,
                           phase=phase, p_alg=self, e_alg=e_alg,

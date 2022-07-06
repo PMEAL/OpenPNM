@@ -39,7 +39,7 @@ def cluster_size(target, cluster=None):
     Parameters
     ----------
     network : dict
-        The GenericNetwork
+        The Network
     cluster : str, optional
         Dict key pointing to the array containing the cluster number of each
         pore.  If not provided then it will be calculated.
@@ -124,7 +124,7 @@ def count_coincident_pores(target, thresh=1e-6):
     Parameters
     ----------
     network : dict
-        The GenericNetwork
+        The Network
     thresh : float
         The distance below which two pores are considered spatially coincident
 
@@ -154,7 +154,7 @@ def find_coincident_pores(target, thresh=1e-6):
     Parameters
     ----------
     network : dict
-        The GenericNetwork
+        The Network
     thresh : float
         The distance below which two pores are considered spatially coincident
 

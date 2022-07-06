@@ -16,7 +16,7 @@ class SpeciesByName(GenericSpecies):
 
     Parameters
     ----------
-    network : GenericNetwork
+    network : Network
         The network to which this phase object will be attached.
     species : str
         The name of the species to generate.  This is used to lookup tabulated

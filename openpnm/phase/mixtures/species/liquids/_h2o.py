@@ -8,7 +8,7 @@ class H2O(mixtures.GenericSpecies):
 
     Parameters
     ----------
-    network : GenericNetwork
+    network : Network
         The network to which this phase object will be attached.
     name : str, optional
         The name of the phase.  This is useful to keep track of the objects

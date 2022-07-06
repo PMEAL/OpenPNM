@@ -25,7 +25,7 @@ class OhmicConductionSettings:
 
 class OhmicConduction(ReactiveTransport):
     r"""
-    A subclass of GenericLinearTransport to simulate electron and ionic
+    A subclass of LinearTransport to simulate electron and ionic
     conduction.  The 2 main roles of this subclass are to set the default
     property names and to implement a method for calculating the effective
     conductivity of the network.

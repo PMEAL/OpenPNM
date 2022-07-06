@@ -15,7 +15,7 @@ class AdvectionDiffusionTest:
         )
         self.net.regenerate_models()
 
-        self.phase = op.phase.GenericPhase(network=self.net)
+        self.phase = op.phase.Phase(network=self.net)
         self.phase['throat.diffusive_conductance'] = 1e-15
         self.phase['throat.hydraulic_conductance'] = 1e-15
 
@@ -189,7 +189,7 @@ class AdvectionDiffusionTest:
         ad.settings["cache"] = False
         # Add source term so we get a non-uniform concentration profile
         self.phase["pore.A1"] = -5e-16
-        linear = op.models.physics.generic_source_term.linear
+        linear = op.models.physics.source_terms.linear
         self.phase.add_model(
             propname="pore.rxn",
             model=linear,

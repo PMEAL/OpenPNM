@@ -27,7 +27,7 @@ def charge_conservation(target, phase, p_alg, e_alg, assumption):
     Parameters
     ----------
     %(target_blurb)s
-    p_alg : GenericAlgorithm
+    p_alg : Algorithm
         The algorithm used to enforce charge conservation.
     e_alg : list
         The list of algorithms used to solve for transport of different
@@ -507,7 +507,7 @@ def general_symbolic(target, eqn, x, **kwargs):
     Examples
     --------
     >>> import openpnm as op
-    >>> from openpnm.models.physics import generic_source_term as gst
+    >>> from openpnm.models.physics import source_terms as st
     >>> import numpy as np
     >>> import sympy
     >>> pn = op.network.Cubic(shape=[5, 5, 5], spacing=0.0001)
@@ -519,7 +519,7 @@ def general_symbolic(target, eqn, x, **kwargs):
     >>> y = 'a*x**b + c'
     >>> arg_map = {'a':'pore.a', 'b':'pore.b', 'c':'pore.c'}
     >>> water.add_model(propname='pore.general',
-    ...                 model=gst.general_symbolic,
+    ...                 model=st.general_symbolic,
     ...                 eqn=y, x='pore.x', **arg_map)
 
     """

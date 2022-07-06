@@ -6,7 +6,7 @@ from numpy.testing import assert_approx_equal
 class ThermalConductivityTest:
     def setup_class(self):
         self.net = op.network.Cubic(shape=[3, 3, 3])
-        self.phase = op.phase.GenericPhase(network=self.net)
+        self.phase = op.phase.Phase(network=self.net)
         self.phase['pore.temperature'] = 298.0  # K
         self.phase['pore.salinity'] = 0.0  # g/kg
         self.phase['pore.viscosity'] = 0.001  # Pa.s

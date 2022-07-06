@@ -12,7 +12,7 @@ class MultiPhaseModelsTest:
             op.models.collections.geometry.spheres_and_cylinders()
         )
         self.net.regenerate_models()
-        self.phase = op.phase.GenericPhase(network=self.net)
+        self.phase = op.phase.Phase(network=self.net)
         self.phase['pore.occupancy'] = np.ones(self.net.Np)
         self.phase['throat.occupancy'] = np.ones(self.net.Nt)
         self.phase['pore.occupancy'][[6, 7, 19, 25]] = 0

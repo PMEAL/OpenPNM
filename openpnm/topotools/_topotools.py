@@ -148,7 +148,7 @@ def trim(network, pores=[], throats=[]):
 
     Parameters
     ----------
-    network : GenericNetwork
+    network : Network
         The Network from which pores or throats should be removed
     pores (or throats) : array_like
         The indices of the of the pores or throats to be removed from the
@@ -239,7 +239,7 @@ def extend(network, coords=[], conns=[], labels=[], **kwargs):
 
     Parameters
     ----------
-    network : GenericNetwork
+    network : Network
         The network to which pores or throats should be added
     coords : array_like
         The coordinates of the pores to add.  These will be appended to the
@@ -330,7 +330,7 @@ def label_faces(network, tol=0.0, label='surface'):
 
     Parameters
     ----------
-    network : GenericNetwork
+    network : Network
         The network to apply the labels
     tol : scalar
         The tolerance for defining what counts as a surface pore, which is
@@ -375,7 +375,7 @@ def find_surface_pores(network, markers=None, label='surface'):
 
     Parameters
     ----------
-    network: GenericNetwork
+    network: Network
         The network for which the surface pores are to be found
     markers: array_like
         3 x N array of the marker coordinates to use in the triangulation.  The
@@ -467,7 +467,7 @@ def clone_pores(network, pores, labels=['clone'], mode='parents'):
 
     Parameters
     ----------
-    network : GenericNetwork
+    network : Network
         The Network object to which the new pores are to be added
     pores : array_like
         List of pores to clone
@@ -533,9 +533,9 @@ def merge_networks(network, donor=[]):
 
     Parameters
     ----------
-    network : GenericNetwork
+    network : Network
         The network to which all the other networks should be added.
-    donor : GenericNetwork or list of Objects
+    donor : Network or list of Objects
         The network object(s) to add to the given network
 
     See Also
@@ -611,9 +611,9 @@ def stitch(network, donor, P_network, P_donor, method='nearest',
 
     Parameters
     ----------
-    network : GenericNetwork
+    network : Network
         The Network to which to donor Network will be attached
-    donor : GenericNetwork
+    donor : Network
         The Network to stitch on to the current Network
     P_network : array_like
         The pores on the current Network
@@ -763,7 +763,7 @@ def connect_pores(network, pores1, pores2, labels=[], add_conns=True):
 
     Parameters
     ----------
-    network : GenericNetwork
+    network : Network
         The network to which the pores should be added
     pores1 : array_like
         The first group of pores on the network
@@ -849,7 +849,7 @@ def merge_pores(network, pores, labels=['merged']):
 
     Parameters
     ----------
-    network : GenericNetwork
+    network : Network
     pores : array_like
         The list of pores which are to be combined into a new single pore
     labels : str or list[str]
@@ -1070,7 +1070,7 @@ def is_fully_connected(network, pores_BC=None):
 
     Parameters
     ----------
-    network : GenericNetwork
+    network : Network
         The network whose connectivity to check.
     pores_BC : array_like (optional)
         The pore indices of boundary conditions (inlets/outlets).
@@ -1103,7 +1103,7 @@ def get_domain_area(network, inlets=None, outlets=None):
 
     Parameters
     ----------
-    network : GenericNetwork
+    network : Network
         The network object containing the pore coordinates
     inlets : array_like
         The pore indices of the inlets.
@@ -1145,7 +1145,7 @@ def get_domain_length(network, inlets=None, outlets=None):
 
     Parameters
     ----------
-    network : GenericNetwork
+    network : Network
         The network object containing the pore coordinates
     inlets : array_like
         The pore indices of the inlets.
@@ -1185,7 +1185,7 @@ def add_reservoir_pore(cls, network, pores, offset=0.1):
 
     Parameters
     ----------
-    network : GenericNetwork
+    network : Network
         The network to which the reservoir pore should be added
     pores : array_like
         The pores to which the reservoir pore should be connected to

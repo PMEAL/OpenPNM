@@ -1,5 +1,5 @@
-from ._generic_algorithm import *
-from ._generic_transport import *
+from ._algorithm import *
+from ._transport import *
 
 from ._reactive_transport import *
 from ._transient_reactive_transport import *

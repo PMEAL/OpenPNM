@@ -14,11 +14,11 @@ class TransientReactiveTransportTest:
         )
         self.net.regenerate_models()
         self.net['pore.volume'] = 1e-12
-        self.phase = op.phase.GenericPhase(network=self.net)
+        self.phase = op.phase.Phase(network=self.net)
         self.phase['pore.A'] = -1e-13
         self.phase['pore.k'] = 2
         self.phase['throat.diffusive_conductance'] = 1e-12
-        mod = op.models.physics.generic_source_term.standard_kinetics
+        mod = op.models.physics.source_terms.standard_kinetics
         self.phase.add_model(propname='pore.reaction',
                              model=mod,
                              prefactor='pore.A',

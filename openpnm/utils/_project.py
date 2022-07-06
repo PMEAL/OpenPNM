@@ -203,19 +203,19 @@ class Project(SimpleList):
 
     @property
     def phases(self):
-        from openpnm.phase import GenericPhase
+        from openpnm.phase import Phase
         phases = []
         for item in self:
-            if isinstance(item, GenericPhase):
+            if isinstance(item, Phase):
                 phases.append(item)
         return phases
 
     @property
     def algorithms(self):
-        from openpnm.algorithms import GenericAlgorithm
+        from openpnm.algorithms import Algorithm
         algs = []
         for item in self:
-            if isinstance(item, GenericAlgorithm):
+            if isinstance(item, Algorithm):
                 algs.append(item)
         return algs
 

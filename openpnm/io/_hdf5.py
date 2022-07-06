@@ -14,10 +14,10 @@ def project_to_hdf5(project, filename=''):
 
     Parameters
     ----------
-    network : GenericNetwork
+    network : Network
         The network containing the desired data
 
-    phases : list[GenericPhase]s (optional, default is none)
+    phases : list[Phase]s (optional, default is none)
         A list of phase objects whose data are to be included
 
     Returns

@@ -12,8 +12,8 @@ class ProjectTest:
         self.ws.clear()
         self.net = op.network.Cubic(shape=[2, 2, 2])
         self.proj = self.net.project
-        self.phase1 = op.phase.GenericPhase(network=self.net)
-        self.phase2 = op.phase.GenericPhase(network=self.net)
+        self.phase1 = op.phase.Phase(network=self.net)
+        self.phase2 = op.phase.Phase(network=self.net)
 
     def test_change_project_name_by_assignment(self):
         proj = self.ws.new_project()

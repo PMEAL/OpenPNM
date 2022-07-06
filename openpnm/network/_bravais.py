@@ -1,6 +1,6 @@
 import numpy as np
 from openpnm import topotools
-from openpnm.network import GenericNetwork
+from openpnm.network import Network
 from openpnm.utils import Workspace
 from openpnm.utils import Docorator
 from openpnm._skgraph.generators import cubic, fcc, bcc
@@ -12,7 +12,7 @@ __all__ = ['Bravais']
 
 
 @docstr.dedent
-class Bravais(GenericNetwork):
+class Bravais(Network):
     r"""
     Crystal lattice types including fcc, bcc, sc, and hcp
 
@@ -46,7 +46,7 @@ class Bravais(GenericNetwork):
             'hcp'        Hexagonal close packed (Not Implemented Yet)
             ===========  =====================================================
 
-    %(GenericNetwork.parameters)s
+    %(Network.parameters)s
 
     See Also
     --------

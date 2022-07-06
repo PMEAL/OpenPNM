@@ -1,6 +1,6 @@
 import logging
 import numpy as np
-from openpnm.network import GenericNetwork
+from openpnm.network import Network
 from openpnm._skgraph.generators import cubic_template
 from openpnm._skgraph.queries import find_coordination
 from openpnm._skgraph.tools import dimensionality, find_surface_nodes
@@ -9,7 +9,7 @@ from openpnm._skgraph.tools import dimensionality, find_surface_nodes
 __all__ = ['CubicTemplate']
 
 
-class CubicTemplate(GenericNetwork):
+class CubicTemplate(Network):
     r"""
     Simple cubic lattice with arbitrary domain shape specified by a
     template image
