@@ -3,7 +3,6 @@ from openpnm.phase import Phase
 from openpnm.utils import Docorator
 
 
-ws = Workspace()
 docstr = Docorator()
 
 
