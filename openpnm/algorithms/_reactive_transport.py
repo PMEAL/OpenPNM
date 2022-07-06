@@ -132,16 +132,19 @@ class ReactiveTransport(Transport):
         current value of 'quantity'.
 
         """
-        phase = self.project[self.settings.phase]
-        for item in self['pore.source'].keys():
-            # Fetch linearized values of the source term
-            Ps = self['pore.source.' + item]
-            S1, S2 = [phase[f"pore.{item}.{Si}"] for Si in ["S1", "S2"]]
-            # Modify A and b: diag(A) += -S1, b += S2
-            diag = self.A.diagonal()
-            diag[Ps] += -S1[Ps]
-            self.A.setdiag(diag)
-            self.b[Ps] += S2[Ps]
+        try:
+            phase = self.project[self.settings.phase]
+            for item in self['pore.source'].keys():
+                # Fetch linearized values of the source term
+                Ps = self['pore.source.' + item]
+                S1, S2 = [phase[f"pore.{item}.{Si}"] for Si in ["S1", "S2"]]
+                # Modify A and b: diag(A) += -S1, b += S2
+                diag = self.A.diagonal()
+                diag[Ps] += -S1[Ps]
+                self.A.setdiag(diag)
+                self.b[Ps] += S2[Ps]
+        except KeyError:
+            pass
 
     def _run_special(self, solver, x0, verbose=True):
         r"""
