@@ -1,6 +1,6 @@
 import numpy as np
 import logging
-from openpnm.phase import GenericPhase
+from openpnm.phase import Phase
 from openpnm.models.collections.phase import liquid_mixture, gas_mixture
 from openpnm.utils import HealthDict, PrintableList, SubDict
 from openpnm.utils import Docorator
@@ -26,13 +26,12 @@ class MixtureSettings:
         The names of each pure component object that constitute the mixture
 
     """
-
     components = []
 
 
 @docstr.get_sections(base='Mixture', sections=['Parameters'])
 @docstr.dedent
-class Mixture(GenericPhase):
+class Mixture(Phase):
     r"""
     Creates Phase object that represents a multicomponent mixture
     consisting of a given list of individual phase objects as components.

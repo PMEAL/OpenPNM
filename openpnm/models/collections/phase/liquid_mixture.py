@@ -1,4 +1,4 @@
-import openpnm.models as mods
+import openpnm.models.phase as mods
 from openpnm.utils import get_model_collection
 
 

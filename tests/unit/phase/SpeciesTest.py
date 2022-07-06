@@ -1,5 +1,5 @@
 import openpnm as op
-from openpnm.phase import mixtures
+from openpnm.phase import
 
 
 class SpeciesTest:
