@@ -12,7 +12,8 @@ docstr = Docorator()
 
 __all__ = [
     'Mixture',
-
+    'GasMixture',
+    'LiquidMixture',
 ]
 
 
