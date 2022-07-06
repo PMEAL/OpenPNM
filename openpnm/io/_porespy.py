@@ -1,5 +1,5 @@
 import pickle as pk
-from openpnm.network import GenericNetwork
+from openpnm.network import Network
 from openpnm.io import _parse_filename
 
 
@@ -28,7 +28,7 @@ def network_from_porespy(filename):
         with open(filename, mode='rb') as f:
             net = pk.load(f)
 
-    network = GenericNetwork()
+    network = Network()
     network.update(net)
 
     return network

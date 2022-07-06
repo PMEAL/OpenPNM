@@ -1,7 +1,7 @@
 import numpy as np
 import scipy.spatial as sptl
 from openpnm import topotools
-from openpnm.network import GenericNetwork
+from openpnm.network import Network
 from openpnm._skgraph.generators.tools import parse_points
 from openpnm._skgraph.generators import voronoi_delaunay_dual
 
@@ -9,7 +9,7 @@ from openpnm._skgraph.generators import voronoi_delaunay_dual
 __all__ = ['DelaunayVoronoiDual']
 
 
-class DelaunayVoronoiDual(GenericNetwork):
+class DelaunayVoronoiDual(Network):
     r"""
     Combined and interconnected Voronoi and Delaunay tessellations
 

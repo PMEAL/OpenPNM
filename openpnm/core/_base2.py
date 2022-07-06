@@ -75,7 +75,7 @@ class Base2(dict):
             project = ws.new_project()
         else:
             project = network.project
-        project.extend(self)
+        project.append(self)
         self.name = name
 
     def __eq__(self, other):
@@ -222,6 +222,19 @@ class Base2(dict):
             d = self[key]  # If key is a nested dict, get all values
             for item in d.keys():
                 super().__delitem__(f'{key}.{item}')
+
+    def pop(self, *args):
+        v = super().pop(*args)
+        if v is None:
+            try:
+                d = self[args[0]]
+                v = {}
+                for item in d.keys():
+                    key = f'{args[0]}.{item}'
+                    v[key] = super().pop(key)
+            except KeyError:
+                pass
+        return v
 
     def clear(self, mode=None):
         if mode is None:

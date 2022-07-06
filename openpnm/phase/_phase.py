@@ -24,9 +24,9 @@ class PhaseSettings:
     auto_interpolate = True
 
 
-@docstr.get_sections(base='GenericPhase', sections=['Parameters'])
+@docstr.get_sections(base='Phase', sections=['Parameters'])
 @docstr.dedent
-class GenericPhase(Domain):
+class Phase(Domain):
     r"""
     This class produces an empty object with no pore-scale models for
     calculating any thermophysical properties.  Users must add models and

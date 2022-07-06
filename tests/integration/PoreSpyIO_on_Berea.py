@@ -55,7 +55,7 @@ pn.add_model(propname='throat.diffusive_size_factors',
 pn.regenerate_models()
 h = op.utils.check_network_health(pn)
 op.topotools.trim(network=pn, pores=h['disconnected_pores'])
-gas = op.phase.GenericPhase(network=pn)
+gas = op.phase.Phase(network=pn)
 gas['pore.diffusivity'] = 1.0
 gas['pore.viscosity'] = 1.0
 gas.add_model_collection(op.models.collections.physics.basic())

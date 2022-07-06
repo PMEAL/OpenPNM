@@ -25,7 +25,7 @@ class FourierConductionSettings:
 
 class FourierConduction(ReactiveTransport):
     r"""
-    A subclass of GenericLinearTransport to simulate heat conduction
+    A subclass of LinearTransport to simulate heat conduction
 
     """
 

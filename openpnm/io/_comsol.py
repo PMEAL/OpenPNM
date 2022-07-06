@@ -10,7 +10,7 @@ def network_to_comsol(network, filename=None):
 
     Parameters
     ----------
-    network : GenericNetwork
+    network : Network
         The network containing the desired data
 
     Notes

@@ -10,7 +10,7 @@ class SubclassedTransportTest:
             op.models.collections.geometry.spheres_and_cylinders()
         )
         self.net.regenerate_models()
-        self.phase = op.phase.GenericPhase(network=self.net)
+        self.phase = op.phase.Phase(network=self.net)
         self.phase.add_model_collection(
             op.models.collections.physics.standard()
         )

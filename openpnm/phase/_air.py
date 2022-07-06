@@ -1,6 +1,6 @@
 from openpnm.models.collections.phase import air
-from openpnm.phase import GenericPhase
-from openpnm.utils import Docorator, Workspace
+from openpnm.phase import Phase
+from openpnm.utils import Docorator
 
 
 ws = Workspace()
@@ -13,13 +13,13 @@ __all__ = [
 
 
 @docstr.dedent
-class Air(GenericPhase):
+class Air(Phase):
     r"""
     Creates a Phase object with preset models and values for air
 
     Parameters
     ----------
-    %(GenericPhase.parameters)s
+    %(Phase.parameters)s
 
     References
     ----------

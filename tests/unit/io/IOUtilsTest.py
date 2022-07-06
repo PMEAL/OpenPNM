@@ -9,8 +9,8 @@ class IOUtilsTest:
     def setup_class(self):
         self._count = 0
         self.net = op.network.Cubic(shape=[5, 5, 5])
-        self.phase = op.phase.GenericPhase(network=self.net)
-        self.phase2 = op.phase.GenericPhase(network=self.net)
+        self.phase = op.phase.Phase(network=self.net)
+        self.phase2 = op.phase.Phase(network=self.net)
 
     def teardown_class(self):
         ws = op.Workspace()
@@ -67,14 +67,12 @@ class IOUtilsTest:
     def test_parse_args_no_input_lists(self):
         proj, net, phases = op.io._parse_args(network=self.net,
                                               phases=self.phase)
-        assert isinstance(proj, list)
         assert isinstance(net, list)
         assert isinstance(phases, list)
 
     def test_parse_args_all_input_lists(self):
         proj, net, phases = op.io._parse_args(network=[self.net],
                                               phases=[self.phase])
-        assert isinstance(proj, list)
         assert isinstance(net, list)
         assert isinstance(phases, list)
 

@@ -12,7 +12,43 @@ ws = Workspace()
 logger = logging.getLogger(__name__)
 
 
-__all__ = ['Project']
+__all__ = [
+    'Project',
+    'SimpleList',
+]
+
+
+class SimpleList:
+    def __init__(self, data=None):
+        if (data is not None):
+            self._list = list(data)
+        else:
+            self._list = list()
+
+    def __repr__(self):
+        return self._list.__repr__()
+
+    def __len__(self):
+        return len(self._list)
+
+    def __getitem__(self, ii):
+        if isinstance(ii, slice):
+            return self.__class__(self._list[ii])
+        else:
+            return self._list[ii]
+
+    def __delitem__(self, ii):
+        del self._list[ii]
+
+    def __str__(self):
+        return str(self._list)
+
+    def __iter__(self):
+        return self._list.__iter__()
+
+    def append(self, item):
+        if item not in self._list:
+            self._list.append(item)
 
 
 class ProjectSettings(SettingsAttr):
@@ -36,7 +72,7 @@ class ProjectSettings(SettingsAttr):
         self._name = name
 
 
-class Project(list):
+class Project(SimpleList):
     r"""
     This class provides a container for all OpenPNM objects in a given
     simulation.
@@ -81,24 +117,6 @@ class Project(list):
         else:
             obj = super().__getitem__(key)
         return obj
-
-    def extend(self, obj):
-        r"""
-        This function is used to add objects to the project. Arguments can
-        be single OpenPNM objects, an OpenPNM project list, or a list of
-        OpenPNM objects.
-        """
-        if not isinstance(obj, list):
-            obj = [obj]
-        for item in obj:
-            # This needs to append or else it unpacks the dict into arrays
-            super().append(item)
-
-    def append(self, obj):
-        self.extend(obj)
-
-    def insert(self, index, obj):
-        self.extend(obj)
 
     def copy(self, name=None):
         r"""
@@ -185,19 +203,19 @@ class Project(list):
 
     @property
     def phases(self):
-        from openpnm.phase import GenericPhase
+        from openpnm.phase import Phase
         phases = []
         for item in self:
-            if isinstance(item, GenericPhase):
+            if isinstance(item, Phase):
                 phases.append(item)
         return phases
 
     @property
     def algorithms(self):
-        from openpnm.algorithms import GenericAlgorithm
+        from openpnm.algorithms import Algorithm
         algs = []
         for item in self:
-            if isinstance(item, GenericAlgorithm):
+            if isinstance(item, Algorithm):
                 algs.append(item)
         return algs
 

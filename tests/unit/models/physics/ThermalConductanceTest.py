@@ -9,7 +9,7 @@ class ThermalConductanceTest:
         self.net['throat.diffusive_size_factors'] = {
             "pore1": 0.4, "throat": 0.2, "pore2": 0.3
         }
-        self.phase = op.phase.GenericPhase(network=self.net)
+        self.phase = op.phase.Phase(network=self.net)
         self.phase['pore.thermal_conductivity'] = 0.5
 
     def test_generic_thermal(self):

@@ -24,7 +24,7 @@ class StokesFlowSettings:
 
 class StokesFlow(ReactiveTransport):
     r"""
-    A subclass of GenericLinearTransport to simulate viscous flow.
+    A subclass of LinearTransport to simulate viscous flow.
     """
 
     def __init__(self, name='stokes_#', **kwargs):

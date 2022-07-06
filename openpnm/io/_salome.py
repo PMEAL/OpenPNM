@@ -76,7 +76,7 @@ def network_to_salome(network, filename=None, explicit=False):
 
     Parameters
     ----------
-    network : GenericNetwork
+    network : Network
         The network containing the desired data
 
     Notes

@@ -4,7 +4,7 @@ import openpnm as op
 class ElectricalConductivityTest:
     def setup_class(self):
         self.net = op.network.Cubic(shape=[3, 3, 3])
-        self.phase = op.phase.GenericPhase(network=self.net)
+        self.phase = op.phase.Phase(network=self.net)
         self.phase['pore.intrinsic_conductivity'] = 1
         self.phase['pore.volume_fraction'] = 0.5
 

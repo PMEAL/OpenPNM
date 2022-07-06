@@ -1,7 +1,7 @@
 import logging
 import numpy as np
 from openpnm.io import _parse_filename
-from openpnm.network import GenericNetwork
+from openpnm.network import Network
 
 
 logger = logging.getLogger(__name__)
@@ -182,7 +182,7 @@ def network_from_pergeos(filename):
     net['pore.coords'] = net['pore.VertexCoordinates']
     net['throat.conns'] = np.sort(net['throat.EdgeConnectivity'], axis=1)
 
-    network = GenericNetwork()
+    network = Network()
     network.update(net)
 
     return network

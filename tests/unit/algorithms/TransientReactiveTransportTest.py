@@ -14,11 +14,11 @@ class TransientReactiveTransportTest:
         )
         self.net.regenerate_models()
         self.net['pore.volume'] = 1e-12
-        self.phase = op.phase.GenericPhase(network=self.net)
+        self.phase = op.phase.Phase(network=self.net)
         self.phase['pore.A'] = -1e-13
         self.phase['pore.k'] = 2
         self.phase['throat.diffusive_conductance'] = 1e-12
-        mod = op.models.physics.generic_source_term.standard_kinetics
+        mod = op.models.physics.source_terms.standard_kinetics
         self.phase.add_model(propname='pore.reaction',
                              model=mod,
                              prefactor='pore.A',
@@ -68,7 +68,6 @@ class TransientReactiveTransportTest:
         # Ensure the results match
         quantity = self.alg.settings['quantity']
         nt.assert_allclose(out1[quantity](0.3), out2[quantity](0.3), rtol=1e-5)
-
 
     def test_adding_bc_over_sources(self):
         with nt.assert_raises(Exception):

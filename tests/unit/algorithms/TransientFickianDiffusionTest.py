@@ -13,7 +13,7 @@ class TransientFickianDiffusionTest:
         )
         self.net.regenerate_models()
         self.net['pore.volume'] = 1e-14
-        self.phase = op.phase.GenericPhase(network=self.net)
+        self.phase = op.phase.Phase(network=self.net)
         self.phase['pore.molar_density'] = 55500
         self.phase['throat.diffusive_conductance'] = 1e-15
         self.alg = op.algorithms.TransientFickianDiffusion(network=self.net,

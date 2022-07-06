@@ -19,7 +19,7 @@ def mix_and_match(target, prop, phases, occupancy):
         The dictionary key to the array containing the pore/throat property to
         be used in the calculation.
     phases : list
-        List of GenericPhases over which the given `prop` is to be
+        List of Phases over which the given `prop` is to be
         averaged out.
     occupancy : str
         The dictionary key to the array containing the occupancy associated

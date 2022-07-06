@@ -10,7 +10,7 @@ from sympy import symbols
 class GenericSourceTermTest:
     def setup_class(self):
         self.net = op.network.Cubic(shape=[5, 5, 5])
-        self.phase = op.phase.GenericPhase(network=self.net)
+        self.phase = op.phase.Phase(network=self.net)
         self.phase['throat.diffusive_conductance'] = 5e-8
         self.phase['pore.mole_fraction'] = 0.0
         self.BC_pores = np.arange(20, 30)
@@ -234,7 +234,7 @@ class GenericSourceTermTest:
                    'd': 'pore.item4',
                    'e': 'pore.item5'}
         self.phase.add_model(propname='pore.general',
-                             model=op.models.physics.generic_source_term.general_symbolic,
+                             model=op.models.physics.source_terms.general_symbolic,
                              eqn=y, x='pore.mole_fraction', **arg_map)
         assert np.allclose(self.phase['pore.source1.rate'],
                            self.phase['pore.general.rate'])

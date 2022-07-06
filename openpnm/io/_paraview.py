@@ -10,7 +10,7 @@ def project_to_paraview(project, filename):
 
     Parameters
     ----------
-    network : GenericNetwork
+    network : Network
         The network containing the desired data.
     filename : str
         Path to saved .vtp file.

@@ -2,7 +2,7 @@ import logging
 import heapq as hq
 import numpy as np
 from collections import namedtuple
-from openpnm.algorithms import GenericAlgorithm
+from openpnm.algorithms import Algorithm
 from openpnm.topotools import find_clusters, site_percolation
 from openpnm.utils import Docorator
 
@@ -21,7 +21,7 @@ class MixedIPSettings:
     r"""
     Parameters
     ----------
-    %(GenericAlgorithmSettings.parameters)s
+    %(AlgorithmSettings.parameters)s
     pore_entry_pressure : str
         The dictionary key on the Phase object where the pore entry
         pressure values are stored.
@@ -52,7 +52,7 @@ class MixedIPSettings:
     trapping = ""
 
 
-class MixedInvasionPercolation(GenericAlgorithm):
+class MixedInvasionPercolation(Algorithm):
     r"""
     An implemetation of invasion percolation which can invade bonds,
     sites or a mixture of both. Inlets can be treated as individual
@@ -61,7 +61,7 @@ class MixedInvasionPercolation(GenericAlgorithm):
 
     Parameters
     ----------
-    network : GenericNetwork
+    network : Network
         The network upon which the invasion should occur.
 
     Notes
@@ -90,32 +90,26 @@ class MixedInvasionPercolation(GenericAlgorithm):
 
         Parameters
         ----------
-        phase : GenericPhase
+        phase : Phase
             The Phase object containing the physical properties of the invading
             fluid.
-
         pore_entry_pressure : str
             The dictionary key on the Phase object where the pore entry
             pressure values are stored.  The default is
             'pore.entry_pressure'.
-
         throat_entry_pressure : str
             The dictionary key on the Phase object where the throat entry
             pressure values are stored.  The default is
             'throat.entry_pressure'.
-
         snap_off : str
             The dictionary key on the Phase object where the throat snap-off
             pressure values are stored.
-
         invade_isolated_Ts : bool
             If True, isolated throats are invaded at the higher invasion
             pressure of their connected pores.
-
         late_pore_filling : str
             The name of the model used to determine late pore filling as
             a function of applied pressure.
-
         late_throat_filling : str
             The name of the model used to determine late throat filling as
             a function of applied pressure.

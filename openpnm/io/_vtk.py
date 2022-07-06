@@ -35,10 +35,10 @@ def project_to_vtk(project, filename="", delim=" | ",
 
     Parameters
     ----------
-    network : GenericNetwork
+    network : Network
         The Network containing the data to be written
     phases : list, optional
-        A list containing GenericPhase(s) containing data to be
+        A list containing Phase(s) containing data to be
         written
     filename : str, optional
         Filename to write data.  If no name is given the file is named

@@ -43,7 +43,7 @@ class GraphToolsTest:
 
         """
         self.ws = op.Workspace()
-        self.net = op.network.GenericNetwork()
+        self.net = op.network.Network()
         coords = np.array([[0, 0, 0],
                            [1, 0, 0],
                            [2, 0, 0],

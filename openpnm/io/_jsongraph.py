@@ -5,7 +5,7 @@ import logging
 import numpy as np
 from pathlib import Path
 from openpnm.io import _parse_filename
-from openpnm.network import GenericNetwork
+from openpnm.network import Network
 logger = logging.getLogger(__name__)
 
 
@@ -34,7 +34,7 @@ def network_to_jsongraph(network, filename=''):
 
     Parameters
     ----------
-    network : GenericNetwork
+    network : Network
 
     filename : str
         Desired file name, defaults to network name if not given
@@ -140,7 +140,7 @@ def network_from_jsongraph(filename):
         [edge['metadata']['link_squared_radius'] for edge in edges])
 
     # Generate network object
-    network = GenericNetwork()
+    network = Network()
     network['pore.all'] = np.ones([number_of_nodes, ], dtype=bool)
     network['throat.all'] = np.ones([number_of_links, ], dtype=bool)
 

@@ -72,7 +72,7 @@ def find_clusters(network, mask=[]):
 
     Parameters
     ----------
-    network : GenericNetwork
+    network : Network
         The network
     mask : array_like, boolean
         A list of open bonds or sites (throats or pores).  If the mask is

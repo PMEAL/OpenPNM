@@ -2,7 +2,7 @@ import openpnm as op
 import pytest
 
 
-class GenericPhaseTest:
+class PhaseTest:
     def setup_class(self):
         self.net = op.network.Cubic(shape=[10, 10, 10])
 
@@ -12,12 +12,12 @@ class GenericPhaseTest:
 
     def test_instantiate_without_network_fails(self):
         with pytest.raises(TypeError):
-            op.phase.GenericPhase()
+            op.phase.Phase()
 
 
 if __name__ == '__main__':
 
-    t = GenericPhaseTest()
+    t = PhaseTest()
     self = t
     t.setup_class()
     for item in t.__dir__():

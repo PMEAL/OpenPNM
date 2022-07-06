@@ -10,7 +10,7 @@ class TransientAdvectionDiffusionTest:
             op.models.collections.geometry.spheres_and_cylinders()
         )
         self.net.regenerate_models()
-        self.phase = op.phase.GenericPhase(network=self.net)
+        self.phase = op.phase.Phase(network=self.net)
         self.phase['throat.diffusive_conductance'] = 1e-15
         self.phase['throat.hydraulic_conductance'] = 1e-15
         self.net['pore.volume'] = 1e-14

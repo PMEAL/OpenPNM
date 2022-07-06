@@ -15,7 +15,7 @@ class Demo(Cubic):
 
     Parameters
     ----------
-    %(GenericNetwork.parameters)s
+    %(Network.parameters)s
 
     """
 
