@@ -1,7 +1,7 @@
 from openpnm.phase import Phase
 import chemicals as chem
 from chemicals.utils import k
-import openpnm.models.phase as mods
+import openpnm.models as mods
 import logging
 
 
@@ -88,14 +88,11 @@ class GasByName(SpeciesByName):
     Creates a phase object based on given chemical name, including some
     additional properties for a gas
     """
+
     def __init__(self, species, **kwargs):
         super().__init__(species=species, **kwargs)
-        self.add_model(propname='pore.heat_capacity',
-                       model=mods.heat_capacity.gas_heat_capacity)
-        self.add_model(propname='pore.thermal_conductivity',
-                       model=mods.thermal_conductivity.gas_thermal_conductivity)
-        self.add_model(propname='pore.viscosity',
-                       model=mods.viscosity.gas_viscosity)
+        self.add_model_collection(mods.collections.phase.generic_gas())
+        self.regenerate_models()
 
 
 class LiquidByName(SpeciesByName):
@@ -103,15 +100,8 @@ class LiquidByName(SpeciesByName):
         Creates a phase object based on given chemical name, including some
         additional properties for a liquid
     """
+
     def __init__(self, species, **kwargs):
         super().__init__(species=species, **kwargs)
-        self.add_model(propname='pore.heat_capacity',
-                       model=mods.heat_capacity.liquid_heat_capacity)
-        self.add_model(propname='pore.thermal_conductivity',
-                       model=mods.thermal_conductivity.liquid_thermal_conductivity)
-        self.add_model(propname='pore.viscosity',
-                       model=mods.viscosity.liquid_viscosity)
-        self.add_model(propname='pore.density',
-                       model=mods.density.liquid_density)
-        self.add_model(propname='pore.vapor_pressure',
-                       model=mods.vapor_pressure.vapor_pressure)
+        self.add_model_collection(mods.collections.phase.generic_liquid())
+        self.regenerate_models()
