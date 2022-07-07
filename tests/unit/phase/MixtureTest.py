@@ -19,7 +19,7 @@ class MixtureTest:
     def test_set_component(self):
         self.CO2 = op.phase.GasByName(network=self.net, species='co2',
                                       name='pure_CO2')
-        self.air.set_component(self.CO2)
+        self.air.components = self.CO2
         self.air['pore.mole_fraction.pure_N2'] = 0.79
         self.air['pore.mole_fraction.pure_O2'] = 0.20
         self.air['pore.mole_fraction.pure_CO2'] = 0.01
@@ -28,7 +28,7 @@ class MixtureTest:
             conc += i
         assert np.all(conc == 1)
         assert len(self.air.components) == 3
-        self.air.set_component(self.CO2, mode='remove')
+        del self.air['pore.mole_fraction.pure_CO2']
         assert len(self.air.components) == 2
 
     def test_check_health(self):

@@ -182,7 +182,7 @@ def chapman_enskog(target, MA, MB, sigma_AB, omega_AB,
 def gas_mixture_LJ_collision_integral(
     target,
     temperature='pore.temperature',
-    epsilon='pore.LJ_epsilon.mixture',
+    epsilon='pore.LJ_epsilon',
 ):
     r"""
     Calculates the collision integral for a single species
@@ -230,8 +230,8 @@ def gas_mixture_diffusivity(
     target,
     temperature='pore.temperature',
     pressure='pore.pressure',
-    sigma='pore.LJ_sigma.mixture',
-    omega='pore.LJ_omega.mixture',
+    sigma='pore.LJ_sigma',
+    omega='pore.LJ_omega',
 ):
     r"""
     Estimates the diffusivity of A in binary mixture using the Lennard-Jones
@@ -258,8 +258,8 @@ def gas_mixture_diffusivity(
 
 
 def fuller_mixture(target,
-                   molecular_weight='param.molecular_weight.mixture',
-                   molar_diffusion_volume='param.molar_diffusion_volume.mixture',
+                   molecular_weight='param.molecular_weight',
+                   molar_diffusion_volume='param.molar_diffusion_volume',
                    temperature='pore.temperature',
                    pressure='pore.pressure'):
     r"""
@@ -301,8 +301,8 @@ def fuller_mixture(target,
 @docstr.dedent
 def wilke_fuller_mixture(
         target,
-        molecular_weight='pore.molecular_weight.mixture',
-        molar_diffusion_volume='pore.molar_diffusion_volume.mixture',
+        molecular_weight='pore.molecular_weight',
+        molar_diffusion_volume='pore.molar_diffusion_volume',
         temperature='pore.temperature',
         pressure='pore.pressure'):
     r"""

@@ -3,13 +3,14 @@ import logging
 from copy import deepcopy
 from openpnm.phase import Phase
 from openpnm.models.collections.phase import liquid_mixture, gas_mixture
-from openpnm.models.phase.mixtures import from_component, mole_summation
+from openpnm.models.phase.mixtures import mole_summation
 from openpnm.utils import HealthDict, PrintableList, SubDict
-from openpnm.utils import Docorator
+from openpnm.utils import Docorator, Workspace
 
 
 logger = logging.getLogger(__name__)
 docstr = Docorator()
+ws = Workspace()
 
 
 __all__ = [
@@ -53,11 +54,7 @@ class Mixture(Phase):
         self.settings._update(MixtureSettings())
 
         # Add any supplied phases to the list components
-        for comp in components:
-            self.set_component(comp)
-
-        super().add_model(propname='pore.mole_fraction.mixture',
-                          model=mole_summation)
+        self.components = components
 
     def __getitem__(self, key):
         try:
@@ -67,30 +64,9 @@ class Mixture(Phase):
             if key.split('.')[-1] in self.components.keys():
                 comp = self.project[key.split('.')[-1]]
                 vals = comp[key.rsplit('.', maxsplit=1)[0]]
-                return vals
-            # If does not end in component name, see if components have it
-            vals = {}
-            for comp in self.components.keys():
-                vals[comp] = self.components[comp][key]
+            else:
+                raise KeyError(key)
         return vals
-
-    def __setitem__(self, key, value):
-        # Prevent writing 'element.property.component' on mixture
-        invalid_keys = set(self.props()).difference(set(self.props()))
-        if key in invalid_keys:
-            raise Exception(key + ' already assigned to a component object')
-        # If writing a concentration, use set_concentration setter
-        if key.startswith('pore.concentration'):
-            self.set_concentration(component=key.split('.')[-1], values=value)
-        super().__setitem__(key, value)
-
-    # def props(self, **kwargs):
-    #     temp = PrintableList()
-    #     for item in self.components.values():
-    #         temp.extend([prop+'.'+item.name for prop in item.props(**kwargs)])
-    #     temp.extend(super().props(**kwargs))
-    #     temp.sort()
-    #     return temp
 
     def __str__(self):
         horizontal_rule = '―' * 78
@@ -106,65 +82,54 @@ class Mixture(Phase):
         lines = horizontal_rule.join(temp)
         return lines
 
-    def add_model(self, propname, model, domain='all', regen_mode='normal',
-                  **kwargs):
-        super().add_model(propname=propname+'.mixture', model=model,
-                          domain=domain, regen_mode=regen_mode, **kwargs)
-
-    def _del_comps(self, components):
-        if not isinstance(components, list):
-            components = [components]
-        # Remove from settings:
-        for comp in components:
-            self._components.remove(comp.name)
-        # Remove data from dict:
-        for item in list(self.keys()):
-            if item.endswith(comp.name):
-                self.pop(item)
-
     def _get_comps(self):
         comps = {}
         comps.update({item: self.project[item]
-                      for item in sorted(self._components)})
+                      for item in sorted(self['pore.mole_fraction'].keys())})
         return comps
 
     def _set_comps(self, components):
         if not isinstance(components, list):
             components = [components]
-        temp = self._components.copy()
-        temp.extend([val.name for val in components])
-        comps = list(set(temp))
-        self._components = comps
         # Add mole_fraction array to dict, filled with nans
-        for item in comps:
-            self['pore.mole_fraction.' + item] = np.nan
-        for c in components:
-            for item in c.keys():
-                if item not in self.keys():
-                    super().add_model(propname=item + '.' + c.name,
-                                      model=from_component,
-                                      prop=item,
-                                      compname=c.name)
+        for item in components:
+            if 'pore.mole_fraction.' + item.name not in self.keys():
+                self['pore.mole_fraction.' + item.name] = 0.0
 
     components = property(fget=_get_comps, fset=_set_comps)
 
-    def set_component(self, component, mode='add'):
+    def set_x(self, compname, x):
         r"""
-        Add another component to the mixture
+        Helper method for setting mole fraction of a component
 
         Parameters
         ----------
-        component : GenericPhase
-            The phase object of the component to add.  Can also be a list
-            of phases to add more than one at a time.
-        mode : str {'add', 'remove'}
-            Indicates whether to add or remove the give component(s)
+        compname : str
+            The name of the component object, i.e. ``obj.name``
+        x : scalar or ndarray
+            The mole fraction of the given species in the mixture.
 
+        Notes
+        -----
+        This method is equivalent to
+        ``mixture['pore.mole_fraction.<compname>'] = x``
         """
-        if mode == 'add':
-            self._set_comps(component)
-        if mode == 'remove':
-            self._del_comps(component)
+        self['pore.mole_fraction.' + compname] = x
+
+    def get_x(self, compname):
+        r"""
+        Helper method for retrieving the mole fraction of a component
+
+        Parameters
+        ----------
+        compname : str
+            The name of the component object, i.e. ``obj.name``
+
+        Notes
+        -----
+        This method is equivalent to ``mixture['pore.mole_fraction.<compname>']``
+        """
+        return self['pore.mole_fraction.' + compname]
 
     def check_mixture_health(self):
         r"""
@@ -177,16 +142,14 @@ class Mixture(Phase):
         -------
         health : dict
             A HealthDict object containing lists of locations where the mole
-            fractions are not unity.  One value indicates locations that are
+            fractions are not unity. One value indicates locations that are
             too high, and another where they are too low.
 
         """
         h = HealthDict()
         h['mole_fraction_too_low'] = []
         h['mole_fraction_too_high'] = []
-        conc = np.zeros(self.Np)
-        for i in self['pore.mole_fraction'].values():
-            conc += i
+        conc = mole_summation(target=self)
         lo = np.where(conc < 1.0)[0]
         hi = np.where(conc > 1.0)[0]
         if len(lo) > 0:
@@ -196,15 +159,49 @@ class Mixture(Phase):
         return h
 
 
+class ComponentHandler:
+
+    def __iadd__(self, component):
+        target = self._find_target()
+        if 'pore.mole_fraction.' + component.name not in target.keys():
+            target['pore.mole_fraction.'+component.name] = 0.0
+
+    def __isub__(self, component):
+        target = self._find_target()
+        del target['pore.mole_fraction.'+component.name]
+
+    def _find_target(self):
+        """
+        Finds and returns the parent object to self.
+        """
+        for proj in ws.values():
+            for obj in proj:
+                if hasattr(obj, "components"):
+                    if obj.components is self:
+                        return obj
+
+
 class LiquidMixture(Mixture):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.models.update(liquid_mixture())
-        # self.regenerate_models()
+        self.regenerate_models()
 
 
 class GasMixture(Mixture):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.models.update(gas_mixture())
-        # self.regenerate_models()
+        self.regenerate_models()
+
+
+if __name__ == '__main__':
+    import openpnm as op
+    pn = op.network.Demo()
+    o2 = op.phase.GasByName(network=pn, species='o2', name='pure_O2')
+    n2 = op.phase.GasByName(network=pn, species='n2', name='pure_N2')
+    air = op.phase.GasMixture(network=pn, components=[o2, n2])
+    # air.set_x(o2.name, 0.21)
+    # air['pore.mole_fraction.pure_N2'] = 0.79
+    air.regenerate_models()
+    print(air)
