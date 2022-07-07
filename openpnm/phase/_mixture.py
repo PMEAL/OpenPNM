@@ -98,38 +98,11 @@ class Mixture(Phase):
 
     components = property(fget=_get_comps, fset=_set_comps)
 
-    def set_x(self, compname, x):
-        r"""
-        Helper method for setting mole fraction of a component
+    def add_comp(self, component, mole_fraction=0.0):
+        self['pore.mole_fraction.' + component.name] = mole_fraction
 
-        Parameters
-        ----------
-        compname : str
-            The name of the component object, i.e. ``obj.name``
-        x : scalar or ndarray
-            The mole fraction of the given species in the mixture.
-
-        Notes
-        -----
-        This method is equivalent to
-        ``mixture['pore.mole_fraction.<compname>'] = x``
-        """
-        self['pore.mole_fraction.' + compname] = x
-
-    def get_x(self, compname):
-        r"""
-        Helper method for retrieving the mole fraction of a component
-
-        Parameters
-        ----------
-        compname : str
-            The name of the component object, i.e. ``obj.name``
-
-        Notes
-        -----
-        This method is equivalent to ``mixture['pore.mole_fraction.<compname>']``
-        """
-        return self['pore.mole_fraction.' + compname]
+    def remove_comp(self, compname):
+        del self['pore.mole_fraction.' + compname]
 
     def check_mixture_health(self):
         r"""
@@ -159,33 +132,42 @@ class Mixture(Phase):
         return h
 
 
-class ComponentHandler:
-
-    def __iadd__(self, component):
-        target = self._find_target()
-        if 'pore.mole_fraction.' + component.name not in target.keys():
-            target['pore.mole_fraction.'+component.name] = 0.0
-
-    def __isub__(self, component):
-        target = self._find_target()
-        del target['pore.mole_fraction.'+component.name]
-
-    def _find_target(self):
-        """
-        Finds and returns the parent object to self.
-        """
-        for proj in ws.values():
-            for obj in proj:
-                if hasattr(obj, "components"):
-                    if obj.components is self:
-                        return obj
-
-
 class LiquidMixture(Mixture):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.models.update(liquid_mixture())
         self.regenerate_models()
+
+    def x(self, compname=None, x=None):
+        r"""
+        Helper method for getting and setting mole fractions of a component
+
+        Parameters
+        ----------
+        compname : str, optional
+            The name of the component, i.e. ``obj.name``.  If ``x`` is not
+            provided this will *return* the mole fraction of the requested
+            component.  If ``x`` is provided this will *set* the mole fraction
+            of the specified component.
+        x : scalar or ndarray, optional
+            The mole fraction of the given species in the mixture. If not
+            provided this method works as a *getter* and will return the
+            mole fraction of the requested component.  If ``compname`` is not
+            provided then the mole fractions of all components will be returned
+            as a dictionary with the components names as keys.
+
+        Notes
+        -----
+        This method is equivalent to
+        ``mixture['pore.mole_fraction.<compname>'] = x``
+        """
+        if x is None:
+            if compname is None:
+                return self['pore.mole_fraction']
+            else:
+                self['pore.mole_fraction' + '.' + compname]
+        else:
+            self['pore.mole_fraction.' + compname] = x
 
 
 class GasMixture(Mixture):
@@ -194,6 +176,37 @@ class GasMixture(Mixture):
         self.models.update(gas_mixture())
         self.regenerate_models()
 
+    def y(self, compname=None, y=None):
+        r"""
+        Helper method for getting and setting mole fractions of a component
+
+        Parameters
+        ----------
+        compname : str, optional
+            The name of the component i.e. ``obj.name``.  If ``y`` is not
+            provided this will *return* the mole fraction of the requested
+            component.  If ``y`` is provided this will *set* the mole fraction
+            of the specified component.
+        y : scalar or ndarray, optional
+            The mole fraction of the given species in the mixture. If not
+            provided this method works as a *getter* and will return the
+            mole fraction of the requested component. If ``compname`` is also
+            not provided then the mole fractions of all components will be
+            returned as a dictionary with the components names as keys.
+
+        Notes
+        -----
+        This method is equivalent to
+        ``mixture['pore.mole_fraction.<compname>'] = y``
+        """
+        if y is None:
+            if compname is None:
+                return self['pore.mole_fraction']
+            else:
+                return self['pore.mole_fraction' + '.' + compname]
+        else:
+            self['pore.mole_fraction.' + compname] = y
+
 
 if __name__ == '__main__':
     import openpnm as op
@@ -201,7 +214,7 @@ if __name__ == '__main__':
     o2 = op.phase.GasByName(network=pn, species='o2', name='pure_O2')
     n2 = op.phase.GasByName(network=pn, species='n2', name='pure_N2')
     air = op.phase.GasMixture(network=pn, components=[o2, n2])
-    # air.set_x(o2.name, 0.21)
-    # air['pore.mole_fraction.pure_N2'] = 0.79
+    air.y(o2.name, 0.21)
+    air['pore.mole_fraction.pure_N2'] = 0.79
     air.regenerate_models()
     print(air)
