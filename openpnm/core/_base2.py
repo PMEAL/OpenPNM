@@ -177,7 +177,6 @@ class Base2(dict):
                 vals = vals[locs]
             return vals
 
-
         # If key contains an @ symbol then return a subset of values at the
         # requested locations, by recursively calling __getitem__
         if '@' in key:
@@ -338,6 +337,7 @@ class Base2(dict):
     def network(self):
         return self.project.network
 
+    @property
     def params(self):
         return self._params
 
@@ -466,10 +466,7 @@ class Base2(dict):
         props = self.props()
         props.sort()
         for i, item in enumerate(props):
-            try:
-                arr = self[item]
-            except:
-                arr = self[item]
+            arr = self[item]
             prop = item
             required = self._count(item.split('.', 1)[0])
             if len(prop) > 35:  # Trim overly long prop names
@@ -489,8 +486,6 @@ class Base2(dict):
                     defined = sum([sum(~np.isnan(arr[i])) for i in k])
                 lines.append(fmt.format(i + 1, prop, defined, required))
         lines.append(horizontal_rule)
-        # lines = lines.rpartition('\n')[0]
-        # lines = lines.append(self._params.__str__())
         return '\n'.join(lines)
 
 

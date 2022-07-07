@@ -157,7 +157,7 @@ class LiquidMixture(Mixture):
             The name of the component, i.e. ``obj.name``.  If ``x`` is not
             provided this will *return* the mole fraction of the requested
             component.  If ``x`` is provided this will *set* the mole fraction
-            of the specified component.
+            of the specified component to ``x``.
         x : scalar or ndarray, optional
             The mole fraction of the given species in the mixture. If not
             provided this method works as a *getter* and will return the
@@ -191,7 +191,7 @@ class GasMixture(Mixture):
             The name of the component i.e. ``obj.name``.  If ``y`` is not
             provided this will *return* the mole fraction of the requested
             component.  If ``y`` is provided this will *set* the mole fraction
-            of the specified component.
+            of the specified component to ``y``.
         y : scalar or ndarray, optional
             The mole fraction of the given species in the mixture. If not
             provided this method works as a *getter* and will return the
@@ -220,6 +220,7 @@ class MultiGasMixture(GasMixture):
         self.models.clear()
         self.models.update(gas_mixture())
         self.regenerate_models()
+
 
 class BinaryGasMixture(GasMixture):
 

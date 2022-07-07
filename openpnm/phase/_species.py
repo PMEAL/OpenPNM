@@ -80,7 +80,7 @@ class SpeciesByName(Species):
         temp['param.lennard_jones_epsilon'] = k*chem.lennard_jones.Stockmayer(CAS)
         temp['param.lennard_jones_sigma'] = chem.lennard_jones.molecular_diameter(CAS)
         super().__init__(**kwargs)
-        self._params.update(temp)
+        self.params.update(temp)
 
 
 class GasByName(SpeciesByName):
