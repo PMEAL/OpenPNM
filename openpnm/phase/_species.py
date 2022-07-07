@@ -63,9 +63,9 @@ class SpeciesByName(Species):
     def __init__(self, species, **kwargs):
         super().__init__(**kwargs)
         CAS = chem.CAS_from_any(species)
-        self.settings['CAS'] = CAS
+        self['param.CAS'] = CAS
         a = chem.identifiers.search_chemical(CAS)
-        self.settings['common_name'] = a.common_name
+        self['param.common_name'] = a.common_name
         self['param.molecular_weight'] = a.MW/1000  # Convert to kg/mol
         self['param.critical_temperature'] = chem.critical.Tc(CAS)
         self['param.critical_pressure'] = chem.critical.Pc(CAS)

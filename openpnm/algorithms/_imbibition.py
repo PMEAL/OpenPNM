@@ -43,7 +43,7 @@ class ImbibitionSettings:
 
 class Imbibition(Drainage):
 
-    def __init__(self, phase, name='imbibition_#', **kwargs):
+    def __init__(self, phase, name='imbibition_?', **kwargs):
         super().__init__(phase=phase, name=name, **kwargs)
         self.settings._update(ImbibitionSettings())
         self.settings['phase'] = phase.name

@@ -172,8 +172,8 @@ class Project(SimpleList):
         if name in [None, '']:
             name = 'obj_01'  # Give basic name, then let rest of func fix it
         warn = True
-        if name.endswith('_#'):
-            name = name.replace('_#', '_01')
+        if name.endswith('_?'):
+            name = name.replace('_?', '_01')
             warn = False
         if name in self.names:  # If proposed name is taken, increment it
             proposed_name = name

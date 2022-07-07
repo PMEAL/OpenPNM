@@ -71,7 +71,7 @@ class InvasionPercolation(Algorithm):
 
     """
 
-    def __init__(self, phase, name='ip_#', **kwargs):
+    def __init__(self, phase, name='ip_?', **kwargs):
         super().__init__(name=name, **kwargs)
         self.settings._update(IPSettings())
         self.settings['phase'] = phase.name

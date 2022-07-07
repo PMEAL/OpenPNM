@@ -9,6 +9,8 @@ __all__ = [
     'salinity',
     'mole_weighted_average',
     'mixture_molecular_weight',
+    'mole_summation',
+    'from_component',
 ]
 
 
@@ -131,3 +133,27 @@ def mole_summation(target):
     else:
         xs = np.nan
     return xs
+
+
+@docstr.dedent
+def from_component(target, prop, compname):
+    r"""
+    Fetches the given values from the specified object
+
+    Parameters
+    ----------
+    %(models.target.parameters)s
+
+    prop : str
+        The name of the array to retreive
+    compname : str
+        The name of the object possessing the desired data
+
+    Returns
+    -------
+    vals : ND-array
+        An ND-array containing the request data
+    """
+    comp = target.project[compname]
+    vals = comp[prop]
+    return vals

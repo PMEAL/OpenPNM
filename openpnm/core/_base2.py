@@ -64,7 +64,7 @@ class Base2(dict):
         instance.settings['uuid'] = str(uuid.uuid4())
         return instance
 
-    def __init__(self, network=None, name='obj_#'):
+    def __init__(self, network=None, name='obj_?'):
         super().__init__()
         # Add default settings
         self.settings._update(BaseSettings())
@@ -460,23 +460,27 @@ class Base2(dict):
         props = self.props()
         props.sort()
         for i, item in enumerate(props):
+            try:
+                arr = self[item]
+            except:
+                arr = self[item]
             prop = item
             required = self._count(item.split('.', 1)[0])
             if len(prop) > 35:  # Trim overly long prop names
                 prop = prop[0:32] + '...'
-            if self[item].dtype == object:  # Print objects differently
-                invalid = [i for i in self[item] if i is None]
-                defined = np.size(self[item]) - len(invalid)
+            if arr.dtype == object:  # Print objects differently
+                invalid = [i for i in arr if i is None]
+                defined = np.size(arr) - len(invalid)
                 lines.append(fmt.format(i + 1, prop, defined, required))
             elif '._' not in prop:
                 try:  # normal ndarray
-                    a = np.isnan(self[item])
-                    defined = np.shape(self[item])[0] \
+                    a = np.isnan(arr)
+                    defined = np.shape(arr)[0] \
                         - a.sum(axis=0, keepdims=(a.ndim-1) == 0)[0]
                 except TypeError:  # numpy struct array
-                    k = self[item].dtype.names
-                    required = self[item].shape[0]*len(k)
-                    defined = sum([sum(~np.isnan(self[item][i])) for i in k])
+                    k = arr.dtype.names
+                    required = arr.shape[0]*len(k)
+                    defined = sum([sum(~np.isnan(arr[i])) for i in k])
                 lines.append(fmt.format(i + 1, prop, defined, required))
         lines.append(horizontal_rule)
         # lines = lines.rpartition('\n')[0]

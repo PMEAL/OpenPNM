@@ -62,7 +62,7 @@ class ReactiveTransport(Transport):
 
     """
 
-    def __init__(self, name='react_trans_#', **kwargs):
+    def __init__(self, name='react_trans_?', **kwargs):
         super().__init__(name=name, **kwargs)
         self.settings._update(ReactiveTransportSettings())
 

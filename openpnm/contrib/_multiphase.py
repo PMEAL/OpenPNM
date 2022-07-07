@@ -55,7 +55,7 @@ class MultiPhase(Phase):
 
     """
 
-    def __init__(self, phases=[], name='mphase_#', **kwargs):
+    def __init__(self, phases=[], name='mphase_?', **kwargs):
         super().__init__(name=name, **kwargs)
         self.settings._update(MultiPhaseSettings())
 

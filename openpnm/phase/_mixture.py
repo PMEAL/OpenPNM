@@ -1,7 +1,9 @@
 import numpy as np
 import logging
+from copy import deepcopy
 from openpnm.phase import Phase
 from openpnm.models.collections.phase import liquid_mixture, gas_mixture
+from openpnm.models.phase.mixtures import from_component, mole_summation
 from openpnm.utils import HealthDict, PrintableList, SubDict
 from openpnm.utils import Docorator
 
@@ -45,28 +47,31 @@ class Mixture(Phase):
 
     """
 
-    def __init__(self, components=[], name='mixture_#', **kwargs):
+    def __init__(self, components=[], name='mixture_?', **kwargs):
         self._components = []
         super().__init__(name=name, **kwargs)
         self.settings._update(MixtureSettings())
 
-        # Add any supplied phases to the components
+        # Add any supplied phases to the list components
         for comp in components:
             self.set_component(comp)
+
+        super().add_model(propname='pore.mole_fraction.mixture',
+                          model=mole_summation)
 
     def __getitem__(self, key):
         try:
             vals = super().__getitem__(key)
         except KeyError:
             # If key ends in component name, fetch it
-            if key.split('.')[-1] in self.settings['components']:
+            if key.split('.')[-1] in self.components.keys():
                 comp = self.project[key.split('.')[-1]]
                 vals = comp[key.rsplit('.', maxsplit=1)[0]]
                 return vals
             # If does not end in component name, see if components have it
-            vals = SubDict()
+            vals = {}
             for comp in self.components.keys():
-                vals[key + '.' + comp] = self.components[comp][key]
+                vals[comp] = self.components[comp][key]
         return vals
 
     def __setitem__(self, key, value):
@@ -79,13 +84,13 @@ class Mixture(Phase):
             self.set_concentration(component=key.split('.')[-1], values=value)
         super().__setitem__(key, value)
 
-    def props(self, **kwargs):
-        temp = PrintableList()
-        for item in self.components.values():
-            temp.extend([prop+'.'+item.name for prop in item.props(**kwargs)])
-        temp.extend(super().props(**kwargs))
-        temp.sort()
-        return temp
+    # def props(self, **kwargs):
+    #     temp = PrintableList()
+    #     for item in self.components.values():
+    #         temp.extend([prop+'.'+item.name for prop in item.props(**kwargs)])
+    #     temp.extend(super().props(**kwargs))
+    #     temp.sort()
+    #     return temp
 
     def __str__(self):
         horizontal_rule = '―' * 78
@@ -93,11 +98,18 @@ class Mixture(Phase):
         lines = ''
         lines = '\n'.join((lines, 'Component Phases', horizontal_rule))
         for item in self.components.values():
-            lines = '\n'.join((lines, item.__module__.replace('__', '')
-                                + ' : ' + item.name))
+            module = self.__module__
+            module = ".".join([x for x in module.split(".") if not x.startswith("_")])
+            cname = module + '.' + item.__class__.__name__
+            lines = '\n'.join((lines, cname + ' : ' + item.name))
         temp.insert(2, lines + '\n')
         lines = horizontal_rule.join(temp)
         return lines
+
+    def add_model(self, propname, model, domain='all', regen_mode='normal',
+                  **kwargs):
+        super().add_model(propname=propname+'.mixture', model=model,
+                          domain=domain, regen_mode=regen_mode, **kwargs)
 
     def _del_comps(self, components):
         if not isinstance(components, list):
@@ -126,6 +138,13 @@ class Mixture(Phase):
         # Add mole_fraction array to dict, filled with nans
         for item in comps:
             self['pore.mole_fraction.' + item] = np.nan
+        for c in components:
+            for item in c.keys():
+                if item not in self.keys():
+                    super().add_model(propname=item + '.' + c.name,
+                                      model=from_component,
+                                      prop=item,
+                                      compname=c.name)
 
     components = property(fget=_get_comps, fset=_set_comps)
 
@@ -157,7 +176,7 @@ class Mixture(Phase):
         Returns
         -------
         health : dict
-            A HealtDict object containing lists of locations where the mole
+            A HealthDict object containing lists of locations where the mole
             fractions are not unity.  One value indicates locations that are
             too high, and another where they are too low.
 
@@ -181,11 +200,11 @@ class LiquidMixture(Mixture):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.models.update(liquid_mixture())
-        self.regenerate_models()
+        # self.regenerate_models()
 
 
 class GasMixture(Mixture):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.models.update(gas_mixture())
-        self.regenerate_models()
+        # self.regenerate_models()

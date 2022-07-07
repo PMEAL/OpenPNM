@@ -13,5 +13,5 @@ class TransientFickianDiffusion(TransientReactiveTransport, FickianDiffusion):
     A class to simulate transient diffusion with reactions
     """
 
-    def __init__(self, name='trans_fick_#', **kwargs):
+    def __init__(self, name='trans_fick_?', **kwargs):
         super().__init__(name=name, **kwargs)

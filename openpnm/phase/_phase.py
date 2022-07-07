@@ -38,7 +38,7 @@ class Phase(Domain):
 
     """
 
-    def __init__(self, network, name='phase_#', **kwargs):
+    def __init__(self, network, name='phase_?', **kwargs):
         super().__init__(network=network, name=name, **kwargs)
         self.settings._update(PhaseSettings())
         self['pore.all'] = np.ones([network.Np, ], dtype=bool)

@@ -38,7 +38,7 @@ def gas_heat_capacity(
 
     """
     T = target[temperature]
-    props = chem.heat_capacity.TRC_gas_data.loc[target.settings['CAS']]
+    props = chem.heat_capacity.TRC_gas_data.loc[target['param.CAS']]
     _, Tmin, Tmax, a0, a1, a2, a3, a4, a5, a6, a7, I, J, Hfg = props
     Cp = numba_vectorized.TRCCp(T, a0, a1, a2, a3, a4, a5, a6, a7)
     return Cp

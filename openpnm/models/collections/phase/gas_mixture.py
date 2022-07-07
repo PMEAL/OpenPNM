@@ -12,7 +12,7 @@ _gas_mixture = {
     'pore.molecular_weight': {
         'model': mods.mixtures.mixture_molecular_weight,
     },
-    'pore.gas_viscosity': {
+    'pore.viscosity': {
         'model': mods.viscosity.gas_mixture_viscosity,
     },
     'pore.thermal_conductivity': {
