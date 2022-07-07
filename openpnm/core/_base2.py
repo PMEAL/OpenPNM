@@ -188,9 +188,11 @@ class Base2(dict):
         # meant for exploring the idea of putting phase values in the
         # network dict, like pn['pore.temperature.air'], but we're not doing
         # that now.
-        if '*' in key:
+        if key.startswith('*'):
             d = {}
-            key = key[1:]
+            key = key[1:]  # Remove astrisk
+            if key.startswith('.'):  # Remove leading dot if *. was given
+                key = key[1:]
             for k, v in self.items():
                 if k.endswith(key):
                     d[k[:-len(key)-1]] = super().__getitem__(k)

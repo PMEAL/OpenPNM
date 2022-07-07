@@ -212,6 +212,7 @@ def gas_mixture_LJ_epsilon(target):
     Calculates the effective molecular diameter for a binary mixture
     """
     es = [c['param.lennard_jones_epsilon'] for c in target.components.values()]
+    assert len(es) == 2
     eAB = np.sqrt(np.prod(es))
     return eAB
 
@@ -344,12 +345,12 @@ def wilke_fuller_mixture(
         only two components of a mixture that has several.  This is necessary for
         use of the fuller model for calculating binary diffusivities.
         """
+
         def __init__(self, target, components):
             super().__init__(target)
             self.components = {}
             for item in components:
                 self.components.update({item.name: item})
-
 
     comps = list(target.components.values())
     values = {}
@@ -361,10 +362,10 @@ def wilke_fuller_mixture(
                 B = comps[j]
                 temp = MixDict(target=target, components=(A, B))
                 D = fuller_mixture(target=temp,
-                                       molecular_weight=molecular_weight,
-                                       molar_diffusion_volume=molar_diffusion_volume,
-                                       temperature=temperature,
-                                       pressure=pressure)
+                                   molecular_weight=molecular_weight,
+                                   molar_diffusion_volume=molar_diffusion_volume,
+                                   temperature=temperature,
+                                   pressure=pressure)
                 yB = target['pore.mole_fraction.' + B.name]
                 denom += yB/D
         yA = target['pore.mole_fraction.' + A.name]

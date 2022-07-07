@@ -38,6 +38,7 @@ class Species(Phase):
                 for comp in item.components.values():
                     if self is comp:
                         return item
+        logger.warn("No mixture phase found for this species")
 
 
 class SpeciesByName(Species):
@@ -61,22 +62,25 @@ class SpeciesByName(Species):
     """
 
     def __init__(self, species, **kwargs):
-        super().__init__(**kwargs)
+        # Create temp first to ensure all look-ups pass before initializing obj
+        temp = {}
         CAS = chem.CAS_from_any(species)
-        self['param.CAS'] = CAS
+        temp['param.CAS'] = CAS
         a = chem.identifiers.search_chemical(CAS)
-        self['param.common_name'] = a.common_name
-        self['param.molecular_weight'] = a.MW/1000  # Convert to kg/mol
-        self['param.critical_temperature'] = chem.critical.Tc(CAS)
-        self['param.critical_pressure'] = chem.critical.Pc(CAS)
-        self['param.critical_volume'] = chem.critical.Vc(CAS)
-        self['param.critical_compressibilty_factor'] = chem.critical.Zc(CAS)
-        self['param.boiling_temperature'] = chem.Tb(CAS)
-        self['param.melting_temperature'] = chem.Tm(CAS)
-        self['param.acentric_factor'] = chem.acentric.omega(CAS)
-        self['param.dipole_moment'] = chem.dipole.dipole_moment(CAS)
-        self['param.lennard_jones_epsilon'] = k*chem.lennard_jones.Stockmayer(CAS)
-        self['param.lennard_jones_sigma'] = chem.lennard_jones.molecular_diameter(CAS)
+        temp['param.common_name'] = a.common_name
+        temp['param.molecular_weight'] = a.MW/1000  # Convert to kg/mol
+        temp['param.critical_temperature'] = chem.critical.Tc(CAS)
+        temp['param.critical_pressure'] = chem.critical.Pc(CAS)
+        temp['param.critical_volume'] = chem.critical.Vc(CAS)
+        temp['param.critical_compressibilty_factor'] = chem.critical.Zc(CAS)
+        temp['param.boiling_temperature'] = chem.Tb(CAS)
+        temp['param.melting_temperature'] = chem.Tm(CAS)
+        temp['param.acentric_factor'] = chem.acentric.omega(CAS)
+        temp['param.dipole_moment'] = chem.dipole.dipole_moment(CAS)
+        temp['param.lennard_jones_epsilon'] = k*chem.lennard_jones.Stockmayer(CAS)
+        temp['param.lennard_jones_sigma'] = chem.lennard_jones.molecular_diameter(CAS)
+        super().__init__(**kwargs)
+        self._params.update(temp)
 
 
 class GasByName(SpeciesByName):

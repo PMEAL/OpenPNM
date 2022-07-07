@@ -1,10 +1,10 @@
 import numpy as np
 import logging
-from copy import deepcopy
 from openpnm.phase import Phase
-from openpnm.models.collections.phase import liquid_mixture, gas_mixture
+from openpnm.models.collections.phase import liquid_mixture
+from openpnm.models.collections.phase import gas_mixture, binary_gas_mixture
 from openpnm.models.phase.mixtures import mole_summation
-from openpnm.utils import HealthDict, PrintableList, SubDict
+from openpnm.utils import HealthDict
 from openpnm.utils import Docorator, Workspace
 
 
@@ -15,22 +15,14 @@ ws = Workspace()
 
 __all__ = [
     'Mixture',
-    'GasMixture',
+    'BinaryGasMixture',
+    'MultiGasMixture',
     'LiquidMixture',
 ]
 
 
 class MixtureSettings:
-    r"""
-    The following settings are specific to Mixture objects
-
-    Parameters
-    ----------
-    components : list of strings
-        The names of each pure component object that constitute the mixture
-
-    """
-    components = []
+    ...
 
 
 @docstr.get_sections(base='Mixture', sections=['Parameters'])
@@ -64,8 +56,19 @@ class Mixture(Phase):
             if key.split('.')[-1] in self.components.keys():
                 comp = self.project[key.split('.')[-1]]
                 vals = comp[key.rsplit('.', maxsplit=1)[0]]
+            elif key.endswith('*'):
+                key = key[:-1]
+                if key.endswith('.'):
+                    key = key[:-1]
+                vals = self._get_comp_vals(key)
             else:
                 raise KeyError(key)
+        return vals
+
+    def _get_comp_vals(self, propname):
+        vals = {}
+        for comp in self.components.keys():
+            vals[comp] = self[propname + '.' + comp]
         return vals
 
     def __str__(self):
@@ -101,8 +104,13 @@ class Mixture(Phase):
     def add_comp(self, component, mole_fraction=0.0):
         self['pore.mole_fraction.' + component.name] = mole_fraction
 
-    def remove_comp(self, compname):
-        del self['pore.mole_fraction.' + compname]
+    def remove_comp(self, component):
+        if hasattr(component, 'name'):
+            component = component.name
+        try:
+            del self['pore.mole_fraction.' + component]
+        except KeyError:
+            pass
 
     def check_mixture_health(self):
         r"""
@@ -133,6 +141,7 @@ class Mixture(Phase):
 
 
 class LiquidMixture(Mixture):
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.models.update(liquid_mixture())
@@ -171,10 +180,6 @@ class LiquidMixture(Mixture):
 
 
 class GasMixture(Mixture):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.models.update(gas_mixture())
-        self.regenerate_models()
 
     def y(self, compname=None, y=None):
         r"""
@@ -208,13 +213,80 @@ class GasMixture(Mixture):
             self['pore.mole_fraction.' + compname] = y
 
 
+class MultiGasMixture(GasMixture):
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.models.clear()
+        self.models.update(gas_mixture())
+        self.regenerate_models()
+
+class BinaryGasMixture(GasMixture):
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.models.clear()
+        self.models.update(binary_gas_mixture())
+        self.regenerate_models()
+
+    def add_comp(self, component, mole_fraction=0.0):
+        if len(self['pore.mole_fraction'].keys()) >= 2:
+            raise Exception("Binary mixtures cannot have more than 2 components"
+                            + ", remove one first")
+        super().add_component(component=component, mole_fraction=mole_fraction)
+
+
 if __name__ == '__main__':
     import openpnm as op
     pn = op.network.Demo()
     o2 = op.phase.GasByName(network=pn, species='o2', name='pure_O2')
     n2 = op.phase.GasByName(network=pn, species='n2', name='pure_N2')
-    air = op.phase.GasMixture(network=pn, components=[o2, n2])
+    air = op.phase.BinaryGasMixture(network=pn, components=[o2, n2], name='air')
     air.y(o2.name, 0.21)
     air['pore.mole_fraction.pure_N2'] = 0.79
     air.regenerate_models()
     print(air)
+
+    ch4 = op.phase.GasByName(network=pn, species='ch4', name='methane')
+    h2 = op.phase.GasByName(network=pn, species='h2', name='hydrogen')
+    h2o = op.phase.GasByName(network=pn, species='h2o', name='water')
+    co2 = op.phase.GasByName(network=pn, species='co2', name='co2')
+    syngas = op.phase.MultiGasMixture(network=pn, components=[ch4, h2, h2o, co2],
+                                      name='syngas')
+    syngas.y(h2.name, 0.25)
+    syngas.y(ch4.name, 0.25)
+    syngas.y(h2o.name, 0.25)
+    syngas.y(co2.name, 0.25)
+    syngas.regenerate_models()
+    print(syngas)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -31,14 +31,13 @@ class MixtureTest:
         del self.air['pore.mole_fraction.pure_CO2']
         assert len(self.air.components) == 2
 
-    def test_set_component_method(self):
+    def test_add_and_remove_component_method(self):
         net = op.network.Demo()
         o2 = op.phase.GasByName(network=net, species='o2', name='pure_O2')
         n2 = op.phase.GasByName(network=net, species='n2', name='pure_N2')
-        air = op.phase.GasMixture(network=net)
-        air.y(o2.name, 0.21)
-        air['pore.mole_fraction.pure_N2'] = 0.79
-        air.regenerate_models()
+        air = op.phase.GasMixture(network=net, components=[n2, o2])
+        air.remove_comp(n2)
+        air.remove_component(o2)
 
     def test_check_health(self):
         self.air['pore.mole_fraction.pure_N2'] = 0.79
