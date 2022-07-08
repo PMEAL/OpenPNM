@@ -68,6 +68,8 @@ class SpeciesByName(Species):
         temp['CAS'] = CAS
         a = chem.identifiers.search_chemical(CAS)
         temp['common_name'] = a.common_name
+        temp['charge'] = a.charge
+        temp['formula'] = a.formula
         temp['molecular_weight'] = a.MW/1000  # Convert to kg/mol
         temp['critical_temperature'] = chem.critical.Tc(CAS)
         temp['critical_pressure'] = chem.critical.Pc(CAS)
