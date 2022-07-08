@@ -16,7 +16,6 @@ from openpnm.utils import (
 from copy import deepcopy
 import inspect
 import uuid
-import numpy.lib.recfunctions as rf
 
 
 docstr = Docorator()
@@ -124,6 +123,7 @@ class Base2(dict):
             for k, v in value.items():
                 self[f'{key}.{k}'] = v
             return
+
         # Catch dictionaries and convert to struct arrays and back
         # if isinstance(value, dict):
         #     s = self._dict_to_struct(d=value, element=element)
@@ -431,26 +431,6 @@ class Base2(dict):
         if np.isnan(vals).sum() == vals.size:
             raise KeyError(f'{propname} not found')
         return vals
-
-    def _dict_to_struct(self, d, element):
-        for k, v in d.items():
-            self[element+'._.'+k] = v
-        # Do it 2nd loop so that any @ domains are all written before popping
-        d2 = {}
-        for k, v in d.items():
-            # Since key can only be popped once, but may be in items > once
-            temp = self.pop(element+'._.'+k.split('@')[0], None)
-            if temp is not None:
-                d2.update({k.split('@')[0]: temp})
-        struct = rf.unstructured_to_structured(np.vstack(list(d2.values())).T,
-                                               names=list(d2.keys()))
-        return struct
-
-    def _struct_to_dict(self, s):
-        d = {}
-        for key in s.dtype.names:
-            d[key] = s[key]
-        return d
 
     def __str__(self):
         module = self.__module__

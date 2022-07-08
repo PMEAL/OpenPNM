@@ -10,6 +10,7 @@ from collections import OrderedDict
 from collections.abc import Iterable
 from docrep import DocstringProcessor
 from copy import deepcopy
+import numpy.lib.recfunctions as rf
 
 
 __all__ = [
@@ -34,6 +35,8 @@ __all__ = [
     'prettify_logger_message',
     'remove_prop_deep',
     'get_model_collection',
+    'dict_to_struct',
+    'struct_to_dict',
 ]
 
 
@@ -631,4 +634,17 @@ def get_model_collection(collection, regen_mode=None, domain=None):
             v['regen_mode'] = regen_mode
         if domain:
             v['domain'] = domain
+    return d
+
+
+def dict_to_struct(d):
+    struct = rf.unstructured_to_structured(np.vstack(list(d.values())),
+                                           names=list(d.keys()))
+    return struct
+
+
+def struct_to_dict(s):
+    d = {}
+    for key in s.dtype.names:
+        d[key] = s[key]
     return d
