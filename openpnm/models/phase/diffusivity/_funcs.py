@@ -8,9 +8,7 @@ docstr = Docorator()
 
 __all__ = [
     "fuller",
-    "fuller_scaling",
     "tyn_calus",
-    "tyn_calus_scaling",
     "chapman_enskog",
     "wilke_fuller_mixture",
     "fuller_mixture",
@@ -58,36 +56,6 @@ def fuller(target, MA, MB, vA, vB, temperature='pore.temperature',
 
 
 @docstr.dedent
-def fuller_scaling(target, DABo, To=298.0, Po=101325,
-                   temperature='pore.temperature',
-                   pressure='pore.pressure'):
-    r"""
-    Uses Fuller correlation to adjust a diffusion coefficient for gases from
-    reference conditions to conditions of interest
-
-    Parameters
-    ----------
-    %(models.target.parameters)s
-    DABo : float
-        Diffusion coefficient at reference conditions
-    Po : float
-        Pressure at reference conditions
-    To : float
-        Temperature at reference conditions
-    %(models.phase.T)s
-    %(models.phase.P)s
-
-    Returns
-    -------
-    %(models.phase.diffusivity.returns)s
-    """
-    Ti = target[temperature]
-    Pi = target[pressure]
-    value = DABo*(Ti/To)**1.75*(Po/Pi)
-    return value
-
-
-@docstr.dedent
 def tyn_calus(target, VA, VB, sigma_A, sigma_B, temperature='pore.temperature',
               viscosity='pore.viscosity'):
     r"""
@@ -117,36 +85,6 @@ def tyn_calus(target, VA, VB, sigma_A, sigma_B, temperature='pore.temperature',
     A = 8.93e-8*(VB*1e6)**0.267/(VA*1e6)**0.433*T
     B = (sigma_B/sigma_A)**0.15/(mu*1e3)
     value = A*B
-    return value
-
-
-@docstr.dedent
-def tyn_calus_scaling(target, DABo, To, mu_o,
-                      viscosity='pore.viscosity',
-                      temperature='pore.temperature'):
-    r"""
-    Uses Tyn-Calus model to adjust a diffusion coeffcient for liquids from
-    reference conditions to conditions of interest
-
-    Parameters
-    ----------
-    %(models.target.parameters)s
-    DABo : float
-        Diffusion coefficient at reference conditions
-    mu_o : float
-        Viscosity at reference conditions
-    To : float
-        Temperature at reference conditions
-    %(models.phase.T)s
-    %(models.phase.P)s
-
-    Returns
-    -------
-    %(models.phase.diffusivity.returns)s
-    """
-    Ti = target[temperature]
-    mu_i = target[viscosity]
-    value = DABo*(Ti/To)*(mu_o/mu_i)
     return value
 
 
@@ -309,8 +247,8 @@ def wilke_fuller_mixture(
     r"""
     Estimates the diffusion coeffient of each species in a gas mixture
 
-    Uses the Fuller equation to estimate binary diffusivity between pairs, then
-    uses the correction of Fairbanks and Wilke [1] to account for the
+    Uses the Fuller equation to estimate binary diffusivity between pairs,
+    then uses the correction of Fairbanks and Wilke [1] to account for the
     composition of the gas mixture.
 
     Parameters

@@ -2,6 +2,12 @@ import openpnm.models.phase as mods
 from openpnm.utils import get_model_collection
 
 
+__all__ = [
+    'liquid_mixture',
+    'generic_liquid',
+]
+
+
 def liquid_mixture(regen_mode=None, domain=None):
     return get_model_collection(collection=_liquid_mixture,
                                 regen_mode=regen_mode,

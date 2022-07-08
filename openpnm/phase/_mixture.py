@@ -15,8 +15,8 @@ ws = Workspace()
 
 __all__ = [
     'Mixture',
-    'BinaryGasMixture',
-    'MultiGasMixture',
+    'BinaryGas',
+    'GasMixture',
     'LiquidMixture',
 ]
 
@@ -60,12 +60,12 @@ class Mixture(Phase):
                 key = key[:-1]
                 if key.endswith('.'):
                     key = key[:-1]
-                vals = self._get_comp_vals(key)
+                vals = self.get_comp_vals(key)
             else:
                 raise KeyError(key)
         return vals
 
-    def _get_comp_vals(self, propname):
+    def get_comp_vals(self, propname):
         vals = {}
         for comp in self.components.keys():
             vals[comp] = self[propname + '.' + comp]
@@ -87,8 +87,10 @@ class Mixture(Phase):
 
     def _get_comps(self):
         comps = {}
-        comps.update({item: self.project[item]
-                      for item in sorted(self['pore.mole_fraction'].keys())})
+        for k in self.keys():
+            if k.startswith('pore.mole_fraction'):
+                name = k.split('.')[-1]
+                comps[name] = self.project[name]
         return comps
 
     def _set_comps(self, components):
@@ -181,6 +183,12 @@ class LiquidMixture(Mixture):
 
 class GasMixture(Mixture):
 
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.models.clear()
+        self.models.update(gas_mixture())
+        self.regenerate_models()
+
     def y(self, compname=None, y=None):
         r"""
         Helper method for getting and setting mole fractions of a component
@@ -213,16 +221,7 @@ class GasMixture(Mixture):
             self['pore.mole_fraction.' + compname] = y
 
 
-class MultiGasMixture(GasMixture):
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.models.clear()
-        self.models.update(gas_mixture())
-        self.regenerate_models()
-
-
-class BinaryGasMixture(GasMixture):
+class BinaryGas(GasMixture):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -234,7 +233,7 @@ class BinaryGasMixture(GasMixture):
         if len(self['pore.mole_fraction'].keys()) >= 2:
             raise Exception("Binary mixtures cannot have more than 2 components"
                             + ", remove one first")
-        super().add_component(component=component, mole_fraction=mole_fraction)
+        super().add_comp(component=component, mole_fraction=mole_fraction)
 
 
 if __name__ == '__main__':
@@ -242,7 +241,7 @@ if __name__ == '__main__':
     pn = op.network.Demo()
     o2 = op.phase.GasByName(network=pn, species='o2', name='pure_O2')
     n2 = op.phase.GasByName(network=pn, species='n2', name='pure_N2')
-    air = op.phase.BinaryGasMixture(network=pn, components=[o2, n2], name='air')
+    air = op.phase.BinaryGas(network=pn, components=[o2, n2], name='air')
     air.y(o2.name, 0.21)
     air['pore.mole_fraction.pure_N2'] = 0.79
     air.regenerate_models()
@@ -252,42 +251,11 @@ if __name__ == '__main__':
     h2 = op.phase.GasByName(network=pn, species='h2', name='hydrogen')
     h2o = op.phase.GasByName(network=pn, species='h2o', name='water')
     co2 = op.phase.GasByName(network=pn, species='co2', name='co2')
-    syngas = op.phase.MultiGasMixture(network=pn, components=[ch4, h2, h2o, co2],
-                                      name='syngas')
+    syngas = op.phase.GasMixture(network=pn, components=[ch4, h2, h2o, co2],
+                                 name='syngas')
     syngas.y(h2.name, 0.25)
     syngas.y(ch4.name, 0.25)
     syngas.y(h2o.name, 0.25)
     syngas.y(co2.name, 0.25)
     syngas.regenerate_models()
     print(syngas)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -2,6 +2,13 @@ import openpnm.models.phase as mods
 from openpnm.utils import get_model_collection
 
 
+__all__ = [
+    'binary_gas_mixture',
+    'gas_mixture',
+    'generic_gas',
+]
+
+
 def binary_gas_mixture(regen_mode=None, domain=None):
     return get_model_collection(collection=_binary_gas_mixture,
                                 regen_mode=regen_mode,

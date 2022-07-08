@@ -98,7 +98,7 @@ def water(target, temperature='pore.temperature', salinity='pore.salinity'):
 
 def vapor_pressure(target, temperature='pore.temperature'):
     T = target[temperature]
-    CAS = target.settings['CAS']
+    CAS = target.params['CAS']
     Tc = target['param.critical_temperature']
     try:
         coeffs = chem.vapor_pressure.Psat_data_AntoineExtended.loc[CAS]

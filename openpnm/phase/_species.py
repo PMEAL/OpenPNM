@@ -65,20 +65,20 @@ class SpeciesByName(Species):
         # Create temp first to ensure all look-ups pass before initializing obj
         temp = {}
         CAS = chem.CAS_from_any(species)
-        temp['param.CAS'] = CAS
+        temp['CAS'] = CAS
         a = chem.identifiers.search_chemical(CAS)
-        temp['param.common_name'] = a.common_name
-        temp['param.molecular_weight'] = a.MW/1000  # Convert to kg/mol
-        temp['param.critical_temperature'] = chem.critical.Tc(CAS)
-        temp['param.critical_pressure'] = chem.critical.Pc(CAS)
-        temp['param.critical_volume'] = chem.critical.Vc(CAS)
-        temp['param.critical_compressibilty_factor'] = chem.critical.Zc(CAS)
-        temp['param.boiling_temperature'] = chem.Tb(CAS)
-        temp['param.melting_temperature'] = chem.Tm(CAS)
-        temp['param.acentric_factor'] = chem.acentric.omega(CAS)
-        temp['param.dipole_moment'] = chem.dipole.dipole_moment(CAS)
-        temp['param.lennard_jones_epsilon'] = k*chem.lennard_jones.Stockmayer(CAS)
-        temp['param.lennard_jones_sigma'] = chem.lennard_jones.molecular_diameter(CAS)
+        temp['common_name'] = a.common_name
+        temp['molecular_weight'] = a.MW/1000  # Convert to kg/mol
+        temp['critical_temperature'] = chem.critical.Tc(CAS)
+        temp['critical_pressure'] = chem.critical.Pc(CAS)
+        temp['critical_volume'] = chem.critical.Vc(CAS)
+        temp['critical_compressibilty_factor'] = chem.critical.Zc(CAS)
+        temp['boiling_temperature'] = chem.Tb(CAS)
+        temp['melting_temperature'] = chem.Tm(CAS)
+        temp['acentric_factor'] = chem.acentric.omega(CAS)
+        temp['dipole_moment'] = chem.dipole.dipole_moment(CAS)
+        temp['lennard_jones_epsilon'] = k*chem.lennard_jones.Stockmayer(CAS)
+        temp['lennard_jones_sigma'] = chem.lennard_jones.molecular_diameter(CAS)
         super().__init__(**kwargs)
         self.params.update(temp)
 
