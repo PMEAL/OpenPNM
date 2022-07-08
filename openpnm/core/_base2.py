@@ -336,6 +336,11 @@ class Base2(dict):
             if k.startswith(element):
                 return v.shape[0]
 
+    # TODO: Delete this once codes stops asking for it
+    @property
+    def _domain(self):
+        return self
+
     @property
     def Nt(self):
         return self._count('throat')
