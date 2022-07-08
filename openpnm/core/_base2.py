@@ -93,6 +93,7 @@ class Base2(dict):
 
         # Intercept parameters
         if key.startswith('param'):
+            _, key = key.split('.', 1)
             self._params[key] = value
             return
 
@@ -160,6 +161,7 @@ class Base2(dict):
             return key
 
         if key.startswith('param'):
+            _, key = key.split('.', 1)
             try:
                 return self._params[key]
             except KeyError:
