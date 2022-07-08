@@ -187,7 +187,7 @@ def gas_mixture_diffusivity(
     """
     MW = np.array([c['param.molecular_weight'] for c in target.components.values()])
     assert len(MW) == 2
-    MWAB = 2/np.sum(1/np.array(MW*1000))
+    MWAB = 2/np.sum(1/np.array(MW))
     T = target[temperature]
     P = target[pressure] / 101325  # convert to bar
     sAB = target[sigma]

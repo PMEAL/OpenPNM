@@ -169,7 +169,7 @@ def sato(
 
 def liquid_thermal_conductivity(target, temperature='pore.temperature'):
     T = target[temperature]
-    MW = target['param.molecular_weight']*1000
+    MW = target['param.molecular_weight']
     Tb = target['param.boiling_temperature']
     Pc = target['param.critical_pressure']
     omega = target['param.acentric_factor']
@@ -179,7 +179,7 @@ def liquid_thermal_conductivity(target, temperature='pore.temperature'):
 
 def gas_thermal_conductivity(target, temperature='pore.temperature'):
     T = target[temperature]
-    MW = target['param.molecular_weight']*1000
+    MW = target['param.molecular_weight']
     Tb = target['param.boiling_temperature']
     Pc = target['param.critical_pressure']
     omega = target['param.acentric_factor']
@@ -191,7 +191,7 @@ def liquid_mixture_thermal_conductivity(target, density='pore.density'):
     xs = [target['pore.mole_fraction.' + c.name] for c in target.components.values()]
     kLs = [c['pore.thermal_conductivity'] for c in target.components.values()]
     # kL = numba_vectorized.DIPPR9I(xs, kLs)  # Another one that doesn't work
-    Vm = [rho_to_Vm(c[density], c['param.molecular_weight']*1000)
+    Vm = [rho_to_Vm(c[density], c['param.molecular_weight'])
           for c in target.components.values()]
     denom = np.sum([xs[i]*Vm[i] for i in range(len(xs))], axis=0)
     phis = np.array([xs[i]*Vm[i] for i in range(len(xs))])/denom

@@ -99,11 +99,11 @@ class Mixture(Phase):
         # Add mole_fraction array to dict, filled with nans
         for item in components:
             if 'pore.mole_fraction.' + item.name not in self.keys():
-                self['pore.mole_fraction.' + item.name] = 0.0
+                self['pore.mole_fraction.' + item.name] = np.nan
 
     components = property(fget=_get_comps, fset=_set_comps)
 
-    def add_comp(self, component, mole_fraction=0.0):
+    def add_comp(self, component, mole_fraction=np.nan):
         self['pore.mole_fraction.' + component.name] = mole_fraction
 
     def remove_comp(self, component):
@@ -146,8 +146,7 @@ class LiquidMixture(Mixture):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.models.update(liquid_mixture())
-        self.regenerate_models()
+        self.models.update(liquid_mixture(regen_mode='deferred'))
 
     def x(self, compname=None, x=None):
         r"""
@@ -245,7 +244,13 @@ if __name__ == '__main__':
     air.y(o2.name, 0.21)
     air['pore.mole_fraction.pure_N2'] = 0.79
     air.regenerate_models()
-    print(air)
+
+    h2o = op.phase.LiquidByName(network=pn, species='water')
+    etoh = op.phase.LiquidByName(network=pn, species='ethanol')
+    vodka = op.phase.LiquidMixture(network=pn, components=[h2o, etoh])
+    vodka.x(h2o.name, 0.4)
+    vodka.x(etoh.name, 0.6)
+    vodka.regenerate_models()
 
     ch4 = op.phase.GasByName(network=pn, species='ch4', name='methane')
     h2 = op.phase.GasByName(network=pn, species='h2', name='hydrogen')
@@ -258,4 +263,3 @@ if __name__ == '__main__':
     syngas.y(h2o.name, 0.25)
     syngas.y(co2.name, 0.25)
     syngas.regenerate_models()
-    print(syngas)

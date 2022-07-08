@@ -1,5 +1,5 @@
 import numpy as np
-from chemicals import numba_vectorized
+from chemicals import numba_vectorized, Herning_Zipperer
 
 
 __all__ = [
@@ -189,22 +189,19 @@ def gas_viscosity(target, temperature='pore.temperature'):
     MW = target['param.molecular_weight']
     Tc = target['param.critical_temperature']
     Pc = target['param.critical_pressure']
-    muG = numba_vectorized.viscosity_gas_Gharagheizi(T, Tc, Pc, MW*1000)
+    muG = numba_vectorized.viscosity_gas_Gharagheizi(T, Tc, Pc, MW)
     return muG
 
 
 def gas_mixture_viscosity(target):
-    ys = [target['pore.mole_fraction.' + c.name] for c in target.components.values()]
+    Ys = target['pore.mole_fraction']
     MWs = [c['param.molecular_weight'] for c in target.components.values()]
-    mus = [c['pore.viscosity'] for c in target.components.values()]
-    # Should be a one-liner, but not working
-    # mu = numba_vectorized.Herning_Zipperer(ys, mus, MWs, sqrtMWs)
-    num = 0.0
-    denom = 0.0
-    for i in range(len(ys)):
-        num += ys[i]*mus[i]*np.sqrt(MWs[i])
-        denom += ys[i]*np.sqrt(MWs[i])
-    mu = num/denom
+    mus = {k: c['pore.viscosity'] for k, c in target.components.items()}
+    mu = np.zeros(target.Np)
+    for pore in target.Ps:
+        y = [Ys[comp][pore] for comp in Ys.keys()]
+        m = [mus[comp][pore] for comp in mus.keys()]
+        mu[pore] = Herning_Zipperer(y, m, MWs)
     return mu
 
 
