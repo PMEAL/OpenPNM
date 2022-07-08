@@ -1,4 +1,7 @@
 import numpy as np
+from copy import deepcopy
+import inspect
+import uuid
 from openpnm.core import (
     LabelMixin,
     ModelsDict,
@@ -13,9 +16,6 @@ from openpnm.utils import (
     Docorator,
     parse_mode,
 )
-from copy import deepcopy
-import inspect
-import uuid
 
 
 docstr = Docorator()
@@ -123,14 +123,6 @@ class Base2(dict):
             for k, v in value.items():
                 self[f'{key}.{k}'] = v
             return
-
-        # Catch dictionaries and convert to struct arrays and back
-        # if isinstance(value, dict):
-        #     s = self._dict_to_struct(d=value, element=element)
-        #     d = self._struct_to_dict(s=s)
-        #     for k, v in d.items():
-        #         self[f'{element}.{prop}.{k}'] = v
-        #     return
 
         # Enfore correct dict naming
         if element not in ['pore', 'throat']:
@@ -320,14 +312,10 @@ class Base2(dict):
 
     def _set_settings(self, settings):
         self._settings = deepcopy(settings)
-        # if (self._settings_docs is None) and (settings.__doc__ is not None):
-        #     self._settings_docs = settings.__doc__
 
     def _get_settings(self):
         if self._settings is None:
             self._settings = SettingsAttr()
-        # if self._settings_docs is not None:
-        #     self._settings.__dict__['__doc__'] = self._settings_docs
         return self._settings
 
     def _del_settings(self):
@@ -342,11 +330,6 @@ class Base2(dict):
     @property
     def params(self):
         return self._params
-
-    # TODO: Delete this once codes stops asking for it
-    @property
-    def _domain(self):
-        return self
 
     def _count(self, element):
         for k, v in self.items():
