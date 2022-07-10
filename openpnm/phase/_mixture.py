@@ -144,10 +144,6 @@ class Mixture(Phase):
 
 class LiquidMixture(Mixture):
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.models.update(liquid_mixture(regen_mode='deferred'))
-
     def x(self, compname=None, x=None):
         r"""
         Helper method for getting and setting mole fractions of a component
@@ -181,12 +177,6 @@ class LiquidMixture(Mixture):
 
 
 class GasMixture(Mixture):
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.models.clear()
-        self.models.update(gas_mixture())
-        self.regenerate_models()
 
     def y(self, compname=None, y=None):
         r"""
@@ -222,12 +212,6 @@ class GasMixture(Mixture):
 
 class BinaryGas(GasMixture):
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.models.clear()
-        self.models.update(binary_gas_mixture())
-        self.regenerate_models()
-
     def add_comp(self, component, mole_fraction=0.0):
         if len(self['pore.mole_fraction'].keys()) >= 2:
             raise Exception("Binary mixtures cannot have more than 2 components"
@@ -238,24 +222,24 @@ class BinaryGas(GasMixture):
 if __name__ == '__main__':
     import openpnm as op
     pn = op.network.Demo()
-    o2 = op.phase.GasByName(network=pn, species='o2', name='pure_O2')
-    n2 = op.phase.GasByName(network=pn, species='n2', name='pure_N2')
-    air = op.phase.BinaryGas(network=pn, components=[o2, n2], name='air')
+    o2 = op.phase.Species(network=pn, species='o2', name='pure_O2')
+    n2 = op.phase.Species(network=pn, species='n2', name='pure_N2')
+    air = op.phase.GasMixture(network=pn, components=[o2, n2], name='air')
     air.y(o2.name, 0.21)
     air['pore.mole_fraction.pure_N2'] = 0.79
     air.regenerate_models()
 
-    h2o = op.phase.LiquidByName(network=pn, species='water')
-    etoh = op.phase.LiquidByName(network=pn, species='ethanol')
+    h2o = op.phase.Species(network=pn, species='water')
+    etoh = op.phase.Species(network=pn, species='ethanol')
     vodka = op.phase.LiquidMixture(network=pn, components=[h2o, etoh])
     vodka.x(h2o.name, 0.4)
     vodka.x(etoh.name, 0.6)
     vodka.regenerate_models()
 
-    ch4 = op.phase.GasByName(network=pn, species='ch4', name='methane')
-    h2 = op.phase.GasByName(network=pn, species='h2', name='hydrogen')
-    h2o = op.phase.GasByName(network=pn, species='h2o', name='water')
-    co2 = op.phase.GasByName(network=pn, species='co2', name='co2')
+    ch4 = op.phase.Species(network=pn, species='ch4', name='methane')
+    h2 = op.phase.Species(network=pn, species='h2', name='hydrogen')
+    h2o = op.phase.Species(network=pn, species='h2o', name='water')
+    co2 = op.phase.Species(network=pn, species='co2', name='co2')
     syngas = op.phase.GasMixture(network=pn, components=[ch4, h2, h2o, co2],
                                  name='syngas')
     syngas.y(h2.name, 0.25)

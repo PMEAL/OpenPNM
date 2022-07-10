@@ -1,7 +1,7 @@
 import numpy as np
-import scipy as sp
 import openpnm as op
-from numpy.testing import assert_approx_equal
+from numpy.testing import assert_approx_equal, assert_array_almost_equal, assert_allclose
+import chemicals
 
 
 class VaporPressureTest:
@@ -44,6 +44,25 @@ class VaporPressureTest:
         assert_approx_equal(self.phase['pore.test'].mean(),
                             3536.0130)
         self.phase['pore.salinity'] = np.zeros((self.phase.Np,))
+
+    def test_generic_chemicals_for_pure_liquid(self):
+        mods = [
+            # chemicals.vapor_pressure.Wagner_original,  # Needs constants
+            # chemicals.vapor_pressure.Wagner,  # Needs constants
+            # chemicals.vapor_pressure.TRC_Antoine_extended,  # Needs constants
+            # chemicals.vapor_pressure.Antoine,  # Needs constants
+            chemicals.vapor_pressure.boiling_critical_relation,
+            chemicals.vapor_pressure.Lee_Kesler,
+            chemicals.vapor_pressure.Ambrose_Walton,
+            chemicals.vapor_pressure.Sanjari,
+            chemicals.vapor_pressure.Edalat,
+            chemicals.iapws.iapws95_Psat,
+        ]
+        h2o = op.phase.Species(network=self.net, species='water')
+        vals = []
+        for f in mods:
+            vals.append(op.models.phase.chemicals_pure_prop(target=h2o, f=f).mean())
+        assert_allclose(vals, 2.762e3, rtol=.5)
 
 
 if __name__ == '__main__':

@@ -1,6 +1,6 @@
 import openpnm as op
-import scipy as sp
-from numpy.testing import assert_approx_equal
+from numpy.testing import assert_approx_equal, assert_allclose
+import chemicals
 
 
 class SurfaceTensionTest:
@@ -50,6 +50,26 @@ class SurfaceTensionTest:
         self.phase.regenerate_models()
         assert_approx_equal(self.phase['pore.surface_tension'].mean(),
                             0.07820759)
+
+    def test_generic_chemicals_for_pure_liq(self):
+        mods = [
+            # chemicals.interface.REFPROP_sigma,  # Needs sigma0
+            # chemicals.interface.Somayajulu,  # Needs A
+            # chemicals.interface.Jasper,  # Needs a
+            chemicals.interface.Brock_Bird,
+            # chemicals.interface.Sastri_Rao,  # Numba version not working
+            # chemicals.interface.Pitzer,  # Model missing
+            chemicals.interface.Zuo_Stenby,
+            chemicals.interface.Miqueu,
+            # chemicals.interface.Aleem,  # Needs rhol
+            chemicals.interface.sigma_IAPWS,
+        ]
+        h2o = op.phase.Species(network=self.net, species='water')
+        vals = []
+        for f in mods:
+            print(f)
+            vals.append(op.models.phase.chemicals_pure_prop(target=h2o, f=f).mean())
+        assert_allclose(vals, 2.898e-1, rtol=.8)
 
 
 if __name__ == '__main__':

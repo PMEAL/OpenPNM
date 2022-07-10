@@ -1,6 +1,7 @@
 import openpnm as op
 import scipy as sp
-from numpy.testing import assert_approx_equal
+import chemicals
+from numpy.testing import assert_approx_equal, assert_array_almost_equal
 
 
 class ViscosityTest:
@@ -35,6 +36,37 @@ class ViscosityTest:
         self.phase.regenerate_models()
         assert_approx_equal(self.phase['pore.viscosity'].mean(),
                             6.47289919e-05)
+
+    def test_generic_chemicals_for_pure_gas_viscosity(self):
+        mods = [
+            'viscosity_gas_Gharagheizi',
+            'Yoon_Thodos',
+            'Stiel_Thodos',
+            # 'Lucas_gas',  # This one does not work
+        ]
+        o2 = op.phase.Species(network=self.net, species='oxygen')
+        mu = []
+        for m in mods:
+            f = getattr(chemicals.viscosity, m)
+            mu.append(op.models.phase.chemicals_pure_prop(target=o2, f=f).mean())
+        assert_array_almost_equal(mu, 2.05e-5, decimal=6)
+
+    def test_generic_chemicals_for_pure_liq_viscosity(self):
+        mods = [
+            # The following 3 require constants
+            # 'Viswanath_Natarajan_3',
+            # 'Viswanath_Natarajan_2',
+            # 'Viswanath_Natarajan_2_exponential',
+            'Letsou_Stiel',
+            # 'Przedziecki_Sridhar',  # Requires molar volume at temperature
+            # 'Lucas',  # Requires saturation pressure at temperature
+        ]
+        h2o = op.phase.Species(network=self.net, species='water')
+        mu = []
+        for m in mods:
+            f = getattr(chemicals.viscosity, m)
+            mu.append(op.models.phase.chemicals_pure_prop(target=h2o, f=f).mean())
+        # assert_array_almost_equal(mu, 2.05e-5, decimal=6)
 
 
 if __name__ == '__main__':

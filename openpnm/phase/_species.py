@@ -51,6 +51,8 @@ class Species(Phase):
         temp['critical_compressibilty_factor'] = chem.critical.Zc(CAS)
         temp['boiling_temperature'] = chem.Tb(CAS)
         temp['melting_temperature'] = chem.Tm(CAS)
+        temp['triple_point_temperature'] = chem.triple.Tt(CAS)
+        temp['triple_point_pressure'] = chem.triple.Pt(CAS)
         temp['acentric_factor'] = chem.acentric.omega(CAS)
         temp['dipole_moment'] = chem.dipole.dipole_moment(CAS)
         temp['lennard_jones_epsilon'] = k*chem.lennard_jones.Stockmayer(CAS)

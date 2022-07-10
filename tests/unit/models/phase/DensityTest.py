@@ -1,5 +1,6 @@
 import openpnm as op
-from numpy.testing import assert_approx_equal
+from numpy.testing import assert_approx_equal, assert_array_almost_equal, assert_allclose
+import chemicals
 
 
 class DensityTest:
@@ -32,9 +33,38 @@ class DensityTest:
         self.phase.regenerate_models()
         assert_approx_equal(self.phase['pore.density'].mean(), 996.9522)
 
-    def teardown_class(self):
-        del(self.phase)
-        del(self.net)
+    def test_generic_chemicals_for_pure_gas_molar_volume(self):
+        mods = [
+            chemicals.virial.BVirial_Pitzer_Curl,
+            chemicals.virial.BVirial_Abbott,
+            chemicals.virial.BVirial_Tsonopoulos,
+            chemicals.virial.BVirial_Tsonopoulos_extended,
+        ]
+        n2 = op.phase.Species(network=self.net, species='nitrogen')
+        n2['pore.temperature'] = 400
+        Vm = []
+        for f in mods:
+            Vm.append(op.models.phase.chemicals_pure_prop(target=n2, f=f).mean())
+        assert_allclose(Vm, 8.795e-6, rtol=.3)
+
+    def test_generic_chemicals_for_pure_liq_molar_volume(self):
+        mods = [
+            chemicals.volume.Yen_Woods_saturation,
+            chemicals.volume.Rackett,
+            chemicals.volume.Yamada_Gunn,
+            chemicals.volume.Townsend_Hales,
+            chemicals.volume.Bhirud_normal,
+            chemicals.volume.COSTALD,
+            chemicals.volume.Campbell_Thodos,
+            # chemicals.volume.SNM0,  # numba version not working
+            # chemicals.volume.CRC_inorganic,  # requires rho
+            # chemicals.volume.COSTALD_compressed,  # requires Psat
+        ]
+        h2o = op.phase.Species(network=self.net, species='water')
+        Vm = []
+        for f in mods:
+            Vm.append(op.models.phase.chemicals_pure_prop(target=h2o, f=f).mean())
+        assert_allclose(Vm, 1.88e-5, rtol=0.2)
 
 
 if __name__ == '__main__':

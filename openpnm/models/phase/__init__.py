@@ -37,3 +37,54 @@ from . import surface_tension
 from . import thermal_conductivity
 from . import vapor_pressure
 from . import viscosity
+
+
+import inspect as _inspect
+import chemicals as _chemicals
+import numpy as _np
+
+
+_argmap = {
+    'T': 'pore.temperature',
+    'P': 'pore.pressure',
+    'MW': 'param.molecular_weight',
+    'Tc': 'param.critical_temperature',
+    'Pc': 'param.critical_pressure',
+    'Zc': 'param.critical_compressibilty_factor',
+    'Vc': 'param.critical_volume',
+    'Tm': 'param.melting_temperature',
+    'Tb': 'param.boiling_temperature',
+    'omega': 'param.acentric_factor',
+    'dipole_moment': 'param.dipole_moment',
+}
+
+
+def chemicals_pure_prop(target, f, argmap=None):
+    if argmap is None:
+        argmap = _argmap
+    # Get the non-numba version of f, which is needed for inspect to extract info
+    temp = getattr(_chemicals, f.__name__)
+    arginfo = _inspect.getfullargspec(temp)
+    # Scan args and set defaults for any that are NOT in argmap
+    if arginfo.defaults is not None:
+        offset = len(arginfo.args) - len(arginfo.defaults)
+        for i in _np.arange(len(arginfo.defaults)):
+            if arginfo.args[offset + i] not in argmap.keys():
+                argmap[arginfo.args[offset + i]] = arginfo.defaults[i]
+    # Scan through the arguments and get necessary values from target
+    args = {}
+    for item in arginfo.args:
+        if argmap[item] is None:
+            args[item] = None
+        elif argmap[item] == '':
+            args[item] = ''
+        else:
+            args[item] = target[argmap[item]]
+    try:
+        # Get the numba vectorized version of f, or else numpy arrays don't work
+        f = getattr(_chemicals.numba_vectorized, f.__name__)
+        # Compute values
+        vals = f(*args.values())
+    except:
+        raise Exception('numba vectorized version did not work')
+    return vals

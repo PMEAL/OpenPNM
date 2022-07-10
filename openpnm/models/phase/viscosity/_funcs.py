@@ -1,5 +1,5 @@
 import numpy as np
-from chemicals import numba_vectorized, Herning_Zipperer
+import chemicals as chem
 
 
 __all__ = [
@@ -167,7 +167,7 @@ def liquid_viscosity(target, temperature='pore.temperature'):
     Tc = target['param.critical_temperature']
     Pc = target['param.critical_pressure']
     omega = target['param.acentric_factor']
-    muL = numba_vectorized.Letsou_Stiel(T, MW, Tc, Pc, omega)
+    muL = chem.numba_vectorized.Letsou_Stiel(T, MW, Tc, Pc, omega)
     return muL
 
 
@@ -189,7 +189,7 @@ def gas_viscosity(target, temperature='pore.temperature'):
     MW = target['param.molecular_weight']
     Tc = target['param.critical_temperature']
     Pc = target['param.critical_pressure']
-    muG = numba_vectorized.viscosity_gas_Gharagheizi(T, Tc, Pc, MW)
+    muG = chem.numba_vectorized.viscosity_gas_Gharagheizi(T, Tc, Pc, MW)
     return muG
 
 
@@ -201,7 +201,7 @@ def gas_mixture_viscosity(target):
     for pore in target.Ps:
         y = [Ys[comp][pore] for comp in Ys.keys()]
         m = [mus[comp][pore] for comp in mus.keys()]
-        mu[pore] = Herning_Zipperer(y, m, MWs)
+        mu[pore] = chem.Herning_Zipperer(y, m, MWs)
     return mu
 
 

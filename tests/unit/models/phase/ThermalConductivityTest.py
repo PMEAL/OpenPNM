@@ -1,6 +1,6 @@
 import openpnm as op
-import scipy as sp
-from numpy.testing import assert_approx_equal
+from numpy.testing import assert_approx_equal, assert_array_almost_equal, assert_allclose
+import chemicals
 
 
 class ThermalConductivityTest:
@@ -39,6 +39,44 @@ class ThermalConductivityTest:
         self.phase.regenerate_models()
         assert_approx_equal(self.phase['pore.thermal_conductivity'].mean(),
                             0.29787023)
+
+    def test_generic_chemicals_for_pure_gas(self):
+        mods = [
+            chemicals.thermal_conductivity.Bahadori_gas,
+            chemicals.thermal_conductivity.Gharagheizi_gas,
+            # chemicals.thermal_conductivity.Eli_Hanley,  # Needs Cvm
+            # chemicals.thermal_conductivity.Chung,  # Needs Cvm
+            # chemicals.thermal_conductivity.DIPPR9B,  # Needs Cvm
+            # chemicals.thermal_conductivity.Eucken_modified,  # Needs Cvm
+            # chemicals.thermal_conductivity.Eucken,  # Needs Cvm
+            # chemicals.thermal_conductivity.Stiel_Thodos_dense,  # Needs Vm
+            # chemicals.thermal_conductivity.Eli_Hanley_dense,  # Needs Cvm
+            # chemicals.thermal_conductivity.Chung_dense,  # Needs Cvm
+        ]
+        a = op.phase.Species(network=self.net, species='nitrogen')
+        vals = []
+        for f in mods:
+            print(f)
+            vals.append(op.models.phase.chemicals_pure_prop(target=a, f=f).mean())
+        assert_allclose(vals, 2.898e-1, rtol=2)
+
+    def test_generic_chemicals_for_pure_liq(self):
+        mods = [
+            chemicals.thermal_conductivity.Sheffy_Johnson,
+            chemicals.thermal_conductivity.Sato_Riedel,
+            chemicals.thermal_conductivity.Lakshmi_Prasad,
+            chemicals.thermal_conductivity.Gharagheizi_liquid,
+            # chemicals.thermal_conductivity.Nicola_original,  # Needs Hfus
+            chemicals.thermal_conductivity.Nicola,
+            chemicals.thermal_conductivity.Bahadori_liquid,
+            # chemicals.thermal_conductivity.DIPPR9G,  # Needs kl
+            # chemicals.thermal_conductivity.Missenard,  # Needs kl
+        ]
+        h2o = op.phase.Species(network=self.net, species='water')
+        vals = []
+        for f in mods:
+            vals.append(op.models.phase.chemicals_pure_prop(target=h2o, f=f).mean())
+        assert_allclose(vals, 2.898e-1, rtol=2)
 
 
 if __name__ == '__main__':
