@@ -72,12 +72,9 @@ def water(target, temperature="pore.temperature", salinity="pore.salinity"):
 @docstr.dedent
 def chung(
     target,
-    Cv="pore.heat_capacity",
-    acentric_factor="pore.acentric_factor",
-    mol_weight="pore.molecular_weight",
-    viscosity="pore.viscosity",
     temperature="pore.temperature",
-    critical_temperature="pore.critical_temperature",
+    viscosity="pore.viscosity",
+    Cv="pore.heat_capacity",
 ):
     r"""
     Uses Chung et al. model to estimate thermal conductivity for gases with
@@ -86,19 +83,12 @@ def chung(
     Parameters
     ----------
     %(models.target.parameters)s
-    acentric_factor : str
-        Dictionary key containing the acentric factor of the component
+    %(models.phase.T)s
+    viscosity : str
+        The dictionary key containing the viscosity values (Pa.s)
     Cv : str
         Dictionary key containing the heat capacity at constant volume
         (J/(mol.K))
-    mol_weight : str
-        Dictionary key containing the molecular weight of the component
-        (kg/mol)
-    viscosity : str
-        The dictionary key containing the viscosity values (Pa.s)
-    %(models.phase.T)s
-    critical_temperatre: str
-        The dictionary key containing the critical temperature values (K)
 
     Returns
     -------
@@ -106,13 +96,13 @@ def chung(
         A numpy ndarray containing thermal conductivity values in [W/m.K]
 
     """
+    acentric = target['param.acentric_factor']
+    MW = target['param.molecular_weight']/1000
+    Tc = target['param.critical_temperature']
     Cv = target[Cv]
-    acentric = target[acentric_factor]
-    MW = target[mol_weight]
     R = 8.314
     T = target[temperature]
     mu = target[viscosity]
-    Tc = target[critical_temperature]
     Tr = T / Tc
     z = 2.0 + 10.5 * Tr ** 2
     beta = 0.7862 - 0.7109 * acentric + 1.3168 * acentric ** 2
@@ -127,10 +117,7 @@ def chung(
 
 def sato(
     target,
-    mol_weight="pore.molecular_weight",
-    boiling_temperature="pore.boiling_point",
     temperature="pore.temperature",
-    critical_temperature="pore.critical_temperature",
 ):
     r"""
     Uses Sato et al. model to estimate thermal conductivity for pure liquids
@@ -139,14 +126,7 @@ def sato(
     Parameters
     ----------
     %(models.target.parameters)s
-    boiling_temperature :  string
-        Dictionary key containing the toiling temperature of the component (K)
-    mol_weight : str
-        Dictionary key containing the molecular weight of the component
-        (kg/mol)
     %(models.phase.T)s
-    critical_temperature : str
-        The dictionary key containing the critical temperature values (K)
 
     Returns
     -------
@@ -155,9 +135,9 @@ def sato(
 
     """
     T = target[temperature]
-    Tc = target[critical_temperature]
-    MW = target[mol_weight]
-    Tbr = target[boiling_temperature] / Tc
+    Tc = target['param.critical_temperature']
+    MW = target['param.molecular_weight']/1000
+    Tbr = target['param.boiling_temperature'] / Tc
     Tr = T / Tc
     value = (
         (1.11 / ((MW * 1e3) ** 0.5))
