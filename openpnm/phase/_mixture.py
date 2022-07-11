@@ -167,6 +167,8 @@ class LiquidMixture(Mixture):
         This method is equivalent to
         ``mixture['pore.mole_fraction.<compname>'] = x``
         """
+        if hasattr(compname, 'name'):
+            compname = compname.name
         if x is None:
             if compname is None:
                 return self['pore.mole_fraction']
@@ -201,6 +203,8 @@ class GasMixture(Mixture):
         This method is equivalent to
         ``mixture['pore.mole_fraction.<compname>'] = y``
         """
+        if hasattr(compname, 'name'):
+            compname = compname.name
         if y is None:
             if compname is None:
                 return self['pore.mole_fraction']

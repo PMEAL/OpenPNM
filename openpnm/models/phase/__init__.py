@@ -97,80 +97,16 @@ def chemicals_pure_prop_wrapper(target, f, **kwargs):
     argmap = default_argmap.copy()
     for k, v in kwargs.items():
         argmap[k] = v
-    argmap = _add_func_defaults_to_argmap(f, argmap)
-    args = _get_items_from_component(target, f, argmap)
+    # Get k, v pairs from target to pass to function below
+    args = _get_items_from_target(target, f, argmap)
 
+    # Get the numba vectorized version of f, or else numpy arrays don't work
+    f = getattr(_chemicals.numba_vectorized, f.__name__)
     try:
-        # Get the numba vectorized version of f, or else numpy arrays don't work
-        f = getattr(_chemicals.numba_vectorized, f.__name__)
         vals = f(*args.values())
-    except:
+    except AssertionError:
         raise Exception('numba vectorized version did not work')
     return vals
-
-
-def _add_func_defaults_to_argmap(f, argmap={}):
-    # Get the non-numba version of f, which is needed for inspect to extract info
-    temp = getattr(_chemicals, f.__name__)
-    arginfo = _inspect.getfullargspec(temp)
-    # Scan args and set defaults for any that are NOT in argmap
-    if arginfo.defaults is not None:
-        offset = len(arginfo.args) - len(arginfo.defaults)
-        for i in _np.arange(len(arginfo.defaults)):
-            if arginfo.args[offset + i] not in argmap.keys():
-                argmap[arginfo.args[offset + i]] = arginfo.defaults[i]
-    return argmap
-
-
-def _get_items_from_component(target, f, argmap):
-    # Get the non-numba version of f, which is needed for inspect to extract info
-    temp = getattr(_chemicals, f.__name__)
-    arginfo = _inspect.getfullargspec(temp)
-    # Scan through the arguments and get necessary values from target
-    args = {}
-    for item in arginfo.args:
-        # Map the parameter (eg Tc) to dict name (eg param.critical_temperature)
-        if item in argmap.keys():
-            if argmap[item] is None:
-                args[item] = None
-            elif argmap[item] == '':
-                args[item] = ''
-            else:
-                args[item] = target[argmap[item]]
-        else:
-            # If item is not in argmap, then just try getting it on target
-            try:
-                args[item] = target['pore.'+item]
-            except KeyError:
-                args[item] = target['param.'+item]
-    return args
-
-
-def _get_items_from_mixture(target, f, argmap):
-    try:
-        arginfo = _inspect.getfullargspec(f)
-    except:
-        temp = getattr(_chemicals, f.__name__)
-        arginfo = _inspect.getfullargspec(temp)
-
-    # Scan args and pull values from target
-    args = {}
-    for item in arginfo.args:
-        # Treat mole fraction specially, since it can be xs, ys, or zs
-        if item in ['xs', 'ys', 'zs']:
-            args[item] = list(target['pore.mole_fraction'].values())
-        elif item in argmap.keys():  # Get basic mixture properties like T&P
-            args[item] = target[argmap[item]]
-        elif item[:-1] in argmap.keys():  # Get props that end in s
-            v = list(target.get_comp_vals(argmap[item[:-1]]).values())
-            args[item] = v
-        elif 'pore.'+ item in target.keys():
-            # If eg. pore.Zc was added to dict directly, no argmap needed
-            args[item] = target[f"{'pore.'+item}"]
-        elif item in target.params.keys():
-            # If a parameter is in params but not in default_argmap
-            args[item] = target.params[item]
-    return args
 
 
 def chemicals_mixture_prop_wrapper(target, f, **kwargs):
@@ -178,9 +114,11 @@ def chemicals_mixture_prop_wrapper(target, f, **kwargs):
     argmap = default_argmap.copy()
     for k, v in kwargs.items():
         argmap[k] = v
-    # argmap = _add_func_defaults_to_argmap(f, argmap)
-    args = _get_items_from_mixture(target, f, argmap)
-
+    # Get k, v pairs from target to pass to function below
+    args = _get_items_from_target(target, f, argmap)
+    # Get the numba vectorized version of f
+    f = getattr(_chemicals.numba_vectorized, f.__name__)
+    # Call function in for-loop for each pores since they are not vectorized
     vals = _np.zeros(target.Np)
     for pore in target.Ps:
         a = {}
@@ -196,18 +134,28 @@ def chemicals_mixture_prop_wrapper(target, f, **kwargs):
     return vals
 
 
+def _get_items_from_target(target, f, argmap):
+    try:
+        arginfo = _inspect.getfullargspec(f)
+    except TypeError:
+        temp = getattr(_chemicals, f.__name__)
+        arginfo = _inspect.getfullargspec(temp)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    # Scan args and pull values from target
+    args = {}
+    for item in arginfo.args:
+        # Treat mole fraction specially, since it can be xs, ys, or zs
+        if item in ['xs', 'ys', 'zs']:
+            args[item] = list(target['pore.mole_fraction'].values())
+        elif item in argmap.keys():  # Get basic mixture properties like T&P
+            args[item] = target[argmap[item]]
+        elif item[:-1] in argmap.keys():  # Get props that end in s
+            v = list(target.get_comp_vals(argmap[item[:-1]]).values())
+            args[item] = v
+        elif 'pore.' + item in target.keys():
+            # If eg. pore.Zc was added to dict directly, no argmap needed
+            args[item] = target[f"{'pore.'+item}"]
+        elif item in target.params.keys():
+            # If a parameter is in params but not in default_argmap
+            args[item] = target.params[item]
+    return args
