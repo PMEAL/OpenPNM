@@ -1,7 +1,14 @@
 import numpy as np
 
 
-def liquid_mixture_critical_volume(target):
+__all__ = [
+    "liquid_mixture_Vc_XXX",
+    "liquid_mixture_Tc_XXX",
+    "liquid_mixture_acentric_factor_XXX",
+]
+
+
+def liquid_mixture_Vc_XXX(target):
     xs = [target['pore.mole_fraction.' + c.name] for c in target.components.values()]
     Vcs = [c['param.critical_volume'] for c in target.components.values()]
     N = len(xs)  # Number of components
@@ -12,7 +19,7 @@ def liquid_mixture_critical_volume(target):
     return Vm
 
 
-def liquid_mixture_critical_temperature(target, Vc='pore.critical_volume'):
+def liquid_mixture_Tc_XXX(target, Vc='pore.critical_volume'):
     xs = [target['pore.mole_fraction.' + c.name] for c in target.components.values()]
     Tcs = [c['param.critical_temperature'] for c in target.components.values()]
     Vcs = [c['param.critical_volume'] for c in target.components.values()]
@@ -27,7 +34,7 @@ def liquid_mixture_critical_temperature(target, Vc='pore.critical_volume'):
     return Tcm
 
 
-def mixture_acentric_factor(target):
+def liquid_mixture_acentric_factor_XXX(target):
     xs = [target['pore.mole_fraction.' + c.name] for c in target.components.values()]
     omegas = [c['param.acentric_factor'] for c in target.components.values()]
     omega = np.sum([omegas[i]*xs[i] for i in range(len(xs))], axis=0)
