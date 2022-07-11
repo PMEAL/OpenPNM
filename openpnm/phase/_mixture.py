@@ -1,8 +1,6 @@
 import numpy as np
 import logging
 from openpnm.phase import Phase
-from openpnm.models.collections.phase import liquid_mixture
-from openpnm.models.collections.phase import gas_mixture, binary_gas_mixture
 from openpnm.models.phase.mixtures import mole_summation
 from openpnm.utils import HealthDict
 from openpnm.utils import Docorator, Workspace
