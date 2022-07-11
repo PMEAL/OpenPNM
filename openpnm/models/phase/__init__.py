@@ -39,7 +39,6 @@ from . import vapor_pressure
 from . import viscosity
 
 
-# %%
 import inspect as _inspect
 import chemicals as _chemicals
 import numpy as _np
@@ -62,7 +61,7 @@ default_argmap = {
 }
 
 
-def chemicals_pure_prop_wrapper(target, f, **kwargs):
+def chemicals_wrapper(target, f, **kwargs):
     r"""
     Wrapper function for calling models in the ``chemicals`` package
 
@@ -90,47 +89,41 @@ def chemicals_pure_prop_wrapper(target, f, **kwargs):
         It is necessary to provide these as keyword arguments, and they will be
         included in ``default_argmap`` as new entries or overwriting existing
         ones. So ``mu='pore.blah'`` will pass ``target['pore.blah']`` to the
-        ``mu`` argument of ``f``.
+        ``mu`` argument of ``f``. Any arguments ending with an ``s`` are
+        assumed to refer to the individual properties of pure components in a
+        mixture. So ``mus`` means fetch the viscosity of each component as a
+        list, like ``[1.3e-5, 1.9e-5]``. This function will trim the trailing
+        ``s`` off any argument name before checking the ``default_argmap`` so
+        that the normal pure component values can be looked up.
 
     """
     # Update default argmap with any user supplied values
     argmap = default_argmap.copy()
     for k, v in kwargs.items():
         argmap[k] = v
-    # Get k, v pairs from target to pass to function below
     args = _get_items_from_target(target, f, argmap)
-
-    # Get the numba vectorized version of f, or else numpy arrays don't work
-    f = getattr(_chemicals.numba_vectorized, f.__name__)
-    try:
-        vals = f(*args.values())
-    except AssertionError:
-        raise Exception('numba vectorized version did not work')
-    return vals
-
-
-def chemicals_mixture_prop_wrapper(target, f, **kwargs):
-    # Update default argmap with any user supplied values
-    argmap = default_argmap.copy()
-    for k, v in kwargs.items():
-        argmap[k] = v
-    # Get k, v pairs from target to pass to function below
-    args = _get_items_from_target(target, f, argmap)
-    # Get the numba vectorized version of f
-    f = getattr(_chemicals.numba_vectorized, f.__name__)
-    # Call function in for-loop for each pores since they are not vectorized
-    vals = _np.zeros(target.Np)
-    for pore in target.Ps:
-        a = {}
-        for item in args.keys():
-            if item.endswith('s'):
-                try:
-                    a[item] = [args[item][i][pore] for i in range(len(args[item]))]
-                except TypeError:
-                    a[item] = args[item]
-            else:
-                a[item] = args[item][pore]
-        vals[pore] = f(*list(a.values()))
+    # f = getattr(_chemicals.numba_vectorized, f.__name__)
+    if any([True for k in args.keys() if k.endswith('s')]):
+        # Call function in for-loop for each pores since they are not vectorized
+        vals = _np.zeros(target.Np)
+        for pore in target.Ps:
+            a = {}
+            for item in args.keys():
+                if item.endswith('s'):
+                    try:
+                        a[item] = [args[item][i][pore] for i in range(len(args[item]))]
+                    except TypeError:
+                        a[item] = args[item]
+                else:
+                    a[item] = args[item][pore]
+            vals[pore] = f(*list(a.values()))
+    else:
+        try:
+            # Get the numba vectorized version of f, or else numpy arrays don't work
+            f = getattr(_chemicals.numba_vectorized, f.__name__)
+            vals = f(*args.values())
+        except AssertionError:
+            raise Exception('numba vectorized version did not work')
     return vals
 
 

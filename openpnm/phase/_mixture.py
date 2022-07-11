@@ -227,11 +227,11 @@ if __name__ == '__main__':
     import openpnm as op
     import chemicals as chem
 
-    pn = op.network.Demo()
+    pn = op.network.Demo(shape=[20, 20, 20])
     o2 = op.phase.Species(network=pn, species='o2', name='pure_O2')
 
     o2.add_model(propname='pore.viscosity',
-                 model=op.models.phase.chemicals_pure_prop_wrapper,
+                 model=op.models.phase.chemicals_wrapper,
                  f=chem.viscosity.viscosity_gas_Gharagheizi)
 
     # o2.add_model(propname='pore.viscosity',
@@ -246,14 +246,14 @@ if __name__ == '__main__':
     n2 = op.phase.Species(network=pn, species='n2', name='pure_N2')
 
     n2.add_model(propname='pore.viscosity',
-                 model=op.models.phase.chemicals_pure_prop_wrapper,
+                 model=op.models.phase.chemicals_wrapper,
                  f=chem.viscosity.viscosity_gas_Gharagheizi)
 
     air = op.phase.GasMixture(network=pn, components=[o2, n2], name='air')
     air.y(o2.name, 0.21)
     air['pore.mole_fraction.pure_N2'] = 0.79
     air.add_model(propname='pore.viscosity',
-                  model=op.models.phase.chemicals_mixture_prop_wrapper,
+                  model=op.models.phase.chemicals_wrapper,
                   f=chem.viscosity.Herning_Zipperer)
     air.regenerate_models()
 
