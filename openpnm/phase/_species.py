@@ -27,7 +27,9 @@ class Species(Phase):
         If provided, this is used to lookup tabulated constants from the
         ``chemicals`` package, which attempts to find a match. For instance,
         'water', 'Water', and 'H2O' all work. The contants are stored in
-        ``species.params`` like ``species.params['molecular_weight']``.
+        ``species.params`` like ``species.params['molecular_weight']``. They
+        can also be accessed using ``species['param.molecular_weight']`` using
+        some behind the scenes python magic.
     name : str, optional
         The name of the phase. This is useful to keep track of the objects
         throughout the simulation.  The name must be unique to the project.

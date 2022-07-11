@@ -80,7 +80,9 @@ class Phase(Domain):
             vals = self.network[element + '.' + prop]
         else:
             if self.settings['auto_interpolate']:
-                if (element == 'pore') and ('throat.'+prop not in self.keys()):
+                if element == 'param':
+                    raise KeyError(key)
+                elif (element == 'pore') and ('throat.'+prop not in self.keys()):
                     msg = f"'throat.{prop}' not found, cannot interpolate '{element+'.'+prop}'"
                     raise KeyError(msg)
                 elif (element == 'throat') and ('pore.'+prop not in self.keys()):

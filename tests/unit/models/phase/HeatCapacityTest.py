@@ -18,7 +18,7 @@ class HeatCapacityTest:
         n2 = op.phase.Species(network=self.net, species='nitrogen')
         vals = []
         for f in mods:
-            vals.append(op.models.phase.chemicals_pure_prop(target=n2, f=f).mean())
+            vals.append(op.models.phase.chemicals_pure_prop_wrapper(target=n2, f=f).mean())
         assert_allclose(vals, 0, rtol=.3)
 
     def test_generic_chemicals_for_pure_liq(self):
@@ -33,7 +33,7 @@ class HeatCapacityTest:
         h2o = op.phase.Species(network=self.net, species='water')
         vals = []
         for f in mods:
-            vals.append(op.models.phase.chemicals_pure_prop(target=h2o, f=f).mean())
+            vals.append(op.models.phase.chemicals_pure_prop_wrapper(target=h2o, f=f).mean())
         assert_allclose(vals, 0, rtol=0.2)
 
 

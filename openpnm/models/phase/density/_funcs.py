@@ -1,5 +1,5 @@
 from openpnm.utils import Docorator
-from chemicals import numba_vectorized, Vm_to_rho, COSTALD_mixture
+from chemicals import Vm_to_rho, COSTALD_mixture
 import numpy as np
 
 
@@ -10,7 +10,6 @@ __all__ = [
     "standard",
     "ideal_gas",
     "water",
-    "liquid_density",
     "liquid_mixture_density",
 ]
 
@@ -131,17 +130,6 @@ def water(target, temperature='pore.temperature', salinity='pore.salinity'):
     rho_sw = rho_w + d_rho
     value = rho_sw
     return value
-
-
-def liquid_density(target, temperature='pore.temperature'):
-    T = target[temperature]
-    MW = target['param.molecular_weight']
-    Tc = target['param.critical_temperature']
-    Vc = target['param.critical_volume']
-    omega = target['param.acentric_factor']
-    Vm = numba_vectorized.COSTALD(T, Tc, Vc, omega)
-    rhoL = Vm_to_rho(Vm, MW)
-    return rhoL
 
 
 def liquid_mixture_density(target, temperature='pore.temperature'):

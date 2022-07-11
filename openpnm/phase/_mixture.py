@@ -67,8 +67,8 @@ class Mixture(Phase):
 
     def get_comp_vals(self, propname):
         vals = {}
-        for comp in self.components.keys():
-            vals[comp] = self[propname + '.' + comp]
+        for comp in self.components.values():
+            vals[comp.name] = comp[propname]
         return vals
 
     def __str__(self):
@@ -221,12 +221,36 @@ class BinaryGas(GasMixture):
 
 if __name__ == '__main__':
     import openpnm as op
+    import chemicals as chem
+
     pn = op.network.Demo()
     o2 = op.phase.Species(network=pn, species='o2', name='pure_O2')
+
+    o2.add_model(propname='pore.viscosity',
+                 model=op.models.phase.chemicals_pure_prop_wrapper,
+                 f=chem.viscosity.viscosity_gas_Gharagheizi)
+
+    # o2.add_model(propname='pore.viscosity',
+    #              model=op.models.viscosity.viscosity_gas_Garagheizi)
+
+    # o2.add_model_from_chemicals(propname='pore.viscosity',
+    #                             model=chem.viscosity.viscosity_gas_Gharagheizi)
+
+    # o2.add_model(propname='pore.viscosity',
+    #              model=chem.viscosity.viscosity_gas_Gharagheizi)
+
     n2 = op.phase.Species(network=pn, species='n2', name='pure_N2')
+
+    n2.add_model(propname='pore.viscosity',
+                 model=op.models.phase.chemicals_pure_prop_wrapper,
+                 f=chem.viscosity.viscosity_gas_Gharagheizi)
+
     air = op.phase.GasMixture(network=pn, components=[o2, n2], name='air')
     air.y(o2.name, 0.21)
     air['pore.mole_fraction.pure_N2'] = 0.79
+    air.add_model(propname='pore.viscosity',
+                  model=op.models.phase.chemicals_mixture_prop_wrapper,
+                  f=chem.viscosity.Herning_Zipperer)
     air.regenerate_models()
 
     h2o = op.phase.Species(network=pn, species='water')

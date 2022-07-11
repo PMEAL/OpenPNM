@@ -22,7 +22,7 @@ class LatentHeatTest:
         h2o = op.phase.Species(network=self.net, species='water')
         vals = []
         for f in mods:
-            vals.append(op.models.phase.chemicals_pure_prop(target=h2o, f=f).mean())
+            vals.append(op.models.phase.chemicals_pure_prop_wrapper_wrapper(target=h2o, f=f).mean())
         assert_allclose(vals, 41276, rtol=0.5)
 
 

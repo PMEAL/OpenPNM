@@ -5,7 +5,11 @@ from openpnm.utils import Docorator
 docstr = Docorator()
 
 
-__all__ = ["standard", "ideal_gas", "vanderwaals"]
+__all__ = [
+    "standard",
+    "ideal_gas",
+    "vanderwaals",
+]
 
 
 @docstr.dedent

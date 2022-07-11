@@ -5,7 +5,6 @@ from openpnm.utils import get_model_collection
 __all__ = [
     'binary_gas_mixture',
     'gas_mixture',
-    'generic_gas',
 ]
 
 
@@ -19,25 +18,6 @@ def gas_mixture(regen_mode=None, domain=None):
     return get_model_collection(collection=_gas_mixture,
                                 regen_mode=regen_mode,
                                 domain=domain)
-
-
-def generic_gas(regen_mode=None, domain=None):
-    return get_model_collection(collection=_generic_gas,
-                                regen_mode=regen_mode,
-                                domain=domain)
-
-
-_generic_gas = {
-    'pore.heat_capacity': {
-        'model': mods.heat_capacity.gas_heat_capacity,
-    },
-    'pore.thermal_conductivity': {
-        'model': mods.thermal_conductivity.gas_thermal_conductivity,
-    },
-    'pore.viscosity': {
-        'model': mods.viscosity.gas_viscosity,
-    },
-}
 
 
 _binary_gas_mixture = {

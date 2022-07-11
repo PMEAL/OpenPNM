@@ -68,7 +68,7 @@ class SurfaceTensionTest:
         vals = []
         for f in mods:
             print(f)
-            vals.append(op.models.phase.chemicals_pure_prop(target=h2o, f=f).mean())
+            vals.append(op.models.phase.chemicals_pure_prop_wrapper(target=h2o, f=f).mean())
         assert_allclose(vals, 2.898e-1, rtol=.8)
 
 

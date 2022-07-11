@@ -21,7 +21,7 @@ class ThermalConductivityTest:
         a = Chemical('nitrogen')
         phase['pore.heat_capacity'] = a.Cpg
         phase.add_model(propname='pore.viscosity',
-                        model=op.models.phase.chemicals_pure_prop,
+                        model=op.models.phase.chemicals_pure_prop_wrapper,
                         f=chemicals.viscosity.viscosity_gas_Gharagheizi)
         phase.add_model(propname='pore.thermal_conductivity', model=f)
         phase.regenerate_models()
@@ -52,7 +52,7 @@ class ThermalConductivityTest:
         a = op.phase.Species(network=self.net, species='nitrogen')
         vals = []
         for f in mods:
-            vals.append(op.models.phase.chemicals_pure_prop(target=a, f=f).mean())
+            vals.append(op.models.phase.chemicals_pure_prop_wrapper(target=a, f=f).mean())
         assert_allclose(vals, 2.898e-2, rtol=.2)
 
     def test_generic_chemicals_for_pure_liq(self):
@@ -70,7 +70,7 @@ class ThermalConductivityTest:
         h2o = op.phase.Species(network=self.net, species='water')
         vals = []
         for f in mods:
-            vals.append(op.models.phase.chemicals_pure_prop(target=h2o, f=f).mean())
+            vals.append(op.models.phase.chemicals_pure_prop_wrapper(target=h2o, f=f).mean())
         assert_allclose(vals, 2.898e-1, rtol=1.5)
 
 

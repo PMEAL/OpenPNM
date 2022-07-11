@@ -4,7 +4,13 @@ from openpnm.utils import Docorator
 
 docstr = Docorator()
 
-__all__ = ["water", "eotvos", "guggenheim_katayama", "brock_bird_scaling"]
+
+__all__ = [
+    "water",
+    "guggenheim_katayama",
+    "brock_bird_scaling",
+]
+
 
 @docstr.dedent
 def water(target, temperature='pore.temperature', salinity='pore.salinity'):
@@ -51,39 +57,6 @@ def water(target, temperature='pore.temperature', salinity='pore.salinity'):
     TC = T-273.15
     sigma_sw = sigma_w*(1+(a1*TC+a2)*np.log(1+a3*S))
     value = sigma_sw
-    return value
-
-
-@docstr.dedent
-def eotvos(target, k, temperature='pore.temperature',
-           critical_temperature='pore.critical_temperature',
-           molar_density='pore.molar_density'):
-    r"""
-    Missing description
-
-    Parameters
-    ----------
-    %(models.target.parameters)s
-    k : float
-        Constant parameter specific to fluid
-    %(models.phase.T)s
-    critical_temperature : str
-        The dictionary key containing the critical temperature values (K)
-    molar_density : str
-        The dictionary key containing the molar density values (K)
-
-    Returns
-    -------
-    value : ndarray
-        A numpy ndarray containing surface tension values [N/m]
-
-    TODO: Needs description, and improve definition of k
-
-    """
-    Tc = target[critical_temperature]
-    T = target[temperature]
-    Vm = 1/target[molar_density]
-    value = k*(Tc-T)/(Vm**(2/3))
     return value
 
 

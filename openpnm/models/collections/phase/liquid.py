@@ -4,18 +4,11 @@ from openpnm.utils import get_model_collection
 
 __all__ = [
     'liquid_mixture',
-    'generic_liquid',
 ]
 
 
 def liquid_mixture(regen_mode=None, domain=None):
     return get_model_collection(collection=_liquid_mixture,
-                                regen_mode=regen_mode,
-                                domain=domain)
-
-
-def generic_liquid(regen_mode=None, domain=None):
-    return get_model_collection(collection=_generic_liquid,
                                 regen_mode=regen_mode,
                                 domain=domain)
 
@@ -44,24 +37,5 @@ _liquid_mixture = {
     },
     'pore.heat_capacity': {
         'model': mods.heat_capacity.mixture_heat_capacity,
-    },
-}
-
-
-_generic_liquid = {
-    'pore.heat_capacity': {
-        'model': mods.heat_capacity.liquid_heat_capacity,
-    },
-    'pore.thermal_conductivity': {
-        'model': mods.thermal_conductivity.liquid_thermal_conductivity,
-    },
-    'pore.viscosity': {
-        'model': mods.viscosity.liquid_viscosity,
-    },
-    'pore.density': {
-        'model': mods.density.liquid_density,
-    },
-    'pore.vapor_pressure': {
-        'model': mods.vapor_pressure.vapor_pressure,
     },
 }

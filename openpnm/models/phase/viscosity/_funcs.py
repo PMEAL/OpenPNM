@@ -6,8 +6,6 @@ __all__ = [
     "water",
     "reynolds",
     "chung",
-    'liquid_viscosity',
-    'gas_viscosity',
     'liquid_mixture_viscosity',
     'gas_mixture_viscosity'
 ]
@@ -159,38 +157,6 @@ def chung(target, temperature='pore.temperature',
     sigma = 0.809*(Vc**(1/3))
     value = 26.69E-9*np.sqrt(MW*T)/(omega*sigma**2)
     return value
-
-
-def liquid_viscosity(target, temperature='pore.temperature'):
-    T = target[temperature]
-    MW = target['param.molecular_weight']
-    Tc = target['param.critical_temperature']
-    Pc = target['param.critical_pressure']
-    omega = target['param.acentric_factor']
-    muL = chem.numba_vectorized.Letsou_Stiel(T, MW, Tc, Pc, omega)
-    return muL
-
-
-def gas_viscosity(target, temperature='pore.temperature'):
-    r"""
-    Estimates the gas viscosity using the model of Gharagheizi et al
-
-    Parameters
-    ----------
-    %(models.target.parameters)s
-    %(models.phase.T)s
-
-    Returns
-    -------
-    vals : ndarray
-        An numpy ndarray containing the viscosity values
-    """
-    T = target[temperature]
-    MW = target['param.molecular_weight']
-    Tc = target['param.critical_temperature']
-    Pc = target['param.critical_pressure']
-    muG = chem.numba_vectorized.viscosity_gas_Gharagheizi(T, Tc, Pc, MW)
-    return muG
 
 
 def gas_mixture_viscosity(target):
