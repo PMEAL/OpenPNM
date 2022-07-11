@@ -96,6 +96,20 @@ def chemicals_wrapper(target, f, **kwargs):
         ``s`` off any argument name before checking the ``default_argmap`` so
         that the normal pure component values can be looked up.
 
+    Notes
+    -----
+    This wrapper works with both pure and mixture phases, but the mixture
+    models are very slow due to the way ``chemicals`` vectorizes code. For pure
+    species it allows the computation of values at many different conditions
+    in a vectorized way. The means that the conditions in each pore, such as
+    temperature, pressure, etc can be passed and iterpreted as a list of
+    conditions. For mixture models, however, the vectorization is done over
+    the compositions, at a *fixed* conditions. This means that we must do a
+    pure-python for-loop (ie. slow) for each individual pore. As such, we
+    have re-implemented several of the most useful mixing models offered by
+    ``chemicals`` in ``OpenPNM``, and include unit tests to ensure our
+    implementation agrees.
+
     """
     # Update default argmap with any user supplied values
     argmap = default_argmap.copy()
