@@ -56,6 +56,6 @@ _water = {
         'C': 236.191,
     },
     'pore.viscosity': {
-        'model': mods.phase.viscosity.water,
+        'model': mods.phase.viscosity.water_correlation,
     },
 }

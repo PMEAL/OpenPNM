@@ -7,8 +7,7 @@ docstr = Docorator()
 
 __all__ = [
     'salinity',
-    'mole_weighted_average',
-    'mixture_molecular_weight',
+    'mixing_rule',
     'mole_summation',
     'from_component',
 ]
@@ -61,55 +60,55 @@ def salinity(
     return S
 
 
-def mixture_molecular_weight(target):
+def mixing_rule(
+    target,
+    prop='pore.viscosity',
+    mode='logarithmic',
+    power=1,
+):
     r"""
-    Computes the average molecular weight of a mixture based on mode fractions
+    Computes the property of a mixture using the specified mixing rule
 
     Parameters
     ----------
-    %(models.target.parameters)s
+    target : dict
+        The openpnm object to which this model applies
+    prop : str
+        The dictionary key containing the property of interest on each
+        component
+    mode : str
+        The mixing rule to to use. Options are:
 
-    Returns
-    -------
-    vals : ndarray
-        An ND-array containing the mole fraction weighted average molecular
-        weight
+        ============== ========================================================
+        mode
+        ============== ========================================================
+        'linear'       Basic mole fraction weighting of the form
+                       :math:`z = \Sigma (x_i \cdot \z_i)`
+        'logarithmic'  Uses the natural logarithm of the property as:
+                       :math:`ln(z) = \Sigma (x_i \cdot ln(\z_i))`
+        'power         Applies an exponent to the property as:
+                       :math:`\z^{power} = \Sigma (x_i \cdot \z_i^{power})`
+        ============== ========================================================
+
+    power : scalar
+        If ``mode='power'`` this indicates the value of the exponent,
+        otherwise this is ignored.
     """
-    xs = [target['pore.mole_fraction.' + c.name] for c in target.components.values()]
-    MWs = [c['param.molecular_weight'] for c in target.components.values()]
-    MW = np.zeros_like(xs[0])
-    for i in range(len(xs)):
-        MW += xs[i]*MWs[i]
-    return MW
-
-
-@docstr.dedent
-def mole_weighted_average(target, prop):
-    r"""
-    Computes the mole fraction weighted average of the given property
-
-    Parameters
-    ----------
-    %(models.target.parameters)s
-    prop : string
-        The dictionary key to the property to be averaged
-
-    Returns
-    -------
-    vals : ND-array
-        An ND-array containing the mole fraction weighted average value of the
-        specified property.
-    """
-    comps = target.components.values()
-    if len(comps) == 0:
-        vals = np.zeros(target.Np)*np.nan
-    else:
-        vals = np.zeros(target.Np)
-        for item in comps:
-            frac = target['pore.mole_fraction.' + item.name]
-            temp = item[prop]
-            vals += temp*frac
-    return vals
+    xs = target['pore.mole_fraction']
+    ys = target.get_comp_vals(prop)
+    z = 0.0
+    if mode == 'logarithmic':
+        for i in xs.keys():
+            z += xs[i]*np.log(ys[i])
+        z = np.exp(z)
+    elif mode in ['linear', 'simple']:
+        for i in xs.keys():
+            z += xs[i]*ys[i]
+    elif mode == 'power':
+        for i in xs.keys():
+            z += xs[i]*ys[i]**power
+        z = z**(1/power)
+    return z
 
 
 @docstr.dedent

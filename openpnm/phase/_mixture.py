@@ -255,12 +255,17 @@ if __name__ == '__main__':
                   f=chem.viscosity.Herning_Zipperer)
     air.regenerate_models()
 
-    h2o = op.phase.Species(network=pn, species='water')
+    h2o_l = op.phase.Species(network=pn, species='water')
+    h2o_l.add_model(propname='pore.viscosity',
+                    model=op.models.phase.viscosity.liquid_chung)
     etoh = op.phase.Species(network=pn, species='ethanol')
-    vodka = op.phase.LiquidMixture(network=pn, components=[h2o, etoh])
-    vodka.x(h2o.name, 0.4)
+    etoh.add_model(propname='pore.viscosity',
+                   model=op.models.phase.viscosity.liquid_chung)
+    vodka = op.phase.LiquidMixture(network=pn, components=[h2o_l, etoh])
+    vodka.x(h2o_l.name, 0.4)
     vodka.x(etoh.name, 0.6)
-    vodka.regenerate_models()
+    vodka.add_model(propname='pore.viscosity',
+                    model=op.models.phase.viscosity.liquid_mixture)
 
     ch4 = op.phase.Species(network=pn, species='ch4', name='methane')
     h2 = op.phase.Species(network=pn, species='h2', name='hydrogen')

@@ -1,17 +1,21 @@
 import numpy as np
-import chemicals as chem
+from openpnm.models.phase.mixtures import mixing_rule
 
 
 __all__ = [
-    "water",
-    "reynolds",
-    "chung",
-    'liquid_mixture_viscosity',
-    'gas_mixture_viscosity'
+    'water_correlation',
+    'liquid_chung',
+    'liquid_mixture',
+    'gas_mixture',
+    'gas_gharagheizi',
 ]
 
 
-def water(target, temperature='pore.temperature', salinity='pore.salinity'):
+def water_correlation(
+    target,
+    temperature='pore.temperature',
+    salinity='pore.salinity'
+):
     r"""
     Calculates viscosity of pure water or seawater at atmospheric pressure
     using Eq. (22) given by Sharqawy et. al [1]. Values at temperature higher
@@ -21,22 +25,18 @@ def water(target, temperature='pore.temperature', salinity='pore.salinity'):
     Parameters
     ----------
     target : Phase
-        The object for which these values are being calculated. This
-        controls the length of the calculated array, and also provides
-        access to other necessary thermofluid properties.
+        The object for which these values are being calculated.
     temperature : str
         The dictionary key containing the temperature values. Temperature must
-        be in Kelvin for this emperical equation to work. Can be either a pore
-        or throat array.
+        be in Kelvin for this emperical equation to work.
     salinity : str
         The dictionary key containing the salinity values. Salinity must be
-        expressed in g of salt per kg of solution (ppt). Can be either a
-        pore or throat array, but must be consistent with ``temperature``.
+        expressed in g of salt per kg of solution (ppt).
 
     Returns
     -------
-    value : ndarray
-        Array containing viscosity of water/seawater in [kg/m.s]
+    mu : ndarray
+        Array containing viscosity of water or seawater in [kg/m.s] or [Pa.s]
 
     Notes
     -----
@@ -76,40 +76,13 @@ def water(target, temperature='pore.temperature', salinity='pore.salinity'):
     return value
 
 
-def reynolds(target, u0, b, temperature='pore.temperature'):
-    r"""
-    Uses exponential model by Reynolds [1] for the temperature dependance of
-    shear viscosity
-
-    Parameters
-    ----------
-    target : Phase
-        The object for which these values are being calculated.  This
-        controls the length of the calculated array, and also provides
-        access to other necessary thermofluid properties.
-    u0, b : float, array_like
-            Coefficients of the viscosity exponential model (mu = u0*Exp(-b*T)
-            where T is the temperature in Kelvin
-    temperature : str
-        The dictionary key containing the temperature values (K).  Can be
-        either a pore or throat array.
-
-    Returns
-    -------
-    value : ndarray
-        Array containing viscosity values based on Reynolds model.
-
-    [1] Reynolds O. (1886). Phil Trans Royal Soc London, v. 177, p.157.
-
-    """
-    value = u0*np.exp(b*target[temperature])
-    return value
-
-
-def chung(target, temperature='pore.temperature',
-          mol_weight='pore.molecular_weight',
-          critical_temperature='pore.critical_temperature',
-          critical_volume='pore.critical_volume'):
+def liquid_chung(
+    target,
+    temperature='pore.temperature',
+    mol_weight='param.molecular_weight',
+    critical_temperature='param.critical_temperature',
+    critical_volume='param.critical_volume'
+):
     r"""
     Uses Chung et al. [1] model to estimate viscosity for gases at low
     pressure (much less than the critical pressure) at conditions of interest.
@@ -159,22 +132,57 @@ def chung(target, temperature='pore.temperature',
     return value
 
 
-def gas_mixture_viscosity(target):
-    Ys = target['pore.mole_fraction']
-    MWs = [c['param.molecular_weight'] for c in target.components.values()]
-    mus = {k: c['pore.viscosity'] for k, c in target.components.items()}
-    mu = np.zeros(target.Np)
-    for pore in target.Ps:
-        y = [Ys[comp][pore] for comp in Ys.keys()]
-        m = [mus[comp][pore] for comp in mus.keys()]
-        mu[pore] = chem.Herning_Zipperer(y, m, MWs)
+def gas_gharagheizi(
+    target,
+):
+    pass
+
+
+def gas_mixture(
+    target,
+    MWs='param.molecular_weight',
+    mus='pore.viscosity',
+):
+    r"""
+    Computes the viscosity of a gas mixture using a custom written version
+    of ``chemicals.viscosity.HerningZipperer``
+
+    Parameters
+    ----------
+    target : dict
+        The openpnm object to which this model applies
+    molecular_weight : str
+        The location of the molecular weights of each species. The default is
+        ``'param.molecular_weight'``
+    viscosity : str
+        The locaiton of the viscosities for each individual species.  The
+        default is ``'pore.viscosity'``.
+
+    Returns
+    -------
+    mu : ndarray
+        An ndarray of Np length containing the viscosity of the mixture in
+        each pore
+    """
+    MWs = target.get_comp_vals(MWs)
+    mus = target.get_comp_vals(mus)
+    xs = target['pore.mole_fraction']
+    num = 0.0
+    denom = 0.0
+    for k in xs.keys():
+        num += xs[k]*mus[k]*MWs[k]**0.5
+        denom += xs[k]*MWs[k]**0.5
+    mu = num/denom
     return mu
 
 
-def liquid_mixture_viscosity(target):
-    xs = [target['pore.mole_fraction.' + c.name] for c in target.components.values()]
-    mus = [c['pore.viscosity'] for c in target.components.values()]
-    mu = 0.0
-    for i in range(len(xs)):
-        mu += xs[i]*np.log(mus[i])
-    return np.exp(mu)
+def liquid_mixture(
+    target,
+    prop='pore.viscosity',
+    mode='logarithmic',
+    power=1,
+):
+    return mixing_rule(target=target, prop=prop, mode=mode, power=power)
+
+
+liquid_mixture.__doc__ = mixing_rule.__doc__
