@@ -19,7 +19,7 @@ def ideal_gas(
     target,
     pressure='pore.pressure',
     temperature='pore.temperature',
-    mol_weight='pore.molecular_weight',
+    molecular_weight='param.molecular_weight',
 ):
     r"""
     Uses ideal gas law to calculate the mass density of an ideal gas
@@ -40,9 +40,14 @@ def ideal_gas(
     """
     P = target[pressure]
     T = target[temperature]
-    MW = target[mol_weight]
-    R = 8.31447
-    value = P/(R*T)*MW
+    try:
+        # If target is a pure species, it should have molecular weight in params
+        MW = target[molecular_weight]
+    except KeyError:
+        # Otherwise, get the mole weighted average value
+        MW = target.get_mix_vals(molecular_weight)
+    R = 8.31447  # J/(mol.K)
+    value = P/(R*T)*MW/1000  # Convert to kg/m3
     return value
 
 
