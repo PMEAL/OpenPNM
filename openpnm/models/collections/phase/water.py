@@ -38,7 +38,7 @@ _water = {
         'value': 1e-9,
     },
     'pore.density': {
-        'model': mods.phase.density.water,
+        'model': mods.phase.density.water_correlation,
     },
     'pore.molar_density': {
         'model': mods.phase.molar_density.standard,

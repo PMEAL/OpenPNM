@@ -69,6 +69,19 @@ class Mixture(Phase):
             vals[comp.name] = comp[propname]
         return vals
 
+    def get_mix_vals(self, propname, mode='linear', power=1):
+        Xs = self['pore.mole_fraction']
+        ys = self.get_comp_vals(propname)
+        if mode == 'linear':
+            z = np.vstack([Xs[k]*ys[k] for k in Xs.keys()]).sum(axis=0)
+        elif mode == 'logarithmic':
+            z = np.vstack([Xs[k]*np.log(ys[k]) for k in Xs.keys()]).sum(axis=0)
+            z = np.exp(z)
+        elif mode == 'power':
+            z = np.vstack([Xs[k]*(ys[k])**power for k in Xs.keys()]).sum(axis=0)
+            z = z**(1/power)
+        return z
+
     def __str__(self):
         horizontal_rule = '―' * 78
         temp = super().__str__().split(horizontal_rule)
