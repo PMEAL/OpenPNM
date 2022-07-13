@@ -1,7 +1,6 @@
-from openpnm.phase import Phase
-import chemicals as chem
-from chemicals.utils import k
 import logging
+from openpnm.phase import Phase, _fetch_chemical_props
+from thermo import Chemical
 
 
 logger = logging.getLogger(__name__)
@@ -39,26 +38,7 @@ class Species(Phase):
 
     def __init__(self, species, **kwargs):
         # Create temp first to ensure all look-ups pass before initializing obj
-        temp = {}
-        CAS = chem.CAS_from_any(species)
-        temp['CAS'] = CAS
-        a = chem.identifiers.search_chemical(CAS)
-        temp['common_name'] = a.common_name
-        temp['charge'] = a.charge
-        temp['formula'] = a.formula
-        temp['molecular_weight'] = a.MW
-        temp['critical_temperature'] = chem.critical.Tc(CAS)
-        temp['critical_pressure'] = chem.critical.Pc(CAS)
-        temp['critical_volume'] = chem.critical.Vc(CAS)
-        temp['critical_compressibilty_factor'] = chem.critical.Zc(CAS)
-        temp['boiling_temperature'] = chem.Tb(CAS)
-        temp['melting_temperature'] = chem.Tm(CAS)
-        temp['triple_point_temperature'] = chem.triple.Tt(CAS)
-        temp['triple_point_pressure'] = chem.triple.Pt(CAS)
-        temp['acentric_factor'] = chem.acentric.omega(CAS)
-        temp['dipole_moment'] = chem.dipole.dipole_moment(CAS)
-        temp['lennard_jones_epsilon'] = k*chem.lennard_jones.Stockmayer(CAS)
-        temp['lennard_jones_sigma'] = chem.lennard_jones.molecular_diameter(CAS)
+        temp = _fetch_chemical_props(Chemical(species))
         super().__init__(**kwargs)
         self.params.update(temp)
 

@@ -1,5 +1,6 @@
 import openpnm.models as mods
 from openpnm.utils import get_model_collection
+from thermo import Mixture
 
 
 def air(regen_mode=None, domain=None):
@@ -9,30 +10,6 @@ def air(regen_mode=None, domain=None):
 
 
 _air = {
-    'pore.molecular_weight': {
-        'model': mods.misc.constant,
-        'value': 0.0291,
-    },
-    'pore.critical_pressure': {
-        'model': mods.misc.constant,
-        'value': 3.786E6,
-    },
-    'pore.critical_temperature': {
-        'model': mods.misc.constant,
-        'value': 132.5,
-    },
-    'pore.critical_volume': {
-        'model': mods.misc.constant,
-        'value': 0.002917,
-    },
-    'pore.contact_angle': {
-        'model': mods.misc.constant,
-        'value': 180.0,
-    },
-    'pore.surface_tension': {
-        'model': mods.misc.constant,
-        'value': 0.072,
-    },
     'pore.density': {
         'model': mods.phase.density.ideal_gas,
     },
@@ -50,10 +27,6 @@ _air = {
         'model': mods.misc.polynomial,
         'prop': 'pore.temperature',
         'a': [0.00422791, 0.0000789606, -1.56383E-08],
-    },
-    'pore.electrical_conductivity': {
-        'model': mods.misc.constant,
-        'value': 1e-15,
     },
     'pore.viscosity': {
         'model': mods.misc.polynomial,

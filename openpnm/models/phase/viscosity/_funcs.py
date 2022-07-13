@@ -143,6 +143,9 @@ def gas_pure(
     critical_pressure='param.critical_pressure',
     molecular_weight='param.molecular_weight',
 ):
+    r"""
+    """
+    # Gharagheizi method from chemicals
     T = target[temperature]
     MW = target[molecular_weight]
     Pc = target[critical_pressure]

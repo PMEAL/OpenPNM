@@ -3,6 +3,7 @@ from chemicals import Vm_to_rho
 import numpy as np
 
 
+
 docstr = Docorator()
 
 
@@ -46,8 +47,8 @@ def ideal_gas(
     except KeyError:
         # Otherwise, get the mole weighted average value
         MW = target.get_mix_vals(molecular_weight)
-    R = 8.31447  # J/(mol.K)
-    value = P/(R*T)*MW/1000  # Convert to kg/m3
+    R = 8.314462618  # J/(mol.K)
+    value = P/(R*T)*(MW/1000)  # Convert to kg/m3
     return value
 
 
@@ -227,68 +228,3 @@ def mass_to_molar(
     rho = target[density]
     value = rho/MW
     return value
-
-
-if __name__ == "__main__":
-
-    import chemicals as chem
-    import openpnm as op
-    from numpy.testing import assert_allclose
-
-    pn = op.network.Demo()
-
-    h2o = op.phase.Species(network=pn, species='water')
-    h2o.add_model(propname='pore.density',
-                  model=op.models.phase.density.liquid_pure)
-    Vm = chem.COSTALD(
-        T=h2o['pore.temperature'][0],
-        Tc=h2o['param.critical_temperature'],
-        Vc=h2o['param.critical_volume'],
-        omega=h2o['param.acentric_factor'],
-    )
-    rho_ref = Vm_to_rho(Vm, h2o['param.molecular_weight'])
-    rho_calc = h2o['pore.density'][0]
-    assert_allclose(rho_ref, rho_calc, rtol=1e-10, atol=0)
-
-    etoh = op.phase.Species(network=pn, species='ethanol')
-    etoh.add_model(propname='pore.density',
-                   model=op.models.phase.density.liquid_pure)
-
-    vodka = op.phase.LiquidMixture(network=pn, components=[h2o, etoh])
-    vodka.x(h2o.name, 0.5)
-    vodka.x(etoh.name, 0.5)
-    vodka.add_model(propname='pore.density',
-                    model=op.models.phase.density.liquid_mixture)
-    Vm = chem.COSTALD_mixture(
-        T=vodka['pore.temperature'][0],
-        xs=np.vstack(list(vodka['pore.mole_fraction'].values()))[:, 0],
-        Tcs=list(vodka.get_comp_vals('param.critical_temperature').values()),
-        Vcs=list(vodka.get_comp_vals('param.critical_volume').values()),
-        omegas=list(vodka.get_comp_vals('param.acentric_factor').values()),
-    )
-    rho_ref = Vm_to_rho(Vm, vodka.get_mix_vals('param.molecular_weight')[0])
-    rho_calc = vodka['pore.density'][0]
-    assert_allclose(rho_ref, rho_calc, rtol=1e-10, atol=0)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

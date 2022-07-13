@@ -10,7 +10,7 @@ def mercury(regen_mode=None, domain=None):
 
 _mercury = {
     'pore.vapor_pressure': {
-        'model': mods.phase.vapor_pressure.antoine,
+        'model': mods.phase.vapor_pressure.liquid_pure_antoine,
         'A': 9.85767,
         'B': 3007.129,
         'C': -10.001,
@@ -30,7 +30,7 @@ _mercury = {
         'm': -2.47004,
     },
     'pore.molar_density': {
-        'model': mods.phase.molar_density.mass_to_molar,
+        'model': mods.phase.density.mass_to_molar,
     },
     'pore.surface_tension': {
         'model': mods.misc.linear,

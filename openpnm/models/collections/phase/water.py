@@ -41,7 +41,7 @@ _water = {
         'model': mods.phase.density.water_correlation,
     },
     'pore.molar_density': {
-        'model': mods.phase.molar_density.mass_to_molar,
+        'model': mods.phase.density.mass_to_molar,
     },
     'pore.surface_tension': {
         'model': mods.phase.surface_tension.water_correlation,
@@ -50,10 +50,7 @@ _water = {
         'model': mods.phase.thermal_conductivity.water_correlation,
     },
     'pore.vapor_pressure': {
-        'model': mods.phase.vapor_pressure.antoine,
-        'A': 8.088,
-        'B': 1750.71,
-        'C': 236.191,
+        'model': mods.phase.vapor_pressure.liquid_pure_antoine,
     },
     'pore.viscosity': {
         'model': mods.phase.viscosity.water_correlation,
