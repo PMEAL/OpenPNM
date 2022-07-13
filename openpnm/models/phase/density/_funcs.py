@@ -14,7 +14,6 @@ __all__ = [
 ]
 
 
-@docstr.dedent
 def ideal_gas(
     target,
     pressure='pore.pressure',
