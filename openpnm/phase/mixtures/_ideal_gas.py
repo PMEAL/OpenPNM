@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 class IdealGas(GenericMixture):
     r"""
     Creates Mixture object that represents a ideal gas system
-    consisting of a given list of GenericPhases as components.
+    consisting of a given list of Phases as components.
 
     Parameters
     ----------
@@ -19,10 +19,8 @@ class IdealGas(GenericMixture):
 
     """
 
-    def __init__(self, settings=None, **kwargs):
-        super().__init__(settings={'prefix': 'mix'}, **kwargs)
-        self.settings._update(settings)
-
+    def __init__(self, name='mix_#', **kwargs):
+        super().__init__(name=name, **kwargs)
         self.add_model(propname='pore.molar_density',
                        model=mods.phase.molar_density.ideal_gas,
                        regen_mode='deferred')

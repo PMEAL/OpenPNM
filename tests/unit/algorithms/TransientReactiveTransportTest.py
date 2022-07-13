@@ -9,29 +9,24 @@ class TransientReactiveTransportTest:
     def setup_class(self):
         np.random.seed(0)
         self.net = op.network.Cubic(shape=[3, 3, 1], spacing=1e-6)
-        self.geo = op.geometry.GenericGeometry(network=self.net,
-                                               pores=self.net.Ps,
-                                               throats=self.net.Ts)
-        self.geo['pore.volume'] = 1e-12
-        self.phase = op.phase.GenericPhase(network=self.net)
-        self.phys = op.physics.GenericPhysics(network=self.net,
-                                              phase=self.phase,
-                                              geometry=self.geo)
-        self.phys['pore.A'] = -1e-13
-        self.phys['pore.k'] = 2
-        self.phys['throat.diffusive_conductance'] = 1e-12
-        mod = op.models.physics.generic_source_term.standard_kinetics
-        self.phys.add_model(propname='pore.reaction',
-                            model=mod,
-                            prefactor='pore.A',
-                            exponent='pore.k',
-                            X='pore.concentration',
-                            regen_mode='deferred')
-        self.settings = {'conductance': 'throat.diffusive_conductance',
-                         'quantity': 'pore.concentration'}
+        self.net.add_model_collection(
+            op.models.collections.geometry.spheres_and_cylinders()
+        )
+        self.net.regenerate_models()
+        self.net['pore.volume'] = 1e-12
+        self.phase = op.phase.Phase(network=self.net)
+        self.phase['pore.A'] = -1e-13
+        self.phase['pore.k'] = 2
+        self.phase['throat.diffusive_conductance'] = 1e-12
+        mod = op.models.physics.source_terms.standard_kinetics
+        self.phase.add_model(propname='pore.reaction',
+                             model=mod,
+                             prefactor='pore.A',
+                             exponent='pore.k',
+                             X='pore.concentration',
+                             regen_mode='deferred')
         self.alg = op.algorithms.TransientReactiveTransport(network=self.net,
-                                                            phase=self.phase,
-                                                            settings=self.settings)
+                                                            phase=self.phase)
         self.alg.settings._update({'quantity': 'pore.concentration',
                                    'conductance': 'throat.diffusive_conductance'})
         self.alg.set_value_BC(pores=self.net.pores('front'), values=2)
@@ -73,7 +68,6 @@ class TransientReactiveTransportTest:
         # Ensure the results match
         quantity = self.alg.settings['quantity']
         nt.assert_allclose(out1[quantity](0.3), out2[quantity](0.3), rtol=1e-5)
-
 
     def test_adding_bc_over_sources(self):
         with nt.assert_raises(Exception):

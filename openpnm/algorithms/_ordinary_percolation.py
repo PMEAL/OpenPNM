@@ -1,15 +1,18 @@
 import logging
 import numpy as np
 from collections import namedtuple
-from openpnm.algorithms import GenericAlgorithm
+from openpnm.algorithms import Algorithm
 from openpnm.topotools import site_percolation, bond_percolation
 from openpnm.topotools import remove_isolated_clusters, ispercolating
-from openpnm.utils import SettingsAttr, Docorator
+from openpnm.utils import Docorator
 from openpnm.utils import prettify_logger_message
-docstr = Docorator()
-logger = logging.getLogger(__name__)
+
 
 __all__ = ['OrdinaryPercolation']
+
+
+docstr = Docorator()
+logger = logging.getLogger(__name__)
 
 
 @docstr.get_sections(base='OrdinaryPercolationSettings',
@@ -19,7 +22,7 @@ class OrdinaryPercolationSettings:
     r"""
     Parameters
     ----------
-    %(GenericAlgorithmSettings.parameters)s
+    %(AlgorithmSettings.parameters)s
     access_limited : bool
         If ``True`` then invading fluid must be connected to the specified
         inlets
@@ -53,13 +56,13 @@ class OrdinaryPercolationSettings:
     throat_volume = 'throat.volume'
 
 
-class OrdinaryPercolation(GenericAlgorithm):
+class OrdinaryPercolation(Algorithm):
     r"""
     Ordinary percolation simulation with or without access limitations.
 
     Parameters
     ----------
-    network : GenericNetwork
+    network : Network
         The Network upon which this simulation should be run
     name : str, optional
         An identifying name for the object. If none is given then one is
@@ -85,9 +88,9 @@ class OrdinaryPercolation(GenericAlgorithm):
 
     """
 
-    def __init__(self, phase, settings=None, **kwargs):
-        self.settings = SettingsAttr(OrdinaryPercolationSettings, settings)
-        super().__init__(settings=self.settings, **kwargs)
+    def __init__(self, phase, **kwargs):
+        super().__init__(**kwargs)
+        self.settings._update(OrdinaryPercolationSettings())
         # Use the reset method to initialize all arrays
         self.reset()
         self.settings['phase'] = phase.name
@@ -321,11 +324,11 @@ class OrdinaryPercolation(GenericAlgorithm):
 
             # Store current applied pressure in newly invaded pores
             pinds = (self['pore.invasion_pressure'] == np.inf) * \
-                    (labels.sites >= 0)
+                    (labels.site_labels >= 0)
             self['pore.invasion_pressure'][pinds] = inv_val
             # Store current applied pressure in newly invaded throats
             tinds = (self['throat.invasion_pressure'] == np.inf) * \
-                    (labels.bonds >= 0)
+                    (labels.bond_labels >= 0)
             self['throat.invasion_pressure'][tinds] = inv_val
 
         # Convert invasion pressures in sequence values

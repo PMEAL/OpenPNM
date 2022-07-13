@@ -1,13 +1,16 @@
 import logging
 import numpy as np
 from openpnm.algorithms import ReactiveTransport
-from openpnm.utils import Docorator, SettingsAttr
+from openpnm.utils import Docorator
 from openpnm.integrators import ScipyRK45
 from openpnm.algorithms._solution import SolutionContainer
-docstr = Docorator()
-logger = logging.getLogger(__name__)
+
 
 __all__ = ['TransientReactiveTransport']
+
+
+docstr = Docorator()
+logger = logging.getLogger(__name__)
 
 
 @docstr.get_sections(base='TransientReactiveTransportSettings',
@@ -30,7 +33,7 @@ class TransientReactiveTransport(ReactiveTransport):
 
     Parameters
     ----------
-    network : GenericNetwork
+    network : Network
         The Network with which this algorithm is associated.
 
     Notes
@@ -39,9 +42,9 @@ class TransientReactiveTransport(ReactiveTransport):
 
     """
 
-    def __init__(self, phase, settings=None, **kwargs):
-        self.settings = SettingsAttr(TransientReactiveTransportSettings, settings)
-        super().__init__(phase=phase, settings=self.settings, **kwargs)
+    def __init__(self, phase, name='trans_react_#', **kwargs):
+        super().__init__(phase=phase, name=name, **kwargs)
+        self.settings._update(TransientReactiveTransportSettings())
         self.settings['phase'] = phase.name
         self["pore.ic"] = np.nan
 
@@ -120,7 +123,7 @@ class TransientReactiveTransport(ReactiveTransport):
 
     def _merge_inital_and_boundary_values(self):
         x0 = self['pore.ic']
-        bc_pores = ~np.isnan(self['pore.bc_value'])
-        x0[bc_pores] = self['pore.bc_value'][bc_pores]
+        bc_pores = ~np.isnan(self['pore.bc.value'])
+        x0[bc_pores] = self['pore.bc.value'][bc_pores]
         quantity = self.settings['quantity']
         self[quantity] = x0

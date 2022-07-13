@@ -14,7 +14,7 @@ def water(target, temperature='pore.temperature', salinity='pore.salinity'):
 
     Parameters
     ----------
-    target : GenericPhase
+    target : Phase
         The object for which these values are being calculated. This
         controls the length of the calculated array, and also provides
         access to other necessary thermofluid properties.
@@ -77,7 +77,7 @@ def reynolds(target, u0, b, temperature='pore.temperature'):
 
     Parameters
     ----------
-    target : GenericPhase
+    target : Phase
         The object for which these values are being calculated.  This
         controls the length of the calculated array, and also provides
         access to other necessary thermofluid properties.
@@ -110,7 +110,7 @@ def chung(target, temperature='pore.temperature',
 
     Parameters
     ----------
-    target : GenericPhase
+    target : Phase
         The object for which these values are being calculated.  This
         controls the length of the calculated array, and also provides
         access to other necessary thermofluid properties.

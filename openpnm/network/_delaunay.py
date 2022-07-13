@@ -1,13 +1,17 @@
-import logging
-from openpnm import topotools
-from openpnm.network import DelaunayVoronoiDual
+import numpy as np
+from openpnm.network import Network
+from openpnm.utils import Docorator
+from openpnm._skgraph.generators import delaunay, tools
+from openpnm._skgraph.tools import isoutside
+from openpnm._skgraph.operations import trim_nodes
 
 
-logger = logging.getLogger(__name__)
 __all__ = ['Delaunay']
+docstr = Docorator()
 
 
-class Delaunay(DelaunayVoronoiDual):
+@docstr.dedent
+class Delaunay(Network):
     r"""
     Random network formed by Delaunay tessellation of arbitrary base points
 
@@ -20,14 +24,17 @@ class Delaunay(DelaunayVoronoiDual):
         The size of the domain.  It's possible to create cubic as well as 2D
         square domains by changing the ``shape`` as follows:
 
-            [x, y, z]
-                will produce a normal cubic domain of dimension x, and and z
-            [x, y, 0]
-                will produce a 2D square domain of size x by y
+        ========== ============================================================
+        shape      result
+        ========== ============================================================
+        [x, y, z]  A 3D cubic domain of dimension x, y and z
+        [x, y, 0]  A 2D square domain of size x by y
+        [r, z]     A 3D cylindrical domain of radius r and height z
+        [r, 0]     A 2D circular domain of radius r
+        [r]        A 3D spherical domain of radius r
+        ========== ============================================================
 
-    name : str
-        An optional name for the object to help identify it.  If not given,
-        one will be generated.
+    %(Network.parameters)s
 
     See Also
     --------
@@ -37,71 +44,22 @@ class Delaunay(DelaunayVoronoiDual):
 
     Notes
     -----
-    This class always performs the tessellation on the full set of points, then
-    trims any points that lie outside the given domain ``shape``.
-
-    Examples
-    --------
-    .. plot::
-
-        import numpy as np
-        import openpnm as op
-        import matplotlib.pyplot as plt
-
-        # Supplying custom specified points
-        pts = np.random.rand(200, 3)
-        gn = op.network.Delaunay(points=pts, shape=[1, 1, 1])
-
-        # Check the number of pores in 'gn'
-        print(gn.Np)
-
-        # Which can be quickly visualized using
-        fig, ax = plt.subplots(figsize=(5, 5))
-        op.topotools.plot_connections(network=gn, ax=ax)
-
-        plt.show()
-
-    Upon visualization it can be seen that this network is not very cubic.
-    There are a few ways to combat this, but none will make a truly square
-    domain. Points can be generated that lie outside the domain ``shape``
-    and they will be automatically trimmed.
-
-    .. plot::
-
-        import numpy as np
-        import openpnm as op
-        import matplotlib.pyplot as plt
-
-        # Must have more points for same density
-        pts = np.random.rand(300, 3)*1.2 - 0.1
-        gn = op.network.Delaunay(points=pts, shape=[1, 1, 1])
-
-        # Confirm base points have been trimmed
-        print(gn.Np < 300)
-
-        # And visualizing
-        fig, ax = plt.subplots(figsize=(5, 5))
-        op.topotools.plot_connections(network=gn, ax=ax)
-
-        plt.show()
-
-    If a domain with random base points but flat faces is needed use
-    ``Voronoi``.
+    This class always performs the tessellation on the full set of points,
+    then trims any points that lie outside the given domain ``shape``.
 
     """
 
     def __init__(self, shape=[1, 1, 1], points=None, **kwargs):
-        # Clean-up input points
-        points = self._parse_points(shape=shape, points=points)
-        super().__init__(shape=shape, points=points, **kwargs)
+        super().__init__(**kwargs)
+        points = tools.parse_points(shape=shape, points=points)
+        net, tri = delaunay(points=points, shape=shape,
+                            node_prefix='pore', edge_prefix='throat')
+        Ps = isoutside(net, shape=shape)
+        net = trim_nodes(g=net, inds=Ps)
+        self.update(net)
 
-        # Initialize network object
-        topotools.trim(network=self, pores=self.pores(['voronoi']))
-        pop = ['pore.voronoi', 'throat.voronoi', 'throat.interconnect',
-               'pore.delaunay', 'throat.delaunay']
-        for item in pop:
-            del self[item]
 
-        # Trim additional pores that are missed by the parent class's trimming
-        Ps = topotools.isoutside(coords=self['pore.coords'], shape=shape)
-        topotools.trim(network=self, pores=Ps)
+if __name__ == "__main__":
+    import openpnm as op
+    dn = Delaunay(shape=[1, 0], points=500)
+    op.topotools.plot_connections(dn)

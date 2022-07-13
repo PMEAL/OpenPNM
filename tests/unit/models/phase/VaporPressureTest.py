@@ -7,7 +7,7 @@ from numpy.testing import assert_approx_equal
 class VaporPressureTest:
     def setup_class(self):
         self.net = op.network.Cubic(shape=[3, 3, 3])
-        self.phase = op.phase.GenericPhase(network=self.net)
+        self.phase = op.phase.Phase(network=self.net)
         self.phase['pore.temperature'] = 300*np.ones(self.phase.Np,)
         self.phase['pore.salinity'] = np.zeros((self.phase.Np,))
 

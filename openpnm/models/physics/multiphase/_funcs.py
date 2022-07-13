@@ -52,7 +52,7 @@ def conduit_conductance(target, throat_conductance,
     """
     network = target.project.network
     domain = target._domain
-    phase = target.project.find_phase(target)
+    phase = target
     Tinv = phase[throat_occupancy] < 0.5
     P12 = network['throat.conns']
     Pinv = phase[pore_occupancy][P12] < 0.5
@@ -106,9 +106,9 @@ def late_filling(target, pressure='pore.pressure',
     percolation algorithm of some sort.
 
     """
-    element = pressure.split('.')[0]
+    element = pressure.split('.', 1)[0]
     domain = target._domain
-    phase = target.project.find_phase(target)
+    phase = target
     pc_star = phase[Pc_star]
     Pc = phase[pressure]
     # Remove any 0's from the Pc array to prevent numpy div by 0 warning

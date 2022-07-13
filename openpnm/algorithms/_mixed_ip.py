@@ -1,23 +1,17 @@
-r"""
-========================
-MixedInvasionPercolation
-========================
-
-IP allowing pores and throats to invade separately.
-
-"""
 import logging
 import heapq as hq
 import numpy as np
 from collections import namedtuple
-from openpnm.algorithms import GenericAlgorithm
+from openpnm.algorithms import Algorithm
 from openpnm.topotools import find_clusters, site_percolation
-from openpnm.utils import SettingsAttr, Docorator
-docstr = Docorator()
-logger = logging.getLogger(__name__)
+from openpnm.utils import Docorator
 
 
 __all__ = ['MixedInvasionPercolation']
+
+
+docstr = Docorator()
+logger = logging.getLogger(__name__)
 
 
 @docstr.get_sections(base='MixedIPSettings',
@@ -27,7 +21,7 @@ class MixedIPSettings:
     r"""
     Parameters
     ----------
-    %(GenericAlgorithmSettings.parameters)s
+    %(AlgorithmSettings.parameters)s
     pore_entry_pressure : str
         The dictionary key on the Phase object where the pore entry
         pressure values are stored.
@@ -58,7 +52,7 @@ class MixedIPSettings:
     trapping = ""
 
 
-class MixedInvasionPercolation(GenericAlgorithm):
+class MixedInvasionPercolation(Algorithm):
     r"""
     An implemetation of invasion percolation which can invade bonds,
     sites or a mixture of both. Inlets can be treated as individual
@@ -67,7 +61,7 @@ class MixedInvasionPercolation(GenericAlgorithm):
 
     Parameters
     ----------
-    network : GenericNetwork
+    network : Network
         The network upon which the invasion should occur.
 
     Notes
@@ -76,9 +70,9 @@ class MixedInvasionPercolation(GenericAlgorithm):
 
     """
 
-    def __init__(self, settings=None, **kwargs):
-        self.settings = SettingsAttr(MixedIPSettings, settings)
-        super().__init__(settings=self.settings, **kwargs)
+    def __init__(self, name='mixedip_#', **kwargs):
+        super().__init__(name=name, **kwargs)
+        self.settings._update(MixedIPSettings())
 
     def setup(
         self,
@@ -96,32 +90,26 @@ class MixedInvasionPercolation(GenericAlgorithm):
 
         Parameters
         ----------
-        phase : GenericPhase
+        phase : Phase
             The Phase object containing the physical properties of the invading
             fluid.
-
         pore_entry_pressure : str
             The dictionary key on the Phase object where the pore entry
             pressure values are stored.  The default is
             'pore.entry_pressure'.
-
         throat_entry_pressure : str
             The dictionary key on the Phase object where the throat entry
             pressure values are stored.  The default is
             'throat.entry_pressure'.
-
         snap_off : str
             The dictionary key on the Phase object where the throat snap-off
             pressure values are stored.
-
         invade_isolated_Ts : bool
             If True, isolated throats are invaded at the higher invasion
             pressure of their connected pores.
-
         late_pore_filling : str
             The name of the model used to determine late pore filling as
             a function of applied pressure.
-
         late_throat_filling : str
             The name of the model used to determine late throat filling as
             a function of applied pressure.
@@ -478,8 +466,7 @@ class MixedInvasionPercolation(GenericAlgorithm):
                 # Set pressure on phase to current capillary pressure
                 phase["pore.pressure"] = Pc
                 # Regenerate corresponding physics model
-                for phys in self.project.find_physics(phase=phase):
-                    phys.regenerate_models(self.settings["late_pore_filling"])
+                phase.regenerate_models(self.settings["late_pore_filling"])
                 # Fetch partial filling fraction from phase object (0->1)
                 frac = phase[self.settings["late_pore_filling"]]
                 p_vol = net["pore.volume"] * frac
@@ -489,8 +476,7 @@ class MixedInvasionPercolation(GenericAlgorithm):
                 # Set pressure on phase to current capillary pressure
                 phase["throat.pressure"] = Pc
                 # Regenerate corresponding physics model
-                for phys in self.project.find_physics(phase=phase):
-                    phys.regenerate_models(self.settings["late_throat_filling"])
+                phase.regenerate_models(self.settings["late_throat_filling"])
                 # Fetch partial filling fraction from phase object (0->1)
                 frac = phase[self.settings["late_throat_filling"]]
                 t_vol = net["throat.volume"] * frac
@@ -832,7 +818,7 @@ class MixedInvasionPercolation(GenericAlgorithm):
         residual = self["pore.residual"]
         net = self.project.network
         conns = net["throat.conns"]
-        rclusters = site_percolation(conns, residual).sites
+        rclusters = site_percolation(conns, residual).site_labels
         rcluster_ids = np.unique(rclusters[rclusters > -1])
         initial_num = len(self.queue) - 1
         for rcluster_id in rcluster_ids:

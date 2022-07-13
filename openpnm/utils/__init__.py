@@ -11,11 +11,16 @@ from ._misc import *
 from ._settings import *
 from ._workspace import *
 from ._project import *
+from ._health import *
+from ._parsers import *
 
 
 def _get_version():
-    from openpnm.__version__ import __version__
-    return __version__.strip(".dev0")
+    from openpnm.__version__ import __version__ as ver
+    suffix = ".dev0"
+    if ver.endswith(suffix):
+        ver = ver[:-len(suffix)]
+    return ver
 
 
 def _setup_logger():

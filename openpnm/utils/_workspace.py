@@ -1,6 +1,8 @@
+import re
 import logging
-import numpy as np
-import openpnm
+import pickle
+from datetime import datetime
+from uuid import uuid4
 from openpnm.utils import SettingsAttr
 
 
@@ -11,6 +13,13 @@ __all__ = ['Workspace']
 
 class WorkspaceSettings(SettingsAttr):
     r"""
+
+    Parameters
+    ----------
+    default_solver : str
+        The solver to use by default, if user does not specify one explicitly.
+        The default values is PardisoSpsolve, but a good option is ScipySpsolve
+        if the Pardiso is causing problems.
     loglevel : int
         Sets the threshold for the severity of logger message which appear.
         Ranges are as follows:
@@ -69,6 +78,7 @@ class Workspace(dict):
 
     __instance__ = None
 
+    # This __new__ method makes the Workspace a Singleton
     def __new__(cls, *args, **kwargs):
         if Workspace.__instance__ is None:
             Workspace.__instance__ = dict.__new__(cls)
@@ -76,22 +86,8 @@ class Workspace(dict):
 
     def __init__(self):
         super().__init__()
-        self._projects = {}
         self.settings = WorkspaceSettings()
         self.settings.loglevel = 30
-
-    def __setitem__(self, name, project):
-        if name is None:
-            name = self._gen_name()
-        if name in self.keys():
-            # To ensure renaming a Project to its current name is allowed
-            if self.__instance__[name] is not project:
-                raise Exception(f"A project named {name} already exists")
-        if project in self.values():
-            self.pop(project.name, None)
-        if not isinstance(project, openpnm.utils.Project):
-            project = openpnm.utils.Project(project, name=name)
-        super().__setitem__(name, project)
 
     def copy(self):
         """Brief explanation of 'copy'"""
@@ -106,9 +102,22 @@ class Workspace(dict):
         for item in project:
             __main__.__dict__[item.name] = item
 
-    @property
-    def version(self):
-        return openpnm.__version__
+    def _validate_name(self, name=None):
+        r"""
+        Generates a valid name for projects
+        """
+        if name in [None, '']:
+            name = 'proj_01'  # Give basic name, then let rest of func fix it
+        if name in self.keys():  # If proposed name is taken, increment it
+            if not re.search(r'_\d+$', name):  # If name does not end with _##
+                name = name + '_01'
+            prefix, count = name.rsplit('_', 1)
+            n = [0]
+            for item in self.keys():
+                if item.startswith(prefix+'_'):
+                    n.append(int(item.split(prefix+'_')[1]))
+            name = prefix+'_'+str(max(n)+1).zfill(2)
+        return name
 
     def save_workspace(self, filename=None):
         r"""
@@ -117,7 +126,7 @@ class Workspace(dict):
         Parameters
         ----------
         filename : str
-            The filename to use when saving.  If not provided, the present
+            The filename to use when saving. If not provided, the present
             date and time are used.
 
         Notes
@@ -128,7 +137,6 @@ class Workspace(dict):
         ``openpnm.io.PNM`` class.
 
         """
-        from datetime import datetime
         if filename is None:
             dt = datetime.now()
             filename = dt.strftime("%Y_%m_%d_%H_%M_%S")
@@ -146,10 +154,6 @@ class Workspace(dict):
         ----------
         filename : str or Path
             The filename containing the saved workspace
-
-        Notes
-        -----
-        ??
 
         """
         from zipfile import ZipFile
@@ -187,10 +191,13 @@ class Workspace(dict):
         ``os.path`` in the Python standard library.
 
         """
-        from openpnm.io import PNM
-        PNM.save_project(project=project, filename=filename)
+        if filename is None:
+            dt = datetime.now()
+            filename = dt.strftime("%Y_%m_%d_%H_%M_%S")
+        with open(filename.split('.')[-1]+'.pnm', 'wb') as f:
+            pickle.dump(project, f)
 
-    def load_project(self, filename, overwrite=False):
+    def load_project(self, filename):
         r"""
         Loads a Project from the specified 'pnm' file
 
@@ -202,8 +209,6 @@ class Workspace(dict):
         ----------
         filename : str or Path
             The name of the file to open. See Notes for more information.
-        overwrite : bool
-            Brief explanation of 'overwrite'
 
         See Also
         --------
@@ -219,8 +224,11 @@ class Workspace(dict):
         ``os.path`` in the Python standard library.
 
         """
-        from openpnm.io import PNM
-        proj = PNM.load_project(filename=filename)
+        with open(filename, 'rb') as f:
+            proj = pickle.load(f)
+            proj.settings.uuid = str(uuid4())
+            proj.name = self._validate_name(proj.name)
+            self[proj.name] = proj
         return proj
 
     def close_project(self, project):
@@ -235,7 +243,7 @@ class Workspace(dict):
             The Project object to be copied
 
         """
-        del self[project.name]
+        _ = self.pop(project.name, None)
 
     def copy_project(self, project, name=None):
         r"""
@@ -275,63 +283,14 @@ class Workspace(dict):
             generator
 
         """
-        proj = openpnm.utils.Project(name=name)
+        from openpnm.utils import Project
+        proj = Project(name=name)
         return proj
-
-    def _gen_name(self):
-        r"""
-        Generates a valid name for projects
-        """
-        n = [0]
-        for item in self.keys():
-            if item.startswith('proj_'):
-                n.append(int(item.split('proj_')[1]))
-        name = 'proj_'+str(max(n)+1).zfill(2)
-        return name
-
-    def _gen_ids(self, size):
-        r"""
-        Generates a sequence of integers of the given ``size``, starting at 1
-        greater than the last produced value.
-
-        The Workspace object keeps track of the most recent value, which
-        persists until the current python session is restarted, so the
-        returned array contains unique values for the given session.
-
-        Parameters
-        ----------
-        size : int
-            The number of values to generate.
-
-        Returns
-        -------
-        A Numpy array of the specified size, containing integer values starting
-        from the last used values.
-
-        Notes
-        -----
-        When a new Workspace is created the
-
-        """
-        if not hasattr(self, '_next_id'):
-            # If _next_id has not been set, then assign it
-            self._next_id = 0
-            # But check ids in any objects present first
-            for proj in self.values():
-                if len(proj) > 0:
-                    if 'pore._id' in proj.network.keys():
-                        Pmax = proj.network['pore._id'].max() + 1
-                        Tmax = proj.network['throat._id'].max() + 1
-                        self._next_id = max([Pmax, Tmax, self._next_id])
-        ids = np.arange(self._next_id, self._next_id + size, dtype=np.int64)
-        self._next_id += size
-        return ids
 
     def __str__(self):
         s = []
         hr = '―'*78
         s.append(hr)
-        s.append('OpenPNM Version ' + openpnm.__version__ + ' Workspace')
         s.append(hr)
         for item in self.values():
             s.append(' ' + item.name)

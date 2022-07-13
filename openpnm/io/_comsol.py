@@ -1,12 +1,17 @@
 import numpy as np
 import openpnm as op
-from openpnm.io import GenericIO
 
 
-class COMSOL(GenericIO):
+def network_to_comsol(network, filename=None):
     r"""
-    Writes a file containing pores and throats of the network in a format
-    that can be opened in COMSOL.
+    Saves the network and geometry data from the given objects into the
+    specified file. This exports in 2D only where throats and pores
+    have rectangular and circular shapes, respectively.
+
+    Parameters
+    ----------
+    network : Network
+        The network containing the desired data
 
     Notes
     -----
@@ -14,66 +19,37 @@ class COMSOL(GenericIO):
     - This class exports in 2D only.
 
     """
+    if op.topotools.dimensionality(network).sum() == 3:
+        raise Exception("COMSOL I/O class only works for 2D networks!")
 
-    @classmethod
-    def export_data(cls, network, filename=None):
-        r"""
-        Saves the network and geometry data from the given objects into the
-        specified file. This exports in 2D only where throats and pores
-        have rectangular and circular shapes, respectively.
+    filename = network.name if filename is None else filename
+    f = open(f"{filename}.mphtxt", 'w')
 
-        Parameters
-        ----------
-        network : GenericNetwork
-            The network containing the desired data
+    header(file=f, Nr=network.Nt, Nc=network.Np)
 
-        Notes
-        -----
-        This method only saves the network and geometry data, not any of
-        the pore-scale models or other attributes. To save an actual
-        OpenPNM Project use the ``Workspace`` object.
+    cn = network['throat.conns']
 
-        """
-        if op.topotools.dimensionality(network).sum() == 3:
-            raise Exception("COMSOL I/O class only works for 2D networks!")
+    p1 = network['pore.coords'][cn[:, 0]]
+    p2 = network['pore.coords'][cn[:, 1]]
 
-        project, network, phases = cls._parse_args(network=network, phases=[])
-        network = network[0]
-        filename = network.name if filename is None else filename
-        f = open(f"{filename}.mphtxt", 'w')
+    # Compute the rotation angle of throats
+    dif_x = p2[:, 0]-p1[:, 0]
+    dif_y = p2[:, 1]-p1[:, 1]
+    # Avoid division by 0
+    m = np.array([dif_x_i != 0 for dif_x_i in dif_x])
+    r = np.zeros((len(dif_x)))
+    r[~m] = np.inf
+    r[m] = dif_y[m]/dif_x[m]
+    angles = np.arctan(r)
 
-        header(file=f, Nr=network.Nt, Nc=network.Np)
+    r_w = network['throat.diameter']
+    rectangles(file=f, pores1=p1, pores2=p2, alphas=angles, widths=r_w)
 
-        cn = network['throat.conns']
+    c_c = network['pore.coords']
+    c_r = network['pore.diameter']/2.0
+    circles(file=f, centers=c_c, radii=c_r)
 
-        p1 = network['pore.coords'][cn[:, 0]]
-        p2 = network['pore.coords'][cn[:, 1]]
-
-        # Compute the rotation angle of throats
-        dif_x = p2[:, 0]-p1[:, 0]
-        dif_y = p2[:, 1]-p1[:, 1]
-        # Avoid division by 0
-        m = np.array([dif_x_i != 0 for dif_x_i in dif_x])
-        r = np.zeros((len(dif_x)))
-        r[~m] = np.inf
-        r[m] = dif_y[m]/dif_x[m]
-        angles = np.arctan(r)
-
-        r_w = network['throat.diameter']
-        rectangles(file=f, pores1=p1, pores2=p2, alphas=angles, widths=r_w)
-
-        c_c = network['pore.coords']
-        c_r = network['pore.diameter']/2.0
-        circles(file=f, centers=c_c, radii=c_r)
-
-        f.close()
-
-
-def to_comsol(network, filename=None):
-    COMSOL.export_data(network=network, filename=filename)
-
-
-to_comsol.__doc__ = COMSOL.export_data.__doc__
+    f.close()
 
 
 def header(file, Nr, Nc):

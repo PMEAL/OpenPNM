@@ -1,12 +1,12 @@
 import logging
-# from collections import ChainMap  # Might use eventually
 import numpy as np
 from chemicals import Vm_to_rho, rho_to_Vm
 from chemicals import numba_vectorized
 from chemicals import R, k
-from openpnm.phase import GenericPhase as GenericPhase
-from openpnm.utils import HealthDict, PrintableList, SubDict
-from openpnm.utils import Docorator, SettingsAttr
+from openpnm.phase import Phase as Phase
+from openpnm.utils import HealthDict, PrintableList, SubDict, Docorator
+
+
 logger = logging.getLogger(__name__)
 docstr = Docorator()
 
@@ -23,20 +23,20 @@ class GenericMixtureSettings:
     """
 
     components = []
-    prefix = 'mix'
+    name = 'mix_01'
 
 
 @docstr.get_sections(base='GenericMixture', sections=['Parameters'])
 @docstr.dedent
-class GenericMixture(GenericPhase):
+class GenericMixture(Phase):
     r"""
     Creates Phase object that represents a multicomponent mixture system
-    consisting of a given list of GenericPhases as components.
+    consisting of a given list of Phases as components.
 
     Parameters
     ----------
-    %(GenericPhase.parameters)s
-    components : list[GenericPhase]s
+    %(Phase.parameters)s
+    components : list[Phase]s
         A list of all components that constitute this mixture
 
     Notes
@@ -47,9 +47,9 @@ class GenericMixture(GenericPhase):
 
     """
 
-    def __init__(self, components=[], settings=None, **kwargs):
-        self.settings = SettingsAttr(GenericMixtureSettings, settings)
-        super().__init__(settings=self.settings, **kwargs)
+    def __init__(self, components=[], **kwargs):
+        super().__init__(**kwargs)
+        self.settings._update(GenericMixtureSettings())
 
         # Add any supplied phases to the phases list
         for comp in components:
@@ -221,7 +221,7 @@ class GenericMixture(GenericPhase):
 
         Parameters
         ----------
-        component : GenericPhase or name
+        component : Phase or name
             The phase object of the component whose concentration is being
             specified
         values : array_like
@@ -249,7 +249,7 @@ class GenericMixture(GenericPhase):
 
         Parameters
         ----------
-        components : GenericPhase or name string
+        components : Phase or name string
             The phase whose mole fraction is being specified
         values : array_like
             The mole fraction of the given ``component`` in each pore.  This
@@ -309,7 +309,7 @@ class GenericMixture(GenericPhase):
 
         Parameters
         ----------
-        component : GenericPhase
+        component : Phase
             The phase object of the component to add.  Can also be a list
             of phases to add more than one at a time.
         mode : str

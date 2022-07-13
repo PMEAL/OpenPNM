@@ -7,13 +7,11 @@ import pytest
 class CheckNetworkHealthTest:
 
     def setup_class(self):
-        self.ws = op.Workspace()
-        self.ws.clear()
-        self.proj = self.ws.new_project()
-        self.net = op.network.Cubic(shape=[2, 2, 2], project=self.proj)
+        pass
 
     def test_check_network_health_healthy(self):
-        a = self.proj.check_network_health()
+        net = op.network.Cubic(shape=[2, 2, 2])
+        a = op.utils.check_network_health(net)
         items = set(['headless_throats',
                      'looped_throats',
                      'isolated_pores',
@@ -29,7 +27,7 @@ class CheckNetworkHealthTest:
         Ps = Ps*(net['pore.coords'][:, 1] > 2.5)
         Ts = net.find_neighbor_throats(pores=Ps, mode='exclusive_or')
         trim(network=net, throats=Ts)
-        a = net.project.check_network_health()
+        a = op.utils.check_network_health(net)
         assert len(a['disconnected_pores']) == 10
 
     def test_check_network_health_two_isolated_clusters(self):
@@ -44,7 +42,7 @@ class CheckNetworkHealthTest:
         Ps = Ps*(net['pore.coords'][:, 1] < 2.5)
         Ts = net.find_neighbor_throats(pores=Ps, mode='exclusive_or')
         trim(network=net, throats=Ts)
-        a = net.check_network_health()
+        a = op.utils.check_network_health(net)
         # assert len(a['disconnected_clusters']) == 3
         assert len(a['disconnected_pores']) == 20
 
@@ -58,7 +56,7 @@ class CheckNetworkHealthTest:
         # Create an isolated pore
         Ts = net.find_neighbor_throats(pores=0)
         trim(network=net, throats=Ts)
-        a = net.check_network_health()
+        a = op.utils.check_network_health(net)
         # Ensure trim_pores has right length
         assert len(a['disconnected_pores']) == 11
         # Ensure 0 is listed in trim pores
@@ -68,17 +66,17 @@ class CheckNetworkHealthTest:
         net = op.network.Cubic(shape=[5, 5, 5])
         Ts = net.find_neighbor_throats(pores=0)
         trim(network=net, throats=Ts)
-        a = net.check_network_health()
+        a = op.utils.check_network_health(net)
         assert a['isolated_pores'] == np.array([0])
         trim(network=net, pores=a['disconnected_pores'])
-        a = net.check_network_health()
+        a = op.utils.check_network_health(net)
         assert np.size(a['disconnected_pores']) == 0
 
     def test_check_network_health_duplicate_throat(self):
         net = op.network.Cubic(shape=[5, 5, 5])
         P12 = net['throat.conns'][0]
         extend(network=net, throat_conns=[P12])
-        a = net.check_network_health()
+        a = op.utils.check_network_health(net)
         assert len(a['duplicate_throats']) == 1
         assert a['duplicate_throats'][0] == 300
 
@@ -87,7 +85,7 @@ class CheckNetworkHealthTest:
         P12 = net['throat.conns'][0]
         extend(network=net, throat_conns=[P12])
         extend(network=net, throat_conns=[P12])
-        a = net.check_network_health()
+        a = op.utils.check_network_health(net)
         assert len(a['duplicate_throats']) == 2
 
     def test_check_network_health_multiple_duplicate_throats(self):
@@ -96,14 +94,14 @@ class CheckNetworkHealthTest:
         extend(network=net, throat_conns=[P12])
         P12 = net['throat.conns'][1]
         extend(network=net, throat_conns=[P12])
-        a = net.check_network_health()
+        a = op.utils.check_network_health(net)
         assert len(a['duplicate_throats']) == 2
 
     def test_check_network_health_bidirectional_throats(self):
         net = op.network.Cubic(shape=[5, 5, 5])
         P12 = net['throat.conns'][0]
         net['throat.conns'][0] = [P12[1], P12[0]]
-        a = net.check_network_health()
+        a = op.utils.check_network_health(net)
         assert np.size(a['bidirectional_throats']) == 1
         assert np.size(a['duplicate_throats']) == 0
 
@@ -118,7 +116,7 @@ class CheckNetworkHealthTest:
     def test_check_network_health_looped_throats(self):
         net = op.network.Cubic(shape=[5, 5, 5])
         extend(network=net, throat_conns=[[5, 5]])
-        a = net.check_network_health()
+        a = op.utils.check_network_health(net)
         assert a['looped_throats'] == np.array([300])
 
 

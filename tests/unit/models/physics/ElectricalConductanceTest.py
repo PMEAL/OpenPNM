@@ -7,32 +7,26 @@ class ElectricalConductanceTest:
 
     def setup_class(self):
         self.net = op.network.Cubic(shape=[4, 4, 4])
-        self.geo = op.geometry.GenericGeometry(network=self.net,
-                                               pores=self.net.Ps,
-                                               throats=self.net.Ts)
-        self.geo['pore.diameter'] = 1.0
-        self.geo['throat.diameter'] = 0.5
-        self.geo['throat.diffusive_size_factors'] = {
+        self.net['pore.diameter'] = 1.0
+        self.net['throat.diameter'] = 0.5
+        self.net['throat.diffusive_size_factors'] = {
             "pore1": 0.123, "throat": 0.981, "pore2": 0.551
         }
-        self.phase = op.phase.GenericPhase(network=self.net)
+        self.phase = op.phase.Phase(network=self.net)
         self.phase['pore.electrical_conductivity'] = 1.0
-        self.phys = op.physics.GenericPhysics(network=self.net,
-                                              phase=self.phase,
-                                              geometry=self.geo)
 
     def test_generic_electrical(self):
         mod = op.models.physics.electrical_conductance.generic_electrical
-        self.phys.add_model(propname='throat.electrical_conductance', model=mod)
-        self.phys.regenerate_models()
-        actual = np.mean(self.phys['throat.electrical_conductance'])
+        self.phase.add_model(propname='throat.electrical_conductance', model=mod)
+        self.phase.regenerate_models()
+        actual = np.mean(self.phase['throat.electrical_conductance'])
         assert_allclose(actual, desired=0.091205, rtol=1e-5)
 
     def test_series_resistors(self):
         mod = op.models.physics.electrical_conductance.series_resistors
-        self.phys.add_model(propname='throat.electrical_conductance', model=mod)
-        self.phys.regenerate_models()
-        actual = np.mean(self.phys['throat.electrical_conductance'])
+        self.phase.add_model(propname='throat.electrical_conductance', model=mod)
+        self.phase.regenerate_models()
+        actual = np.mean(self.phase['throat.electrical_conductance'])
         assert_allclose(actual, desired=0.091205, rtol=1e-5)
 
 

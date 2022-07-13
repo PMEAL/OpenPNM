@@ -42,11 +42,11 @@ def sphere(
 
     """
     network = target.project.network
-    R = target[pore_diameter] / 2
-    Asurf = 4 * _np.pi * R**2
-    Tn = network.find_neighbor_throats(pores=target.Ps, flatten=False)
-    Tsurf = _np.array([network[throat_cross_sectional_area][Ts].sum() for Ts in Tn])
-    value = Asurf - Tsurf
+    R = network[pore_diameter] / 2
+    value = 4 * _np.pi * R**2
+    Tca = network[throat_cross_sectional_area]
+    _np.subtract.at(value, network.conns.flatten(), _np.repeat(Tca, repeats=2))
+    value = value[network.pores(target.name)]
     return value
 
 
@@ -74,11 +74,10 @@ def circle(
 
     """
     network = target.project.network
-    R = target[pore_diameter] / 2
-    Asurf = 2 * _np.pi * R
-    Tn = network.find_neighbor_throats(pores=target.Ps, flatten=False)
-    Tsurf = _np.array([network[throat_cross_sectional_area][Ts].sum() for Ts in Tn])
-    value = Asurf - Tsurf
+    value = _np.pi * network[pore_diameter]
+    Tca = network[throat_cross_sectional_area]
+    _np.subtract.at(value, network.conns.flatten(), _np.repeat(Tca, repeats=2))
+    value = value[network.pores(target.name)]
     return value
 
 
@@ -101,10 +100,11 @@ def cube(
 
     """
     network = target.project.network
-    D = target[pore_diameter]
-    Tn = network.find_neighbor_throats(pores=target.Ps, flatten=False)
-    Tsurf = _np.array([network[throat_cross_sectional_area][Ts].sum() for Ts in Tn])
-    value = 6 * D**2 - Tsurf
+    D = network[pore_diameter]
+    value = 6.0 * D**2
+    Tca = network[throat_cross_sectional_area]
+    _np.subtract.at(value, network.conns.flatten(), _np.repeat(Tca, repeats=2))
+    value = value[network.pores(target.name)]
     return value
 
 
@@ -127,8 +127,9 @@ def square(
 
     """
     network = target.project.network
-    D = target[pore_diameter]
-    Tn = network.find_neighbor_throats(pores=target.Ps, flatten=False)
-    Tsurf = _np.array([network[throat_cross_sectional_area][Ts].sum() for Ts in Tn])
-    value = 4 * D - Tsurf
+    D = network[pore_diameter]
+    value = 4.0 * D
+    Tca = network[throat_cross_sectional_area]
+    _np.subtract.at(value, network.conns.flatten(), _np.repeat(Tca, repeats=2))
+    value = value[network.pores(target.name)]
     return value

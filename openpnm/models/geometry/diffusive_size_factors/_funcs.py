@@ -58,8 +58,7 @@ def spheres_and_cylinders(
     on each end.
 
     """
-    D1, Dt, D2 = target.get_conduit_data(poreprop=pore_diameter,
-                                         throatprop=throat_diameter).T
+    D1, Dt, D2 = target.get_conduit_data(pore_diameter.split('.', 1)[1]).T
     L1, Lt, L2 = _conduit_lengths.spheres_and_cylinders(
         target,
         pore_diameter=pore_diameter,
@@ -100,8 +99,7 @@ def circles_and_rectangles(
     symmetry.
 
     """
-    D1, Dt, D2 = target.get_conduit_data(poreprop=pore_diameter,
-                                         throatprop=throat_diameter).T
+    D1, Dt, D2 = target.get_conduit_data(pore_diameter.split('.', 1)[1]).T
     L1, Lt, L2 = _conduit_lengths.circles_and_rectangles(
         target,
         pore_diameter=pore_diameter,
@@ -142,8 +140,7 @@ def cones_and_cylinders(
     symmetry.
 
     """
-    D1, Dt, D2 = target.get_conduit_data(poreprop=pore_diameter,
-                                         throatprop=throat_diameter).T
+    D1, Dt, D2 = target.get_conduit_data(pore_diameter.split('.', 1)[1]).T
     L1, Lt, L2 = _conduit_lengths.cones_and_cylinders(
         target,
         pore_diameter=pore_diameter,
@@ -184,8 +181,7 @@ def trapezoids_and_rectangles(
     symmetry.
 
     """
-    D1, Dt, D2 = target.get_conduit_data(poreprop=pore_diameter,
-                                         throatprop=throat_diameter).T
+    D1, Dt, D2 = target.get_conduit_data(pore_diameter.split('.', 1)[-1]).T
     L1, Lt, L2 = _conduit_lengths.trapezoids_and_rectangles(
         target,
         pore_diameter=pore_diameter,
@@ -231,8 +227,7 @@ def pyramids_and_cuboids(
     symmetry.
 
     """
-    D1, Dt, D2 = target.get_conduit_data(poreprop=pore_diameter,
-                                         throatprop=throat_diameter).T
+    D1, Dt, D2 = target.get_conduit_data(pore_diameter.split('.', 1)[-1]).T
     L1, Lt, L2 = _conduit_lengths.pyramids_and_cuboids(
         target,
         pore_diameter=pore_diameter,
@@ -279,8 +274,7 @@ def cubes_and_cuboids(
     symmetry.
 
     """
-    D1, Dt, D2 = target.network.get_conduit_data(poreprop=pore_diameter,
-                                                 throatprop=throat_diameter).T
+    D1, Dt, D2 = target.get_conduit_data(pore_diameter.split('.', 1)[-1]).T
     L1, Lt, L2 = _conduit_lengths.cubes_and_cuboids(
         target,
         pore_diameter=pore_diameter,
@@ -327,8 +321,7 @@ def squares_and_rectangles(
     symmetry.
 
     """
-    D1, Dt, D2 = target.network.get_conduit_data(poreprop=pore_diameter,
-                                                 throatprop=throat_diameter).T
+    D1, Dt, D2 = target.get_conduit_data(pore_diameter.split('.', 1)[-1]).T
     L1, Lt, L2 = _conduit_lengths.squares_and_rectangles(
         target,
         pore_diameter=pore_diameter,
@@ -459,8 +452,7 @@ def ncylinders_in_series(
     %(models.geometry.diffusive_size_factor.notes)s
 
     """
-    D1, Dt, D2 = target.get_conduit_data(poreprop=pore_diameter,
-                                         throatprop=throat_diameter).T
+    D1, Dt, D2 = target.get_conduit_data(pore_diameter.split('.', 1)[-1]).T
     # Ensure throats are never bigger than connected pores
     Dt = _np.minimum(Dt, 0.99 * _np.minimum(D1, D2))
     L1, Lt, L2 = _conduit_lengths.spheres_and_cylinders(

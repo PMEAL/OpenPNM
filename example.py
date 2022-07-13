@@ -1,24 +1,35 @@
-# %% Imports
-import numpy as np
 import openpnm as op
 from openpnm.models.physics import source_terms
-
-# %% Initialization: Create Workspace and project objects.
+from openpnm.models import collections
+import matplotlib.pyplot as plt
 ws = op.Workspace()
-ws.settings.default_solver = 'PardisoSpsolve'  # Optionally use ScipySpsolve
-ws.settings.loglevel = 50
-np.random.seed(9)
+ws.clear()
 
-# %% Create network, geometry, phase, and physics objects
-pn = op.network.Cubic(shape=[10, 10, 10], spacing=1e-4)
-geo = op.geometry.SpheresAndCylinders(network=pn, pores=pn.Ps, throats=pn.Ts)
-air = op.phase.Air(network=pn, name='air')
-water = op.phase.Water(network=pn, name='h2o')
-hg = op.phase.Mercury(network=pn, name='hg')
-phys_air = op.physics.Standard(network=pn, phase=air, geometry=geo)
-phys_water = op.physics.Standard(network=pn, phase=water, geometry=geo)
-phys_hg = op.physics.Standard(network=pn, phase=hg, geometry=geo)
 
+pn = op.network.Cubic(shape=[25, 25, 1], spacing=1e-4)
+
+# Create domain1
+Ps = pn.coords[:, 0] < 13e-4
+Ts = pn.find_neighbor_throats(pores=Ps, asmask=True)
+pn['pore.domain1'] = Ps
+pn['throat.domain1'] = Ts
+
+# Create domain2
+Ps = pn.coords[:, 0] >= 13e-4
+Ts = pn.find_neighbor_throats(pores=Ps, mode='xnor', asmask=True)
+pn['pore.domain2'] = Ps
+pn['throat.domain2'] = Ts
+
+# Add network/geometry models to both domains
+pn.add_model_collection(collections.geometry.cones_and_cylinders(),
+                        domain='domain1')
+pn.add_model_collection(collections.geometry.pyramids_and_cuboids(),
+                        domain='domain2')
+
+# FIXME: Must regenerate network models, otherwise, phase models will complain
+pn.regenerate_models()
+
+<<<<<<< HEAD
 # %% Perform Stokes flow simulation
 sf = op.algorithms.StokesFlow(network=pn, phase=water)
 sf.set_value_BC(pores=pn.pores('left'), values=101325)
@@ -29,34 +40,44 @@ water.update(sf.results())
 perm = op.metrics.AbsolutePermeability(network=pn)
 K = perm.run()
 # assert K == 7.51015925e-13
+=======
+# Create phase and add phase/physics models
+air = op.phase.Air(network=pn, name="air")
+air.add_model_collection(collections.physics.standard(),
+                         domain='domain1')
+air.add_model_collection(collections.physics.standard(),
+                         domain='domain2')
+air.regenerate_models()
 
-# %% Perform reaction-diffusion simulation
-# Add reaction to phys_air
-phys_air['pore.n'] = 2
-phys_air['pore.A'] = -1e-5
-phys_air.add_model(
-    propname='pore.2nd_order_rxn',
-    model=source_terms.standard_kinetics,
-    X='pore.concentration', prefactor='pore.A', exponent='pore.n',
-    regen_mode='deferred'
-)
-# Set up Fickian diffusion simulation
+# Add a nonlinear reaction
+air['pore.reaction_sites'] = False
+air['pore.reaction_sites'][[310, 212, 113]] = True
+air.add_model(propname='pore.reaction1',
+              model=source_terms.power_law,
+              X='pore.concentration',
+              A1=-1, A2=2, A3=0,
+              domain='reaction_sites',
+              regen_mode='deferred')
+air.add_model(propname='pore.reaction2',
+              model=source_terms.power_law,
+              X='pore.concentration',
+              A1=-1, A2=2, A3=0,
+              domain='reaction_sites',
+              regen_mode='deferred')
+>>>>>>> dev
+
+# Run Fickian diffusion with reaction
 rxn = op.algorithms.FickianDiffusion(network=pn, phase=air)
-Ps = pn.find_nearby_pores(pores=50, r=5e-4, flatten=True)
-rxn.set_source(propname='pore.2nd_order_rxn', pores=Ps)
-rxn.set_value_BC(pores=pn.pores('top'), values=1)
+rxn.set_value_BC(pores=pn.pores('left'), values=1)
+rxn.set_source(pores=air.pores('reaction_sites'), propname='pore.reaction1')
 rxn.run()
-air.update(rxn.results())
 
-# %% Perform pure diffusion simulation
-fd = op.algorithms.FickianDiffusion(network=pn, phase=air)
-fd.set_value_BC(pores=pn.pores('left'), values=1)
-fd.set_value_BC(pores=pn.pores('right'), values=0)
-fd.run()
-# calculate formation factor in x direction
-FF = op.metrics.FormationFactor(network=pn)
-F = FF.run()
-# assert F == 20.53387084881872
+# Run Fickian diffusion with reaction
+rxn2 = op.algorithms.FickianDiffusion(network=pn, phase=air)
+rxn2.set_value_BC(pores=pn.pores('left'), values=1)
+rxn2.set_source(pores=air.pores('reaction_sites'), propname='pore.reaction2')
+rxn2.run()
 
-# %% Output network and the phases to a VTP file for visualization in Paraview
-pn.project.export_data(phases=[hg, air, water], filename='output.vtp')
+# Plot concentration profile
+fig, ax = plt.subplots()
+ax.pcolormesh(rxn.x.reshape([25, 25]))

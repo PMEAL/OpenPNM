@@ -7,7 +7,6 @@ __all__ = [
     'plot_connections',
     'plot_coordinates',
     'plot_networkx',
-    'plot_vpython',
     'plot_tutorial',
     'plot_network_jupyter',
     'generate_voxel_image',
@@ -33,7 +32,7 @@ def plot_connections(network,
 
     Parameters
     ----------
-    network : GenericNetwork
+    network : Network
         The network whose topological connections to plot
     throats : array_like (optional)
         The list of throats to plot if only a sub-sample is desired.  This is
@@ -92,15 +91,15 @@ def plot_connections(network,
     >>> mpl.use('Agg')
     >>> pn = op.network.Cubic(shape=[10, 10, 3])
     >>> pn.add_boundary_pores()
-    >>> Ts = pn.throats('*boundary', mode='not')        # find internal throats
-    >>> fig, ax = plt.subplots()                        # create empty figure
+    >>> Ts = pn.throats('*boundary', mode='not')  # find internal throats
+    >>> fig, ax = plt.subplots()  # create empty figure
     >>> _ = op.topotools.plot_connections(network=pn,
-    ...                                   throats=Ts)   # plot internal throats
-    >>> Ts = pn.throats('*boundary')                    # find boundary throats
+    ...                                   throats=Ts)  # plot internal throats
+    >>> Ts = pn.throats('*boundary')  # find boundary throats
     >>> _ = op.topotools.plot_connections(network=pn,
     ...                                   throats=Ts,
     ...                                   ax=ax,
-    ...                                   color='r')    # plot boundary throats in red
+    ...                                   color='r')  # plot boundary throats in red
 
     """
     import matplotlib.pyplot as plt
@@ -142,6 +141,8 @@ def plot_connections(network,
     color = mcolors.to_rgb(color) + tuple([alpha])
     # Override colors with color_by if given
     if color_by is not None:
+        if len(color_by) != len(Ts):
+            color_by = color_by[Ts]
         color = cm.get_cmap(name=cmap)(color_by / color_by.max())
         color[:, 3] = alpha
     if size_by is not None:
@@ -157,9 +158,10 @@ def plot_connections(network,
                             antialiaseds=np.ones_like(network.Ts), **kwargs)
     ax.add_collection(lc)
 
-    _scale_axes(ax=ax, X=X, Y=Y, Z=Z)
-    _label_axes(ax=ax, X=X, Y=Y, Z=Z)
-    fig.tight_layout()
+    if np.size(Ts) > 0:
+        _scale_axes(ax=ax, X=X, Y=Y, Z=Z)
+        _label_axes(ax=ax, X=X, Y=Y, Z=Z)
+        fig.tight_layout()
 
     return lc
 
@@ -180,7 +182,7 @@ def plot_coordinates(network,
 
     Parameters
     ----------
-    network : GenericNetwork
+    network : Network
         The network whose topological connections to plot.
     pores : array_like (optional)
         The list of pores to plot if only a sub-sample is desired. This is
@@ -236,18 +238,19 @@ def plot_coordinates(network,
     >>> import matplotlib.pyplot as plt
     >>> mpl.use('Agg')
     >>> pn = op.network.Cubic(shape=[10, 10, 3])
+    >>> pn['pore.internal'] = True
     >>> pn.add_boundary_pores()
-    >>> Ps = pn.pores('internal')                       # find internal pores
-    >>> fig, ax = plt.subplots()                        # create empty figure
+    >>> Ps = pn.pores('internal')  # find internal pores
+    >>> fig, ax = plt.subplots()  # create empty figure
     >>> _ = op.topotools.plot_coordinates(network=pn,
     ...                                   pores=Ps,
     ...                                   color='b',
-    ...                                   ax=ax)        # plot internal pores
-    >>> Ps = pn.pores('*boundary')                      # find boundary pores
+    ...                                   ax=ax)  # plot internal pores
+    >>> Ps = pn.pores('*boundary')  # find boundary pores
     >>> _ = op.topotools.plot_coordinates(network=pn,
     ...                                   pores=Ps,
     ...                                   color='r',
-    ...                                   ax=ax)        # plot boundary pores in red
+    ...                                   ax=ax)  # plot boundary pores in red
 
     """
     import matplotlib.pyplot as plt
@@ -289,6 +292,7 @@ def plot_coordinates(network,
     if 's' in kwargs.keys():
         markersize = kwargs.pop('s')
     if color_by is not None:
+        color_by = color_by[Ps]
         color = cm.get_cmap(name=cmap)(color_by / color_by.max())
     if size_by is not None:
         markersize = size_by / size_by.max() * markersize
@@ -351,7 +355,7 @@ def plot_networkx(network,
 
     Parameters
     ----------
-    network : GenericNetwork
+    network : Network
     plot_throats : bool, optional
         Plots throats as well as pores, if True.
     labels : list, optional
@@ -434,124 +438,6 @@ def plot_networkx(network,
     return gplot
 
 
-def plot_vpython(network,
-                 Psize='pore.diameter',
-                 Tsize='throat.diameter',
-                 Pcolor=None,
-                 Tcolor=None,
-                 cmap='jet',
-                 **kwargs):  # pragma: no cover
-    r"""
-    Quickly visualize a network in 3D using VPython.
-
-    Parameters
-    ----------
-    network : GenericNetwork
-        The network to visualize.
-    Psize : str (default = 'pore.diameter')
-        The dictionary key pointing to the pore property by which sphere
-        diameters should be scaled
-    Tsize : str (default = 'throat.diameter')
-        The dictionary key pointing to the throat property by which cylinder
-        diameters should be scaled
-    Pcolor : str
-        The dictionary key pointing to the pore property which will control
-        the sphere colors.  The default is None, which results in a bright
-        red for all pores.
-    Tcolor : str
-        The dictionary key pointing to the throat property which will control
-        the cylinder colors.  The default is None, which results in a unform
-        pale blue for all throats.
-    cmap : str or Matplotlib colormap object (default is 'jet')
-        The color map to use when converting pore and throat properties to
-        RGB colors.  Can either be a string indicating which color map to
-        fetch from matplotlib.cmap, or an actual cmap object.
-    kwargs : dict
-        Any additional kwargs that are received are passed to the VPython
-        ``canvas`` object.  Default options are:
-
-        *'height' = 500* - Height of canvas
-
-        *'width' = 800* - Width of canvas
-
-        *'background' = [0, 0, 0]* - Sets the background color of canvas
-
-        *'ambient' = [0.2, 0.2, 0.3]* - Sets the brightness of lighting
-
-    Returns
-    -------
-    canvas : VPython Canvas object
-        The canvas object containing the generated scene. The object has
-        several useful methods.
-
-    Notes
-    -----
-    **Important**
-
-    a) This does not work in Spyder. It should only be called from a
-    Jupyter Notebook.
-
-    b) This is only meant for relatively small networks. For proper
-    visualization use Paraview.
-
-    """
-    import matplotlib.pyplot as plt
-
-    try:
-        from vpython import canvas, vec, sphere, cylinder
-    except ModuleNotFoundError:
-        raise Exception('VPython must be installed to use this function')
-
-    if isinstance(cmap, str):
-        cmap = getattr(plt.cm, cmap)
-
-    if Pcolor is None:
-        Pcolor = [vec(230/255, 57/255, 0/255)]*network.Np
-    else:
-        a = cmap(network[Pcolor]/network[Pcolor].max())
-        Pcolor = [vec(row[0], row[1], row[2]) for row in a]
-
-    if Tcolor is None:
-        Tcolor = [vec(51/255, 153/255, 255/255)]*network.Nt
-    else:
-        a = cmap(network[Tcolor]/network[Tcolor].max())
-        Tcolor = [vec(row[0], row[1], row[2]) for row in a]
-
-    # Set default values for canvas properties
-    if 'background' not in kwargs.keys():
-        kwargs['background'] = vec(1.0, 1.0, 1.0)
-    if 'height' not in kwargs.keys():
-        kwargs['height'] = 500
-    if 'width' not in kwargs.keys():
-        kwargs['width'] = 800
-    # Parse any given values for canvas properties
-    for item in kwargs.keys():
-        try:
-            kwargs[item] = vec(*kwargs[item])
-        except TypeError:
-            pass
-    scene = canvas(title=network.name, **kwargs)
-
-    for p in network.Ps:
-        r = network[Psize][p]/2
-        xyz = network['pore.coords'][p]
-        c = Pcolor[p]
-        sphere(pos=vec(*xyz), radius=r, color=c,
-               shininess=.5)
-
-    for t in network.Ts:
-        head = network['throat.endpoints.head'][t]
-        tail = network['throat.endpoints.tail'][t]
-        v = tail - head
-        r = network[Tsize][t]
-        L = np.sqrt(np.sum((head-tail)**2))
-        c = Tcolor[t]
-        cylinder(pos=vec(*head), axis=vec(*v), opacity=1, size=vec(L, r, r),
-                 color=c)
-
-    return scene
-
-
 def plot_tutorial(network,
                   font_size=12,
                   line_width=2,
@@ -563,7 +449,7 @@ def plot_tutorial(network,
 
     Parameters
     ----------
-    network : GenericNetwork
+    network : Network
         The network to plot, should be 2D, since the z-coordinate will be
         ignored.
     font_size : int
@@ -584,9 +470,9 @@ def plot_tutorial(network,
     """
     import networkx as nx
     import matplotlib.pyplot as plt
-    from openpnm.io import to_networkx
+    from openpnm.io import network_to_networkx
 
-    G = to_networkx(network=network)
+    G = network_to_networkx(network=network)
     pos = {i: network['pore.coords'][i, 0:2] for i in network.Ps}
     labels = {i: i for i in network.Ps}
     edge_labels = {tuple(network['throat.conns'][i, :]): i for i in network.Ts}
@@ -633,7 +519,7 @@ def plot_network_jupyter(network,
 
     Parameters
     ----------
-    network : GenericNetwork
+    network : Network
         The network to visualize
     node_color : ndarray
         An array of values used for coloring the pores. If not given, the
@@ -750,7 +636,7 @@ def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200):
 
     Parameters
     ----------
-    network : OpenPNM GenericNetwork
+    network : OpenPNM Network
         Network from which voxel image is to be generated
     pore_shape : str
         Shape of pores in the network, valid choices are "sphere", "cube"
@@ -845,11 +731,11 @@ def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200):
 def generate_voxel_image(network, pore_shape="sphere", throat_shape="cylinder",
                          max_dim=None, rtol=0.1):
     r"""
-    Generate a voxel image from an GenericNetwork
+    Generate a voxel image from an Network
 
     Parameters
     ----------
-    network : OpenPNM GenericNetwork
+    network : OpenPNM Network
         Network from which voxel image is to be generated
     pore_shape : str
         Shape of pores in the network, valid choices are "sphere", "cube"

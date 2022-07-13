@@ -73,7 +73,7 @@ def mole_weighted_average(target, prop):
         specified property.
     """
     comps = target.components.values()
-    element = prop.split('.')[0]
+    element = prop.split('.', 1)[0]
     if len(comps) == 0:
         vals = np.zeros(target._count(element))*np.nan
     else:

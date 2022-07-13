@@ -8,16 +8,14 @@ class TransientFickianDiffusionTest:
     def setup_class(self):
         np.random.seed(0)
         self.net = op.network.Cubic(shape=[4, 3, 1], spacing=1.0)
-        self.geo = op.geometry.GenericGeometry(network=self.net,
-                                               pores=self.net.Ps,
-                                               throats=self.net.Ts)
-        self.geo['pore.volume'] = 1e-14
-        self.phase = op.phase.GenericPhase(network=self.net)
+        self.net.add_model_collection(
+            op.models.collections.geometry.spheres_and_cylinders()
+        )
+        self.net.regenerate_models()
+        self.net['pore.volume'] = 1e-14
+        self.phase = op.phase.Phase(network=self.net)
         self.phase['pore.molar_density'] = 55500
-        self.phys = op.physics.GenericPhysics(network=self.net,
-                                              phase=self.phase,
-                                              geometry=self.geo)
-        self.phys['throat.diffusive_conductance'] = 1e-15
+        self.phase['throat.diffusive_conductance'] = 1e-15
         self.alg = op.algorithms.TransientFickianDiffusion(network=self.net,
                                                            phase=self.phase)
         self.alg.settings._update({'quantity': 'pore.concentration',
